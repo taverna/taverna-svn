@@ -56,7 +56,7 @@ public class DataThing implements Cloneable, Serializable {
 	
 	protected Object theDataObject;
 
-	protected HashMap metadataMap = new HashMap();
+	protected HashMap<Object, WeakReference<SemanticMarkup>> metadataMap = new HashMap<Object, WeakReference<SemanticMarkup>>();
 
 	protected SemanticMarkup myMarkup;
 
@@ -109,10 +109,10 @@ public class DataThing implements Cloneable, Serializable {
 	}
 
 	public DataThing(DataThing other) {
-		this.theDataObject = other.theDataObject;
-		this.metadataMap.putAll(other.metadataMap);
-		this.myMarkup = new SemanticMarkup(other.myMarkup);
-		this.lsid.putAll(other.lsid);
+		theDataObject = other.theDataObject;
+		metadataMap.putAll(other.metadataMap);
+		myMarkup = new SemanticMarkup(other.myMarkup);
+		lsid.putAll(other.lsid);
 	}
 
 	/**
@@ -153,7 +153,7 @@ public class DataThing implements Cloneable, Serializable {
 	 */
 	public void fillLSIDValues(LSIDProvider provider) {
 		// First check the DataThing itself
-		String selfValue = (String) (lsid.get(this));
+		String selfValue = lsid.get(this);
 		if (selfValue == null || selfValue.equals("")) {
 			// lsid.put(this, provider.getID("datathing"));
 		}
@@ -162,7 +162,7 @@ public class DataThing implements Cloneable, Serializable {
 	}
 
 	private void doInternalLSIDFill(Object o, LSIDProvider provider) {
-		String lsidValue = (String) (lsid.get(o));
+		String lsidValue = lsid.get(o);
 		if (lsidValue == null || lsidValue.equals("")) {
 			if (o instanceof Collection) {
 				lsid.put(o, provider.getID(LSIDProvider.DATATHINGCOLLECTION));
@@ -195,7 +195,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * such mapping
 	 */
 	public String getLSID(Object target) {
-		String lsidString = (String) lsid.get(target);
+		String lsidString = lsid.get(target);
 		return (lsidString != null) ? lsidString : "";
 	}
 
@@ -203,11 +203,11 @@ public class DataThing implements Cloneable, Serializable {
 	 * Get the object with the supplied LSID or return null if there isn't one
 	 */
 	public Object getDataObjectWithLSID(String LSID) {
-		for (Iterator i = lsid.keySet().iterator(); i.hasNext();) {
+		for (Iterator<Object> i = lsid.keySet().iterator(); i.hasNext();) {
 			Object key = i.next();
-			Object value = lsid.get(key);
+			String value = lsid.get(key);
 			// logger.debug("LSID value found : "+value);
-			if (((String) value).equals(LSID)) {
+			if (value.equals(LSID)) {
 				return key;
 			}
 		}
@@ -219,7 +219,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * as values
 	 */
 	public String[] getAllLSIDs() {
-		return (String[]) lsid.values().toArray(new String[0]);
+		return lsid.values().toArray(new String[0]);
 	}
 
 	/**
@@ -255,7 +255,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * Return the SemanticMarkup object associated with the DataThing itself
 	 */
 	public SemanticMarkup getMetadata() {
-		return this.myMarkup;
+		return myMarkup;
 	}
 
 	/**
@@ -263,7 +263,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * document.
 	 */
 	public Object getDataObject() {
-		return this.theDataObject;
+		return theDataObject;
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * document.
 	 */
 	private void setDataObject(Object data) {
-		this.theDataObject = data;
+		theDataObject = data;
 		setLSID(theDataObject, "");
 		doInternalLSIDFill(theDataObject, SYSTEM_DEFAULT_LSID_PROVIDER);
 	}
@@ -292,7 +292,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * value returned if the collection is empty.
 	 */
 	public String getSyntacticType() {
-		return getSyntacticTypeForObject(this.theDataObject);
+		return getSyntacticTypeForObject(theDataObject);
 	}
 
 	public String getMostInterestingMIMETypeForObject(Object o) {
@@ -407,8 +407,8 @@ public class DataThing implements Cloneable, Serializable {
 	 * the metadata.
 	 */
 	public void linkMetadataFrom(DataThing source) {
-		this.lsid = source.lsid;
-		this.metadataMap = source.metadataMap;
+		lsid = source.lsid;
+		metadataMap = source.metadataMap;
 	}
 
 	/**
@@ -420,12 +420,9 @@ public class DataThing implements Cloneable, Serializable {
 	 */
 	public SemanticMarkup getMetadataForObject(Object theObject,
 			boolean supplyDefault) throws NoMetadataFoundException {
-		WeakReference ref = (WeakReference) metadataMap.get(theObject);
-
-		// SemanticMarkup theMarkup =
-		// (SemanticMarkup)((WeakReference)metadataMap.get(theObject)).get();
-		if (ref != null) {
-			return (SemanticMarkup) ref.get();
+		WeakReference<SemanticMarkup> ref = metadataMap.get(theObject);
+		if (ref != null && ref.get() != null) {
+			return ref.get();
 		}
 		if (supplyDefault == false) {
 			throw new NoMetadataFoundException("No metadata available");
@@ -433,7 +430,7 @@ public class DataThing implements Cloneable, Serializable {
 		// Create a new markup object and store
 		// it bound to the object specified
 		SemanticMarkup theMarkup = new SemanticMarkup(theObject);
-		this.metadataMap.put(theObject, new WeakReference(theMarkup));
+		metadataMap.put(theObject, new WeakReference<SemanticMarkup>(theMarkup));
 		return theMarkup;
 	}
 
@@ -469,15 +466,16 @@ public class DataThing implements Cloneable, Serializable {
 	 * 
 	 * @return an Iterator over all children
 	 */
-	public Iterator childIterator() {
+	@SuppressWarnings("unchecked")
+	public Iterator<DataThing> childIterator() {
 		if (theDataObject instanceof Collection) {
-			List dataThingList = new ArrayList();
+			List<DataThing> dataThingList = new ArrayList<DataThing>();
 			for (Iterator i = ((Collection) theDataObject).iterator(); i
 					.hasNext();) {
 				DataThing newThing = new DataThing(i.next());
-				newThing.metadataMap = this.metadataMap;
-				newThing.myMarkup = new SemanticMarkup(this.myMarkup);
-				newThing.lsid = this.lsid;
+				newThing.metadataMap = metadataMap;
+				newThing.myMarkup = new SemanticMarkup(myMarkup);
+				newThing.lsid = lsid;
 				dataThingList.add(newThing);
 				// dataThingList.add(extractChild(i.next()));
 			}
@@ -520,7 +518,7 @@ public class DataThing implements Cloneable, Serializable {
 		// detected that iteration is required somewhere else using the join
 		// iterator
 		if (type.equals(currentType)) {
-			List dataThingList = new ArrayList();
+			List<DataThing> dataThingList = new ArrayList<DataThing>();
 			dataThingList.add(this);
 			return new BaclavaIterator(dataThingList);
 		}
@@ -533,13 +531,11 @@ public class DataThing implements Cloneable, Serializable {
 			// See how deep the iterator needs to go.
 			int iterationDepth = (currentType.length() - type.length()) / 2;
 			// Now drill down into the data structure that number of levels,
-			// build a list
-			// of all the items into a new collection, iterate over this list
-			// building
-			// the DataThing objects and return the iterator over that list (and
-			// breathe...)
-			List targetList = new ArrayList();
-			List indexList = new ArrayList();
+			// build a list of all the items into a new collection, iterate over
+			// this list building the DataThing objects and return the iterator
+			// over that list (and breathe...)
+			List<Object> targetList = new ArrayList<Object>();
+			List<int[]> indexList = new ArrayList<int[]>();
 			drill(iterationDepth, targetList, indexList, new int[0],
 					(Collection) theDataObject);
 			// Now iterate over the target list creating new DataThing objects
@@ -548,8 +544,8 @@ public class DataThing implements Cloneable, Serializable {
 			 * for (Iterator i = targetList.iterator(); i.hasNext(); ) {
 			 * DataThing newThing = new DataThing(i.next()); // Copy any
 			 * metadata into the new datathing
-			 * newThing.metadataMap.putAll(this.metadataMap);
-			 * newThing.lsid.putAll(this.lsid); dataThingList.add(newThing); }
+			 * newThing.metadataMap.putAll(metadataMap);
+			 * newThing.lsid.putAll(lsid); dataThingList.add(newThing); }
 			 */
 			// return new BaclavaIterator(dataThingList, indexList);
 			return new BaclavaIterator(this, targetList, indexList);
@@ -567,24 +563,25 @@ public class DataThing implements Cloneable, Serializable {
 	 * @return true if a datathing's dataObject has been replaced with the
 	 *         newData.
 	 */
+	@SuppressWarnings("unchecked")
 	public DataThing drillAndSet(DataThing oldDT, String newData) {
-		if (this.theDataObject instanceof Collection) {
-			ArrayList dtList = new ArrayList((Collection) this.theDataObject);
+		if (theDataObject instanceof Collection) {
+			ArrayList<Object> dtList = new ArrayList<Object>((Collection) theDataObject);
 			for (int i = 0; i < dtList.size(); i++) {
 				DataThing tmp = new DataThing(dtList.get(i));
-				tmp.metadataMap = this.metadataMap;
-				tmp.myMarkup = new SemanticMarkup(this.myMarkup);
-				tmp.lsid = this.lsid;
+				tmp.metadataMap = metadataMap;
+				tmp.myMarkup = new SemanticMarkup(myMarkup);
+				tmp.lsid = lsid;
 				DataThing newDT = tmp.drillAndSet(oldDT, newData);
 				if (newDT != null) {
 					dtList.set(i, newDT.getDataObject());
-					this.setDataObject(dtList);
+					setDataObject(dtList);
 					return this;
 				}
 			}
 			return null;
-		} else if (this.getDataObject().equals(oldDT.getDataObject())) {
-			this.setDataObject(new String(newData));
+		} else if (getDataObject().equals(oldDT.getDataObject())) {
+			setDataObject(new String(newData));
 			return this;
 		} else
 			return null;
@@ -592,8 +589,8 @@ public class DataThing implements Cloneable, Serializable {
 
 	/*
 	 * public void drillAndPrint(){ System.out.print("-");
-	 * System.out.println(this.toString()); for (Iterator
-	 * iDT=this.childIterator();iDT.hasNext();){ System.out.print("-");
+	 * System.out.println(toString()); for (Iterator
+	 * iDT=childIterator();iDT.hasNext();){ System.out.print("-");
 	 * ((DataThing)iDT.next()).drillAndPrint(); } }
 	 */
 
@@ -602,7 +599,7 @@ public class DataThing implements Cloneable, Serializable {
 	 * depth, this makes the underlying assumption that the collection contains
 	 * either collections or objects, but never a mix of both.
 	 */
-	private void drill(int iterationDepth, List targetList, List indexList,
+	private void drill(int iterationDepth, List<Object> targetList, List<int[]> indexList,
 			int[] currentIndex, Collection theDataObject) {
 		if (iterationDepth == 1) {
 			// Collecting items
@@ -627,9 +624,7 @@ public class DataThing implements Cloneable, Serializable {
 	 */
 	private int[] append(int[] list, int head) {
 		int[] newlist = new int[list.length + 1];
-		for (int i = 0; i < list.length; i++) {
-			newlist[i] = list[i];
-		}
+		System.arraycopy(list, 0, newlist, 0, list.length);
 		newlist[list.length] = head;
 		return newlist;
 	}
@@ -663,7 +658,7 @@ public class DataThing implements Cloneable, Serializable {
 	public File writeToFileSystem(File destination, String name)
 			throws IOException {
 		// Check for the most interesting type, if defined
-		String interestingType = getMostInterestingMIMETypeForObject(this.theDataObject);
+		String interestingType = getMostInterestingMIMETypeForObject(theDataObject);
 		String fileExtension = ".text";
 		if (interestingType != null
 				&& interestingType.equals("text/plain") == false) {
