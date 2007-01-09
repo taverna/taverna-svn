@@ -73,7 +73,7 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * Last edited by: $Author: mereden $
+ * Last edited by: $Author: stain $
  * 
  * @author mfortner
  */
@@ -93,7 +93,7 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 			return columnIndex > 0;
 		}
 
-		public Class getColumnClass(int columnIndex) {
+		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
 			case 0:
 				return Port.class;
@@ -130,10 +130,9 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 		 * @return
 		 */
 		private int getListDepth(String syntacticType) {
-			int index;
 			int depth = 0;
 			String temp = syntacticType;
-			while ((index = temp.indexOf("l(")) > -1) {
+			while ((temp.indexOf("l(")) > -1) {
 				temp = temp.substring(2);
 				depth++;
 			}
@@ -319,6 +318,10 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 					processor.removePort(ports[index]);
 				}
 			}
+			inputTable.revalidate();
+			outputTable.revalidate();
+			inputTable.repaint();
+			outputTable.repaint();
 		}
 	};
 
@@ -406,7 +409,7 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 
 		deletePortAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 
-		JComboBox inputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));
+		JComboBox inputTypesCombo = new JComboBox(new Vector<Object>(DataThing.mimeTypes.values()));
 
 		inputTable = new JTable(new PortTableModel() {
 			protected Port[] getPorts() {
@@ -450,6 +453,9 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 					ip.setSyntacticType("'text/plain'");
 					processor.addPort(ip);
 					addInputField.setText("");
+					inputTable.revalidate();
+					inputTable.repaint();
+					
 				} catch (PortCreationException pce) {
 					//
 				} catch (DuplicatePortNameException dpne) {
@@ -498,7 +504,7 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 		JPanel outputEditPanel = new JPanel(new BorderLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Outputs"));
 
-		JComboBox outputTypesCombo = new JComboBox(new Vector(DataThing.mimeTypes.values()));
+		JComboBox outputTypesCombo = new JComboBox(new Vector<Object>(DataThing.mimeTypes.values()));
 
 		outputTable = new JTable(new PortTableModel() {
 			protected Port[] getPorts() {
@@ -542,6 +548,8 @@ public class BSFConfigPanel extends JPanel implements WorkflowModelViewSPI, Scuf
 					op.setSyntacticType("'text/plain'");
 					processor.addPort(op);
 					addOutputField.setText("");
+					outputTable.revalidate();
+					outputTable.repaint();
 				} catch (PortCreationException pce) {
 					//
 				} catch (DuplicatePortNameException dpne) {
