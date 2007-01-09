@@ -60,8 +60,6 @@ public class WebScavenger extends Scavenger {
 	private DefaultMutableTreeNode progressDisplayNode = new DefaultMutableTreeNode(
 	"Searching...");
 	
-	private ScavengerRegistry registry = ScavengerRegistry.instance();
-	
 	/**
 	 * Creates a new web scavenger, starting the web crawl in a new thread and
 	 * returning immediately
@@ -120,7 +118,7 @@ public class WebScavenger extends Scavenger {
 				validURL = true;
 			}
 			if (validURL) {
-				for (Scavenger scavenger : registry.getScavengers()) {
+				for (Scavenger scavenger : ScavengerRegistry.instance().getScavengers()) {
 					try {
 						if (scavenger instanceof URLBasedScavenger) {
 							add(((URLBasedScavenger)scavenger).fromURL(url));
