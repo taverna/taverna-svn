@@ -9,7 +9,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -53,6 +55,8 @@ public class Bootstrap {
 			IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException {
 
+		setUpProxyAuthenticator();
+		
 		findUserDir();
 		properties = findProperties();
 		remoteRepositories = findRepositories(properties);
@@ -72,6 +76,21 @@ public class Bootstrap {
 		invokeWorkbench(args, workbenchClass);
 	}
 
+	private static void setUpProxyAuthenticator() {
+		if (System.getProperty("http.proxyUser")!=null && System.getProperty("http.proxyPassword")!=null) {
+			Authenticator.setDefault(new Authenticator() {
+
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					String password=System.getProperty("http.proxyPassword");
+					String username=System.getProperty("http.proxyUser");
+					return new PasswordAuthentication(username,password.toCharArray());
+				}
+				
+			});
+		}
+	}
+	
 	public static void addSystemLoaderArtifacts() throws MalformedURLException {
 		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
 		if (systemClassLoader instanceof BootstrapClassLoader) {
