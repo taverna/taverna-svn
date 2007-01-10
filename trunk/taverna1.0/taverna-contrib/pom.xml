@@ -71,6 +71,22 @@
       <artifactId>bsf</artifactId>
       <version>2.3.0</version>
     </dependency>
+    <!-- Should be the same as bsf/bsf/2.3.0 above, hence not needed
+    <dependency>
+      <groupId>uk.org.mygrid.resources</groupId>
+      <artifactId>bsf_core</artifactId>
+      <version>NO-VERSION</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.resources</groupId>
+      <artifactId>bsf_debug</artifactId>
+      <version>NO-VERSION</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.org.mygrid.resources</groupId>
+      <artifactId>bsfperl</artifactId>
+      <version>NO-VERSION</version>
+    </dependency-->
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
@@ -115,21 +131,6 @@
       <groupId>uk.org.mygrid.resources</groupId>
       <artifactId>biojava</artifactId>
       <version>1.4pre1</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>bsf_core</artifactId>
-      <version>NO-VERSION</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>bsf_debug</artifactId>
-      <version>NO-VERSION</version>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>bsfperl</artifactId>
-      <version>NO-VERSION</version>
     </dependency>
     <dependency>
       <groupId>uk.org.mygrid.resources</groupId>
