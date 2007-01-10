@@ -46,9 +46,9 @@ public class ArtifactClassLoaderTest extends TestCase {
 		repository.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		repository.addRemoteRepository(new URL("http://rpc268.cs.man.ac.uk/repository/"));
 		tavernaCore = new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core","1.5-SNAPSHOT");
+				"taverna-core","1.5.1-SNAPSHOT");
 		baclavaCore = new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core","1.5-SNAPSHOT");
+				"baclava-core","1.5.1-SNAPSHOT");
 		jdom = new BasicArtifact("jdom", "jdom", "1.0");
 		xerces = new BasicArtifact("xerces", "xercesImpl", "2.6.2");
 		repository.addArtifact(xerces);

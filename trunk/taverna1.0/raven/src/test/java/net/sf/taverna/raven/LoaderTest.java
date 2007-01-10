@@ -15,6 +15,14 @@ import java.net.URLClassLoader;
 
 public class LoaderTest extends TestCase {
 
+	public static final String mavenRepository = "http://www.ibiblio.org/maven2/";
+
+	public static final String repositoryLocation = 
+		// "http://www.ebi.ac.uk/~tmo/repository/";  // Tom's
+		// "http://www.mygrid.org.uk/maven/repository/"
+		// "http://www.mygrid.org.uk/maven/snapshot-repository/"
+		"http://rpc268.cs.man.ac.uk/repository/"; // Stian's
+	
 	File dir;
 	
 	public void setUp() {
@@ -68,10 +76,9 @@ public class LoaderTest extends TestCase {
 	IllegalAccessException, InvocationTargetException, InterruptedException {
 		
 		// Create a remote classloader referencing the raven jar within a repository
-		String repositoryLocation = 
-			"http://www.ebi.ac.uk/~tmo/repository/";
+
 		String artifactLocation = 
-			"uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
+			"uk/org/mygrid/taverna/raven/raven/1.5.1-SNAPSHOT/raven-1.5.1-SNAPSHOT.jar";
 		ClassLoader c = new URLClassLoader(
 				new URL[]{new URL(repositoryLocation+artifactLocation)}
 				,null);
@@ -92,14 +99,13 @@ public class LoaderTest extends TestCase {
         int.class);
 		
 		// Parameters for the Raven loader call
-		String ravenVersion = "1.5-SNAPSHOT";
+		String ravenVersion = "1.5.1-SNAPSHOT";
 		URL[] remoteRepositories = new URL[]{
-				new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
-				new URL("http://www.ibiblio.org/maven2/")};
-		//URL splashScreenImage = new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png");
+				new URL(repositoryLocation), 
+				new URL(mavenRepository)};
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
-		String version = "1.5-SNAPSHOT";
+		String version = "1.5.1-SNAPSHOT";
 		int minimumDisplayTime = 10 * 1000; // Ten seconds
 		String targetClassName = "org.embl.ebi.escience.scuflui.workbench.Workbench";
 		
@@ -124,7 +130,7 @@ public class LoaderTest extends TestCase {
 		assertEquals("org.embl.ebi.escience.scuflui.workbench.Workbench", 
 				workbenchClass.getName());
 		String classLoaderName = workbenchClass.getClassLoader().toString().split(" ")[0];
-		assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}",
+		assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5.1-SNAPSHOT}",
 				classLoaderName);
 		
 		// Could invoke the workbench's main method here as follows :
@@ -141,22 +147,21 @@ public class LoaderTest extends TestCase {
   {
 
     // Create a remote classloader referencing the raven jar within a repository
-    String repositoryLocation = "http://www.ebi.ac.uk/~tmo/repository/";
-    String artifactLocation = "uk/org/mygrid/taverna/raven/raven/1.5-SNAPSHOT/raven-1.5-SNAPSHOT.jar";
+    String artifactLocation = "uk/org/mygrid/taverna/raven/raven/1.5.1-SNAPSHOT/raven-1.5.1-SNAPSHOT.jar";
     ClassLoader c = new URLClassLoader(new URL[]{new URL(repositoryLocation + artifactLocation)},
                                        null);
 
     // Reference to the Loader class within net.sf.taverna.raven
-    Class loaderClass = c.loadClass("net.sf.taverna.raven.Loader");
+    c.loadClass("net.sf.taverna.raven.Loader");
     // Find the single static method provided by the loader
 
     // Parameters for the Raven loader call
     URL[] remoteRepositories = new URL[]{
-            new URL("http://www.ebi.ac.uk/~tmo/repository/"),
-            new URL("http://www.ibiblio.org/maven2/") };
+            new URL(repositoryLocation),
+            new URL(mavenRepository) };
     String groupID = "uk.org.mygrid.taverna";
     String artifactID = "taverna-workbench";
-    String version = "1.5-SNAPSHOT";
+    String version = "1.5.1-SNAPSHOT";
     String targetClassName = "org.embl.ebi.escience.scuflui.workbench.Workbench";
 
     RepositoryListener listener = new RepositoryListener()
@@ -191,7 +196,7 @@ public class LoaderTest extends TestCase {
             workbenchClass.getName());
 
 	String classLoaderName = workbenchClass.getClassLoader().toString().split(" ")[0];
-	assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5-SNAPSHOT}",
+	assertEquals("loader{uk.org.mygrid.taverna:taverna-workbench:1.5.1-SNAPSHOT}",
 			classLoaderName);
 
     // Could invoke the workbench's main method here as follows :
@@ -213,13 +218,13 @@ public class LoaderTest extends TestCase {
 	public void testNonDynamic() throws MalformedURLException, ArtifactNotFoundException, ArtifactStateException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		UIManager.setLookAndFeel(UIManager
 				.getSystemLookAndFeelClassName());
-		Class workbenchClass = Loader.doRavenMagic(
-				"1.5-SNAPSHOT",
+		Loader.doRavenMagic(
+				"1.5.1-SNAPSHOT",
 				dir,
-				new URL[]{new URL("http://www.ebi.ac.uk/~tmo/repository/"), 
-				          new URL("http://www.ibiblio.org/maven2/")},
-        "uk.org.mygrid.taverna", "taverna-workbench", "1.5-SNAPSHOT",
-        "org.embl.ebi.escience.scuflui.workbench.Workbench", //new URL("http://www.ebi.ac.uk/~tmo/mygrid/splashscreen.png"),
+				new URL[]{new URL(repositoryLocation), 
+				          new URL(mavenRepository)},
+        "uk.org.mygrid.taverna", "taverna-workbench", "1.5.1-SNAPSHOT",
+        "org.embl.ebi.escience.scuflui.workbench.Workbench",
         null, 10000
     );
 		//System.out.println(workbenchClass.toString());
