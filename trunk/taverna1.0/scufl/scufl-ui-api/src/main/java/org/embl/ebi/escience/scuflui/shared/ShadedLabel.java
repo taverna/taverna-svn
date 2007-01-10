@@ -24,11 +24,13 @@ import javax.swing.SwingConstants;
  */
 public class ShadedLabel extends JPanel {
 
+	// If you change these, please make sure BLUE is really blue, etc.. :-)
+
 	public static Color TAVERNA_ORANGE = new Color(238, 206, 143);
 
-	public static Color TAVERNA_GREEN = new Color(213, 229, 246);
+	public static Color TAVERNA_BLUE = new Color(213, 229, 246);
 
-	public static Color TAVERNA_BLUE = new Color(161, 198, 157);
+	public static Color TAVERNA_GREEN = new Color(161, 198, 157);
 
 	final JLabel label;
 

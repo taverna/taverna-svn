@@ -62,7 +62,7 @@ public class WorkflowInputPanel extends JPanel {
 	
 	public class Header extends JPanel {
 		ShadedLabel header = new ShadedLabel("Run workflow: " + model.getDescription().getTitle(),
-				ShadedLabel.TAVERNA_BLUE);
+				ShadedLabel.TAVERNA_GREEN);
 		public Header() {
 			super(new BorderLayout());
 			add(header, BorderLayout.NORTH);
@@ -163,7 +163,7 @@ public class WorkflowInputPanel extends JPanel {
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.weightx = 0.9;
 			c.anchor = GridBagConstraints.FIRST_LINE_START;
-			add(new ShadedLabel("Inputs", ShadedLabel.TAVERNA_GREEN), c);
+			add(new ShadedLabel("Inputs", ShadedLabel.TAVERNA_BLUE), c);
 			builder = new WorkflowInputMapBuilder();
 			// FIXME: also call detachFromModel
 			c.fill = GridBagConstraints.BOTH;
