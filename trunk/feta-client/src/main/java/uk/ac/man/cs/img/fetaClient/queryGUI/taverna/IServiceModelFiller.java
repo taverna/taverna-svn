@@ -1,5 +1,7 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import java.util.Map;
+
 import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;
 
 public interface IServiceModelFiller {
@@ -34,5 +36,9 @@ public interface IServiceModelFiller {
 	public String getLocationURL();
 
 	public String getOrganisationName();
+	
+	public Map<String, String> getInputParameters();
+	
+	public Map<String, String> getOutputParameters();
 
 }

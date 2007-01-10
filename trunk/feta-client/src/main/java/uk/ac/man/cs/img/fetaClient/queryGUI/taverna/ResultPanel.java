@@ -27,15 +27,19 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 import uk.ac.man.cs.img.fetaClient.resource.FetaResources;
 import uk.ac.man.cs.img.fetaClient.util.GUIUtil;
@@ -58,10 +62,8 @@ public class ResultPanel extends JPanel {
 	private BasicServiceModel serviceModel;
 
 	private ServiceModelAdaptor serviceModelAdaptor;
-
-	private JLabel nameField, desciptionField;
-
-	JButton annotateButton, queryButton;
+	
+	private JButton annotateButton;
 
 	public ResultPanel(QueryHelper queryHelper) {
 		super();
@@ -82,28 +84,28 @@ public class ResultPanel extends JPanel {
 		formPanel = new ServiceFormPanel(serviceModelAdaptor);
 		serviceModel.addChangeListener(serviceModelAdaptor);
 
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-		this.setMaximumSize(new Dimension(500, 700));
+		setLayout(new GridBagLayout());
+		
+		setBackground(ShadedLabel.TAVERNA_ORANGE);
 
 		// Top Pane
-		JPanel topPane = new JPanel();
-		topPane.setLayout(new BoxLayout(topPane, BoxLayout.X_AXIS));
+		JSplitPane topPane = new JSplitPane();
 		topPane.setOpaque(true);
-
+		
 		treePanel = new ServiceTreePanel(serviceTree, serviceModel);
-
+		//treePanel.setPreferredSize(new Dimension(1000, 1000));
+		
 		// JScrollPane scrollPane = new
 		// JScrollPane(treePanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-		JPanel myPane = new JPanel();
-		myPane.setLayout(new BoxLayout(myPane, BoxLayout.X_AXIS));
-		myPane.setOpaque(true);
-		myPane.add(treePanel);
+//		JPanel myPane = new JPanel();
+//		myPane.setLayout(new BoxLayout(myPane, BoxLayout.X_AXIS));
+//		myPane.setOpaque(true);
+//		myPane.add(treePanel);
 
-		topPane.add(myPane/** scrollPane* */
-		);
-		topPane.add(formPanel);
+		topPane.setLeftComponent(treePanel);
+		topPane.setRightComponent(formPanel);
+
 
 		// Bottom Pane
 		JPanel bottomPane = new JPanel();
@@ -129,17 +131,29 @@ public class ResultPanel extends JPanel {
 
 		bottomPane.add(queryButton);
 		boolean annotator = false;
-		try{
+		try {
 			annotator = FetaClientProperties.isAnnotator();
-		}catch(Exception exp){
-			exp.printStackTrace();			
+		} catch (Exception exp) {
+			exp.printStackTrace();
 		}
 		if (annotator) {
 			bottomPane.add(annotateButton);	
 		}
-		 
-		this.add(topPane);
-		this.add(bottomPane);
+		
+		
+		GridBagConstraints c = new GridBagConstraints();
+		// Grow the top in all directions
+		c.fill = GridBagConstraints.BOTH;
+		c.gridx = 0;
+		c.weightx = 0.1;
+		c.weighty = 0.1;
+		add(topPane, c);
+		
+		// But don't grow the bottom
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weighty = 0;
+		add(bottomPane, c);
+		
 	}
 
 	public void clearForm() {

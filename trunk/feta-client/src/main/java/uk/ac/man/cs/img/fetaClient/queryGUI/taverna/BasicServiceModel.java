@@ -27,6 +27,7 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
 import java.io.StringReader;
+import java.util.Map;
 
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -69,6 +70,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 
 	private BasicOperationModel operation;
 
+
 	public BasicServiceModel() {
 		super();
 		serviceType = ServiceType.UNDEFINED;
@@ -92,7 +94,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 		operation = new BasicOperationModel(xmlWrapper);
 		operationName = xmlWrapper.getOperationName();
 		operationSpec = xmlWrapper.getOperationSpec();
-
+		
 		try {
 			if (operationSpec == null) {
 				if (this.serviceType == ServiceType.WSDL) {
@@ -160,49 +162,49 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 * @return
 	 */
 	public String getServiceLocation() {
-		return this.serviceLocation;
+		return serviceLocation;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getServiceName() {
-		return this.serviceName;
+		return serviceName;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getServiceOrganisationName() {
-		return this.serviceOrganisationName;
+		return serviceOrganisationName;
 	}
 
 	/**
 	 * @return
 	 */
 	public ServiceType getServiceType() {
-		return this.serviceType;
+		return serviceType;
 	}
 
 	/**
 	 * @return
 	 */
 	public String getServiceDescriptionText() {
-		return this.serviceDescriptionText;
+		return serviceDescriptionText;
 	}
 
 	public String getServiceDescriptionLocation() {
-		return this.serviceDescriptionLocation;
+		return serviceDescriptionLocation;
 
 	}
 
 	public String getServiceInterfaceLocation() {
-		return this.serviceInterfaceLocation;
+		return serviceInterfaceLocation;
 
 	}
 
 	public DnDFragment getDnDFragment() {
-		return this.dndFragment;
+		return dndFragment;
 
 	}
 
@@ -217,25 +219,25 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	}
 
 	public String getTavernaProcessorSpecAsString() {
-		return this.operationSpec;
+		return operationSpec;
 
 	}
 
 	public BasicOperationModel getOperationModel() {
-		return this.operation;
+		return operation;
 	}
-
+	
 	public String toString() {
-		if (this.serviceType == ServiceType.SOAPLAB)
-			return this.serviceName;
+		if (serviceType == ServiceType.SOAPLAB)
+			return serviceName;
 		else
-			return /* this.serviceName+" - "+ */this.operation
+			return /* serviceName+" - "+ */operation
 					.getOperationName();
 
 	}
 
 	public void setServiceDescriptionLocation(String loc) {
-		this.serviceDescriptionLocation = loc;
+		serviceDescriptionLocation = loc;
 		fireChange();
 
 	}
@@ -247,7 +249,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	}
 
 	public void setServiceInterfaceLocation(String loc) {
-		this.serviceInterfaceLocation = loc;
+		serviceInterfaceLocation = loc;
 		fireChange();
 	}
 
@@ -255,7 +257,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 * @param string
 	 */
 	public void setServiceLocation(String loc) {
-		this.serviceLocation = loc;
+		serviceLocation = loc;
 		fireChange();
 
 	}
@@ -264,7 +266,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 * @param string
 	 */
 	public void setServiceName(String name) {
-		this.serviceName = name;
+		serviceName = name;
 		fireChange();
 
 	}
@@ -273,7 +275,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 * @param string
 	 */
 	public void setServiceOrganisationName(String name) {
-		this.serviceOrganisationName = name;
+		serviceOrganisationName = name;
 		fireChange();
 
 	}
@@ -283,7 +285,7 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 */
 
 	public void setServiceType(ServiceType srvcType) {
-		this.serviceType = srvcType;
+		serviceType = srvcType;
 		fireChange();
 
 	}
@@ -292,13 +294,13 @@ public class BasicServiceModel extends AbstractMonitorableModel {
 	 * @param string
 	 */
 	public void setServiceDescriptionText(String desc) {
-		this.serviceDescriptionText = desc;
+		serviceDescriptionText = desc;
 		fireChange();
 
 	}
 
 	public void setDnDFragment(DnDFragment frag) {
-		this.dndFragment = frag;
+		dndFragment = frag;
 	}
 
 	public void copyFrom(BasicServiceModel model) {

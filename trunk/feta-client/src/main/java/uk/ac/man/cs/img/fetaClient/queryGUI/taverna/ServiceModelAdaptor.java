@@ -47,9 +47,6 @@ public class ServiceModelAdaptor implements ActionListener, DocumentListener,
 
 	ServiceFormPanel view;
 
-	/**
-	 * 
-	 */
 	public ServiceModelAdaptor() {
 		super();
 
@@ -59,56 +56,40 @@ public class ServiceModelAdaptor implements ActionListener, DocumentListener,
 		super();
 		this.model = model;
 	}
-
+ 
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource() == model) {
-			if (view != null) {
-
-				// view.removeListener(this);
-				view.setServiceName(model.getServiceName());
-				view.setServiceDescriptionText(model
-						.getServiceDescriptionText());
-				view.setLocationURL(model.getServiceLocation());
-				view.setInterfaceLocationURL(model
-						.getServiceInterfaceLocation());
-				view.setOrganisationName(model.getServiceOrganisationName());
-				view.setServiceDescriptionLocation(model
-						.getServiceDescriptionLocation());
-
-				if (model.getOperationModel() != null) {
-					// System.out.println("Debug in else the operation model is
-					// NOTTTT null");
-					view.setOperationName(model.getOperationModel()
-							.getOperationName());
-					view.setOperationDescriptionText(model.getOperationModel()
-							.getOperationDescriptionText());
-					view.setOperationMethod(model.getOperationModel()
-							.getOperationMethod() != null ? model
-							.getOperationModel().getOperationMethod()
-							.getLabel() : null);
-					view.setOperationTask(model.getOperationModel()
-							.getOperationTask() != null ? model
-							.getOperationModel().getOperationTask().getLabel()
-							: null);
-					view.setOperationResource(model.getOperationModel()
-							.getOperationResource() != null ? model
-							.getOperationModel().getOperationResource()
-							.getLabel() : null);
-					// view.setOperationResourceContent(model.getOperationModel().getOperationResourceContent()!=null?model.getOperationModel().getOperationResourceContent().getLabel():null);
-					// view.setOperationApplication(model.getOperationModel().getOperationApplication()!=null?model.getOperationModel().getOperationApplication().getLabel():null);
-				} else {
-					// System.out.println("Debug in else the operation model is
-					// null");
-				}
-
-				if (model.getServiceType() != null) {
-					view.setServiceType(model.getServiceType());
-				}
-
-			}
-
+		if (e.getSource() != model) {
+			return;
+		}
+		if (view == null) {
+			return;
 		}
 
+		view.setServiceName(model.getServiceName());
+		view.setServiceDescriptionText(model.getServiceDescriptionText());
+		view.setLocationURL(model.getServiceLocation());
+		view.setInterfaceLocationURL(model.getServiceInterfaceLocation());
+		view.setOrganisationName(model.getServiceOrganisationName());
+		view.setServiceDescriptionLocation(model.getServiceDescriptionLocation());
+
+		if (model.getServiceType() != null) {
+			view.setServiceType(model.getServiceType());
+		}
+
+		BasicOperationModel operation = model.getOperationModel();
+		if (operation != null) {
+			view.setOperationName(operation.getOperationName());
+			view.setOperationDescriptionText(operation.getOperationDescriptionText());
+			view.setOperationMethod(operation.getOperationMethod() != null ? model.getOperationModel().getOperationMethod().getLabel()
+				: null);
+			view.setOperationTask(operation.getOperationTask() != null ? model.getOperationModel().getOperationTask().getLabel()
+				: null);
+			view.setOperationResource(operation.getOperationResource() != null ? model.getOperationModel().getOperationResource().getLabel()
+				: null);
+			view.setInputParameters(operation.getInputParameters());
+			view.setOutputParameters(operation.getOutputParameters());
+			
+		}
 	}
 
 	/*

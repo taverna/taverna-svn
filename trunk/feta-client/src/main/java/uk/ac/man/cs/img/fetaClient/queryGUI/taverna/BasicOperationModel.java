@@ -1,5 +1,7 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import java.util.Map;
+
 /*
  * BasicOperationModel.java
  *
@@ -26,6 +28,10 @@ public class BasicOperationModel {
 	// private FetaOntologyTermModel operationApplication;
 	private FetaOntologyTermModel operationResource;
 
+	private Map<String, String> inputParameters;
+
+	private Map<String, String> outputParameters;
+	
 	// private FetaOntologyTermModel operationResourceContent;
 	// private ArrayList inputParameters;
 	// private ArrayList outputParameters;
@@ -47,40 +53,47 @@ public class BasicOperationModel {
 		setOperationMethod(xmlWrapper.getOperationMethod());
 		setOperationTask(xmlWrapper.getOperationTask());
 		setOperationResource(xmlWrapper.getOperationResource());
-		// setOperationResourceContent(xmlWrapper.getOperationResourceContent());
-		// setOperationApplication(xmlWrapper.getOperationApplication());
+		setInputParameters(xmlWrapper.getInputParameters());
+		setOutputParameters(xmlWrapper.getOutputParameters());
 	}
 
 	public void setOperationName(String operName) {
-		this.operationName = operName;
+		operationName = operName;
 
 	}
 
 	public void setOperationDescriptionText(String operDescText) {
-		this.operationDescriptionText = operDescText;
+		operationDescriptionText = operDescText;
 
 	}
 
 	public void setOperationMethod(String method) {
 		if (method != null) {
-			this.operationMethod = new FetaOntologyTermModel(method);
+			operationMethod = new FetaOntologyTermModel(method);
 		}
 
 	}
 
 	public void setOperationTask(String task) {
 		if (task != null) {
-			this.operationTask = new FetaOntologyTermModel(task);
+			operationTask = new FetaOntologyTermModel(task);
 		}
-
 	}
 
 	public void setOperationResource(String resource) {
 		if (resource != null) {
-			this.operationResource = new FetaOntologyTermModel(resource);
+			operationResource = new FetaOntologyTermModel(resource);
 		}
-
 	}
+
+	public void setInputParameters(Map<String, String> inputParameters) {
+		this.inputParameters = inputParameters;
+	}
+	
+	public void setOutputParameters(Map<String, String> outputParameters) {
+		this.outputParameters = outputParameters;
+	}
+	
 
 	/*
 	 * public void setOperationResourceContent(String resourceContent){ if
@@ -92,11 +105,11 @@ public class BasicOperationModel {
 	 *  }
 	 */
 	public String getOperationName() {
-		return this.operationName;
+		return operationName;
 	}
 
 	public String getOperationDescriptionText() {
-		return this.operationDescriptionText;
+		return operationDescriptionText;
 	}
 
 	/*
@@ -105,39 +118,42 @@ public class BasicOperationModel {
 	 * 
 	 */
 	public FetaOntologyTermModel getOperationMethod() {
-		return this.operationMethod;
+		return operationMethod;
 	}
 
 	public FetaOntologyTermModel getOperationTask() {
-		return this.operationTask;
+		return operationTask;
 	}
 
 	public FetaOntologyTermModel getOperationResource() {
-		return this.operationResource;
+		return operationResource;
 	}
+	
 
 	/*
 	 * public FetaOntologyTermModel getOperationResourceContent() { return
 	 * this.operationResourceContent; }
 	 */
 	public void copyFrom(BasicOperationModel model) {
-		this.setOperationName(model.getOperationName());
-		this.setOperationDescriptionText(model.getOperationDescriptionText());
+		setOperationName(model.getOperationName());
+		setOperationDescriptionText(model.getOperationDescriptionText());
 		if (model.getOperationMethod() != null) {
-			this.setOperationMethod(model.getOperationMethod().getID());
+			setOperationMethod(model.getOperationMethod().getID());
 		} else {
-			this.operationMethod = null;
+			operationMethod = null;
 		}
 		if (model.getOperationTask() != null) {
-			this.setOperationTask(model.getOperationTask().getID());
+			setOperationTask(model.getOperationTask().getID());
 		} else {
-			this.operationTask = null;
+			operationTask = null;
 		}
 		if (model.getOperationResource() != null) {
-			this.setOperationResource(model.getOperationResource().getID());
+			setOperationResource(model.getOperationResource().getID());
 		} else {
-			this.operationResource = null;
+			operationResource = null;
 		}
+		setInputParameters(model.getInputParameters());
+		setOutputParameters(model.getOutputParameters());
 		/*
 		 * if ( model.getOperationResourceContent() != null ) {
 		 * this.setOperationResource(model.getOperationResourceContent().getID()); }
@@ -148,5 +164,15 @@ public class BasicOperationModel {
 		 */
 		// parameters.copyFrom(model.getOperationModel());
 	}
+
+	public Map<String, String> getInputParameters() {
+		return inputParameters;
+	}
+
+	public Map<String, String> getOutputParameters() {
+		return outputParameters;
+	}
+
+
 
 }

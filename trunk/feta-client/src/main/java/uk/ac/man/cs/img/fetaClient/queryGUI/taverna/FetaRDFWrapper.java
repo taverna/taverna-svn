@@ -1,8 +1,14 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
 
 import uk.ac.man.cs.img.fetaEngine.commons.FetaModelRDF;
 import uk.ac.man.cs.img.fetaEngine.commons.ServiceType;
@@ -25,6 +31,8 @@ import com.hp.hpl.jena.rdql.ResultBinding;
 
 public class FetaRDFWrapper implements IServiceModelFiller {
 
+	private static Logger logger = Logger.getLogger(FetaRDFWrapper.class);
+	
 	private String operationName;
 
 	private String serviceName;
@@ -47,149 +55,120 @@ public class FetaRDFWrapper implements IServiceModelFiller {
 
 	private String operationMethod;
 
-	private String operationApplication;
+	//private String operationApplication;
 
 	private String operationResource;
 
-	private String operationResourceContent;
+	//private String operationResourceContent;
 
 	private String operationSpec;
 
-	/** Creates a new instance of FetaRDFWrapper */
-	public FetaRDFWrapper(String operID) throws Exception {
-
+	/** 
+	 * Create a new instance of FetaRDFWrapper 
+	 * 
+	 * @throws IOException
+	 */
+	public FetaRDFWrapper(String operID) throws IOException {
+		logger.debug("Finding feta service description " + operID);
 		// tokenize location, service name and operation name
 		String[] tokens = operID.split("\\$");
 		if (tokens.length != 3) {
-			Exception e = new Exception();
-			throw e;
+			throw new IllegalArgumentException("Could not parse operation id " + operID);
 		}
 
-		this.operationName = tokens[2];
-		this.serviceName = tokens[1];
-		this.descriptionLocation = tokens[0];
+		descriptionLocation = tokens[0];
+		serviceName = tokens[1];
+		operationName = tokens[2];
 
-		try {
-			URL descURL = new URL(descriptionLocation);
-			Model m1 = ModelFactory.createDefaultModel();
-			m1.read(descURL.openStream(), null);
+		URL descURL = new URL(descriptionLocation);
+		Model m1 = ModelFactory.createDefaultModel();
+		m1.read(descURL.openStream(), null);
+		String query = " SELECT  ?serv, ?oper \n"
+			+ " WHERE (?serv, mg:hasServiceNameText, ?servName), \n"
+			+ " (?serv, mg:hasOperation, ?oper), \n"
+			+ " (?oper, mg:hasOperationNameText, ?operName) \n"
+			+ "  AND (?operName =~ /" + operationName
+			+ "/ &&  ?servName =~ /" + serviceName + "/ ) \n"
+			+ " USING  mg for <" + FetaModelRDF.MYGRID_MOBY_SERVICE_NS
+			+ ">\n";
 
-			String[] arr = { "serv", "oper" };
+		List<Map<String, RDFNode>> results = processQuery(m1, query);
+		if (results.size() < 0) {
+			logger.warn("Could not find " + operID);
+			throw new IllegalArgumentException("Could not find operation " + operID);
+		}
+		Map<String, RDFNode> localResults = results.get(0);
+		
+		Resource serviceResource = (Resource) localResults.get("serv");
+		Resource operationResource = (Resource) localResults.get("oper");
 
-			String query = " SELECT  ?serv, ?oper \n"
-					+ " WHERE (?serv, mg:hasServiceNameText, ?servName), \n"
-					+ " (?serv, mg:hasOperation, ?oper), \n"
-					+ " (?oper, mg:hasOperationNameText, ?operName) \n"
-					+ "  AND (?operName =~ /" + operationName
-					+ "/ &&  ?servName =~ /" + serviceName + "/ ) \n"
-					+ " USING  mg for <" + FetaModelRDF.MYGRID_MOBY_SERVICE_NS
-					+ ">\n";
+		operationDescriptionText = getLiteralObjectValue(m1,
+			operationResource, FetaModelRDF.hasOperationNameText);
+		serviceDescriptionText = getLiteralObjectValue(m1,
+			serviceResource, FetaModelRDF.hasServiceDescriptionText);
+		organisationName = getLiteralObjectValue(m1,
+			serviceResource, FetaModelRDF.hasOrganisationNameText);
+		locationURL = getLiteralObjectValue(m1, serviceResource,
+			FetaModelRDF.locationURI);
+		serviceInterfaceLocation = getLiteralObjectValue(m1,
+			serviceResource, FetaModelRDF.hasInterfaceLocation);
+		String serviceTypeStr = getLiteralObjectValue(m1,
+			serviceResource, FetaModelRDF.DC_PATCHED_Format);
 
-			Vector reslts = processQuery(m1, query, arr);
-			if (reslts.size() > 0) {
-				Vector localResults = (Vector) reslts.get(0);
-				Resource serviceResource = (Resource) localResults.get(0);
-				Resource operationResource = (Resource) localResults.get(1);
-
-				this.operationDescriptionText = getLiteralObjectValue(m1,
-						operationResource, FetaModelRDF.hasOperationNameText);
-				this.serviceDescriptionText = getLiteralObjectValue(m1,
-						serviceResource, FetaModelRDF.hasServiceDescriptionText);
-				this.organisationName = getLiteralObjectValue(m1,
-						serviceResource, FetaModelRDF.hasOrganisationNameText);
-				this.locationURL = getLiteralObjectValue(m1, serviceResource,
-						FetaModelRDF.locationURI);
-				this.serviceInterfaceLocation = getLiteralObjectValue(m1,
-						serviceResource, FetaModelRDF.hasInterfaceLocation);
-				String serviceTypeStr = getLiteralObjectValue(m1,
-						serviceResource, FetaModelRDF.DC_PATCHED_Format);
-
-				// not really we should not do this
-				if (serviceTypeStr == null) {
-					this.serviceType = ServiceType.WSDL;
-				} else {
-					this.serviceType = ServiceType
-							.getTypeForRDFLiteralString(serviceTypeStr);
-				}
-
-				if (serviceType == ServiceType.BIOMOBY) {
-
-					this.organisationName = getLiteralObjectValue(m1, null,
-							FetaModelRDF.DC_PATCHED_Publisher);
-
-				}
-
-				// this.operationMethod = getTypedObjectValue(operationResource,
-				// FetaModelXSD.OPER_METHOD);
-				// this.operationTask =
-				// getFirstSubElementValue(operationResource,
-				// FetaModelXSD.OPER_TASK);
-				// this.operationResource =
-				// getFirstSubElementValue(operationResource,
-				// FetaModelXSD.OPER_RESOURCE);
-				// this.operationSpec =
-				// getFirstSubElementValue(operationResource,
-				// FetaModelXSD.OPERATION_SPEC);
-
-			}
-		}// try
-		catch (Exception e) {
-
-			throw e;
+		// not really we should not do this
+		if (serviceTypeStr == null) {
+			this.serviceType = ServiceType.WSDL;
+		} else {
+			this.serviceType = ServiceType
+			.getTypeForRDFLiteralString(serviceTypeStr);
 		}
 
+		if (serviceType == ServiceType.BIOMOBY) {
+
+			this.organisationName = getLiteralObjectValue(m1, null,
+				FetaModelRDF.DC_PATCHED_Publisher);
+
+		}
+
+//		 operationMethod =
+//			getTypedObjectValue(operationResource, FetaModelXSD.OPER_METHOD);
+//		operationTask =
+//			getFirstSubElementValue(operationResource, FetaModelXSD.OPER_TASK);
+//		operationResource =
+//			getFirstSubElementValue(operationResource,
+//				FetaModelXSD.OPER_RESOURCE);
+//		operationSpec =
+//			getFirstSubElementValue(operationResource,
+//				FetaModelXSD.OPERATION_SPEC);
 	}
 
 	public String getLiteralObjectValue(Model modl, Resource oper, Property prop) {
 		Selector selector = new SimpleSelector(oper, prop, (RDFNode) null);
-		StmtIterator iter1 = (StmtIterator) modl.listStatements(selector);
-		String valStr = null;
-		if (iter1.hasNext()) {
-
-			while (iter1.hasNext()) {
-				Statement stmt = iter1.nextStatement();
-				Literal val = (Literal) stmt.getObject();
-				valStr = val.getString();
-
-			}
+		StmtIterator iter1 = modl.listStatements(selector);
+		while (iter1.hasNext()) {
+			Statement stmt = iter1.nextStatement();
+			Literal val = (Literal) stmt.getObject();
+			return val.getString();
 		}
-		return valStr;
-
-	}
-
-	public String getResourceObjectValue(Model modl, Resource oper,
-			Property prop) {
-		Selector selector = new SimpleSelector(oper, prop, (RDFNode) null);
-		StmtIterator iter1 = (StmtIterator) modl.listStatements(selector);
-		String valStr = null;
-		if (iter1.hasNext()) {
-
-			while (iter1.hasNext()) {
-				Statement stmt = iter1.nextStatement();
-				Resource val = (Resource) stmt.getObject();
-
-			}
-		}
-		return valStr;
-
+		return null;
 	}
 
 	/* Operation Related */
 	public String getOperationName() {
-		return this.operationName;
+		return operationName;
 	}
 
 	public String getOperationDescriptionText() {
-		return this.operationDescriptionText;
+		return operationDescriptionText;
 	}
 
 	/* Operation Annotation Related */
 	public String getOperationMethod() {
-		return this.operationMethod;
+		return operationMethod;
 	}
 
 	public String getOperationTask() {
-		return this.operationTask;
+		return operationTask;
 	}
 
 	/*
@@ -197,7 +176,7 @@ public class FetaRDFWrapper implements IServiceModelFiller {
 	 * this.operationApplication; }
 	 */
 	public String getOperationResource() {
-		return this.operationResource;
+		return operationResource;
 	}
 
 	/*
@@ -205,67 +184,79 @@ public class FetaRDFWrapper implements IServiceModelFiller {
 	 * this.operationResourceContent; }
 	 */
 	public String getOperationSpec() {
-		return this.operationSpec;
+		return operationSpec;
 	}
 
 	/* Service Related */
 	public String getServiceName() {
-		return this.serviceName;
+		return serviceName;
 	}
 
 	public String getDescriptionLocation() {
-		return this.descriptionLocation;
+		return descriptionLocation;
 	}
 
 	public String getServiceDescriptionText() {
-		return this.serviceDescriptionText;
+		return serviceDescriptionText;
 	}
 
 	public ServiceType getServiceType() {
-		return this.serviceType;
+		return serviceType;
 	}
 
 	public String getServiceInterfaceLocation() {
-		return this.serviceInterfaceLocation;
+		return serviceInterfaceLocation;
 	}
 
 	public String getLocationURL() {
-		return this.locationURL;
+		return locationURL;
 	}
 
 	public String getOrganisationName() {
-		return this.organisationName;
+		return organisationName;
 	}
 
 	/* We do not have any setter methods! */
 
-	public static Vector processQuery(Model m, String rdqlQuery,
-			String[] variableNames) {
+	@SuppressWarnings("unchecked")
+	public static List<Map<String, RDFNode>> processQuery(Model m, String rdqlQuery) {
 
-		Vector results = new Vector();
+		List<Map<String, RDFNode>> results = new ArrayList<Map<String, RDFNode>>();
 		try {
 			Query query = new Query(rdqlQuery);
 			query.setSource(m);
 			QueryExecution qe = new QueryEngine(query);
 			QueryResults queryResults = qe.exec();
-
-			for (Iterator iter = queryResults; iter.hasNext();) {
-				ResultBinding rb = (ResultBinding) iter.next();
-
-				Vector localResult = new Vector();
-				results.addElement(localResult);
-				for (int i = 0; i < variableNames.length; i++) {
-					String variableName = variableNames[i];
-					RDFNode r = (RDFNode) rb.get(variableName);
-					localResult.addElement(r);
-				}
+			try {
+				for (Iterator iter = queryResults; iter.hasNext();) {
+					ResultBinding rb = (ResultBinding) iter.next();
+					Map<String, RDFNode> localResult = new HashMap<String, RDFNode>();
+					results.add(localResult);
+					
+					Iterator<String> namesIter = rb.names();
+					while (namesIter.hasNext()) {
+						String variableName = namesIter.next();
+						RDFNode r = (RDFNode) rb.get(variableName);
+						localResult.put(variableName, r);
+					}
+				} 
+			} finally {
+				queryResults.close();
 			}
-			queryResults.close();
 		} catch (Exception ex) {
-			System.err.println("Exception: " + ex);
-			ex.printStackTrace(System.err);
+			logger.error("Could not query " + rdqlQuery, ex);
 		}
 		return results;
+	}
+
+	public Map<String, String> getInputParameters() {
+		// TODO Perform SparQL Query for parameters
+		return null;
+	}
+
+	public Map<String, String> getOutputParameters() {
+		// TODO Perform SparQL Query for parameters
+		return null;
 	}
 
 }
