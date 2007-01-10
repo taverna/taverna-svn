@@ -3,9 +3,9 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.util.Map;
 
@@ -109,6 +109,9 @@ public class WorkflowInputPanel extends JPanel {
 	public class DescriptionAndDiagram extends JPanel {
 		//JLabel description = new JLabel(model.getDescription().getText());
 		ScuflSVGDiagram diagram = new ScuflSVGDiagram(false, false);
+		
+
+		
 		public DescriptionAndDiagram() {
 			super(new BorderLayout());
 			// FIXME: make description wrap lines
@@ -117,6 +120,7 @@ public class WorkflowInputPanel extends JPanel {
 			description.setLineWrap(true);
 			description.setOpaque(false);
 			description.setWrapStyleWord(true);
+			description.setFont(Font.getFont("Dialog"));
 			// Avoid stealing all width
         	description.setMinimumSize(new Dimension(25, 10));
 			// FIXME: detach from model when window is closed
@@ -147,6 +151,7 @@ public class WorkflowInputPanel extends JPanel {
 				descriptionArea.setOpaque(false);
 				descriptionArea.setWrapStyleWord(true);
 				descriptionArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+				descriptionArea.setFont(Font.getFont("Dialog"));
 				add(descriptionArea);
 			}
 		}

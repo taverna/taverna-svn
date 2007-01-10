@@ -2,6 +2,7 @@ package org.embl.ebi.escience.scuflui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -247,6 +248,7 @@ public class AdvancedModelExplorer extends JPanel implements
 		description.setEditable(true);
 		description.setLineWrap(true);
 		description.setWrapStyleWord(true);
+		description.setFont(Font.getFont("Dialog"));
 		descriptionPanel.add(descriptionPane);
 		propertiesPanel.add(descriptionPanel);
 		final JPanel iterationConfigPanel = new JPanel() {
@@ -539,7 +541,8 @@ public class AdvancedModelExplorer extends JPanel implements
 			descriptionPane.setPreferredSize(new Dimension(100, 100));
 			description.setEditable(true);
 			description.setLineWrap(true);
-			description.setWrapStyleWord(true);			
+			description.setWrapStyleWord(true);
+			description.setFont(Font.getFont("Dialog"));
 			descriptionPanel.add(descriptionPane);
 			
 			addDocumentListener(description, new MetadataDocListener() {

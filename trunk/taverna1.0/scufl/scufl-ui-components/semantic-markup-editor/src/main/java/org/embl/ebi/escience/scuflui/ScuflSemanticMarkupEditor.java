@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,8 +69,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 			descriptionText.setText("");
 			selectedOntologyNode.setText("");
 			mimeTypeListModel.clear();
-		}
-		else {
+		} else {
 			theMetadata = m;
 			selectedOntologyNode.setText(m.getSemanticType());
 			if (theMetadata.getSemanticType().equals("") == false) {
@@ -235,7 +235,9 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		descriptionPanel.setPreferredSize(new Dimension(400, 400));
 		descriptionPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Edit Description"));
-
+		descriptionText.setLineWrap(true);
+		descriptionText.setWrapStyleWord(true);
+		descriptionText.setFont(Font.getFont("Dialog"));
 		JScrollPane descriptionPane = new JScrollPane(descriptionText);
 		descriptionPanel.add(descriptionPane, BorderLayout.CENTER);
 		descriptionText.addFocusListener(new FocusListener() {

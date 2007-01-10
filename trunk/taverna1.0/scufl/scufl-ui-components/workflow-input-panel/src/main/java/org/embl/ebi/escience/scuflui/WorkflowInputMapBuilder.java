@@ -8,6 +8,7 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -99,7 +100,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelViewSPI, ScuflModelEventListener {
@@ -802,6 +803,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
             description.setLineWrap(true);
             description.setOpaque(false);
             description.setWrapStyleWord(true);
+            description.setFont(Font.getFont("Dialog"));
             // Avoid stealing all width of the split pane
             description.setMinimumSize(new Dimension(25, 10));
             return description;
@@ -998,6 +1000,7 @@ public class WorkflowInputMapBuilder extends JPanel implements
             if (isText()) {
                 editor = new JTextArea();
                 editor.setText((String) getUserObject());
+                editor.setFont(Font.getFont("Monospaced"));
                 editor.getDocument().addDocumentListener(
                         new DocumentListener() {
                             public void insertUpdate(DocumentEvent e) {

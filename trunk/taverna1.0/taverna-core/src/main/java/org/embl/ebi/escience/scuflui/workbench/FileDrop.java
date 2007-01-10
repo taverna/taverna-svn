@@ -1,5 +1,7 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
+import java.awt.Font;
+
 /**
  * This class makes it easy to drag and drop files from the operating system to
  * a Java program. Any <tt>java.awt.Component</tt> can be dropped onto, but
@@ -528,6 +530,7 @@ public class FileDrop {
 		// javax.swing.border.TitledBorder dragBorder = new
 		// javax.swing.border.TitledBorder( "Drop 'em" );
 		final javax.swing.JTextArea text = new javax.swing.JTextArea();
+		text.setFont(Font.getFont("Monospaced"));
 		frame.getContentPane().add(new javax.swing.JScrollPane(text),
 				java.awt.BorderLayout.CENTER);
 
