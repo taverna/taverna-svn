@@ -66,6 +66,8 @@ public class ScuflSVGDiagram extends JComponent implements
 		docFactory = new SAXSVGDocumentFactory(parser);
 	}
 
+	private boolean fitToWindow = true;
+	
 	private ScuflModel model;
 
 	private DotView dot;
@@ -83,7 +85,9 @@ public class ScuflSVGDiagram extends JComponent implements
 		public void componentMoved(ComponentEvent e) {}
 		public void componentShown(ComponentEvent e) {}
 		public void componentResized(ComponentEvent e) {
-			graphicValid = false;
+			if (isFitToWindow()) {
+				graphicValid = false;
+			}
 		}
 	};
 
@@ -265,6 +269,25 @@ public class ScuflSVGDiagram extends JComponent implements
 
 	public void onDispose() {
 		detachFromModel();		
+	}
+
+	/**
+	 * If diagram should be rescaled when resizing panel
+	 * 
+	 * @return true if the diagram should be rescaled
+	 */
+	public boolean isFitToWindow() {
+		return fitToWindow;
+	}
+	
+	/**
+	 * Enable automatic rescale on resize of panel.
+	 * 
+	 * @param fitToWindow true if the diagram should be rescaled
+	 */
+	public void setFitToWindow(boolean fitToWindow) {
+		this.fitToWindow = fitToWindow;
+		graphicValid = false;
 	}
 	
 }

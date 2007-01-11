@@ -22,9 +22,7 @@ import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -65,24 +63,26 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 
 	String[] alignment = { "Top to bottom", "Left to right" };
 
-	JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
+//	JComboBox displayPolicyChooser = new JComboBox(displayPolicyStrings);
 
-	JComboBox alignmentChooser = new JComboBox(alignment);
+//	JComboBox alignmentChooser = new JComboBox(alignment);
 
 	ScuflSVGDiagram diagram = new ScuflSVGDiagram();
 
-	JCheckBox typeDisplay = new JCheckBox("Show types", false);
+//	JCheckBox typeDisplay = new JCheckBox("Show types", false);
 
-	JCheckBox showBoring = new JCheckBox("Boring?", true);
+//	JCheckBox showBoring = new JCheckBox("Boring?", true);
 
-	JCheckBox fitToWindow = new JCheckBox("Fit to window", true);
+//	JCheckBox fitToWindow = new JCheckBox("Fit to window", true);
+	
+	
 
 	final JFileChooser fc;
 
 	private ScuflModel model = null;
 	
 	
-	public javax.swing.ImageIcon getIcon() {
+	public ImageIcon getIcon() {
 		return TavernaIcons.windowDiagram;
 	}
 
@@ -127,8 +127,7 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 		ButtonGroup alignButtonGroup = new ButtonGroup();
 		for (int i = 0; i < alignment.length; i++) {
 			JRadioButtonMenuItem item = new JRadioButtonMenuItem(alignment[i]);
-			item
-					.setSelected((diagram.getDotView().getAlignment() ? 1 : 0) == i);
+			item.setSelected((diagram.getDotView().getAlignment() ? 1 : 0) == i);
 			menu.add(item);
 			alignButtonGroup.add(item);
 			final boolean b = (i == 1);
@@ -173,14 +172,16 @@ public class ScuflDiagramPanel extends JPanel implements WorkflowModelViewSPI {
 			}
 		});
 		menu.add(inline);
-		/**
-		 * JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window");
-		 * scale.setSelected(diagram.getFitToWindow());
-		 * scale.addItemListener(new ItemListener() { public void
-		 * itemStateChanged(ItemEvent e) {
-		 * diagram.setFitToWindow(e.getStateChange() == ItemEvent.SELECTED); }
-		 * }); menu.add(scale);
-		 */
+		
+		JCheckBoxMenuItem scale = new JCheckBoxMenuItem("Fit to window");
+		scale.setSelected(diagram.isFitToWindow());
+		scale.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				diagram.setFitToWindow(e.getStateChange() == ItemEvent.SELECTED);
+			}
+		});
+		menu.add(scale);
+		 
 		return menu;
 	}
 
