@@ -72,7 +72,7 @@ import uk.ac.man.cs.img.fetaClient.util.GUIUtil;
 
 
 /**
- * @author alperp
+ * @author Pinar Alper
  * @author Stuart Owen
  * 
  * 
@@ -108,7 +108,12 @@ DropTargetListener {
 		} catch (java.io.IOException e) {
 			logger.error("Problem reading Feta Properties File : ",e);
 		}
-		initialise();		
+		// Do the rest in a separate thread to avoid hanging the GUI
+		new Thread() {
+			public void run() {
+				initialise();						
+			}
+		}.start();
 	}
 		
 	public void onDisplay() {
@@ -161,7 +166,7 @@ DropTargetListener {
 				adminPanel = new AdminPanel(helper);
 			}
 			
-			this.add("Search Services", queryPanel);
+			this.add("Search services", queryPanel);
 			// setBackgroundAt(0, ShadedLabel.TAVERNA_GREEN);
 			this.add("Result", resultPanel);
 			// setBackgroundAt(1, ShadedLabel.TAVERNA_GREEN);
