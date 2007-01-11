@@ -719,7 +719,7 @@ public class Workbench extends JFrame {
 				});
 			}
 			
-			//menu.add(perspectives.getDisplayPerspectivesMenu());			
+			menu.add(perspectives.getDisplayPerspectivesMenu());			
 			return menu;
 		}
 
@@ -902,32 +902,42 @@ public class Workbench extends JFrame {
 		}
 
 		/**
-		 * Finds the first instance of a perspective that contains a WorkflowInstanceContainer and is visible
+		 * Unless the current perspective does, finds the first instance of a perspective that contains a WorkflowInstanceContainer and is visible
 		 * and then switch the current perspective to that one, so that the results of the running workflow can be seen		 
 		 */
-		private void switchToWorkflowInstanceContainerPerspective() {			
-			for (PerspectiveSPI perspective : perspectives.getPerspectives()) {
-				if (perspective.isVisible()) {	
-					ZBasePane pane = new WorkbenchZBasePane();
-					pane.setRepository(repository);
-					InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
-					SAXBuilder builder = new SAXBuilder(false);										
-					try {
-						Document document = builder.build(isr);
-						pane.configure(document.detachRootElement());
-						if (findWorkflowInstanceSetViewSPIPanes(pane.getZChildren()).size()>0) {
+		private void switchToWorkflowInstanceContainerPerspective() {
+			PerspectiveSPI currentPerspective = (PerspectiveSPI)modelmap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+			
+			if (currentPerspective==null || !perspectiveContainsWorkflowInstanceContainer(currentPerspective)) {
+				for (PerspectiveSPI perspective : perspectives.getPerspectives()) {
+					if (perspective.isVisible()) {	
+						if (perspectiveContainsWorkflowInstanceContainer(perspective)) {
 							modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
 							break;
-						}
-					}
-					catch(IOException e) {
-						logger.error("Error reading layout stream",e);
-					}
-					catch(JDOMException e) {
-						logger.error("Error parsing layout XML",e);
+						}					
 					}
 				}
 			}
+		}
+		
+		private boolean perspectiveContainsWorkflowInstanceContainer(PerspectiveSPI perspective) {
+			boolean result=false;
+			ZBasePane pane = new WorkbenchZBasePane();
+			pane.setRepository(repository);
+			InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
+			SAXBuilder builder = new SAXBuilder(false);	
+			try {
+				Document document = builder.build(isr);
+				pane.configure(document.detachRootElement());
+				result=findWorkflowInstanceSetViewSPIPanes(pane.getZChildren()).size()>0;
+			}
+			catch(IOException e) {
+				logger.error("Error reading layout stream",e);
+			}
+			catch(JDOMException e) {
+				logger.error("Error parsing layout XML",e);
+			}
+			return result;
 		}
 
 		/**

@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CustomPerspectiveFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-08 11:07:31 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-11 15:07:31 $
+ *               by   $Author: sowen70 $
  * Created on 9 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -89,11 +89,12 @@ public class CustomPerspectiveFactory {
 		File perspectiveFile=new File(userdir,XMLDOCNAME);		
 		Element topElement=new Element("perspectives");
 		
-		for (CustomPerspective p : perspectives) {
+		for (CustomPerspective perspective : perspectives) {
 			Element layoutElement=new Element("layout");			
-			layoutElement.setAttribute("name", p.getName());
+			layoutElement.setAttribute("name", perspective.getName());
+			layoutElement.setAttribute("visible",Boolean.toString(perspective.isVisible()));
 			try {
-				Element layoutContent=new SAXBuilder().build(p.getLayoutInputStream()).detachRootElement();
+				Element layoutContent=new SAXBuilder().build(perspective.getLayoutInputStream()).detachRootElement();
 				layoutElement.addContent(layoutContent);
 			} catch (JDOMException e) {
 				logger.error("Error parsing layout xml",e);
