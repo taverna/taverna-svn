@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CustomPerspective.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 12:14:50 $
+ * Last modified on   $Date: 2007-01-11 14:05:19 $
  *               by   $Author: sowen70 $
  * Created on 9 Nov 2006
  *****************************************************************/
@@ -51,7 +51,8 @@ import org.jdom.output.XMLOutputter;
 public class CustomPerspective implements PerspectiveSPI {
 
 	private String name;
-	private Element layoutElement;	
+	private Element layoutElement;
+	private boolean visible=true;
 	
 	public CustomPerspective(Element layoutElement) {
 		this.name=layoutElement.getAttributeValue("name");
@@ -88,7 +89,16 @@ public class CustomPerspective implements PerspectiveSPI {
 	 */
 	public int positionHint() {
 		return 101;
+	}
+
+	public boolean isVisible() {		
+		return visible;
 	}	
+	
+	public void setVisible(boolean visible) {
+		this.visible=visible;
+	}
+	
 	
 	
 }

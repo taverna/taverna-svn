@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractPerspective.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-08 11:07:31 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-11 14:05:19 $
+ *               by   $Author: sowen70 $
  * Created on 15 Nov 2006
  *****************************************************************/
 package net.sf.taverna.perspectives;
@@ -53,6 +53,7 @@ import org.jdom.output.XMLOutputter;
 public abstract class AbstractPerspective implements PerspectiveSPI {
 
 	private Element layoutElement = null;		
+	private boolean visible=true;
 
 	public InputStream getLayoutInputStream() {
 		if (layoutElement == null) {
@@ -92,6 +93,15 @@ public abstract class AbstractPerspective implements PerspectiveSPI {
 	public int positionHint() {
 		return 101;
 	}
+
+	public boolean isVisible() {		
+		return visible;
+	}
+	
+	public void setVisible(boolean visible) {
+		this.visible=visible;
+	}
+	
 	
 	
 		

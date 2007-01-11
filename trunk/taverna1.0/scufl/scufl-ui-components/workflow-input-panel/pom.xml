@@ -37,11 +37,7 @@
     <dependency>
       <groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
       <artifactId>svg-diagram</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.perspectives</groupId>
-      <artifactId>perspective-enact</artifactId>
-    </dependency>
+    </dependency>    
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>

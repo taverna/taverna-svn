@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-08 11:13:40 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-11 14:05:19 $
+ *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -45,6 +45,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
@@ -97,13 +100,16 @@ public class WorkbenchPerspectives {
 
 	private Action openPerspectiveAction = null;
 
-	private Action deletePerspectiveAction = null;
+	private Action deletePerspectiveAction = null;	
 
 	private CurrentPerspectiveListener modelChangeListener = null;	
 
 	Set<CustomPerspective> customPerspectives = null;
 
 	private ZBasePane basePane = null;
+	
+	private JMenu perspectiveVisibilityMenu = new JMenu("Display perspectives");
+	private Map<PerspectiveSPI,JMenu> perspectiveVisibilityMap = new HashMap<PerspectiveSPI,JMenu>();
 
 	private JToolBar toolBar = null;
 
@@ -115,20 +121,62 @@ public class WorkbenchPerspectives {
 		}
 		return modelChangeListener;
 	}
+	
+	/**
+	 * @return a list of all the present perspectives, both default and custom,
+	 * ordered in accending order of PerspectiveSPI.positionHint.
+	 */
+	public List<PerspectiveSPI> getPerspectives() {
+		List<PerspectiveSPI> result = new ArrayList<PerspectiveSPI>();
+		result.addAll(perspectives.keySet());
+		Collections.sort(result, new Comparator<PerspectiveSPI>() {
+			public int compare(PerspectiveSPI o1, PerspectiveSPI o2) {
+				return new Integer(o1.positionHint()).compareTo(new Integer(o2.positionHint()));
+			}			
+		});
+		return result;
+	}
 
 	public WorkbenchPerspectives(ZBasePane basePane, JToolBar toolBar) {		
-
 		this.basePane = basePane;
 		this.toolBar = toolBar;
 
 		PerspectiveRegistry.getInstance().addRegistryListener(new RegistryListener() {
-
 			public void spiRegistryUpdated(SpiRegistry registry) {
 				refreshPerspectives();
-			}
-			
+			}			
 		});
-	}	
+	}		
+	
+	public JMenu getDisplayPerspectivesMenu() {
+		return perspectiveVisibilityMenu;
+	}
+	
+	private void addPerspectiveToVisibilityMenu(final PerspectiveSPI perspective) {
+		JMenu perspectivemenu = new JMenu(perspective.getText()+" perspective");
+		perspectivemenu.setIcon(perspective.getButtonIcon());
+		final JMenuItem toggle = new JMenuItem();			
+		
+		toggle.setAction(new AbstractAction(perspective.isVisible() ? "Hide" : "Show") {								
+			public void actionPerformed(ActionEvent e) {					
+				perspective.setVisible(!perspective.isVisible());											
+				perspectives.get(perspective).setVisible(perspective.isVisible());
+				putValue(NAME, perspective.isVisible() ? "Hide" : "Show");
+				if (!perspective.isVisible()) { 
+					PerspectiveSPI current=(PerspectiveSPI)modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+					if (current==perspective) {
+						selectFirstPerspective();
+					}
+				}
+			}				
+		});			
+										
+		perspectivemenu.add(toggle);
+		perspectives.get(perspective).setVisible(perspective.isVisible());
+		perspectiveVisibilityMenu.add(perspectivemenu);		
+		perspectiveVisibilityMap.put(perspective, perspectivemenu);
+	}
+
 
 	public JMenu getEditPerspectivesMenu() {
 		JMenu editPerspectivesMenu = new JMenu("Edit perspectives");
@@ -204,15 +252,21 @@ public class WorkbenchPerspectives {
 	public void removeCustomPerspective(CustomPerspective perspective) {
 		customPerspectives.remove(perspective);
 		perspectives.remove(perspective);
+		
+		//remove from menu to toggle visibility
+		JMenu menu = perspectiveVisibilityMap.get(perspective);
+		if (menu!=null) {
+			perspectiveVisibilityMenu.remove(menu);
+		}
 	}
 
 	public void initialisePerspectives() {
 
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
 				.getPerspectives();
-		for (final PerspectiveSPI perspective : perspectives) {			
-			updatePerspectiveSplitPanesWithSaved(perspective);
-			addPerspective(perspective, false);
+		for (final PerspectiveSPI perspective : perspectives) {				
+				updatePerspectiveSplitPanesWithSaved(perspective);
+				addPerspective(perspective, false);			
 		}		
 
 		try {
@@ -229,12 +283,18 @@ public class WorkbenchPerspectives {
 			}
 		}
 
-		for (Component c : toolBar.getComponents()) {
-			if (c instanceof AbstractButton) {
-				((AbstractButton) c).doClick();
+		selectFirstPerspective();
+		
+	}
+	
+	//selects the first visible perspective by clicking on the toolbar button
+	private void selectFirstPerspective() {		
+		for (Component c : toolBar.getComponents()) {			
+			if (c instanceof AbstractButton && c.isVisible()) {				
+				((AbstractButton) c).doClick();				
 				break;
 			}
-		}
+		}			
 	}
 
 	/**
@@ -301,7 +361,7 @@ public class WorkbenchPerspectives {
 			buttonIcon = new ImageIcon(buttonImage.getScaledInstance(16, 16,
 					Image.SCALE_SMOOTH));
 		}
-
+		
 		final JToggleButton toolbarButton = new JToggleButton(perspective
 				.getText(), buttonIcon);
 		toolbarButton.setToolTipText(perspective.getText() + " perspective");
@@ -331,6 +391,7 @@ public class WorkbenchPerspectives {
 		toolBar.add(toolbarButton);
 		perspectiveButtons.add(toolbarButton);
 		perspectives.put(perspective, toolbarButton);
+		addPerspectiveToVisibilityMenu(perspective);
 		if (makeActive) {
 			toolbarButton.doClick();
 		}
@@ -482,6 +543,8 @@ public class WorkbenchPerspectives {
 		toolBar.repaint();
 		
 		customPerspectives.clear();
+		perspectiveVisibilityMap.clear();
+		perspectiveVisibilityMenu.removeAll();
 		initialisePerspectives();
 	}
 
@@ -539,25 +602,24 @@ public class WorkbenchPerspectives {
 	public void setWorkflowPerspective() {
 		PerspectiveSPI currentPerspective =
 			(PerspectiveSPI) modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
-		if (currentPerspective instanceof WorkflowPerspective) {
-			return; // OK
-		}
-		PerspectiveSPI foundPerspective = null;
-		for (PerspectiveSPI perspective : perspectives.keySet()) {
-			if (!(perspective instanceof WorkflowPerspective)) {
-				continue;
+		if (!(currentPerspective instanceof WorkflowPerspective)) {
+			
+			PerspectiveSPI foundPerspective = null;
+			for (PerspectiveSPI perspective : perspectives.keySet()) {
+				if (perspective instanceof WorkflowPerspective && perspective.isVisible()) {					
+					if (foundPerspective == null ||
+						perspective.positionHint() < foundPerspective.positionHint()) {
+						// select the first perspective with the lowest positionHint
+						foundPerspective = perspective;
+					}
+				}
 			}
-			if (foundPerspective == null ||
-				perspective.positionHint() < foundPerspective.positionHint()) {
-				// select the first perspective with the lowest positionHint
-				foundPerspective = perspective;
+			if (foundPerspective == null) {
+				logger.warn("No WorkflowPerspective found");
+				return;
 			}
+			modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, foundPerspective);
 		}
-		if (foundPerspective == null) {
-			logger.warn("No WorkflowPerspective found");
-			return;
-		}
-		modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, foundPerspective);
 	}
 	
 
@@ -589,9 +651,9 @@ public class WorkbenchPerspectives {
 		}
 
 		public void modelDestroyed(String modelName, Object oldModel) {
-			if (oldModel instanceof CustomPerspective) {
-				removeCustomPerspective((CustomPerspective) oldModel);
-			}
+			if (oldModel instanceof CustomPerspective) {				
+					removeCustomPerspective((CustomPerspective) oldModel);
+			}			
 		}
 	}
 

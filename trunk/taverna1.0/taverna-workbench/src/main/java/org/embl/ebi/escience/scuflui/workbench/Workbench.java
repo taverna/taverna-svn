@@ -1,6 +1,6 @@
 package org.embl.ebi.escience.scuflui.workbench;
 
-import static java.lang.Math.min;
+
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -14,6 +14,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
@@ -78,6 +79,9 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet.ScuflModelSetListener;
 import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 
 /**
  * Top level Zaria based UI for Taverna
@@ -140,7 +144,8 @@ public class Workbench extends JFrame {
 	 */
 	@SuppressWarnings("deprecation")
 	private Workbench() {
-		super();
+		super();		
+		
 		MyGridConfiguration.loadMygridProperties();
 		setLookAndFeel();
 		setIconImage(TavernaIcons.tavernaIcon.getImage());
@@ -428,8 +433,8 @@ public class Workbench extends JFrame {
 			int y = Integer.parseInt(sy);
 
 			// Make sure our window is not too big
-			width = min((int) resolution.getWidth(), width);
-			height = min((int) resolution.getHeight(), height);
+			width = Math.min((int) resolution.getWidth(), width);
+			height = Math.min((int) resolution.getHeight(), height);
 
 			// Move to upper left corner if we are too far off
 			if (x > (resolution.getWidth() - 50) || x < 0) {
@@ -714,6 +719,7 @@ public class Workbench extends JFrame {
 				});
 			}
 			
+			//menu.add(perspectives.getDisplayPerspectivesMenu());			
 			return menu;
 		}
 
@@ -878,9 +884,12 @@ public class Workbench extends JFrame {
 		 * its tabs.
 		 */
 		public void modelCreated(String modelName, Object model) {
+			switchToWorkflowInstanceContainerPerspective();
+			
 			Set<WorkflowInstanceSetViewSPI> views = findWorkflowInstanceSetViewSPIPanes(basePane
 					.getZChildren());
-			boolean found = false;
+			boolean found = false;						
+			
 			for (WorkflowInstanceSetViewSPI view : views) {
 				logger.info("Notified " + view);
 				view.newWorkflowInstance(modelName, (WorkflowInstance) model);
@@ -888,6 +897,35 @@ public class Workbench extends JFrame {
 					// only jump to the first view found
 					showEnactorTab((Component) view);
 					found = true;
+				}
+			}				
+		}
+
+		/**
+		 * Finds the first instance of a perspective that contains a WorkflowInstanceContainer and is visible
+		 * and then switch the current perspective to that one, so that the results of the running workflow can be seen		 
+		 */
+		private void switchToWorkflowInstanceContainerPerspective() {			
+			for (PerspectiveSPI perspective : perspectives.getPerspectives()) {
+				if (perspective.isVisible()) {	
+					ZBasePane pane = new WorkbenchZBasePane();
+					pane.setRepository(repository);
+					InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
+					SAXBuilder builder = new SAXBuilder(false);										
+					try {
+						Document document = builder.build(isr);
+						pane.configure(document.detachRootElement());
+						if (findWorkflowInstanceSetViewSPIPanes(pane.getZChildren()).size()>0) {
+							modelmap.setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
+							break;
+						}
+					}
+					catch(IOException e) {
+						logger.error("Error reading layout stream",e);
+					}
+					catch(JDOMException e) {
+						logger.error("Error parsing layout XML",e);
+					}
 				}
 			}
 		}

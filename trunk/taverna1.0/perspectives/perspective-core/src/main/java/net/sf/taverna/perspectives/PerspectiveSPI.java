@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PerspectiveSPI.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-27 10:35:42 $
+ * Last modified on   $Date: 2007-01-11 14:05:19 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -76,6 +76,20 @@ public interface PerspectiveSPI {
 	 * Custom plugins are recommended to start with a value > 100 (allowing for a whopping 100 built in plugins!)
 	 */
 	public int positionHint();
+	
+	/**
+	 * returns true if the perspective is set to be visible
+	 * @return boolean
+	 */
+	public boolean isVisible();
+	
+	/**
+	 * sets whether the perspective should be visible or not.
+	 *
+	 */
+	public void setVisible(boolean visible);
+		
+	
 		
 	
 }

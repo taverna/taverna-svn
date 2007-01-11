@@ -6,8 +6,6 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.perspectives.EnactPerspective;
-
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -109,8 +107,6 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 			return;
 		}
 		logger.debug("Compiled workflow " + instance);
-		ModelMap.getInstance().setModel(ModelMap.CURRENT_PERSPECTIVE, 
-				new EnactPerspective());
 		ModelMap.getInstance().setModel(instance.getID(), instance);					
 		logger.debug("Running the workflow " + instance);
 		try {
