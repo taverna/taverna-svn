@@ -287,7 +287,10 @@ public class ScuflSVGDiagram extends JComponent implements
 	 */
 	public void setFitToWindow(boolean fitToWindow) {
 		this.fitToWindow = fitToWindow;
-		graphicValid = false;
+		if (fitToWindow) {
+			// Do a redraw
+			graphicValid = false;
+		}
 	}
 	
 }
