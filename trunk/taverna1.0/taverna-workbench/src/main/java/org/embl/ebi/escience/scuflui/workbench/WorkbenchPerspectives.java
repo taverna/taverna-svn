@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.15 $
+ * Revision           $Revision: 1.16 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-11 14:05:19 $
+ * Last modified on   $Date: 2007-01-11 15:32:43 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -231,14 +231,18 @@ public class WorkbenchPerspectives {
 		SAXBuilder builder = new SAXBuilder(false);
 		Document document;
 		try {
-			document = builder.build(isr);
-
+			document = builder.build(isr);					
+			Element layout=new Element("layout");
+			layout.setAttribute("visible",Boolean.toString(perspective.isVisible()));
+			
+			layout.addContent(document.detachRootElement());
+			
 			String filename = perspective.getClass().getName() + ".perspective";
 			File file = new File(MyGridConfiguration.getUserDir("conf"),
 					filename);
 
 			XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-			outputter.output(document.getRootElement(), new FileOutputStream(
+			outputter.output(layout, new FileOutputStream(
 					file));
 
 		} catch (JDOMException e) {
@@ -307,11 +311,21 @@ public class WorkbenchPerspectives {
 		String filename = perspective.getClass().getName() + ".perspective";
 		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
 		if (file.exists()) {
-			try {
-				Document savedLayout = new SAXBuilder().build(file);
+			try {				
+				Element savedLayoutElement = new SAXBuilder().build(file).getRootElement();
+				
+				//if 1.5.0 then enclosing element is basepane, for 1.5.1 and beyond it should be
+				//layout that contains the attribute 'visible'
+				if (savedLayoutElement.getName().equals("layout")) {
+					String v = savedLayoutElement.getAttributeValue("visible");
+					if (v!=null) {
+						perspective.setVisible(Boolean.parseBoolean(v));
+					}
+				}
+				
 				Element perspectiveLayout = new SAXBuilder().build(perspective.getLayoutInputStream()).detachRootElement();				
 				
-				List<Element> savedSplitElements = getSplitChildElements(savedLayout.getRootElement());
+				List<Element> savedSplitElements = getSplitChildElements(savedLayoutElement);
 				List<Element> perspectiveSplitElements = getSplitChildElements(perspectiveLayout);
 				
 				if (savedSplitElements.size()==perspectiveSplitElements.size()) {
