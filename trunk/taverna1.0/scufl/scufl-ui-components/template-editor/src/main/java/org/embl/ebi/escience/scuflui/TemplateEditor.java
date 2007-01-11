@@ -28,8 +28,6 @@ import org.embl.ebi.escience.scufl.AnnotationTemplate;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scuflui.spi.ProcessorViewSPI;
 
 /**

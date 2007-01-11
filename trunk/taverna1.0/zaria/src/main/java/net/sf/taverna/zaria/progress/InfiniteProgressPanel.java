@@ -102,43 +102,43 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 	}
 
 	public void paintComponent(Graphics g) {
-		if (started) {
-			int width  = getWidth();
-			int height = getHeight();
+		if (! started) {
+			return;
+		}
+		int width  = getWidth();
+		double maxY = 0.0; 
 
-			double maxY = 0.0; 
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHints(hints);
 
-			Graphics2D g2 = (Graphics2D) g;
-			g2.setRenderingHints(hints);
+		g2.setColor(new Color(255, 255, 255, (int) (alphaLevel * shield)));
+		g2.fillRect(0, 0, getWidth(), getHeight());
+		Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
+		AffineTransform toCenter = AffineTransform.getTranslateInstance(center.getX(), center.getY());
+		AffineTransform fromCenter = AffineTransform.getTranslateInstance(-center.getX(), -center.getY());
 
-			g2.setColor(new Color(255, 255, 255, (int) (alphaLevel * shield)));
-			g2.fillRect(0, 0, getWidth(), getHeight());
-			Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
-			AffineTransform toCenter = AffineTransform.getTranslateInstance(center.getX(), center.getY());
-			AffineTransform fromCenter = AffineTransform.getTranslateInstance(-center.getX(), -center.getY());
-
-			for (int i = 0; i < ticker.length; i++)	{	
-				int channel = 224 - 128 / (i + 1);
-				g2.setColor(new Color(channel, channel, channel, alphaLevel));
-				synchronized (ticker[i]) {
-					ticker[i].transform(toCenter);
-					g2.fill(ticker[i]);
-					Rectangle2D bounds = ticker[i].getBounds2D();
-					if (bounds.getMaxY() > maxY)
-						maxY = bounds.getMaxY();
-					ticker[i].transform(fromCenter);
-				}
-			}
-
-			if (text != null && text.length() > 0) {
-				FontRenderContext context = g2.getFontRenderContext();
-				TextLayout layout = new TextLayout(text, getFont(), context);
-				Rectangle2D bounds = layout.getBounds();
-				g2.setColor(getForeground());
-				layout.draw(g2, (float) (width - bounds.getWidth()) / 2,
-						(float) (maxY + layout.getLeading() + 2 * layout.getAscent()));
+		for (int i = 0; i < ticker.length; i++)	{	
+			int channel = 224 - 128 / (i + 1);
+			g2.setColor(new Color(channel, channel, channel, alphaLevel));
+			synchronized (ticker[i]) {
+				ticker[i].transform(toCenter);
+				g2.fill(ticker[i]);
+				Rectangle2D bounds = ticker[i].getBounds2D();
+				if (bounds.getMaxY() > maxY)
+					maxY = bounds.getMaxY();
+				ticker[i].transform(fromCenter);
 			}
 		}
+
+		if (text != null && text.length() > 0) {
+			FontRenderContext context = g2.getFontRenderContext();
+			TextLayout layout = new TextLayout(text, getFont(), context);
+			Rectangle2D bounds = layout.getBounds();
+			g2.setColor(getForeground());
+			layout.draw(g2, (float) (width - bounds.getWidth()) / 2,
+				(float) (maxY + layout.getLeading() + 2 * layout.getAscent()));
+		}
+
 	}
 
 	private Area buildPrimitive() {

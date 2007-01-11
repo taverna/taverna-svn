@@ -67,7 +67,7 @@ public class LocalRepositoryTest extends TestCase {
 		// Should create directory if it is not existing
 		dir.delete();
 		assertFalse(dir.isDirectory());
-		LocalRepository rep = new LocalRepository(dir);
+		new LocalRepository(dir);
 		assertTrue(dir.isDirectory());
 	}
 

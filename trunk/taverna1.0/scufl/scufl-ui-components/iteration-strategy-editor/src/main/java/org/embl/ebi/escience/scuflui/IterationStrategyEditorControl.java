@@ -10,7 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.BoxLayout;
@@ -167,20 +166,19 @@ public class IterationStrategyEditorControl extends JPanel {
 				// Search through, compile a list of leaf nodes
 				// to be pushed back up to the root (can't modify
 				// the tree structure whilst iterating over it)
-				Set nodesToMove = new HashSet();
+				Set<LeafNode> nodesToMove = new HashSet<LeafNode>();
 				for (Enumeration en = ((DefaultMutableTreeNode) selectedNode)
 						.depthFirstEnumeration(); en.hasMoreElements();) {
 					Object candidate = en.nextElement();
 					if (candidate instanceof LeafNode) {
-						nodesToMove.add(candidate);
+						nodesToMove.add((LeafNode) candidate);
 					}
 				}
 				// Now remove the candidate nodes from their parents and
 				// put them back into the root node
 				DefaultTreeModel model = (DefaultTreeModel) IterationStrategyEditorControl.this.tree
 						.getModel();
-				for (Iterator i = nodesToMove.iterator(); i.hasNext();) {
-					MutableTreeNode nodeToMove = (MutableTreeNode) i.next();
+				for (MutableTreeNode nodeToMove : nodesToMove) {
 					model.removeNodeFromParent(nodeToMove);
 					model.insertNodeInto(nodeToMove, (MutableTreeNode) model
 							.getRoot(), 0);

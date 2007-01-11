@@ -94,8 +94,7 @@ public class IteratorNodeTests {
 				+ ((TreeNode) i).getChildCount() + " children.");
 		while (i.hasNext()) {
 			// Explode the map and print a new map containing the data objects
-			// without
-			// the datathing wrapping
+			// without the datathing wrapping
 			Map display = new HashMap();
 			Map current = (Map) i.next();
 			for (Iterator k = current.keySet().iterator(); k.hasNext();) {

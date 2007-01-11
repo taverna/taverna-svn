@@ -7,9 +7,6 @@ package org.embl.ebi.escience.scuflui;
 
 import javax.swing.JTextArea;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
-import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
 import org.embl.ebi.escience.scufl.enactor.event.CollectionConstructionEvent;

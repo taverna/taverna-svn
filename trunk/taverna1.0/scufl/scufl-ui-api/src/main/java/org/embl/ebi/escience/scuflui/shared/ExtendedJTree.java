@@ -42,10 +42,10 @@ public class ExtendedJTree extends JTree {
 		// to highlight the term selected.
 		if (getCellRenderer() instanceof NodeColouringRenderer) {
 			NodeColouringRenderer renderer = (NodeColouringRenderer) getCellRenderer();
-			if (pattern.equals("")) {
+			if (this.pattern.equals("")) {
 				renderer.setPattern(null);
 			} else {
-				renderer.setPattern(".*" + pattern.toLowerCase() + ".*");
+				renderer.setPattern(".*" + this.pattern.toLowerCase() + ".*");
 			}
 			repaint();
 		}

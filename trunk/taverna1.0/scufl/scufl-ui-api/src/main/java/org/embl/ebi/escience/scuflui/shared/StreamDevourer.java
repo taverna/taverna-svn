@@ -66,9 +66,6 @@ public class StreamDevourer extends Thread {
 				// && line.endsWith("</svg>") == false) {
 				output.write(line.getBytes());
 			}
-			if (line != null) {
-				output.write(line.getBytes());
-			}
 			br.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromURLAction.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:44:14 $
+ * Last modified on   $Date: 2007-01-11 10:16:42 $
  *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -41,10 +41,7 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 
 /**
  *
@@ -66,8 +63,6 @@ public class OpenWorkflowFromURLAction extends AbstractAction {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		ScuflModel model = new ScuflModel();
-
 		Preferences prefs = Preferences.userNodeForPackage(OpenWorkflowFromURLAction.class);
 		String currentUrl = prefs
 				.get("currentUrl", "http://");

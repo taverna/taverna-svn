@@ -46,6 +46,7 @@ public class ArtifactImplTest extends TestCase {
 	}
 
 	
+	@SuppressWarnings("null")
 	public void testExclusionDependencies() throws MalformedURLException, InterruptedException, ArtifactStateException {
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
 		r.addRemoteRepository(testRepos);

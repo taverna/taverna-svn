@@ -1,7 +1,6 @@
 package org.embl.ebi.escience.scuflui.spi;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 
 /**
  * Implementations can construct UI components to be inserted into

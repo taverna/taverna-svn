@@ -113,7 +113,7 @@ public class WorkflowScavenger extends URLBasedScavenger {
 		for (int i = 0; i < processors.length; i++) {
 			// Create a new node for the factory corresponding to this processor
 			String tagName = ProcessorHelper.getTagNameForClassName(processors[i].getClass().getName());
-			XMLHandler xh = (XMLHandler) ProcessorHelper.getXMLHandlerForTagName(tagName);
+			XMLHandler xh = ProcessorHelper.getXMLHandlerForTagName(tagName);
 			logger.info(tagName + ":" + processors[i].getName());
 			if (xh != null) {
 				ProcessorFactory pf = xh.getFactory(xh.elementForProcessor(processors[i]));

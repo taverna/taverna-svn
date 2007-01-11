@@ -20,7 +20,6 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 
 /**
@@ -141,7 +140,6 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 		Element processorList;
 		String workflowID = null;
 		String workflowStatus = null;
-		Namespace documentNamespace = null;
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
 			Document document = builder.build(new StringReader(progressReport));
@@ -244,11 +242,11 @@ public class EnactorStatusTableModel extends AbstractTableModel {
 		return workflowStatus;
 	}
 
-	public Class getColumnClass(int c) {
+	public Class<?> getColumnClass(int c) {
 		if (c == 0 || c == 5) {
 			return ImageIcon.class;
 		} else {
-			return java.lang.String.class;
+			return String.class;
 		}
 	}
 

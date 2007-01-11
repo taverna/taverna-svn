@@ -5,6 +5,7 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.SystemColor;
+import java.awt.RenderingHints.Key;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
@@ -37,7 +38,7 @@ public class CArrowImage extends BufferedImage {
 		super(nWidth, nHeight, TYPE_INT_ARGB_PRE); // Set the width, height and
 		// image type
 
-		Map map = new HashMap();
+		Map<Key, Object> map = new HashMap<Key, Object>();
 		map.put(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
 		map.put(RenderingHints.KEY_RENDERING,
