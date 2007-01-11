@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.16 $
+ * Revision           $Revision: 1.17 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-11 15:32:43 $
+ * Last modified on   $Date: 2007-01-11 16:57:03 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -36,6 +36,7 @@ package org.embl.ebi.escience.scuflui.workbench;
 import java.awt.Component;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -162,10 +163,17 @@ public class WorkbenchPerspectives {
 				perspective.setVisible(!perspective.isVisible());											
 				perspectives.get(perspective).setVisible(perspective.isVisible());
 				putValue(NAME, perspective.isVisible() ? "Hide" : "Show");
+				PerspectiveSPI current=(PerspectiveSPI)modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
 				if (!perspective.isVisible()) { 
-					PerspectiveSPI current=(PerspectiveSPI)modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
+					// change to the first available if the current is being hidden
 					if (current==perspective) {
 						selectFirstPerspective();
+					}
+				}
+				else {
+					//if no perspectives are currently visible, then change to the one just made visible					
+					if (current==null || current instanceof BlankPerspective) {
+						modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
 					}
 				}
 			}				
@@ -255,7 +263,8 @@ public class WorkbenchPerspectives {
 
 	public void removeCustomPerspective(CustomPerspective perspective) {
 		customPerspectives.remove(perspective);
-		perspectives.remove(perspective);
+		JToggleButton button = perspectives.remove(perspective);
+		toolBar.remove(button);
 		
 		//remove from menu to toggle visibility
 		JMenu menu = perspectiveVisibilityMap.get(perspective);
@@ -269,7 +278,7 @@ public class WorkbenchPerspectives {
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
 				.getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {				
-				updatePerspectiveSplitPanesWithSaved(perspective);
+				updatePerspectiveWithSaved(perspective);
 				addPerspective(perspective, false);			
 		}		
 
@@ -293,12 +302,20 @@ public class WorkbenchPerspectives {
 	
 	//selects the first visible perspective by clicking on the toolbar button
 	private void selectFirstPerspective() {		
+		boolean set = false;
 		for (Component c : toolBar.getComponents()) {			
 			if (c instanceof AbstractButton && c.isVisible()) {				
-				((AbstractButton) c).doClick();				
+				((AbstractButton) c).doClick();
+				set=true;
 				break;
 			}
 		}			
+		
+		if (!set) //no visible perspectives were found
+		{			
+			logger.info("No visible perspectives.");			
+			modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, new BlankPerspective());
+		}
 	}
 
 	/**
@@ -306,8 +323,11 @@ public class WorkbenchPerspectives {
 	 * the current perspective with these values. This is so that the split pane ratios
 	 * are restored to the users last session. Reopenning the whole layout file was found to
 	 * be dangerous, as embedded components can disappear if there are errors initialising them.
+	 * 
+	 * In addition to this, the visibility status of the perspective read and set from the stored
+	 * xml.
 	 */
-	private void updatePerspectiveSplitPanesWithSaved(PerspectiveSPI perspective) {
+	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
 		String filename = perspective.getClass().getName() + ".perspective";
 		File file = new File(MyGridConfiguration.getUserDir("conf"), filename);
 		if (file.exists()) {
@@ -412,13 +432,12 @@ public class WorkbenchPerspectives {
 	}
 
 	private void openLayout(InputStream layoutStream) {
-		try {
+		try {						
 			InputStreamReader isr = new InputStreamReader(layoutStream);
 			SAXBuilder builder = new SAXBuilder(false);
 			Document document = builder.build(isr);
 			basePane.configure(document.detachRootElement());
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception ex) {			
 			logger.error("Error opening layout file", ex);
 			JOptionPane.showMessageDialog(basePane,
 					"Error opening layout file: " + ex.getMessage());
@@ -517,14 +536,10 @@ public class WorkbenchPerspectives {
 							basePane.setEditable(false); // cancel edit mode
 															// so perspective
 															// can be changed
-															// after deletion
-							if (p instanceof CustomPerspective) {
-								removeCustomPerspective((CustomPerspective) p);
-							}
+															// after deletion							
 							try {
 								CustomPerspectiveFactory.getInstance().saveAll(
-										customPerspectives);
-								refreshPerspectives();
+										customPerspectives);								
 							} catch (FileNotFoundException e1) {
 								logger.error(
 										"No file to save custom perspectives",
@@ -535,6 +550,7 @@ public class WorkbenchPerspectives {
 												"Error writing custom perspectives to file",
 												e1);
 							}
+							selectFirstPerspective();
 						}
 					}
 				}
@@ -563,41 +579,43 @@ public class WorkbenchPerspectives {
 	}
 
 	public void switchPerspective(PerspectiveSPI perspective) {
-		// If we don't know it, and it's not a custom perspective
-		// (where each instance is really unique),
-		// we'll try to locate one of the existing buttons
-		if (!perspectives.containsKey(perspective)
-				&& !(perspective instanceof CustomPerspective)) {
-			for (PerspectiveSPI buttonPerspective : perspectives.keySet()) {
-				// FIXME: Should have some other identifier than getClass() ?
-				// First (sub)class instance wins
-				if (perspective.getClass().isInstance(buttonPerspective)) {
-					// Do the known button instead
-					perspective = buttonPerspective;
-					break;
+		if (!(perspective instanceof BlankPerspective)) {
+			// If we don't know it, and it's not a custom perspective
+			// (where each instance is really unique),
+			// we'll try to locate one of the existing buttons
+			if (!perspectives.containsKey(perspective)
+					&& !(perspective instanceof CustomPerspective)) {
+				for (PerspectiveSPI buttonPerspective : perspectives.keySet()) {
+					// FIXME: Should have some other identifier than getClass() ?
+					// First (sub)class instance wins
+					if (perspective.getClass().isInstance(buttonPerspective)) {
+						// Do the known button instead
+						perspective = buttonPerspective;
+						break;
+					}
 				}
 			}
-		}
-
-		// Regardless of the above, we'll add it as a button
-		// if it still does not exist in the toolbar.
-		if (!perspectives.containsKey(perspective)) {
-			addPerspective(perspective, true);
-		}
-		// (Button should now be in perspectives)
-
-		// Make sure the button is selected
-		perspectives.get(perspective).setSelected(true);
-
-		if (perspective instanceof CustomPerspective) {
-			// only allow custom perspectives to be editable.
-			basePane.getToggleEditAction().setEnabled(true);
-			getOpenPerspectiveAction().setEnabled(true);
-			getDeleteCurrentPerspectiveAction().setEnabled(true);
-		} else {
-			basePane.getToggleEditAction().setEnabled(false);
-			getOpenPerspectiveAction().setEnabled(false);
-			getDeleteCurrentPerspectiveAction().setEnabled(false);
+	
+			// Regardless of the above, we'll add it as a button
+			// if it still does not exist in the toolbar.
+			if (!perspectives.containsKey(perspective)) {
+				addPerspective(perspective, true);
+			}
+			// (Button should now be in perspectives)
+	
+			// Make sure the button is selected
+			perspectives.get(perspective).setSelected(true);
+	
+			if (perspective instanceof CustomPerspective) {
+				// only allow custom perspectives to be editable.
+				basePane.getToggleEditAction().setEnabled(true);
+				getOpenPerspectiveAction().setEnabled(true);
+				getDeleteCurrentPerspectiveAction().setEnabled(true);
+			} else {
+				basePane.getToggleEditAction().setEnabled(false);
+				getOpenPerspectiveAction().setEnabled(false);
+				getDeleteCurrentPerspectiveAction().setEnabled(false);
+			}
 		}
 		openLayout(perspective.getLayoutInputStream());
 	}
@@ -669,6 +687,49 @@ public class WorkbenchPerspectives {
 					removeCustomPerspective((CustomPerspective) oldModel);
 			}			
 		}
+	}
+	
+	/**
+	 * A dummy blank perspective for when there are no visible perspectives available
+	 * 
+	 * @author Stuart Owen
+	 */
+	class BlankPerspective implements PerspectiveSPI {
+
+		public ImageIcon getButtonIcon() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public InputStream getLayoutInputStream() {
+			return new ByteArrayInputStream("<basepane><child><znode classname=\"net.sf.taverna.zaria.ZBlankComponent\"><blank/></znode></child></basepane>".getBytes());
+		}
+
+		public String getText() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isVisible() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public int positionHint() {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		public void setVisible(boolean visible) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void update(Element layoutElement) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 
 }
