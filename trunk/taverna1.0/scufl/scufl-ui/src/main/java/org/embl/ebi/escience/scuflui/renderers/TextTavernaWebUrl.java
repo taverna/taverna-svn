@@ -53,7 +53,7 @@ public class TextTavernaWebUrl
         } catch (Exception ex) {
             JTextArea theTextArea = new JTextArea();
             theTextArea.setText((String) dataObject);
-            theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            theTextArea.setFont(Font.getFont("Monospaced"));
             return theTextArea;
         }
     }

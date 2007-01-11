@@ -44,7 +44,7 @@ public class Text
     {
         JTextArea theTextArea = new JTextArea();
         theTextArea.setText((String) dataThing.getDataObject());
-        theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        theTextArea.setFont(Font.getFont("Monospaced"));
         return theTextArea;
     }
 }
