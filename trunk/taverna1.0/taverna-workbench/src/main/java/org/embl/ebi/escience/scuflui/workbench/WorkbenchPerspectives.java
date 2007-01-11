@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.18 $
+ * Revision           $Revision: 1.19 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-11 17:11:22 $
+ * Last modified on   $Date: 2007-01-11 17:16:46 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -289,16 +289,13 @@ public class WorkbenchPerspectives {
 			logger.error("Error reading user perspectives", e);
 		}		
 			
-		if (customPerspectives != null && customPerspectives.size() > 0) {
-			toolBar.addSeparator();
-			
+		if (customPerspectives != null && customPerspectives.size() > 0) {			
 			for (CustomPerspective perspective : customPerspectives) {
 				addPerspective(perspective, false);
 			}
 		}
 
-		selectFirstPerspective();
-		
+		selectFirstPerspective();		
 	}
 	
 	//selects the first visible perspective by clicking on the toolbar button
