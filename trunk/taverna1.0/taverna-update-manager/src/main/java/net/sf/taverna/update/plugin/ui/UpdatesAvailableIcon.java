@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 13:12:49 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-12 12:23:09 $
+ *               by   $Author: stain $
  * Created on 12 Dec 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -36,6 +36,7 @@ package net.sf.taverna.update.plugin.ui;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 import javax.swing.JLabel;
@@ -155,9 +156,11 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		boolean result=false;
 		
 		try {
-			result=new ProfileHandler(getRemoteProfile()).isNewVersionAvailable();
+			result = new ProfileHandler(getRemoteProfile()).isNewVersionAvailable();
+		} catch (FileNotFoundException e) {
+			logger.warn("Could not find profile " + getRemoteProfile());
 		} catch (Exception e) {
-			logger.error("Error checking for profile updates",e);
+			logger.error("Error checking for profile updates", e);
 		}
 		return result;
 	}

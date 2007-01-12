@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.15 $
+ * Revision           $Revision: 1.16 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 16:25:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-12 12:23:09 $
+ *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -269,42 +269,85 @@ public class PluginManager implements PluginListener {
 	 * @return all the <code>Plugin</code>s available from the
 	 *         <code>PluginSite</code>
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Plugin> getPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
-		HttpMethod getPlugins = new GetMethod(pluginSite.getUrl()
-				+ "plugins.xml");
+		
+		URI pluginSiteURI;
 		try {
-			int statusCode = client.executeMethod(getPlugins);
-			if (statusCode != HttpStatus.SC_OK) {
-				// log
-			}
-			Document pluginsDocument = new SAXBuilder().build(getPlugins
-					.getResponseBodyAsStream());
-			List<Element> pluginList = pluginsDocument.getRootElement()
-					.getChildren("plugin");
-			for (Element plugin : pluginList) {
-				URI pluginUri = new URI(plugin.getTextTrim());
-				URL pluginURL=pluginSite.getUrl();
-				if (pluginURL!=null) {
-					pluginUri = pluginURL.toURI().resolve(pluginUri);
-					HttpMethod getPlugin = new GetMethod(pluginUri.toString());
-					statusCode = client.executeMethod(getPlugin);
-					if (statusCode != HttpStatus.SC_OK) {
-						// log
-					}
-					Document pluginDocument = new SAXBuilder().build(getPlugin
-							.getResponseBodyAsStream());
-					plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
-				}
-			}
-		} catch (JDOMException e) {
-			logger.error("Error parsing xml: "+e.getMessage());
-		} catch (IOException e) {
-			logger.error("Error contacting plugin site: "+e.getMessage());
+			pluginSiteURI = pluginSite.getUrl().toURI();
 		} catch (URISyntaxException e) {
-			logger.error("Error parsing plugin site: "+e.getMessage());
+			logger.error("Invalid plugin site URL" + pluginSite);
+			return plugins;
 		}
+		
+		URI pluginsXML = pluginSiteURI.resolve("plugins.xml");
+		
+		HttpMethod getPlugins = new GetMethod(pluginsXML.toString());
+		int statusCode;
+		try {
+			statusCode = client.executeMethod(getPlugins);
+		} catch (IOException e) {
+			logger.warn("Could not fetch plugins " + pluginsXML, e);
+			return plugins;
+		}
+		if (statusCode != HttpStatus.SC_OK) {
+			logger.warn("HTTP status " + statusCode + 
+				" while getting plugins " + pluginsXML);
+			return plugins;
+		}
+
+		Document pluginsDocument;
+		try {
+			pluginsDocument = new SAXBuilder().build(getPlugins
+				.getResponseBodyAsStream());
+		} catch (JDOMException e) {
+			logger.warn("Could not parse plugins " + pluginsXML, e);
+			return plugins;
+		} catch (IOException e) {
+			logger.warn("Could not read plugins " + pluginsXML, e);
+			return plugins;
+		}
+		List<Element> pluginList =
+			pluginsDocument.getRootElement().getChildren("plugin");
+		for (Element plugin : pluginList) {
+			URI pluginUri;
+			try {
+				pluginUri = pluginSiteURI.resolve(plugin.getTextTrim());
+			} catch (IllegalArgumentException ex) {
+				logger.warn("Invalid plugin URI " + plugin.getTextTrim());
+				continue;
+			}
+			
+			HttpMethod getPlugin = new GetMethod(pluginUri.toString());
+			try {
+				statusCode = client.executeMethod(getPlugin);
+			} catch (IOException e) {
+				logger.warn("Could not fetch plugin " + pluginUri, e);
+				continue;
+			}
+			if (statusCode != HttpStatus.SC_OK) {
+				logger.warn("HTTP status " + statusCode + 
+					" while getting plugin " + pluginUri);
+				continue;
+			}
+			
+			Document pluginDocument;
+			try {
+				pluginDocument = new SAXBuilder().build(getPlugin
+					.getResponseBodyAsStream());
+			} catch (JDOMException e) {
+				logger.warn("Could not parse plugin " + pluginUri, e);
+				continue;
+			} catch (IOException e) {
+				logger.warn("Could not read plugin " + pluginUri, e);
+				continue;
+			}
+			plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
+			logger.debug("Added plugin from " + pluginUri);
+		}
+		logger.info("Added plugins from " + pluginSiteURI);
 		return plugins;
 	}
 
@@ -461,6 +504,7 @@ public class PluginManager implements PluginListener {
 		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin(),plugins.indexOf(event.getPlugin())));
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initializePlugins() {
 		File pluginsFile = new File(pluginsDir, "plugins.xml");
 		if (pluginsFile.exists()) {
@@ -526,6 +570,7 @@ public class PluginManager implements PluginListener {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void initializePluginSites() {
 		pluginSites.addAll(getTavernaPluginSites());
 		
