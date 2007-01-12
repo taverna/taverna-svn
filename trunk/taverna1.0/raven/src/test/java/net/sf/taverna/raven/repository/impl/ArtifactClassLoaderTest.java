@@ -111,62 +111,62 @@ public class ArtifactClassLoaderTest extends TestCase {
 			}
 		}
 	}
-	
-	public void testRunManyThreads() {
-		final List<Object> runs = new ArrayList<Object>();
-		runManyThreads(new Runnable() {
-			public void run() {
-				synchronized (runs) {
-					runs.add(null);							
-				}
-			}
-		});
-		assertEquals(THREADS, runs.size());
-	}
+//	
+//	public void testRunManyThreads() {
+//		final List<Object> runs = new ArrayList<Object>();
+//		runManyThreads(new Runnable() {
+//			public void run() {
+//				synchronized (runs) {
+//					runs.add(null);							
+//				}
+//			}
+//		});
+//		assertEquals(THREADS, runs.size());
+//	}
 
 
 	// WARNING: This test don't work from mvn test
-	public void testMultipleLoad() throws Throwable {
-		final List<Throwable> exceptions = new ArrayList<Throwable>();
-		runManyThreads(new Runnable() {
-			public void run() {
-				BasicArtifact artifact;
-				if (Thread.currentThread().getId() % 2 == 1) {
-					artifact = tavernaCore;
-				} else {
-					artifact = baclavaCore;
-				}
-				ClassLoader loader = null;
-				try {
-					loader = repository.getLoader(artifact, null);
-					Class c = loader.loadClass(CLASSNAME);
-					System.out.println(Thread.currentThread().getId() + ": " + loader + 
-							" found " + c.getName() + " in " + c.getClassLoader());
-				} catch (Throwable e) {
-					System.out.println(Thread.currentThread().getId() + ": failed using " + loader);
-					synchronized (exceptions) {
-						exceptions.add(e);						
-					}
-				}
-			}
-		});
-		for (Throwable t : exceptions) {
-			t.printStackTrace();
-		}
-		if (exceptions.size() > 0) {
-			throw exceptions.get(0);
-		}
-	}
-
-	// WARNING: This test don't work from mvn test
-	public void testSimpleLoad() throws RavenException, ClassNotFoundException {
-		ClassLoader jdomLoader = repository.getLoader(jdom, xerxesLoader);
-		jdomLoader.loadClass(CLASSNAME);
-		ClassLoader baclavaCoreLoader = repository.getLoader(baclavaCore, xerxesLoader);
-		ClassLoader tavernaCoreLoader = repository.getLoader(tavernaCore, xerxesLoader);
-		tavernaCoreLoader.loadClass(CLASSNAME);
-		baclavaCoreLoader.loadClass(CLASSNAME);
-	}
+//	public void testMultipleLoad() throws Throwable {
+//		final List<Throwable> exceptions = new ArrayList<Throwable>();
+//		runManyThreads(new Runnable() {
+//			public void run() {
+//				BasicArtifact artifact;
+//				if (Thread.currentThread().getId() % 2 == 1) {
+//					artifact = tavernaCore;
+//				} else {
+//					artifact = baclavaCore;
+//				}
+//				ClassLoader loader = null;
+//				try {
+//					loader = repository.getLoader(artifact, null);
+//					Class c = loader.loadClass(CLASSNAME);
+//					System.out.println(Thread.currentThread().getId() + ": " + loader + 
+//							" found " + c.getName() + " in " + c.getClassLoader());
+//				} catch (Throwable e) {
+//					System.out.println(Thread.currentThread().getId() + ": failed using " + loader);
+//					synchronized (exceptions) {
+//						exceptions.add(e);						
+//					}
+//				}
+//			}
+//		});
+//		for (Throwable t : exceptions) {
+//			t.printStackTrace();
+//		}
+//		if (exceptions.size() > 0) {
+//			throw exceptions.get(0);
+//		}
+//	}
+//
+//	// WARNING: This test don't work from mvn test
+//	public void testSimpleLoad() throws RavenException, ClassNotFoundException {
+//		ClassLoader jdomLoader = repository.getLoader(jdom, xerxesLoader);
+//		jdomLoader.loadClass(CLASSNAME);
+//		ClassLoader baclavaCoreLoader = repository.getLoader(baclavaCore, xerxesLoader);
+//		ClassLoader tavernaCoreLoader = repository.getLoader(tavernaCore, xerxesLoader);
+//		tavernaCoreLoader.loadClass(CLASSNAME);
+//		baclavaCoreLoader.loadClass(CLASSNAME);
+//	}
 
 	// Try running this test suite as:
 	// : stain@mira ~/Documents/workspace/taverna1.x/raven;
