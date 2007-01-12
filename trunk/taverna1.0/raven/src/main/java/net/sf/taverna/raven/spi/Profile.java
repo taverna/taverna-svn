@@ -31,26 +31,31 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * A Profile in this context is a set of Artifacts that are known to work in conjunction
- * with one another. With Raven's ability to deploy components at runtime and update
- * in a very fine grained manner the issue of support can become tangled, the potential
- * variety of coexisting (and therefore possibly interacting) software components may
- * cause incompatibilities that are only apparent at runtime. For this reason some
- * organizations such as OMII-UK may with to provide a 'blessed' combination of component
- * versions which have had some level of integration testing within their host environment.<p>
- * The profile is held and distributed in the form of an XML file with the following
- * structure:
+ * A Profile in this context is a set of Artifacts that are known to work in
+ * conjunction with one another. With Raven's ability to deploy components at
+ * runtime and update in a very fine grained manner the issue of support can
+ * become tangled, the potential variety of coexisting (and therefore possibly
+ * interacting) software components may cause incompatibilities that are only
+ * apparent at runtime. For this reason some organizations such as OMII-UK may
+ * with to provide a 'blessed' combination of component versions which have had
+ * some level of integration testing within their host environment.
+ * <p>
+ * The profile is held and distributed in the form of an XML file with the
+ * following structure:
+ * 
  * <pre>
- * &lt;profile>
- *   &lt;artifact groupId="..." artifactId="..." version="..."/>
- *   ...
- * &lt;/profile>
+ *  &lt;profile&gt;
+ *    &lt;artifact groupId=&quot;...&quot; artifactId=&quot;...&quot; version=&quot;...&quot;/&gt;
+ *    ...
+ *  &lt;/profile&gt;
  * </pre>
- * Note that as this is only used by the SPI mechanism there is no need to include dependencies
- * of these artifacts, the only entries required are those which directly contain SPI implementations
+ * 
+ * Note that as this is only used by the SPI mechanism there is no need to
+ * include dependencies of these artifacts, the only entries required are those
+ * which directly contain SPI implementations
  * 
  * @author Tom Oinn
- *
+ * @author Stian Soiland
  */
 public class Profile extends AbstractArtifactFilter {
 	private static Log logger = Log.getLogger(Profile.class);
@@ -68,26 +73,27 @@ public class Profile extends AbstractArtifactFilter {
 	}
 	
 	/**
-	 * Create a Profile and initialize it from the specified
-	 * InputStream of XML (see class description)
+	 * Create a Profile and initialize it from the specified InputStream of XML
+	 * (see class description)
 	 * <p>
-	 * If the strict setting is set to true then the filter
-	 * operation is a straight set intersection of the set to be
-	 * filtered and the set of artifacts within this profile. If
-	 * false then the behaviour is slightly more complex - an artifact
-	 * is allowed through the filter if either all three fields (
-	 * groupId, artifactId and version) match or there are no
-	 * matches on the groupId and artifactId pair. This effectively
-	 * allows through components which are unknown to the profile and
-	 * can be used to compose the union of multiple profiles by 
-	 * adding each one to the filter chain in turn.
+	 * If the strict setting is set to true then the filter operation is a
+	 * straight set intersection of the set to be filtered and the set of
+	 * artifacts within this profile. If false then the behaviour is slightly
+	 * more complex - an artifact is allowed through the filter if either all
+	 * three fields (groupId, artifactId and version) match or there are no
+	 * matches on the groupId and artifactId pair. This effectively allows
+	 * through components which are unknown to the profile and can be used to
+	 * compose the union of multiple profiles by adding each one to the filter
+	 * chain in turn.
 	 * 
-	 * @param is Inputstream to read XML from
-	 * @param strict only allows exact matches to the profile through
-	 * if true, if false then artifacts which don't exist in the profile
-	 * in any version will be allowed through.
-	 * @throws InvalidProfileException if there is any problem reading
-	 * or parsing the profile XML.
+	 * @param is
+	 *            {@link InputStream} to read XML from
+	 * @param strict
+	 *            only allows exact matches to the profile through if true, if
+	 *            false then artifacts which don't exist in the profile in any
+	 *            version will be allowed through.
+	 * @throws InvalidProfileException
+	 *             if there is any problem reading or parsing the profile XML.
 	 */
 	public Profile(InputStream is, boolean strict) throws InvalidProfileException {
 		
@@ -150,7 +156,8 @@ public class Profile extends AbstractArtifactFilter {
 	}
 	
 	/**
-	 * Return the version string of the Profile, or 'NO VERSION' if a version is not defined
+	 * Return the version string of the Profile, or 'NO VERSION' if a version is
+	 * not defined
 	 */
 	public String getVersion() {
 		if (version == null) {
@@ -174,6 +181,7 @@ public class Profile extends AbstractArtifactFilter {
 	 */
 	public void removeArtifact(Artifact artifact) {
 		artifacts.remove(artifact);
+		systemArtifacts.remove(artifacts);
 		fireFilterChanged(this);
 	}
 	
@@ -185,18 +193,32 @@ public class Profile extends AbstractArtifactFilter {
 	}
 	
 	/**
-	 * @return a copy of the internal Set of Artifacts
+	 * Get the artifacts that forms part of this profile.
+ 	 * 
+	 * @return a copy of the internal {@link Set} of {@link Artifact}.
 	 */
 	public Set<Artifact> getArtifacts() {
-		return new HashSet<Artifact>(this.artifacts);
+		return new HashSet<Artifact>(artifacts);
+	}
+	
+	/**
+	 * Get the subset of {@link #getArtifacts()} that is marked as being system
+	 * artifacts by this profile. A system artifact is supposed to be put into
+	 * the {@link net.sf.taverna.tools.BootstrapClassLoader} and thereby
+	 * available even to artifacts that don't declare it as a dependency. This
+	 * is mainly useful for global XML parsers.
+	 * 
+	 * @return a copy of the internal Set of system Artifacts
+	 */
+	public Set<Artifact> getSystemArtifacts() {
+		return new HashSet<Artifact>(systemArtifacts);
 	}
 
 	/**
-	 * Return the intersection of the set of Artifacts in this Profile
-	 * and that presented to this method if strict is true, otherwise
-	 * return the intersection plus all artifacts in the set which have
-	 * no match within the profile when only groupId and artifactId are
-	 * taken into account.
+	 * Return the intersection of the set of Artifacts in this Profile and that
+	 * presented to this method if strict is true, otherwise return the
+	 * intersection plus all artifacts in the set which have no match within the
+	 * profile when only groupId and artifactId are taken into account.
 	 * 
 	 * @return filtered list of Artifact objects
 	 */
@@ -218,8 +240,10 @@ public class Profile extends AbstractArtifactFilter {
 	}
 	
 	/**
-	 * @param artifact Artifact to look for ignoring version information
-	 * @return whether there is a matching pair of groupId,artifactId in this profile
+	 * @param artifact
+	 *            Artifact to look for ignoring version information
+	 * @return whether there is a matching pair of groupId,artifactId in this
+	 *         profile
 	 */
 	private boolean containsOtherVersion(Artifact artifact) {
 		for (Artifact existing : artifacts) {
@@ -232,13 +256,13 @@ public class Profile extends AbstractArtifactFilter {
 	}
 	
 	/**
-	 * Select the highest version artifact defined in the registry that fits the 
-	 * artifactId and groupId. Useful for allowing artifacts to be defined without version with
-	 * the profile dictating the version to be used. 
+	 * Select the highest version {@link Artifact} defined in the registry that fits the
+	 * artifactId and groupId. Useful for allowing artifacts to be defined
+	 * without version with the profile dictating the version to be used.
 	 * <p>
-	 * Versions are compared as described in VersionComparator.
- 	 * 
- 	 * @see VersionComparator
+	 * Versions are compared as described in {@link VersionComparator}.
+	 * 
+	 * @see VersionComparator
 	 * @param groupId
 	 * @param artifactId
 	 * @return the Artifact or null if not found
