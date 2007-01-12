@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-06 14:31:44 $
+ * Last modified on   $Date: 2007-01-12 13:14:54 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -39,30 +39,46 @@ import net.sf.taverna.raven.log.Log;
 
 
 /**
- * A factory class for getting an instance of the Profile of the taverna components according to the
- * profile xml at the location defined by the system property taverna.profile. Once loaded it stores a copy locally
- * which is used as a fallback should the defined location be innaccessible.
+ * A factory class for getting an instance of the Profile of the Taverna
+ * components according to the profile xml at the location defined by the system
+ * property taverna.profile. Once loaded it stores a copy locally which is used
+ * as a fallback should the defined location be innaccessible.
  */
-
-
 public class ProfileFactory {
 	private static Log logger = Log.getLogger(ProfileFactory.class);
 	
-	private static ProfileFactory instance = new ProfileFactory();
 	private static Profile profile = null;
+
+	private static ProfileFactory instance = null;
 	
 	/**
-	 * Singleton, use getInstance() instead
-	 *
+	 * Don't instanciate, use static methods like {@link #getProfile()} only.
 	 */ 
 	private ProfileFactory() {}
 	
-	// Why is an instance needed at all instead of a static getProfile()?
+	
+	/**
+	 * No need to call this method, just access the static method {@link #getProfile()}
+	 * instead.
+	 * 
+	 * @see #getProfile()
+	 */
+	@Deprecated
 	public static ProfileFactory getInstance() {
+		if (instance != null) {
+			instance = new ProfileFactory();
+		}
 		return instance;
 	}
 	
-	public Profile getProfile() {
+	/**
+	 * Get the current system profile as specified by 
+	 * system property <pre>raven.profile</pre>. Subsequent
+	 * calls will return the same instance.
+	 * 
+	 * @return System {@link Profile} instance
+	 */
+	public static Profile getProfile() {
 		if (profile != null) {
 			return profile;
 		}
@@ -80,5 +96,7 @@ public class ProfileFactory {
 			return null;
 		}								
 	}
+
+
 	
 }
