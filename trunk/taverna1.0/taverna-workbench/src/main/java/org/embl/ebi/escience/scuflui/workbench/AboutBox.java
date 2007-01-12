@@ -25,28 +25,23 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AboutBox.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-14 15:40:15 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-12 13:05:29 $
+ *               by   $Author: stain $
  * Created on 14 Dec 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -116,10 +111,8 @@ public class AboutBox extends JDialog {
 	 */
 	private JPanel getDetailsPane() {
 		if (detailsPane == null) {
-			
 			detailsPane = new JPanel();
 			detailsPane.setLayout(new GridLayout(5,1));	
-			
 			detailsPane.setBackground(BACKGROUND_COLOUR);			
 			detailsPane.add(new JLabel(getVersion(),JLabel.CENTER));															
 			detailsPane.add(new JLabel("Project Website: ",JLabel.CENTER));			
@@ -161,13 +154,13 @@ public class AboutBox extends JDialog {
 	
 	private String getVersion() {
 		String version="Unknown";
-		Profile prof = ProfileFactory.getInstance().getProfile();
+		Profile prof = ProfileFactory.getProfile();
 		if (prof != null) {
 			if (prof.getVersion() != null) {
 				version = prof.getVersion();
 			}			
 		}
-		return "Version " +version;
+		return "Version " + version;
 	}
 
 	/**
@@ -185,11 +178,11 @@ public class AboutBox extends JDialog {
 			catch(MalformedURLException e) {
 				logger.error("Malformed URL for splashscreen",e);
 			}
-			
 		}
 		return splashscreen;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 		new AboutBox().show();
 	}
