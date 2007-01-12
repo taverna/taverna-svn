@@ -319,7 +319,7 @@ public class Workbench extends JFrame {
 	 */
 	private void setWorkbenchTitle() {
 		String title = "Taverna Workbench";
-		Profile prof = ProfileFactory.getInstance().getProfile();
+		Profile prof = ProfileFactory.getProfile();
 		if (prof != null) {
 			if (prof.getName() != null) {
 				title = prof.getName();

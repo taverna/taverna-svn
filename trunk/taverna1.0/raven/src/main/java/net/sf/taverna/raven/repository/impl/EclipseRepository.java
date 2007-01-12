@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 15:10:48 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-12 13:19:56 $
+ *               by   $Author: stain $
  * Created on 18 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.repository.impl;
@@ -98,7 +98,7 @@ public class EclipseRepository implements Repository {
 			artifacts.add(a);
 		
 			//add artifact to profile so it doesn't get filtered out
-			Profile p=ProfileFactory.getInstance().getProfile();
+			Profile p = ProfileFactory.getProfile();
 			if (p!=null) {
 				p.addArtifact(a);
 			}
