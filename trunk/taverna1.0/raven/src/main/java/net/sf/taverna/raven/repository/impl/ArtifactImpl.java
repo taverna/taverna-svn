@@ -57,7 +57,7 @@ public class ArtifactImpl extends BasicArtifact {
 	 * Create a new ArtifactImpl from an Artifact and a Repository
 	 */
 	ArtifactImpl(Artifact a, LocalRepository repository) {
-		super(a.getGroupId(), a.getArtifactId(), a.getVersion());
+		super(a);
 		this.repository = repository;
 		if (a instanceof ArtifactImpl) {
 			ArtifactImpl other = (ArtifactImpl) a;
