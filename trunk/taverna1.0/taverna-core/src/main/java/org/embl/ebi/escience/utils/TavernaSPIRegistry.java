@@ -108,7 +108,7 @@ public class TavernaSPIRegistry<T> {
 	
 	protected void updateWithProfile(SpiRegistry registry) {		
 		if (profile == null) {
-			profile = ProfileFactory.getProfile();
+			profile = ProfileFactory.getInstance().getProfile();
 
 		}		
 		if (profile == null) {

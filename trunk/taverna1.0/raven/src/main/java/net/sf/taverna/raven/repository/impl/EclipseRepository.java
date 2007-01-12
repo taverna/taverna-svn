@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 13:19:56 $
+ * Last modified on   $Date: 2007-01-12 14:00:27 $
  *               by   $Author: stain $
  * Created on 18 Oct 2006
  *****************************************************************/
@@ -98,8 +98,8 @@ public class EclipseRepository implements Repository {
 			artifacts.add(a);
 		
 			//add artifact to profile so it doesn't get filtered out
-			Profile p = ProfileFactory.getProfile();
-			if (p!=null) {
+			Profile p = ProfileFactory.getInstance().getProfile();
+			if (p != null) {
 				p.addArtifact(a);
 			}
 		}		

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AboutBox.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 13:05:29 $
+ * Last modified on   $Date: 2007-01-12 14:00:27 $
  *               by   $Author: stain $
  * Created on 14 Dec 2006
  *****************************************************************/
@@ -154,7 +154,7 @@ public class AboutBox extends JDialog {
 	
 	private String getVersion() {
 		String version="Unknown";
-		Profile prof = ProfileFactory.getProfile();
+		Profile prof = ProfileFactory.getInstance().getProfile();
 		if (prof != null) {
 			if (prof.getVersion() != null) {
 				version = prof.getVersion();

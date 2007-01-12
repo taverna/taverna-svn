@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.17 $
+ * Revision           $Revision: 1.18 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 13:19:56 $
+ * Last modified on   $Date: 2007-01-12 14:00:27 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -94,7 +94,7 @@ public class PluginManager implements PluginListener {
 
 	private List<Plugin> updatedPlugins = new ArrayList<Plugin>();
 
-	private Profile profile = ProfileFactory.getProfile();
+	private Profile profile = ProfileFactory.getInstance().getProfile();
 
 	/**
 	 * Constructs an instance of PluginManager.

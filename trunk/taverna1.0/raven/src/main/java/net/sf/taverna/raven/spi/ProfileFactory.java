@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 13:14:54 $
+ * Last modified on   $Date: 2007-01-12 14:00:26 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -52,18 +52,15 @@ public class ProfileFactory {
 	private static ProfileFactory instance = null;
 	
 	/**
-	 * Don't instanciate, use static methods like {@link #getProfile()} only.
+	 * Don't instanciate, use singleton {@link #getInstance()}.
 	 */ 
 	private ProfileFactory() {}
 	
 	
 	/**
-	 * No need to call this method, just access the static method {@link #getProfile()}
-	 * instead.
+	 * Get the singleton factory.
 	 * 
-	 * @see #getProfile()
 	 */
-	@Deprecated
 	public static ProfileFactory getInstance() {
 		if (instance != null) {
 			instance = new ProfileFactory();
@@ -78,7 +75,7 @@ public class ProfileFactory {
 	 * 
 	 * @return System {@link Profile} instance
 	 */
-	public static Profile getProfile() {
+	public Profile getProfile() {
 		if (profile != null) {
 			return profile;
 		}
