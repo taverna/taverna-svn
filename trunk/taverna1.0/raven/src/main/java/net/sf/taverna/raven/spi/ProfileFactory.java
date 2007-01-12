@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 14:00:26 $
+ * Last modified on   $Date: 2007-01-12 15:10:44 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -62,7 +62,7 @@ public class ProfileFactory {
 	 * 
 	 */
 	public static ProfileFactory getInstance() {
-		if (instance != null) {
+		if (instance == null) {
 			instance = new ProfileFactory();
 		}
 		return instance;
