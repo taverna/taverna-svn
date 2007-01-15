@@ -122,7 +122,6 @@ public class ResultPanel extends JPanel {
 		});
 
 		JButton queryButton = new JButton("List All Operations");
-		queryButton.setMaximumSize(new Dimension(Short.MAX_VALUE, 30));
 		queryButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				helper.queryForAll(true);

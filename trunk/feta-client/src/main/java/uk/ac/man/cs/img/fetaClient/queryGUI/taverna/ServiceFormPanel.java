@@ -34,11 +34,12 @@ import java.awt.GridBagLayout;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
@@ -74,7 +75,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel descriptionLabel;
 
-	private JTextArea descriptionField;
+	private JEditorPane descriptionField;
 
 	private JLabel nameLabel;
 
@@ -89,7 +90,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel operDescriptionLabel;
 
-	private JTextArea operDescriptionField;
+	private JEditorPane operDescriptionField;
 
 	private JLabel operationMethodLabel;
 
@@ -116,6 +117,8 @@ public class ServiceFormPanel extends JTabbedPane {
 	private JLabel parametersLabel;
 
 	private JPanel parametersField;
+
+    private JScrollPane parametersScroll;
 
 	private JPanel inputParameters;
 
@@ -155,10 +158,13 @@ public class ServiceFormPanel extends JTabbedPane {
 
 		descriptionLabel = new JLabel("Service description");
 		descriptionField = multiLabel("");
-		
+
 		parametersLabel = new JLabel("Parameters");
 		parametersField = new JPanel(new GridBagLayout());
-		
+        parametersScroll = new JScrollPane(parametersField, 
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+
 		inputParameters = new JPanel();
 		outputParameters = new JPanel();
 		GridBagConstraints c = new GridBagConstraints();
@@ -169,16 +175,16 @@ public class ServiceFormPanel extends JTabbedPane {
 		parametersField.add(inputParameters, c);
 		parametersField.add(outputParameters, c);
 		// filler
-		//c.weighty = 0.1;
+		c.weighty = 0.1;
 		c.weightx = 0.1;
-		parametersField.add(new JPanel(), c); 
+        c.fill = GridBagConstraints.VERTICAL;
+		parametersField.add(new JPanel(), c);
 
-		
-
-		JScrollPane scrollingDescriptionArea = new JScrollPane(
-				descriptionField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane scrollingDescriptionArea =
+			new JScrollPane(descriptionField,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//		scrollingDescriptionArea.setBorder(BorderFactory.createEtchedBorder());
+		// scrollingDescriptionArea.setBorder(BorderFactory.createEtchedBorder());
 		scrollingDescriptionArea.setOpaque(false);
 
 		locationLabel = new JLabel("Service endpoint location");
@@ -211,30 +217,30 @@ public class ServiceFormPanel extends JTabbedPane {
 
 		servicePanel.add(nameLabel);
 		servicePanel.add(nameField);
-		
+
 		servicePanel.add(descriptionLabel);
 		servicePanel.add(scrollingDescriptionArea);
-		
+
 		servicePanel.add(parametersLabel);
-		servicePanel.add(parametersField);
-		
+		servicePanel.add(parametersScroll);
+
 		servicePanel.add(descLocationLabel);
 		servicePanel.add(descLocationField);
-		
+
 		servicePanel.add(locationLabel);
 		servicePanel.add(locationField);
-		
+
 		servicePanel.add(interfaceLabel);
 		servicePanel.add(interfaceField);
-		
+
 		servicePanel.add(organisationLabel);
 		servicePanel.add(organisationField);
-		
+
 		servicePanel.add(typeLabel);
 		servicePanel.add(typeField);
 
-		final int COLS=2;
-		final int ROWS=8;
+		final int COLS = 2;
+		final int ROWS = 8;
 		SpringUtilities.makeCompactGrid(servicePanel, ROWS, COLS, 6, 6, 6, 6);
 
 		/** Initialize Operation Panel * */
@@ -249,22 +255,20 @@ public class ServiceFormPanel extends JTabbedPane {
 		operDescriptionLabel = new JLabel("Operation description");
 		operDescriptionField = multiLabel("");
 
-		JScrollPane scrollingOperDescriptionArea = new JScrollPane(
-				operDescriptionField, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		JScrollPane scrollingOperDescriptionArea =
+			new JScrollPane(operDescriptionField,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollingOperDescriptionArea.setBorder(BorderFactory
-				.createEtchedBorder());
+		scrollingOperDescriptionArea.setBorder(BorderFactory.createEtchedBorder());
 
 		operationMethodLabel = new JLabel("Operation Method");
-		operationMethodLabel
-				.setIcon(FetaResources.getIcon("selectedClass.gif"));
+		operationMethodLabel.setIcon(FetaResources.getIcon("selectedClass.gif"));
 		operationMethodField = new JTextField();
 		operationMethodField.setMaximumSize(new Dimension(300, 20));
 		operationMethodField.setEnabled(false);
 
 		operationResourceLabel = new JLabel("Operation Resource");
-		operationResourceLabel.setIcon(FetaResources
-				.getIcon("selectedClass.gif"));
+		operationResourceLabel.setIcon(FetaResources.getIcon("selectedClass.gif"));
 		operationResourceField = new JTextField();
 		operationResourceField.setMaximumSize(new Dimension(300, 20));
 		operationResourceField.setEnabled(false);
@@ -314,8 +318,8 @@ public class ServiceFormPanel extends JTabbedPane {
 		SpringUtilities.makeCompactGrid(operationPanel, 5, 2, 6, 6, 6, 6);
 
 		this.add("Brief Info", servicePanel);
-		//this.add("Operation",operationPanel);
-		//this.add("Parameters",parameterPanel);
+		// this.add("Operation",operationPanel);
+		// this.add("Parameters",parameterPanel);
 
 		this.setBackgroundAt(0, ShadedLabel.TAVERNA_BLUE);
 		// this.setBackgroundAt(1, ShadedLabel.TAVERNA_ORANGE);
@@ -373,7 +377,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	public void setServiceDescriptionLocation(String descLocation) {
 		descLocationField.setText(descLocation);
-	}	
+	}
 
 	public void setOperationMethod(String method) {
 		operationMethodField.setText(method);
@@ -386,15 +390,15 @@ public class ServiceFormPanel extends JTabbedPane {
 	public void setOperationResource(String resource) {
 		operationResourceField.setText(resource);
 	}
-	
-	public void setInputParameters(Map<String,String> parameters) {
-		setParameters(inputParameters, "Inputs", 
-			ShadedLabel.TAVERNA_BLUE, parameters);
-	}		
+
+	public void setInputParameters(Map<String, String> parameters) {
+		setParameters(inputParameters, "Inputs", ShadedLabel.TAVERNA_BLUE,
+			parameters);
+	}
 
 	public void setOutputParameters(Map<String, String> parameters) {
-		setParameters(outputParameters, "Outputs", 
-			ShadedLabel.TAVERNA_GREEN, parameters);
+		setParameters(outputParameters, "Outputs", ShadedLabel.TAVERNA_GREEN,
+			parameters);
 	}
 
 	private void setParameters(JPanel panel, String header, Color color,
@@ -409,55 +413,48 @@ public class ServiceFormPanel extends JTabbedPane {
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		
-		panel.add(new ShadedLabel(header, color),
-			c);
+
+		panel.add(new ShadedLabel(header, color), c);
 		for (String parameter : parameters.keySet()) {
 			JLabel label =
 				new JLabel("<html><strong>" + parameter + "</strong></html>");
 			panel.add(label, c);
-			JTextArea description = multiLabel(parameters.get(parameter));
+			JEditorPane description = multiLabel(parameters.get(parameter));
 			panel.add(description, c);
 		}
-		
-		// filler
-		c.weighty = 0.1;
-		c.weightx = 0.1;
-		panel.add(new JPanel(), c); 
 
+		// filler
+		c.weighty = 0.2;
+		c.weightx = 0.2;
+		c.fill = GridBagConstraints.VERTICAL;
+		panel.add(new JPanel(), c);
 		panel.revalidate();
 		panel.repaint();
 	}
 
 	/**
-	 * Make a multi-line label as a passive JTextArea.
+	 * Make a multi-line label as a passive JEditorPane.
 	 * 
 	 * @param text
 	 *            label to display
-	 * @return JTextArea instance showing label text
+	 * @return JEditorPane instance showing label text
 	 */
-	public static JTextArea multiLabel(String text) {
-		JTextArea textArea = new JTextArea(text);
-		textArea.setEditable(false);
-		textArea.setLineWrap(true);
-		textArea.setOpaque(false);
-		textArea.setWrapStyleWord(true);
-		textArea.setAlignmentX(Component.LEFT_ALIGNMENT);
+	public static JEditorPane multiLabel(String text) {
+		JEditorPane editor = new JEditorPane("text/plain", text);
+		editor.setEditable(false);
+		editor.setOpaque(false);
+		//editor.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// Avoid stealing all width
-		textArea.setMinimumSize(new Dimension(25, 10));
-		return textArea;
+		//editor.setMinimumSize(new Dimension(25, 10));
+		return editor;
 	}
-	
+
 	/*
 	 * public void setOperationResourceContent(String resourceContent) {
-	 * 
-	 * this.operationResourceContentField.setText(resourceContent);
-	 *  }
+	 * this.operationResourceContentField.setText(resourceContent); }
 	 */
 	/*
 	 * public void setOperationApplication(String application) {
-	 * 
-	 * this.operationApplicationField.setText(application);
-	 *  }
+	 * this.operationApplicationField.setText(application); }
 	 */
 }
