@@ -33,6 +33,9 @@ public class BasicArtifact implements Artifact {
 	 * @param version
 	 */
 	public BasicArtifact(String groupId, String artifactId, String version) {
+		if (groupId == null || artifactId == null || version == null) {
+			throw new NullPointerException();
+		}
 		this.groupId = groupId;
 		this.artifactId = artifactId;
 		this.version = version;
@@ -56,9 +59,9 @@ public class BasicArtifact implements Artifact {
 			return false;
 		}
 		Artifact otherDep = (Artifact) other;
-		return (otherDep.getArtifactId().equals(getArtifactId())
-			&& otherDep.getGroupId().equals(getGroupId()) 
-			&& otherDep.getVersion().equals(getVersion()));
+		return (getArtifactId().equals(otherDep.getArtifactId())
+			&& getGroupId().equals(otherDep.getGroupId()) 
+			&& getVersion().equals(otherDep.getVersion()));
 	}
 
 	/**
