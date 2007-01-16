@@ -377,7 +377,7 @@ public class LocalRepository implements Repository {
 				return true;
 			} catch (ArtifactStateException e) {
 				logger.error("Artifact state for " + artifact
-					+ "should have been Jar", e);
+					+ " should have been Jar", e);
 			}
 		}
 		return false;

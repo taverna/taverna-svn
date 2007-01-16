@@ -108,7 +108,7 @@ public class WorkflowInputPanelFactory implements UIComponentFactorySPI {
 		}
 		logger.debug("Compiled workflow " + instance);
 		ModelMap.getInstance().setModel(instance.getID(), instance);					
-		logger.debug("Running the workflow " + instance);
+		logger.info("Running the workflow " + instance);
 		try {
 			instance.run();
 		} catch (InvalidInputException e) {

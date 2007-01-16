@@ -210,7 +210,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 			while (resources.hasMoreElements()) {
 				URL resourceURL = resources.nextElement();
 				if (resourceURL == null || seenURLs.contains(resourceURL)) {
-					logger.info("No SPI file for "+classname);
+					logger.debug("No SPI file for "+classname);
 					continue;
 				}
 				// Found an appropriate SPI file

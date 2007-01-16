@@ -33,6 +33,8 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	private LocalRepository repository;
 
+	private Set<String> unknownClasses = new HashSet<String>();
+	
 	public Repository getRepository() {
 		return repository;
 	}
@@ -137,7 +139,17 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		return findClass(name, new HashSet<LocalArtifactClassLoader>());						
+		try {
+			return findClass(name, new HashSet<LocalArtifactClassLoader>());						
+		} catch (ClassNotFoundException ex) {
+			if (! unknownClasses.contains(name)) {
+				// Only log it once
+				unknownClasses.add(name);
+				logger.info("Could not find " + name + " in " + this.name);
+				logger.debug(ex);
+			}
+			throw ex;
+		}
 	}
 
 	protected Class<?> findClass(String name,
