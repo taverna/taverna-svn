@@ -96,6 +96,8 @@ import org.jdom.input.SAXBuilder;
 @SuppressWarnings("serial")
 public class Workbench extends JFrame {
 
+	private final AboutBox aboutBox = new AboutBox();
+	
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
 	private static Workbench instance = null;
@@ -330,11 +332,19 @@ public class Workbench extends JFrame {
 		// the below compile even on non-OS X platforms, where the listener
 		// will never be called.
 		OSXApplication.setListener(new OSXAdapter() {
+			@Override
 			public boolean handleQuit() {
 				exit();
 				// exit() do System.exit(0) if OK to quit, otherwise return
 				// here, so we will say false, we don't want to quit
 				return false; 
+			}
+			@Override
+			public boolean handleAbout() {
+				aboutBox.setLocationRelativeTo(Workbench.this);
+				aboutBox.setVisible(true);
+				// Bug: OS X still shows it's own box
+				return true;
 			}
 		});
 
@@ -657,8 +667,6 @@ public class Workbench extends JFrame {
 	 */
 	public class WorkbenchMenuBar extends JMenuBar {
 		
-		private final AboutBox aboutBox=new AboutBox();
-
 		private JMenu file = makeFile();
 		
 		private JMenu tools = makeTools();
@@ -680,7 +688,11 @@ public class Workbench extends JFrame {
 			add(workflows);
 			add(advanced);
 			add(Box.createHorizontalGlue());
-			add(help);
+			if (! System.getProperty("os.name").equalsIgnoreCase("Mac OS X")) {
+				// In OS X, the OSXAdapter shows the About for us,
+				// all other OSes, add a Help->About
+				add(help);
+			}
 		}
 
 		/**
@@ -795,6 +807,8 @@ public class Workbench extends JFrame {
 		}
 		
 		private JMenu makeHelp() {
+			// NOTE: If you add more items to the Help menu than "About",
+			// move the is-osx-check here 
 			JMenu result = new JMenu("Help");
 			JMenuItem about = new JMenuItem(new AbstractAction("About") {
 				public void actionPerformed(ActionEvent e) {
@@ -925,7 +939,7 @@ public class Workbench extends JFrame {
 			boolean found = false;						
 			
 			for (WorkflowInstanceSetViewSPI view : views) {
-				logger.info("Notified " + view);
+				logger.debug("Notified " + view);
 				view.newWorkflowInstance(modelName, (WorkflowInstance) model);
 				if (!found && view instanceof Component) {
 					// only jump to the first view found
