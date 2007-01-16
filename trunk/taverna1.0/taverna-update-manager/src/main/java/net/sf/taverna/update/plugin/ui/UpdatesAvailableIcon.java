@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 12:23:09 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
+ *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -75,7 +75,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		super();		
 		setVisible(false);		
 		startCheckThread();
-		PluginManager.getInstance().addPluginManagerListener(this);
+		PluginManager.addPluginManagerListener(this);
 	}
 	
 	
@@ -94,6 +94,12 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		if (isVisible()) checkForUpdates();
 	}
 	
+	
+	
+	public void pluginIncompatible(PluginManagerEvent event) {		
+		logger.warn("Plugin found to be incompatible with the current version of Taverna: "+event.getPlugin());
+	}
+
 	private void startCheckThread() {
 		Thread checkThread = new Thread("Check for updates thread") {
 
@@ -129,7 +135,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		
 		if (pluginUpdateAvailable()) {
 			logger.info("Plugin update available");
-			setToolTipText("A plugin update is available");
+			setToolTipText("Plugin updates are available");
 			setVisible(true);
 			setIcon(TavernaIcons.updateIcon);
 			if (!Arrays.asList(getMouseListeners()).contains(updatePluginMouseAdaptor)) {
@@ -139,8 +145,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		}
 		
 		setToolTipText("");
-		setVisible(false);
-				
+		setVisible(false);				
 	}
 	
 	private boolean pluginUpdateAvailable() {			

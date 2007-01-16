@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerListener.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:06 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
+ *               by   $Author: sowen70 $
  * Created on 30 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.event;
@@ -63,5 +63,13 @@ public interface PluginManagerListener extends EventListener {
 	 * @param event
 	 */
 	public void pluginChanged(PluginManagerEvent event);
+	
+	/**
+	 * Invoked when a plugin is found to be incompatible with the current running
+	 * version of Taverna.
+	 * 
+	 * @param event
+	 */
+	public void pluginIncompatible(PluginManagerEvent event);
 
 }

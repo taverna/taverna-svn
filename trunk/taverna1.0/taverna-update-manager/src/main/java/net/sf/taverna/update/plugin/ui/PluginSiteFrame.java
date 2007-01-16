@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSiteFrame.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 15:20:52 $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
  *               by   $Author: sowen70 $
  * Created on 29 Nov 2006
  *****************************************************************/
@@ -45,7 +45,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -102,9 +101,15 @@ public class PluginSiteFrame extends JDialog {
 	 * This is the default constructor
 	 */
 	public PluginSiteFrame(Frame owner) {
-		super(owner,true);
-		this.pluginManager = PluginManager.getInstance();
-		this.pluginSites = this.pluginManager.getPluginSites();		
+		super(owner,true);				
+		initialize();
+	}
+	
+	/**
+	 * This is the default constructor
+	 */
+	public PluginSiteFrame(JDialog owner) {
+		super(owner,true);			
 		initialize();
 	}
 
@@ -114,6 +119,8 @@ public class PluginSiteFrame extends JDialog {
 	 * @return void
 	 */
 	private void initialize() {
+		this.pluginManager = PluginManager.getInstance();
+		this.pluginSites = this.pluginManager.getPluginSites();
 		this.setSize(600, 450);
 		this.setContentPane(getJContentPane());
 		this.setTitle("Plugin Sites");

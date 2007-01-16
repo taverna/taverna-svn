@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-05 17:02:06 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -60,12 +60,24 @@ public class Plugin implements Comparable<Plugin> {
 	private String version;
 
 	private String provider;
+	
+	private List<String> tavernaVersions = new ArrayList<String>();
 
 	private boolean enabled;
 
 	private List<String> repositories = new ArrayList<String>();
 
-	private Profile profile = new Profile(true);
+	private Profile profile = new Profile(true);	
+	
+	public boolean compatible = true;		
+
+	public boolean isCompatible() {
+		return compatible;
+	}
+
+	public void setCompatible(boolean compatible) {
+		this.compatible = compatible;
+	}
 
 	/**
 	 * Constructs an instance of Plugin.
@@ -141,6 +153,10 @@ public class Plugin implements Comparable<Plugin> {
 					enabled ? PluginEvent.ENABLED : PluginEvent.DISABLED));
 		}
 	}
+	
+	public List<String> getTavernaVersions() {
+		return this.tavernaVersions;
+	}
 
 	/**
 	 * Returns the repositories.
@@ -210,6 +226,19 @@ public class Plugin implements Comparable<Plugin> {
 		plugin.identifier = pluginElement.getChildTextTrim("identifier");
 		plugin.version = pluginElement.getChildTextTrim("version");
 		plugin.provider = pluginElement.getChildTextTrim("provider");
+		
+		if (pluginElement.getChild("taverna")==null) {
+			//if missing, then assume only compatible with 1.5.0 since this tag didn't exist in that version
+			plugin.tavernaVersions.add("1.5.0");
+		}
+		else {
+			List<Element> tavernaElements = pluginElement.getChild("taverna").getChildren("version");
+			for (Element tavernaVersion : tavernaElements) {
+				plugin.tavernaVersions.add(tavernaVersion.getTextTrim());
+			}
+		}
+		
+		
 		plugin.enabled = Boolean.valueOf(pluginElement
 				.getChildTextTrim("enabled"));
 		List<Element> repositoryElements = pluginElement.getChild(
@@ -225,7 +254,7 @@ public class Plugin implements Comparable<Plugin> {
 					.getAttributeValue("artifactId"), artifact
 					.getAttributeValue("version"));
 			plugin.profile.addArtifact(basicArtifact);
-		}
+		}		
 		return plugin;
 	}
 
@@ -243,6 +272,7 @@ public class Plugin implements Comparable<Plugin> {
 				.addContent(getIdentifier()));
 		pluginElement.addContent(new Element("version")
 				.addContent(getVersion()));
+		
 		pluginElement.addContent(new Element("provider")
 				.addContent(getProvider()));
 		pluginElement.addContent(new Element("enabled").addContent(Boolean
@@ -263,6 +293,15 @@ public class Plugin implements Comparable<Plugin> {
 			profileElement.addContent(artifactElement);
 		}
 		pluginElement.addContent(profileElement);
+		
+		Element tavernaversions=new Element("taverna");
+		for (String v : this.tavernaVersions) {
+			Element tavernaVersion=new Element("version");
+			tavernaVersion.setText(v);
+			tavernaversions.addContent(tavernaVersion);
+		}
+		pluginElement.addContent(tavernaversions);
+		
 		return pluginElement;
 	}
 
@@ -320,6 +359,10 @@ public class Plugin implements Comparable<Plugin> {
 			return -1;
 		}
 		return version.compareTo(plugin.version);
+	}
+	
+	public String toString() {
+		return this.identifier+":"+this.name+" v."+this.version;
 	}
 
 }

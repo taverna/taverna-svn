@@ -53,7 +53,10 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.update.ProfileHandler;
+import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
+import net.sf.taverna.update.plugin.event.PluginManagerEvent;
+import net.sf.taverna.update.plugin.event.PluginManagerListener;
 import net.sf.taverna.update.plugin.ui.PluginManagerFrame;
 import net.sf.taverna.update.plugin.ui.UpdatesAvailableIcon;
 import net.sf.taverna.utils.MyGridConfiguration;
@@ -167,10 +170,9 @@ public class Workbench extends JFrame {
 				repository.addRemoteRepository(remoteRepository);
 			}
 		}		
-		
-		PluginManager.setRepository(repository);
-		PluginManager.getInstance();
+				
 		TavernaSPIRegistry.setRepository(repository);
+		initialisePluginManager();
 
 		basePane
 				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });
@@ -182,6 +184,38 @@ public class Workbench extends JFrame {
 		// Force a new workflow instance to start off with
 		createWorkflow();
 				
+	}
+
+	private void initialisePluginManager() {
+		final List<Plugin> incompatiblePlugins = new ArrayList<Plugin>();
+		PluginManager.setRepository(repository);		
+		PluginManagerListener listener = new PluginManagerListener() {
+
+			public void pluginAdded(PluginManagerEvent event) {}
+
+			public void pluginChanged(PluginManagerEvent event) {}
+
+			public void pluginIncompatible(PluginManagerEvent event) {
+				logger.warn("Incompatible plugin found, which has been disabled:"+event.getPlugin());
+				incompatiblePlugins.add(event.getPlugin());
+			}
+
+			public void pluginRemoved(PluginManagerEvent event) {}
+			
+		};
+		
+		PluginManager.addPluginManagerListener(listener);
+		PluginManager.getInstance();
+		PluginManager.removePluginManagerListener(listener);
+		
+		if (incompatiblePlugins.size()>0) {
+			JOptionPane.showMessageDialog(this, "Some plugins were found to be incompatible with the currently version of Taverna and have been disabled.\nThese will need updating before they can be re-enabled.");
+			if (PluginManager.getInstance().checkForUpdates()) { //only display if updates are available. Calling this also ensure the update status of plugins is correct when displaying.
+				PluginManagerFrame pluginManagerUI = new PluginManagerFrame(Workbench.this,PluginManager.getInstance());
+				pluginManagerUI.setLocationRelativeTo(Workbench.this);
+				pluginManagerUI.setVisible(true);
+			}
+		}		
 	}
 
 	private void setLookAndFeel() {
@@ -700,7 +734,7 @@ public class Workbench extends JFrame {
 			menu.add(new JMenuItem(new AbstractAction("Plugin Manager") {
 				
 				public void actionPerformed(ActionEvent e) {					
-					PluginManagerFrame pluginManagerUI = new PluginManagerFrame(PluginManager.getInstance());
+					PluginManagerFrame pluginManagerUI = new PluginManagerFrame(Workbench.this,PluginManager.getInstance());
 					pluginManagerUI.setLocationRelativeTo(Workbench.this);
 					pluginManagerUI.setVisible(true);
 				}

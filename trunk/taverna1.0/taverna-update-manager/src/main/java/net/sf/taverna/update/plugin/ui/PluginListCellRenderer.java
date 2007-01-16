@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginListCellRenderer.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-11 15:33:31 $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -67,6 +67,7 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 	private JLabel version = null;
 
 	private JLabel status = null;
+	private JLabel status2 = null;
 
 	/**
 	 * This is the default constructor
@@ -89,10 +90,22 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 		gridBagConstraints15.anchor = GridBagConstraints.NORTHWEST;
 		gridBagConstraints15.insets = new Insets(3, 3, 3, 3);
 		gridBagConstraints15.gridy = 2;
+		GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
+		gridBagConstraints16.gridx = 0;
+		gridBagConstraints16.gridwidth = 2;
+		gridBagConstraints16.anchor = GridBagConstraints.NORTHWEST;
+		gridBagConstraints16.insets = new Insets(3, 3, 3, 3);
+		gridBagConstraints16.gridy = 3;
 		status = new JLabel();
 		status.setFont(getFont().deriveFont(Font.BOLD));
 		status.setForeground(Color.BLUE);
 		status.setText("status");
+		status2 = new JLabel();
+		status2.setFont(getFont().deriveFont(Font.BOLD));
+		status2.setForeground(Color.RED);
+		status2.setText("status");
+		
+		
 		GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
 		gridBagConstraints7.gridx = 1;
 		gridBagConstraints7.insets = new Insets(3, 8, 3, 3);
@@ -140,6 +153,7 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 		this.add(description, gridBagConstraints1);
 		this.add(version, gridBagConstraints7);
 		this.add(status, gridBagConstraints15);
+		this.add(status2,gridBagConstraints16);
 	}
 
 	public Component getListCellRendererComponent(JList list, Object value,
@@ -157,12 +171,17 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 			name.setText(plugin.getName());
 			version.setText(plugin.getVersion());
 			description.setText("<html>"+plugin.getDescription());
+						
+			status2.setText("");
+			if (!plugin.isCompatible()) {
+				status2.setText("This plugin is incompatible.");				
+			}
+			
+			status.setText("");
 			if (pluginManager.isUpdateAvailable(plugin)) {
-				status.setText("An update is available for this plugin");
+				status.setText("An update is available for this plugin");				
 			} else if (!plugin.isEnabled()) {
-				status.setText("This plugin is disabled");
-			} else {
-				status.setText("");
+				status.setText("This plugin is disabled");				
 			}
 		}
 		return this;

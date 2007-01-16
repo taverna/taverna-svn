@@ -25,20 +25,21 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:41:46 $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
  *               by   $Author: sowen70 $
  * Created on 27 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
 
+import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,7 +56,7 @@ import net.sf.taverna.update.plugin.PluginManager;
  * 
  * @author David Withers
  */
-public class PluginManagerFrame extends JFrame {
+public class PluginManagerFrame extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 
@@ -76,12 +77,30 @@ public class PluginManagerFrame extends JFrame {
 	private JButton uninstallButton = null;
 
 	private JButton findUpdatesButton = null;
-
+	
 	/**
 	 * This is the default constructor
 	 */
 	public PluginManagerFrame(PluginManager pluginManager) {
 		super();
+		this.pluginManager = pluginManager;
+		initialize();
+	}
+
+	/**
+	 * This is the default constructor
+	 */
+	public PluginManagerFrame(Frame parent,PluginManager pluginManager) {
+		super(parent);
+		this.pluginManager = pluginManager;
+		initialize();
+	}
+	
+	/**
+	 * This is the default constructor
+	 */
+	public PluginManagerFrame(JDialog parent,PluginManager pluginManager) {
+		super(parent);
 		this.pluginManager = pluginManager;
 		initialize();
 	}
@@ -94,7 +113,7 @@ public class PluginManagerFrame extends JFrame {
 	private void initialize() {
 		this.setSize(613, 444);
 		this.setContentPane(getJContentPane());
-		this.setTitle("Plugin Manager");
+		this.setTitle("Plugin Manager");			
 	}
 
 	/**
@@ -205,29 +224,14 @@ public class PluginManagerFrame extends JFrame {
 
 				public void valueChanged(ListSelectionEvent e) {
 					if (!e.getValueIsAdjusting()) {
-						Object selectedObject = jList.getSelectedValue();
-						if (selectedObject instanceof Plugin) {
-							Plugin plugin = (Plugin) selectedObject;
-							if (plugin.isEnabled()) {
-								getEnableButton().setText("Disable");
-								getEnableButton().setActionCommand("disable");
-							} else {
-								getEnableButton().setText("Enable");
-								getEnableButton().setActionCommand("enable");
-							}
-							getEnableButton().setEnabled(true);
-							if (pluginManager.isUpdateAvailable(plugin)) {
-								getUpdateButton().setEnabled(true);
-							} else {
-								getUpdateButton().setEnabled(false);
-							}
-						}
+						respondToSelectedPlugin();
 					}
 				}
 
 			});
 			if (jList.getComponentCount() > 0) {
 				jList.setSelectedIndex(0);
+				respondToSelectedPlugin();
 			}
 		}
 		return jList;
@@ -345,6 +349,33 @@ public class PluginManagerFrame extends JFrame {
 			});
 		}
 		return findUpdatesButton;
+	}
+
+	private void respondToSelectedPlugin() {
+		Object selectedObject = jList.getSelectedValue();
+		if (selectedObject!=null && selectedObject instanceof Plugin) {
+			Plugin plugin = (Plugin) selectedObject;
+			if (plugin.isEnabled()) {
+				getEnableButton().setText("Disable");
+				getEnableButton().setActionCommand("disable");
+			} else {
+				getEnableButton().setText("Enable");
+				getEnableButton().setActionCommand("enable");
+			}
+			
+			//only allow plugin to be enabled if it is compatible.
+			if (plugin.isCompatible()) {								
+				getEnableButton().setEnabled(true);
+			}
+			else {
+				getEnableButton().setEnabled(false);
+			}
+			if (pluginManager.isUpdateAvailable(plugin)) {
+				getUpdateButton().setEnabled(true);
+			} else {
+				getUpdateButton().setEnabled(false);
+			}
+		}
 	}
 
 } // @jve:decl-index=0:visual-constraint="33,9"

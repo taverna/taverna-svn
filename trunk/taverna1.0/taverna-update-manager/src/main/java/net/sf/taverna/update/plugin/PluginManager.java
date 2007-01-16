@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.18 $
+ * Revision           $Revision: 1.19 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 14:00:27 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-16 13:55:11 $
+ *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -84,7 +84,7 @@ public class PluginManager implements PluginListener {
 
 	private static Repository repository;
 
-	private List<PluginManagerListener> pluginManagerListeners = new ArrayList<PluginManagerListener>();
+	private static List<PluginManagerListener> pluginManagerListeners = new ArrayList<PluginManagerListener>();
 
 	private File pluginsDir;
 
@@ -100,7 +100,7 @@ public class PluginManager implements PluginListener {
 	 * Constructs an instance of PluginManager.
 	 * 
 	 */
-	private PluginManager() {
+	private PluginManager() {		
 		pluginsDir = MyGridConfiguration.getUserDir("plugins");
 		if (pluginsDir != null) {
 			initializePluginSites();
@@ -138,8 +138,8 @@ public class PluginManager implements PluginListener {
 	}
 
 	public void addPlugin(Plugin plugin) {
-		if (!plugins.contains(plugin)) {
-			plugins.add(plugin);
+		if (!plugins.contains(plugin)) {			
+			plugins.add(plugin);			
 			sortPlugins();
 			for (String repositoryURL : plugin.getRepositories()) {
 				try {
@@ -152,6 +152,14 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
 			}
+			
+			if (!checkPluginCompatibility(plugin)) {
+				if (plugin.isEnabled()) {
+					plugin.setEnabled(false);
+					firePluginIncompatibleEvent(new PluginManagerEvent(this,plugin,plugins.indexOf(plugin)));
+				}
+			}
+			
 			repository.update();
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
@@ -161,6 +169,24 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
+	private boolean checkPluginCompatibility(Plugin plugin) {
+		String profileVersion=profile.getVersion();
+		for (String v : plugin.getTavernaVersions()) {
+			if (profileVersion.startsWith(v)) {
+				plugin.setCompatible(true);
+				return true;
+			}
+		}
+		plugin.setCompatible(false);
+		return false;
+	}
+	
+	private void firePluginIncompatibleEvent(PluginManagerEvent event) {
+		for (PluginManagerListener listener : this.pluginManagerListeners) {
+			listener.pluginIncompatible(event);
+		}
+	}
+	
 	public void removePlugin(Plugin plugin) {
 		if (updatedPlugins.contains(plugin)) updatedPlugins.remove(plugin);
 		
@@ -311,12 +337,12 @@ public class PluginManager implements PluginListener {
 		}
 		List<Element> pluginList =
 			pluginsDocument.getRootElement().getChildren("plugin");
-		for (Element plugin : pluginList) {
+		for (Element pluginElement : pluginList) {
 			URI pluginUri;
 			try {
-				pluginUri = pluginSiteURI.resolve(plugin.getTextTrim());
+				pluginUri = pluginSiteURI.resolve(pluginElement.getTextTrim());
 			} catch (IllegalArgumentException ex) {
-				logger.warn("Invalid plugin URI " + plugin.getTextTrim());
+				logger.warn("Invalid plugin URI " + pluginElement.getTextTrim());
 				continue;
 			}
 			
@@ -344,8 +370,14 @@ public class PluginManager implements PluginListener {
 				logger.warn("Could not read plugin " + pluginUri, e);
 				continue;
 			}
-			plugins.add(Plugin.fromXml(pluginDocument.getRootElement()));
-			logger.debug("Added plugin from " + pluginUri);
+			Plugin plugin = Plugin.fromXml(pluginDocument.getRootElement());
+			if (checkPluginCompatibility(plugin)) {
+				plugins.add(plugin);
+				logger.debug("Added plugin from " + pluginUri);
+			}
+			else {
+				logger.debug("Plugin deemed incompatible so not added to available plugin list");
+			}
 		}
 		logger.info("Added plugins from " + pluginSiteURI);
 		return plugins;
@@ -454,7 +486,7 @@ public class PluginManager implements PluginListener {
 		return updatedPlugins.size() > 0;
 	}
 
-	public void addPluginManagerListener(PluginManagerListener listener) {
+	public static void addPluginManagerListener(PluginManagerListener listener) {		
 		synchronized (pluginManagerListeners) {
 			if (!pluginManagerListeners.contains(listener)) {
 				pluginManagerListeners.add(listener);
@@ -462,7 +494,7 @@ public class PluginManager implements PluginListener {
 		}
 	}	
 
-	public void removePluginManagerListener(PluginManagerListener listener) {
+	public static void removePluginManagerListener(PluginManagerListener listener) {
 		synchronized (pluginManagerListeners) {
 			pluginManagerListeners.remove(listener);
 		}
