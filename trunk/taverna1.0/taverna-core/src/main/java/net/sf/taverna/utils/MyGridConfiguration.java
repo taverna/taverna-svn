@@ -14,12 +14,16 @@ import java.util.Properties;
 
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
+import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -47,13 +51,19 @@ public class MyGridConfiguration {
     // Cache of properties for getProperty() and getProperties()  (clear with flushProperties() )
 	static Properties properties = null;
 
-	// Property filename/resource name
-	private final static String PROPERTIES = "mygrid.properties";
+	// mygrid property filename/resource name
+	public final static String MYGRID_PROPERTIES = "mygrid.properties";
 
-
+	// log4j property filename/resource name
+	public final static String LOG4J_PROPERTIES = "log4j.properties";
+	
+	public final static String MINIMAL_LOG4J_PROPERTIES = "minimal-" + LOG4J_PROPERTIES;
+	
 	// Written to the top of the generated mygrid.properties.dist
-	private final static String HEADER = "# Default values are shown double-commented like this:\n"
-		+ "# ## mygrid.example = value\n" + "\n";
+	private final static String HEADER = 
+		  "# Default values are shown for your convenience like this:\n"
+		+ "# ## mygrid.example = value\n" 
+		+ "# To change such values, remove ## and edit the value\n\n" ;
 
 	// For each resource, this header will be added to mygrid.properties.dist
 	private final static String SECTION_HEADER = "# Default properties from ";
@@ -85,30 +95,44 @@ public class MyGridConfiguration {
 	 */
 	
 	private static void prepareLog4J() {
-		// Avoid warnings before we have loaded log4j settings
-		System.setProperty("log4j.defaultInitOverride", "true");
-		// Must be set before we call anything else
+		// Avoid warnings before we have loaded log4j settings. Load 
+		// bundled minimal log4j properties first.
+		URL bundledProps = MyGridConfiguration.class.getClassLoader().getResource(
+			MINIMAL_LOG4J_PROPERTIES);
+		if (bundledProps == null) {
+			System.err.println("Could not find " + MINIMAL_LOG4J_PROPERTIES);
+			System.setProperty("log4j.defaultInitOverride", "true");
+		} else {
+			PropertyConfigurator.configure(bundledProps);
+		}
 		logger = Logger.getLogger(MyGridConfiguration.class);
-		for (URL url : findResources("log4j.properties")) {
-			PropertyConfigurator.configure(url);
-		}
-		// FIXME: Use loadUserProperties() and the gang to write
-		// out log4j.properties.dist.
+		// We can now start using other methods of MyGridConfiguration
 		
-		File log4j = new File(getUserDir(CONFIGURATION_DIRECTORY), "log4j.properties");
-		if (log4j.canRead()) {
-			// FIXME: Can't do log4j.rootLogger=WARN, CONSOLE as 
-			// configure(String path) treats each call separately. 
-			// Should use configure(Properties p) instead.
-			PropertyConfigurator.configure(log4j.toString());
-		}
+		// So that ${taverna.logdir} will work
+		System.setProperty("taverna.logdir", 
+			getUserDir("logs").getAbsolutePath());
+		
+		
+		// Will read our bundled log4j.properties, write out new defaults to 
+		// .taverna/conf/log4j.properties, and read those as well
+		Properties log4jProperties = getProperties(LOG4J_PROPERTIES);
+		LogManager.resetConfiguration();
+		PropertyConfigurator.configure(log4jProperties);
+				
 		// Let Raven use log4j through our little proxy, unless log4j has been loaded
 		// through Raven (that would introduce funny recursive problems)
 		// (It seems to be OK to load Log4jLog through Raven)
 		if (! (Logger.class.getClassLoader() instanceof LocalArtifactClassLoader)) {
 			Log.setImplementation(new Log4jLog());
 		} else {
-			logger.warn("Cannot enable log4j logging for Raven, try adding log4j to profile with system='true'");
+			logger.warn("Cannot enable log4j logging for Raven, try " +
+					"adding log4j to profile with system='true'");
+		}
+		Profile profile = ProfileFactory.getInstance().getProfile();
+		logger.info("Starting " + profile.getName() + " v" + profile.getVersion());
+		logger.debug("Containing artifacts:");
+		for (Artifact a : profile.getArtifacts()) {
+			logger.debug(a);
 		}
 	}
 
@@ -166,9 +190,7 @@ public class MyGridConfiguration {
 		if (properties != null) {
 			return properties;
 		}
-		properties = loadDefaultProperties();
-		writeDefaultProperties();
-		properties.putAll(loadUserProperties());
+		properties = getProperties(MYGRID_PROPERTIES);
 		// FIXME: Support overriding through system properties (but for this to
 		// work we can no longer do loadMygridProperties() - as that would mean 
 		// we will get the old values even after flushProperties(). 
@@ -178,6 +200,24 @@ public class MyGridConfiguration {
 		// for key,value in SystemProperties.entrySet():
 		//    if key in properties:  // Known mygrid key
 		//           properties.put(key, value);
+		return properties;
+	}
+	
+	/**
+	 * Get all properties for the given resource name. The properties will be the combination 
+	 * of the default properties distributed with Taverna and the user specified
+	 * properties.
+	 * <p>
+	 * <strong>Note:</strong> This method will force creation/updating of local
+	 * user properties files if needed.
+	 * 
+	 * @param name Resource name, like "mygrid.properties"
+	 * @return properties specified by name
+	 */
+	public static Properties getProperties(String name) {
+		Properties properties = loadDefaultProperties(name);
+		writeDefaultProperties(name);
+		properties.putAll(loadUserProperties(name));
 		return properties;
 	}
 
@@ -275,10 +315,10 @@ public class MyGridConfiguration {
 	 * 
 	 * @return Properties as loaded from user directory
 	 */
-	static Properties loadUserProperties() {
+	static Properties loadUserProperties(String resourceName) {
 		Properties userProps = new Properties();
 		File confDir = getUserDir(CONFIGURATION_DIRECTORY);
-		File propertyFile = new File(confDir, PROPERTIES);
+		File propertyFile = new File(confDir, resourceName);
 		if (!propertyFile.isFile()) {
 			return userProps;
 		}
@@ -300,10 +340,10 @@ public class MyGridConfiguration {
 	 * 
 	 * @return Default properties as provided by classloader
 	 */
-	static Properties loadDefaultProperties() {
+	static Properties loadDefaultProperties(String resourceName) {
 		Properties properties = new Properties();
 		// Concatinate all resources
-		for (URL resource : findResources(PROPERTIES)) {
+		for (URL resource : findResources(resourceName)) {
 			logger.info("Loading resources from " + resource);
 			try {
 				properties.load(resource.openStream());
@@ -316,23 +356,24 @@ public class MyGridConfiguration {
 		}
 		return properties;
 	}
-
+	
 	/**
-	 * Write default properties to user directory.
-	 * .taverna/conf/mygrid.properties.dist will always be 
-	 * created/overwritten, which will be a dump of the 
-	 * properties as in getDefaultProperties().  However, all
-	 * active lines will be commented out with ##.
+	 * Write default properties to user directory. .taverna/conf/NAME.dist will
+	 * always be created/overwritten, which will be a dump of the properties as
+	 * in getDefaultProperties(name). However, all active lines will be
+	 * commented out with ##.
 	 * <p>
-	 * In addition, .taverna/conf/mygrid.properties will be 
-	 * written if it does not exist, or if the existing copy
-	 * matched the old .dist version.
+	 * In addition, .taverna/conf/NAME will be written if it does not exist, or
+	 * if the existing copy matched the old .dist version.
 	 * 
+	 * @param resourceName
+	 *            Name of resource which properties are to be written, like
+	 *            "mygrid.properties"
 	 */
-	static void writeDefaultProperties() {
+	static void writeDefaultProperties(String resourceName) {
 		File confDir = getUserDir(CONFIGURATION_DIRECTORY);
-		File propDist = new File(confDir, PROPERTIES + ".dist");
-		File prop = new File(confDir, PROPERTIES);
+		File propDist = new File(confDir, resourceName + ".dist");
+		File prop = new File(confDir, resourceName);
 		boolean replaceProp; 
 		try {
 			// If it does not exist, or is the same as the .dist, we can replace it
@@ -347,11 +388,11 @@ public class MyGridConfiguration {
 			prop.delete();
 		}
 
-		// Write out mygrid.properties.dist
+		// Write out blah.properties.dist
 		try {
 			Writer propWriter = new BufferedWriter(new FileWriter(propDist));
 			propWriter.write(HEADER);
-			for (URL resource : findResources(PROPERTIES)) {
+			for (URL resource : findResources(resourceName)) {
 				writeDefaults(resource, propWriter);
 			}
 			propWriter.close();
@@ -364,7 +405,7 @@ public class MyGridConfiguration {
 			return;
 		}
 
-		// Upgrade mygrid.properties unless there exists a user-modified version
+		// Upgrade blah.properties unless there exists a user-modified version
 		if (replaceProp && propDist.isFile()) {
 			try {
 				FileUtils.copyFile(propDist, prop);
