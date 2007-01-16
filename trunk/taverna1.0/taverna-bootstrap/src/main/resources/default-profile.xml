@@ -42,6 +42,11 @@
 
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
+
+    <!-- Jaxen XML support -->
+	<artifact groupId="jaxen" artifactId="jaxen" version="1.0-FCS" system="true"/>
+	<artifact groupId="saxpath" artifactId="saxpath" version="1.0-FCS" system="true"/>
+	<artifact groupId="dom4j" artifactId="dom4j" version="1.6" system="true"/>
 			
 	<!-- system log4j for Raven's Log4jLog proxy -->
 	<artifact groupId="log4j" artifactId="log4j" version="1.2.12" system="true"/>
