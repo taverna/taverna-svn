@@ -172,7 +172,7 @@ public class QueryHelper {
 			FetaAdminPortType port;
 			port = new FetaLocator().getfetaAdmin(locationURL);
 			((FetaAdminPortTypeBindingStub) port).setTimeout(2400000);
-			System.out.println("Got the service binding");
+//			System.out.println("Got the service binding");
 			String response = null;
 			// ((FetaAdminPortTypeBindingStub)port).refresh();
 			refreshEngine(locationURL);
@@ -211,7 +211,7 @@ public class QueryHelper {
 			FetaPortType port;
 			port = new FetaLocator().getfeta(locationURL);
 			((FetaPortTypeBindingStub) port).setTimeout(2400000);
-			System.out.println("Got the service binding");
+//			System.out.println("Got the service binding");
 
 			String resultRDF = ((FetaPortTypeBindingStub) port)
 					.freeFormQuery(freeFormQueryString);
@@ -242,13 +242,13 @@ public class QueryHelper {
 
 			port = new FetaLocator().getfeta(this.fetaEngineLocation);
 			((FetaPortTypeBindingStub) port).setTimeout(2400000);
-			System.out.println("Got the service binding");
+//			System.out.println("Got the service binding");
 			FetaSearchResponseType response = null;
 			response = (FetaSearchResponseType) ((FetaPortTypeBindingStub) port)
 					.inquire(reqs);
 
 			if (response.getOperationURI() != null) {
-				System.out.println("New URI: " + response.getOperationURI()[0]);
+//				System.out.println("New URI: " + response.getOperationURI()[0]);
 
 			}
 

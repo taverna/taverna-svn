@@ -297,9 +297,9 @@ DropTargetListener {
 				
 				if (e.isDataFlavorSupported(f)) {
 					FactorySpecFragment fsf = (FactorySpecFragment)t.getTransferData(f);
-					System.out.println("Found factory spec fragment");
+//					System.out.println("Found factory spec fragment");
 					
-					System.out.println(xo.outputString(fsf.getElement()));
+//					System.out.println(xo.outputString(fsf.getElement()));
 					String validName = model.getValidProcessorName(fsf.getFactoryNodeName());
 					attemptToRecognize = true;
 					
@@ -317,9 +317,9 @@ DropTargetListener {
 						processorElement.removeAttribute(att);
 					}
 					
-					System.out.println("Found processor spec fragment");
+//					System.out.println("Found processor spec fragment");
 					
-					System.out.println(xo.outputString(processorElement));
+//					System.out.println(xo.outputString(processorElement));
 					
 					droppedProcessorElement  = 	processorElement;
 				}//else-if

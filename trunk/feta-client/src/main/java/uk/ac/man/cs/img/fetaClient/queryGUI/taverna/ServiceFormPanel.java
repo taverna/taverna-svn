@@ -40,8 +40,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
+import javax.swing.text.JTextComponent;
 
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
@@ -75,7 +77,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel descriptionLabel;
 
-	private JEditorPane descriptionField;
+	private JTextComponent descriptionField;
 
 	private JLabel nameLabel;
 
@@ -90,7 +92,7 @@ public class ServiceFormPanel extends JTabbedPane {
 
 	private JLabel operDescriptionLabel;
 
-	private JEditorPane operDescriptionField;
+	private JTextComponent operDescriptionField;
 
 	private JLabel operationMethodLabel;
 
@@ -419,7 +421,7 @@ public class ServiceFormPanel extends JTabbedPane {
 			JLabel label =
 				new JLabel("<html><strong>" + parameter + "</strong></html>");
 			panel.add(label, c);
-			JEditorPane description = multiLabel(parameters.get(parameter));
+			JTextComponent description = multiLabel(parameters.get(parameter));
 			panel.add(description, c);
 		}
 
@@ -439,13 +441,16 @@ public class ServiceFormPanel extends JTabbedPane {
 	 *            label to display
 	 * @return JEditorPane instance showing label text
 	 */
-	public static JEditorPane multiLabel(String text) {
-		JEditorPane editor = new JEditorPane("text/plain", text);
+	public static JTextComponent multiLabel(String text) {
+//		JEditorPane editor = new JEditorPane("text/plain", text);
+		JTextArea editor = new JTextArea(text);
 		editor.setEditable(false);
 		editor.setOpaque(false);
+		editor.setLineWrap(true);
+		editor.setWrapStyleWord(true);
 		//editor.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// Avoid stealing all width
-		//editor.setMinimumSize(new Dimension(25, 10));
+		editor.setMinimumSize(new Dimension(25, 10));
 		return editor;
 	}
 

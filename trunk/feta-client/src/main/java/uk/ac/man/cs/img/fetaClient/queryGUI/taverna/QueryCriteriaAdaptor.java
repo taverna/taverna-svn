@@ -160,8 +160,8 @@ public class QueryCriteriaAdaptor implements ChangeListener, CaretListener,
 	 * @see javax.swing.event.CaretListener#caretUpdate(javax.swing.event.CaretEvent)
 	 */
 	public void caretUpdate(CaretEvent arg0) {
-		System.out.println("adaptor- Caret Update"
-				+ arg0.getSource().getClass());
+//		System.out.println("adaptor- Caret Update"
+//				+ arg0.getSource().getClass());
 		updateModel();
 
 	}
@@ -170,7 +170,7 @@ public class QueryCriteriaAdaptor implements ChangeListener, CaretListener,
 	 * 
 	 */
 	private void updateModel() {
-		System.out.println("adaptor- Debug in  Update Model");
+//		System.out.println("adaptor- Debug in  Update Model");
 		model.removeChangeListener(this);
 		model.setCriteriaType(view.getCriteriaType());
 		model.setValue((Object) view.getCriteriaValue());
