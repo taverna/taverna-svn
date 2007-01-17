@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.19 $
+ * Revision           $Revision: 1.20 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-16 13:55:11 $
+ * Last modified on   $Date: 2007-01-17 15:37:16 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -169,15 +169,46 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
+	/**
+	 * Returns a list of all currently installed and enabled plugins that would
+	 * become incompatible with the version String supplied. If teh omitDisbaledPlugins flag
+	 * is set to true, then only enabled plugins will be returned
+	 * 
+	 * @param version - the version String to check plugins against
+	 * @param omitDisabledPlugins - flag to indicate that disabled plugins should be ignored
+	 * @return
+	 */
+	public List<Plugin> getIncompatiblePlugins(String version, boolean omitDisabledPlugins) {
+		List<Plugin> result = new ArrayList<Plugin>();
+		for (Plugin plugin : getPlugins()) {
+			if (omitDisabledPlugins && !plugin.isEnabled()) continue;
+			if (!checkPluginCompatibility(plugin,version)) {
+				result.add(plugin);
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Checks a plugins compatiblilty with the current version and returns whether it is compatible.
+	 * Sets the plugins compatibility flag accordingly
+	 * @param plugin
+	 * @return
+	 */
 	private boolean checkPluginCompatibility(Plugin plugin) {
 		String profileVersion=profile.getVersion();
+		boolean result;
+		result=checkPluginCompatibility(plugin,profileVersion);
+		plugin.setCompatible(result);
+		return result;
+	}
+	
+	private boolean checkPluginCompatibility(Plugin plugin, String version) {
 		for (String v : plugin.getTavernaVersions()) {
-			if (profileVersion.startsWith(v)) {
-				plugin.setCompatible(true);
+			if (version.startsWith(v)) {				
 				return true;
 			}
 		}
-		plugin.setCompatible(false);
 		return false;
 	}
 	

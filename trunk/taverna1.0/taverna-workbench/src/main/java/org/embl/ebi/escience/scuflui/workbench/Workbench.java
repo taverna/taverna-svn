@@ -52,13 +52,14 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
-import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
 import net.sf.taverna.update.plugin.event.PluginManagerListener;
 import net.sf.taverna.update.plugin.ui.PluginManagerFrame;
 import net.sf.taverna.update.plugin.ui.UpdatesAvailableIcon;
+import net.sf.taverna.update.profile.ProfileHandler;
+import net.sf.taverna.update.profile.ui.ProfileVersionListFrame;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
 import net.sf.taverna.zaria.ZRavenComponent;
@@ -150,10 +151,10 @@ public class Workbench extends JFrame {
 	@SuppressWarnings("deprecation")
 	private Workbench() {
 		super();		
-		
-		MyGridConfiguration.loadMygridProperties();
-		setLookAndFeel();
-		setIconImage(TavernaIcons.tavernaIcon.getImage());
+				
+		MyGridConfiguration.loadMygridProperties();		
+		setLookAndFeel();		
+		setIconImage(TavernaIcons.tavernaIcon.getImage());		
 
 		// Create and configure the ZBasePane
 		basePane = new WorkbenchZBasePane();
@@ -171,21 +172,27 @@ public class Workbench extends JFrame {
 			for (URL remoteRepository : Bootstrap.remoteRepositories) {
 				repository.addRemoteRepository(remoteRepository);
 			}
-		}		
-				
+		}				
 		TavernaSPIRegistry.setRepository(repository);
-		initialisePluginManager();
+		logger.info("About to initialise plugin manager");		
+		initialisePluginManager();		
+		logger.info("Plugin manager initialised");
 
 		basePane
 				.setKnownSPINames(new String[] { "org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI" });
-		setUI();
-		setModelChangeListeners();
-		setModelSetListener();
-		setVisible(true);
+		
+		logger.info("About to setup the UI");
+		setUI();		
+		logger.info("UI setup complete");
+		
+		logger.info("About to set listeners");
+		setModelChangeListeners();		
+		setModelSetListener();	
+		logger.info("Setting listeners complete");
+		setVisible(true);		
 				
 		// Force a new workflow instance to start off with
-		createWorkflow();
-				
+		createWorkflow();						
 	}
 
 	private void initialisePluginManager() {
@@ -691,8 +698,8 @@ public class Workbench extends JFrame {
 			if (! System.getProperty("os.name").equalsIgnoreCase("Mac OS X")) {
 				// In OS X, the OSXAdapter shows the About for us,
 				// all other OSes, add a Help->About
-				add(help);
-			}
+			add(help);
+		}
 		}
 
 		/**
@@ -764,14 +771,27 @@ public class Workbench extends JFrame {
 					}
 				});
 			}
-			
+						
 			menu.add(perspectives.getDisplayPerspectivesMenu());			
 			return menu;
+		}
+		
+		private JMenuItem makeSwitchProfileMenu() {
+			JMenuItem revertMenu = new JMenuItem();
+			revertMenu.setAction(new AbstractAction("Switch to another core Taverna version") {
+				public void actionPerformed(ActionEvent e) {					
+					ProfileVersionListFrame frame=new ProfileVersionListFrame(Workbench.this);
+					frame.setLocationRelativeTo(Workbench.this);
+					frame.setVisible(true);
+				}				
+			});
+			return revertMenu;
 		}
 
 		private JMenu makeAdvanced() {
 			JMenu advancedMenu = new JMenu("Advanced");
-			advancedMenu.add(perspectives.getEditPerspectivesMenu());			
+			advancedMenu.add(perspectives.getEditPerspectivesMenu());
+			//advancedMenu.add(makeSwitchProfileMenu());
 			return advancedMenu;
 		}
 

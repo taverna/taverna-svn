@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileHandler.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-15 10:14:44 $
+ * Last modified on   $Date: 2007-01-17 15:37:16 $
  *               by   $Author: sowen70 $
  * Created on 25 Oct 2006
  *****************************************************************/
-package net.sf.taverna.update;
+package net.sf.taverna.update.profile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -55,13 +55,38 @@ public class ProfileHandler {
 	private Profile remoteProfile;
 	private Profile localProfile;
 	private boolean newVersionAvailable=false;
+	private String localProfileName=null;
 	
+	/**
+	 * Constructs the handler, using the removeProfileLocation to generate the name of the local profile name
+	 * which becomes the same name with the path stripped away.
+	 * @param remoteProfileLocation
+	 * @throws Exception
+	 */
 	public ProfileHandler(String remoteProfileLocation) throws Exception {
+		this(remoteProfileLocation,null);
+	}
+	
+	/**
+	 * Constructs the handler, in this case using the provided local profile name to determine
+	 * the name that the profile will be written to locally. This overides deriving this name from the remote
+	 * profile name for cases that the two may differ.
+	 * 
+	 * @param remoteProfileLocation the location of the remote profile
+	 * @param localProfileName the name of the file that the profile should be written to locally 
+	 * 		  (note, just the name and note the full path - the path is automatically adjusted to place this file in Tavernas conf directory).
+	 */
+	public ProfileHandler(String remoteProfileLocation, String localProfileName) throws Exception {
+		this.localProfileName = localProfileName;
 		this.remoteProfileURL=new URL(remoteProfileLocation);
 		this.remoteProfile=new Profile(remoteProfileURL.toURI().toURL().openStream(),true);
 		init();
 	}
 		
+	/**
+	 * Indicates whether a newer version of the profile is available
+	 * @return true if a newer version is available.
+	 */
 	public boolean isNewVersionAvailable() {
 		return newVersionAvailable;
 	}
@@ -76,15 +101,27 @@ public class ProfileHandler {
 		}
 	}
 	
+	/**
+	 * Use the localProfileName and the taverna conf path, or derive the profileName from the remoteProfileUrl is localProfileName is null 
+	 * @return File representing the location of the local profile.
+	 */
 	private File getLocalProfileFile() {
-		String profileStr=remoteProfileURL.getPath();
-		File tavernaHome=new File(System.getProperty("taverna.home"));
-		File userdir=new File(tavernaHome,"conf");
-		String fileStr=profileStr;
-		if (fileStr.contains("/")) {
-			int i=fileStr.lastIndexOf("/");
-			fileStr=fileStr.substring(i+1);
+		
+		String fileStr;
+		if (localProfileName==null) {
+			String profileStr=remoteProfileURL.getPath();
+			fileStr=profileStr;
+			if (fileStr.contains("/")) {
+				int i=fileStr.lastIndexOf("/");
+				fileStr=fileStr.substring(i+1);
+			}
 		}
+		else {
+			fileStr=localProfileName;
+		}
+		
+		File tavernaHome=new File(System.getProperty("taverna.home"));
+		File userdir=new File(tavernaHome,"conf");		
 		File profileFile=new File(userdir,fileStr);
 		return profileFile;
 	}	
@@ -106,8 +143,7 @@ public class ProfileHandler {
 			}
 		}
 	}
-	
-	
+		
 	private void storeLocalProfile(File localProfileFile) throws Exception {
 		try {
 			remoteProfile.write(new FileOutputStream(localProfileFile));

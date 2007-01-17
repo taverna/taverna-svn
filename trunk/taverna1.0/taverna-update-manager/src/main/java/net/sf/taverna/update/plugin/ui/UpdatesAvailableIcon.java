@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-16 13:55:11 $
+ * Last modified on   $Date: 2007-01-17 15:37:16 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -42,10 +42,10 @@ import java.util.Arrays;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.update.ProfileHandler;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
 import net.sf.taverna.update.plugin.event.PluginManagerListener;
+import net.sf.taverna.update.profile.ProfileHandler;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;

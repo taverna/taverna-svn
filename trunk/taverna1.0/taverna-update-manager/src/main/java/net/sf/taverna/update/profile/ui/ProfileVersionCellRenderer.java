@@ -24,15 +24,16 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: PluginListCellRenderer.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: ProfileVersionCellRenderer.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-01-17 15:37:16 $
  *               by   $Author: sowen70 $
- * Created on 28 Nov 2006
+ * Created on 16 Jan 2007
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.update.profile.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -47,74 +48,27 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.AbstractBorder;
 
-import net.sf.taverna.update.plugin.Plugin;
-import net.sf.taverna.update.plugin.PluginManager;
+import net.sf.taverna.update.profile.ProfileVersion;
 
-/**
- * 
- * @author David Withers
- */
-public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
+public class ProfileVersionCellRenderer extends JPanel implements
+		ListCellRenderer {
 
-	private static final long serialVersionUID = 1L;
-
-	private PluginManager pluginManager;
-
-	private JLabel name = null;
-
-	private JLabel description = null;
-
-	private JLabel version = null;
-
-	private JLabel status = null;
-	private JLabel status2 = null;
-
-	/**
-	 * This is the default constructor
-	 */
-	public PluginListCellRenderer(PluginManager pluginManager) {
+	private JLabel name;
+	private JLabel version;
+	private JLabel description;
+	
+	public ProfileVersionCellRenderer() {
 		super();
-		this.pluginManager = pluginManager;
-		initialize();
+		initialise();
 	}
-
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-		GridBagConstraints gridBagStatus = new GridBagConstraints();
-		gridBagStatus.gridx = 0;
-		gridBagStatus.gridwidth = 2;
-		gridBagStatus.anchor = GridBagConstraints.NORTHWEST;
-		gridBagStatus.insets = new Insets(3, 3, 3, 3);
-		gridBagStatus.gridy = 2;
-		
-		GridBagConstraints gridBagStatus2 = new GridBagConstraints();
-		gridBagStatus2.gridx = 0;
-		gridBagStatus2.gridwidth = 2;
-		gridBagStatus2.anchor = GridBagConstraints.NORTHWEST;
-		gridBagStatus2.insets = new Insets(3, 3, 3, 3);
-		gridBagStatus2.gridy = 3;
-		
-		status = new JLabel();
-		status.setFont(getFont().deriveFont(Font.BOLD));
-		status.setForeground(Color.BLUE);
-		status.setText("status");
-		status2 = new JLabel();
-		status2.setFont(getFont().deriveFont(Font.BOLD));
-		status2.setForeground(Color.RED);
-		status2.setText("status");
-		
-		
+	
+	private void initialise() {		
 		GridBagConstraints gridBagVersion = new GridBagConstraints();
 		gridBagVersion.gridx = 1;
 		gridBagVersion.insets = new Insets(3, 8, 3, 3);
 		gridBagVersion.anchor = GridBagConstraints.NORTHWEST;
 		gridBagVersion.fill = GridBagConstraints.NONE;
-		gridBagVersion.gridy = 0;
-		
+		gridBagVersion.gridy = 0;		
 		version = new JLabel();
 		version.setFont(getFont().deriveFont(Font.PLAIN));
 		version.setText("version");
@@ -157,11 +111,9 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 		});
 		this.add(name, gridBagName);
 		this.add(description, gridBagDescription);
-		this.add(version, gridBagVersion);
-		this.add(status, gridBagStatus);
-		this.add(status2,gridBagStatus2);
+		this.add(version, gridBagVersion);		
 	}
-
+	
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		if (isSelected) {
@@ -171,25 +123,16 @@ public class PluginListCellRenderer extends JPanel implements ListCellRenderer {
 			setBackground(list.getBackground());
 			setForeground(list.getForeground());
 		}
-
-		if (value instanceof Plugin) {
-			Plugin plugin = (Plugin) value;
-			name.setText(plugin.getName());
-			version.setText(plugin.getVersion());
-			description.setText("<html>"+plugin.getDescription());
-						
-			status2.setText("");
-			if (!plugin.isCompatible()) {
-				status2.setText("This plugin is incompatible.");				
-			}
-			
-			status.setText("");
-			if (pluginManager.isUpdateAvailable(plugin)) {
-				status.setText("An update is available for this plugin");				
-			} else if (!plugin.isEnabled()) {
-				status.setText("This plugin is disabled");				
-			}
+		
+		if (value instanceof ProfileVersion) {
+			ProfileVersion version = (ProfileVersion) value;
+			this.name.setText(version.getName());
+			this.version.setText(version.getVersion());
+			this.description.setText("<html>"+version.getDescription());
 		}
+		
+		
 		return this;
 	}
-} // @jve:decl-index=0:visual-constraint="10,10"
+
+}
