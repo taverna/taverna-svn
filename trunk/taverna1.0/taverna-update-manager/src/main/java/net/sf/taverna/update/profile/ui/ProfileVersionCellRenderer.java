@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersionCellRenderer.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-01-17 16:41:24 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -48,6 +48,9 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.AbstractBorder;
 
+import net.sf.taverna.raven.spi.Profile;
+import net.sf.taverna.raven.spi.ProfileFactory;
+import net.sf.taverna.update.profile.ProfileHandler;
 import net.sf.taverna.update.profile.ProfileVersion;
 
 public class ProfileVersionCellRenderer extends JPanel implements
@@ -56,13 +59,21 @@ public class ProfileVersionCellRenderer extends JPanel implements
 	private JLabel name;
 	private JLabel version;
 	private JLabel description;
+	private String currentVersion;
 	
 	public ProfileVersionCellRenderer() {
 		super();
 		initialise();
 	}
 	
-	private void initialise() {		
+	private void initialise() {
+		Profile currentProfile = ProfileFactory.getInstance().getProfile();
+		if (currentProfile!=null) {
+			currentVersion=currentProfile.getVersion();
+		}
+		else {
+			currentVersion="UNKNOWN";
+		}
 		GridBagConstraints gridBagVersion = new GridBagConstraints();
 		gridBagVersion.gridx = 1;
 		gridBagVersion.insets = new Insets(3, 8, 3, 3);
@@ -70,7 +81,7 @@ public class ProfileVersionCellRenderer extends JPanel implements
 		gridBagVersion.fill = GridBagConstraints.NONE;
 		gridBagVersion.gridy = 0;		
 		version = new JLabel();
-		version.setFont(getFont().deriveFont(Font.PLAIN));
+		version.setFont(getFont().deriveFont(Font.BOLD));
 		version.setText("version");
 		
 		GridBagConstraints gridBagDescription = new GridBagConstraints();
@@ -95,7 +106,7 @@ public class ProfileVersionCellRenderer extends JPanel implements
 		gridBagName.gridwidth = 1;
 		gridBagName.gridy = 0;
 		name = new JLabel();
-		name.setFont(getFont().deriveFont(Font.BOLD));
+		name.setFont(getFont().deriveFont(Font.PLAIN));
 		name.setText("plugin name");
 		
 		this.setSize(297, 97);
@@ -125,8 +136,16 @@ public class ProfileVersionCellRenderer extends JPanel implements
 		}
 		
 		if (value instanceof ProfileVersion) {
-			ProfileVersion version = (ProfileVersion) value;
+			ProfileVersion version = (ProfileVersion) value;			
 			this.name.setText(version.getName());
+			if (version.getVersion().equalsIgnoreCase(currentVersion)) {
+				this.name.setText(version.getName()+" (Current)");
+				this.name.setForeground(Color.BLUE);
+			}
+			else {
+				this.name.setText(version.getName());
+				this.name.setForeground(Color.BLACK);
+			}
 			this.version.setText(version.getVersion());
 			this.description.setText("<html>"+version.getDescription());
 		}

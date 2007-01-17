@@ -791,7 +791,7 @@ public class Workbench extends JFrame {
 		private JMenu makeAdvanced() {
 			JMenu advancedMenu = new JMenu("Advanced");
 			advancedMenu.add(perspectives.getEditPerspectivesMenu());
-			//advancedMenu.add(makeSwitchProfileMenu());
+			advancedMenu.add(makeSwitchProfileMenu());
 			return advancedMenu;
 		}
 

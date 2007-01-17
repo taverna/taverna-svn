@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersionListFrame.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-01-17 16:41:24 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -35,6 +35,7 @@ package net.sf.taverna.update.profile.ui;
 
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -65,6 +66,7 @@ public class ProfileVersionListFrame extends JDialog {
 	private JScrollPane scrollPane = null;
 	private JList list = null;
 	private JButton switchButton = null;
+	private JButton closeButton = null;
 	private String currentVersion = null;
 	
 	private static Logger logger = Logger
@@ -91,19 +93,25 @@ public class ProfileVersionListFrame extends JDialog {
 			scrollPaneConstraints.insets = new Insets(5, 5, 5, 5);
 			scrollPaneConstraints.gridx = 0;
 			scrollPaneConstraints.gridheight = 3;
-			scrollPaneConstraints.anchor=GridBagConstraints.NORTHWEST;
 			
-			GridBagConstraints switchButtonConstraints = new GridBagConstraints();
-			switchButtonConstraints.fill=GridBagConstraints.BOTH;
+			GridBagConstraints switchButtonConstraints = new GridBagConstraints();			
 			switchButtonConstraints.gridy=0;			
 			switchButtonConstraints.gridx=2;
-			switchButtonConstraints.insets = new Insets(5,0,0,5);
-			switchButtonConstraints.anchor=GridBagConstraints.NORTHEAST;
+			switchButtonConstraints.insets = new Insets(5,5,5,5);
 			switchButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
 			
+			GridBagConstraints closeButtonConstraints = new GridBagConstraints();
+			closeButtonConstraints.gridy=2;			
+			closeButtonConstraints.gridx=2;
+			closeButtonConstraints.insets = new Insets(5,5,5,5);
+			closeButtonConstraints.anchor=GridBagConstraints.SOUTH;
+			closeButtonConstraints.fill=GridBagConstraints.HORIZONTAL;
+			
 			contentPane = new JPanel();
+			contentPane.setLayout(new GridBagLayout());
 			contentPane.add(getScrollPane(),scrollPaneConstraints);
 			contentPane.add(getSwitchButton(),switchButtonConstraints);
+			contentPane.add(getCloseButton(),closeButtonConstraints);
 			
 		}
 		return contentPane;
@@ -172,6 +180,20 @@ public class ProfileVersionListFrame extends JDialog {
 		return switchButton;
 	}
 	
+	protected JButton getCloseButton() {
+		if (closeButton==null) {
+			closeButton=new JButton("Close");
+			closeButton.setEnabled(true);
+			closeButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {					
+					setVisible(false);
+					dispose();
+				}				
+			});			
+		}
+		return closeButton;		
+	}
+	
 	protected void performSwitch(ProfileVersion newVersion) {
 		List<Plugin> incompatiblePlugins = PluginManager.getInstance().getIncompatiblePlugins(newVersion.getVersion(),true);
 		if (incompatiblePlugins.size()>0) {
@@ -220,9 +242,5 @@ public class ProfileVersionListFrame extends JDialog {
 		setContentPane(getJContentPane());
 		setTitle("Taverna versions");		
 	}	
-	
-	public static void main(String[] args) {
-		new ProfileVersionListFrame().setVisible(true);
-	}
 	
 }
