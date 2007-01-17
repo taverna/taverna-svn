@@ -8,11 +8,11 @@
   <version>1.5.1-SNAPSHOT</version>
   <issueManagement>
     <system>jira</system>
-    <url>http://www.mygrid.org.uk/jira</url>
+    <url>http://www.mygrid.org.uk/jira/</url>
   </issueManagement>
   <ciManagement>
     <system>continuum</system>
-    <url>http://www.mygrid.org.uk/continuum</url>
+    <url>http://www.mygrid.org.uk/continuum/</url>
     <notifiers>
       <notifier>
         <type>mail</type>
@@ -47,24 +47,48 @@
       <email>david.withers@manchester.ac.uk</email>
       <url>http://www.cs.man.ac.uk/~witherd5/</url>
       <organization>University of Manchester</organization>
-      <organizationUrl>http://www.manchester.ac.uk</organizationUrl>
+      <organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
       <roles>
         <role>Developer</role>
       </roles>
       <timezone>0</timezone>
     </developer>
   	<developer>
-  	      <id>sowen</id>
-  	      <name>Stuart Owen</name>
-  	      <email>stuart.owen@manchester.ac.uk</email>
-  	      <url>http://www.cs.man.ac.uk/~sowen/</url>
-  	      <organization>University of Manchester</organization>
-  	      <organizationUrl>http://www.manchester.ac.uk</organizationUrl>
-  	      <roles>
-  	        <role>Developer</role>
-  	      </roles>
-  	      <timezone>0</timezone>
+  	  <id>sowen</id>
+  	  <name>Stuart Owen</name>
+  	  <email>stuart.owen@manchester.ac.uk</email>
+  	  <url>http://www.cs.man.ac.uk/~sowen/</url>
+  	  <organization>University of Manchester</organization>
+      <organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+  	  <roles>
+  	    <role>Developer</role>
+  	  </roles>
+  	  <timezone>0</timezone>
   	</developer>
+  	<developer>
+  	  <id>stain</id>
+  	  <name>Stian Soiland</name>
+      <email>ssoiland@cs.man.ac.uk</email>
+  	  <url>http://www.cs.man.ac.uk/~ssoiland/</url>
+  	  <organization>University of Manchester</organization>
+      <organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+  	  <roles>
+  	    <role>Developer</role>
+  	  </roles>
+  	  <timezone>0</timezone>
+  	</developer>
+    <developer>
+      <id>mereden</id>
+      <name>Tom Oinn</name>
+      <email>tmo@ebi.ac.uk</email>
+      <url>http://www.ebi.ac.uk/~tmo/</url>
+      <organization>European Bioinformatics Institute</organization>
+      <organizationUrl>http://www.ebi.ac.uk</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
   </developers>
   <licenses>
     <license>
@@ -79,7 +103,7 @@
   </scm>
   <organization>
     <name>University of Manchester</name>
-    <url>http://www.manchester.ac.uk</url>
+    <url>http://www.manchester.ac.uk/</url>
   </organization>
   <build>
     <extensions>
