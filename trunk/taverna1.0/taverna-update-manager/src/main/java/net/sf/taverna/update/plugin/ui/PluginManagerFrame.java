@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-16 13:55:11 $
+ * Last modified on   $Date: 2007-01-17 16:43:41 $
  *               by   $Author: sowen70 $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -37,6 +37,8 @@ import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -77,6 +79,8 @@ public class PluginManagerFrame extends JDialog {
 	private JButton uninstallButton = null;
 
 	private JButton findUpdatesButton = null;
+	
+	private JButton closeButton = null;
 	
 	/**
 	 * This is the default constructor
@@ -161,6 +165,20 @@ public class PluginManagerFrame extends JDialog {
 			updateButtonConstraints.insets = new Insets(5, 0, 0, 5);
 			updateButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
 			updateButtonConstraints.gridy = 2;
+			
+			GridBagConstraints closeButtonConstraints = new GridBagConstraints();
+			closeButtonConstraints.gridx = 2;
+			closeButtonConstraints.insets = new Insets(5, 5, 5, 5);
+			closeButtonConstraints.gridy = 3;
+			closeButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+//			closeButtonConstraints.gridx = 2;
+//			closeButtonConstraints.gridwidth = 1;
+//			closeButtonConstraints.anchor = GridBagConstraints.SOUTHEAST;
+//			closeButtonConstraints.insets = new Insets(5, 0, 0, 5);
+//			closeButtonConstraints.fill = GridBagConstraints.HORIZONTAL;
+//			closeButtonConstraints.gridy = 3;
+			
+			
 			jContentPane = new JPanel();
 			jContentPane.setLayout(new GridBagLayout());
 			jContentPane.add(getUpdateButton(), updateButtonConstraints);
@@ -169,6 +187,7 @@ public class PluginManagerFrame extends JDialog {
 			jContentPane.add(getEnableButton(), enableButtonConstraints);
 			jContentPane.add(getUninstallButton(), uninstallButtonConstraints);
 			jContentPane.add(getFindUpdatesButton(), findUpdatesConstraints);
+			jContentPane.add(getCloseButton(),closeButtonConstraints);
 		}
 		return jContentPane;
 	}
@@ -299,6 +318,20 @@ public class PluginManagerFrame extends JDialog {
 		return uninstallButton;
 	}
 
+	private JButton getCloseButton() {
+		if (closeButton==null) {
+			closeButton = new JButton("Close");
+			closeButton.setEnabled(true);
+			closeButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					setVisible(false);
+					dispose();
+				}				
+			});
+		}
+		return closeButton;
+	} 
+	
 	/**
 	 * This method initializes jButton1
 	 * 
