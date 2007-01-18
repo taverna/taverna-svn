@@ -45,6 +45,7 @@ import net.sf.taverna.osx.OSXAdapter;
 import net.sf.taverna.osx.OSXApplication;
 import net.sf.taverna.perspectives.CustomPerspective;
 import net.sf.taverna.perspectives.PerspectiveSPI;
+import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
@@ -151,7 +152,10 @@ public class Workbench extends JFrame {
 	@SuppressWarnings("deprecation")
 	private Workbench() {
 		super();		
-				
+		
+		SplashScreen splash=SplashScreen.getSplashScreen();
+		if (splash!=null) splash.setText("Starting the Workbench.");
+		
 		MyGridConfiguration.loadMygridProperties();		
 		setLookAndFeel();		
 		setIconImage(TavernaIcons.tavernaIcon.getImage());		
@@ -189,6 +193,13 @@ public class Workbench extends JFrame {
 		setModelChangeListeners();		
 		setModelSetListener();	
 		logger.info("Setting listeners complete");
+		
+		logger.info("Closing splashscreen");
+				
+		if (splash!=null) {
+			SplashScreen.getSplashScreen().setClosable();
+			SplashScreen.getSplashScreen().requestClose();
+		}
 		setVisible(true);		
 				
 		// Force a new workflow instance to start off with

@@ -203,18 +203,19 @@ public class Bootstrap {
 	}	
 
 	public static void invokeWorkbench(String[] args, Class workbenchClass)
-			throws IllegalAccessException, NoSuchMethodException {
+			throws IllegalAccessException, NoSuchMethodException {		
 		try {
 			try {
-				// Try m(String[] args) first
-				Method workbenchStatic = workbenchClass.getMethod(properties
-						.getProperty("raven.target.method"), String[].class);
-				workbenchStatic.invoke(null, new Object[] { args });
-			} catch (NoSuchMethodException ex) {
-				// Then with m()
+				// Try m() first
 				Method workbenchStatic = workbenchClass.getMethod(properties
 						.getProperty("raven.target.method"));
-				workbenchStatic.invoke(null);
+				workbenchStatic.invoke(null);				
+			} catch (NoSuchMethodException ex) {
+				ex.printStackTrace();
+				// Then with m(String[] args)
+				Method workbenchStatic = workbenchClass.getMethod(properties
+						.getProperty("raven.target.method"), String[].class);
+				workbenchStatic.invoke(null, new Object[] { args });				
 			}
 		} catch (InvocationTargetException e) {
 			String methodName = workbenchClass
