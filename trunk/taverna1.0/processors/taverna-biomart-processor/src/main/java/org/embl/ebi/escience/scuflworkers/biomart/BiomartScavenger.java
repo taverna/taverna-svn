@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-09 18:57:59 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-18 14:46:52 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -83,6 +83,7 @@ public class BiomartScavenger extends URLBasedScavenger {
 		try {
 			MartService martService = MartService
 					.getMartService(registryLocation.toString());
+			martService.setRequestId("taverna");
 			MartRegistry registry = martService.getRegistry();
 			MartURLLocation[] martURLLocations = registry.getMartURLLocations();
 			for (int i = 0; i < martURLLocations.length; i++) {
