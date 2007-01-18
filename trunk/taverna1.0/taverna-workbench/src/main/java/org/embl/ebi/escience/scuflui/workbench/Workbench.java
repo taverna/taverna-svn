@@ -197,8 +197,8 @@ public class Workbench extends JFrame {
 		logger.info("Closing splashscreen");
 				
 		if (splash!=null) {
-			SplashScreen.getSplashScreen().setClosable();
-			SplashScreen.getSplashScreen().requestClose();
+			splash.setClosable();
+			splash.requestClose();
 		}
 		setVisible(true);		
 				
