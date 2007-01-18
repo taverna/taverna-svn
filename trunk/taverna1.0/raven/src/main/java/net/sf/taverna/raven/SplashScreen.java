@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-18 12:05:35 $
+ * Last modified on   $Date: 2007-01-18 12:11:30 $
  *               by   $Author: sowen70 $
  * Created on 18 Jan 2007
  *****************************************************************/
@@ -58,6 +58,13 @@ public class SplashScreen extends JWindow {
 	private static Log logger = Log.getLogger(SplashScreen.class);
 	
 	private static SplashScreen splashscreen;
+	
+	public static SplashScreen getSplashScreen(URL imageUrl,int timeout) {
+		if (splashscreen==null) {
+			splashscreen = new SplashScreen(imageUrl,timeout);
+		}
+		return splashscreen;
+	}
 	
 	public static SplashScreen getSplashScreen(URL imageUrl) {
 		if (splashscreen==null) {
