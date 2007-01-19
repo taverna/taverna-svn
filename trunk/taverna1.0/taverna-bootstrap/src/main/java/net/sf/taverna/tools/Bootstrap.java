@@ -208,11 +208,9 @@ public class Bootstrap {
 			throws IllegalAccessException, NoSuchMethodException {		
 		try {
 			try {
-				// Try m() first
-				System.out.println("Looking for workbench starter method");
+				// Try m() first				
 				Method workbenchStatic = workbenchClass.getMethod(properties
-						.getProperty("raven.target.method"));				
-				System.out.println("Done");				
+						.getProperty("raven.target.method"));										
 				workbenchStatic.invoke(null);				
 			} catch (NoSuchMethodException ex) {
 				ex.printStackTrace();

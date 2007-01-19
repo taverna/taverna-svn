@@ -16,6 +16,7 @@ import java.util.Set;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.Repository;
+import sun.misc.CompoundEnumeration;
 
 /**
  * Implementation of ClassLoader that uses the artifact metadata to manage any
@@ -138,9 +139,9 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	}
 
 	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException {
+	protected Class<?> findClass(String name) throws ClassNotFoundException {		
 		try {
-			return findClass(name, new HashSet<LocalArtifactClassLoader>());						
+			return findClass(name, new HashSet<ClassLoader>());						
 		} catch (ClassNotFoundException ex) {
 			if (! unknownClasses.contains(name)) {
 				// Only log it once
@@ -153,7 +154,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	}
 
 	protected Class<?> findClass(String name,
-			Set<LocalArtifactClassLoader> seenLoaders)
+			Set<ClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		Class result = null;
 		logger.debug("Searching for '" + name + "' - " + this);
@@ -192,7 +193,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	}
 
 	private Class<?> loadClass(String name,
-			Set<LocalArtifactClassLoader> seenLoaders)
+			Set<ClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		Class result = null;
 		if (classMap.get(name) != null) {
@@ -203,14 +204,18 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 				result = loadedClass;
 			} else {
 				ClassLoader parent = getParent();
-				try {
-					if (parent instanceof LocalArtifactClassLoader) {
-						result = ((LocalArtifactClassLoader) parent).loadClass(
-								name, seenLoaders);
-					} else if (parent != null) {
-						result = parent.loadClass(name);
-					}
-				} catch (ClassNotFoundException cnfe) {
+				if (parent!=null && !seenLoaders.contains(parent)) {
+					try {
+						if (parent instanceof LocalArtifactClassLoader) {
+							result = ((LocalArtifactClassLoader) parent).loadClass(
+									name, seenLoaders);
+						} else if (parent != null) {
+							if (validClassLoaderForName(parent,name))
+								result = parent.loadClass(name);
+						}
+					} catch (ClassNotFoundException cnfe) {
+						seenLoaders.add(parent);
+					}					
 				}
 				if (result == null)
 					result = findClass(name, seenLoaders);
@@ -221,4 +226,55 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		}
 		return result;
 	}
+	
+	/**
+	 * Temporary patch to prevent a URLClassLoader used to bootstrap Taverna being used
+	 * to find non-raven classes. Otherwise, every URL is searched for the class - that it will
+	 * never find, which is very time consuming, especially as more mirror sites are included.
+	 * 
+	 * This is for those using the 1.5.0 bootstrap. The 1.5.1 bootstrap first tries to load Raven
+	 * with local URLS only, then trying remote if that fails. This means that with this bootstrap
+	 * this problem only now exists on the first run.
+	 * @param parent
+	 * @param name
+	 * @return
+	 */
+	private boolean validClassLoaderForName(ClassLoader parent, String name) {
+		if (!isParentRavenClassLoader()) return true;		
+		
+		//the only class of the package net.sf.taverna.raven that isn't part of the raven artifact is Log4jLog - which would shouldn't be found here anyway
+		if (name.startsWith("net.sf.taverna.raven") && !name.endsWith("Log4jLog")) return true;
+		
+		return false;
+	}
+
+	@Override
+	/**
+	 * Overridden to prevent it checking parents if the parent is the URLClassLoader
+	 * used to bootstrap raven. Otherwise it has to download and search each raven.jar
+	 * for every repository, including mirror repositories, defined.
+	 */
+	public Enumeration<URL> getResources(String name) throws IOException {
+		if (getParent()==null || !isParentRavenClassLoader()) {
+			return super.getResources(name);			
+		}
+		Enumeration[] tmp = new Enumeration[2];
+		tmp[1]=findResources(name);
+		
+		return new CompoundEnumeration<URL>(tmp);
+	}
+	
+	private boolean isParentRavenClassLoader() {
+		boolean result = false;
+		if (getParent()!=null && getParent() instanceof URLClassLoader) {
+			URLClassLoader loader = (URLClassLoader)getParent();
+			for (URL url : loader.getURLs()) {
+				if (url.toExternalForm().contains("uk/org/mygrid/taverna/raven/raven/")) result=true;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	
 }

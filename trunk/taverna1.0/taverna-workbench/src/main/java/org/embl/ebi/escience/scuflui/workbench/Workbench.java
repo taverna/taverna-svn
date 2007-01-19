@@ -178,6 +178,13 @@ public class Workbench extends JFrame {
 			}
 		}				
 		TavernaSPIRegistry.setRepository(repository);
+		
+		//splashscreen needs to close here, as initialising the plugin manager can raise a message box
+		if (splash!=null) {
+			splash.setClosable();
+			splash.requestClose();
+		}
+		
 		logger.info("About to initialise plugin manager");		
 		initialisePluginManager();		
 		logger.info("Plugin manager initialised");
@@ -195,11 +202,7 @@ public class Workbench extends JFrame {
 		logger.info("Setting listeners complete");
 		
 		logger.info("Closing splashscreen");
-				
-		if (splash!=null) {
-			splash.setClosable();
-			splash.requestClose();
-		}
+						
 		setVisible(true);		
 				
 		// Force a new workflow instance to start off with

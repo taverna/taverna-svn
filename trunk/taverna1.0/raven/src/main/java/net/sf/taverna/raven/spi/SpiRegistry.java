@@ -185,7 +185,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		
 //		 Do filtering
 		for (ArtifactFilter af : filters) {			
-			workingSet = af.filter(workingSet); 												
+			workingSet = af.filter(workingSet); 											
 		}
 		for (Artifact a : workingSet) {			
 			ClassLoader cl;
@@ -208,7 +208,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 				continue;
 			}
 			while (resources.hasMoreElements()) {
-				URL resourceURL = resources.nextElement();
+				URL resourceURL = resources.nextElement();				
 				if (resourceURL == null || seenURLs.contains(resourceURL)) {
 					logger.debug("No SPI file for "+classname);
 					continue;
