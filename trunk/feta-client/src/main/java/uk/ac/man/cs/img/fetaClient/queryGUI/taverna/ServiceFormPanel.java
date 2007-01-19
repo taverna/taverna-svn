@@ -27,18 +27,15 @@
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JScrollBar;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -447,7 +444,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		editor.setEditable(false);
 		editor.setOpaque(false);
 		editor.setLineWrap(true);
-		editor.setWrapStyleWord(true);
+		//editor.setWrapStyleWord(true);
 		//editor.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// Avoid stealing all width
 		editor.setMinimumSize(new Dimension(25, 10));
