@@ -24,21 +24,22 @@
  ***/
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+
+import net.sf.taverna.utils.MyGridConfiguration;
 
 public class FetaClientProperties {
 
+	private final static String FETACLIENT_PROPERTIES = "fetaClient.properties";
+	
 	private static Properties fetaProperties;
 
-	public static Properties getProperties() throws IOException {
+	public static synchronized Properties getProperties() throws IOException {
 		if (fetaProperties == null) {
-			fetaProperties = new Properties();
-			InputStream stream = FetaClientProperties.class.getClassLoader()
-					.getResourceAsStream("fetaClient.properties");
-			fetaProperties.load(stream);
+			fetaProperties =
+				MyGridConfiguration.getProperties(FETACLIENT_PROPERTIES, 
+					FetaClientProperties.class.getClassLoader());
 		}
 		return fetaProperties;
 	}
@@ -56,35 +57,4 @@ public class FetaClientProperties {
 			throws IOException {
 		return getProperties().getProperty(propertyName);
 	}
-
-	public static String getPropertiesLocation() {
-		String directory;
-
-		if (System.getProperty("taverna.home") != null) {
-			System.out.println("using taverna.home"); // inserted by jreport
-			directory = System.getProperty("taverna.home");
-		} else {
-			System.out.println("using user.dir"); // inserted by jreport
-			directory = System.getProperty("user.dir");
-		}
-
-		return directory + File.separator + "conf" + File.separator
-				+ "fetaClient.properties";
-	}
-
-	public static String getPropertiesDir() {
-		String directory;
-
-		if (System.getProperty("taverna.home") != null) {
-			System.out.println("using taverna.home"); // inserted by jreport
-			directory = System.getProperty("taverna.home");
-		} else {
-			System.out.println("7 " + "using user.dir"); // inserted by
-															// jreport
-			directory = System.getProperty("user.dir");
-		}
-
-		return directory;
-	}
-
-} // FetaClientProperties
+} 
