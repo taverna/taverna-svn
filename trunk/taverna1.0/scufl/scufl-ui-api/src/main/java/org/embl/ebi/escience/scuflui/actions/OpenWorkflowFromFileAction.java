@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-08 16:44:14 $
+ * Last modified on   $Date: 2007-01-19 15:50:12 $
  *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -149,12 +149,13 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 				}
 				if (workflowOpened) {
 					ScuflModelSet.getInstance().addModel(model);
-				}
-				if (url.getProtocol().equals("file")) {
-					File file = new File(url.getPath());
-					WorkflowChanges.getInstance().syncedWithFile(model, file);
-				} else {
-					WorkflowChanges.getInstance().synced(model);
+					if (url.getProtocol().equals("file")) {
+						File file = new File(url.getPath());
+						WorkflowChanges.getInstance().syncedWithFile(model, file);
+					} else {
+						WorkflowChanges.getInstance().synced(model);
+					}
+					
 				}
 			}
 		}).start();
