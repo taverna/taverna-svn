@@ -284,8 +284,7 @@ DropTargetListener {
 		
 		try {
 			boolean annotator = FetaClientProperties.isAnnotator();
-			if (annotator){
-				XMLOutputter xo = new XMLOutputter();
+			if (annotator) {
 				
 				org.jdom.Element droppedProcessorElement = null;
 				setCursorBusy();
@@ -298,9 +297,9 @@ DropTargetListener {
 				if (e.isDataFlavorSupported(f)) {
 					FactorySpecFragment fsf = (FactorySpecFragment)t.getTransferData(f);
 //					System.out.println("Found factory spec fragment");
-					
+//					XMLOutputter xo = new XMLOutputter();					
 //					System.out.println(xo.outputString(fsf.getElement()));
-					String validName = model.getValidProcessorName(fsf.getFactoryNodeName());
+//					String validName = model.getValidProcessorName(fsf.getFactoryNodeName());
 					attemptToRecognize = true;
 					
 					droppedProcessorElement =  fsf.getElement();
@@ -342,7 +341,7 @@ DropTargetListener {
 							
 						} else if (returnVal == JOptionPane.NO_OPTION) {
 							//setCursor (new Cursor (Cursor.WAIT_CURSOR));
-							GUIUtil.launchAnnotator((org.w3c.dom.Document)invokeImporter(droppedProcessorElement));
+							GUIUtil.launchAnnotator(invokeImporter(droppedProcessorElement));
 							
 						} else {
 							//User pressed the cancel button
@@ -350,7 +349,7 @@ DropTargetListener {
 						}
 						
 					}else {
-						GUIUtil.launchAnnotator((org.w3c.dom.Document)invokeImporter(droppedProcessorElement));
+						GUIUtil.launchAnnotator(invokeImporter(droppedProcessorElement));
 						
 					}//else
 				}//if
