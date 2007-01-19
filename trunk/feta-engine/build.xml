@@ -78,7 +78,7 @@
     <property name="junit.usefile" value="yes"/>
     <property name="junit.printsummary" value="no"/>
     <property name="test-dir" value="${ext}"/>
-    <property name="webdav.server" value="http://phoebus.cs.man.ac.uk:8100/feta-beta"/>
+    <property name="webdav.server" value="http://www.mygrid.org.uk/feta"/>
     <property name="webdav.ant" value="${ant}/jakarta-slide-ant-webdav-2.1.jar:${ext-base}/ext/jakarta-slide-webdavlib-2.1.jar:${ext-base}/ext/commons-httpclient.jar:${ext-base}/ext/commons-logging.jar:${ext-base}/ext/jdom.jar"/>
     <property name="antmerge.parent" value="default+mygrid+axis-ws+checkdependencies+test+webdav"/>
     <property name="jar-dependencies.endorsed" value="     ${super}     xalan-2.5.1.jar   "/>

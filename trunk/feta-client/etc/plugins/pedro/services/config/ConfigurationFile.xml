@@ -61,7 +61,7 @@
 							pedro.ontology.sources.RDFSOntologySource2
 						</class>
 						<parameters>
-							<inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
+							<inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
 							<anchorTerm>bioinformatics_task</anchorTerm>
 						</parameters>					
 					 </ontologySource>										
@@ -81,7 +81,7 @@
 							pedro.ontology.sources.RDFSOntologySource2
 						</class>
 						<parameters>
-							<inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
+							<inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
 							<anchorTerm>bioinformatics_data_resource</anchorTerm>
 						</parameters>					
 					 </ontologySource>					
@@ -101,7 +101,7 @@
 							pedro.ontology.sources.RDFSOntologySource2
 						</class>
 						<parameters>
-							<inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
+							<inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
 							<anchorTerm>bioinformatics_algorithm</anchorTerm>
 						</parameters>					
 					 </ontologySource>					
@@ -136,7 +136,7 @@
 								pedro.ontology.sources.RDFSOntologySource2
 							</class>
 							<parameters>
-							<inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
+							<inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
 								<anchorTerm>bioinformatics_data</anchorTerm>
 								<anchorTerm>bioinformatics_metadata</anchorTerm>
 					     	        </parameters>					
@@ -156,7 +156,7 @@
 								pedro.ontology.sources.RDFSOntologySource2
 							</class>
 							<parameters>
-	  						    <inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
+	  						    <inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/myGridDomainOntology.rdfs</inputURL>
 								<anchorTerm>bioinformatics_file_formats</anchorTerm>
 							</parameters>					
 						</ontologySource>										
@@ -192,7 +192,7 @@
 							pedro.ontology.sources.RDFSOntologySource2
 						</class>
 						<parameters>
-						<inputURL>http://phoebus.cs.man.ac.uk:8100/feta/mygrid/ontology/Common-Service-Ontology.rdfs</inputURL>
+						<inputURL>http://www.mygrid.org.uk/feta/mygrid/ontology/Common-Service-Ontology.rdfs</inputURL>
 							<anchorTerm>parameterType</anchorTerm>
 						</parameters>					
 					</ontologySource>										
