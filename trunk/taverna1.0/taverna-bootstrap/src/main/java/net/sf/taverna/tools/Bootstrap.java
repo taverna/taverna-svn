@@ -65,9 +65,11 @@ public class Bootstrap {
 			initialiseProfile(properties.getProperty("raven.remoteprofile"));
 		}
 
-		List<URL> loaderURLs = getLoaderUrls();
+		List<URL> localLoaderUrls = new ArrayList<URL>();
+		List<URL> remoteLoaderUrls = new ArrayList<URL>();
+		getLoaderUrls(localLoaderUrls,remoteLoaderUrls);
 
-		Method loaderMethod = createLoaderMethod(loaderURLs);
+		Method loaderMethod = createLoaderMethod(localLoaderUrls,remoteLoaderUrls);
 
 		Class workbenchClass = createWorkbenchClass(loaderVersion, loaderMethod);
 
@@ -207,8 +209,10 @@ public class Bootstrap {
 		try {
 			try {
 				// Try m() first
+				System.out.println("Looking for workbench starter method");
 				Method workbenchStatic = workbenchClass.getMethod(properties
-						.getProperty("raven.target.method"));
+						.getProperty("raven.target.method"));				
+				System.out.println("Done");				
 				workbenchStatic.invoke(null);				
 			} catch (NoSuchMethodException ex) {
 				ex.printStackTrace();
@@ -277,13 +281,13 @@ public class Bootstrap {
 		return Bootstrap.class.getResource("/" + SPLASHSCREEN);
 	}
 
-	public static List<URL> getLoaderUrls() throws MalformedURLException {
+	public static void getLoaderUrls(List<URL> localUrls, List<URL> remoteUrls) throws MalformedURLException {
 		File cacheDir = findCache();
 
 		if (cacheDir == null) {
 			System.err.println("Unable to create repository directory");
 			System.exit(-1);
-			return null;
+			return;
 		}
 
 		// Create a remote classloader referencing the raven jar within a
@@ -306,25 +310,38 @@ public class Bootstrap {
 				loaderVersion);
 
 		// Use our local repository if possible
-		List<URL> loaderURLs = new ArrayList<URL>();
-		
-		loaderURLs.add(new URL(cacheDir.toURI().toURL(),artifactLocation));
+		URL cacheUrl = new URL(cacheDir.toURI().toURL(),artifactLocation);
+		if (cacheUrl.getProtocol().equals("file")) {
+			localUrls.add(cacheUrl);
+		}
+		else {
+			remoteUrls.add(cacheUrl);
+		}
+				
 		for (URL repository : remoteRepositories) {
 			URL loaderUrl=null;
 			if (loaderVersion.endsWith("-SNAPSHOT")) {				
 				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);
 				if (loaderUrl!=null) {
-					loaderURLs.add(loaderUrl);
+					if (loaderUrl.getProtocol().equals("file")) {
+						localUrls.add(loaderUrl);
+					}
+					else {
+						remoteUrls.add(loaderUrl);
+					}					
 					break; //for snapshots leave loop once we've found the first.
 				}				
 			}
 			else {
 				loaderUrl=new URL(repository, artifactLocation);
-			}
-			if (loaderUrl!=null)
-				loaderURLs.add(loaderUrl);
-		}
-		return loaderURLs;
+				if (loaderUrl.getProtocol().equals("file")) {
+					localUrls.add(loaderUrl);
+				}
+				else {
+					remoteUrls.add(loaderUrl);
+				}
+			}	
+		}		
 	}
 	
 	private static URL getSnapshotUrl(String artifact, String group, String version, URL repository) {
@@ -394,11 +411,30 @@ public class Bootstrap {
 		return result;
 	}
 
-	public static Method createLoaderMethod(List<URL> loaderURLs)
-			throws ClassNotFoundException, NoSuchMethodException {
-		Method loaderMethod;		
-		ClassLoader c = new URLClassLoader(loaderURLs.toArray(new URL[0]), null);
+	public static Method createLoaderMethod(List<URL> localUrls, List<URL> remoteUrls)
+			throws ClassNotFoundException, NoSuchMethodException {		
+		Method result=null;			
 
+		//first try with just the local urls, since raven should be local by now
+		try {
+			ClassLoader c = new URLClassLoader(localUrls.toArray(new URL[0]), null);
+			result = createLoaderMethodWithClassloader(c);
+		}
+		catch(Exception e) {
+			System.out.println("Trying remote raven artifact");
+			//now try with the remote too, this is probably fhe first run and raven needs fetching
+			List<URL> allUrls=new ArrayList<URL>();
+			allUrls.addAll(localUrls);
+			allUrls.addAll(remoteUrls);
+			ClassLoader c = new URLClassLoader(allUrls.toArray(new URL[0]), null);
+			result = createLoaderMethodWithClassloader(c);
+		}
+		
+		return result;
+	}
+
+	private static Method createLoaderMethodWithClassloader(ClassLoader c) throws ClassNotFoundException, NoSuchMethodException {
+		Method loaderMethod;
 		// override with system classloader if running in eclipse
 		if (properties.getProperty("raven.eclipse") != null) {
 			c = ClassLoader.getSystemClassLoader();
