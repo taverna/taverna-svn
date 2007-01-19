@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
 
 import net.sf.taverna.raven.log.Log;
@@ -212,11 +214,28 @@ public class MyGridConfiguration {
 	 * user properties files if needed.
 	 * 
 	 * @param name Resource name, like "mygrid.properties"
+	 * @param classLoader Optional {@link ClassLoader} to search for property
 	 * @return properties specified by name
 	 */
 	public static Properties getProperties(String name) {
-		Properties properties = loadDefaultProperties(name);
-		writeDefaultProperties(name);
+		return getProperties(name, null);
+	}
+	
+	/**
+	 * Get all properties for the given resource name. The properties will be the combination 
+	 * of the default properties distributed with Taverna and the user specified
+	 * properties.
+	 * <p>
+	 * <strong>Note:</strong> This method will force creation/updating of local
+	 * user properties files if needed.
+	 * 
+	 * @param name Resource name, like "mygrid.properties"
+	 * @param classLoader Optional {@link ClassLoader} to include in search for resource
+	 * @return properties specified by name
+	 */
+	public static Properties getProperties(String name, ClassLoader classLoader) {
+		Properties properties = loadDefaultProperties(name, classLoader);
+		writeDefaultProperties(name, classLoader);
 		properties.putAll(loadUserProperties(name));
 		return properties;
 	}
@@ -341,9 +360,23 @@ public class MyGridConfiguration {
 	 * @return Default properties as provided by classloader
 	 */
 	static Properties loadDefaultProperties(String resourceName) {
+		return loadDefaultProperties(resourceName, null);
+	}
+	
+	/**
+	 * Get the default myGrid properties as distributed with Taverna.
+	 * <p>
+	 * The property object returned is freshly created (and loaded) for each
+	 * call and can be modified without affecting later calls.
+	 *
+	 * @param resourceName Name of resource to be loaded
+ 	 * @param classLoader Optional {@link ClassLoader} to include in search for resource
+	 * @return Default properties as provided by classloader
+	 */
+	static Properties loadDefaultProperties(String resourceName, ClassLoader classLoader) {
 		Properties properties = new Properties();
 		// Concatinate all resources
-		for (URL resource : findResources(resourceName)) {
+		for (URL resource : findResources(resourceName, classLoader)) {
 			logger.info("Loading resources from " + resource);
 			try {
 				properties.load(resource.openStream());
@@ -352,7 +385,7 @@ public class MyGridConfiguration {
 			}
 		}
 		if (properties.isEmpty()) {
-			logger.warn("Default properties empty");
+			logger.warn("Empty properties " + resourceName);
 		}
 		return properties;
 	}
@@ -371,6 +404,25 @@ public class MyGridConfiguration {
 	 *            "mygrid.properties"
 	 */
 	static void writeDefaultProperties(String resourceName) {
+		writeDefaultProperties(resourceName, null);
+	}
+	
+	/**
+	 * Write default properties to user directory. .taverna/conf/NAME.dist will
+	 * always be created/overwritten, which will be a dump of the properties as
+	 * in getDefaultProperties(name). However, all active lines will be
+	 * commented out with ##.
+	 * <p>
+	 * In addition, .taverna/conf/NAME will be written if it does not exist, or
+	 * if the existing copy matched the old .dist version.
+	 * 
+	 * @param resourceName
+	 *            Name of resource which properties are to be written, like
+	 *            "mygrid.properties"
+	 * @param classLoader
+	 *            Optional {@link ClassLoader} to include in search for resource
+	 */
+	static void writeDefaultProperties(String resourceName, ClassLoader classLoader) {
 		File confDir = getUserDir(CONFIGURATION_DIRECTORY);
 		File propDist = new File(confDir, resourceName + ".dist");
 		File prop = new File(confDir, resourceName);
@@ -392,7 +444,7 @@ public class MyGridConfiguration {
 		try {
 			Writer propWriter = new BufferedWriter(new FileWriter(propDist));
 			propWriter.write(HEADER);
-			for (URL resource : findResources(resourceName)) {
+			for (URL resource : findResources(resourceName, classLoader)) {
 				writeDefaults(resource, propWriter);
 			}
 			propWriter.close();
@@ -472,43 +524,36 @@ public class MyGridConfiguration {
 	 *  }
 	 * </pre>
 	 * 
-	 * @param resourceName
-	 * @return Iterable over URLs
+	 * @param resourceName Resource to find
+	 * @param classLoader Optional {@link ClassLoader} to include in search for resource
+	 * @return Collection of URLs
 	 */
-	static Iterable<URL> findResources(final String resourceName) {
-		// 15 layers of Iterable vs. Iterator courtesy of Sun
-		return new Iterable<URL>() {
-			public Iterator<URL> iterator() {
-				// FIXME: Shouldn't we always use context class loader?
-				ClassLoader loader = MyGridConfiguration.class.getClassLoader();
-				if (loader == null) {
-					loader = Thread.currentThread().getContextClassLoader();
-				}
-				Enumeration<URL> tempResources;
-				try {
-					tempResources = loader.getResources(resourceName);
-				} catch (IOException e) {
-					logger.error("Could not find " + resourceName, e);
-					tempResources = null;
-				}
-				final Enumeration<URL> resources = tempResources;
-				return new Iterator<URL>() {
-					public boolean hasNext() {
-						return resources != null && resources.hasMoreElements();
-					}
-					public URL next() {
-						if (resources == null) {
-							throw new NoSuchElementException();
-						}
-						return resources.nextElement();
-					}
-					public void remove() {
-						throw new UnsupportedOperationException();
-					}
-				};
+	static Collection<URL> findResources(String resourceName, ClassLoader classLoader) {
+		// Avoid finding it twice
+		LinkedHashSet<URL> resources = new LinkedHashSet<URL>();
+
+		// We will check in both our own class loader and the Thread's
+		// classloader. NOTE: might contain null
+		List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();		
+		classLoaders.add(MyGridConfiguration.class.getClassLoader());
+		classLoaders.add(Thread.currentThread().getContextClassLoader());
+		classLoaders.add(classLoader);
+		for (ClassLoader loader : classLoaders) {
+			if (loader == null) {
+				continue;
 			}
-	
-		};
+			Enumeration<URL> tempResources;
+			try {
+				tempResources = loader.getResources(resourceName);
+			} catch (IOException e) {
+				logger.warn("Could not find " + resourceName + " in " + loader, e);
+				continue;
+			}
+			while (tempResources.hasMoreElements()) {
+				resources.add(tempResources.nextElement());
+			}
+		}
+		return resources;
 	}
 
 }

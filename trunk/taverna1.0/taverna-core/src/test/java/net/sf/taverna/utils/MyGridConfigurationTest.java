@@ -241,11 +241,11 @@ public class MyGridConfigurationTest extends TestCase {
 	}
 	
 	public void testFindDefaultResources() {
-		for (URL url : MyGridConfiguration.findResources("fish.properties")) {
+		for (URL url : MyGridConfiguration.findResources("fish.properties", null)) {
 			fail("Should not have found " + url);
 		}
 		boolean foundMygrid = false;
-		for (URL url : MyGridConfiguration.findResources("mygrid.properties")) {
+		for (URL url : MyGridConfiguration.findResources("mygrid.properties", null)) {
 			if (foundMygrid) {
 				// NOTE: This might happen in Eclipse. Run tests from maven.
 				fail("Found more than one mygrid.properties: " + url);
@@ -257,7 +257,7 @@ public class MyGridConfigurationTest extends TestCase {
 	}
 	
 	public void testloadDefaultProperties() {
-		Properties props = MyGridConfiguration.loadDefaultProperties(MyGridConfiguration.MYGRID_PROPERTIES);
+		Properties props = MyGridConfiguration.loadDefaultProperties(MyGridConfiguration.MYGRID_PROPERTIES, null);
 		// Did not touch the global cache, that is only touched by
 		// getProperties();
 		assertNull(MyGridConfiguration.properties);
