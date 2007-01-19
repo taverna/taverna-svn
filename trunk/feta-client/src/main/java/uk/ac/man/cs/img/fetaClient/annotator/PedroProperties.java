@@ -9,11 +9,11 @@ package uk.ac.man.cs.img.fetaClient.annotator;
 import java.io.File;
 import java.io.FileWriter;
 
-import uk.ac.man.cs.img.fetaClient.queryGUI.taverna.FetaClientProperties;
+import net.sf.taverna.utils.MyGridConfiguration;
 
 /**
  * 
- * @author alperp
+ * @author Pinar Alper
  */
 public class PedroProperties {
 
@@ -35,30 +35,29 @@ public class PedroProperties {
 
 	private static final String propHelpDirName = "pedro.session.helpDirectory";
 
-	private static final String propDocDirName = "pedro.session.documentDirectory";
+	private static final String propDocDirName =
+		"pedro.session.documentDirectory";
 
-	private static final String propSchemaValue = "services" + "/" + "model"
-			+ "/" + "common.xsd";
+	private static final String propSchemaValue = "services/model/common.xsd";
 
-	private static final String propMainConfValue = "services" + "/" + "config"
-			+ "/" + "ConfigurationFile.xml";
+	private static final String propMainConfValue =
+		"services/config/ConfigurationFile.xml";
 
-	private static final String propFileExtValue = "services" + "/" + "config"
-			+ "/" + "FileExtensionsToLaunch.xml";
+	private static final String propFileExtValue =
+		"services/config/FileExtensionsToLaunch.xml";
 
-	private static final String propFavFilesValue = "services" + "/" + "config"
-			+ "/" + "FavouriteFiles.xml";
+	private static final String propFavFilesValue =
+		"services/config/FavouriteFiles.xml";
 
 	private static final String propIconDirValue = "img";
 
-	private static final String propResourceDirValue = "services" + "/"
-			+ "resources";
+	private static final String propResourceDirValue = "services/resources";
 
-	private static final String propLibDirValue = "services" + "/" + "lib";
+	private static final String propLibDirValue = "services/lib";
 
 	private static final String propHelpDirValue = "help";
 
-	private static final String propDocDirValue = "services" + "/" + "doc";
+	private static final String propDocDirValue = "services/doc";
 
 	private File pedroPropFile;
 
@@ -67,47 +66,31 @@ public class PedroProperties {
 	 * directory
 	 */
 	public PedroProperties() {
-
 		try {
-
-			String tavernaHomeDirPath = FetaClientProperties.getPropertiesDir()
-					+ File.separator;
-			String pluginsPath = tavernaHomeDirPath + "plugins"
-					+ File.separator;
-			String pedroHomeDirPath = tavernaHomeDirPath + "plugins"
-					+ File.separator + "pedro" + File.separator;
-			pedroPropFile = new File(pedroHomeDirPath + "pedro.properties");
+			File pedroHome =
+				new File(MyGridConfiguration.getUserDir("plugins"), "pedro");
+			pedroHome.mkdirs();
+			String pedroHomeDirPath = pedroHome.getPath().replace('\\', '/') + "/";
+			pedroPropFile = new File(pedroHome, "pedro.properties");
 			FileWriter out = new FileWriter(pedroPropFile);
-			out.write(propSchemaName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propSchemaValue
-					+ "\n");
-			out.write(propMainConfName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propMainConfValue
-					+ "\n");
-			out.write(propFileExtName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propFileExtValue
-					+ "\n");
-			out.write(propFavFilesName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propFavFilesValue
-					+ "\n");
-			out.write(propIconDirName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propIconDirValue
-					+ "\n");
-			out.write(propResourceDirName + " = "
-					+ pedroHomeDirPath.replace('\\', '/')
-					+ propResourceDirValue + "\n");
-			out.write(propLibDirName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propLibDirValue
-					+ "\n");
-			// out.write(propLibDirName + " = " + pluginsPath.replace('\\','/')
-			// +"\n");
-			out.write(propHelpDirName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propHelpDirValue
-					+ "\n");
-			out.write(propDocDirName + " = "
-					+ pedroHomeDirPath.replace('\\', '/') + propDocDirValue
-					+ "\n");
-
+			out.write(propSchemaName + " = " + pedroHomeDirPath
+				+ propSchemaValue + "\n");
+			out.write(propMainConfName + " = " + pedroHomeDirPath
+				+ propMainConfValue + "\n");
+			out.write(propFileExtName + " = " + pedroHomeDirPath
+				+ propFileExtValue + "\n");
+			out.write(propFavFilesName + " = " + pedroHomeDirPath
+				+ propFavFilesValue + "\n");
+			out.write(propIconDirName + " = " + pedroHomeDirPath
+				+ propIconDirValue + "\n");
+			out.write(propResourceDirName + " = " + pedroHomeDirPath
+				+ propResourceDirValue + "\n");
+			out.write(propLibDirName + " = " + pedroHomeDirPath
+				+ propLibDirValue + "\n");
+			out.write(propHelpDirName + " = " + pedroHomeDirPath
+				+ propHelpDirValue + "\n");
+			out.write(propDocDirName + " = " + pedroHomeDirPath
+				+ propDocDirValue + "\n");
 			out.close();
 
 		} catch (java.io.IOException ioExp) {
@@ -115,7 +98,6 @@ public class PedroProperties {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-
 		}
 
 	}
