@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.rowset.WebRowSet;
@@ -28,7 +29,7 @@ import com.sun.rowset.WebRowSetImpl;
  * the results.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput url The jdbc database URL.
  * @tavinput driver A fully qualified driver classname.
@@ -43,45 +44,62 @@ import com.sun.rowset.WebRowSetImpl;
  * @tavinput xmlresults An XML representation of the results.
  */
 public class SQLQueryWorker implements LocalWorker {
+	// Ports
+	private static final String XMLRESULTS = "xmlresults";
+	private static final String RESULT_LIST = "resultList";
+	private static final String PROVIDE_XML = "provideXml";
+	private static final String PARAMS = "params";
+	private static final String SQL = "sql";
+	private static final String PASSWORD = "password";
+	private static final String USERID = "userid";
+	private static final String DRIVER = "driver";
+	private static final String URL = "url";
+
+	// Mime types
+	private static final String TEXT_PLAIN = "'text/plain'";
+	private static final String L_TEXT_PLAIN = "l('text/plain')";
+	private static final String L_L_TEXT_PLAIN = "l(l('text/plain'))";
+
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#execute(java.util.Map)
 	 */
-	public Map execute(Map inputMap) throws TaskExecutionException {
+	public Map<String, DataThing> execute(Map inputMap) throws TaskExecutionException {
 		DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-		HashMap outputMap = new HashMap();
+		HashMap<String, DataThing> outputMap = new HashMap<String, DataThing>();
 		DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 
 		ResultSet rs = null;
 		PreparedStatement ps = null;
 		Connection connection = null;
-		ArrayList resultList = new ArrayList();
+		List<List<String>> resultList = new ArrayList<List<String>>();
 		try {
 			// get and validate parameters
-			String driverName = inAdapter.getString("driver");
+			String driverName = inAdapter.getString(DRIVER);
 			if (driverName == null || driverName.equals("")) {
-				throw new TaskExecutionException("The 'driver' port cannot be null");
+				throw new TaskExecutionException("The '" + DRIVER + "' port cannot be empty");
 			}
-			String url = inAdapter.getString("url");
+			String url = inAdapter.getString(URL);
 			if (url == null || url.equals("")) {
-				throw new TaskExecutionException("The 'url' port cannot be null");
+				throw new TaskExecutionException("The '" + URL + "' port cannot be empty");
 			}
-			String username = inAdapter.getString("userid");
+			String username = inAdapter.getString(USERID);
 			if (username == null || username.equals("")) {
-				throw new TaskExecutionException("The 'userid' port cannot be null");
+				throw new TaskExecutionException("The '" + USERID + "' port cannot be empty");
 			}
-			String password = inAdapter.getString("password");
+			String password = inAdapter.getString(PASSWORD);
 
-			String provideXmlStr = inAdapter.getString("provideXml");
+			String provideXmlStr = inAdapter.getString(PROVIDE_XML);
 			boolean provideXml = (provideXmlStr != null) ? Boolean.valueOf(provideXmlStr.toUpperCase()).booleanValue()
 					: false;
 
 			// get the sql statement parameters
-			String[] params = inAdapter.getStringArray("params");
-			String sql = inAdapter.getString("sql");
+			String[] params = inAdapter.getStringArray(PARAMS);
+			String sql = inAdapter.getString(SQL);
 			if (sql == null || sql.equals("")) {
-				throw new TaskExecutionException("The 'sql' port cannot be null");
+				throw new TaskExecutionException("The '" + SQL + "' port cannot be empty");
 			}
 
 			// Load the JDBC driver
@@ -107,13 +125,13 @@ public class SQLQueryWorker implements LocalWorker {
 				WebRowSet webrs = new WebRowSetImpl();
 				StringWriter sw = new StringWriter();
 				webrs.writeXml(rs, sw);
-				outAdapter.putString("xmlresults", sw.toString());
+				outAdapter.putString(XMLRESULTS, sw.toString());
 			}
 			int numCols = rsmd.getColumnCount();
 
 			// put the results into the results list.
 			while (rs.next()) {
-				ArrayList row = new ArrayList(numCols);
+				List<String> row = new ArrayList<String>(numCols);
 				for (int i = 0; i < numCols; i++) {
 					row.add(rs.getString(i + 1));
 				}
@@ -144,7 +162,7 @@ public class SQLQueryWorker implements LocalWorker {
 		}
 
 		// put results into hashmap
-		outputMap.put("resultList", new DataThing(resultList));
+		outputMap.put(RESULT_LIST, new DataThing(resultList));
 
 		return outputMap;
 	}
@@ -155,7 +173,7 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputNames()
 	 */
 	public String[] inputNames() {
-		return new String[] { "url", "driver", "userid", "password", "sql", "params", "provideXml" };
+		return new String[] { URL, DRIVER, USERID, PASSWORD, SQL, PARAMS, PROVIDE_XML };
 	}
 
 	/*
@@ -164,8 +182,8 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#inputTypes()
 	 */
 	public String[] inputTypes() {
-		return new String[] { "'text/plain'", "'text/plain'", "'text/plain'", "'text/plain'", "'text/plain'",
-				"l('text/plain')", "'text/plain'" };
+		return new String[] { TEXT_PLAIN, TEXT_PLAIN, TEXT_PLAIN, TEXT_PLAIN, TEXT_PLAIN,
+				L_TEXT_PLAIN, TEXT_PLAIN };
 	}
 
 	/*
@@ -174,7 +192,7 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputNames()
 	 */
 	public String[] outputNames() {
-		return new String[] { "resultList", "xmlresults" };
+		return new String[] { RESULT_LIST, XMLRESULTS };
 	}
 
 	/*
@@ -183,6 +201,6 @@ public class SQLQueryWorker implements LocalWorker {
 	 * @see org.embl.ebi.escience.scuflworkers.java.LocalWorker#outputTypes()
 	 */
 	public String[] outputTypes() {
-		return new String[] { "l(l('text/plain'))", "'text/plain'" };
+		return new String[] { L_L_TEXT_PLAIN, TEXT_PLAIN };
 	}
 }
