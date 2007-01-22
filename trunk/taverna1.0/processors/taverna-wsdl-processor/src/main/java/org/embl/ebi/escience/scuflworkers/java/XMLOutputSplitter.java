@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
+ * Last modified on   $Date: 2007-01-22 10:17:41 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -257,7 +257,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
 		DataThing inputThing = (DataThing) inputMap.get(inputNames[0]);
-		Map result = new HashMap();
+		Map<String,DataThing> result = new HashMap<String,DataThing>();
 		List outputNameList = Arrays.asList(outputNames);
 		if (inputThing != null) {
 			String xml = inputThing.getDataObject().toString();
@@ -302,9 +302,9 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		return result;
 	}
 
-	private void executeForArrayType(Map result, List children) {
+	private void executeForArrayType(Map<String,DataThing> result, List children) {
 		ArrayTypeDescriptor arrayDescriptor = (ArrayTypeDescriptor) typeDescriptor;
-		List values = new ArrayList();
+		List<String> values = new ArrayList<String>();
 		XMLOutputter outputter = new XMLOutputter();
 
 		boolean isInnerBaseType = arrayDescriptor.getElementType() instanceof BaseTypeDescriptor;
@@ -319,7 +319,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		result.put(outputNames[0], DataThingFactory.bake(values));
 	}
 
-	private void executeForComplexType(Map result, List outputNameList,
+	private void executeForComplexType(Map<String,DataThing> result, List outputNameList,
 			List children) {
 		XMLOutputter outputter = new XMLOutputter();
 		for (Iterator iterator = children.iterator(); iterator.hasNext();) {

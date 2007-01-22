@@ -79,7 +79,7 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	 * Only inputs provided are included as tags within the resulting XML.
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
-		Map result = new HashMap();
+		Map<String,DataThing> result = new HashMap<String,DataThing>();
 
 		Element outputElement = (this.typeDescriptor.getName().length() > 0 ? new Element(
 				this.typeDescriptor.getName())
@@ -209,7 +209,7 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			defineFromTypeDescriptor();
 	}
 
-	private void executeForComplexType(Map inputMap, Map result,
+	private void executeForComplexType(Map inputMap, Map<String,DataThing> result,
 			Element outputElement) throws JDOMException, IOException {
 		ComplexTypeDescriptor complexDescriptor = (ComplexTypeDescriptor) typeDescriptor;
 		for (Iterator inputIterator = complexDescriptor.getElements()
