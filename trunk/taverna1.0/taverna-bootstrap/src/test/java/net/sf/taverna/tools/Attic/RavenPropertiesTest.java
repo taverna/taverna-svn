@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-24 12:08:52 $
+ * Last modified on   $Date: 2007-01-22 10:51:32 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -48,7 +48,7 @@ public class RavenPropertiesTest extends TestCase{
 		assertNotNull("No raven.loader.version defined",props.getProperty("raven.loader.version"));
 		assertNotNull("No raven.loader.class defined",props.getProperty("raven.loader.class"));
 		assertNotNull("No raven.loader.method defined",props.getProperty("raven.loader.method"));
-		assertNotNull("No raven.repository.1 defined",props.getProperty("raven.repository.1"));		
+		assertNotNull("No raven.repository.11 defined",props.getProperty("raven.repository.11"));		
 		assertNotNull("No raven.splashscreen defined",props.getProperty("raven.splashscreen"));
 		assertNotNull("No raven.splashscreen.timeout defined",props.getProperty("raven.splashscreen.timeout"));		
 		assertNotNull("No raven.target.groupid defined",props.getProperty("raven.target.groupid"));
