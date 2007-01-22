@@ -31,45 +31,31 @@ public class OSXApplicationListener implements ApplicationListener {
 	}
 
 	public void handleOpenApplication(ApplicationEvent event) {
-		if (listener.handleOpenApplication()) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handleOpenApplication());
 	}
 
 	public void handleReOpenApplication(ApplicationEvent event) {
-		if (listener.handleReOpenApplication()) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handleReOpenApplication());
 	}
 
 	public void handleAbout(ApplicationEvent event) {
-		if (listener.handleAbout()) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handleAbout());
 	}
 
 	public void handleOpenFile(ApplicationEvent event) {
-		if (listener.handleOpenFile(event.getFilename())) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handleOpenFile(event.getFilename()));
 	}
 
 	public void handlePrintFile(ApplicationEvent event) {
-		if (listener.handlePrintFile(event.getFilename())) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handlePrintFile(event.getFilename()));
 	}
 
 	public void handlePreferences(ApplicationEvent event) {
-		if (listener.handlePreferences()) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handlePreferences());
 	}
 
 	public void handleQuit(ApplicationEvent event) {
-		if (listener.handleQuit()) {
-			event.isHandled();
-		}
+		event.setHandled(listener.handleQuit());
 	}
 
 }

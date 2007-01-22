@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>osxapplication</artifactId>
-  <version>1.5.0</version>
+  <version>1.5.1</version>
   <description>
     OS X application proxy. By implementing the
     net.sf.taverna.osx.OSXListener interface (or subclassing the
@@ -39,6 +39,17 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <scm>
     <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:osxapplication</connection>
     <url>http://taverna.cvs.sourceforge.net/taverna/osxapplication/</url>
@@ -67,6 +78,17 @@
       </releases>
     </repository>
   </repositories>
+  <!--profiles>
+    <profile>
+      <id>compile</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+    </profile>
+  </profiles-->
   <distributionManagement>
     <!-- use the following if you're not using a snapshot version. -->
     <repository>
