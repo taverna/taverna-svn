@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
+ * Last modified on   $Date: 2007-01-22 12:46:46 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -242,6 +242,44 @@ public class XMLOutputSplitterTest extends TestCase {
 				"<item><Name>mary</Name><Age>57</Age></item>", elements.get(1));
 	}
 
+	public void testArrayWithinComplex() throws Exception {
+		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSearchResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"AList\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Base\"/></s:elements></s:complextype></s:extensions>";
+		XMLOutputSplitter splitter = new XMLOutputSplitter();
+		splitter.consumeXML(new SAXBuilder().build(
+				new StringReader(splitterXML)).getRootElement());
+		
+		assertEquals("should be 2 outputs",2,splitter.outputTypes().length);
+		assertEquals("should be l('text/plain')","l('text/plain')",splitter.outputTypes()[0]);
+		assertEquals("should be 'text/plain'","'text/plain'",splitter.outputTypes()[1]);
+		
+		String inputXML="<parameters><AList><id>1</id><id>2</id><id>3</id></AList><Base>a string</Base></parameters>";
+		Map inputMap = new HashMap();
+		inputMap.put("input", new DataThing(inputXML));
+		
+		Map outputMap = splitter.execute(inputMap);
+		
+		assertNotNull("no output for the list",outputMap.get("AList"));
+		assertNotNull("no output for the base type",outputMap.get("Base"));
+		
+		Object data = ((DataThing)outputMap.get("AList")).getDataObject();
+		
+		assertEquals("Should be an ArrayList",ArrayList.class,data.getClass());
+		
+		ArrayList list = (ArrayList)data;
+		
+		assertEquals("Should be 3 items",3,list.size());
+		assertEquals("item 1 should be 1","1",list.get(0));
+		assertEquals("item 2 should be 2","2",list.get(1));
+		assertEquals("item 3 should be 3","3",list.get(2));
+		
+		data = ((DataThing)outputMap.get("Base")).getDataObject();
+		assertEquals("Should be a String",String.class,data.getClass());				
+		
+		assertEquals("Should equals 'a string'","a string",data);
+				
+	}
+	
+	
 	public void testEmptyOutputs() throws Exception {
 		// missing optional outputs are populated with an empty string
 		XMLOutputSplitter splitter = new XMLOutputSplitter();

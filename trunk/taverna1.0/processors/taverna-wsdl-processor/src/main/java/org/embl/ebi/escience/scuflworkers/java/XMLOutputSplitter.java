@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-22 10:17:41 $
+ * Last modified on   $Date: 2007-01-22 12:46:46 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -308,12 +308,13 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		XMLOutputter outputter = new XMLOutputter();
 
 		boolean isInnerBaseType = arrayDescriptor.getElementType() instanceof BaseTypeDescriptor;
-		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-			Element child = (Element) iterator.next();
-			if (isInnerBaseType) {
-				values.add(child.getText());
-			} else {
-				values.add(outputter.outputString(child));
+		if (isInnerBaseType) {
+			values=extractBaseTypeArrayFromChildren(children);
+		}
+		else {
+			for (Iterator iterator = children.iterator(); iterator.hasNext();) {
+				Element child = (Element) iterator.next();
+				values.add(outputter.outputString(child));			
 			}
 		}
 		result.put(outputNames[0], DataThingFactory.bake(values));
@@ -333,12 +334,23 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 				} else if (outputTypes[i].equals("'application/octet-stream'")) { // base64Binary
 					byte[] data = Base64.decode(child.getText());
 					result.put(child.getName(), DataThingFactory.bake(data));
-				} else {
+				} else if (outputTypes[i].equals("l('text/plain')")) { // an inner element containing a list
+					result.put(child.getName(), new DataThing(extractBaseTypeArrayFromChildren(child.getChildren())));
+				}
+				else {
 					result.put(child.getName(), new DataThing(child.getText()));
 				}
 			}
 
 		}
+	}
+	
+	private List<String> extractBaseTypeArrayFromChildren(List<Element> children) {
+		List<String> result = new ArrayList<String>();		
+		for (Element child : children) {
+			result.add(child.getTextTrim());
+		}
+		return result;
 	}
 
 	public List<InputPort> inputPorts(LocalServiceProcessor processor)

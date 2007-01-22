@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-10-09 10:05:37 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-22 12:46:46 $
+ *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -47,7 +47,8 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 public class WSDLSOAPInvokerTest extends TestCase {
 
 	private static Logger logger = Logger.getLogger(WSDLSOAPInvokerTest.class);
-
+	
+	
 	public void testPrimitive() throws Exception {
 
 		WSDLBasedProcessor processor = null;
