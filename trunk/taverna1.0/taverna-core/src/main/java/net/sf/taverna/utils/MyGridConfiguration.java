@@ -131,10 +131,15 @@ public class MyGridConfiguration {
 					"adding log4j to profile with system='true'");
 		}
 		Profile profile = ProfileFactory.getInstance().getProfile();
-		logger.info("Starting " + profile.getName() + " v" + profile.getVersion());
-		logger.debug("Containing artifacts:");
-		for (Artifact a : profile.getArtifacts()) {
-			logger.debug(a);
+		if (profile!=null) {
+			logger.info("Starting " + profile.getName() + " v" + profile.getVersion());
+			logger.debug("Containing artifacts:");
+			for (Artifact a : profile.getArtifacts()) {
+				logger.debug(a);
+			}
+		}
+		else {
+			logger.info("No profile found");
 		}
 	}
 
