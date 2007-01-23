@@ -28,6 +28,7 @@ package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.Map;
@@ -445,6 +446,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		editor.setOpaque(false);
 		editor.setLineWrap(true);
 		editor.setWrapStyleWord(true);
+		editor.setFont(Font.getFont("Dialog"));
 		//editor.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// Avoid stealing all width
 		editor.setMinimumSize(new Dimension(25, 10));
