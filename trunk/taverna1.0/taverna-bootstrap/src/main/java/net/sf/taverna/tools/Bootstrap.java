@@ -418,8 +418,7 @@ public class Bootstrap {
 			ClassLoader c = new URLClassLoader(localUrls.toArray(new URL[0]), null);
 			result = createLoaderMethodWithClassloader(c);
 		}
-		catch(Exception e) {
-			System.out.println("Trying remote raven artifact");
+		catch(Exception e) {			
 			//now try with the remote too, this is probably fhe first run and raven needs fetching
 			List<URL> allUrls=new ArrayList<URL>();
 			allUrls.addAll(localUrls);
