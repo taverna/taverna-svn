@@ -5,10 +5,11 @@
  */
 package net.sourceforge.taverna.scuflworkers.bsf;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.ExtendedBSFManager;
@@ -17,35 +18,30 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.IProcessorTask;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
-import bsh.Interpreter;
 
 /**
  * A task to invoke a BSFProcessor
  * 
- * Last edited by: $Author: sowen70 $
+ * Last edited by: $Author: stain $
  * 
  * @author mfortner
+ * @author Stian Soiland
  */
 public class BSFTask implements ProcessorTaskWorker {
 
-	private static Logger logger = Logger.getLogger(BSFTask.class);
+	// Magic output port, if this has been added, the script will be
+	// run as an evaluation, and the result put as "result"
+	private static final String RESULT = "result";
 
-	private static final int INVOCATION_TIMEOUT = 0;
+	private static Logger logger = Logger.getLogger(BSFTask.class);
 
 	private Processor proc;
 
 	private BSFEngine engine;
-
-	private Map inputBeanMap = new HashMap();
-
-	private Map outputBeanMap = new HashMap();
-
-	private Vector beanVector = new Vector();
-
-	private Interpreter interpreter = new Interpreter();
 
 	private ExtendedBSFManager mgr = new ExtendedBSFManager();
 
@@ -57,13 +53,13 @@ public class BSFTask implements ProcessorTaskWorker {
 
 	}
 
-	public Map execute(java.util.Map workflowInputMap, IProcessorTask parentTask) throws TaskExecutionException {
+	public Map execute(Map workflowInputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		try {
 			BSFProcessor theProcessor = (BSFProcessor) proc;
 			String script = theProcessor.getScript();
 			String language = theProcessor.getLanguage();
-			Map outputMap = new HashMap();
-			OutputPort outputPorts[] = theProcessor.getOutputPorts();
+			Map<String, DataThing> outputMap = new HashMap<String, DataThing>();
+			List<OutputPort> outputPorts = Arrays.asList(theProcessor.getOutputPorts());
 			// mgr.initBSFDebugManager();
 			engine = mgr.loadScriptingEngine(language);
 
@@ -89,9 +85,8 @@ public class BSFTask implements ProcessorTaskWorker {
 				}
 
 				// set outputs
-				for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
-
-					String outputname = outputPorts[ioutput].getName();
+				for (OutputPort output : outputPorts) {
+					String outputname = output.getName();
 					// DataFlavor flavor =
 					// outputPorts[ioutput].getTransferDataFlavors()[0];
 					// Object outObj =
@@ -110,22 +105,34 @@ public class BSFTask implements ProcessorTaskWorker {
 
 				// execute the script
 				// engine.initialize(mgr, language,beanVector);
-
-				Object r = mgr.eval(language, "testScript", 0, 0, script);
+				
+				// FIXME: Avoid flow control through exceptions
+				Object result = null;
+				try {
+					theProcessor.locatePort(RESULT);
+					// Found "magic" port, we'll also capture the result of evaluating
+					// the script. Note that some languages (Python) don't allow
+					// assignments (ie. other outputs) in evaluations
+					logger.debug("Running script as evaluation");
+					result = mgr.eval(language, "testScript", 0, 0, script);
+				} catch (UnknownPortException ex) {
+					logger.debug("Running script as execution");
+					mgr.exec(language, "testScript", 0, 0, script);
+				}
 
 				// convert outputs to DataThings.
-				for (int ioutput = 0; ioutput < outputPorts.length; ioutput++) {
-
-					String outputname = outputPorts[ioutput].getName();
-
+				for (OutputPort port : outputPorts) {
+					String outputname = port.getName();
 					Object outBean = mgr.lookupBean(outputname);
-
 					if (outBean != null) {
 						outputMap.put(outputname, new DataThing(outBean));
 					}
-
 				}
-				outputMap.put("result", new DataThing(r));
+				
+				if (result != null) {
+					// Include evaluation result
+					outputMap.put(RESULT, new DataThing(result));
+				}
 
 				/*
 				 * // clear inputs iinput =
