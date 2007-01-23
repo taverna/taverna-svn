@@ -42,7 +42,7 @@ import org.embl.ebi.escience.scuflui.spi.RendererSPI;
  * @author Matthew Pocock
  */
 public class FacetsTable extends JPanel {
-	private static final Logger LOG = Logger.getLogger(FacetsTable.class);
+	private static final Logger logger = Logger.getLogger(FacetsTable.class);
 
 	private static final int H_PAD = 2;
 
@@ -210,7 +210,7 @@ public class FacetsTable extends JPanel {
 	}
 
 	protected void resizeAndValidate() {
-		LOG.info("resizeAndValidate: redoing layout: " + dataThing);
+		logger.info("resizeAndValidate: redoing layout: " + dataThing);
 		// this is bruit force - we will probably want to optimize this for
 		// incremental changes to the model
 
@@ -227,14 +227,14 @@ public class FacetsTable extends JPanel {
 		for (Iterator ci = columnModel.columnIterator(); ci.hasNext();) {
 			FTableColumn column = (FTableColumn) ci.next();
 			JComponent heading = makeHeading(column);
-			LOG.info("heading dimensions: " + heading.getPreferredSize());
+			logger.info("heading dimensions: " + heading.getPreferredSize());
 			headings.add(new Header(heading, (int) heading.getPreferredSize()
 					.getWidth()));
 			columns.add(new ArrayList());
 			columnHeaders.add(heading);
 		}
 
-		LOG.info("resizeAndValidate: adding all data rows");
+		logger.info("resizeAndValidate: adding all data rows");
 
 		Iterator rowIt = makeRowIterator();
 		rowHeights = new int[rows];
@@ -262,7 +262,7 @@ public class FacetsTable extends JPanel {
 				}
 
 				JComponent cmp = makeCell(dataObj, ftCol);
-				LOG.info("cell size: " + cmp.getPreferredSize());
+				logger.info("cell size: " + cmp.getPreferredSize());
 				col.add(cmp);
 				table.add(cmp);
 			}
@@ -275,7 +275,7 @@ public class FacetsTable extends JPanel {
 		redoLayout();
 		configureScrolling();
 
-		LOG.info("resizeAndValidate: done");
+		logger.info("resizeAndValidate: done");
 	}
 
 	private void redoGeometry() {
@@ -286,8 +286,8 @@ public class FacetsTable extends JPanel {
 		}
 		headingHeight = 0;
 
-		LOG.info("rows: " + rowHeights.length);
-		LOG.info("columns: " + columnModel.getColumnCount());
+		logger.info("rows: " + rowHeights.length);
+		logger.info("columns: " + columnModel.getColumnCount());
 
 		for (int i = 0; i < columnModel.getColumnCount(); i++) {
 			Header header = (Header) headings.get(i);
@@ -349,9 +349,9 @@ public class FacetsTable extends JPanel {
 		table.setMaximumSize(tableSize);
 		table.setSize(tableSize);
 
-		LOG.info("set table dims to " + tableSize);
+		logger.info("set table dims to " + tableSize);
 		validate();
-		LOG.info("table size is now " + table.getSize());
+		logger.info("table size is now " + table.getSize());
 	}
 
 	private JComponent makeHeading(FTableColumn col) {
@@ -368,7 +368,7 @@ public class FacetsTable extends JPanel {
 				try {
 					cmp = renderer.getComponent(renderers, dataObj);
 				} catch (Exception e) {
-					LOG.error("Problem creating component from renderer", e);
+					logger.error("Problem creating component from renderer", e);
 				}
 			}
 			if (cmp == null) {
@@ -379,7 +379,7 @@ public class FacetsTable extends JPanel {
 						try {
 							cmp = renderer.getComponent(renderers, dataObj);
 						} catch (Exception e) {
-							LOG.error(
+							logger.error(
 									"Problem creating component from renderer",
 									e);
 						}
@@ -521,7 +521,7 @@ public class FacetsTable extends JPanel {
 				DataThing current = exampleThing;
 				Component editor = col.getColID().getCustomiser(current);
 				if (editor == null) {
-					LOG.info("No editor for " + col.getColID());
+					logger.info("No editor for " + col.getColID());
 					return;
 				}
 
@@ -667,7 +667,7 @@ public class FacetsTable extends JPanel {
 			int indx = evt.getToIndex();
 			FTableColumn col = columnModel.getColumn(indx);
 			PropertyChangeEvent cause = evt.getCause();
-			LOG.info("change: " + cause.getPropertyName());
+			logger.info("change: " + cause.getPropertyName());
 			if ("name".equals(cause.getPropertyName())) {
 				Header header = (Header) headings.remove(indx);
 				columnHeaders.remove(header.heading);
