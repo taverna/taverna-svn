@@ -210,7 +210,7 @@ public class FacetsTable extends JPanel {
 	}
 
 	protected void resizeAndValidate() {
-		logger.info("resizeAndValidate: redoing layout: " + dataThing);
+		logger.debug("resizeAndValidate: redoing layout: " + dataThing);
 		// this is bruit force - we will probably want to optimize this for
 		// incremental changes to the model
 
@@ -227,14 +227,14 @@ public class FacetsTable extends JPanel {
 		for (Iterator ci = columnModel.columnIterator(); ci.hasNext();) {
 			FTableColumn column = (FTableColumn) ci.next();
 			JComponent heading = makeHeading(column);
-			logger.info("heading dimensions: " + heading.getPreferredSize());
+			logger.debug("heading dimensions: " + heading.getPreferredSize());
 			headings.add(new Header(heading, (int) heading.getPreferredSize()
 					.getWidth()));
 			columns.add(new ArrayList());
 			columnHeaders.add(heading);
 		}
 
-		logger.info("resizeAndValidate: adding all data rows");
+		logger.debug("resizeAndValidate: adding all data rows");
 
 		Iterator rowIt = makeRowIterator();
 		rowHeights = new int[rows];
@@ -262,7 +262,7 @@ public class FacetsTable extends JPanel {
 				}
 
 				JComponent cmp = makeCell(dataObj, ftCol);
-				logger.info("cell size: " + cmp.getPreferredSize());
+				logger.debug("cell size: " + cmp.getPreferredSize());
 				col.add(cmp);
 				table.add(cmp);
 			}
@@ -275,7 +275,7 @@ public class FacetsTable extends JPanel {
 		redoLayout();
 		configureScrolling();
 
-		logger.info("resizeAndValidate: done");
+		logger.debug("resizeAndValidate: done");
 	}
 
 	private void redoGeometry() {
@@ -286,8 +286,8 @@ public class FacetsTable extends JPanel {
 		}
 		headingHeight = 0;
 
-		logger.info("rows: " + rowHeights.length);
-		logger.info("columns: " + columnModel.getColumnCount());
+		logger.debug("rows: " + rowHeights.length);
+		logger.debug("columns: " + columnModel.getColumnCount());
 
 		for (int i = 0; i < columnModel.getColumnCount(); i++) {
 			Header header = (Header) headings.get(i);
@@ -349,9 +349,9 @@ public class FacetsTable extends JPanel {
 		table.setMaximumSize(tableSize);
 		table.setSize(tableSize);
 
-		logger.info("set table dims to " + tableSize);
+		logger.debug("set table dims to " + tableSize);
 		validate();
-		logger.info("table size is now " + table.getSize());
+		logger.debug("table size is now " + table.getSize());
 	}
 
 	private JComponent makeHeading(FTableColumn col) {
@@ -521,7 +521,7 @@ public class FacetsTable extends JPanel {
 				DataThing current = exampleThing;
 				Component editor = col.getColID().getCustomiser(current);
 				if (editor == null) {
-					logger.info("No editor for " + col.getColID());
+					logger.debug("No editor for " + col.getColID());
 					return;
 				}
 
@@ -667,7 +667,7 @@ public class FacetsTable extends JPanel {
 			int indx = evt.getToIndex();
 			FTableColumn col = columnModel.getColumn(indx);
 			PropertyChangeEvent cause = evt.getCause();
-			logger.info("change: " + cause.getPropertyName());
+			logger.debug("change: " + cause.getPropertyName());
 			if ("name".equals(cause.getPropertyName())) {
 				Header header = (Header) headings.remove(indx);
 				columnHeaders.remove(header.heading);

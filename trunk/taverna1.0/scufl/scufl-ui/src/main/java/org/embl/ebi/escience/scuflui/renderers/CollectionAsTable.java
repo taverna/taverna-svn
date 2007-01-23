@@ -55,11 +55,11 @@ public class CollectionAsTable
     public JComponent getComponent(RendererRegistry renderers,
                                    DataThing dataThing)
     {
-        LOG.info("" + depth++);
+        LOG.debug("" + depth++);
         if(depth > 4) {
             throw new AssertionError("Depth exceeded");
         }
-        LOG.info(getName() + " getComponent for " + dataThing);
+        LOG.debug(getName() + " getComponent for " + dataThing);
 
         DataThing ourThing = dataThing;
         if(dataThing.getDataObject() instanceof Collection) {
@@ -74,12 +74,12 @@ public class CollectionAsTable
         List finders = facetReg.getFinders(ourThing);
         FTableColumnModel columns = new FTableColumnModel();
 
-        LOG.info(getName() + " Finders: (" + finders.size() + ") " + finders);
+        LOG.debug(getName() + " Finders: (" + finders.size() + ") " + finders);
         for(Iterator i = finders.iterator(); i.hasNext(); ) {
             FacetFinderSPI finder = (FacetFinderSPI) i.next();
-            LOG.info(getName() + " finder: " + finder);
+            LOG.debug(getName() + " finder: " + finder);
             Set cols = finder.getStandardColumns(ourThing);
-            LOG.info(getName() + " Columns: (" + cols.size() + ") " + cols);
+            LOG.debug(getName() + " Columns: (" + cols.size() + ") " + cols);
             for(Iterator j = cols.iterator(); j.hasNext(); ) {
                 FacetFinderSPI.ColumnID colID = (FacetFinderSPI.ColumnID) j.next();
                 FTableColumn col = new FTableColumn();
@@ -94,13 +94,13 @@ public class CollectionAsTable
         }
 
         if(columns.getColumnCount() == 0) {
-            LOG.info("nothing" + --depth);
+            LOG.debug("nothing" + --depth);
             return null;
         } else {
             table.setColumnModel(columns);
             table.setDataThing(dataThing);
 
-            LOG.info("table" + --depth);
+            LOG.debug("table" + --depth);
             return table;
         }
     }

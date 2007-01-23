@@ -51,12 +51,12 @@ public class FacetFinderRegistry extends TavernaSPIRegistry<FacetFinderSPI> {
 	 * @return a (possibly empty) List of FacetFinderSPI instances
 	 */
 	public List getFinders(DataThing dataThing) {
-		logger.info("Finding facetisers: " + dataThing);
+		logger.debug("Finding facetisers: " + dataThing);
 		List res = new ArrayList();
 		for (FacetFinderSPI finder : findComponents()) {
-			logger.info("\tfound: " + finder.getName());
+			logger.debug("\tfound: " + finder.getName());
 			if (finder.canMakeFacets(dataThing)) {
-				logger.info("\taccepted: " + finder.getName());
+				logger.debug("\taccepted: " + finder.getName());
 				res.add(finder);
 			}
 		}
