@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersionListModel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-01-23 15:15:47 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -42,6 +42,7 @@ import javax.swing.AbstractListModel;
 
 import org.apache.log4j.Logger;
 
+import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.update.profile.ProfileVersion;
 import net.sf.taverna.update.profile.ProfileVersions;
 
@@ -73,8 +74,8 @@ public class ProfileVersionListModel extends AbstractListModel {
 		return versions.size();
 	}
 	
-	private URL getProfileListLocation() throws MalformedURLException{
-		return new URL(System.getProperty("raven.remoteprofiles"));
+	private URL getProfileListLocation() throws MalformedURLException{		
+		return new URL(Bootstrap.properties.getProperty("raven.remoteprofiles"));
 	}
 
 }
