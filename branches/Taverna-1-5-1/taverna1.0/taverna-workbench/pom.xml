@@ -2,13 +2,12 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>taverna-workbench</artifactId>
-  <name>Taverna Workbench</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <name>Taverna Workbench</name>  
   <build>
    
   </build>

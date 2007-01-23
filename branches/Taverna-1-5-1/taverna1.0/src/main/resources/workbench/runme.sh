@@ -31,4 +31,4 @@ ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 #ARGS="$ARGS -Dhttp.proxyHost=<hostname or ip address> -Dhttp.proxyPort=<port>"
 #ARGS="$ARGS -Dhttp.proxyUser=<username> -Dhttp.proxyPassword=<password>"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.1.jar $@

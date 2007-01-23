@@ -29,4 +29,4 @@ ARGS="$ARGS -Draven.target.artifactid=scufl-tools "
 ARGS="$ARGS -Draven.target.class=org.embl.ebi.escience.scufl.tools.WorkflowLauncher "
 ARGS="$ARGS -Draven.target.method=main"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.1.jar $@

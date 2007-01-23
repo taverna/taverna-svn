@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.7.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-15 13:42:38 $
+ * Last modified on   $Date: 2007-01-23 15:43:58 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -71,17 +71,17 @@ public class RavenProperties extends Properties {
 	 */
 	public RavenProperties(File localfile) throws Exception {
 		super();
-//		if (!findRemoteProperties()) {
-//			if (localfile == null || !findLocalProperties(localfile)) {
+		if (!findRemoteProperties()) {
+			if (localfile == null || !findLocalProperties(localfile)) {
 				if (!findResourceProperties()) {
 					throw new Exception("Unable to find raven properties");
 				}
-//			}
-//		} else {
-//			if (localfile != null) {
-//				saveLocalCopy(localfile);
-//			}
-//		}
+			}
+		} else {
+			if (localfile != null) {
+				saveLocalCopy(localfile);
+			}
+		}
 		// Allow overriding any of those on command line
 		putAll(System.getProperties());
 	}

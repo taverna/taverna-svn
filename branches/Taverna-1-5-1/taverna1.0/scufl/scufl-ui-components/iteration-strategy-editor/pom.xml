@@ -2,13 +2,12 @@
   <parent>
     <artifactId>scufl-ui-components</artifactId>
     <groupId>uk.org.mygrid.taverna.scufl</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupId>
   <artifactId>iteration-strategy-editor</artifactId>
-  <name>Iteration Strategy Editor</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <name>Iteration Strategy Editor</name>  
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>

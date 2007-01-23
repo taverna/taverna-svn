@@ -70,9 +70,10 @@ public class LocalRepository implements Repository {
 			this.base = base;
 		}
 		// Fake in our own classloader
-		synchronized (loaderMap) {
-			loaderMap.put(new BasicArtifact("uk.org.mygrid.taverna.raven",
-				"raven", "1.5.1-SNAPSHOT"), new LocalArtifactClassLoader(this,
+		synchronized (loaderMap) {	
+			Artifact a = new BasicArtifact("uk.org.mygrid.taverna.raven",
+					"raven", "1.5.1");
+			loaderMap.put(a, new LocalArtifactClassLoader(this,
 				this.getClass().getClassLoader()));
 		}
 		initialize();

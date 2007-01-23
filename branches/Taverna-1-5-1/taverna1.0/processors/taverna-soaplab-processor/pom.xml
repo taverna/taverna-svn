@@ -2,13 +2,12 @@
   <parent>
     <artifactId>processors</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-soaplab-processor</artifactId>
-  <name>SoapLab Processor</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <name>SoapLab Processor</name>  
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>

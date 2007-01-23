@@ -3,14 +3,14 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>processors</artifactId>
   <packaging>pom</packaging>
   <name>Processors</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <version>1.5.1</version>
   <modules>
     <module>taverna-apiconsumer-processor</module>
     <module>taverna-beanshell-processor</module>

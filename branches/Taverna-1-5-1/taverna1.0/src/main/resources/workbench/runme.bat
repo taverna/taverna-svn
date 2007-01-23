@@ -10,6 +10,6 @@ REM set ARGS=%ARGS% -Dtaverna.repository=<directory>
 
 REM uncomment and complete the next line to set http proxy settings, and the 2nd line if authentication is required
 REM set ARGS=%ARGS% -Dhttp.proxyHost=<hostname or ip address> -Dhttp.proxyPort=<port>
-REM set ARGS=%ARGS% -Dhttp.proxyUser=<username> -Dhttp.proxyPassword=<password>
+REM set ARGS=%ARGS% "-Dhttp.proxyUser=<username> -Dhttp.proxyPassword=<password>"
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*
+java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.1.jar" %*
