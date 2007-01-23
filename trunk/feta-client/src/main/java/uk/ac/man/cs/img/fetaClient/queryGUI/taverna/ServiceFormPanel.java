@@ -444,7 +444,7 @@ public class ServiceFormPanel extends JTabbedPane {
 		editor.setEditable(false);
 		editor.setOpaque(false);
 		editor.setLineWrap(true);
-		//editor.setWrapStyleWord(true);
+		editor.setWrapStyleWord(true);
 		//editor.setAlignmentX(Component.LEFT_ALIGNMENT);
 		// Avoid stealing all width
 		editor.setMinimumSize(new Dimension(25, 10));
