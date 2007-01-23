@@ -28,6 +28,7 @@ import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.zaria.ZBasePane.NamedRavenComponentSpecifier;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 @SuppressWarnings("serial")
@@ -44,7 +45,7 @@ public class ZRavenComponent extends ZPane {
 	private SpiRegistry registry = null;
 	private String sharedName = "";
 	
-	private Action toggleScroll = new ToggleScrollPaneAction();
+	private ToggleScrollPaneAction toggleScroll = new ToggleScrollPaneAction();
 	private Action selectSPI = new SelectSPIAction();
 	private Action selectInstance = new SelectInstanceAction();
 	private Action nameComponent = new NameComponentAction();
@@ -66,43 +67,50 @@ public class ZRavenComponent extends ZPane {
 	}
 	
 	public Element getElement() {
+		Element e;
 		if (sharedName.equals("")) {
-			Element e = new Element("component");
-			if (artifact != null && className != null) {
-				Element ravenElement = new Element("raven");
-				Element groupElement = new Element("group");
-				groupElement.setText(artifact.getGroupId());
-				Element artifactElement = new Element("artifact");
-				artifactElement.setText(artifact.getArtifactId());
-				
-				ravenElement.addContent(groupElement);
-				ravenElement.addContent(artifactElement);
-				
-				if (!artifactExistsInProfile(artifact)) {				
-					Element versionElement = new Element("version");
-					versionElement.setText(artifact.getVersion());
-					ravenElement.addContent(versionElement);
-				}
-				
-				Element classNameElement = new Element("classname");
-				classNameElement.setText(className);
-				
-				Element spiNameElement = new Element("interface");
-				spiNameElement.setText(spiName);
-				
-				e.addContent(ravenElement);
-				e.addContent(classNameElement);
-				e.addContent(spiNameElement);
-			}
-			return e;
+			e = new Element("component");
+		} else {
+			e = new Element("namedcomponent");
 		}
-		else {
-			Element e = new Element("namedcomponent");
+		e.setAttribute("scroll", hasScrollPane ? "true" : "false");
+
+		if (e.getName().equals("namedcomponent")) {
 			Element nameElement = new Element("name");
 			nameElement.setText(sharedName);
 			e.addContent(nameElement);
 			return e;
 		}
+		if (artifact == null || className != null) {
+			logger.warn("Can't serialize null-valued artifact or className");
+			return e;
+		}
+		Element ravenElement = new Element("raven");
+		Element groupElement = new Element("group");
+		groupElement.setText(artifact.getGroupId());
+		Element artifactElement = new Element("artifact");
+		artifactElement.setText(artifact.getArtifactId());
+
+		ravenElement.addContent(groupElement);
+		ravenElement.addContent(artifactElement);
+
+		if (!artifactExistsInProfile(artifact)) {
+			Element versionElement = new Element("version");
+			versionElement.setText(artifact.getVersion());
+			ravenElement.addContent(versionElement);
+		}
+
+		Element classNameElement = new Element("classname");
+		classNameElement.setText(className);
+
+		Element spiNameElement = new Element("interface");
+		spiNameElement.setText(spiName);
+
+		e.addContent(ravenElement);
+		e.addContent(classNameElement);
+		e.addContent(spiNameElement);
+
+		return e;
 	}
 
 	public void unsetSharedName() {
@@ -111,27 +119,27 @@ public class ZRavenComponent extends ZPane {
 	}
 	
 	public void setSharedName(String name) {
-		this.sharedName = name;
+		sharedName = name;
 		// Either fetch a component from the base pane with this name
 		// or we're creating a new one.
 		JComponent jc = getRoot().getNamedComponent(name);
 		if (jc != null) {
-			if (jc.getParent()!=null) {
+			if (jc.getParent() != null) {
 				JComponent parent = (JComponent) jc.getParent();
 				// Remove from any existing parent just in case
 				jc.getParent().remove(jc);
 				parent.revalidate();
 				parent.repaint();
-				
+
 			}
 			setComponent(jc);
-		}
-		else {
+		} else {
 			// Create a new shared component entry in the basepane
-			NamedRavenComponentSpecifier nrcs = 
-				getRoot().new NamedRavenComponentSpecifier(artifact, className, name);
+			NamedRavenComponentSpecifier nrcs =
+				getRoot().new NamedRavenComponentSpecifier(artifact, className,
+					name);
 			getRoot().namedComponentDefinitions.put(name, nrcs);
-			if (this.contents != null) {
+			if (contents != null) {
 				getRoot().namedComponents.put(name, this.contents);
 			}
 		}
@@ -140,71 +148,84 @@ public class ZRavenComponent extends ZPane {
 	
 	public void configure(Element confElement) {
 		Element e = confElement.getChild("component");
-		if (e!=null) {
-			Element spiNameElement = e.getChild("interface");
-			if (spiNameElement != null) {
-				this.setSPI(spiNameElement.getTextTrim());
-			}
-			Element ravenElement = e.getChild("raven");
-			if (ravenElement != null) {
-				String groupId=ravenElement.getChild("group").getTextTrim();
-				String artifactId=ravenElement.getChild("artifact").getTextTrim();
-				String version=null;
-				if (ravenElement.getChild("version")!=null) {
-					version=ravenElement.getChild("version").getTextTrim();
-				}				
-				
-				//if no version defined, use the version defined in the profile
-				if (version==null) {
-					Profile profile=ProfileFactory.getInstance().getProfile();
-					artifact=profile.discoverArtifact(groupId,artifactId);
-				}
-				else {
-					artifact = new BasicArtifact(groupId,artifactId,version);
-				}
-			}
-			Element classNameElement = e.getChild("classname");
-			if (classNameElement != null) {
-				className = classNameElement.getTextTrim();
-			}
-			if (className != null) {
-				ClassLoader acl;
-				try {
-					try {
-						acl = getRoot().getRepository().getLoader(artifact, null);
-					}
-					catch(ArtifactNotFoundException ex) { //add to repository if it doesn't exist
-						logger.info("Fetching artifact for ZRavenComponent:"+artifact.getGroupId()+":"+artifact.getArtifactId());
-						getRoot().getRepository().addArtifact(artifact);
-						getRoot().getRepository().update();
-						acl = getRoot().getRepository().getLoader(artifact, null);
-					}
-					Class theClass = acl.loadClass(className);
-					setComponent(getRoot().getComponent(theClass));
-				} catch (ArtifactNotFoundException ex) {
-					logger.warn("Could not find artifact " + artifact, ex);
-				} catch (ArtifactStateException ex) {
-					logger.warn("Invalid state for artifact " + artifact, ex);
-				} catch (ClassNotFoundException ex) {
-					logger.warn("Class not found: " + className, ex);
-				}
-			}
-		}
-		else {
+		if (e == null) {
+			// Try as named component instead
 			e = confElement.getChild("namedcomponent");
-			if (e!=null) {
-				Element componentNameElement = e.getChild("name");
-				String componentName = componentNameElement.getTextTrim();
-				JComponent jc = getRoot().getNamedComponent(componentName);
-				if (jc.getParent()!=null) {
-					jc.getParent().remove(jc);
-				}
-				setComponent(jc);
-				this.sharedName=componentName;
+			if (e == null) {
+				logger.warn("Could not find either <component> or <namedcomponent> in " + confElement);
+				return;
 			}
 		}
-	}
-	
+		Attribute scroll = e.getAttribute("scroll");
+		if (scroll == null) {
+			setScroll(true); // default behaviour in Taverna 1.5.0
+		} else {
+			setScroll(scroll.getValue().equals("true"));
+		}
+		
+		if (e.getName().equals("namedcomponent")) {
+			Element componentNameElement = e.getChild("name");
+			String componentName = componentNameElement.getTextTrim();
+			JComponent jc = getRoot().getNamedComponent(componentName);
+			if (jc.getParent() != null) {
+				jc.getParent().remove(jc);
+			}
+			setComponent(jc);
+			sharedName = componentName;
+			return;
+		}
+		Element spiNameElement = e.getChild("interface");
+		if (spiNameElement != null) {
+			this.setSPI(spiNameElement.getTextTrim());
+		}
+		Element ravenElement = e.getChild("raven");
+		if (ravenElement != null) {
+			String groupId = ravenElement.getChild("group").getTextTrim();
+			String artifactId =
+				ravenElement.getChild("artifact").getTextTrim();
+			String version = null;
+			if (ravenElement.getChild("version") != null) {
+				version = ravenElement.getChild("version").getTextTrim();
+			}
+
+			// if no version defined, use the version defined in the profile
+			if (version == null) {
+				Profile profile = ProfileFactory.getInstance().getProfile();
+				artifact = profile.discoverArtifact(groupId, artifactId);
+			} else {
+				artifact = new BasicArtifact(groupId, artifactId, version);
+			}
+		}
+		Element classNameElement = e.getChild("classname");
+		if (classNameElement != null) {
+			className = classNameElement.getTextTrim();
+		}
+		if (className != null) {
+			ClassLoader acl;
+			try {
+				try {
+					acl = getRoot().getRepository().getLoader(artifact, null);
+				} catch (ArtifactNotFoundException ex) { 
+					// add to repository if it doesn't exist
+					logger.info("Fetching artifact for ZRavenComponent:"
+						+ artifact.getGroupId() + ":"
+						+ artifact.getArtifactId());
+					getRoot().getRepository().addArtifact(artifact);
+					getRoot().getRepository().update();
+					acl = getRoot().getRepository().getLoader(artifact, null);
+				}
+				Class theClass = acl.loadClass(className);
+				setComponent(getRoot().getComponent(theClass));
+			} catch (ArtifactNotFoundException ex) {
+				logger.warn("Could not find artifact " + artifact, ex);
+			} catch (ArtifactStateException ex) {
+				logger.warn("Invalid state for artifact " + artifact, ex);
+			} catch (ClassNotFoundException ex) {
+				logger.warn("Class not found: " + className, ex);
+			}
+		}
+	} 
+
 	public List<Action> getActions() {
 		return actions;
 	}
@@ -237,6 +258,32 @@ public class ZRavenComponent extends ZPane {
 		getRoot().registerComponent(this.contents);
 		toggleScroll.setEnabled(true);
 		getRoot().revalidate();
+	}
+	
+	/**
+	 * Enable or disable scrollpane. By default, a scroll panel is enabled.
+	 * 
+	 * @param scroll true if scrollpane is to be used
+	 */
+	public void setScroll(boolean scroll) {
+		hasScrollPane = scroll;
+		contentArea.removeAll();
+		toggleScroll.updateState();
+		if (contents == null) {
+			// Too early to set the contentArea
+			return;
+		}
+		if (hasScrollPane) {
+			JScrollPane sp = new JScrollPane(contents,
+					JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			sp.setPreferredSize(new Dimension(0,0));
+			contentArea.add(sp,	BorderLayout.CENTER);
+		} else {
+			contentArea.add(contents, BorderLayout.CENTER);
+		}
+		repaint();
+		revalidate();
 	}
 	
 	/**
@@ -395,7 +442,8 @@ public class ZRavenComponent extends ZPane {
 	/**
 	 * Action to toggle whether the contents are shown within
 	 * a scroll pane or directly within the panel
-	 * @author Tom
+	 * 
+	 * @author Tom Oinn
 	 */
 	public class ToggleScrollPaneAction extends AbstractAction {
 
@@ -405,7 +453,7 @@ public class ZRavenComponent extends ZPane {
 			updateState();
 		}
 		
-		private void updateState() {
+		public void updateState() {
 			if (hasScrollPane) {
 				// Set state for button to remove pane
 				putValue(Action.SHORT_DESCRIPTION,"Disable scroll pane");
@@ -423,23 +471,10 @@ public class ZRavenComponent extends ZPane {
 				setEnabled(true);
 			}
 		}
-		
-		public void actionPerformed(ActionEvent arg0) {
-			contentArea.removeAll();
-			hasScrollPane = !hasScrollPane;
-			if (hasScrollPane) {
-				JScrollPane sp = new JScrollPane(contents,
-						JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-						JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-				sp.setPreferredSize(new Dimension(0,0));
-				contentArea.add(sp,	BorderLayout.CENTER);
-			}
-			else {
-				contentArea.add(contents, BorderLayout.CENTER);
-			}
-			repaint();
-			revalidate();
-			updateState();
+
+		public void actionPerformed(ActionEvent ev) {
+			// Flip
+			setScroll(! hasScrollPane);
 		}
 		
 	}
