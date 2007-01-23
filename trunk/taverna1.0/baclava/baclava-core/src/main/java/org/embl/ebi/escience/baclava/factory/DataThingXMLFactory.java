@@ -196,11 +196,11 @@ public class DataThingXMLFactory {
 		// now we're good.
 		String collectionType = e.getAttributeValue("type");		
 		Element itemListElement = e.getChild("itemList", namespace);
-		Collection result = null;
+		Collection<Object> result = null;
 		if (collectionType.equals("list")) {
-			result = new ArrayList();
+			result = new ArrayList<Object>();
 		} else {
-			result = new HashSet();
+			result = new HashSet<Object>();
 		}
 
 		for (Iterator i = itemListElement.getChildren().iterator(); i.hasNext();) {
@@ -312,8 +312,7 @@ public class DataThingXMLFactory {
 			}
 		}
 		// Convert to base64
-		logger
-				.info("Size of binary data is " + theBytes.length
+		logger.debug("Size of binary data is " + theBytes.length
 						+ " bytes.");
 		realDataElement.setText(Base64.encodeBytes(theBytes));
 		dataElement.addContent(realDataElement);

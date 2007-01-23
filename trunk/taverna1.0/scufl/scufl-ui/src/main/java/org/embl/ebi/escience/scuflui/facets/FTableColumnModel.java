@@ -133,9 +133,9 @@ public class FTableColumnModel {
 	protected void fireColumnChanged(PropertyChangeEvent pce) {
 		FTableColumnModelEvent evt = new FTableColumnModelEvent(this, -1,
 				columns.indexOf(pce.getSource()), pce);
-		LOG.info("PCE: " + evt);
+		LOG.debug("PCE: " + evt);
 		if (evt.getToIndex() == -1) {
-			LOG.info("The source object may be wrong");
+			LOG.debug("The source object may be wrong");
 		}
 		List local;
 		synchronized (listeners) {

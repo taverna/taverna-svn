@@ -53,7 +53,7 @@ public class PropertySheet
      */
     public PropertySheet(final Object bean)
     {
-        LOG.info("Creating property sheet for bean " + bean.getClass().getName());
+        LOG.debug("Creating property sheet for bean " + bean.getClass().getName());
 
         try {
             setLayout(new GridBagLayout());
@@ -75,24 +75,24 @@ public class PropertySheet
                 final Method read = pd.getReadMethod();
                 final Method write = pd.getWriteMethod();
 
-                LOG.info("Property: " + pd.getName());
+                LOG.debug("Property: " + pd.getName());
 
                 if(read != null && write != null) {
-                    LOG.info("mutable");
+                    LOG.debug("mutable");
                     Class propType = read.getReturnType();
-                    LOG.info("of type: " + propType.getName());
+                    LOG.debug("of type: " + propType.getName());
                     final PropertyEditor pe = PropertyEditorManager.findEditor(propType);
                     if(pe == null) {
-                        LOG.info("no property editor");
+                        LOG.debug("no property editor");
                     } else {
-                        LOG.info("got editor: " + pe);
+                        LOG.debug("got editor: " + pe);
                         pe.setValue(read.invoke(bean, new Object[] {}));
                         if(pe.supportsCustomEditor()) {
-                            LOG.info("custom editor");
+                            LOG.debug("custom editor");
                             Component cmp = pe.getCustomEditor();
                             if(cmp != null) {
                                 // if this fails, give up
-                                LOG.info("got editor comopnent");
+                                LOG.debug("got editor comopnent");
                                 add(new JLabel(pd.getDisplayName()), lhc);
                                 add(cmp, rhc);
                                 lhc.gridy++;
@@ -106,13 +106,13 @@ public class PropertySheet
                             }
                         } else if(pe.isPaintable()) {
                             // how do I handle this?
-                            LOG.info("Paintable - ignoring for now");
+                            LOG.debug("Paintable - ignoring for now");
                         } else {
                             // try to use plain text view I guess
                             String[] vals = pe.getTags();
                             if(vals != null) {
                                 // we have a list of legal items
-                                LOG.info("One of several options");
+                                LOG.debug("One of several options");
                                 final JComboBox options = new JComboBox(vals);
                                 options.setSelectedItem(pe.getAsText());
                                 options.setEditable(false);
@@ -129,14 +129,14 @@ public class PropertySheet
                                 rhc.gridy++;
                             } else {
                                 // we have to work with the raw text
-                                LOG.info("Text input");
+                                LOG.debug("Text input");
                                 final JTextField input = new JTextField(pe.getAsText());
                                 input.setEditable(true);
                                 final Color original = input.getBackground();
                                 input.addPropertyChangeListener(new PropertyChangeListener() {
                                     public void propertyChange(PropertyChangeEvent evt)
                                     {
-                                        LOG.info("property: " + evt.getPropertyName() + " " + evt.getNewValue());
+                                        LOG.debug("property: " + evt.getPropertyName() + " " + evt.getNewValue());
                                     }
                                 });
                                 input.addActionListener(new ActionListener() {
@@ -155,7 +155,7 @@ public class PropertySheet
                                         try {
                                             input.setText(doc.getText(0, doc.getLength()));
 
-                                            LOG.info("focus lost. set text to " + input.getText());
+                                            LOG.debug("focus lost. set text to " + input.getText());
                                         } catch (BadLocationException ble) {
                                             LOG.error(ble);
                                         }
@@ -179,7 +179,7 @@ public class PropertySheet
     private void update(final Method write, final Object bean, final PropertyEditor pe, final PropertyDescriptor pd)
     {
         try {
-            LOG.info("update " + pd.getDisplayName() + " to " + pe.getValue());
+            LOG.debug("update " + pd.getDisplayName() + " to " + pe.getValue());
             write.invoke(bean,
                          new Object[] { pe.getValue() });
         } catch (IllegalAccessException e) {
@@ -204,7 +204,7 @@ public class PropertySheet
          */
         public Editor()
         {
-            LOG.info("Creating new PropertySheet.Editor");
+            LOG.debug("Creating new PropertySheet.Editor");
             child = new JPanel();
             child.setLayout(new BorderLayout());
         }
@@ -223,7 +223,7 @@ public class PropertySheet
         {
             super.setValue(value);
 
-            LOG.info("Seting value in PropertySheet.Editor to " + value);
+            LOG.debug("Setting value in PropertySheet.Editor to " + value);
 
             child.removeAll();
             child.add(new PropertySheet(value), BorderLayout.CENTER);
