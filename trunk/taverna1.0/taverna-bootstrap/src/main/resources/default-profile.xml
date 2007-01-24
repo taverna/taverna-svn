@@ -1,4 +1,4 @@
-<profile version="1.5.0.1-SNAPSHOT" name="Taverna Workbench">	
+<profile version="1.5.1.0-SNAPSHOT" name="Taverna Workbench">	
 
 	<!--  processors -->			
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1-SNAPSHOT"/>
@@ -29,6 +29,8 @@
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="enactor-event-monitor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="dot-text-area" version="1.5.1-SNAPSHOT"/>	
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="workflow-instance-container" version="1.5.1-SNAPSHOT"/>
+	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-text-area" version="1.5.1-SNAPSHOT"/>
+	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-tree" version="1.5.1-SNAPSHOT"/>
 	
 	<!-- perspectives -->
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-design" version="1.5.1-SNAPSHOT"/>
