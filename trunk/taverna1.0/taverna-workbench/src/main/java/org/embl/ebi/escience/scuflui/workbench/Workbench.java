@@ -74,7 +74,6 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.actions.ImportWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.ImportWorkflowFromURLAction;
-import org.embl.ebi.escience.scuflui.actions.LoadWorkflowAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromURLAction;
 import org.embl.ebi.escience.scuflui.actions.RunWorkflowAction;
