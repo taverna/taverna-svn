@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 12:09:33 $
+ * Last modified on   $Date: 2007-01-24 13:42:18 $
  *               by   $Author: sowen70 $
  * Created on 28-Jun-2006
  *****************************************************************/
@@ -141,7 +141,7 @@ public class TavernaIcons {
             copyIcon = new ImageIcon(c.getResource("icons/generic/copy.png"));
             pasteIcon = new ImageIcon(c.getResource("icons/generic/paste.png"));
             searchIcon = new ImageIcon(c
-                    .getResource("icons/generic/search.png"));
+                    .getResource("icons/generic/search.png"));            
             updateIcon = new ImageIcon(c
                     .getResource("icons/generic/update.png"));
             updateRecommendedIcon = new ImageIcon(c
