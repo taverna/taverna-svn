@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 12:09:33 $
+ * Last modified on   $Date: 2007-01-24 16:39:29 $
  *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -119,7 +120,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 	 * @param url URL to workflow to load.
 	 */
 	public void openFromURL(final URL url) {
-		new Thread(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				final ScuflModel model = getModel();
 				boolean workflowOpened = false;
@@ -162,7 +163,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 					
 				}
 			}
-		}).start();
+		});
 	}
 	
 	protected ScuflModel getModel() {

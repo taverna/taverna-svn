@@ -136,17 +136,22 @@ public class ZSplitPane extends ZPane {
 				
 				total = total - splitPane.getDividerSize();
 		
-				
-		double dividerLocation = splitPane.getDividerLocation();		
-		if (dividerLocation < 0)
-			dividerLocation = 0; // when the divider is far to one side, it
-									// the dividerlocation results in being
-									// negative (?!), setting to 0 prevents an
-									// error on reload it gives the correct
-									// approximate location		
-		double ratio;		
-		if (total<=0) ratio=0;
-		else  ratio = dividerLocation / total;
+		double ratio;
+		
+		if (getWidth()==0) {				
+			ratio=this.dividerLocation;
+		}
+		else {
+			double dividerLocation = splitPane.getDividerLocation();		
+			if (dividerLocation < 0)
+				dividerLocation = 0; // when the divider is far to one side, it
+										// the dividerlocation results in being
+										// negative (?!), setting to 0 prevents an
+										// error on reload it gives the correct
+										// approximate location						
+			if (total<=0) ratio=0;
+			else  ratio = dividerLocation / total;
+		}
 		return ratio;
 	}
 
