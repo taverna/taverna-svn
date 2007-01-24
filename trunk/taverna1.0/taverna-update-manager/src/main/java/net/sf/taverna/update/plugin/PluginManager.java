@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.20 $
+ * Revision           $Revision: 1.21 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-01-24 16:47:37 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -464,7 +464,7 @@ public class PluginManager implements PluginListener {
 			synchronized (updatedPlugins) {
 				Plugin newPlugin = getUpdate(plugin);
 				updatedPlugins.remove(newPlugin);
-				newPlugin.setEnabled(plugin.isEnabled());
+				newPlugin.setEnabled(true); //enable newly updated plugin
 				removePlugin(plugin);
 				addPlugin(newPlugin);								
 				savePlugins();
