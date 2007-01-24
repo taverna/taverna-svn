@@ -72,6 +72,8 @@ import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.ImportWorkflowFromFileAction;
+import org.embl.ebi.escience.scuflui.actions.ImportWorkflowFromURLAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromURLAction;
 import org.embl.ebi.escience.scuflui.actions.RunWorkflowAction;
@@ -746,12 +748,16 @@ public class Workbench extends JFrame {
 			menu.add(newWorkflow);
 
 			menu.add(new JMenuItem(new OpenWorkflowFromFileAction(this)));
-			menu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));
+			menu.add(new JMenuItem(new OpenWorkflowFromURLAction(this)));			
 			menu.addSeparator();
 			menu.add(new JMenuItem(closeWorkflowAction()));
-
+						
 			menu.addSeparator();
 			menu.add(new JMenuItem(new SaveWorkflowAction(this)));
+			
+			menu.addSeparator();
+			menu.add(new JMenuItem(new ImportWorkflowFromFileAction(this)));
+			menu.add(new JMenuItem(new ImportWorkflowFromURLAction(this)));
 
 			menu.addSeparator();
 			menu.add(new JMenuItem(new RunWorkflowAction(this)));

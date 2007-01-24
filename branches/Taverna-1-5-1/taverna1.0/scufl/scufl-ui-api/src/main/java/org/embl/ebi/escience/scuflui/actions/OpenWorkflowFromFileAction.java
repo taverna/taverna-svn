@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.6.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-19 15:50:12 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-01-24 17:44:07 $
+ *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
@@ -43,6 +43,7 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -65,10 +66,14 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 	private Component parentComponent;
 
 	public OpenWorkflowFromFileAction(Component parentComponent) {
+		initialise();
+		this.parentComponent=parentComponent;		
+	}
+	
+	protected void initialise() {
 		putValue(SMALL_ICON, TavernaIcons.openIcon);
 		putValue(NAME, "Open workflow ...");
-		putValue(SHORT_DESCRIPTION, "Open a workflow from a file");
-		this.parentComponent=parentComponent;
+		putValue(SHORT_DESCRIPTION, "Open a workflow from a file into a new workflow");
 	}
 
 	/*
@@ -115,9 +120,9 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 	 * @param url URL to workflow to load.
 	 */
 	public void openFromURL(final URL url) {
-		new Thread(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final ScuflModel model = new ScuflModel();
+				final ScuflModel model = getModel();
 				boolean workflowOpened = false;
 				try {
 					// todo: does the update need running in the AWT thread?
@@ -158,6 +163,10 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 					
 				}
 			}
-		}).start();
+		});
+	}
+	
+	protected ScuflModel getModel() {
+		return new ScuflModel();
 	}
 }

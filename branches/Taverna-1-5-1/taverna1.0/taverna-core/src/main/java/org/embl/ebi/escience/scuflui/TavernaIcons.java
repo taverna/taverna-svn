@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaIcons.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.9.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-12 16:54:31 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2007-01-24 17:44:07 $
+ *               by   $Author: sowen70 $
  * Created on 28-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui;
@@ -48,7 +48,7 @@ public class TavernaIcons {
             constraintIcon, findIcon, folderOpenIcon, folderClosedIcon,
             newIcon, newInputIcon, newListIcon, inputValueIcon, xmlNodeIcon,
             leafIcon, windowRun, windowScavenger, windowInput, windowDiagram,
-            windowExplorer, saveIcon, importIcon, openurlIcon, pauseIcon,
+            windowExplorer, saveIcon, importIcon,importUrlIcon,importFileIcon, openurlIcon, pauseIcon,
             playIcon, stopIcon, breakIcon, rbreakIcon, tickIcon, openMenuIcon,
             saveMenuIcon, databaseIcon, renameIcon, classIcon,
             selectedClassIcon, nullIcon, copyIcon, pasteIcon, searchIcon,
@@ -112,6 +112,10 @@ public class TavernaIcons {
                     .getResource("icons/generic/savepng.gif"));
             importIcon = new ImageIcon(c
                     .getResource("icons/generic/import.gif"));
+            importFileIcon = new ImageIcon(c
+                    .getResource("icons/generic/fileimport.png"));
+            importUrlIcon = new ImageIcon(c
+                    .getResource("icons/generic/urlimport.png"));
             openurlIcon = new ImageIcon(c
                     .getResource("icons/generic/openurl.gif"));
             openIcon = new ImageIcon(c.getResource("icons/generic/open.gif"));
@@ -137,7 +141,7 @@ public class TavernaIcons {
             copyIcon = new ImageIcon(c.getResource("icons/generic/copy.png"));
             pasteIcon = new ImageIcon(c.getResource("icons/generic/paste.png"));
             searchIcon = new ImageIcon(c
-                    .getResource("icons/generic/search.png"));
+                    .getResource("icons/generic/search.png"));            
             updateIcon = new ImageIcon(c
                     .getResource("icons/generic/update.png"));
             updateRecommendedIcon = new ImageIcon(c

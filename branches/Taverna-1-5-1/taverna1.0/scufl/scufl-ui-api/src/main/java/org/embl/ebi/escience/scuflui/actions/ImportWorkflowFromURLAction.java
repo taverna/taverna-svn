@@ -24,66 +24,41 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: OpenWorkflowFromURLAction.java,v $
- * Revision           $Revision: 1.5.2.1 $
+ * Filename           $RCSfile: ImportWorkflowFromURLAction.java,v $
+ * Revision           $Revision: 1.1.2.2 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-01-24 17:44:07 $
  *               by   $Author: sowen70 $
- * Created on 20 Nov 2006
+ * Created on 24 Jan 2007
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.prefs.Preferences;
 
-import javax.swing.AbstractAction;
-import javax.swing.JOptionPane;
-
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 
-/**
- *
- * @author David Withers
- */
 @SuppressWarnings("serial")
-public class OpenWorkflowFromURLAction extends OpenWorkflowFromFileAction {
+public class ImportWorkflowFromURLAction extends OpenWorkflowFromURLAction{
 
-	private Component parentComponent;
-	
-	public OpenWorkflowFromURLAction(Component parentComponent) {
-		super(parentComponent);				
+	public ImportWorkflowFromURLAction(Component parentComponent) {
+		super(parentComponent);		
 	}
 	
 	protected void initialise() {
-		putValue(SMALL_ICON, TavernaIcons.openurlIcon);
-		putValue(NAME, "Open workflow location ...");
-		putValue(SHORT_DESCRIPTION, "Open a workflow from the web into a new worklflow");
+		putValue(SMALL_ICON, TavernaIcons.importUrlIcon);
+		putValue(NAME, "Import workflow location ...");
+		putValue(SHORT_DESCRIPTION, "Import a workflow from the web into the current workflow");
 	}
 
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		Preferences prefs = Preferences.userNodeForPackage(OpenWorkflowFromURLAction.class);
-		String currentUrl = prefs
-				.get("currentUrl", "http://");
-		
-		try {
-			String url = (String) JOptionPane.showInputDialog(parentComponent,
-					"Enter the URL of a workflow definition to load",
-					"Workflow URL", JOptionPane.QUESTION_MESSAGE, null, null,
-					currentUrl);
-			if (url != null) {
-				prefs.put("currentUrl", url);
-				openFromURL(new URL(url));
-			}
-		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(parentComponent,
-					"Problem opening workflow from web : \n" + ex.getMessage(),
-					"Error!", JOptionPane.ERROR_MESSAGE);
-		}
+	@Override
+	protected ScuflModel getModel() {
+		return (ScuflModel)ModelMap.getInstance().getNamedModel(ModelMap.CURRENT_WORKFLOW);
 	}
+	
+	
 
+	
+	
 }

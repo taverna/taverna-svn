@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TavernaPluginSite.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.2.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 16:25:45 $
+ * Last modified on   $Date: 2007-01-24 17:44:08 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -77,7 +77,7 @@ public class TavernaPluginSite extends PluginSite {
 		URL pluginsURL=null;
 		for (URL url : urls) {
 			try {
-				pluginsURL=new URL(url,"plugins.xml");
+				pluginsURL=new URL(url,"pluginlist.xml");
 				URLConnection con=pluginsURL.openConnection();
 				InputStream stream=con.getInputStream();
 				stream.close();

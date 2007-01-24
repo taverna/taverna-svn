@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.3.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-14 14:10:37 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-24 17:44:08 $
+ *               by   $Author: sowen70 $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -198,7 +198,11 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 				locatePort(name);
 			} catch (UnknownPortException upe) {
 				Port newPort = new OutputPort(this, name);
-				newPort.setSyntacticType("l('text/plain')");
+				if (attribute.getAttributes() != null) {
+					newPort.setSyntacticType("l(l('text/plain'))");
+				} else {
+					newPort.setSyntacticType("l('text/plain')");
+				}
 				addPort(newPort);
 			}
 		}
