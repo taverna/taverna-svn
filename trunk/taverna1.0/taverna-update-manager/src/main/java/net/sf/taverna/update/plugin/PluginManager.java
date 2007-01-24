@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.21 $
+ * Revision           $Revision: 1.22 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 16:47:37 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-24 17:30:29 $
+ *               by   $Author: davidwithers $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -64,6 +64,8 @@ import net.sf.taverna.utils.MyGridConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -330,6 +332,7 @@ public class PluginManager implements PluginListener {
 	public List<Plugin> getPluginsFromSite(PluginSite pluginSite) {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
+		setProxy(client);
 		
 		URI pluginSiteURI;
 		try {
@@ -631,6 +634,27 @@ public class PluginManager implements PluginListener {
 			}
 		}
 		return result;
+	}
+	
+	private void setProxy(HttpClient client) {
+		String host = System.getProperty("http.proxyHost");
+		String port = System.getProperty("http.proxyPort");
+		String user = System.getProperty("http.proxyUser");
+		String password = System.getProperty("http.proxyPassword");
+
+		if (host != null && port != null) {
+			try {
+				int portInteger = Integer.parseInt(port);
+				client.getHostConfiguration().setProxy(host, portInteger);
+				if (user != null && password != null) {
+					client.getState().setProxyCredentials(
+							new AuthScope(host, portInteger),
+							new UsernamePasswordCredentials(user, password));
+				}
+			} catch (NumberFormatException e) {
+				logger.error("Proxy port not an integer", e);
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
