@@ -81,7 +81,7 @@ public class ZRavenComponent extends ZPane {
 			e.addContent(nameElement);
 			return e;
 		}
-		if (artifact == null || className != null) {
+		if (artifact == null || className == null) {
 			logger.warn("Can't serialize null-valued artifact or className");
 			return e;
 		}
