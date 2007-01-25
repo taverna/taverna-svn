@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.3.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-01-25 17:00:41 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -69,7 +69,7 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
 	protected List outputNames;
 
-	protected boolean stripAttributes = true;
+	private boolean stripAttributes = false;
 
 	public SOAPResponseEncodedParser(List outputNames) {
 		this.outputNames = outputNames;
@@ -93,12 +93,14 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 
 			Node outputNode = getOutputNode(mainBody, outputName);
 			if (outputNode != null) {
-				String xml;
-				if (stripAttributes) {
+				String xml;				
+				
+				if (stripAttributes) {					
 					stripAttributes(outputNode);
 					outputNode = (Node) removeNamespace(outputName,
 							(Element) outputNode);
 				}
+				
 				xml = XMLUtils.ElementToString((Element) outputNode);
 				result.put(outputName, new DataThing(xml));
 			} else {
@@ -189,4 +191,7 @@ public class SOAPResponseEncodedParser implements SOAPResponseParser {
 		this.stripAttributes = stripAttributes;
 	}
 
+	public boolean getStripAttributes() {
+		return this.stripAttributes;
+	}
 }
