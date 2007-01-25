@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.22 $
+ * Revision           $Revision: 1.23 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 17:30:29 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-25 11:30:34 $
+ *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -342,7 +342,7 @@ public class PluginManager implements PluginListener {
 			return plugins;
 		}
 		
-		URI pluginsXML = pluginSiteURI.resolve("plugins.xml");
+		URI pluginsXML = pluginSiteURI.resolve("pluginlist.xml");
 		
 		HttpMethod getPlugins = new GetMethod(pluginsXML.toString());
 		int statusCode;
