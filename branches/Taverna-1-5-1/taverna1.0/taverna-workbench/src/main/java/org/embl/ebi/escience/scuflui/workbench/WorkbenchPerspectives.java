@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.19 $
+ * Revision           $Revision: 1.19.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-11 17:16:46 $
+ * Last modified on   $Date: 2007-01-25 12:07:58 $
  *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -570,10 +570,15 @@ public class WorkbenchPerspectives {
 		toolBar.removeAll();
 		toolBar.repaint();
 		
-		customPerspectives.clear();
-		perspectiveVisibilityMap.clear();
-		perspectiveVisibilityMenu.removeAll();
-		initialisePerspectives();
+		try {
+			saveAll();		
+			perspectiveVisibilityMap.clear();
+			perspectiveVisibilityMenu.removeAll();
+			initialisePerspectives();
+		}
+		catch(IOException e) {
+			logger.error("Error saving perspectives whilst doing a refresh.",e);
+		}				
 	}
 
 	public void switchPerspective(PerspectiveSPI perspective) {
