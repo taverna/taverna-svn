@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
+ * Last modified on   $Date: 2007-01-25 16:49:17 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -64,6 +64,7 @@ public class SOAPResponseEncodedTest extends TestCase {
 
 		SOAPResponseEncodedParser parser = new SOAPResponseEncodedParser(
 				outputNames);
+		parser.setStripAttributes(true);
 
 		Map outputMap = parser.parse(response);
 

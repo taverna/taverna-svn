@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-01-25 16:49:59 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -94,7 +94,7 @@ public class SOAPResponseEncodedMultiRefParser extends
 			if (outputNode != null) {
 				expandNode(outputNode, new ArrayList());
 				String xml;
-				if (stripAttributes) {
+				if (getStripAttributes()) {
 					stripAttributes(outputNode);
 					outputNode = (Node) removeNamespace(outputName,
 							(Element) outputNode);
