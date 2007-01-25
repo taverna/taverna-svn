@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 The University of Manchester 
+ * Copyright (C) 2006-2007 The University of Manchester 
  *
  * Modifications to the initial code base are copyright of their
  * respective authors, or their employers as appropriate.  Authorship
@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 15:10:44 $
+ * Last modified on   $Date: 2007-01-25 09:38:46 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -37,7 +37,6 @@ import java.net.URL;
 
 import net.sf.taverna.raven.log.Log;
 
-
 /**
  * A factory class for getting an instance of the Profile of the Taverna
  * components according to the profile xml at the location defined by the system
@@ -46,17 +45,17 @@ import net.sf.taverna.raven.log.Log;
  */
 public class ProfileFactory {
 	private static Log logger = Log.getLogger(ProfileFactory.class);
-	
+
 	private static Profile profile = null;
 
 	private static ProfileFactory instance = null;
-	
+
 	/**
 	 * Don't instanciate, use singleton {@link #getInstance()}.
-	 */ 
-	private ProfileFactory() {}
-	
-	
+	 */
+	private ProfileFactory() {
+	}
+
 	/**
 	 * Get the singleton factory.
 	 * 
@@ -67,33 +66,32 @@ public class ProfileFactory {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Get the current system profile as specified by 
-	 * system property <pre>raven.profile</pre>. Subsequent
+	 * system property <code>raven.profile</code>. Subsequent
 	 * calls will return the same instance.
 	 * 
-	 * @return System {@link Profile} instance
+	 * @return Global {@link Profile} instance, or null if an error occured
 	 */
 	public Profile getProfile() {
 		if (profile != null) {
 			return profile;
 		}
-		String profileStr=System.getProperty("raven.profile");
+		String profileStr = System.getProperty("raven.profile");
 		if (profileStr == null) {
 			logger.warn("No profile defined, try specifying -Draven.profile");
 			return null;
 		}
-		try {				
-			URL profileURL = new URL(profileStr);					
+		try {
+			URL profileURL = new URL(profileStr);
 			profile = new Profile(profileURL.openStream(), true);
 			return profile;
 		} catch (Exception e) {
-			logger.warn("Could not fetch profile from: "+profileStr+" using stored profile.", e);	
+			logger.warn("Could not fetch profile from: " + profileStr
+				+ " using stored profile.", e);
 			return null;
-		}								
+		}
 	}
 
-
-	
 }
