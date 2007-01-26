@@ -6,7 +6,7 @@ progname=`basename "$0"`
 saveddir=`pwd`
 
 # need this for relative symlinks
-cd $(dirname "$PRG")
+cd "$(dirname "$PRG")"
 while [ -h "$PRG" ] ; do
     ls=$(ls -ld "$PRG")
     link=`expr "$ls" : '.*-> \(.*\)$'`
@@ -17,7 +17,7 @@ while [ -h "$PRG" ] ; do
     fi
 done
   
-TAVERNA_HOME=`dirname "$PRG"`
+TAVERNA_HOME="`dirname "$PRG"`"
 cd "$saveddir"
 
 ARGS="-Xmx300m"
@@ -31,4 +31,4 @@ ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 #ARGS="$ARGS -Dhttp.proxyHost=<hostname or ip address> -Dhttp.proxyPort=<port>"
 #ARGS="$ARGS -Dhttp.proxyUser=<username> -Dhttp.proxyPassword=<password>"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.1.jar $@
