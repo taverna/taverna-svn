@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 16:39:29 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-01-26 15:11:52 $
+ *               by   $Author: stain $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
@@ -131,24 +131,26 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 							null);
 					workflowOpened = true;
 				} catch (Exception ex) {
+					logger.warn("Can't open in online mode " + url, ex);
 					model.clear();
 					JOptionPane
 							.showMessageDialog(
 									parentComponent,
-									"Problem opening workflow from" + url + ": \n\n"
+									"Problem opening workflow from " + url + ": \n\n"
 											+ ex.getMessage()
 											+ "\n\nLoading workflow in offline mode, "
 											+ "this will allow you to remove any defunct operations.",
-									"Error", JOptionPane.ERROR_MESSAGE);
+									"Warning", JOptionPane.WARNING_MESSAGE);
 					try {
 						model.setOffline(true);
 						XScuflParser.populate(url.openStream(),
 								model, null);
 						workflowOpened = true;
 					} catch (Exception e) {
+						logger.error("Can't open in offline mode" + url, e);
 						JOptionPane.showMessageDialog(parentComponent,
-								"Problem opening workflow from" + url + ": \n\n"
-										+ ex.getMessage(), "Error",
+								"Problem opening workflow from " + url + ": \n\n"
+										+ e.getMessage(), "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
