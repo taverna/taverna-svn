@@ -6,7 +6,7 @@ progname=`basename "$0"`
 saveddir=`pwd`
 
 # need this for relative symlinks
-cd $(dirname "$PRG")
+cd "$(dirname "$PRG")"
 while [ -h "$PRG" ] ; do
     ls=$(ls -ld "$PRG")
     link=`expr "$ls" : '.*-> \(.*\)$'`
@@ -17,7 +17,7 @@ while [ -h "$PRG" ] ; do
     fi
 done
   
-TAVERNA_HOME=`dirname "$PRG"`
+TAVERNA_HOME="`dirname "$PRG"`"
 cd "$saveddir"
 
 ARGS="-Xmx300m"

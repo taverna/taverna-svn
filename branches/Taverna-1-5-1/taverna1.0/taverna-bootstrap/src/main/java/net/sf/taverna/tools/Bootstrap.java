@@ -206,22 +206,22 @@ public class Bootstrap {
 
 	public static void invokeWorkbench(String[] args, Class workbenchClass)
 			throws IllegalAccessException, NoSuchMethodException {		
+		String methodName = properties.getProperty("raven.target.method");
 		try {
 			try {
-				// Try m() first				
-				Method workbenchStatic = workbenchClass.getMethod(properties
-						.getProperty("raven.target.method"));										
-				workbenchStatic.invoke(null);				
-			} catch (NoSuchMethodException ex) {
-				ex.printStackTrace();
-				// Then with m(String[] args)
-				Method workbenchStatic = workbenchClass.getMethod(properties
-						.getProperty("raven.target.method"), String[].class);
+				// Try m(String[] args) first
+				Method workbenchStatic = workbenchClass.getMethod(methodName, 
+					String[].class);
 				workbenchStatic.invoke(null, new Object[] { args });				
+			} catch (NoSuchMethodException ex) {
+				// Try m() instead
+				Method workbenchStatic = workbenchClass.getMethod(methodName);										
+				workbenchStatic.invoke(null);				
 			}
+			} catch (NoSuchMethodException ex) {
+			System.err.println("Could not find method " + methodName);
+			System.exit(6);
 		} catch (InvocationTargetException e) {
-			String methodName = workbenchClass
-					+ properties.getProperty("raven.target.method");
 			System.err.println("Exception occured in " + methodName);
 			e.getCause().printStackTrace();
 			System.exit(5);
@@ -417,8 +417,7 @@ public class Bootstrap {
 		try {
 			ClassLoader c = new URLClassLoader(localUrls.toArray(new URL[0]), null);
 			result = createLoaderMethodWithClassloader(c);
-		}
-		catch(Exception e) {			
+		} catch(Exception e) {
 			//now try with the remote too, this is probably fhe first run and raven needs fetching
 			List<URL> allUrls=new ArrayList<URL>();
 			allUrls.addAll(localUrls);
