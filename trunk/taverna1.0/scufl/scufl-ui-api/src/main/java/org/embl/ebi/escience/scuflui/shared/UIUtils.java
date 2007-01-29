@@ -47,15 +47,17 @@ public class UIUtils {
 					component.onDispose();
 				}
 			});
+
+			newFrame.setSize(sizeX, sizeY);
+			newFrame.setLocation(posX, posY);
+			newFrame.setVisible(true);
+			// Set the icon AFTER making it visible to avoid TAV-395
 			if (component.getIcon() != null) {
 				newFrame.setIconImage(component.getIcon().getImage());
 			}
 			if (component instanceof WorkflowModelViewSPI) {
 				((WorkflowModelViewSPI)component).attachToModel(model);
 			}
-			newFrame.setSize(sizeX, sizeY);
-			newFrame.setLocation(posX, posY);
-			newFrame.setVisible(true);
 		}
 	};
 
