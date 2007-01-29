@@ -48,10 +48,10 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      *      found
      */
     public RendererSPI getRenderer(DataThing dataThing) {
-        logger.info("Finding renderer: " + dataThing);
+        logger.debug("Finding renderer: " + dataThing);
         for (RendererSPI rend : findComponents()) {           
             if (rend.canHandle(this, dataThing)) {
-                logger.info("Found: " + rend.getName());
+                logger.debug("Found: " + rend.getName());
                 return rend;
             }
         }
@@ -66,11 +66,11 @@ public class RendererRegistry extends TavernaSPIRegistry<RendererSPI>{
      * @return a (possibly empty) List of RendererSPI instances
      */
     public List<RendererSPI> getRenderers(DataThing dataThing) {
-        logger.info("Finding renderers: " + dataThing);
+        logger.debug("Finding renderers: " + dataThing);
         List<RendererSPI> res = new ArrayList<RendererSPI>();
         for (RendererSPI rend : findComponents()) {            
             if (rend.canHandle(this, dataThing)) {
-                logger.info("Found: " + rend.getName());
+                logger.debug("Found: " + rend.getName());
                 res.add(rend);
             }
         }
