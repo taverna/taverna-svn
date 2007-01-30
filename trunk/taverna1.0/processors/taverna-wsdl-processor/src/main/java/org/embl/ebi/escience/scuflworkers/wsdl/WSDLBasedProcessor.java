@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.wsdl.Definition;
 import javax.wsdl.PortType;
@@ -328,28 +329,24 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 		for (Iterator j = wsLocations.keySet().iterator(); j.hasNext();) {
 			// Top level iterator over all service locations.
 			String location = (String) j.next();
-			Map operationToProcessorName = (Map) wsLocations.get(location);
+			Map<String, Set<String>> operationToProcessorName = wsLocations.get(location);
 			int rows = 2 + operationToProcessorName.size();
 			sb.append("<tr>");
 			sb.append("<td width=\"80\" valign=\"top\" rowspan=\"" + rows
-					+ "\" bgcolor=\"#a3cd5a\">Web&nbsp;service</td>");
-			sb
-					.append("<td colspan=\"2\" bgcolor=\"#a3cd5a\">WSDL Defined at <em>"
-							+ location + "</em></td>");
+				+ "\" bgcolor=\"#a3cd5a\">Web&nbsp;service</td>");
+			sb.append("<td colspan=\"2\" bgcolor=\"#a3cd5a\">WSDL Defined at <em>"
+				+ location + "</em></td>");
 			sb.append("</tr>");
-			sb
-					.append("<tr><td bgcolor=\"#eeeedd\">Operation name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
-			for (Iterator k = operationToProcessorName.keySet().iterator(); k
-					.hasNext();) {
-				String operationName = (String) k.next();
-				Set processorNames = (Set) operationToProcessorName
-						.get(operationName);
+			sb.append("<tr><td bgcolor=\"#eeeedd\">Operation name</td><td bgcolor=\"#eeeedd\">Processors</td></tr>");
+			for (Entry<String, Set<String>> e : operationToProcessorName.entrySet()) {
+				String operationName = e.getKey();
+				Set<String> processorNames = e.getValue();
 				sb.append("<tr>");
 				sb.append("<td><font color=\"purple\">" + operationName
-						+ "</font></td>");
+					+ "</font></td>");
 				sb.append("<td>");
-				for (Iterator l = processorNames.iterator(); l.hasNext();) {
-					sb.append((String) l.next());
+				for (Iterator<String> l = processorNames.iterator(); l.hasNext();) {
+					sb.append(l.next());
 					if (l.hasNext()) {
 						sb.append(", ");
 					}
