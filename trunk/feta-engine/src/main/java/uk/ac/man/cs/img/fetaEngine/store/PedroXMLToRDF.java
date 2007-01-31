@@ -87,7 +87,7 @@ public class PedroXMLToRDF {
 		Map serviceTypes = new HashMap();
 		serviceTypes.put("soaplab service", "soaplab");
 		serviceTypes.put("wsdl service", "wsdl");
-		serviceTypes.put("workflow Service", "scufl");
+		serviceTypes.put("workflow service", "scufl");
 		serviceTypes.put("biomoby service", "moby");
 		serviceTypes.put("seqhound service", "seqhound");
 		serviceTypes.put("local java widget", "localjava");
