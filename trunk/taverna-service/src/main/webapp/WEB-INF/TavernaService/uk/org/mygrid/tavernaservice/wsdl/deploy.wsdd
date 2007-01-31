@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from TavernaService WSDL service -->
+
+  <service name="Taverna" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://wsdl.tavernaservice.mygrid.org.uk"/>
+      <parameter name="wsdlServiceElement" value="TavernaService"/>
+      <parameter name="schemaQualified" value="http://wsdl.tavernaservice.mygrid.org.uk,http://queue.tavernaservice.mygrid.org.uk"/>
+      <parameter name="wsdlServicePort" value="Taverna"/>
+      <parameter name="className" value="uk.org.mygrid.tavernaservice.wsdl.Taverna"/>
+      <parameter name="wsdlPortType" value="Taverna"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:retNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getResults" qname="operNS:getResults" returnQName="retNS:getResultsReturn" returnType="rtns:anyType" soapAction="">
+        <parameter xmlns:pns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:retNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="runWorkflow" qname="operNS:runWorkflow" returnQName="retNS:runWorkflowReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:workflow" type="tns:string"/>
+        <parameter xmlns:pns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:inputs" type="tns:string"/>
+        <fault xmlns:fns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://queue.tavernaservice.mygrid.org.uk" name="QueueException" qname="fns:fault" class="uk.org.mygrid.tavernaservice.queue.QueueException" type="tns:QueueException"/>
+      </operation>
+      <operation xmlns:operNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:retNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="jobStatus" qname="operNS:jobStatus" returnQName="retNS:jobStatusReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:retNS="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getResultDocument" qname="operNS:getResultDocument" returnQName="retNS:getResultDocumentReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="jobStatus getResultDocument getResults runWorkflow"/>
+
+      <typeMapping xmlns:ns="http://queue.tavernaservice.mygrid.org.uk" qname="ns:QueueException" type="java:uk.org.mygrid.tavernaservice.queue.QueueException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <arrayMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" xmlns:cmp-ns="http://www.w3.org/2001/XMLSchema" qname="ns:&gt;getResultsResponse" type="java:java.lang.Object[]" innerType="cmp-ns:anyType" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;runWorkflowResponse" type="java:uk.org.mygrid.tavernaservice.wsdl.RunWorkflowResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;getResultDocumentResponse" type="java:uk.org.mygrid.tavernaservice.wsdl.GetResultDocumentResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;runWorkflow" type="java:uk.org.mygrid.tavernaservice.wsdl.RunWorkflow" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;jobStatusResponse" type="java:uk.org.mygrid.tavernaservice.wsdl.JobStatusResponse" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;getResultDocument" type="java:uk.org.mygrid.tavernaservice.wsdl.GetResultDocument" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;jobStatus" type="java:uk.org.mygrid.tavernaservice.wsdl.JobStatus" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.tavernaservice.mygrid.org.uk" qname="ns:&gt;getResults" type="java:uk.org.mygrid.tavernaservice.wsdl.GetResults" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+  </service>
+</deployment>
