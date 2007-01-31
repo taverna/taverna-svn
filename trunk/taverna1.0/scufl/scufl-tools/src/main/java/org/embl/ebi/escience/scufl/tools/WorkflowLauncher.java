@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 10:44:52 $
+ * Last modified on   $Date: 2007-01-31 10:46:15 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -445,11 +445,11 @@ public class WorkflowLauncher {
 			formatter.printHelp("executeworkflow <workflow> [..]\n"
 					+ "Execute workflow and save outputs. "
 					+ "Inputs can be specified by multiple "
-					+ "--input options, or loaded from an "
+					+ "-input options, or loaded from an "
 					+ "XML input document as saved from "
 					+ "Taverna. By default, a new directory "
 					+ "is created named workflow.xml_output "
-					+ "unless the --output or --outputdoc"
+					+ "unless the -output or -outputdoc"
 					+ "options are given. All files to be read "
 					+ "can be either a local file or an URL.", options);
 			System.exit(0);
