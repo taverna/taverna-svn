@@ -25,18 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.4.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-09 16:48:20 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-01-31 14:25:43 $
+ *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
-
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.tools.Bootstrap;
-import net.sf.taverna.utils.MyGridConfiguration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,6 +44,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -131,11 +131,12 @@ public class WorkflowLauncher {
 			UnknownProcessorException, UnknownPortException,
 			DuplicateProcessorNameException, MalformedNameException,
 			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException {	
+		initialiseSPIRegistry();
 		model = openWorkflowModel(xmlStream);
 		this.userContext = userContext;
 	}
-
+	
 	/**
 	 * Set <code>userContext</code> and instantiate the WorkflowLauncher,
 	 * constructing an instance of the ScuflModel from the XML provided by the
@@ -221,7 +222,8 @@ public class WorkflowLauncher {
 	 * @param model
 	 *            a {@link ScuflModel}
 	 */
-	public WorkflowLauncher(ScuflModel model) {
+	public WorkflowLauncher(ScuflModel model) {		
+		initialiseSPIRegistry();
 		this.model = model;
 	}
 
@@ -236,6 +238,7 @@ public class WorkflowLauncher {
 	 *            a {@link UserContext}
 	 */
 	public WorkflowLauncher(ScuflModel model, UserContext userContext) {
+		initialiseSPIRegistry();
 		this.model = model;
 		this.userContext = userContext;
 	}
@@ -325,6 +328,7 @@ public class WorkflowLauncher {
 	public Map execute(Map inputs,
 			WorkflowEventListener[] workflowEventListeners)
 			throws WorkflowSubmissionException, InvalidInputException {
+		initialiseSPIRegistry();
 		for (int i = 0; i < workflowEventListeners.length; i++) {
 			WorkflowEventDispatcher.DISPATCHER
 					.addListener(workflowEventListeners[i]);
@@ -353,17 +357,27 @@ public class WorkflowLauncher {
 		return execute(inputs);
 
 	}
-
-	/**
-	 * Allows a workflow to be executed stand-alone. Usage: <workflowURL> [<inputName>
-	 * <inputDataURL>] ...
-	 * 
-	 * @param args
-	 * @throws MalformedURLException
-	 */
-	@SuppressWarnings({ "deprecation", "static-access" })
-	public static void main(String args[]) throws MalformedURLException {
-		// For compatability with old-style code using System.getProperty("taverna.*")
+	
+	private void initialiseSPIRegistry() {
+		Repository repository;
+		try {
+			LocalArtifactClassLoader acl = (LocalArtifactClassLoader) getClass()
+					.getClassLoader();
+			repository = acl.getRepository();						
+		} catch (ClassCastException cce) {
+			// Running from outside of Raven - won't expect this to work
+			// properly!			
+			repository = LocalRepository.getRepository(new File(
+					Bootstrap.TAVERNA_CACHE));			
+			for (URL remoteRepository : Bootstrap.remoteRepositories) {
+				repository.addRemoteRepository(remoteRepository);
+			}					
+		}				
+		TavernaSPIRegistry.setRepository(repository);
+	}
+	
+	private WorkflowLauncher(String [] args)  throws MalformedURLException {
+//		 For compatability with old-style code using System.getProperty("taverna.*")
 		MyGridConfiguration.loadMygridProperties();
 		
 		// Return code to exit with, normally 0
@@ -372,13 +386,9 @@ public class WorkflowLauncher {
 		// Current directory is from where files are read if not otherwise
 		// specified
 		URL here = new URL("file:");
-
-		// Set the local repository for the SPI registry
-		Repository repository = LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE));
-		if (repository != null) {
-			TavernaSPIRegistry.setRepository(repository);
-		}
-
+		
+		initialiseSPIRegistry();		
+		
 		// Construct command line options
 		Option helpOption = new Option("help", "print this message");
 		// Option version = new Option("version",
@@ -435,11 +445,11 @@ public class WorkflowLauncher {
 			formatter.printHelp("executeworkflow <workflow> [..]\n"
 					+ "Execute workflow and save outputs. "
 					+ "Inputs can be specified by multiple "
-					+ "--input options, or loaded from an "
+					+ "-input options, or loaded from an "
 					+ "XML input document as saved from "
 					+ "Taverna. By default, a new directory "
 					+ "is created named workflow.xml_output "
-					+ "unless the --output or --outputdoc"
+					+ "unless the -output or -outputdoc"
 					+ "options are given. All files to be read "
 					+ "can be either a local file or an URL.", options);
 			System.exit(0);
@@ -598,6 +608,18 @@ public class WorkflowLauncher {
 		// Make sure we actually exit because some threads could be hanging
 		// around
 		System.exit(error);
+	}
+
+	/**
+	 * Allows a workflow to be executed stand-alone. Usage: <workflowURL> [<inputName>
+	 * <inputDataURL>] ...
+	 * 
+	 * @param args
+	 * @throws MalformedURLException
+	 */
+	@SuppressWarnings({ "deprecation", "static-access" })
+	public static void main(String args[]) throws MalformedURLException {
+		new WorkflowLauncher(args);
 	}
 
 	private static Map loadInputDoc(File file) throws JDOMException, IOException {

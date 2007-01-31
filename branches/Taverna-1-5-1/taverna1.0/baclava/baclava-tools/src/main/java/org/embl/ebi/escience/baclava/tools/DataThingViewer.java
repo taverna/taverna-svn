@@ -31,6 +31,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
 
+import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.tools.Bootstrap;
@@ -54,6 +55,7 @@ import org.jdom.input.SAXBuilder;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class DataThingViewer extends JFrame {
 
 	private JTabbedPane tabs;
@@ -69,6 +71,12 @@ public class DataThingViewer extends JFrame {
 		Repository repository = LocalRepository.getRepository(new File(Bootstrap.TAVERNA_CACHE));
 		if (repository != null) {
 			TavernaSPIRegistry.setRepository(repository);
+		}
+		
+		SplashScreen splash = SplashScreen.getSplashScreen();		
+		if (splash!=null) {
+			splash.setClosable();
+			splash.requestClose();
 		}
 
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -1,4 +1,4 @@
-<profile version="1.5.1.0" name="Taverna Workbench">	
+<profile version="1.5.1.1" name="Taverna Workbench">	
 
 	<!--  processors -->			
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1"/>
@@ -42,6 +42,10 @@
 	<!-- raven -->
 	<artifact groupId="uk.org.mygrid.taverna.raven" artifactId="raven" version="1.5.1"/>	
 
+	<!-- tools -->
+	<artifact groupId="uk.org.mygrid.taverna.scufl" artifactId="scufl-tools" version="1.5.1.1"/>
+	<artifact groupId="uk.org.mygrid.taverna.baclava" artifactId="baclava-tools" version="1.5.1.1"/>
+	
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
 			
