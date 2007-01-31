@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-30 14:46:45 $
+ * Last modified on   $Date: 2007-01-31 10:44:52 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -376,7 +376,7 @@ public class WorkflowLauncher {
 		TavernaSPIRegistry.setRepository(repository);
 	}
 	
-	public WorkflowLauncher(String [] args)  throws MalformedURLException {
+	private WorkflowLauncher(String [] args)  throws MalformedURLException {
 //		 For compatability with old-style code using System.getProperty("taverna.*")
 		MyGridConfiguration.loadMygridProperties();
 		
