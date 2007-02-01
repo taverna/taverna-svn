@@ -42,8 +42,23 @@ public class Taverna {
 		}
 	}
 	
-	public String runWorkflowFile(String filename) {
-		return call("runWorkflowFile", filename);
+	private String call(String method, String... msg) {
+		System.out.println("Calling method " + method);
+		try {
+			return (String) invoke(method, (Object[])msg);
+		} catch (Throwable t) {
+			System.out.println("Oh noe!");
+			t.printStackTrace();
+			return "Error: " + t;
+		}
+	}
+	
+	public String runWorkflow(String scufl, String inputDoc) {
+		return call("runWorkflow", scufl, inputDoc);
+	}
+	
+	public String runWorkflowFile(String filename, String inputDoc) {
+		return call("runWorkflowFile", filename, inputDoc);
 	}
 	
 	public String jobStatus(String job_id) {
@@ -57,8 +72,6 @@ public class Taverna {
 	public String getProgressReport(String job_id) {
 		return call("getProgressReport", job_id);
 	}
-	
-	
 
 	private Object invoke(String methodName, Object... args)
 	throws NoSuchMethodException, Throwable {
@@ -94,7 +107,7 @@ public class Taverna {
 			
 	
 			System.err.println("Using fresh taverna.home " + tavernaHome);
-			System.setProperty("taverna.home", tavernaHome.toString());
+			System.setProperty("taverna.home", tavernaHome.getAbsolutePath());
 			//System.setProperty("java.awt.headless", "true");
 			
 	//		System.setProperty("raven.target.groupid", "uk.org.mygrid.taverna.scufl");
@@ -109,8 +122,10 @@ public class Taverna {
 			System.setProperty("raven.target.class", "net.sf.taverna.service.backend.Engine");
 			
 			System.setProperty("raven.loader.version", "1.5.1");
+			// FIXME: /tmp/tavernaXhome/conf/taverna-service-profile.xml is still
+			//  version="1.5.1.0" name="Taverna Workbench"
 			System.setProperty("raven.remoteprofile", 
-				"http://rpc268.cs.man.ac.uk/profiles/taverna-service-profile.xml");
+			"http://rpc268.cs.man.ac.uk/profiles/taverna-service-profile.xml");
 			File m2Repo = new File(System.getProperty("user.home"), ".m2/repository");
 			if (m2Repo.isDirectory()) {
 				System.setProperty("raven.repository.1", m2Repo.toURI().toString());
