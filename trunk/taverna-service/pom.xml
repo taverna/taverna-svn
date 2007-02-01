@@ -100,6 +100,17 @@
         </releases>
       </repository-->
      <repository>
+      <id>apache</id>
+      <name>Apache Repository</name>
+      <url>http://www.apache.org/dist/maven-repository</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+     <repository>
       <id>mygrid-repository</id>
       <name>myGrid Repository</name>
       <url>http://www.mygrid.org.uk/maven/repository</url>
@@ -124,10 +135,20 @@
   </repositories>
     <pluginRepositories>
       <pluginRepository>
+        <id>Apache m2</id>
+        <url>http://www.apache.org/dist/maven-repository</url>
+        <snapshots>
+          <enabled>false</enabled>
+        </snapshots>
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+       </pluginRepository>
+      <pluginRepository>
         <id>Codehaus Snapshots</id>
         <url>http://snapshots.repository.codehaus.org/</url>
         <snapshots>
-          <enabled>true</enabled>
+          <enabled>false</enabled>
         </snapshots>
         <releases>
           <enabled>true</enabled>

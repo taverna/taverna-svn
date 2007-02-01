@@ -20,7 +20,7 @@ public class Taverna {
 
 	public Taverna() {
 		synchronized (this) {
-			if (tavernaHome == null) {
+			if (tavernaHome == null || targetClass == null || targetObject == null) {
 				prepare();
 			} else {
 				System.out.println("Already prepared");
@@ -95,7 +95,7 @@ public class Taverna {
 	
 			System.err.println("Using fresh taverna.home " + tavernaHome);
 			System.setProperty("taverna.home", tavernaHome.toString());
-			System.setProperty("java.awt.headless", "true");
+			//System.setProperty("java.awt.headless", "true");
 			
 	//		System.setProperty("raven.target.groupid", "uk.org.mygrid.taverna.scufl");
 	//		System.setProperty("raven.target.artifactid", "scufl-tools");

@@ -24,6 +24,20 @@
                 <!--warFile>path/to/my/warFile.war</warFile-->
         </configuration>
       </plugin>
+      <!--plugin>
+        <groupId>org.apache.axis2.maven2</groupId>
+        <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java2wsdl</goal>
+            </goals>
+          <configuration>
+            <className>net.sf.taverna.service.wsdl.Taverna</className>
+          </configuration>
+          </execution>
+        </executions>
+      </plugin-->
     </plugins>
   </build>
   <dependencies>

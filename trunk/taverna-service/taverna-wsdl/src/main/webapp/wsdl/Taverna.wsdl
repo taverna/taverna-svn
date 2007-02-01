@@ -326,7 +326,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       <wsdl:port binding="impl:TavernaSoapBinding" name="Taverna">
 
-         <wsdlsoap:address location="http://localhost:9980/tavernaservice/services/Taverna"/>
+         <wsdlsoap:address location="http://localhost:9980/taverna-service/services/Taverna"/>
 
       </wsdl:port>
 
