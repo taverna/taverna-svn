@@ -2,6 +2,7 @@ package net.sf.taverna.service.queue;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -15,10 +16,14 @@ public class Job {
 	State state;
 	Map<String, DataThing> results;
 	String progressReport;
+	Map<String, DataThing> inputs;
+	public final String id;
 
-	public Job(ScuflModel workflow) {
+	public Job(ScuflModel workflow, Map<String, DataThing> inputs) {
 		this.workflow = workflow;
+		this.inputs = inputs;
 		this.created = new Date();
+		this.id = UUID.randomUUID().toString();
 		this.state = State.NEW;
 	}
 	
@@ -55,7 +60,7 @@ public class Job {
 	 * Wait for the maximum specified amount of milliseconds for
 	 * the job to complete.
 	 * 
-	 * Return the state. If this is 
+	 * Return the state. 
 	 * 
 	 * @param millis
 	 * @return The state 

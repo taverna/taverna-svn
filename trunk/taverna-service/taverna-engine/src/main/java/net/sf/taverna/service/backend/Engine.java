@@ -7,11 +7,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.UUID;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.service.queue.Job;
 import net.sf.taverna.service.queue.QueueException;
 import net.sf.taverna.service.queue.QueueListener;
@@ -125,13 +125,16 @@ public class Engine {
 		return outputDoc + "\n" + report;
 	}
 	
-	public String runWorkflowFile(String filename) throws IOException, QueueException {
+	public String runWorkflowFile(String filename, String inputDoc) throws IOException, QueueException {
 		File workflowFile = new File(filename);
 		String workflow = FileUtils.readFileToString(workflowFile, "utf8");
-		String job_id = UUID.randomUUID().toString();
-		Job job = queue.add(workflow);
-		jobs.put(job_id, job);
-		return job_id;
+		return runWorkflow(workflow, inputDoc);
+	}
+	
+	public String runWorkflow(String scufl, String inputDoc) throws IOException, QueueException {
+		Job job = queue.add(scufl, inputDoc);
+		jobs.put(job.id, job);
+		return job.id;
 	}
 	
 	public String jobStatus(String job_id) {
@@ -153,6 +156,10 @@ public class Engine {
 	public String getProgressReport(String job_id) {
 		Job job = jobs.get(job_id);
 		return job.getProgressReport();
+	}
+	
+	public String getProfile(String ignore) {
+		return ""+ProfileFactory.getInstance().getProfile().getArtifacts();
 	}
 	
 }
