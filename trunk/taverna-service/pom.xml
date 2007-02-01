@@ -102,7 +102,7 @@
      <repository>
       <id>mygrid-repository</id>
       <name>myGrid Repository</name>
-      <url>http://www.mygrid.org.uk/maven/repository/</url>
+      <url>http://www.mygrid.org.uk/maven/repository</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
