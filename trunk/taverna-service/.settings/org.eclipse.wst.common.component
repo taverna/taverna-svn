@@ -4,6 +4,12 @@
 <wb-resource deploy-path="/" source-path="/taverna-wsdl/src/main/webapp"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-wsdl/src/main/java"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/main/java"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/test/java"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-wsdl/src/main/resources"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/test/resources"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/execute-remotely-plugin/target/generated-sources/axistools/wsdl2java"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/execute-remotely-plugin/src/main/java"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/execute-remotely-plugin/src/main/resources"/>
 <property name="context-root" value="taverna-service"/>
 <property name="java-output-path" value="build/classes"/>
 </wb-module>

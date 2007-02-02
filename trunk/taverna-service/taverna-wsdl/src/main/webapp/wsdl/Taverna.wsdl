@@ -10,6 +10,16 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
    <element name="resetResponse">
     <complexType/>
    </element>
+   <element name="jobs">
+    <complexType/>
+   </element>
+   <element name="jobsResponse">
+    <complexType>
+     <sequence>
+      <element name="jobsReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="call">
     <complexType>
      <sequence>
@@ -25,10 +35,26 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="runWorkflow">
+    <complexType>
+     <sequence>
+      <element name="scufl" type="xsd:string"/>
+      <element name="inputDoc" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="runWorkflowResponse">
+    <complexType>
+     <sequence>
+      <element name="runWorkflowReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
    <element name="runWorkflowFile">
     <complexType>
      <sequence>
       <element name="filename" type="xsd:string"/>
+      <element name="inputDoc" type="xsd:string"/>
      </sequence>
     </complexType>
    </element>
@@ -84,21 +110,21 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="getResultDocumentResponse">
+   <wsdl:message name="resetResponse">
 
-      <wsdl:part element="impl:getResultDocumentResponse" name="parameters"/>
+      <wsdl:part element="impl:resetResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="jobsRequest">
+
+      <wsdl:part element="impl:jobs" name="parameters"/>
 
    </wsdl:message>
 
    <wsdl:message name="runWorkflowFileRequest">
 
       <wsdl:part element="impl:runWorkflowFile" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="resetResponse">
-
-      <wsdl:part element="impl:resetResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -114,21 +140,9 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="getProgressReportResponse">
+   <wsdl:message name="jobsResponse">
 
-      <wsdl:part element="impl:getProgressReportResponse" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="getResultDocumentRequest">
-
-      <wsdl:part element="impl:getResultDocument" name="parameters"/>
-
-   </wsdl:message>
-
-   <wsdl:message name="runWorkflowFileResponse">
-
-      <wsdl:part element="impl:runWorkflowFileResponse" name="parameters"/>
+      <wsdl:part element="impl:jobsResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -138,9 +152,9 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="callRequest">
+   <wsdl:message name="getResultDocumentRequest">
 
-      <wsdl:part element="impl:call" name="parameters"/>
+      <wsdl:part element="impl:getResultDocument" name="parameters"/>
 
    </wsdl:message>
 
@@ -156,6 +170,42 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getResultDocumentResponse">
+
+      <wsdl:part element="impl:getResultDocumentResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProgressReportResponse">
+
+      <wsdl:part element="impl:getProgressReportResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="runWorkflowFileResponse">
+
+      <wsdl:part element="impl:runWorkflowFileResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="callRequest">
+
+      <wsdl:part element="impl:call" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="runWorkflowResponse">
+
+      <wsdl:part element="impl:runWorkflowResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="runWorkflowRequest">
+
+      <wsdl:part element="impl:runWorkflow" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:portType name="Taverna">
 
       <wsdl:operation name="reset">
@@ -166,11 +216,27 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="jobs">
+
+         <wsdl:input message="impl:jobsRequest" name="jobsRequest"/>
+
+         <wsdl:output message="impl:jobsResponse" name="jobsResponse"/>
+
+      </wsdl:operation>
+
       <wsdl:operation name="call">
 
          <wsdl:input message="impl:callRequest" name="callRequest"/>
 
          <wsdl:output message="impl:callResponse" name="callResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="runWorkflow">
+
+         <wsdl:input message="impl:runWorkflowRequest" name="runWorkflowRequest"/>
+
+         <wsdl:output message="impl:runWorkflowResponse" name="runWorkflowResponse"/>
 
       </wsdl:operation>
 
@@ -230,6 +296,24 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
       </wsdl:operation>
 
+      <wsdl:operation name="jobs">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="jobsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="jobsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
       <wsdl:operation name="call">
 
          <wsdlsoap:operation soapAction=""/>
@@ -241,6 +325,24 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          </wsdl:input>
 
          <wsdl:output name="callResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="runWorkflow">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="runWorkflowRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="runWorkflowResponse">
 
             <wsdlsoap:body use="literal"/>
 

@@ -8,8 +8,8 @@
   <parameter name="dotNetSoapEncFix" value="true"/>
   <parameter name="enableNamespacePrefixOptimization" value="false"/>
   <parameter name="sendXMLDeclaration" value="true"/>
-  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
   <parameter name="sendXsiTypes" value="true"/>
+  <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
   <requestFlow>
    <handler type="java:org.apache.axis.handlers.JWSHandler">
     <parameter name="scope" value="session"/>
@@ -25,23 +25,29 @@
  <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
  <service name="Taverna" provider="java:RPC" style="wrapped" use="literal">
   <operation name="reset" qname="ns1:reset" soapAction="" xmlns:ns1="http://wsdl.service.taverna.sf.net"/>
-  <operation name="call" qname="ns2:call" returnQName="ns2:callReturn" returnType="xsd:string" soapAction="" xmlns:ns2="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns2:method" type="xsd:string"/>
-   <parameter qname="ns2:msg" type="xsd:string"/>
+  <operation name="jobs" qname="ns2:jobs" returnQName="ns2:jobsReturn" returnType="xsd:string" soapAction="" xmlns:ns2="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  <operation name="call" qname="ns3:call" returnQName="ns3:callReturn" returnType="xsd:string" soapAction="" xmlns:ns3="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns3:method" type="xsd:string"/>
+   <parameter qname="ns3:msg" type="xsd:string"/>
   </operation>
-  <operation name="runWorkflowFile" qname="ns3:runWorkflowFile" returnQName="ns3:runWorkflowFileReturn" returnType="xsd:string" soapAction="" xmlns:ns3="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns3:filename" type="xsd:string"/>
+  <operation name="runWorkflow" qname="ns4:runWorkflow" returnQName="ns4:runWorkflowReturn" returnType="xsd:string" soapAction="" xmlns:ns4="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns4:scufl" type="xsd:string"/>
+   <parameter qname="ns4:inputDoc" type="xsd:string"/>
   </operation>
-  <operation name="jobStatus" qname="ns4:jobStatus" returnQName="ns4:jobStatusReturn" returnType="xsd:string" soapAction="" xmlns:ns4="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns4:job_id" type="xsd:string"/>
+  <operation name="runWorkflowFile" qname="ns5:runWorkflowFile" returnQName="ns5:runWorkflowFileReturn" returnType="xsd:string" soapAction="" xmlns:ns5="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns5:filename" type="xsd:string"/>
+   <parameter qname="ns5:inputDoc" type="xsd:string"/>
   </operation>
-  <operation name="getResultDocument" qname="ns5:getResultDocument" returnQName="ns5:getResultDocumentReturn" returnType="xsd:string" soapAction="" xmlns:ns5="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns5:job_id" type="xsd:string"/>
-  </operation>
-  <operation name="getProgressReport" qname="ns6:getProgressReport" returnQName="ns6:getProgressReportReturn" returnType="xsd:string" soapAction="" xmlns:ns6="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <operation name="jobStatus" qname="ns6:jobStatus" returnQName="ns6:jobStatusReturn" returnType="xsd:string" soapAction="" xmlns:ns6="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <parameter qname="ns6:job_id" type="xsd:string"/>
   </operation>
-  <parameter name="allowedMethods" value="call jobStatus getResultDocument reset getProgressReport runWorkflowFile"/>
+  <operation name="getResultDocument" qname="ns7:getResultDocument" returnQName="ns7:getResultDocumentReturn" returnType="xsd:string" soapAction="" xmlns:ns7="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns7:job_id" type="xsd:string"/>
+  </operation>
+  <operation name="getProgressReport" qname="ns8:getProgressReport" returnQName="ns8:getProgressReportReturn" returnType="xsd:string" soapAction="" xmlns:ns8="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns8:job_id" type="xsd:string"/>
+  </operation>
+  <parameter name="allowedMethods" value="call jobStatus getResultDocument reset getProgressReport jobs runWorkflowFile runWorkflow"/>
   <parameter name="typeMappingVersion" value="1.2"/>
   <parameter name="wsdlPortType" value="Taverna"/>
   <parameter name="className" value="net.sf.taverna.service.wsdl.Taverna"/>

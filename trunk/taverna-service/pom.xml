@@ -184,5 +184,6 @@
   <modules>
     <module>taverna-engine</module>
     <module>taverna-wsdl</module>
+    <module>execute-remotely-plugin</module>
   </modules>
 </project>
