@@ -31,28 +31,6 @@ public class Taverna {
 		prepare();
 	}
 	
-	public String call(String method, String msg) {
-		System.out.println("Calling method " + method);
-		try {
-			return (String) invoke(method, msg);
-		} catch (Throwable t) {
-			System.out.println("Oh noe!");
-			t.printStackTrace();
-			return "Error: " + t;
-		}
-	}
-	
-	private String call(String method, String... msg) {
-		System.out.println("Calling method " + method);
-		try {
-			return (String) invoke(method, (Object[])msg);
-		} catch (Throwable t) {
-			System.out.println("Oh noe!");
-			t.printStackTrace();
-			return "Error: " + t;
-		}
-	}
-	
 	public String runWorkflow(String scufl, String inputDoc) {
 		return call("runWorkflow", scufl, inputDoc);
 	}
@@ -72,7 +50,31 @@ public class Taverna {
 	public String getProgressReport(String job_id) {
 		return call("getProgressReport", job_id);
 	}
+	
+	public String jobs() {
+		return call("jobs");
+	}
 
+	public String call(String method, String msg) {
+		System.out.println("Calling method " + method);
+		try {
+			return (String) invoke(method, msg);
+		} catch (Throwable t) {
+			System.out.println("Oh noe!");
+			t.printStackTrace();
+			return "Error: " + t;
+		}
+	}
+	private String call(String method, String... msg) {
+		System.out.println("Calling method " + method);
+		try {
+			return (String) invoke(method, (Object[])msg);
+		} catch (Throwable t) {
+			System.out.println("Oh noe!");
+			t.printStackTrace();
+			return "Error: " + t;
+		}
+	}
 	private Object invoke(String methodName, Object... args)
 	throws NoSuchMethodException, Throwable {
 		// Find classes to match our method

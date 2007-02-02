@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
@@ -123,6 +124,17 @@ public class Engine {
 		String report = l.getProgressReportXML();
 		// FIXME: Not really valid XML
 		return outputDoc + "\n" + report;
+	}
+	
+	public String jobs() {
+		StringBuffer s = new StringBuffer();
+		for (Entry<String, Job> e : jobs.entrySet()) {
+			s.append(e.getKey());
+			s.append(": ");
+			s.append(e.getValue().getState());
+			s.append('\n');
+		}
+		return s.toString();
 	}
 	
 	public String runWorkflowFile(String filename, String inputDoc) throws IOException, QueueException {
