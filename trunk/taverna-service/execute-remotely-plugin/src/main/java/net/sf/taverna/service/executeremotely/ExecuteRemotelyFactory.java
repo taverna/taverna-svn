@@ -16,6 +16,7 @@ public class ExecuteRemotelyFactory implements UIComponentFactorySPI {
 		return new ExecuteRemotelyPanel();
 	}
 
+	// FIXME: Replace with a "Run remotely" icon
 	public ImageIcon getIcon() {
 		return TavernaIcons.runIcon;
 	}

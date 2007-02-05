@@ -7,6 +7,9 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,7 +30,9 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
+import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 public class ExecuteRemotelyPanel extends JPanel implements
@@ -78,12 +83,12 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		return endpoint;
 	}
 
+	// FIXME: Replace with a "Run remotely" icon
 	public ImageIcon getIcon() {
 		return TavernaIcons.runIcon;
 	}
 
 	public String getName() {
-		logger.info("Woohuu");
 		return "Execute remotely";
 	}
 
@@ -124,14 +129,16 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
-		c.anchor = GridBagConstraints.FIRST_LINE_END;
-		add(new JLabel("Endpoint URL:"), c);
-		c.gridx = GridBagConstraints.RELATIVE;
-		c.anchor = GridBagConstraints.FIRST_LINE_START;
-		c.weightx = 0.1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		add(endpointField, c);
+		c.anchor = GridBagConstraints.LINE_END;
 		c.ipadx = 5;
+		c.ipady = 5;
+		add(new JLabel("Endpoint URL:"), c);
+
+		c.weightx = 0.1;
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = GridBagConstraints.RELATIVE;
+		add(endpointField, c);
 		add(endpointStatus, c);
 	}
 	
@@ -160,6 +167,33 @@ public class ExecuteRemotelyPanel extends JPanel implements
 
 
 	private class Jobs extends JPanel {
+		private class Job extends JLabel {
+			private class MouseClickListener extends MouseAdapter {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// Create and add a Workflow instance
+					RemoteWorkflowInstance instance = new RemoteWorkflowInstance(taverna, job_id);
+					ModelMap.getInstance().setModel(job_id, instance);
+				}
+			}
+
+			private String job_id;
+			private String state;
+
+			private Job(String text) {
+				super(text);
+				String[] job = text.split(": ");
+				if (job.length != 2) {
+					logger.warn("Illegal job specifier: " + text);
+					throw new IllegalArgumentException("Job specifier must be on the form 'id: state'");
+				}
+				job_id = job[0];
+				state = job[1];
+				setBackground(Color.WHITE);
+				addMouseListener(new MouseClickListener());
+			}
+		}
+
 		public class RefreshAction extends AbstractAction {
 			public RefreshAction() {
 				putValue(SMALL_ICON, TavernaIcons.refreshIcon);
@@ -228,7 +262,9 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			c.gridx = 0;
 			c.gridy = GridBagConstraints.RELATIVE;
 			for (String job : jobs) {
-				add(new JLabel(job), c);
+				if (! job.equals("")) {
+					add(new Job(job), c);
+				}
 			}
 		}		
 	}
@@ -305,5 +341,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			}
 		}
 	}
+
+
 
 }
