@@ -120,7 +120,7 @@
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
-      </plugin>
+      </plugin>     
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -137,6 +137,23 @@
             </property>
           </systemProperties>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.2</version>        
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <xincludeSupported>true</xincludeSupported>
+          <chunkedOutput>true</chunkedOutput>                        
+        </configuration>	
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -221,7 +238,7 @@
       </distributionManagement> 
     </profile>
   </profiles>
-  <repositories>
+  <repositories>  	
     <repository>
       <id>mygrid-repository</id>
       <name>myGrid Repository</name>
@@ -232,7 +249,7 @@
       <releases>
         <enabled>true</enabled>
       </releases>
-    </repository>
+    </repository>    
     <repository>
       <id>mygrid-snapshot-repository</id>
       <name>myGrid Snapshot Repository</name>
@@ -266,7 +283,7 @@
        <releases>
          <enabled>false</enabled>
        </releases>
-     </pluginRepository>
+     </pluginRepository>     
      <pluginRepository>
       <id>mygrid-snapshot-repository</id>
       <name>myGrid Snapshot Repository</name>
@@ -282,6 +299,17 @@
       <id>mygrid-repository</id>
       <name>myGrid Repository</name>
       <url>http://www.mygrid.org.uk/maven/repository</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>docbkx</id>
+      <name>AgileJava Repository</name>
+      <url>http://agilejava.com/maven/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
