@@ -48,7 +48,7 @@ public abstract class QueueListener implements Runnable {
 			logger.debug("Executing job " + job);
 			execute(job);			
 			logger.debug("Completed job " + job);
-			job.setState(State.COMPLETED);
+			job.setState(State.COMPLETE);
 		} catch (Throwable t) {
 			logger.warn("Job " + job + " processing failed", t);
 			job.setState(State.FAILED);

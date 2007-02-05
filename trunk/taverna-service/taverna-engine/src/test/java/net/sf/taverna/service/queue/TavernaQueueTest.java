@@ -101,7 +101,7 @@ public class TavernaQueueTest extends TestCommon {
 		// And it should not fail
 		assertNotSame(State.FAILED, job.getState());
 		assertNotSame(State.CANCELLED, job.getState());
-		if (job.getState().equals(State.COMPLETED)) {
+		if (job.getState().equals(State.COMPLETE)) {
 			assertEquals("Executed.", progress.toString());
 		}		
 	}
@@ -112,7 +112,7 @@ public class TavernaQueueTest extends TestCommon {
 		new Thread(listener).start();
 		Job job = queue.add(workflow, "");
 		State state = job.waitForCompletion(2000);
-		assertEquals(State.COMPLETED, state);
+		assertEquals(State.COMPLETE, state);
 		Map<String, DataThing> result = job.getResults();
 		DataThing thing = result.get("Output");
 		assertEquals("[[square red cat, square greenrabbit], [circular red cat, circular greenrabbit], [triangularred cat, triangulargreenrabbit]]",

@@ -30,11 +30,13 @@ import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.MalformedNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
+import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
 import org.jdom.output.Format;
@@ -109,23 +111,7 @@ public class Engine {
 		System.out.println("ping " + msg);
 		return "pong: " + msg;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public String executeWorkflow(String filename) throws WorkflowSubmissionException, InvalidInputException, FileNotFoundException, ProcessorCreationException, DataConstraintCreationException, UnknownProcessorException, UnknownPortException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException, IOException {
-		File workflow = new File(filename);
-		URL url = workflow.toURI().toURL();
-		WorkflowLauncher l = new WorkflowLauncher(url);
-		Map<String, DataThing> outputs = l.execute(new HashMap());
 		
-		Document doc = DataThingXMLFactory.getDataDocument(outputs);
-		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-		String outputDoc = xo.outputString(doc);	
-		
-		String report = l.getProgressReportXML();
-		// FIXME: Not really valid XML
-		return outputDoc + "\n" + report;
-	}
-	
 	public String jobs() {
 		StringBuffer s = new StringBuffer();
 		for (Entry<String, Job> e : jobs.entrySet()) {
@@ -159,9 +145,14 @@ public class Engine {
 	public String getResultDocument(String job_id) {
 		Job job = jobs.get(job_id);
 		Map<String, DataThing> results = job.getResults();
-		Document doc = DataThingXMLFactory.getDataDocument(results);
+		return makeDataDocument(results);	
+	}
+
+	private String makeDataDocument(Map<String, DataThing> values) {
+		Document doc = DataThingXMLFactory.getDataDocument(values);
+		// FIXME: Use Format.getCompactFormat()
 		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-		String xmlString = xo.outputString(doc);	
+		String xmlString = xo.outputString(doc);
 		return xmlString;
 	}
 	
@@ -174,4 +165,15 @@ public class Engine {
 		return ""+ProfileFactory.getInstance().getProfile().getArtifacts();
 	}
 	
+	public String getWorkflow(String job_id) {
+		Job job = jobs.get(job_id);
+		ScuflModel workflow = job.getWorkflow();
+		return XScuflView.getXMLText(workflow);
+	}
+	
+	public String getInputs(String job_id) {
+		Job job = jobs.get(job_id);
+		Map<String, DataThing> inputs = job.getInputs();
+		return makeDataDocument(inputs);
+	}
 }

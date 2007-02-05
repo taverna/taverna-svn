@@ -9,7 +9,9 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 
 public class Job {
 
-	public enum State { NEW, QUEUED, DEQUEUED, RUNNING, FAILED, CANCELLED, COMPLETED }
+	// Different from Freefluo:
+	// QUEUED, DEQUEUED
+	public enum State { NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, FAILED, CANCELLING, CANCELLED, COMPLETE, DESTROYED }
 	
 	ScuflModel workflow;
 	Date created;
@@ -50,10 +52,18 @@ public class Job {
 	}
 	
 	public Map<String, DataThing> getResults() {
-		if (! getState().equals(State.COMPLETED)) {
+		if (! getState().equals(State.COMPLETE)) {
 			throw new IllegalStateException("Not completed");
 		}
 		return this.results;		
+	}
+	
+	public ScuflModel getWorkflow() {
+		return workflow;
+	}
+	
+	public Map<String, DataThing> getInputs() {
+		return inputs;
 	}
 	
 	/**
