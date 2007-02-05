@@ -51,6 +51,14 @@ public class Taverna {
 		return call("getProgressReport", job_id);
 	}
 	
+	public String getWorkflow(String job_id) {
+		return call("getWorkflow", job_id);
+	}
+
+	public String getInputs(String job_id) {
+		return call("getInputs", job_id);
+	}
+
 	public String jobs() {
 		return call("jobs");
 	}

@@ -107,6 +107,34 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
      </sequence>
     </complexType>
    </element>
+   <element name="getWorkflow">
+    <complexType>
+     <sequence>
+      <element name="job_id" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getWorkflowResponse">
+    <complexType>
+     <sequence>
+      <element name="getWorkflowReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getInputs">
+    <complexType>
+     <sequence>
+      <element name="job_id" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getInputsResponse">
+    <complexType>
+     <sequence>
+      <element name="getInputsReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
   </schema>
  </wsdl:types>
 
@@ -140,6 +168,12 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
+   <wsdl:message name="getInputsRequest">
+
+      <wsdl:part element="impl:getInputs" name="parameters"/>
+
+   </wsdl:message>
+
    <wsdl:message name="jobsResponse">
 
       <wsdl:part element="impl:jobsResponse" name="parameters"/>
@@ -161,6 +195,24 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
    <wsdl:message name="resetRequest">
 
       <wsdl:part element="impl:reset" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getWorkflowRequest">
+
+      <wsdl:part element="impl:getWorkflow" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getInputsResponse">
+
+      <wsdl:part element="impl:getInputsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getWorkflowResponse">
+
+      <wsdl:part element="impl:getWorkflowResponse" name="parameters"/>
 
    </wsdl:message>
 
@@ -269,6 +321,22 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          <wsdl:input message="impl:getProgressReportRequest" name="getProgressReportRequest"/>
 
          <wsdl:output message="impl:getProgressReportResponse" name="getProgressReportResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getWorkflow">
+
+         <wsdl:input message="impl:getWorkflowRequest" name="getWorkflowRequest"/>
+
+         <wsdl:output message="impl:getWorkflowResponse" name="getWorkflowResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getInputs">
+
+         <wsdl:input message="impl:getInputsRequest" name="getInputsRequest"/>
+
+         <wsdl:output message="impl:getInputsResponse" name="getInputsResponse"/>
 
       </wsdl:operation>
 
@@ -415,6 +483,42 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          </wsdl:input>
 
          <wsdl:output name="getProgressReportResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getWorkflow">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getWorkflowRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getWorkflowResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getInputs">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getInputsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getInputsResponse">
 
             <wsdlsoap:body use="literal"/>
 

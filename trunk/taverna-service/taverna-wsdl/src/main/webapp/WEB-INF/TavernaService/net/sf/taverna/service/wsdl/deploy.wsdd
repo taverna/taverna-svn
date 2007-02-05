@@ -35,7 +35,13 @@
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getProgressReport" qname="operNS:getProgressReport" returnQName="retNS:getProgressReportReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
       </operation>
-      <parameter name="allowedMethods" value="call jobStatus getResultDocument reset getProgressReport jobs runWorkflowFile runWorkflow"/>
+      <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getWorkflow" qname="operNS:getWorkflow" returnQName="retNS:getWorkflowReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getInputs" qname="operNS:getInputs" returnQName="retNS:getInputsReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="getInputs call jobStatus getResultDocument reset getProgressReport jobs getWorkflow runWorkflowFile runWorkflow"/>
 
   </service>
 </deployment>

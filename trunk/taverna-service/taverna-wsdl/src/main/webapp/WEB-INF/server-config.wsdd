@@ -47,7 +47,13 @@
   <operation name="getProgressReport" qname="ns8:getProgressReport" returnQName="ns8:getProgressReportReturn" returnType="xsd:string" soapAction="" xmlns:ns8="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <parameter qname="ns8:job_id" type="xsd:string"/>
   </operation>
-  <parameter name="allowedMethods" value="call jobStatus getResultDocument reset getProgressReport jobs runWorkflowFile runWorkflow"/>
+  <operation name="getWorkflow" qname="ns9:getWorkflow" returnQName="ns9:getWorkflowReturn" returnType="xsd:string" soapAction="" xmlns:ns9="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns9:job_id" type="xsd:string"/>
+  </operation>
+  <operation name="getInputs" qname="ns10:getInputs" returnQName="ns10:getInputsReturn" returnType="xsd:string" soapAction="" xmlns:ns10="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <parameter qname="ns10:job_id" type="xsd:string"/>
+  </operation>
+  <parameter name="allowedMethods" value="getInputs call jobStatus getResultDocument reset getProgressReport jobs getWorkflow runWorkflowFile runWorkflow"/>
   <parameter name="typeMappingVersion" value="1.2"/>
   <parameter name="wsdlPortType" value="Taverna"/>
   <parameter name="className" value="net.sf.taverna.service.wsdl.Taverna"/>
