@@ -186,7 +186,7 @@
 &lt;/plugin&gt;</screen>Although many are self explanatory, here is a
       description of all the elements:</para>
 
-      <table pgwide="">
+      <table>
         <title>Plugin Description Elements</title>
 
         <tgroup cols="2">
