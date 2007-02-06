@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section id="useful_properties">
-  <title>Useful Properties</title>
+  <title>Useful properties.</title>
 
   <para>These are sytem properties that can be overridden in the startup
   script used to run Taverna or an external tool, such as

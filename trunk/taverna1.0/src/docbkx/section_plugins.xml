@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<section>
-  <title id="plugins">Creating Plugins.</title>
+<section id="plugins">
+  <title>Creating Plugins.</title>
 
   <toc></toc>
 
   <section>
-    <title>Writing the Plugin</title>
+    <title>Writing the Plugin.</title>
 
     <para>We assume at this point you are know what your plugin is going to
     do, and are familiar with the Taverna API, and inparticular which <link
@@ -56,6 +56,20 @@
   &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
   &lt;name&gt;My Funky Plugin&lt;/name&gt;
 
+  &lt;repositories&gt;
+    &lt;repository&gt;
+      &lt;id&gt;mygrid-repository&lt;/id&gt;
+      &lt;name&gt;myGrid Repository&lt;/name&gt;
+      &lt;url&gt;http://www.mygrid.org.uk/maven/repository&lt;/url&gt;
+      &lt;snapshots&gt;
+        &lt;enabled&gt;false&lt;/enabled&gt;
+      &lt;/snapshots&gt;
+      &lt;releases&gt;
+        &lt;enabled&gt;true&lt;/enabled&gt;
+      &lt;/releases&gt;
+    &lt;/repository&gt;
+  &lt;repositories&gt;
+
   &lt;dependencies&gt;
     &lt;dependency&gt;
       &lt;groupId&gt;junit&lt;/groupId&gt;
@@ -67,19 +81,26 @@
 
 &lt;/project&gt;</screen>
 
-    <para>Its important that when you define your Taverna dependencies you use
-    artifact versions that are consistent with the version of Taverna you are
-    wish to install your plugin into. If the version of Taverna is 1.5.1.x
-    then you will want your artifact versions to be 1.5.1.x. In general when
-    moving between versions most plugins will simply need their dependencies
-    changing and the plugin rebuilding with minimal code changes.</para>
+    <para>You need to include the mygrid-repository to be able to add Taverna
+    dependencies to your project.</para>
+
+    <important>
+      <para>Its important that when you define your Taverna dependencies you
+      use artifact versions that are consistent with the version of Taverna
+      you are wish to install your plugin into. If the version of Taverna is
+      1.5.1.x then you will want your artifact versions to be 1.5.1.x. In
+      general when moving between 3rd order versions most plugins will simply
+      need their dependencies changing and the plugin rebuilding with minimal,
+      if any, code changes. More information about Taverna versioning can be
+      found <link linkend="versioning">here</link>.</para>
+    </important>
   </section>
 
   <section>
-    <title>Publishing the Plugin</title>
+    <title>Publishing the Plugin.</title>
 
     <section id="plugin_deploy">
-      <title>Deploying the Plugin Artifact</title>
+      <title>Deploying the Plugin artifact.</title>
 
       <para>To be able to install the plugin to Taverna, Taverna needs to be
       able to find the artifacts required. This is possible using Maven
@@ -155,7 +176,7 @@
     </section>
 
     <section id="plugin_describing">
-      <title>Describing the Plugin</title>
+      <title>Describing the Plugin.</title>
 
       <para>Once the artifact is deployed, it is necessary to describe the
       plugin before it can be installed into Taverna. This comprises of two
@@ -187,7 +208,7 @@
       description of all the elements:</para>
 
       <table>
-        <title>Plugin Description Elements</title>
+        <title>Plugin description elements.</title>
 
         <tgroup cols="2">
           <thead>
@@ -307,14 +328,14 @@
       location.</para>
 
       <tip>
-        <para>The mygrid plugins are declared <ulink
+        <para>The myGrid plugins are declared <ulink
         url="http://www.mygrid.org.uk/taverna/updates/1.5/plugins/">here</ulink>,
-        which may provide some additional useful examples.</para>
+        and may provide some additional useful examples.</para>
       </tip>
     </section>
 
     <section>
-      <title>Installing the Plugin</title>
+      <title>Installing the Plugin.</title>
 
       <para>Now all thats required is to install your plugin into Taverna.
       This is done through the Plugin Manager -&gt; Find Plugins -&gt; Add
@@ -396,7 +417,7 @@
   </section>
 
   <section id="plugin_publishing_updates">
-    <title>Publishing Plugin Updates</title>
+    <title>Publishing Plugin updates.</title>
 
     <para>Eventually you will probably add an improvement to your plugin, or,
     heaven forbid, find a bug that requires fixing. Once you have made your

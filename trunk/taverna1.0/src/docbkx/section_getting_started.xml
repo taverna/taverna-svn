@@ -24,7 +24,7 @@
 
     <para>Even if you not planning on modifying the Taverna sourcecode
     directly, and are simply planning on creating a <link
-    linkend="plugins">Plugin</link> it is still advised that you download the
+    linkend="plugins">Plugin</link>, it is still advisable that you download the
     sourcecode. It can provide a valuable reference on how to use various
     parts of the API.</para>
 
@@ -55,7 +55,7 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
   </section>
 
   <section>
-    <title id="building_taverna">Building Taverna with Maven</title>
+    <title id="building_taverna">Building Taverna with Maven.</title>
 
     <para><ulink url="http://maven.apache.org">Maven</ulink>, version 2.0.4,
     is a pre-requisite to building Taverna, as of course is Java, but

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section id="spi">
-  <title>Extending Taverna using a Service Provider Interface (SPI)</title>
+  <title>Extending Taverna using a Service Provider Interface (SPI).</title>
 
   <para>Taverna contains numerous Classes or Interfaces that can be extended
   and packaged as a <link linkend="plugins">Plugin</link> to provide
@@ -9,7 +9,7 @@
   Discovery</ulink> libraries to discover SPI's.</para>
 
   <section>
-    <title>Available Extension Points</title>
+    <title>Available SPI's.</title>
 
     <para>Below is a list of the interfaces that can be used to add extensions
     to Taverna. The descriptions are a brief outline and far from
@@ -169,7 +169,7 @@
   </section>
 
   <section>
-    <title>Declaring your SPI</title>
+    <title>Declaring your SPI.</title>
 
     <para>Writing your code to extend an SPI is not all that is required for
     it to be discovered within Taverna. You also need to declare it as an
