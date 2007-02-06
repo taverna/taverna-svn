@@ -2,7 +2,7 @@
 <section id="versioning">
   <title>Taverna versioning guidelines.</title>
 
-  <para>Taverna releases and artifacts use the following versioning
+  <para>Taverna releases use the following versioning
   rules.</para>
 
   <itemizedlist>
@@ -33,8 +33,8 @@
     </listitem>
   </itemizedlist>
 
-  <para>Artifacts for a given release will follow the 3rd order version of
+  <para>Taverna artifacts for a given release will follow the 3rd order version of
   Taverna. So all artifacts in Taverna 1.5.1 will have the version 1.5.1.x.
-  When a new release is made that afects the 3rd order version number, all
-  artifacts will have their versions updated to remain in sync.</para>
+  When a new Taverna release is made that affects the 3rd order version number, all
+  artifacts will have their versions updated to remain synchronised.</para>
 </section>
