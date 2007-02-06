@@ -78,15 +78,15 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
     target/taverna-1.5.1-bin/taverna-1.5.1</para>
 
     <note>
-      <para>In theory the package goal is an unnessary step, but is sadly
+      <para>In theory the goal 'package' is an unnessary step, but is sadly
       required due to a bug in the maven assembly plugin.</para>
     </note>
 
-    <para>Next cd to the target/taverna-1.5.1-bin/taverna-1.5.1/ directory. If
+    <para>Next change to the target/taverna-1.5.1-bin/taverna-1.5.1/ directory. If
     you are making sourcecode changes, then before you can run Taverna you
     need to edit the startup script, runme.sh or runme.bat depending upon your
     platform. If you don't make the following change then when you run Taverna
-    it will fetch its libraries from the central myGrid repository, rather
+    it will fetch its artifacts from the central myGrid repository, rather
     than using the artifacts you just built and installed. You will need to
     know the location of your local maven repository. Using Linux or the Mac
     this is by default $HOME/.m2/repository, or using Windows "Documents and
