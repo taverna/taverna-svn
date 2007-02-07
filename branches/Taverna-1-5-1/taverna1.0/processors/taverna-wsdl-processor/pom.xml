@@ -8,6 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-wsdl-processor</artifactId>
+  <version>1.5.1.1</version>
   <name>WSDL Processor</name>  
   <dependencies>
     <dependency>

@@ -1,4 +1,4 @@
-<profile version="1.5.1.1" name="Taverna Workbench">	
+<profile version="1.5.1.2" name="Taverna Workbench">	
 
 	<!--  processors -->			
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1"/>
@@ -8,7 +8,7 @@
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-notification-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-beanshell-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-soaplab-processor" version="1.5.1"/>
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-wsdl-processor" version="1.5.1"/>
+	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-wsdl-processor" version="1.5.1.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-apiconsumer-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-inferno-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-notification-processor" version="1.5.1"/>
