@@ -50,6 +50,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 				String omiiClasspath = ClasspathUtils.expandDirs(omiiLibDir
 						.getCanonicalPath())
 						+ File.pathSeparator + omiiConfDir.getCanonicalPath();
+				logger.debug("Set omii classpath " + omiiClasspath);
 				ClassLoader omiiClassLoader = ClassUtils.createClassLoader(
 						omiiClasspath, ClassUtils.class.getClassLoader());
 				ClassUtils.setDefaultClassLoader(omiiClassLoader);
@@ -83,11 +84,19 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 				result = invoker.invoke(inputMap);
 			}
 		} catch (AxisFault af) {
-			if ("SecurityContextInitHandler: Request does not contain required Security header"
-					.equals(af.getMessage())) {
-				if (!isSecureService() && securityConfiguration != null) {
+			String reason = af.getFaultReason();
+			if (reason != null) {
+				reason = reason.toLowerCase();
+				// Note: Check in lowercase in case they fix the
+				// typo "required Security header". Don't check the classname
+				// (WSDoAllReceiver) as it has a tendency to change with wss4j
+				// versions. This is still very flaky, but there seems to be no
+				// way of asking wss4j if a service is expecting security headers
+				if (reason.contains("does not contain required security header") && 
+					!isSecureService() && securityConfiguration != null) {
 					// this looks like a secure service so set it as secure and
 					// try again
+					logger.debug("Retrying as secure service");
 					setSecureService(true);
 					return execute(inputMap, parentTask);
 				}
@@ -111,7 +120,7 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 		} catch (TaskExecutionException e) {
 			logger.error("Error occurred invoking wsdl based service: "
 					+ e.getMessage());
-			throw (TaskExecutionException) e;
+			throw e;
 		} catch (Exception e) {
 			logger.error("Error occurred invoking wsdl based service: "
 					+ e.getMessage());
