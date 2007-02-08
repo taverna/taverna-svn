@@ -9,9 +9,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.tools.Bootstrap;
 
 public class Taverna {
+	
+	private static Logger logger = Logger.getLogger(Taverna.class);
 	
 	private static File tavernaHome = null;
 	private String loaderVersion = "1.5.1";
@@ -22,8 +26,6 @@ public class Taverna {
 		synchronized (this) {
 			if (tavernaHome == null || targetClass == null || targetObject == null) {
 				prepare();
-			} else {
-				System.out.println("Already prepared");
 			}
 		}
 	}
@@ -35,7 +37,7 @@ public class Taverna {
 		return call("runWorkflow", scufl, inputDoc);
 	}
 	
-	public String runWorkflowFile(String filename, String inputDoc) {
+	public String runWorkflowFile(String filename, String inputDoc)  {
 		return call("runWorkflowFile", filename, inputDoc);
 	}
 	
@@ -43,46 +45,51 @@ public class Taverna {
 		return call("jobStatus", job_id);
 	}
 	
-	public String getResultDocument(String job_id) {
-		return call("getResultDocument", job_id);
+	public String jobs() {
+		return call("jobs");
+	}
+	
+	public String getResultDocument(String job_id) throws UnknownJobException {
+		return call("getResultDocument", UnknownJobException.class, job_id);
 	}
 
-	public String getProgressReport(String job_id) {
-		return call("getProgressReport", job_id);
+	public String getProgressReport(String job_id) throws UnknownJobException {
+		return call("getProgressReport", UnknownJobException.class, job_id);
 	}
 	
 	public String getWorkflow(String job_id) {
 		return call("getWorkflow", job_id);
 	}
 
-	public String getInputs(String job_id) {
+	public String getInputs(String job_id)  {
 		return call("getInputs", job_id);
 	}
 
-	public String jobs() {
-		return call("jobs");
-	}
-
-	public String call(String method, String msg) {
-		System.out.println("Calling method " + method);
+	@SuppressWarnings("unchecked")
+	private <E extends TavernaException> String call(String method,
+		Class<E> expected, String... msg) throws E {
+		logger.debug("Calling method " + method);
 		try {
-			return (String) invoke(method, msg);
+			return (String) invoke(method, (Object[]) msg);
 		} catch (Throwable t) {
-			System.out.println("Oh noe!");
-			t.printStackTrace();
+			if (expected.isInstance(t)) {
+				// Throw it on requested
+				throw (E)t; 
+			}
+			logger.warn("Could not call " + method, t);
 			return "Error: " + t;
 		}
 	}
+    
 	private String call(String method, String... msg) {
-		System.out.println("Calling method " + method);
 		try {
-			return (String) invoke(method, (Object[])msg);
-		} catch (Throwable t) {
-			System.out.println("Oh noe!");
-			t.printStackTrace();
-			return "Error: " + t;
+			return call(method, TavernaException.class, msg);
+		} catch (TavernaException e) {
+			logger.warn("Could not call " + method, e);
+			return "Error: " + e;
 		}
 	}
+	
 	private Object invoke(String methodName, Object... args)
 	throws NoSuchMethodException, Throwable {
 		// Find classes to match our method

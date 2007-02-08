@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import net.sf.taverna.service.wsdl.client.Taverna;
+import net.sf.taverna.service.wsdl.client.UnknownJobException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -97,12 +98,16 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 	
 
 	public String getProgressReportXMLString() {
+		String progress;
 		try {
-			return service.getProgressReport(job_id);
+			progress = service.getProgressReport(job_id);
+		} catch (UnknownJobException ex) {
+			throw new IllegalStateException("Unknown job " + job_id);
 		} catch (RemoteException ex) {
 			logger.warn("Could not retrieve progress report", ex);
 			throw new IllegalStateException("Could not retrieve progress report", ex);
 		}
+		return progress;
 	}
 
 	public String getProvenanceXMLString() {

@@ -11,6 +11,7 @@ import net.sf.taverna.service.queue.Job;
 import net.sf.taverna.service.queue.QueueException;
 import net.sf.taverna.service.queue.TavernaQueue;
 import net.sf.taverna.service.queue.Job.State;
+import net.sf.taverna.service.wsdl.UnknownJobException;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.jdom.JDOMException;
@@ -42,7 +43,7 @@ public class TavernaTest extends TestCommon {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void testGetResults() throws QueueException, JDOMException, IOException {
+	public void testGetResults() throws QueueException, JDOMException, IOException, UnknownJobException {
 		String job_id = engine.runWorkflow(workflow, "");
 		// OK, we'll cheat and wait for the job to finish
 		Job job = engine.jobs.get(job_id);

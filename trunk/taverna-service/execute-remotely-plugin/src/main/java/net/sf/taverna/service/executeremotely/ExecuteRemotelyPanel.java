@@ -190,6 +190,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 				job_id = job[0];
 				state = job[1];
 				setBackground(Color.WHITE);
+				// FIXME: Should be Action so it also works with keyboard
 				addMouseListener(new MouseClickListener());
 			}
 		}
@@ -227,9 +228,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			c.gridx = 0;
 			c.gridy = 0;
 			if (taverna == null) {
-				add(new JLabel("Not connected"), c);
+				add(new ShadedLabel("Not connected", 
+						ShadedLabel.TAVERNA_ORANGE), c);
 			} else {
-				add(new JLabel("Jobs at " + getEndpoint()), c);
+				add(new ShadedLabel("Jobs at " + getEndpoint(),
+					ShadedLabel.TAVERNA_BLUE), c);
 			}
 		}
 		

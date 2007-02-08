@@ -4,11 +4,14 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 public class Job {
 
+	private static Logger logger = Logger.getLogger(Job.class);
+	
 	// Different from Freefluo:
 	// QUEUED, DEQUEUED
 	public enum State { NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, FAILED, CANCELLING, CANCELLED, COMPLETE, DESTROYED }
@@ -29,7 +32,7 @@ public class Job {
 		this.state = State.NEW;
 	}
 	
-	public synchronized void setState(State state) {
+	synchronized void setState(State state) {
 		if (state.compareTo(this.state) > 0) {
 			this.state = state;
 			this.notifyAll();
@@ -44,7 +47,7 @@ public class Job {
 		return getState().compareTo(State.RUNNING) > 1;
 	}
 	
-	public void setResults(Map<String, DataThing> results) {
+	void setResults(Map<String, DataThing> results) {
 		if (! getState().equals(State.RUNNING)) {
 			throw new IllegalStateException("Not running");
 		}
@@ -93,18 +96,20 @@ public class Job {
 	}
 
 	public String getProgressReport() {
-		if (! isFinished()) {
-			throw new IllegalStateException("Not finished");
+		if (progressReport == null) {
+			logger.warn("Getting progress report too early");
+			return "";
 		}
 		return progressReport;
 	}
 
-	public void setProgressReport(String progressReport) {
-		if (! getState().equals(State.RUNNING)) {
-			throw new IllegalStateException("Not running");
-		}
+	void setProgressReport(String progressReport) {
 		this.progressReport = progressReport;
 	}
 	
+	@Override
+	public String toString() {
+		return "Job " + id;
+	}
 	
 }

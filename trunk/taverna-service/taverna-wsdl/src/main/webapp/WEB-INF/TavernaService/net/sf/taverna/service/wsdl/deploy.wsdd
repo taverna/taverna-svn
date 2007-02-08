@@ -14,10 +14,6 @@
       </operation>
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="jobs" qname="operNS:jobs" returnQName="retNS:jobsReturn" returnType="rtns:string" soapAction="">
       </operation>
-      <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="call" qname="operNS:call" returnQName="retNS:callReturn" returnType="rtns:string" soapAction="">
-        <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:method" type="tns:string"/>
-        <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msg" type="tns:string"/>
-      </operation>
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="runWorkflow" qname="operNS:runWorkflow" returnQName="retNS:runWorkflowReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:scufl" type="tns:string"/>
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:inputDoc" type="tns:string"/>
@@ -31,9 +27,11 @@
       </operation>
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getResultDocument" qname="operNS:getResultDocument" returnQName="retNS:getResultDocumentReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+        <fault xmlns:fns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://wsdl.service.taverna.sf.net" name="UnknownJobException" qname="fns:fault" class="net.sf.taverna.service.wsdl.UnknownJobException" type="tns:UnknownJobException"/>
       </operation>
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getProgressReport" qname="operNS:getProgressReport" returnQName="retNS:getProgressReportReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
+        <fault xmlns:fns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://wsdl.service.taverna.sf.net" name="UnknownJobException" qname="fns:fault" class="net.sf.taverna.service.wsdl.UnknownJobException" type="tns:UnknownJobException"/>
       </operation>
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getWorkflow" qname="operNS:getWorkflow" returnQName="retNS:getWorkflowReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
@@ -41,7 +39,9 @@
       <operation xmlns:operNS="http://wsdl.service.taverna.sf.net" xmlns:retNS="http://wsdl.service.taverna.sf.net" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getInputs" qname="operNS:getInputs" returnQName="retNS:getInputsReturn" returnType="rtns:string" soapAction="">
         <parameter xmlns:pns="http://wsdl.service.taverna.sf.net" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:job_id" type="tns:string"/>
       </operation>
-      <parameter name="allowedMethods" value="getInputs call jobStatus getResultDocument reset getProgressReport jobs getWorkflow runWorkflowFile runWorkflow"/>
+      <parameter name="allowedMethods" value="getInputs jobStatus getResultDocument reset getProgressReport jobs getWorkflow runWorkflowFile runWorkflow"/>
 
+      <typeMapping xmlns:ns="http://wsdl.service.taverna.sf.net" qname="ns:UnknownJobException" type="java:net.sf.taverna.service.wsdl.UnknownJobException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
+      <typeMapping xmlns:ns="http://wsdl.service.taverna.sf.net" qname="ns:TavernaException" type="java:net.sf.taverna.service.wsdl.TavernaException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle=""/>
   </service>
 </deployment>

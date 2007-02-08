@@ -18,6 +18,7 @@ import net.sf.taverna.service.queue.QueueException;
 import net.sf.taverna.service.queue.QueueListener;
 import net.sf.taverna.service.queue.TavernaQueue;
 import net.sf.taverna.service.queue.TavernaQueueListener;
+import net.sf.taverna.service.wsdl.UnknownJobException;
 import net.sf.taverna.tools.Bootstrap;
 import net.sf.taverna.utils.MyGridConfiguration;
 
@@ -142,8 +143,11 @@ public class Engine {
 		}
 		return job.getState().toString();
 	}
-	public String getResultDocument(String job_id) {
+	public String getResultDocument(String job_id) throws UnknownJobException {
 		Job job = jobs.get(job_id);
+		if (job == null) {
+			throw new UnknownJobException(job_id);
+		}
 		Map<String, DataThing> results = job.getResults();
 		return makeDataDocument(results);	
 	}
@@ -156,8 +160,11 @@ public class Engine {
 		return xmlString;
 	}
 	
-	public String getProgressReport(String job_id) {
+	public String getProgressReport(String job_id) throws UnknownJobException {
 		Job job = jobs.get(job_id);
+		if (job == null) {
+			throw new UnknownJobException(job_id);
+		}
 		return job.getProgressReport();
 	}
 	
@@ -165,14 +172,20 @@ public class Engine {
 		return ""+ProfileFactory.getInstance().getProfile().getArtifacts();
 	}
 	
-	public String getWorkflow(String job_id) {
+	public String getWorkflow(String job_id) throws UnknownJobException {
 		Job job = jobs.get(job_id);
+		if (job == null) {
+			throw new UnknownJobException(job_id);
+		}
 		ScuflModel workflow = job.getWorkflow();
 		return XScuflView.getXMLText(workflow);
 	}
 	
-	public String getInputs(String job_id) {
+	public String getInputs(String job_id) throws UnknownJobException {
 		Job job = jobs.get(job_id);
+		if (job == null) {
+			throw new UnknownJobException(job_id);
+		}
 		Map<String, DataThing> inputs = job.getInputs();
 		return makeDataDocument(inputs);
 	}

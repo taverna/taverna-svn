@@ -3,6 +3,8 @@
 	<classpathentry kind="src" path="taverna-engine/src/main/java"/>
 	<classpathentry kind="src" path="taverna-engine/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="taverna-engine/src/test/resources" path="taverna-engine/src/test/resources"/>
+	<classpathentry kind="src" path="taverna-interface/src/main/java"/>
+	<classpathentry excluding="**" kind="src" output="taverna-interface/src/main/resources" path="taverna-interface/src/main/resources"/>
 	<classpathentry kind="src" path="taverna-wsdl/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="taverna-wsdl/src/main/resources" path="taverna-wsdl/src/main/resources"/>
 	<classpathentry kind="src" path="execute-remotely-plugin/src/main/java"/>

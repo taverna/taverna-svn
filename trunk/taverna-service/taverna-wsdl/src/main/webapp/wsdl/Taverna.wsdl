@@ -20,21 +20,6 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
      </sequence>
     </complexType>
    </element>
-   <element name="call">
-    <complexType>
-     <sequence>
-      <element name="method" type="xsd:string"/>
-      <element name="msg" type="xsd:string"/>
-     </sequence>
-    </complexType>
-   </element>
-   <element name="callResponse">
-    <complexType>
-     <sequence>
-      <element name="callReturn" type="xsd:string"/>
-     </sequence>
-    </complexType>
-   </element>
    <element name="runWorkflow">
     <complexType>
      <sequence>
@@ -93,6 +78,21 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
      </sequence>
     </complexType>
    </element>
+   <complexType abstract="true" name="TavernaException">
+    <sequence>
+     <element name="msg" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="UnknownJobException">
+    <complexContent>
+     <extension base="impl:TavernaException">
+      <sequence>
+       <element name="jobID" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <element name="fault" type="impl:UnknownJobException"/>
    <element name="getProgressReport">
     <complexType>
      <sequence>
@@ -180,12 +180,6 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="callResponse">
-
-      <wsdl:part element="impl:callResponse" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="getResultDocumentRequest">
 
       <wsdl:part element="impl:getResultDocument" name="parameters"/>
@@ -195,6 +189,12 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
    <wsdl:message name="resetRequest">
 
       <wsdl:part element="impl:reset" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="UnknownJobException">
+
+      <wsdl:part element="impl:fault" name="fault"/>
 
    </wsdl:message>
 
@@ -240,12 +240,6 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="callRequest">
-
-      <wsdl:part element="impl:call" name="parameters"/>
-
-   </wsdl:message>
-
    <wsdl:message name="runWorkflowResponse">
 
       <wsdl:part element="impl:runWorkflowResponse" name="parameters"/>
@@ -273,14 +267,6 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          <wsdl:input message="impl:jobsRequest" name="jobsRequest"/>
 
          <wsdl:output message="impl:jobsResponse" name="jobsResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="call">
-
-         <wsdl:input message="impl:callRequest" name="callRequest"/>
-
-         <wsdl:output message="impl:callResponse" name="callResponse"/>
 
       </wsdl:operation>
 
@@ -314,6 +300,8 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
          <wsdl:output message="impl:getResultDocumentResponse" name="getResultDocumentResponse"/>
 
+         <wsdl:fault message="impl:UnknownJobException" name="UnknownJobException"/>
+
       </wsdl:operation>
 
       <wsdl:operation name="getProgressReport">
@@ -321,6 +309,8 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          <wsdl:input message="impl:getProgressReportRequest" name="getProgressReportRequest"/>
 
          <wsdl:output message="impl:getProgressReportResponse" name="getProgressReportResponse"/>
+
+         <wsdl:fault message="impl:UnknownJobException" name="UnknownJobException"/>
 
       </wsdl:operation>
 
@@ -375,24 +365,6 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
          </wsdl:input>
 
          <wsdl:output name="jobsResponse">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="call">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="callRequest">
-
-            <wsdlsoap:body use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="callResponse">
 
             <wsdlsoap:body use="literal"/>
 
@@ -470,6 +442,12 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
          </wsdl:output>
 
+         <wsdl:fault name="UnknownJobException">
+
+            <wsdlsoap:fault name="UnknownJobException" use="literal"/>
+
+         </wsdl:fault>
+
       </wsdl:operation>
 
       <wsdl:operation name="getProgressReport">
@@ -487,6 +465,12 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
             <wsdlsoap:body use="literal"/>
 
          </wsdl:output>
+
+         <wsdl:fault name="UnknownJobException">
+
+            <wsdlsoap:fault name="UnknownJobException" use="literal"/>
+
+         </wsdl:fault>
 
       </wsdl:operation>
 

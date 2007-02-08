@@ -155,7 +155,7 @@
         <id>Codehaus Snapshots</id>
         <url>http://snapshots.repository.codehaus.org/</url>
         <snapshots>
-          <enabled>false</enabled>
+          <enabled>true</enabled>
         </snapshots>
         <releases>
           <enabled>true</enabled>
@@ -183,6 +183,7 @@
   </distributionManagement>
   <modules>
     <module>taverna-engine</module>
+    <module>taverna-interface</module>
     <module>taverna-wsdl</module>
     <module>execute-remotely-plugin</module>
   </modules>
