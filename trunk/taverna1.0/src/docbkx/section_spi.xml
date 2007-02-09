@@ -4,7 +4,8 @@
 
   <para>Taverna contains numerous Classes or Interfaces that can be extended
   and packaged as a <link linkend="plugins">Plugin</link> to provide
-  additional functionality for a specific purpose. Taverna uses the <ulink
+  additional functionality for a specific purpose. Taverna uses a mechanism
+  that mimics the <ulink
   url="http://jakarta.apache.org/commons/discovery/">Apache Commons
   Discovery</ulink> libraries to discover SPI's.</para>
 
@@ -186,6 +187,6 @@
 
     <screen>elvis:&gt;cat src/main/resources/META-INF/services/org.embl.ebi.escience.scuflui.spi.RendererSPI
 
-net.sf.sourceforge.net.MyFancyRendererSPI</screen>
+org.myproject.renderers.MyFancyRenderer</screen>
   </section>
 </section>

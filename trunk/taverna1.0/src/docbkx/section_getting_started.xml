@@ -15,8 +15,9 @@
     the taverna-users list.</para>
 
     <para>Details of how to join the mailing lists, and browse the archives,
-    can be found <ulink
-    url="http://sourceforge.net/mail/?group_id=74874">here.</ulink></para>
+    can be found at the Taverna <ulink
+    url="http://sourceforge.net/mail/?group_id=74874">Sourceforge
+    site.</ulink></para>
   </section>
 
   <section id="getting_the_code">
@@ -24,8 +25,8 @@
 
     <para>Even if you not planning on modifying the Taverna sourcecode
     directly, and are simply planning on creating a <link
-    linkend="plugins">Plugin</link>, it is still advisable that you download the
-    sourcecode. It can provide a valuable reference on how to use various
+    linkend="plugins">Plugin</link>, it is still advisable that you download
+    the sourcecode. It can provide a valuable reference on how to use various
     parts of the API.</para>
 
     <para>When a Taverna release is made the sourcecode used to make that
@@ -50,8 +51,9 @@
 
 cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P taverna1.0</screen>
 
-    <para>It is also possible to browse CVS <ulink
-    url="http://taverna.cvs.sourceforge.net/taverna/taverna1.0/">here.</ulink></para>
+    <para>It is also possible to <ulink
+    url="http://taverna.cvs.sourceforge.net/taverna/taverna1.0/">Browse CVS
+    online.</ulink></para>
   </section>
 
   <section>
@@ -82,18 +84,18 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
       required due to a bug in the maven assembly plugin.</para>
     </note>
 
-    <para>Next change to the target/taverna-1.5.1-bin/taverna-1.5.1/ directory. If
-    you are making sourcecode changes, then before you can run Taverna you
-    need to edit the startup script, runme.sh or runme.bat depending upon your
-    platform. If you don't make the following change then when you run Taverna
-    it will fetch its artifacts from the central myGrid repository, rather
-    than using the artifacts you just built and installed. You will need to
-    know the location of your local maven repository. Using Linux or the Mac
-    this is by default $HOME/.m2/repository, or using Windows "Documents and
-    Settings/&lt;user&gt;/.m2/repository/. You need to assign this value to
-    the variable raven.repository.0 in the startup script meaning that your
-    local repository is examined first for the Taverna artifacts. The path
-    needs to represented as a file URL.</para>
+    <para>Next change to the target/taverna-1.5.1-bin/taverna-1.5.1/
+    directory. If you are making sourcecode changes, then before you can run
+    Taverna you need to edit the startup script, runme.sh or runme.bat
+    depending upon your platform. If you don't make the following change then
+    when you run Taverna it will fetch its artifacts from the central myGrid
+    repository, rather than using the artifacts you just built and installed.
+    You will need to know the location of your local maven repository. Using
+    Linux or the Mac this is by default $HOME/.m2/repository, or using Windows
+    "Documents and Settings/&lt;user&gt;/.m2/repository/. You need to assign
+    this value to the variable raven.repository.0 in the startup script
+    meaning that your local repository is examined first for the Taverna
+    artifacts. The path needs to represented as a file URL.</para>
 
     <para>So for Linux your run.sh will end with something like.</para>
 
