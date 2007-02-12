@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BigXMLTester.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:42 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.test;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -66,12 +68,8 @@ public class BigXMLTester {
 		XMLStreamParser parser = new XMLStreamParserImpl();
 		TagInterceptor interceptor = new TagInterceptorImpl("data","data-replaced",new NullWriterFactory());
 		parser.addTagInterceptor(interceptor);
+		parser.setOutputStream(System.out);
 		parser.read(new URL(args[0]).openStream());
-		Document doc=parser.finalDocument();
-		
-		OutputFormat format = OutputFormat.createPrettyPrint();		
-		XMLWriter writer = new XMLWriter(System.out,format);
-		writer.write(doc.getRootElement());		
 	}
 }
 
@@ -100,8 +98,7 @@ class NullWriterFactory implements WriterFactory {
 			return dest;
 		}
 
-		public void write(char[] ch, int start, int length) throws IOException {
-			logger.info("Recieved "+ch.length+" chars, start="+start+", length="+length);
+		public void write(char[] ch, int start, int length) throws IOException {			
 			
 		}
 

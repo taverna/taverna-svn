@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MediumXMLTester.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:42 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.test;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -68,14 +70,22 @@ public class MediumXMLTester {
 		tmp.delete();
 		tmp.mkdir();
 		logger.info("Using tmp location for stored data: "+tmp.toURL().toExternalForm());
+						
+		
 		XMLStreamParser parser = new XMLStreamParserImpl();
+		
+		parser.setOutputStream(System.out);
+		
 		TagInterceptor interceptor = new TagInterceptorImpl("picture","picture-replaced",new FileInterceptorWriterFactory(tmp.toURL()));		
 		parser.addTagInterceptor(interceptor);
-		parser.read(new URL(args[0]).openStream());
-		Document doc=parser.finalDocument();
+		parser.read(new URL(args[0]).openStream());				
 		
-		OutputFormat format = OutputFormat.createPrettyPrint();		
-		XMLWriter writer = new XMLWriter(System.out,format);
-		writer.write(doc.getRootElement());		
+		
+		
+//		Document doc=parser.finalDocument();
+//		
+//		OutputFormat format = OutputFormat.createPrettyPrint();		
+//		XMLWriter writer = new XMLWriter(System.out,format);
+//		writer.write(doc.getRootElement());		
 	}
 }

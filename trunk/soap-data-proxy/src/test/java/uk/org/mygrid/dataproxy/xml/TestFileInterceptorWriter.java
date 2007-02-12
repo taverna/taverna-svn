@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,6 +48,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,9 +63,11 @@ public class TestFileInterceptorWriter {
 			.getLogger(TestFileInterceptorWriter.class);
 	
 	private File tmpDir;
+	private ByteArrayOutputStream outStream;
+	private XMLStreamParser parser;
 	
 	@Before
-	public void createTemp() {
+	public void createTemp() throws Exception {
 		try {
 			tmpDir = File.createTempFile("dataproxy-test", "");
 			// But we want a directory!
@@ -71,7 +75,10 @@ public class TestFileInterceptorWriter {
 			logger.error("Couldn't create tmp dir",e);	
 		}
 		tmpDir.delete();
-		tmpDir.mkdir();				
+		tmpDir.mkdir();
+		outStream = new ByteArrayOutputStream();
+		parser=new XMLStreamParserImpl();
+		parser.setOutputStream(outStream);
 	}
 	
 	@After
@@ -83,10 +90,11 @@ public class TestFileInterceptorWriter {
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
 		TagInterceptor interceptor = new TagInterceptorImpl("data","data-replaced", new FileInterceptorWriterFactory(tmpDir.toURL()));
-		XMLStreamParser parser=new XMLStreamParserImpl();
+		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
-		Document doc=parser.finalDocument();
+		
+		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
 		Element el = doc.getRootElement().element("data-replaced");
 		String strURL=el.getTextTrim();
@@ -105,10 +113,11 @@ public class TestFileInterceptorWriter {
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
 		TagInterceptor interceptor = new TagInterceptorImpl("data","data-replaced", new FileInterceptorWriterFactory(tmpDir.toURL()));
-		XMLStreamParser parser=new XMLStreamParserImpl();
+		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
-		Document doc=parser.finalDocument();
+		
+		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
 		List<Element> elements = doc.getRootElement().elements("data-replaced");
 		assertEquals("should be 3 elements",3,elements.size());

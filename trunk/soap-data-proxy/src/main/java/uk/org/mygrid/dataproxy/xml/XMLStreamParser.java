@@ -25,23 +25,25 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:42 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
+import org.xml.sax.SAXException;
 
 public interface XMLStreamParser {
-		
-	public Document finalDocument();
+			
+	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
 	public void addTagInterceptor(TagInterceptor interceptor);	
-	public void read(InputStream stream)  throws DocumentException;
+	public void read(InputStream stream)  throws SAXException, IOException;
 }

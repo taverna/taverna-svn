@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -35,25 +35,27 @@ package uk.org.mygrid.dataproxy.xml.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.helpers.XMLFilterImpl;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 
-public class XMLStreamParserImpl extends XMLFilterImpl implements XMLStreamParser {	
+public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {	
 	
 	private static Logger logger = Logger.getLogger(XMLStreamParserImpl.class);
 
@@ -61,12 +63,16 @@ public class XMLStreamParserImpl extends XMLFilterImpl implements XMLStreamParse
 	private int activeTagCount = 0;
 	private String activeTag = null;
 	private InterceptorWriter activeWriter = null;
-	private Document finalDocument = null;		
-
-	public Document finalDocument() {
-		return finalDocument;
-	}	
 	
+	
+	@Override
+	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		
+		super.setOutputStream(out);
+		super.getOutputFormat().setSuppressDeclaration(true);
+	}
+
+
+
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (activeWriter != null ) {
@@ -93,8 +99,9 @@ public class XMLStreamParserImpl extends XMLFilterImpl implements XMLStreamParse
 			if (activeTag.equals(localName)) {
 				activeTagCount--;
 			}
-			if (activeTagCount==0) {				
-				super.endElement(uri, interceptors.get(localName).getReplacementTag(), qName);
+			if (activeTagCount==0) {
+				TagInterceptor interceptor=interceptors.get(localName);
+				super.endElement(uri, interceptor.getReplacementTag(), qName.replaceAll(localName, interceptor.getReplacementTag()));
 				try {
 					activeWriter.close();
 				}
@@ -157,7 +164,7 @@ public class XMLStreamParserImpl extends XMLFilterImpl implements XMLStreamParse
 				logger.error("Error writing to Interceptors writer:",e);
 			}
 			if (interceptor!=null) {
-				super.startElement(uri,interceptor.getReplacementTag(),qName,new AttributesImpl());
+				super.startElement(uri,interceptor.getReplacementTag(),qName.replaceAll(localName, interceptor.getReplacementTag()),new AttributesImpl());
 				String destinationName=activeWriter.getDestinationName();
 				super.characters(destinationName.toCharArray(), 0, destinationName.length());
 			}
@@ -167,10 +174,10 @@ public class XMLStreamParserImpl extends XMLFilterImpl implements XMLStreamParse
 		}								
 	}		
 	
-	public void read(InputStream stream) throws DocumentException {
-		SAXReader reader = new SAXReader();
-		reader.setXMLFilter(this);				
-		finalDocument=reader.read(stream);
+	public void read(InputStream stream) throws SAXException, IOException {
+		XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setContentHandler(this);				
+		reader.parse(new InputSource(stream));
 	}
 
 	public void addTagInterceptor(TagInterceptor interceptor) {

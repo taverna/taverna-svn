@@ -1,10 +1,12 @@
 package uk.org.mygrid.dataproxy.xml;
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.UnsupportedEncodingException;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -12,9 +14,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.TagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
@@ -45,9 +45,9 @@ import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLStreamParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-12 17:01:45 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -55,10 +55,13 @@ import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 public class TestXMLStreamParser {
 
 	private XMLStreamParser parser = null;
+	ByteArrayOutputStream outputStream;
 	
 	@Before
-	public void setUp() {
+	public void setUp() throws UnsupportedEncodingException {
 		parser=new XMLStreamParserImpl();
+		outputStream  = new ByteArrayOutputStream();		
+		parser.setOutputStream(outputStream );
 	}
 	
 	@Test
@@ -82,8 +85,7 @@ public class TestXMLStreamParser {
 		assertEquals("XML for link element did not match expected","<link href=\"a ref\">my site</link>",linkWriterFactory.getOutputsWritten().get(0));
 		
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 		
 		assertEquals("<section><para-replaced>1</para-replaced><link-replaced>1</link-replaced></section>",finalXML);
 		
@@ -103,8 +105,7 @@ public class TestXMLStreamParser {
 		assertEquals("<b>bbbbb</b>",bWriterFactory.getOutputsWritten().get(0));
 		assertEquals("<b>bbb</b>",bWriterFactory.getOutputsWritten().get(1));
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 		
 		assertEquals("<a><b-replaced>1</b-replaced><c>c</c><b-replaced>2</b-replaced></a>",finalXML);
 	}
@@ -113,7 +114,7 @@ public class TestXMLStreamParser {
 	public void testNested() throws Exception {
 		String xml = "<a><b><c>c</c><b>bbbbb</b></b><c>c</c></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);		
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -122,8 +123,7 @@ public class TestXMLStreamParser {
 		assertEquals(1,bWriterFactory.getOutputsWritten().size());
 		assertEquals("<b><c>c</c><b>bbbbb</b></b>",bWriterFactory.getOutputsWritten().get(0));		
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 		
 		assertEquals("<a><b-replaced>1</b-replaced><c>c</c></a>",finalXML);
 	}
@@ -142,8 +142,7 @@ public class TestXMLStreamParser {
 		assertEquals(1,bWriterFactory.getOutputsWritten().size());
 		assertEquals("<ns1:b>bbb</ns1:b>",bWriterFactory.getOutputsWritten().get(0));		
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 				
 		assertEquals("<ns1:a xmlns:ns1=\"a\"><ns1:b-replaced>1</ns1:b-replaced></ns1:a>",finalXML);
 	}
@@ -162,8 +161,7 @@ public class TestXMLStreamParser {
 		assertEquals(1,bWriterFactory.getOutputsWritten().size());
 		assertEquals("<b>bbb</b>",bWriterFactory.getOutputsWritten().get(0));		
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 				
 		assertEquals("<ns1:a xmlns:ns1=\"a\"><b-replaced>1</b-replaced></ns1:a>",finalXML);
 	}
@@ -182,19 +180,10 @@ public class TestXMLStreamParser {
 		assertEquals(1,bWriterFactory.getOutputsWritten().size());
 		assertEquals("<b></b>",bWriterFactory.getOutputsWritten().get(0));		
 		
-		Document resultingDoc = parser.finalDocument();		
-		String finalXML=elementToString(resultingDoc.getRootElement());
+		String finalXML=outputStream.toString();
 		
 		assertEquals("<a><b-replaced>1</b-replaced></a>",finalXML);
-	}	
-	
-	private String elementToString(Element element) throws IOException{
-		OutputFormat format = OutputFormat.createCompactFormat();
-		StringWriter stringWriter=new StringWriter();
-		XMLWriter writer = new XMLWriter(stringWriter,format);
-		writer.write(element);
-		return stringWriter.getBuffer().toString();
-	}
+	}		
 }
 
 
