@@ -25,16 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:44 $
+ * Last modified on   $Date: 2007-02-12 17:16:18 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,10 +43,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -55,12 +53,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.xml.sax.SAXException;
+
+import uk.org.mygrid.dataproxy.xml.TagInterceptor;
+import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
+import uk.org.mygrid.dataproxy.xml.impl.TagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
 @SuppressWarnings("serial")
 public class ProxyServlet extends HttpServlet {
@@ -93,18 +92,7 @@ public class ProxyServlet extends HttpServlet {
 		}
 		
 		return result;
-	}
-	
-	private String receiveEndpointResponse(InputStream in) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-		String line;
-		String result="";
-		while ((line=reader.readLine())!=null) {
-			logger.debug("Received line from endpoint: "+line);
-			result+=line;
-		}
-		return result;
-	}
+	}	
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -121,50 +109,28 @@ public class ProxyServlet extends HttpServlet {
 		
 		InputStream in = connection.getInputStream();
 		
-		String endPointResponse=receiveEndpointResponse(in);
-		
-		String clientResponse;
-		try {
-			clientResponse = parseEndpointResponse(id,endPointResponse);
-		} catch (JDOMException e) {
-			throw new ServletException(e);
-		}
-		
-		logger.debug("Processed response:"+clientResponse);
-		
-		response.setContentType("text/html");
-		response.getWriter().println(clientResponse);
-	}
-
-	private String parseEndpointResponse(String id,String endpointResponse) throws JDOMException, IOException {
-		String result;
+		XMLStreamParser parser = new XMLStreamParserImpl();
 		if (id.equals("11111")) {
-			Element root=new SAXBuilder().build(new ByteArrayInputStream(endpointResponse.getBytes())).detachRootElement();
-			List<Element> elements= new ArrayList<Element>();
-			getChildren(root,"Field",elements);
-			for (Element element : elements) {
-				element.removeContent();
-				element.setName("Field-proxied");
-				element.setText("http://a data url");				
-			}
-			result=new XMLOutputter(Format.getPrettyFormat()).outputString(root);
+			File tmpFile = File.createTempFile("FieldListProxy", "");
+			tmpFile.delete();
+			tmpFile.mkdir();
+			
+			TagInterceptor interceptor = new TagInterceptorImpl("FieldList","FieldList-proxied",new FileInterceptorWriterFactory(tmpFile.toURL()));
+			parser.addTagInterceptor(interceptor);
 		}
-		else {
-			result=endpointResponse;
+			
+			
+		parser.setOutputStream(response.getOutputStream());
+						
+		response.setContentType("text/html");
+		
+		try {
+			parser.read(in);
+		} catch (SAXException e) {
+			logger.error("Error parsing SOAP response",e);
 		}
 		
-		return result;
-		
-	}
-	
-	private void getChildren(Element root,String name,List<Element> collected) {
-		if (root.getChildren().size()>0) {
-			for (Element child : (List<Element>)root.getChildren()) {
-				if (child.getName().equals(name)) collected.add(child);
-				getChildren(child, name, collected);
-			}
-		}
-	}
+	}		
 	
 	private HttpURLConnection createEndpointConnection(String endPoint, String soapAction) throws MalformedURLException, IOException, ProtocolException {
 		URL endpointUrl=new URL(endPoint);
