@@ -10,7 +10,7 @@
       <directory>src/main/resources/workbench</directory>
       <outputDirectory>/</outputDirectory>
       <excludes>
-        <exclude>conf/mygridtest.properties</exclude>
+      	<exclude>broken-examples/</exclude>
       </excludes>
     </fileSet>
     <!-- contrib examples -->
@@ -18,17 +18,15 @@
       <directory>taverna-contrib/examples</directory>
       <outputDirectory>examples</outputDirectory>
     </fileSet>
-    <!-- provenance -->
-    <fileSet>
-      <directory>target/provenance</directory>
-      <outputDirectory>/</outputDirectory>
-    </fileSet>
   </fileSets>
   <moduleSets>
     <moduleSet>
+      <includes>
+        <include>uk.org.mygrid.taverna:taverna-bootstrap</include>
+      </includes>
       <binaries>
-        <outputDirectory>lib</outputDirectory>
-        <includeDependencies>true</includeDependencies>
+        <outputDirectory>/</outputDirectory>
+		<includeDependencies>true</includeDependencies>
         <unpack>false</unpack>
       </binaries>
     </moduleSet>

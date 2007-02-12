@@ -28,5 +28,10 @@ ARGS="$ARGS -Draven.target.artifactid=baclava-tools "
 ARGS="$ARGS -Draven.target.class=org.embl.ebi.escience.baclava.tools.DataThingViewer "
 ARGS="$ARGS -Draven.target.method=main"
 
+# Load customised properties if they exist
+if [ -f "$TAVERNA_HOME/custom.sh" ] ; then
+    source "$TAVERNA_HOME/custom.sh"
+fi
+
 java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.1.jar $@
 
