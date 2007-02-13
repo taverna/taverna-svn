@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-12 17:16:18 $
+ * Last modified on   $Date: 2007-02-13 17:16:55 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -73,8 +73,7 @@ public class ProxyServlet extends HttpServlet {
 		if (endPointMap==null) {
 			endPointMap = Collections.synchronizedMap(new HashMap<String,String>());
 			endPointMap.put("11111", "http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi");
-			endPointMap.put("22222", "http://localhost:8080/testwebservices/services/MyService");
-			endPointMap.put("33333", "http://localhost:8080/testwebservices/services/MyService");
+			endPointMap.put("22222", "http://localhost:8080/testwebservices/services/MyService");			
 		}
 	}
 	
@@ -116,6 +115,15 @@ public class ProxyServlet extends HttpServlet {
 			tmpFile.mkdir();
 			
 			TagInterceptor interceptor = new TagInterceptorImpl("FieldList","FieldList-proxied",new FileInterceptorWriterFactory(tmpFile.toURL()));
+			parser.addTagInterceptor(interceptor);
+		}
+		
+		if (id.equals("22222")) {
+			File tmpFile = File.createTempFile("dataproxy-picturedata", "");
+			tmpFile.delete();
+			tmpFile.mkdir();
+			
+			TagInterceptor interceptor = new TagInterceptorImpl("data","data-proxied",new FileInterceptorWriterFactory(tmpFile.toURL()));
 			parser.addTagInterceptor(interceptor);
 		}
 			
