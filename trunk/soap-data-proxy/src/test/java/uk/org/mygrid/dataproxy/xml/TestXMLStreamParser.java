@@ -45,9 +45,9 @@ import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLStreamParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-12 17:01:45 $
+ * Last modified on   $Date: 2007-02-13 15:38:51 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -111,7 +111,7 @@ public class TestXMLStreamParser {
 	}
 	
 	@Test 
-	public void testNested() throws Exception {
+	public void nested() throws Exception {
 		String xml = "<a><b><c>c</c><b>bbbbb</b></b><c>c</c></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
 		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);		
@@ -126,6 +126,29 @@ public class TestXMLStreamParser {
 		String finalXML=outputStream.toString();
 		
 		assertEquals("<a><b-replaced>1</b-replaced><c>c</c></a>",finalXML);
+	}
+	
+	@Test 
+	public void nestedWithinActiveTag() throws Exception {
+		String xml="<a><b><c>ccc</c></b></a>";
+		StringWriterFactory bWriterFactory=new StringWriterFactory();
+		StringWriterFactory cWriterFactory=new StringWriterFactory();
+		TagInterceptor interceptorB=new TagInterceptorImpl("b","b-replaced",bWriterFactory);		
+		TagInterceptor interceptorC=new TagInterceptorImpl("c","c-replaced",cWriterFactory);
+		
+		parser.addTagInterceptor(interceptorB);
+		parser.addTagInterceptor(interceptorC);
+		
+		parser.read(new ByteArrayInputStream(xml.getBytes()));
+		
+		assertEquals(1,bWriterFactory.getOutputsWritten().size());
+		assertEquals("<b><c>ccc</c></b>",bWriterFactory.getOutputsWritten().get(0));
+		
+		assertEquals("nothing should have been intercepted for the c tag",0,cWriterFactory.getOutputsWritten().size());
+		
+		String finalXML=outputStream.toString();
+		
+		assertEquals("<a><b-replaced>1</b-replaced></a>",finalXML);
 	}
 	
 	@Test
@@ -184,6 +207,25 @@ public class TestXMLStreamParser {
 		
 		assertEquals("<a><b-replaced>1</b-replaced></a>",finalXML);
 	}		
+	
+	@Test 
+	public void testNoContent2() throws Exception {
+		String xml = "<a><b></b></a>";
+		
+		StringWriterFactory bWriterFactory=new StringWriterFactory();
+		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		
+		parser.addTagInterceptor(interceptor);
+		
+		parser.read(new ByteArrayInputStream(xml.getBytes()));
+		
+		assertEquals(1,bWriterFactory.getOutputsWritten().size());
+		assertEquals("<b></b>",bWriterFactory.getOutputsWritten().get(0));		
+		
+		String finalXML=outputStream.toString();
+		
+		assertEquals("<a><b-replaced>1</b-replaced></a>",finalXML);
+	}
 }
 
 

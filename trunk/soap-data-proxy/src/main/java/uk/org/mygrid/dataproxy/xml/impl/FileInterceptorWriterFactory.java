@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-13 15:38:51 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -37,10 +37,15 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.log4j.Logger;
+
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.WriterFactory;
 
 public class FileInterceptorWriterFactory implements WriterFactory {
+	
+	private static Logger logger = Logger
+			.getLogger(FileInterceptorWriterFactory.class);
 
 	private URL baseURL=null;
 	private int c=1;
@@ -52,6 +57,7 @@ public class FileInterceptorWriterFactory implements WriterFactory {
 	public InterceptorWriter newWriter() throws Exception {
 		String fileName="data_"+String.valueOf(c++);
 		URL fileURL=new URL(baseURL,fileName);
+		if (logger.isDebugEnabled()) logger.debug("Created FileInterceptorWriter to write to file:"+fileURL.toExternalForm());
 		return new FileInterceptorWriter(fileURL);
 	}
 

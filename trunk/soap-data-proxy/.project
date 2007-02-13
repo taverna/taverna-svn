@@ -70,10 +70,5 @@
 			<type>1</type>
 			<location>/local/.m2/repository/junit/junit/4.1/junit-4.1.jar</location>
 		</link>
-		<link>
-			<name>src/main/webapp/WEB-INF/lib/jdom-1.0.jar</name>
-			<type>1</type>
-			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
-		</link>
 	</linkedResources>
 </projectDescription>

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-12 17:01:45 $
+ * Last modified on   $Date: 2007-02-13 15:38:51 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
 import org.dom4j.io.XMLWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -71,8 +70,6 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		super.getOutputFormat().setSuppressDeclaration(true);
 	}
 
-
-
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (activeWriter != null ) {
@@ -87,21 +84,15 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		}
 	}
 
-
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (activeWriter!=null) {
-			try {
-				activeWriter.write("</"+qName+">");
-			} catch (IOException e) {
-				logger.error("Error writing end Element to Interceptor writer",e);
-			}
+			writeEndTagToActiveWriter(qName);
 			if (activeTag.equals(localName)) {
 				activeTagCount--;
 			}
 			if (activeTagCount==0) {
-				TagInterceptor interceptor=interceptors.get(localName);
-				super.endElement(uri, interceptor.getReplacementTag(), qName.replaceAll(localName, interceptor.getReplacementTag()));
+				writeReplacementEndElement(uri, localName, qName);
 				try {
 					activeWriter.close();
 				}
@@ -117,61 +108,85 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		}
 	}
 
-	
+	private void writeReplacementEndElement(String uri, String localName, String qName) throws SAXException {
+		TagInterceptor interceptor=interceptors.get(localName);
+		if (logger.isDebugEnabled()) logger.debug("Encountered final tag for active Tag: "+localName);
+		super.endElement(uri, interceptor.getReplacementTag(), qName.replaceAll(localName, interceptor.getReplacementTag()));
+	}
 
+	private void writeEndTagToActiveWriter(String qName) {
+		try {
+			activeWriter.write("</"+qName+">");
+		} catch (IOException e) {
+			logger.error("Error writing end Element to Interceptor writer",e);
+		}
+	}
+	
+	@Override
+	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {		
+		
+		if (activeTag==null) {
+			if (checkForNewStartElement(uri, localName, qName)) {
+				writeReplacementStartElement(uri, localName, qName);
+			}
+		}		
+		
+		if (activeTag!=null) {
+			if (activeTag.equals(localName)) {				
+				activeTagCount++;
+			}
+			writeStartTagToActiveWriter(localName, qName, atts);			
+		}
+		else {
+			super.startElement(uri, localName, qName, atts);
+		}			
+		
+		
+	}
+
+	private void writeStartTagToActiveWriter(String localName, String qName, Attributes atts) {
+		
+		
+		String attributesString="";
+		for (int i=0;i<atts.getLength();i++) {
+			attributesString+=atts.getQName(i)+"=\""+atts.getValue(i)+"\" ";
+		}
+		if (attributesString.length()>0) attributesString=" "+attributesString.trim();
+		
+		try {
+			activeWriter.write("<"+qName+attributesString+">");				
+		} catch (IOException e) {
+			logger.error("Error writing to Interceptors writer:",e);
+		}
+	}
+
+	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
+		TagInterceptor interceptor = interceptors.get(localName);
+		super.startElement(uri,interceptor.getReplacementTag(),qName.replaceAll(localName, interceptor.getReplacementTag()),new AttributesImpl());
+		String destinationName=activeWriter.getDestinationName();
+		super.characters(destinationName.toCharArray(), 0, destinationName.length());
+	}
+
+	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {
+		TagInterceptor interceptor = interceptors.get(localName);
+		if (interceptor!=null) {		
+			if (logger.isDebugEnabled()) logger.debug("Found matching start tag for :"+localName);
+			activeTag=localName;
+			try {
+				activeWriter=interceptor.getWriterFactory().newWriter();
+			}
+			catch(Exception e) {
+				logger.error("Unable to retrieve a new Writer ",e);
+				throw new SAXException(e);
+			}													
+		}
+		return interceptor!=null;
+	}
 
 	@Override
 	public void warning(SAXParseException e) throws SAXException {
 		logger.warn("SAX warning:"+e.getMessage());
 		super.warning(e);
-	}
-
-
-
-
-
-	@Override
-	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {		
-		TagInterceptor interceptor = null;
-		if (activeTag==null) {
-			interceptor = interceptors.get(localName);
-			if (interceptor!=null) {				
-				activeTag=localName;
-				try {
-					activeWriter=interceptor.getWriterFactory().newWriter();
-				}
-				catch(Exception e) {
-					logger.error("Unable to retrieve a new Writer ",e);
-					throw new SAXException(e);
-				}
-			}
-		}
-		
-		if (activeTag!=null) {
-			if (activeTag.equals(localName)) {
-				activeTagCount++;
-			}
-			
-			String attributesString="";
-			for (int i=0;i<atts.getLength();i++) {
-				attributesString+=atts.getQName(i)+"=\""+atts.getValue(i)+"\" ";
-			}
-			if (attributesString.length()>0) attributesString=" "+attributesString.trim();
-			
-			try {
-				activeWriter.write("<"+qName+attributesString+">");				
-			} catch (IOException e) {
-				logger.error("Error writing to Interceptors writer:",e);
-			}
-			if (interceptor!=null) {
-				super.startElement(uri,interceptor.getReplacementTag(),qName.replaceAll(localName, interceptor.getReplacementTag()),new AttributesImpl());
-				String destinationName=activeWriter.getDestinationName();
-				super.characters(destinationName.toCharArray(), 0, destinationName.length());
-			}
-		}
-		else {
-			super.startElement(uri, localName, qName, atts);
-		}								
 	}		
 	
 	public void read(InputStream stream) throws SAXException, IOException {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-12 17:01:45 $
+ * Last modified on   $Date: 2007-02-13 15:38:51 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -67,7 +67,7 @@ public class TestFileInterceptorWriter {
 	private XMLStreamParser parser;
 	
 	@Before
-	public void createTemp() throws Exception {
+	public void setUp() throws Exception {
 		try {
 			tmpDir = File.createTempFile("dataproxy-test", "");
 			// But we want a directory!
@@ -83,7 +83,8 @@ public class TestFileInterceptorWriter {
 	
 	@After
 	public void deleteTemp() {
-		//tmpDir.delete();
+		for (File file : tmpDir.listFiles()) file.delete();
+		tmpDir.delete();
 	}
 	
 	@Test
