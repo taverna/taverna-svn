@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.22 $
+ * Revision           $Revision: 1.23 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 16:48:13 $
+ * Last modified on   $Date: 2007-02-14 16:49:30 $
  *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -97,8 +97,6 @@ public class WorkbenchPerspectives {
 
 	private ButtonGroup perspectiveButtons = new ButtonGroup();
 
-	private AbstractButton lastPerspectiveButton = null;
-
 	private Action openPerspectiveAction = null;
 
 	private Action deletePerspectiveAction = null;
@@ -119,6 +117,8 @@ public class WorkbenchPerspectives {
 
 	private Map<PerspectiveSPI, JToggleButton> perspectives =
 		new HashMap<PerspectiveSPI, JToggleButton>();
+
+	private PerspectiveSPI currentPerspective;
 
 	public ModelChangeListener getModelChangeListener() {
 		if (modelChangeListener == null) {
@@ -417,19 +417,7 @@ public class WorkbenchPerspectives {
 		toolbarButton.setToolTipText(perspective.getText() + " perspective");
 		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (basePane.isEditable()) {
-					JOptionPane.showMessageDialog(
-						basePane,
-						"Sorry, unable to change perspectives whilst in edit mode",
-						"Cannot change perspective",
-						JOptionPane.INFORMATION_MESSAGE);
-					// make sure selected button is the previous one.
-					if (lastPerspectiveButton != null)
-						lastPerspectiveButton.setSelected(true);
-				} else {
-					modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
-					lastPerspectiveButton = toolbarButton;
-				}
+				modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, perspective);
 			}
 		};
 		action.putValue(Action.NAME, perspective.getText());
@@ -591,6 +579,15 @@ public class WorkbenchPerspectives {
 	}
 
 	public void switchPerspective(PerspectiveSPI perspective) {
+		// The currentPerspective test <b>is</b> neccessary to avoid loops :)
+		if (perspective != currentPerspective && basePane.isEditable()) {
+			JOptionPane.showMessageDialog(basePane,
+				"Sorry, unable to change perspectives whilst in edit mode",
+				"Cannot change perspective", JOptionPane.INFORMATION_MESSAGE);
+			modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE, currentPerspective);
+			return;
+		}
+
 		if (!(perspective instanceof BlankPerspective)) {
 			// If we don't know it, and it's not a custom perspective
 			// (where each instance is really unique),
@@ -630,7 +627,12 @@ public class WorkbenchPerspectives {
 				getDeleteCurrentPerspectiveAction().setEnabled(false);
 			}
 		}
-		openLayout(perspective.getLayoutInputStream());
+		if (perspective != currentPerspective) {
+			// Don't touch if it's the same, in case we are reverting after
+			// an attempt to switch away from an perspective being edited
+			openLayout(perspective.getLayoutInputStream());
+			currentPerspective = perspective;
+		}
 	}
 
 	/**
@@ -689,7 +691,6 @@ public class WorkbenchPerspectives {
 		public void modelChanged(String modelName, Object oldModel,
 			Object newModel) {
 			((PerspectiveSPI) oldModel).update(basePane.getElement());
-
 			PerspectiveSPI perspective = (PerspectiveSPI) newModel;
 			switchPerspective(perspective);
 		}
