@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.org.mygrid.dataproxy.xml.impl.TagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
 /*
@@ -38,9 +38,9 @@ import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLStreamParser.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 09:21:29 $
+ * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -63,8 +63,8 @@ public class TestXMLStreamParser {
 				
 		StringWriterFactory paraWriterFactory = new StringWriterFactory();
 		StringWriterFactory linkWriterFactory = new StringWriterFactory();
-		TagInterceptor paraInterceptor=new TagInterceptorImpl("para","para-replaced",paraWriterFactory);
-		TagInterceptor linkInterceptor=new TagInterceptorImpl("link","link-replaced",linkWriterFactory);
+		TagInterceptor paraInterceptor=new IncomingTagInterceptorImpl("para","para-replaced",paraWriterFactory);
+		TagInterceptor linkInterceptor=new IncomingTagInterceptorImpl("link","link-replaced",linkWriterFactory);
 		
 		parser.addTagInterceptor(paraInterceptor);
 		parser.addTagInterceptor(linkInterceptor);
@@ -88,7 +88,7 @@ public class TestXMLStreamParser {
 	public void multipleElements() throws Exception {
 		String xml = "<a><b>bbbbb</b><c>c</c><b>bbb</b></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -107,7 +107,7 @@ public class TestXMLStreamParser {
 	public void nested() throws Exception {
 		String xml = "<a><b><c>c</c><b>bbbbb</b></b><c>c</c></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);		
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);		
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -126,8 +126,8 @@ public class TestXMLStreamParser {
 		String xml="<a><b><c>ccc</c></b></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
 		StringWriterFactory cWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptorB=new TagInterceptorImpl("b","b-replaced",bWriterFactory);		
-		TagInterceptor interceptorC=new TagInterceptorImpl("c","c-replaced",cWriterFactory);
+		TagInterceptor interceptorB=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);		
+		TagInterceptor interceptorC=new IncomingTagInterceptorImpl("c","c-replaced",cWriterFactory);
 		
 		parser.addTagInterceptor(interceptorB);
 		parser.addTagInterceptor(interceptorC);
@@ -149,7 +149,7 @@ public class TestXMLStreamParser {
 		String xml = "<ns1:a xmlns:ns1=\"a\"><ns1:b>bbb</ns1:b></ns1:a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -168,7 +168,7 @@ public class TestXMLStreamParser {
 		String xml = "<ns1:a xmlns:ns1=\"a\"><b>bbb</b></ns1:a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -187,7 +187,7 @@ public class TestXMLStreamParser {
 		String xml = "<a><b/></a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -206,7 +206,7 @@ public class TestXMLStreamParser {
 		String xml = "<a><b></b></a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		TagInterceptor interceptor=new TagInterceptorImpl("b","b-replaced",bWriterFactory);
+		TagInterceptor interceptor=new IncomingTagInterceptorImpl("b","b-replaced",bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		

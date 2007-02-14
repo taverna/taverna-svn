@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 15:38:51 $
+ * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,14 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		
 		super.setOutputStream(out);
 		super.getOutputFormat().setSuppressDeclaration(true);
+	}
+	
+	
+
+	public void addTagInterceptors(List<TagInterceptor> interceptors) {
+		for (TagInterceptor interceptor : interceptors) {
+			addTagInterceptor(interceptor);
+		}
 	}
 
 	@Override
@@ -139,14 +148,11 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		}
 		else {
 			super.startElement(uri, localName, qName, atts);
-		}			
-		
-		
+		}
 	}
 
 	private void writeStartTagToActiveWriter(String localName, String qName, Attributes atts) {
-		
-		
+				
 		String attributesString="";
 		for (int i=0;i<atts.getLength();i++) {
 			attributesString+=atts.getQName(i)+"=\""+atts.getValue(i)+"\" ";

@@ -24,27 +24,22 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: WSDLConfig.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
- * Created on 8 Feb 2007
+ * Created on 14 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.xml;
+package uk.org.mygrid.dataproxy.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import org.xml.sax.SAXException;
-
-public interface XMLStreamParser {
-			
-	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);	
-	public void addTagInterceptors(List<TagInterceptor> interceptors);
-	public void read(InputStream stream)  throws SAXException, IOException;
+public interface WSDLConfig {
+	
+	public String getWSDLID();
+	public List<ElementDef> getElements();
+	public String getReplacement(ElementDef element);
+	public String getEndpoint();
+	
 }

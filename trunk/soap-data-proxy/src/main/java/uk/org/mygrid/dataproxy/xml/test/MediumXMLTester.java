@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MediumXMLTester.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 15:38:52 $
+ * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
-import uk.org.mygrid.dataproxy.xml.impl.TagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
 /**
@@ -71,7 +71,7 @@ public class MediumXMLTester {
 		
 		parser.setOutputStream(System.out);
 		
-		TagInterceptor interceptor = new TagInterceptorImpl("picture","picture-replaced",new FileInterceptorWriterFactory(tmp.toURL()));		
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl("picture","picture-replaced",new FileInterceptorWriterFactory(tmp.toURL(),"data"));		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new URL(args[0]).openStream());				
 

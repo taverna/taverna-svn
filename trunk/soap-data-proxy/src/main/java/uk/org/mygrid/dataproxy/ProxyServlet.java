@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 09:21:30 $
+ * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,9 +42,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -55,31 +51,33 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
+import uk.org.mygrid.dataproxy.configuration.ElementDef;
+import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
+import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.configuration.impl.TestingProxyConfig;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
-import uk.org.mygrid.dataproxy.xml.impl.TagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
 @SuppressWarnings("serial")
 public class ProxyServlet extends HttpServlet {
-	
-	private Map<String,String> endPointMap=null;	
+		
 	private static Logger logger = Logger.getLogger(ProxyServlet.class);	
+	
+	private ProxyConfig config = null;
 	
 	
 	public ProxyServlet() {	
-		logger.info("Instantiating Proxy Servlet");
-		if (endPointMap==null) {
-			endPointMap = Collections.synchronizedMap(new HashMap<String,String>());
-			endPointMap.put("11111", "http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi");
-			endPointMap.put("22222", "http://localhost:8080/testwebservices/services/MyService");			
-		}
+		logger.info("Instantiating Proxy Servlet");		
 	}
 	
-	private String getEndpoint(String id) {
-		return endPointMap.get(id);
-	}
+	private ProxyConfig getConfig() {
+		if (config == null) {
+			config=new TestingProxyConfig();
+		}
+		return config;
+	}	
 	
 	private String receiveIncomingMessage(InputStream inputStream) throws IOException {			
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -96,37 +94,27 @@ public class ProxyServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String id=request.getParameter("id");
-		String endPoint = getEndpoint(id);				
+		String id=request.getParameter("id");				
 		logger.info("Proxying request for wsdlID="+id);
+		
+		WSDLConfig wsdlConfig = getConfig().getWSDLConfigForID(id);
+		if (wsdlConfig==null) {
+			logger.error("Identifier "+id+" not recognised when looking for WSDL configuration details");
+			throw new ServletException("Identifier "+id+" not recognised when looking for WSDL configuration details");
+		}
 		
 		String incomingMessage = receiveIncomingMessage(request.getInputStream());					
 
-		HttpURLConnection connection = createEndpointConnection(endPoint, request.getHeader("SOAPAction"));		
+		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));		
 		OutputStream out = connection.getOutputStream();
 		out.write(incomingMessage.getBytes("UTF-8"));		
 		
 		InputStream in = connection.getInputStream();
 		
-		XMLStreamParser parser = new XMLStreamParserImpl();
-		if (id.equals("11111")) {
-			File tmpFile = File.createTempFile("FieldListProxy", "");
-			tmpFile.delete();
-			tmpFile.mkdir();
-			
-			TagInterceptor interceptor = new TagInterceptorImpl("FieldList","FieldList-proxied",new FileInterceptorWriterFactory(tmpFile.toURL()));
-			parser.addTagInterceptor(interceptor);
+		XMLStreamParser parser = new XMLStreamParserImpl();	
+		for (ElementDef elementDef : wsdlConfig.getElements()) {
+			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef.getElementName(),wsdlConfig.getReplacement(elementDef),new FileInterceptorWriterFactory(getConfig().getStoreBaseURL(),elementDef.getElementName())));
 		}
-		
-		if (id.equals("22222")) {
-			File tmpFile = File.createTempFile("dataproxy-picturedata", "");
-			tmpFile.delete();
-			tmpFile.mkdir();
-			
-			TagInterceptor interceptor = new TagInterceptorImpl("data","data-proxied",new FileInterceptorWriterFactory(tmpFile.toURL()));
-			parser.addTagInterceptor(interceptor);
-		}
-			
 			
 		parser.setOutputStream(response.getOutputStream());
 						

@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TagInterceptorImpl.java,v $
+ * Filename           $RCSfile: IncomingTagInterceptorImpl.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-14 11:39:46 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -36,13 +36,13 @@ package uk.org.mygrid.dataproxy.xml.impl;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.WriterFactory;
 
-public class TagInterceptorImpl implements TagInterceptor {
+public class IncomingTagInterceptorImpl implements TagInterceptor {
 
 	private String target;
 	private String replacement;
 	private WriterFactory writerFactory;
 	
-	public TagInterceptorImpl(String target, String replacement, WriterFactory writerFactory) {
+	public IncomingTagInterceptorImpl(String target, String replacement, WriterFactory writerFactory) {
 		this.target=target;
 		this.replacement=replacement;
 		this.writerFactory=writerFactory;
