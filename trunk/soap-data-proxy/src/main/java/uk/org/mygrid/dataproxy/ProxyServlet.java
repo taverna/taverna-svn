@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 17:16:55 $
+ * Last modified on   $Date: 2007-02-14 09:21:30 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -81,7 +81,7 @@ public class ProxyServlet extends HttpServlet {
 		return endPointMap.get(id);
 	}
 	
-	private String receiveIncomingMessage(InputStream inputStream) throws IOException {
+	private String receiveIncomingMessage(InputStream inputStream) throws IOException {			
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line;
 		String result="";

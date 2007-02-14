@@ -25,16 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 15:38:51 $
+ * Last modified on   $Date: 2007-02-14 09:21:30 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;

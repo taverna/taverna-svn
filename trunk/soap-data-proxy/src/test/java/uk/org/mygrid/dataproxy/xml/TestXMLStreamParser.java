@@ -3,15 +3,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,9 +38,9 @@ import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLStreamParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 15:38:51 $
+ * Last modified on   $Date: 2007-02-14 09:21:29 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/

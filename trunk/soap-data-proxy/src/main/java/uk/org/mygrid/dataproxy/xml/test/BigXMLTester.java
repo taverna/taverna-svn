@@ -25,23 +25,18 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BigXMLTester.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-12 17:01:45 $
+ * Last modified on   $Date: 2007-02-14 09:21:30 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.test;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Document;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
 
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;

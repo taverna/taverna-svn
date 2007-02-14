@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-13 15:38:51 $
+ * Last modified on   $Date: 2007-02-14 09:21:30 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -110,6 +110,7 @@ public class TestFileInterceptorWriter {
 		assertEquals("<data>some data</data>",result);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
@@ -120,11 +121,11 @@ public class TestFileInterceptorWriter {
 		
 		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
-		List<Element> elements = doc.getRootElement().elements("data-replaced");
+		List elements = doc.getRootElement().elements("data-replaced");
 		assertEquals("should be 3 elements",3,elements.size());
 		
 		int c=1;
-		for (Element el : elements) {
+		for (Element el : (List<Element>)elements) {
 			String url=el.getTextTrim();
 			assertTrue("should end with "+c,url.endsWith(String.valueOf(c)));
 			c++;
