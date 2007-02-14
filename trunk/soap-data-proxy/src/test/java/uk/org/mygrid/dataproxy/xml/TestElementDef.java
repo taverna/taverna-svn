@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDef.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-14 15:30:03 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;

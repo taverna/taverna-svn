@@ -24,25 +24,24 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: WSDLConfig.java,v $
- * Revision           $Revision: 1.3 $
+ * Filename           $RCSfile: ProxyConfigException.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-02-14 15:30:03 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.configuration;
+package uk.org.mygrid.dataproxy.configuration.impl;
 
-import java.util.List;
-
-import uk.org.mygrid.dataproxy.xml.ElementDef;
-
-public interface WSDLConfig {
+@SuppressWarnings("serial")
+public class ProxyConfigException extends Exception {
 	
-	public String getWSDLID();
-	public String getAddress();
-	public List<ElementDef> getElements();
-	public String getReplacement(ElementDef element);
-	public String getEndpoint();
+	public ProxyConfigException(String msg) {
+		super(msg);
+	}
+	
+	public ProxyConfigException(String msg, Throwable e) {
+		super(msg,e);
+	}
 	
 }

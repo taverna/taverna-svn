@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestingProxyConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-14 15:30:03 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -81,6 +81,11 @@ public class TestingProxyConfig implements ProxyConfig {
 		private String endpoint;
 		
 		
+		
+		public String getAddress() {
+			return "";
+		}
+
 		public TestingWSDLConfig(String id, List<ElementDef> elements, List<String> replacements, String endpoint) {
 			this.id=id;
 			this.endpoint=endpoint;
