@@ -19,12 +19,13 @@
   <target name="build-server">
   </target>
   
-  <target name="build-client">
+  <target name="build-client" depends="build-doc">
     <exec executable="${maven.executable}">
       <arg line="package assembly:directory -Dassembly=omii-client"/>
     </exec>
     <copy file="client-build.xml" tofile="dist/client/build.xml"/>
     <copy file="LICENSE.txt" tofile="dist/client/LICENSE"/>
+    <copy file="custom.sh" tofile="dist/client/custom.sh"/>
   </target>
   
   <target name="build-doc">

@@ -190,6 +190,31 @@
 	</build>
 	<profiles>
 		<profile>
+			<activation>
+				<property>
+					<name>!assembly</name>
+				</property>
+			</activation>
+			<modules>
+				<module>baclava</module>
+				<module>scufl</module>
+				<module>perspectives</module>
+				<module>processors</module>
+				<module>taverna-enactor</module>
+				<module>taverna-workbench</module>
+				<module>taverna-scavenger</module>
+				<module>taverna-scavenger-ui</module>
+				<module>taverna-core</module>
+				<module>taverna-tools</module>
+				<module>taverna-biomoby</module>
+				<module>taverna-contrib</module>
+				<module>taverna-update-manager</module>
+				<module>raven</module>
+				<module>raven-log4j</module>
+				<module>zaria</module>
+			</modules>
+		</profile>
+		<profile>
 			<id>default-tools.jar</id>
 			<activation>
 				<property>
@@ -231,6 +256,9 @@
 					</plugin>
 				</plugins>
 			</build>
+			<modules>
+				<module>taverna-bootstrap</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>omii-client-assembly</id>
@@ -266,6 +294,9 @@
 					<url>file:///</url>
 				</site>
 			</distributionManagement>
+			<modules>
+				<module>taverna-bootstrap</module>
+			</modules>
 		</profile>
 	</profiles>
 	<repositories>
@@ -727,22 +758,6 @@
 		</dependencies>
 	</dependencyManagement>
 	<modules>
-		<module>baclava</module>
-		<module>scufl</module>
-		<module>perspectives</module>
-		<module>processors</module>
-		<module>taverna-enactor</module>
-		<module>taverna-workbench</module>
-		<module>taverna-scavenger</module>
-		<module>taverna-scavenger-ui</module>
-		<module>taverna-core</module>
-		<module>taverna-tools</module>
-		<module>taverna-biomoby</module>
 		<module>taverna-bootstrap</module>
-		<module>taverna-contrib</module>
-		<module>taverna-update-manager</module>
-		<module>raven</module>
-		<module>raven-log4j</module>
-		<module>zaria</module>
 	</modules>
 </project>

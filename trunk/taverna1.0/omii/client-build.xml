@@ -36,8 +36,18 @@
     	<property name="install.home" value="${omii.client.home}/${install.directory}"/>
 		<mkdir dir="${install.home}"/>
     	<copy todir="${install.home}">
-    		<fileset dir="${basedir}"/>
+    		<fileset dir="${basedir}">
+                <exclude name="custom.sh"/>
+            </fileset>
     	</copy>
+        <copy todir="${install.home}">
+            <fileset dir="${basedir}">
+                <include name="custom.sh"/>
+            </fileset>
+            <filterset>
+                <filter token="OMII_CLIENT_HOME" value="${omii.client.home}"/>
+            </filterset>
+        </copy>
     </target>
  
     <target name="undeploy">
