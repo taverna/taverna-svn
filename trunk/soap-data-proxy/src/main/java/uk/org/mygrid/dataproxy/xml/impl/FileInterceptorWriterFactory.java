@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -49,9 +49,9 @@ public class FileInterceptorWriterFactory implements WriterFactory {
 	private int c=1;
 	private String prefix;
 	
-	public FileInterceptorWriterFactory(URL baseURL,String prefix) {
+	public FileInterceptorWriterFactory(URL baseURL,String dataFilePrefix) {
 		this.baseURL=baseURL;
-		this.prefix=prefix;
+		this.prefix=dataFilePrefix;
 	}
 	
 	public InterceptorWriter newWriter() throws Exception {

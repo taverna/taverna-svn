@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfig.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration;
 
 import java.util.List;
+
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 
 public interface WSDLConfig {
 	

@@ -24,29 +24,65 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ElementDef.java,v $
+ * Filename           $RCSfile: TestElementDef.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.configuration;
+package uk.org.mygrid.dataproxy.xml;
 
-public class ElementDef {
-	private String elementName;
-	private String namespaceURI;
+import static org.junit.Assert.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Test;
+
+public class TestElementDef {
+
+	@Test
+	public void testEquals() {
+		ElementDef a = new ElementDef("a","namespace");
+		ElementDef a2 = new ElementDef("a","namespace");
+		
+		ElementDef b = new ElementDef("b","namespace");
+		ElementDef b_nons = new ElementDef("b","");
+		
+		assertTrue(a.equals(a2));
+		assertTrue(a2.equals(a));
+		
+		assertFalse(a.equals(b));
+		assertFalse(b.equals(a));
+		assertFalse(b.equals(b_nons));
+	}
 	
-	public ElementDef(String elementName, String namespaceURI) {
-		this.elementName=elementName;
-		this.namespaceURI=namespaceURI;
+	@Test
+	public void testMap() {
+		ElementDef a = new ElementDef("a","namespace");
+		ElementDef a2 = new ElementDef("a","namespace");
+		
+		ElementDef b = new ElementDef("b","namespace");
+		ElementDef b_nons = new ElementDef("b","");
+		
+		Map<ElementDef,String> map= new HashMap<ElementDef,String>();
+		
+		map.put(a, "a");		
+		map.put(b, "b");
+		map.put(b_nons, "b_nons");
+		
+		assertEquals("a",map.get(a));
+		assertEquals("a",map.get(a2));
+		assertEquals("a",map.get(new ElementDef("a","namespace")));
+		
+				
+		assertEquals("b",map.get(b));
+		assertEquals("b_nons",map.get(b_nons));
+		assertEquals("b_nons",map.get(new ElementDef("b","")));
+		
 	}
-
-	public String getElementName() {
-		return elementName;
-	}
-
-	public String getNamespaceURI() {
-		return namespaceURI;
-	}	
+	
+	
+	
 }

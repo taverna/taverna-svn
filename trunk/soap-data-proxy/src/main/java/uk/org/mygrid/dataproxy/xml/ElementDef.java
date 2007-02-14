@@ -24,41 +24,47 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: IncomingTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ElementDef.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
- * Created on 8 Feb 2007
+ * Created on 14 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.xml.impl;
+package uk.org.mygrid.dataproxy.xml;
 
-import uk.org.mygrid.dataproxy.xml.ElementDef;
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
-import uk.org.mygrid.dataproxy.xml.WriterFactory;
-
-public class IncomingTagInterceptorImpl implements TagInterceptor {
-
-	private ElementDef target;
-	private String replacement;
-	private WriterFactory writerFactory;
+public class ElementDef {
+	private String elementName;
+	private String namespaceURI;
 	
-	public IncomingTagInterceptorImpl(ElementDef targetElement, String replacementElement, WriterFactory writerFactory) {
-		this.target=targetElement;
-		this.replacement=replacementElement;
-		this.writerFactory=writerFactory;
+	public ElementDef(String elementName, String namespaceURI) {
+		this.elementName=elementName;
+		this.namespaceURI=namespaceURI;
+	}
+
+	public String getElementName() {
+		return elementName;
+	}
+
+	public String getNamespaceURI() {
+		return namespaceURI;
 	}
 	
-	public String getReplacementElement() {
-		return replacement;
+	
+
+	@Override
+	public int hashCode() {
+		return (getElementName()+getNamespaceURI()).hashCode();
 	}
 
-	public ElementDef getTargetElementDef() {
-		return target;
-	}
-
-	public WriterFactory getWriterFactory() {
-		return writerFactory;
-	}
-
+	@Override
+	public boolean equals(Object obj) {
+		if (obj.getClass() != this.getClass()) return false;
+		
+		ElementDef elDef = (ElementDef)obj;
+		
+		return ((this.getElementName().equals(elDef.getElementName())) && (this.getNamespaceURI().equals(elDef.getNamespaceURI())));
+	}	
+	
+	
 }

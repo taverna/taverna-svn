@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -51,6 +51,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
@@ -59,7 +60,7 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	
 	private static Logger logger = Logger.getLogger(XMLStreamParserImpl.class);
 
-	private Map<String,TagInterceptor> interceptors = new HashMap<String,TagInterceptor>();
+	private Map<ElementDef,TagInterceptor> interceptors = new HashMap<ElementDef,TagInterceptor>();
 	private int activeTagCount = 0;
 	private String activeTag = null;
 	private InterceptorWriter activeWriter = null;
@@ -118,9 +119,9 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	}
 
 	private void writeReplacementEndElement(String uri, String localName, String qName) throws SAXException {
-		TagInterceptor interceptor=interceptors.get(localName);
+		TagInterceptor interceptor=getInterceptorForElement(localName,uri);
 		if (logger.isDebugEnabled()) logger.debug("Encountered final tag for active Tag: "+localName);
-		super.endElement(uri, interceptor.getReplacementTag(), qName.replaceAll(localName, interceptor.getReplacementTag()));
+		super.endElement(uri, interceptor.getReplacementElement(), qName.replaceAll(localName, interceptor.getReplacementElement()));
 	}
 
 	private void writeEndTagToActiveWriter(String qName) {
@@ -129,6 +130,10 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		} catch (IOException e) {
 			logger.error("Error writing end Element to Interceptor writer",e);
 		}
+	}
+	
+	private TagInterceptor getInterceptorForElement(String element, String uri) {
+		return interceptors.get(new ElementDef(element,uri));
 	}
 	
 	@Override
@@ -167,14 +172,14 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	}
 
 	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
-		TagInterceptor interceptor = interceptors.get(localName);
-		super.startElement(uri,interceptor.getReplacementTag(),qName.replaceAll(localName, interceptor.getReplacementTag()),new AttributesImpl());
+		TagInterceptor interceptor = getInterceptorForElement(localName,uri);
+		super.startElement(uri,interceptor.getReplacementElement(),qName.replaceAll(localName, interceptor.getReplacementElement()),new AttributesImpl());
 		String destinationName=activeWriter.getDestinationName();
 		super.characters(destinationName.toCharArray(), 0, destinationName.length());
 	}
 
 	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {
-		TagInterceptor interceptor = interceptors.get(localName);
+		TagInterceptor interceptor = getInterceptorForElement(localName,uri);
 		if (interceptor!=null) {		
 			if (logger.isDebugEnabled()) logger.debug("Found matching start tag for :"+localName);
 			activeTag=localName;
@@ -202,7 +207,7 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	}
 
 	public void addTagInterceptor(TagInterceptor interceptor) {
-		interceptors.put(interceptor.getTargetTag(),interceptor);			
+		interceptors.put(interceptor.getTargetElementDef(),interceptor);			
 	}
 
 }

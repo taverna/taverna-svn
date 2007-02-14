@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestingProxyConfig.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -40,28 +40,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import uk.org.mygrid.dataproxy.configuration.ElementDef;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 
 
 public class TestingProxyConfig implements ProxyConfig {
 	
 	Map<String,WSDLConfig> wsdlConfigs = new HashMap<String,WSDLConfig>();
-
-//	if (endPointMap==null) {
-//		endPointMap = Collections.synchronizedMap(new HashMap<String,String>());
-//		endPointMap.put("11111", "http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi");
-//		endPointMap.put("22222", "http://localhost:8080/testwebservices/services/MyService");			
-//	}
 	
 	public TestingProxyConfig() {
-		List<String> elements = new ArrayList<String>();
+		List<ElementDef> elements = new ArrayList<ElementDef>();
 		List<String>replacements = new ArrayList<String>();
 		
-		elements.add("FieldList");
+		elements.add(new ElementDef("FieldList","http://www.ncbi.nlm.nih.gov/soap/eutils/einfo"));
 		replacements.add("FieldList-replaced");
-		elements.add("Link");
+		elements.add(new ElementDef("Link","http://www.ncbi.nlm.nih.gov/soap/eutils/einfo"));
 		replacements.add("Link-replaced");
 		wsdlConfigs.put("11111",new TestingWSDLConfig("11111",elements,replacements,"http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi"));
 	}
@@ -87,12 +81,11 @@ public class TestingProxyConfig implements ProxyConfig {
 		private String endpoint;
 		
 		
-		public TestingWSDLConfig(String id, List<String> elements, List<String> replacements, String endpoint) {
+		public TestingWSDLConfig(String id, List<ElementDef> elements, List<String> replacements, String endpoint) {
 			this.id=id;
 			this.endpoint=endpoint;
 			int i=0;
-			for (String el : elements) {
-				ElementDef def = new ElementDef(el,"");
+			for (ElementDef def : elements) {				
 				this.elements.add(def);
 				this.replacements.put(def,replacements.get(i++));
 			}

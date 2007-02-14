@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BigXMLTester.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 11:39:46 $
+ * Last modified on   $Date: 2007-02-14 14:07:17 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -38,6 +38,7 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.WriterFactory;
@@ -61,7 +62,7 @@ public class BigXMLTester {
 	
 	public static void main(String[] args) throws Exception {
 		XMLStreamParser parser = new XMLStreamParserImpl();
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl("data","data-replaced",new NullWriterFactory());
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),"data-replaced",new NullWriterFactory());
 		parser.addTagInterceptor(interceptor);
 		parser.setOutputStream(System.out);
 		parser.read(new URL(args[0]).openStream());
