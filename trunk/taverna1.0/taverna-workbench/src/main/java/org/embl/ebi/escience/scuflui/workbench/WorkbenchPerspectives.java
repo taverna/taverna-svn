@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.21 $
+ * Revision           $Revision: 1.22 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 16:45:37 $
+ * Last modified on   $Date: 2007-02-14 16:48:13 $
  *               by   $Author: stain $
  * Created on 10 Nov 2006
  *****************************************************************/
@@ -129,7 +129,7 @@ public class WorkbenchPerspectives {
 
 	/**
 	 * @return a list of all the present perspectives, both default and custom,
-	 * ordered in accending order of PerspectiveSPI.positionHint.
+	 *         ordered in accending order of PerspectiveSPI.positionHint.
 	 */
 	public List<PerspectiveSPI> getPerspectives() {
 		List<PerspectiveSPI> result = new ArrayList<PerspectiveSPI>();
@@ -175,12 +175,14 @@ public class WorkbenchPerspectives {
 				PerspectiveSPI current =
 					(PerspectiveSPI) modelMap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
 				if (!perspective.isVisible()) {
-					// change to the first available if the current is being hidden
+					// change to the first available if the current is being
+					// hidden
 					if (current == perspective) {
 						selectFirstPerspective();
 					}
 				} else {
-					//if no perspectives are currently visible, then change to the one just made visible					
+					// if no perspectives are currently visible, then change to
+					// the one just made visible
 					if (current == null || current instanceof BlankPerspective) {
 						modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE,
 							perspective);
@@ -275,7 +277,7 @@ public class WorkbenchPerspectives {
 		JToggleButton button = perspectives.remove(perspective);
 		toolBar.remove(button);
 
-		//remove from menu to toggle visibility
+		// remove from menu to toggle visibility
 		JMenu menu = perspectiveVisibilityMap.get(perspective);
 		if (menu != null) {
 			perspectiveVisibilityMenu.remove(menu);
@@ -307,7 +309,7 @@ public class WorkbenchPerspectives {
 		selectFirstPerspective();
 	}
 
-	//selects the first visible perspective by clicking on the toolbar button
+	// selects the first visible perspective by clicking on the toolbar button
 	private void selectFirstPerspective() {
 		boolean set = false;
 		for (Component c : toolBar.getComponents()) {
@@ -318,7 +320,7 @@ public class WorkbenchPerspectives {
 			}
 		}
 
-		if (!set) //no visible perspectives were found
+		if (!set) // no visible perspectives were found
 		{
 			logger.info("No visible perspectives.");
 			modelMap.setModel(ModelMap.CURRENT_PERSPECTIVE,
@@ -327,13 +329,12 @@ public class WorkbenchPerspectives {
 	}
 
 	/**
-	 * Checks the saved copy of the perspective for the split pane ratios, and updates
-	 * the current perspective with these values. This is so that the split pane ratios
-	 * are restored to the users last session. Reopenning the whole layout file was found to
-	 * be dangerous, as embedded components can disappear if there are errors initialising them.
-	 * 
-	 * In addition to this, the visibility status of the perspective read and set from the stored
-	 * xml.
+	 * Checks the saved copy of the perspective for the split pane ratios, and
+	 * updates the current perspective with these values. This is so that the
+	 * split pane ratios are restored to the users last session. Reopenning the
+	 * whole layout file was found to be dangerous, as embedded components can
+	 * disappear if there are errors initialising them. In addition to this, the
+	 * visibility status of the perspective read and set from the stored xml.
 	 */
 	private void updatePerspectiveWithSaved(PerspectiveSPI perspective) {
 		String filename = perspective.getClass().getName() + ".perspective";
@@ -343,8 +344,9 @@ public class WorkbenchPerspectives {
 				Element savedLayoutElement =
 					new SAXBuilder().build(file).getRootElement();
 
-				//if 1.5.0 then enclosing element is basepane, for 1.5.1 and beyond it should be
-				//layout that contains the attribute 'visible'
+				// if 1.5.0 then enclosing element is basepane, for 1.5.1 and
+				// beyond it should be
+				// layout that contains the attribute 'visible'
 				if (savedLayoutElement.getName().equals("layout")) {
 					String v = savedLayoutElement.getAttributeValue("visible");
 					if (v != null) {
@@ -546,7 +548,7 @@ public class WorkbenchPerspectives {
 							basePane.setEditable(false); // cancel edit mode
 							// so perspective
 							// can be changed
-							// after deletion							
+							// after deletion
 							try {
 								CustomPerspectiveFactory.getInstance().saveAll(
 									customPerspectives);
@@ -572,9 +574,7 @@ public class WorkbenchPerspectives {
 	}
 
 	/**
-	 * Recreates the toolbar buttons. Useful if a perspective has been
-	 * removed.
-	 * 
+	 * Recreates the toolbar buttons. Useful if a perspective has been removed.
 	 */
 	private void refreshPerspectives() {
 		toolBar.removeAll();
@@ -598,7 +598,8 @@ public class WorkbenchPerspectives {
 			if (!perspectives.containsKey(perspective)
 				&& !(perspective instanceof CustomPerspective)) {
 				for (PerspectiveSPI buttonPerspective : perspectives.keySet()) {
-					// FIXME: Should have some other identifier than getClass() ?
+					// FIXME: Should have some other identifier than getClass()
+					// ?
 					// First (sub)class instance wins
 					if (perspective.getClass().isInstance(buttonPerspective)) {
 						// Do the known button instead
@@ -653,7 +654,8 @@ public class WorkbenchPerspectives {
 					&& perspective.isVisible()) {
 					if (foundPerspective == null
 						|| perspective.positionHint() < foundPerspective.positionHint()) {
-						// select the first perspective with the lowest positionHint
+						// select the first perspective with the lowest
+						// positionHint
 						foundPerspective = perspective;
 					}
 				}
@@ -671,7 +673,6 @@ public class WorkbenchPerspectives {
 	 * 
 	 * @author Stian Soiland
 	 * @author Stuart Owen
-	 * 
 	 */
 	public class CurrentPerspectiveListener implements ModelChangeListener {
 
@@ -701,7 +702,8 @@ public class WorkbenchPerspectives {
 	}
 
 	/**
-	 * A dummy blank perspective for when there are no visible perspectives available
+	 * A dummy blank perspective for when there are no visible perspectives
+	 * available
 	 * 
 	 * @author Stuart Owen
 	 */
