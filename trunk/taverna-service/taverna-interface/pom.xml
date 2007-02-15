@@ -1,34 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-      <groupId>uk.org.mygrid.tavernaservice</groupId>
-      <artifactId>tavernaservice</artifactId>
-      <version>1.0.0</version>
-  </parent>
-  <groupId>uk.org.mygrid.tavernaservice</groupId>
-  <artifactId>taverna-interface</artifactId>
-  <packaging>jar</packaging>
-  <name>Taverna service interface</name>
-  <description>
-      The interface that taverna-wsdl implements, backed by
-      taverna-backend.
-  </description> 
-  <!--build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build-->
-  <dependencies>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna.scufl</groupId>
-      <artifactId>scufl-tools</artifactId>
-      <version>1.5.1</version>
-    </dependency> 
-  </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.org.mygrid.tavernaservice</groupId>
+		<artifactId>tavernaservice</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<groupId>uk.org.mygrid.tavernaservice</groupId>
+	<artifactId>taverna-interface</artifactId>
+	<packaging>jar</packaging>
+	<name>Taverna service interface</name>
+	<description>
+		The interface that taverna-wsdl implements, backed by
+		taverna-backend.
+	</description>
 </project>
