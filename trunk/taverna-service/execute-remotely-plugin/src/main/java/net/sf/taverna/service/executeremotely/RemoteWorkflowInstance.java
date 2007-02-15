@@ -5,8 +5,8 @@ import java.io.StringReader;
 import java.rmi.RemoteException;
 import java.util.Map;
 
+import net.sf.taverna.service.interfaces.client.UnknownJobException;
 import net.sf.taverna.service.wsdl.client.Taverna;
-import net.sf.taverna.service.wsdl.client.UnknownJobException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -72,15 +72,34 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		String outputDoc;
 		try {
 			outputDoc = service.getResultDocument(job_id);
+		} catch (UnknownJobException ex) {
+			delay();
+			logger.error("Unknown job when retrieving output", ex);
+			throw new IllegalStateException("Unknown job id", ex);
 		} catch (RemoteException ex) {
+			delay();
 			logger.warn("Could not retrieve output", ex);
 			throw new IllegalStateException("Could not retrieve output", ex);
 		}
 		try {
 			return parseDataDoc(outputDoc);
 		} catch (JDOMException e) {
+			delay();
 			logger.error("Could not parse output document", e);
 			throw new IllegalStateException("Could not parse output document", e);
+		}
+	}
+
+	/**
+	 * Avoid hammering web service if something went wrong, by
+	 * sleeping for 250 milliseconds. This method could be called
+	 * whenever a fault occured.
+	 *
+	 */
+	private static void delay() {
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
 		}
 	}
 	
@@ -91,6 +110,7 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 			doc = builder.build(new StringReader(xml));
 		} catch (IOException e) {
 			logger.error("Could not read inputDoc with StringReader", e);
+			delay();
 			throw new RuntimeException(e);
 		}
 		return DataThingXMLFactory.parseDataDocument(doc);				
@@ -102,10 +122,13 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		try {
 			progress = service.getProgressReport(job_id);
 		} catch (UnknownJobException ex) {
+			delay();
 			throw new IllegalStateException("Unknown job " + job_id);
 		} catch (RemoteException ex) {
 			logger.warn("Could not retrieve progress report", ex);
+			delay();
 			throw new IllegalStateException("Could not retrieve progress report", ex);
+
 		}
 		return progress;
 	}
@@ -119,11 +142,13 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 			String status = service.jobStatus(job_id);
 			if (status.equals("UNKNOWN")) {
 				logger.error("Unknown job " + job_id);
+				delay();
 				throw new IllegalStateException("Unknown job " + job_id);
 			}
 			return status;
 		} catch (RemoteException ex) {
 			logger.warn("Could not check job status", ex);
+			delay();
 			throw new IllegalStateException("Could not check job status", ex);
 		}
 	}
@@ -137,15 +162,22 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		String scufl;
 		try {
 			scufl = service.getWorkflow(job_id);
+		} catch (UnknownJobException ex) {
+			logger.error("Unknown job when retrieving workflow model", ex);
+			delay();
+			throw new IllegalStateException("Unknown job id", ex);
 		} catch (RemoteException ex) {
 			logger.warn("Could not get workflow", ex);
+			delay();
 			throw new IllegalStateException("Could not get workflow", ex);
+
 		}
 		ScuflModel model = new ScuflModel();
 		try {
 			XScuflParser.populate(scufl, model, null);
 		} catch (ScuflException ex) {
 			logger.error("Could not load workflow:\n" + scufl, ex);
+			delay();
 			throw new IllegalStateException("Could not load workflow", ex);
 		}
 		return model;
