@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MediumXMLTester.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-15 14:34:22 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -45,18 +45,7 @@ import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
 import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
-/**
- * Not run as a unit test, as its used to test with HUGE xml files which are too big to put into
- * CVS. Its main use is to check for data corruption.
- * 
- * Test takes URL to xml to be processed as the first parameter and replaces tags of <picture/> with <picture-replaced/>
- * Replaced data is sent to File Writer with its destination as a OS assigned tmp folder (logged to screen).
- * 
- * The resulting XML is sent to stdout
- * 
- * @author Stuart Owen
- *
- */
+
 public class MediumXMLTester {
 	
 	private static Logger logger = Logger.getLogger(MediumXMLTester.class);
@@ -66,13 +55,12 @@ public class MediumXMLTester {
 		tmp.delete();
 		tmp.mkdir();
 		logger.info("Using tmp location for stored data: "+tmp.toURL().toExternalForm());
-						
-		
+								
 		XMLStreamParser parser = new XMLStreamParserImpl();
 		
 		parser.setOutputStream(System.out);
 		
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("picture",""),"picture-replaced",new FileInterceptorWriterFactory(tmp.toURL(),"data"));		
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("picture",""),new FileInterceptorWriterFactory(tmp.toURL(),"data"));		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new URL(args[0]).openStream());				
 

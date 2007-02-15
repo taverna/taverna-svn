@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BigXMLTester.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-15 14:34:22 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -46,23 +46,11 @@ import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
 
-/**
- * Not run as a unit test, as its used to test with HUGE xml files which are too big to put into
- * CVS. Its main use is to check for memory problems.
- * 
- * Test takes URL to xml to be processed as the first parameter and replaces tags of <data/> with <data-replaced/>
- * Replaced data is sent to a null writer that ignores the data but logs its size.
- * 
- * The resulting XML is sent to stdout
- * 
- * @author Stuart Owen
- *
- */
 public class BigXMLTester {
 	
 	public static void main(String[] args) throws Exception {
 		XMLStreamParser parser = new XMLStreamParserImpl();
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),"data-replaced",new NullWriterFactory());
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),new NullWriterFactory());
 		parser.addTagInterceptor(interceptor);
 		parser.setOutputStream(System.out);
 		parser.read(new URL(args[0]).openStream());

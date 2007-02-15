@@ -10,15 +10,27 @@
 			<elements>				
 				<element>
 					<name>Field</name>
-					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>
-					<replacement>Field-proxied</replacement>
+					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>					
 				</element>				
 				<element>
 					<name>Link</name>
-					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>
-					<replacement>Link-proxied</replacement>
+					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>					
 				</element>
 			</elements>
+		</wsdl>
+		<wsdl>
+			<id>22222</id>
+			<address></address>
+			<endpoint>http://localhost:8080/testwebservices/services/MyService</endpoint>
+			
+			<elements>
+				<element>
+					<name>address</name>
+					<namespaceURI>http://testing.org</namespaceURI>
+					<replacement>address</replacement>
+				</element>
+			</elements>
+			
 		</wsdl>
 	</wsdls>	
 

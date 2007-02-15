@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 10:27:24 $
+ * Last modified on   $Date: 2007-02-15 14:34:23 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -133,7 +133,7 @@ public class ProxyServlet extends HttpServlet {
 		
 		XMLStreamParser parser = new XMLStreamParserImpl();	
 		for (ElementDef elementDef : wsdlConfig.getElements()) {
-			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef,wsdlConfig.getReplacement(elementDef),new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
+			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
 		}
 			
 		parser.setOutputStream(response.getOutputStream());

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-15 14:34:23 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -97,7 +97,7 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (activeWriter!=null) {
-			writeEndTagToActiveWriter(qName);
+			
 			if (activeTag.equals(localName)) {
 				activeTagCount--;
 			}
@@ -112,6 +112,9 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 				activeWriter=null;
 				activeTag=null;
 			}
+			else {
+				writeEndTagToActiveWriter(qName); //write inner tags, but not the tag of the element being stripped
+			}
 		}
 		else {
 			super.endElement(uri, localName, qName);
@@ -121,7 +124,7 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 	private void writeReplacementEndElement(String uri, String localName, String qName) throws SAXException {
 		TagInterceptor interceptor=getInterceptorForElement(localName,uri);
 		if (logger.isDebugEnabled()) logger.debug("Encountered final tag for active Tag: "+localName);
-		super.endElement(uri, interceptor.getReplacementElement(), qName.replaceAll(localName, interceptor.getReplacementElement()));
+		super.endElement(uri, localName, qName);
 	}
 
 	private void writeEndTagToActiveWriter(String qName) {
@@ -146,10 +149,12 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		}		
 		
 		if (activeTag!=null) {
+			
+			if (activeTagCount>0) writeStartTagToActiveWriter(localName, qName, atts);
+			
 			if (activeTag.equals(localName)) {				
 				activeTagCount++;
-			}
-			writeStartTagToActiveWriter(localName, qName, atts);			
+			}						
 		}
 		else {
 			super.startElement(uri, localName, qName, atts);
@@ -171,9 +176,8 @@ public class XMLStreamParserImpl extends XMLWriter implements XMLStreamParser {
 		}
 	}
 
-	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
-		TagInterceptor interceptor = getInterceptorForElement(localName,uri);
-		super.startElement(uri,interceptor.getReplacementElement(),qName.replaceAll(localName, interceptor.getReplacementElement()),new AttributesImpl());
+	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {		
+		super.startElement(uri,localName,qName,new AttributesImpl());
 		String destinationName=activeWriter.getDestinationName();
 		super.characters(destinationName.toCharArray(), 0, destinationName.length());
 	}

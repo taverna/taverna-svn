@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 10:27:24 $
+ * Last modified on   $Date: 2007-02-15 14:34:22 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -51,8 +51,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	private String ID;
 	private String address;
 	private String endpoint;
-	private List<ElementDef> elements = new ArrayList<ElementDef>();
-	private Map<ElementDef, String>replacements = new HashMap<ElementDef, String>();
+	private List<ElementDef> elements = new ArrayList<ElementDef>();	
 		
 	@SuppressWarnings("unchecked")
 	public XMLWSDLConfig(Element element) throws WSDLConfigException {		
@@ -75,15 +74,12 @@ public class XMLWSDLConfig implements WSDLConfig {
 			logger.info(elements.size()+" elements defined in config for WSDLID:"+ID);
 			for (Element el : elements) {
 				Element name=el.element("name");
-				Element namespaceURI=el.element("namespaceURI");
-				Element replacement = el.element("replacement");
+				Element namespaceURI=el.element("namespaceURI");				
 				
-				if (name == null) throw new WSDLConfigException("No element 'name' defined within the element block");
-				if (replacement == null) throw new WSDLConfigException("No element 'replacement' defined within the element block");
+				if (name == null) throw new WSDLConfigException("No element 'name' defined within the element block");				
 				if (namespaceURI == null) logger.warn("No namespace defined for Element name='"+name.getText()+"' for WSDLID:"+ID);
 				ElementDef def = new ElementDef(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "");
-				this.elements.add(def);
-				replacements.put(def, replacement.getTextTrim());				
+				this.elements.add(def);						
 			}
 		}				
 	}
@@ -98,11 +94,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 
 	public String getEndpoint() {
 		return endpoint;
-	}
-
-	public String getReplacement(ElementDef element) {
-		return replacements.get(element);
-	}
+	}	
 
 	public String getWSDLID() {
 		return ID;

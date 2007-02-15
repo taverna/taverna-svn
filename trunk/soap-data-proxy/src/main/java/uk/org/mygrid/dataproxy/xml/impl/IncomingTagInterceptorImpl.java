@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: IncomingTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-15 14:34:23 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -39,19 +39,13 @@ import uk.org.mygrid.dataproxy.xml.WriterFactory;
 
 public class IncomingTagInterceptorImpl implements TagInterceptor {
 
-	private ElementDef target;
-	private String replacement;
+	private ElementDef target;	
 	private WriterFactory writerFactory;
 	
-	public IncomingTagInterceptorImpl(ElementDef targetElement, String replacementElement, WriterFactory writerFactory) {
-		this.target=targetElement;
-		this.replacement=replacementElement;
+	public IncomingTagInterceptorImpl(ElementDef targetElement, WriterFactory writerFactory) {
+		this.target=targetElement;		
 		this.writerFactory=writerFactory;
-	}
-	
-	public String getReplacementElement() {
-		return replacement;
-	}
+	}	
 
 	public ElementDef getTargetElementDef() {
 		return target;

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:18 $
+ * Last modified on   $Date: 2007-02-15 14:34:23 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -90,14 +90,14 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),"data-replaced", new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 		
 		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
-		Element el = doc.getRootElement().element("data-replaced");
+		Element el = doc.getRootElement().element("data");
 		String strURL=el.getTextTrim();
 				
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(strURL).openStream()));
@@ -107,21 +107,21 @@ public class TestFileInterceptorWriter {
 			result+=line;
 		}
 		
-		assertEquals("<data>some data</data>",result);
+		assertEquals("some data",result);
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),"data-replaced", new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 		
 		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
-		List elements = doc.getRootElement().elements("data-replaced");
+		List elements = doc.getRootElement().elements("data");
 		assertEquals("should be 3 elements",3,elements.size());
 		
 		int c=1;
@@ -135,14 +135,14 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testPrefix() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""),"data-replaced", new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
+		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 		
 		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
 		
-		Element el = doc.getRootElement().element("data-replaced");
+		Element el = doc.getRootElement().element("data");
 		String strURL=el.getTextTrim();
 		URL url = new URL(strURL);
 		String file=url.getFile();
