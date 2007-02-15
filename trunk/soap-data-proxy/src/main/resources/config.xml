@@ -1,0 +1,25 @@
+<config>
+	<store>
+		<baseURL>file:/tmp/dataproxy-testing/</baseURL>
+	</store>
+	<wsdls>
+		<wsdl>
+			<id>11111</id>
+			<address></address>
+			<endpoint>http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi</endpoint>
+			<elements>				
+				<element>
+					<name>Field</name>
+					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>
+					<replacement>Field-proxied</replacement>
+				</element>				
+				<element>
+					<name>Link</name>
+					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>
+					<replacement>Link-proxied</replacement>
+				</element>
+			</elements>
+		</wsdl>
+	</wsdls>	
+
+</config>

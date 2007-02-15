@@ -25,15 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:18 $
+ * Last modified on   $Date: 2007-02-15 10:27:24 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -42,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -49,11 +51,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.configuration.impl.TestingProxyConfig;
+import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
@@ -70,11 +74,19 @@ public class ProxyServlet extends HttpServlet {
 	
 	public ProxyServlet() {	
 		logger.info("Instantiating Proxy Servlet");		
+		config=getConfig();
 	}
 	
 	private ProxyConfig getConfig() {
-		if (config == null) {
-			config=new TestingProxyConfig();
+		if (config==null) {
+			try {
+				SAXReader reader = new SAXReader();
+				Element element = reader.read(ProxyServlet.class.getResourceAsStream("/config.xml")).getRootElement();
+				config=new XMLProxyConfig(element);
+			}
+			catch(Exception e) {
+				logger.error("Exception reading the XML configuration file",e);
+			}
 		}
 		return config;
 	}	
@@ -111,9 +123,17 @@ public class ProxyServlet extends HttpServlet {
 		
 		InputStream in = connection.getInputStream();
 		
+		URL dataStoreLocation;
+		try {
+			dataStoreLocation = getDataStoreLocation();
+		} catch (Exception e1) {
+			logger.error("An error occurred creating the data store location");
+			throw new ServletException("An error occurred creating the data store location",e1);
+		}
+		
 		XMLStreamParser parser = new XMLStreamParserImpl();	
 		for (ElementDef elementDef : wsdlConfig.getElements()) {
-			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef,wsdlConfig.getReplacement(elementDef),new FileInterceptorWriterFactory(getConfig().getStoreBaseURL(),elementDef.getElementName())));
+			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef,wsdlConfig.getReplacement(elementDef),new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
 		}
 			
 		parser.setOutputStream(response.getOutputStream());
@@ -124,9 +144,30 @@ public class ProxyServlet extends HttpServlet {
 			parser.read(in);
 		} catch (SAXException e) {
 			logger.error("Error parsing SOAP response",e);
+		}		
+	}	
+	
+	private URL getDataStoreLocation() throws Exception {
+		URL result = null;
+		
+		URL base = getConfig().getStoreBaseURL();
+		File dir = new File(base.toURI());
+		if (!dir.exists()) {
+			dir.mkdir();
 		}
 		
-	}		
+		while(true) {
+			String uuid=UUID.randomUUID().toString();
+			File invocationDir = new File(dir,uuid);
+			if (!invocationDir.exists()) {
+				invocationDir.mkdir();
+				result=invocationDir.toURL();
+				break;
+			}
+		}
+		
+		return result;
+	}
 	
 	private HttpURLConnection createEndpointConnection(String endPoint, String soapAction) throws MalformedURLException, IOException, ProtocolException {
 		URL endpointUrl=new URL(endPoint);

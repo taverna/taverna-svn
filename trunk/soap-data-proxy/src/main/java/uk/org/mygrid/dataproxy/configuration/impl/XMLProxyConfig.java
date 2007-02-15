@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 15:30:03 $
+ * Last modified on   $Date: 2007-02-15 10:27:24 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -39,12 +39,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
 public class XMLProxyConfig implements ProxyConfig {
+	
+	private static Logger logger = Logger.getLogger(XMLProxyConfig.class);
 	
 	private URL baseURL;
 	private Map<String,WSDLConfig> wsdlMap = new HashMap<String, WSDLConfig>();
@@ -58,16 +61,22 @@ public class XMLProxyConfig implements ProxyConfig {
 		
 		String baseURLStr = baseURLElement.getTextTrim();
 		try {
-			baseURL=new URL(baseURLStr);
+			baseURL=new URL(baseURLStr);			
 		} catch (MalformedURLException e) {
 			throw new ProxyConfigException("MalforedException with baseURL:'"+baseURLStr+"'");
 		}
 		
+		logger.info("BaseURL defined in config as:"+baseURLStr);
+		
 		Element wsdlsElement = element.element("wsdls");
 		if (wsdlsElement!=null) {
-			for (Element wsdlElement : (List<Element>)wsdlsElement.elements("wsdl")) {
+			List<Element> wsdlElements = (List<Element>)wsdlsElement.elements("wsdl");
+			logger.info(wsdlElements.size()+" WSDLS found in config");			
+			for (Element wsdlElement : wsdlElements)				
+			{
 				WSDLConfig wsdlConfig = new XMLWSDLConfig(wsdlElement);
 				wsdlMap.put(wsdlConfig.getWSDLID(),wsdlConfig);
+				logger.info("WSDL added from config with ID:"+wsdlConfig.getWSDLID()+", Endpoint:"+wsdlConfig.getEndpoint());
 			}
 		}
 	}

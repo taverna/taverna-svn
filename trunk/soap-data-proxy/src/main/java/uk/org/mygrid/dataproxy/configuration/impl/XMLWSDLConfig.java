@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 15:30:03 $
+ * Last modified on   $Date: 2007-02-15 10:27:24 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -46,13 +46,14 @@ import uk.org.mygrid.dataproxy.xml.ElementDef;
 
 public class XMLWSDLConfig implements WSDLConfig {
 	
+	private static Logger logger = Logger.getLogger(XMLWSDLConfig.class);
+	
 	private String ID;
 	private String address;
 	private String endpoint;
 	private List<ElementDef> elements = new ArrayList<ElementDef>();
 	private Map<ElementDef, String>replacements = new HashMap<ElementDef, String>();
-	private static Logger logger = Logger.getLogger(XMLWSDLConfig.class);
-	
+		
 	@SuppressWarnings("unchecked")
 	public XMLWSDLConfig(Element element) throws WSDLConfigException {		
 		
@@ -71,6 +72,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		child = element.element("elements");
 		if (child!=null) {
 			List<Element> elements = child.elements("element");
+			logger.info(elements.size()+" elements defined in config for WSDLID:"+ID);
 			for (Element el : elements) {
 				Element name=el.element("name");
 				Element namespaceURI=el.element("namespaceURI");
