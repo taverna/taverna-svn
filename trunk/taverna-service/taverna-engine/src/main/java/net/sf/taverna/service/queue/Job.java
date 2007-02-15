@@ -14,7 +14,7 @@ public class Job {
 	
 	// Different from Freefluo:
 	// QUEUED, DEQUEUED
-	public enum State { NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, FAILED, CANCELLING, CANCELLED, COMPLETE, DESTROYED }
+	public enum State { NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED }
 	
 	ScuflModel workflow;
 	Date created;
@@ -33,10 +33,13 @@ public class Job {
 	}
 	
 	synchronized void setState(State state) {
+		// Don't go backwards, ignore same state
 		if (state.compareTo(this.state) > 0) {
 			this.state = state;
 			this.notifyAll();
-		} 
+		} else {
+			logger.warn("Did not change state from " + this.state + " to " + state);
+		}
 	}
 	
 	public State getState() {
@@ -47,16 +50,24 @@ public class Job {
 		return getState().compareTo(State.RUNNING) > 1;
 	}
 	
-	void setResults(Map<String, DataThing> results) {
+	synchronized void setResults(Map<String, DataThing> results) {
 		if (! getState().equals(State.RUNNING)) {
+			logger.warn("Trying to set results, but state is " + state);
 			throw new IllegalStateException("Not running");
+		}
+		if (this.results != null) {
+			throw new IllegalStateException("Already set results");
 		}
 		this.results = results;		
 	}
 	
-	public Map<String, DataThing> getResults() {
+	public synchronized Map<String, DataThing> getResults() {
 		if (! getState().equals(State.COMPLETE)) {
+			logger.warn("Trying to get results, but state is " + state);
 			throw new IllegalStateException("Not completed");
+		}
+		if (this.results == null) {
+			throw new IllegalStateException("Did not set results yet");
 		}
 		return this.results;		
 	}

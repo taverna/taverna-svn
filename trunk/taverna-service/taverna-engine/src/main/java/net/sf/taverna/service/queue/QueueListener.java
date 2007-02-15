@@ -10,7 +10,7 @@ public abstract class QueueListener implements Runnable {
 
 	private static Logger logger = Logger.getLogger(QueueListener.class);
 	
-	final int TIMEOUT = 100;
+	final static int QUEUE_TIMEOUT = 100;
 
 	boolean running;
 	TavernaQueue queue;
@@ -29,7 +29,7 @@ public abstract class QueueListener implements Runnable {
 			Job job;
 			synchronized (queue) {
 				try {									
-					queue.wait(TIMEOUT);				
+					queue.wait(QUEUE_TIMEOUT);				
 				} catch (InterruptedException e) {
 					// pass
 				}
@@ -49,8 +49,7 @@ public abstract class QueueListener implements Runnable {
 			execute(job);			
 			logger.debug("Completed job " + job);
 			if (! job.isFinished()) {
-				logger.warn("Finished " + job + " that was in unfinished state: " + job.getState());
-				job.setState(State.COMPLETE);
+				logger.warn("Timed out for unfinished " + job + ", in state: " + job.getState());
 			}
 		} catch (Throwable t) {
 			logger.warn("Job " + job + " processing failed", t);

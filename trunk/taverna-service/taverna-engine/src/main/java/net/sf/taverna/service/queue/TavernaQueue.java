@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.sf.taverna.service.interfaces.QueueException;
 import net.sf.taverna.service.queue.Job.State;
 
 import org.apache.log4j.Logger;

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 
 import net.sf.taverna.service.TestCommon;
+import net.sf.taverna.service.interfaces.QueueException;
 import net.sf.taverna.service.queue.Job.State;
 
 import org.embl.ebi.escience.baclava.DataThing;

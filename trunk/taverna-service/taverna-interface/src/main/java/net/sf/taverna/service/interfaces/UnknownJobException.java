@@ -1,4 +1,4 @@
-package net.sf.taverna.service.wsdl;
+package net.sf.taverna.service.interfaces;
 
 public class UnknownJobException extends TavernaException {
 

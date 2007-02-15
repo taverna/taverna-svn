@@ -7,11 +7,11 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import net.sf.taverna.service.TestCommon;
+import net.sf.taverna.service.interfaces.QueueException;
+import net.sf.taverna.service.interfaces.UnknownJobException;
 import net.sf.taverna.service.queue.Job;
-import net.sf.taverna.service.queue.QueueException;
 import net.sf.taverna.service.queue.TavernaQueue;
 import net.sf.taverna.service.queue.Job.State;
-import net.sf.taverna.service.wsdl.UnknownJobException;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.jdom.JDOMException;
