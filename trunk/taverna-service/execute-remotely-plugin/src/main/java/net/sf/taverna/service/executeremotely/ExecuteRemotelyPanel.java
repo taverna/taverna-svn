@@ -9,11 +9,12 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -27,13 +28,16 @@ import net.sf.taverna.service.wsdl.client.Taverna;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
-import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.Namespace;
+import org.jdom.input.SAXBuilder;
 
 public class ExecuteRemotelyPanel extends JPanel implements
 	WorkflowModelViewSPI {
@@ -51,6 +55,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	private Taverna taverna = null;
 	
 	private Jobs jobs = new Jobs();
+	
+	private Namespace serviceNS = Namespace.getNamespace("http://service.taverna.sf.net/");	
 
 	public ExecuteRemotelyPanel() {
 		super(new GridBagLayout());
@@ -180,16 +186,12 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			private String job_id;
 			private String state;
 
-			private Job(String text) {
-				super(text);
-				String[] job = text.split(": ");
-				if (job.length != 2) {
-					logger.warn("Illegal job specifier: " + text);
-					throw new IllegalArgumentException("Job specifier must be on the form 'id: state'");
-				}
-				job_id = job[0];
-				state = job[1];
+			private Job(Element jobElement) {
+				super("Parsing job");
+				job_id = jobElement.getAttribute("id").getValue();
+				state = jobElement.getChildText("status", serviceNS);
 				setBackground(Color.WHITE);
+				setText(job_id +": " + state);
 				// FIXME: Should be Action so it also works with keyboard
 				addMouseListener(new MouseClickListener());
 			}
@@ -246,16 +248,30 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			add(new JButton(new RefreshAction()), c);
 		}
 		
+		@SuppressWarnings("unchecked")
 		private void addJobs() {
 			if (taverna == null) {
 				return;
 			}
-			String[] jobs;
+			String jobs;
 			try {
-				jobs = taverna.jobs().split("\n");
+				jobs = taverna.jobs();
 			} catch (RemoteException e) {
 				logger.warn("Could not list jobs at " + getEndpoint(), e);
 				endpointField.warning(e.toString());
+				return;
+			}
+			Element jobsElement;
+			try {
+				jobsElement = parseXML(jobs);
+			} catch (JDOMException e) {
+				logger.warn("Could not parse XML for jobs: " + jobs, e);
+				return;
+			}
+			if (! jobsElement.getNamespace().equals(serviceNS) || 
+				!jobsElement.getName().equals("jobs")) {
+				logger.warn("Unknown XML element for jobs: " + jobsElement);
+				endpointField.warning("Unknown XML for jobs");
 				return;
 			}
 			GridBagConstraints c = new GridBagConstraints();
@@ -264,11 +280,26 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			c.gridwidth = GridBagConstraints.REMAINDER;
 			c.gridx = 0;
 			c.gridy = GridBagConstraints.RELATIVE;
-			for (String job : jobs) {
+			List<Element> children = jobsElement.getChildren("job", serviceNS);
+			for (Element job : children) {
 				if (! job.equals("")) {
 					add(new Job(job), c);
 				}
 			}
+		}
+
+		public Element parseXML(String xm) throws JDOMException {
+			SAXBuilder builder = new SAXBuilder(false);
+			Document document;
+			try {
+				document = builder.build(new StringReader(xm));
+			} catch (IOException ex) {
+				// Not expected
+				logger.error("Could not read XML from StringReader", ex);
+				throw new RuntimeException("Could not read XML from StringReader", ex);
+			}
+			Element element = document.getRootElement();
+			return element;
 		}		
 	}
 
