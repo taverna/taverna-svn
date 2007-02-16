@@ -25,17 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TagInterceptor.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:23 $
+ * Last modified on   $Date: 2007-02-16 14:01:44 $
  *               by   $Author: sowen70 $
- * Created on 8 Feb 2007
+ * Created on 15 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-
 public interface TagInterceptor {
-	public ElementDef getTargetElementDef();	
-	public WriterFactory getWriterFactory();
-	
+	public ElementDef getTargetElementDef();
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:23 $
+ * Last modified on   $Date: 2007-02-16 14:01:43 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -54,8 +54,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
-import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
-import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 
 public class TestFileInterceptorWriter {
 
@@ -77,7 +77,7 @@ public class TestFileInterceptorWriter {
 		tmpDir.delete();
 		tmpDir.mkdir();
 		outStream = new ByteArrayOutputStream();
-		parser=new XMLStreamParserImpl();
+		parser=new ResponseXMLStreamParserImpl();
 		parser.setOutputStream(outStream);
 	}
 	
@@ -90,7 +90,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -114,7 +114,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -135,7 +135,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testPrefix() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data",""), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MediumXMLTester.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:22 $
+ * Last modified on   $Date: 2007-02-16 14:01:43 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -39,11 +39,11 @@ import java.net.URL;
 import org.apache.log4j.Logger;
 
 import uk.org.mygrid.dataproxy.xml.ElementDef;
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
+import uk.org.mygrid.dataproxy.xml.ResponseTagInterceptor;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
-import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
-import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 
 
 public class MediumXMLTester {
@@ -56,11 +56,11 @@ public class MediumXMLTester {
 		tmp.mkdir();
 		logger.info("Using tmp location for stored data: "+tmp.toURL().toExternalForm());
 								
-		XMLStreamParser parser = new XMLStreamParserImpl();
+		XMLStreamParser parser = new ResponseXMLStreamParserImpl();
 		
 		parser.setOutputStream(System.out);
 		
-		TagInterceptor interceptor = new IncomingTagInterceptorImpl(new ElementDef("picture",""),new FileInterceptorWriterFactory(tmp.toURL(),"data"));		
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("picture",""),new FileInterceptorWriterFactory(tmp.toURL(),"data"));		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new URL(args[0]).openStream());				
 

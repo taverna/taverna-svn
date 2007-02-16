@@ -25,20 +25,21 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:23 $
+ * Last modified on   $Date: 2007-02-16 14:01:45 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration.impl;
+
+import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDef;

@@ -24,8 +24,8 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: ResponseTagInterceptor.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-02-16 14:01:44 $
  *               by   $Author: sowen70 $
@@ -33,16 +33,7 @@
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
-import org.xml.sax.SAXException;
-
-public interface XMLStreamParser {
-			
-	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);		
-	public void read(InputStream stream)  throws SAXException, IOException;
+public interface ResponseTagInterceptor extends TagInterceptor {	
+	public WriterFactory getWriterFactory();	
 }

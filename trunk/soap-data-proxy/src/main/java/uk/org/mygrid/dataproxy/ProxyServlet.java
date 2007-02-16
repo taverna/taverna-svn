@@ -25,20 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:23 $
+ * Last modified on   $Date: 2007-02-16 14:01:45 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -61,8 +58,9 @@ import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
-import uk.org.mygrid.dataproxy.xml.impl.IncomingTagInterceptorImpl;
-import uk.org.mygrid.dataproxy.xml.impl.XMLStreamParserImpl;
+import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
+import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 
 @SuppressWarnings("serial")
 public class ProxyServlet extends HttpServlet {
@@ -89,19 +87,7 @@ public class ProxyServlet extends HttpServlet {
 			}
 		}
 		return config;
-	}	
-	
-	private String receiveIncomingMessage(InputStream inputStream) throws IOException {			
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-		String line;
-		String result="";
-		while ((line=reader.readLine())!=null) {
-			logger.debug("Read Line from request stream:"+line);
-			result+=line;
-		}
-		
-		return result;
-	}	
+	}		
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -114,12 +100,16 @@ public class ProxyServlet extends HttpServlet {
 			logger.error("Identifier "+id+" not recognised when looking for WSDL configuration details");
 			throw new ServletException("Identifier "+id+" not recognised when looking for WSDL configuration details");
 		}
-		
-		String incomingMessage = receiveIncomingMessage(request.getInputStream());					
 
-		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));		
-		OutputStream out = connection.getOutputStream();
-		out.write(incomingMessage.getBytes("UTF-8"));		
+		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));
+		XMLStreamParser requestParser = new RequestXMLStreamParserImpl();
+		requestParser.setOutputStream(connection.getOutputStream());
+		try {
+			requestParser.read(request.getInputStream());
+		} catch (SAXException e2) {
+			logger.error("Error parsing request SOAP message",e2);
+		}
+						
 		
 		InputStream in = connection.getInputStream();
 		
@@ -131,17 +121,17 @@ public class ProxyServlet extends HttpServlet {
 			throw new ServletException("An error occurred creating the data store location",e1);
 		}
 		
-		XMLStreamParser parser = new XMLStreamParserImpl();	
+		XMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
 		for (ElementDef elementDef : wsdlConfig.getElements()) {
-			parser.addTagInterceptor(new IncomingTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
+			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
 		}
 			
-		parser.setOutputStream(response.getOutputStream());
+		responseParser.setOutputStream(response.getOutputStream());
 						
 		response.setContentType("text/html");
 		
 		try {
-			parser.read(in);
+			responseParser.read(in);
 		} catch (SAXException e) {
 			logger.error("Error parsing SOAP response",e);
 		}		

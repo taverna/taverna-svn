@@ -24,25 +24,52 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-02-16 14:01:41 $
  *               by   $Author: sowen70 $
- * Created on 8 Feb 2007
+ * Created on 15 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.xml;
+package uk.org.mygrid.dataproxy.xml.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.dom4j.io.XMLWriter;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
-public interface XMLStreamParser {
-			
-	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);		
-	public void read(InputStream stream)  throws SAXException, IOException;
+import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.TagInterceptor;
+import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+
+public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLStreamParser {
+	private Map<ElementDef,TagInterceptor> interceptors = new HashMap<ElementDef,TagInterceptor>();
+	
+	@Override
+	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		
+		super.setOutputStream(out);
+		super.getOutputFormat().setSuppressDeclaration(true);
+	}
+	
+	public void read(InputStream stream) throws SAXException, IOException {
+		XMLReader reader = XMLReaderFactory.createXMLReader();
+		reader.setContentHandler(this);				
+		reader.parse(new InputSource(stream));
+	}
+	
+	public void addTagInterceptor(TagInterceptor interceptor) {
+		interceptors.put(interceptor.getTargetElementDef(),interceptor);			
+	}
+	
+	protected TagInterceptor getInterceptorForElement(String element, String uri) {
+		return interceptors.get(new ElementDef(element,uri));
+	}
 }

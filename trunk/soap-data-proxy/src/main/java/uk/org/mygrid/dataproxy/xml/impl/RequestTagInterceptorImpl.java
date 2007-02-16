@@ -24,35 +24,35 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: IncomingTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Filename           $RCSfile: RequestTagInterceptorImpl.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-15 14:34:23 $
+ * Last modified on   $Date: 2007-02-16 14:01:41 $
  *               by   $Author: sowen70 $
- * Created on 8 Feb 2007
+ * Created on 15 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
 import uk.org.mygrid.dataproxy.xml.ElementDef;
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
-import uk.org.mygrid.dataproxy.xml.WriterFactory;
+import uk.org.mygrid.dataproxy.xml.ReaderFactory;
+import uk.org.mygrid.dataproxy.xml.RequestTagInterceptor;
 
-public class IncomingTagInterceptorImpl implements TagInterceptor {
+public class RequestTagInterceptorImpl implements RequestTagInterceptor {
 
-	private ElementDef target;	
-	private WriterFactory writerFactory;
+	private ElementDef target;
+	private ReaderFactory readerFactory;
 	
-	public IncomingTagInterceptorImpl(ElementDef targetElement, WriterFactory writerFactory) {
-		this.target=targetElement;		
-		this.writerFactory=writerFactory;
-	}	
+	public RequestTagInterceptorImpl(ElementDef target, ReaderFactory readerFactory) {
+		this.target=target;
+		this.readerFactory=readerFactory;
+	}
+	
+	public ReaderFactory getReaderFactory() {
+		return readerFactory;
+	}
 
 	public ElementDef getTargetElementDef() {
 		return target;
-	}
-
-	public WriterFactory getWriterFactory() {
-		return writerFactory;
 	}
 
 }

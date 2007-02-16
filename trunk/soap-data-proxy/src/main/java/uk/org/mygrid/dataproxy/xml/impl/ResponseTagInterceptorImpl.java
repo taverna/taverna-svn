@@ -24,25 +24,35 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: ResponseTagInterceptorImpl.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-02-16 14:01:41 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.xml;
+package uk.org.mygrid.dataproxy.xml.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ResponseTagInterceptor;
+import uk.org.mygrid.dataproxy.xml.WriterFactory;
 
-import org.xml.sax.SAXException;
+public class ResponseTagInterceptorImpl implements ResponseTagInterceptor {
 
-public interface XMLStreamParser {
-			
-	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);		
-	public void read(InputStream stream)  throws SAXException, IOException;
+	private ElementDef target;	
+	private WriterFactory writerFactory;
+	
+	public ResponseTagInterceptorImpl(ElementDef targetElement, WriterFactory writerFactory) {
+		this.target=targetElement;		
+		this.writerFactory=writerFactory;
+	}	
+
+	public ElementDef getTargetElementDef() {
+		return target;
+	}
+
+	public WriterFactory getWriterFactory() {
+		return writerFactory;
+	}
+
 }
