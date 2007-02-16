@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptorWriter.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:42 $
+ * Last modified on   $Date: 2007-02-16 16:13:58 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -37,7 +37,7 @@ import java.io.IOException;
 
 public interface InterceptorWriter {
 	
-	public String getDestinationName();
+	public String getDestinationReference();
 	public void write(String text) throws IOException;
 	public void write(char [] ch, int start, int length) throws IOException;
 	public void close() throws IOException;

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDef.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 14:07:17 $
+ * Last modified on   $Date: 2007-02-16 16:13:58 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -65,6 +65,10 @@ public class ElementDef {
 		
 		return ((this.getElementName().equals(elDef.getElementName())) && (this.getNamespaceURI().equals(elDef.getNamespaceURI())));
 	}	
+	
+	public String toString() {
+		return namespaceURI+":"+elementName;
+	}
 	
 	
 }

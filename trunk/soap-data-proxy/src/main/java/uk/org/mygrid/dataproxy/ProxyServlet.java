@@ -25,17 +25,22 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:45 $
+ * Last modified on   $Date: 2007-02-16 16:13:59 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -57,7 +62,9 @@ import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
+import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
@@ -102,16 +109,27 @@ public class ProxyServlet extends HttpServlet {
 		}
 
 		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));
+		
 		XMLStreamParser requestParser = new RequestXMLStreamParserImpl();
-		requestParser.setOutputStream(connection.getOutputStream());
+		for (ElementDef elementDef : wsdlConfig.getElements()) {
+			requestParser.addTagInterceptor(new RequestTagInterceptorImpl(elementDef,new FileInterceptorReaderFactory()));
+		}
+		
+		ByteArrayOutputStream outstream = new ByteArrayOutputStream();
+		requestParser.setOutputStream(outstream);
+		
 		try {
 			requestParser.read(request.getInputStream());
 		} catch (SAXException e2) {
 			logger.error("Error parsing request SOAP message",e2);
-		}
-						
+		}					
 		
-		InputStream in = connection.getInputStream();
+		String message = outstream.toString();
+		logger.info("Parsed message from client:"+message);
+		
+		
+		connection.getOutputStream().write(message.getBytes());
+		InputStream in = connection.getInputStream();		
 		
 		URL dataStoreLocation;
 		try {

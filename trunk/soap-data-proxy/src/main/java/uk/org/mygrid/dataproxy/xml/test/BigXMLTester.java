@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BigXMLTester.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:43 $
+ * Last modified on   $Date: 2007-02-16 16:13:59 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -78,7 +78,7 @@ class NullWriterFactory implements WriterFactory {
 			this.dest=dest;
 		}
 
-		public String getDestinationName() {
+		public String getDestinationReference() {
 			return dest;
 		}
 

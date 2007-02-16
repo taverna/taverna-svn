@@ -22,14 +22,14 @@
 			<id>22222</id>
 			<address></address>
 			<endpoint>http://localhost:8080/testwebservices/services/MyService</endpoint>
-			
+			 
 			<elements>
 				<element>
 					<name>address</name>
 					<namespaceURI>http://testing.org</namespaceURI>
 					<replacement>address</replacement>
 				</element>
-			</elements>
+			</elements>			
 			
 		</wsdl>
 	</wsdls>	

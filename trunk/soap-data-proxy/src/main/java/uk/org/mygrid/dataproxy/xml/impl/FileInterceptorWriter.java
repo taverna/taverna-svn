@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriter.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-09 16:38:43 $
+ * Last modified on   $Date: 2007-02-16 16:13:58 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -56,7 +56,7 @@ public class FileInterceptorWriter implements InterceptorWriter {
 		writer = new BufferedWriter(new OutputStreamWriter(outStream));
 	}
 	
-	public String getDestinationName() {
+	public String getDestinationReference() {
 		return fileURL.toExternalForm();
 	}
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:40 $
+ * Last modified on   $Date: 2007-02-16 16:13:58 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -52,6 +52,7 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 	
 	private ReaderFactory activeReaderFactory = null;
 	private String reference;
+		
 	
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
@@ -61,6 +62,7 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 		else {
 			super.characters(ch, start, length);
 		}
+				
 	}
 
 	@Override
@@ -74,11 +76,20 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 	}
 	
 	private void insertDataFromReference() throws SAXException{
-		InterceptorReader reader = activeReaderFactory.getReaderForReference(reference);
+		InterceptorReader reader;
+		try {			
+			reader = activeReaderFactory.getReaderForReference(reference);
+			if (logger.isDebugEnabled()) logger.debug("Found reader for reference:"+reference);
+		}
+		catch(Exception e) {
+			logger.error("Unable to create reader for reference '"+reference+"'");
+			throw new SAXException("Unable to create reader for reference '"+reference+"'",e);
+		}
 		char [] buffer = new char[255];
 		int len=0;
 		try {
 			while ((len = reader.read(buffer))!= -1) {
+				logger.info("Data read:"+String.valueOf(buffer,0,len));
 				super.characters(buffer, 0, len);
 			}
 		}
@@ -89,14 +100,13 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException {
-		TagInterceptor interceptor = getInterceptorForElement(localName, uri);		
+		TagInterceptor interceptor = getInterceptorForElement(localName, uri);	
+		if (logger.isDebugEnabled()) logger.debug("Met start element: "+localName+", namespaceuri="+uri+", qName="+qName);
 		if (interceptor!=null && interceptor instanceof RequestTagInterceptor) {
+			if (logger.isDebugEnabled()) logger.debug("Interceptor found for start element: "+localName+", namespaceuri="+uri+", qName="+qName);
 			activeReaderFactory = ((RequestTagInterceptor)interceptor).getReaderFactory();
 			reference="";
-		}
+		}		
 		super.startElement(uri, localName, qName, attr);		
 	}	
-	
-	
-
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:41 $
+ * Last modified on   $Date: 2007-02-16 16:13:58 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.dom4j.io.XMLWriter;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -52,6 +53,13 @@ import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 
 public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLStreamParser {
 	private Map<ElementDef,TagInterceptor> interceptors = new HashMap<ElementDef,TagInterceptor>();
+	
+	private static Logger logger = Logger
+			.getLogger(AbstractXMLStreamParser.class);
+	
+	public AbstractXMLStreamParser() {
+		setEscapeText(false); //prevents inserted XML being escaped.
+	}
 	
 	@Override
 	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		
@@ -66,10 +74,12 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLSt
 	}
 	
 	public void addTagInterceptor(TagInterceptor interceptor) {
-		interceptors.put(interceptor.getTargetElementDef(),interceptor);			
+		interceptors.put(interceptor.getTargetElementDef(),interceptor);
+		logger.info("Interceptor added class="+interceptor.getClass()+" for elementDef: "+interceptor.getTargetElementDef());
 	}
 	
 	protected TagInterceptor getInterceptorForElement(String element, String uri) {
 		return interceptors.get(new ElementDef(element,uri));
 	}
+		
 }
