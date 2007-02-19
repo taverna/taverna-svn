@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorReader.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-02-19 16:10:07 $
  *               by   $Author: sowen70 $
  * Created on 16 Feb 2007
  *****************************************************************/
@@ -36,7 +36,6 @@ package uk.org.mygrid.dataproxy.xml.impl;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;

@@ -25,22 +25,18 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:59 $
+ * Last modified on   $Date: 2007-02-19 16:10:08 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -75,16 +71,14 @@ public class ProxyServlet extends HttpServlet {
 	private static Logger logger = Logger.getLogger(ProxyServlet.class);	
 	
 	private ProxyConfig config = null;
-	
-	
-	public ProxyServlet() {	
-		logger.info("Instantiating Proxy Servlet");		
-		config=getConfig();
+		
+	public ProxyServlet() {		
+		logger.info("Instantiating Proxy Servlet.");					
 	}
 	
-	private ProxyConfig getConfig() {
+	private ProxyConfig getConfig() {		
 		if (config==null) {
-			try {
+			try {								
 				SAXReader reader = new SAXReader();
 				Element element = reader.read(ProxyServlet.class.getResourceAsStream("/config.xml")).getRootElement();
 				config=new XMLProxyConfig(element);
@@ -94,7 +88,13 @@ public class ProxyServlet extends HttpServlet {
 			}
 		}
 		return config;
-	}		
+	}	
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		getConfig();		
+		super.doGet(request, response);
+	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -124,8 +124,7 @@ public class ProxyServlet extends HttpServlet {
 			logger.error("Error parsing request SOAP message",e2);
 		}					
 		
-		String message = outstream.toString();
-		logger.info("Parsed message from client:"+message);
+		String message = outstream.toString();		
 		
 		
 		connection.getOutputStream().write(message.getBytes());

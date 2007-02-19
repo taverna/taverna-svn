@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-02-19 16:10:07 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -89,7 +89,7 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 		int len=0;
 		try {
 			while ((len = reader.read(buffer))!= -1) {
-				logger.info("Data read:"+String.valueOf(buffer,0,len));
+				if (logger.isDebugEnabled()) logger.debug("Data read:"+String.valueOf(buffer,0,len));
 				super.characters(buffer, 0, len);
 			}
 		}

@@ -25,15 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorReader.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-02-19 16:10:07 $
  *               by   $Author: sowen70 $
  * Created on 16 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -43,16 +43,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
-import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
 import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
-import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 
 public class TestFileInterceptorReader {
 	
