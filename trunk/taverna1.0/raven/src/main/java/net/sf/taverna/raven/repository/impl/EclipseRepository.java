@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 14:00:27 $
+ * Last modified on   $Date: 2007-02-19 10:08:52 $
  *               by   $Author: stain $
  * Created on 18 Oct 2006
  *****************************************************************/
@@ -118,9 +118,12 @@ public class EclipseRepository implements Repository {
 	}
 
 	public ClassLoader getLoader(Artifact a, ClassLoader parent)
-			throws ArtifactNotFoundException, ArtifactStateException {
-		return ClassLoader.getSystemClassLoader(); 
-		
+		throws ArtifactNotFoundException, ArtifactStateException {
+		ClassLoader cl = getClass().getClassLoader();
+		if (cl != null) {
+			return cl;
+		}
+		return ClassLoader.getSystemClassLoader();
 	}
 
 	public ArtifactStatus getStatus(Artifact a) {
