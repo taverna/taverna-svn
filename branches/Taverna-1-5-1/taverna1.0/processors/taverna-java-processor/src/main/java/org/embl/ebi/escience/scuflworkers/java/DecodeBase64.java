@@ -38,7 +38,14 @@ public class DecodeBase64 implements LocalWorker {
 
 	public Map execute(Map inputs) throws TaskExecutionException {
 		Map results = new HashMap();
-		String base64 = (String) ((DataThing) inputs.get("base64")).getDataObject();
+		Object data = ((DataThing)inputs.get("base64")).getDataObject();
+		String base64;
+		if (String.class.isAssignableFrom(data.getClass())) {
+			base64 = (String) ((DataThing) inputs.get("base64")).getDataObject();
+		}
+		else {
+			throw new TaskExecutionException("Input data cannot be assigned to a String, so is not a base64 encoding. Its type is:"+data.getClass().getName());
+		}
 		byte[] bytes = Base64.decode(base64);
 		results.put("bytes", new DataThing(bytes));
 		return results;
