@@ -74,13 +74,15 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * @author Tom Oinn, Chris Greenhalgh, Kevin Glover
+ * @author Tom Oinn
+ * @author Chris Greenhalgh
+ * @author Kevin Glover
  */
 public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 	ScuflModelEventListener {
-	
+
 	private static Logger logger = Logger.getLogger(BeanshellConfigPanel.class);
-	
+
 	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
 
@@ -397,7 +399,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 
 		JComboBox inputTypesCombo =
-			// Really Strings, but Properties.java is so 
+		// Really Strings, but Properties.java is so 
 			// outdated it claims to have Objects
 			new JComboBox(new Vector<Object>(DataThing.mimeTypes.values()));
 
@@ -446,8 +448,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 				// Add a port to the input model!
 				String portName = addInputField.getText();
 				try {
-					InputPort ip =
-						new InputPort(processor, portName);
+					InputPort ip = new InputPort(processor, portName);
 					ip.setSyntacticType("'text/plain'");
 					processor.addPort(ip);
 					addInputField.setText("");
@@ -551,8 +552,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 				// Add a port to the input model!
 				String portName = addOutputField.getText();
 				try {
-					OutputPort op =
-						new OutputPort(processor, portName);
+					OutputPort op = new OutputPort(processor, portName);
 					op.setSyntacticType("'text/plain'");
 					processor.addPort(op);
 					addOutputField.setText("");
