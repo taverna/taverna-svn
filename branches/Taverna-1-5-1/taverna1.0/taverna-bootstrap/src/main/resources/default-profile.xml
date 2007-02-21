@@ -1,4 +1,4 @@
-<profile version="1.5.1.2" name="Taverna Workbench">	
+<profile version="1.5.1.3" name="Taverna Workbench">	
 
 	<!--  processors -->			
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1"/>
@@ -19,7 +19,7 @@
 	<artifact groupId="uk.org.mygrid.taverna.scufl" artifactId="scufl-workflow" version="1.5.1"/>
 
 	<!-- contributions -->
-	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-contrib" version="1.5.1"/>
+	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-contrib" version="1.5.1.1"/>
 
 	<!-- ui components -->	
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-scavenger-ui" version="1.5.1"/>
@@ -37,7 +37,7 @@
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-enact" version="1.5.1"/>
 
 	<!-- workbench -->
-	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-workbench" version="1.5.1"/>
+	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-workbench" version="1.5.1.1"/>
 
 	<!-- raven -->
 	<artifact groupId="uk.org.mygrid.taverna.raven" artifactId="raven" version="1.5.1"/>	

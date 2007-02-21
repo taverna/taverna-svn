@@ -87,6 +87,7 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowInstanceSetViewSPI;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
@@ -991,7 +992,8 @@ public class Workbench extends JFrame {
 
 		/**
 		 * Unless the current perspective does, finds the first instance of a perspective that contains a WorkflowInstanceContainer and is visible
-		 * and then switch the current perspective to that one, so that the results of the running workflow can be seen		 
+		 * and then switch the current perspective to that one, so that the results of the running workflow can be seen.
+		 * The correct perspective is found by parsing the XML looking a named or static ZRavenComponent containing the class org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory		 
 		 */
 		private void switchToWorkflowInstanceContainerPerspective() {
 			PerspectiveSPI currentPerspective = (PerspectiveSPI)modelmap.getNamedModel(ModelMap.CURRENT_PERSPECTIVE);
@@ -1010,14 +1012,35 @@ public class Workbench extends JFrame {
 		
 		private boolean perspectiveContainsWorkflowInstanceContainer(PerspectiveSPI perspective) {
 			boolean result=false;
-			ZBasePane pane = new WorkbenchZBasePane();
-			pane.setRepository(repository);
+			
 			InputStreamReader isr = new InputStreamReader(perspective.getLayoutInputStream());
 			SAXBuilder builder = new SAXBuilder(false);	
 			try {
 				Document document = builder.build(isr);
-				pane.configure(document.detachRootElement());
-				result=findWorkflowInstanceSetViewSPIPanes(pane.getZChildren()).size()>0;
+				String namedWorkflowInstanceContainer=null;
+				namedWorkflowInstanceContainer = findNamedWorkflowInstanceContainerFactory(document.getRootElement());
+				List<Element> zravenComponentElements = new ArrayList<Element>();
+				discoverZRavenComponentElements(document.getRootElement().getChild("child"),zravenComponentElements);
+				for (Element zravenElement : zravenComponentElements) {
+					Element namedComponent = zravenElement.getChild("namedcomponent");
+					if (namedComponent!=null && namedWorkflowInstanceContainer!=null) {
+						String name=namedComponent.getChildTextTrim("name");
+						if (name.equals(namedWorkflowInstanceContainer)) {
+							result=true;
+							break;
+			}
+					}
+					else {
+						Element component = zravenElement.getChild("component");
+						if (component!=null) {
+							String classname=component.getChildTextTrim("classname");
+							if (classname!=null && classname.equals("org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory")) {
+								result=true;
+								break;
+							}
+						}
+					}
+				}
 			}
 			catch(IOException e) {
 				logger.error("Error reading layout stream",e);
@@ -1027,6 +1050,36 @@ public class Workbench extends JFrame {
 			}
 			return result;
 		}
+
+		private String findNamedWorkflowInstanceContainerFactory(Element rootElement) {
+			String result=null;
+			Element named = rootElement.getChild("namedcomponents");
+			if (named!=null) {
+				List<Element> namedComponents = named.getChildren("namedcomponent");
+				for (Element namedComponent : namedComponents) {
+					String className=namedComponent.getChildTextTrim("classname");
+					if (className!=null && className.equals("org.embl.ebi.escience.scuflui.WorkflowInstanceContainerFactory")) {
+						result=namedComponent.getChildText("name");
+						break;
+					}
+				}
+			}
+			return result;
+		}
+		
+		private void discoverZRavenComponentElements(Element element, List<Element> collected) {
+			List<Element> children = element.getChildren();
+			for (Element child : children) {
+				if (child.getName().equals("znode")) {
+					String className=child.getAttributeValue("classname");
+					if (className!=null && className.equals("net.sf.taverna.zaria.ZRavenComponent")) {
+						collected.add(child);
+					}
+				}				
+				discoverZRavenComponentElements(child, collected);				
+			}
+		}
+		
 
 		/**
 		 * Should normally not happen with WF instances
