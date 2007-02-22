@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryXMLHandler.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:09 $
+ * Last modified on   $Date: 2007-02-22 18:36:13 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -193,7 +193,7 @@ public class QueryXMLHandler {
 		filterElement.setAttribute(NAME_ATTRIBUTE, filter.getName());
 		String value = filter.getValue();
 		if (filter.isBoolean()) {
-			if ("excluded".equals(value)) {
+			if ("excluded".equalsIgnoreCase(value)) {
 				filterElement.setAttribute("excluded", "1");
 			} else {
 				filterElement.setAttribute("excluded", "0");
