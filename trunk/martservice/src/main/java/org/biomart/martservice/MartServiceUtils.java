@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:04 $
+ * Last modified on   $Date: 2007-02-22 18:31:56 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -358,7 +360,8 @@ public class MartServiceUtils {
 		for (Iterator iter = query.getDatasets().iterator(); iter.hasNext();) {
 			Dataset dataset = (Dataset) iter.next();
 			List attributeList = dataset.getAttributes();
-			for (Iterator iterator = attributeList.iterator(); iterator.hasNext();) {
+			for (Iterator iterator = attributeList.iterator(); iterator
+					.hasNext();) {
 				Attribute attribute = (Attribute) iterator.next();
 				if (attribute.getAttributes() == null) {
 					result.add(lists[index]);
@@ -374,7 +377,7 @@ public class MartServiceUtils {
 				}
 			}
 		}
-		return (List[] )result.toArray(new List[result.size()]);
+		return (List[]) result.toArray(new List[result.size()]);
 	}
 
 	public static Query splitAttributeLists(Query query) {
@@ -383,7 +386,8 @@ public class MartServiceUtils {
 			Dataset dataset = (Dataset) iter.next();
 			List attributeList = dataset.getAttributes();
 			dataset.removeAllAttributes();
-			for (Iterator iterator = attributeList.iterator(); iterator.hasNext();) {
+			for (Iterator iterator = attributeList.iterator(); iterator
+					.hasNext();) {
 				Attribute attribute = (Attribute) iterator.next();
 				if (attribute.getAttributes() == null) {
 					dataset.addAttribute(attribute);
@@ -482,10 +486,11 @@ public class MartServiceUtils {
 	 */
 	private static InputStream executeMethod(HttpMethod method,
 			String martServiceLocation) throws MartServiceException {
-//		HttpClient client = getHttpClient();
 		HttpClient client = new HttpClient();
-		setProxy(client);
-		
+		if (isProxyHost(martServiceLocation)) {
+			setProxy(client);
+		}
+
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 				new DefaultHttpMethodRetryHandler(3, false));
 		try {
@@ -503,7 +508,7 @@ public class MartServiceUtils {
 	 * 
 	 * @param client
 	 */
-	private static void setProxy(HttpClient client) {
+	public static void setProxy(HttpClient client) {
 		String host = System.getProperty("http.proxyHost");
 		String port = System.getProperty("http.proxyPort");
 		String user = System.getProperty("http.proxyUser");
@@ -524,14 +529,35 @@ public class MartServiceUtils {
 		}
 	}
 
-	private static HttpClient getHttpClient() {
-		if (httpClient == null) {
-			httpClient = new HttpClient();
-			setProxy(httpClient);
+	public static boolean isProxyHost(String location) {
+		String httpNonProxyHosts = System.getProperty("http.nonProxyHosts");
+		if (httpNonProxyHosts != null) {
+			try {
+				String host = new URL(location).getHost();
+				String[] nonProxyHosts = httpNonProxyHosts.split("\\|");
+				for (int i = 0; i < nonProxyHosts.length; i++) {
+					if (nonProxyHosts[i].startsWith("*")) {
+						if (host.endsWith(nonProxyHosts[i].substring(1))) {
+							return false;
+						}
+					} else if (nonProxyHosts[i].endsWith("*")) {
+						if (host.startsWith(nonProxyHosts[i].substring(0, nonProxyHosts[i].length() - 1))) {
+							return false;
+						}						
+					} else {
+						if (host.equals(nonProxyHosts[i])) {
+							return false;
+						}
+					}
+				}
+			} catch (MalformedURLException e) {
+				logger.warn("'" + location + "' is not a valid URL. " +
+						"Cannot compare host with http.nonProxyHosts", e);
+			}
 		}
-		return httpClient;
+		return true;
 	}
-	
+
 	private static MartServiceException constructException(HttpMethod method,
 			String martServiceLocation, Exception cause) {
 		StringBuffer errorMessage = new StringBuffer();
