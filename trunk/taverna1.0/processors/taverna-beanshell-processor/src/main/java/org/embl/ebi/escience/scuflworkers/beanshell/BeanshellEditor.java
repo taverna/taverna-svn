@@ -27,7 +27,7 @@ public class BeanshellEditor implements ProcessorEditor {
 				// If the workbench is present then create and display a new
 				// panel to configure the script engine.
 				UIUtils.createFrame(bp.getModel(),
-						new BeanshellConfigPanel(bp), 100, 100, 400, 500);
+						new BeanshellConfigPanel(bp), 50, 50, 500, 600);
 				/**
 				 * if (Workbench.workbench != null) { GenericUIComponentFrame
 				 * thing = new

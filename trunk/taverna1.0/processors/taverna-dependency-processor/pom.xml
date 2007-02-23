@@ -7,14 +7,17 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.processors</groupId>
-  <artifactId>taverna-beanshell-processor</artifactId>
-  <name>BeanShell Processor</name>
+  <artifactId>taverna-dependency-processor</artifactId>
+  <name>Abstract dependency processor</name>
+  <description>
+      A processor that needs dependency management, such as 
+      beanshell and API consumer. This module provides
+      an abstract Processor class and helpers for GUI and
+      XML serialisation to be able to define dependencies
+      on local JAR files or Raven artefacts.
+  </description>
   <version>1.5.1-SNAPSHOT</version>
   <dependencies>
-    <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
-      <artifactId>taverna-scavenger</artifactId>
-    </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna.baclava</groupId>
       <artifactId>baclava-core</artifactId>
@@ -28,27 +31,8 @@
       <artifactId>scufl-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>uk.org.mygrid.taverna.processors</groupId>
-      <artifactId>taverna-dependency-processor</artifactId>
-    </dependency>
-    <dependency>
       <groupId>uk.org.mygrid.taverna.scufl</groupId>
       <artifactId>scufl-ui-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>jedit-syntax</artifactId>
-      <version>2.2.2</version>
-    </dependency>
-    <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.beanshell</groupId>
-      <artifactId>bsh</artifactId>
-      <version>2.0b4</version>
     </dependency>
   </dependencies>
 </project>

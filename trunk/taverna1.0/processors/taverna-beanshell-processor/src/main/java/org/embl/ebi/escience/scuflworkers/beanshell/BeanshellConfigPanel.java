@@ -64,6 +64,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.dependency.DependenciesPanel;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
@@ -600,9 +601,12 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 		outputEditPanel.add(outputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(outputEditPanel);
 
+		JPanel dependenciesPanel = new DependenciesPanel(bp);
+		
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Ports", portEditPanel);
+		tabbedPane.addTab("Dependencies", dependenciesPanel);
 		add(tabbedPane);
 
 		setVisible(true);

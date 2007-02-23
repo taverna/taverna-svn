@@ -1,7 +1,11 @@
 package org.embl.ebi.escience.scuflworkers.beanshell;
 
-import java.util.Iterator;
+import static org.embl.ebi.escience.scufl.XScufl.XScuflNS;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.InputPort;
@@ -10,61 +14,72 @@ import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
+import org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor;
+import org.embl.ebi.escience.scuflworkers.dependency.DependencyXMLHandler;
+import org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor.ClassLoaderSharing;
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
  * Handles XML store and load for the beanshell processor
  * 
  * @author Tom Oinn
+ * @author Stian Soiland
  */
 public class BeanshellXMLHandler implements XMLHandler {
 
+	private static Logger logger = Logger.getLogger(BeanshellXMLHandler.class);
+	
 	public Element elementForProcessor(Processor p) {
 		BeanshellProcessor bp = (BeanshellProcessor) p;
-		Element spec = new Element("beanshell", XScufl.XScuflNS);
+		Element spec = new Element("beanshell", XScuflNS);
 		// Script element
-		Element script = new Element("scriptvalue", XScufl.XScuflNS);
+		Element script = new Element("scriptvalue", XScuflNS);
 		script.setText(bp.getScript());
 		spec.addContent(script);
 		// Input list
-		Element inputList = new Element("beanshellinputlist", XScufl.XScuflNS);
+		Element inputList = new Element("beanshellinputlist", XScuflNS);
 		InputPort[] inputs = bp.getInputPorts();
 		for (int i = 0; i < inputs.length; i++) {
 			Element inputElement = new Element("beanshellinput",
-					XScufl.XScuflNS);
+					XScuflNS);
 			inputElement.setText(inputs[i].getName());
 			if (inputs[i].getSyntacticType() != null)
 				inputElement.setAttribute("syntactictype", inputs[i]
-						.getSyntacticType(), XScufl.XScuflNS);
+						.getSyntacticType(), XScuflNS);
 			inputList.addContent(inputElement);
 		}
 		spec.addContent(inputList);
 		// Output list
-		Element outputList = new Element("beanshelloutputlist", XScufl.XScuflNS);
+		Element outputList = new Element("beanshelloutputlist", XScuflNS);
 		OutputPort[] outputs = bp.getOutputPorts();
 		for (int i = 0; i < outputs.length; i++) {
 			Element outputElement = new Element("beanshelloutput",
-					XScufl.XScuflNS);
+					XScuflNS);
 			outputElement.setText(outputs[i].getName());
 			if (outputs[i].getSyntacticType() != null)
 				outputElement.setAttribute("syntactictype", outputs[i]
-						.getSyntacticType(), XScufl.XScuflNS);
+						.getSyntacticType(), XScuflNS);
 			outputList.addContent(outputElement);
 		}
 		spec.addContent(outputList);
+		
+		Element dependencies = DependencyXMLHandler.saveDependencies(bp);
+		spec.addContent(dependencies);
+		
 		return spec;
 	}
+
 
 	public Element elementForFactory(ProcessorFactory pf) {
 		BeanshellProcessorFactory bpf = (BeanshellProcessorFactory) pf;
 		if (bpf.getPrototype() != null) {
 			return elementForProcessor(bpf.getPrototype());
 		} else {
-			Element spec = new Element("beanshell", XScufl.XScuflNS);
+			Element spec = new Element("beanshell", XScuflNS);
 			return spec;
 		}
 	}
@@ -79,7 +94,7 @@ public class BeanshellXMLHandler implements XMLHandler {
 			bp = (BeanshellProcessor) loadProcessorFromXML(processorNode, null,
 					"foo");
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			logger.error("Could not load from XML", ex);
 		}
 		if (bp != null) {
 			return new BeanshellProcessorFactory(bp);
@@ -94,22 +109,22 @@ public class BeanshellXMLHandler implements XMLHandler {
 		BeanshellProcessor bp = new BeanshellProcessor(model, name, "",
 				new String[0], new String[0]);
 		Element beanshell = processorNode
-				.getChild("beanshell", XScufl.XScuflNS);
+				.getChild("beanshell", XScuflNS);
 		Element scriptElement = beanshell.getChild("scriptvalue",
-				XScufl.XScuflNS);
+				XScuflNS);
 		if (scriptElement != null) {
 			String script = scriptElement.getTextTrim();
 			bp.setScript(script);
 		}
 		// Handle inputs
 		Element inputList = beanshell.getChild("beanshellinputlist",
-				XScufl.XScuflNS);
+				XScuflNS);
 		if (inputList != null) {
 			for (Iterator i = inputList.getChildren().iterator(); i.hasNext();) {
 				Element inputElement = (Element) i.next();
 				String inputName = inputElement.getTextTrim();
 				String syntacticType = inputElement.getAttributeValue(
-						"syntactictype", XScufl.XScuflNS);
+						"syntactictype", XScuflNS);
 				try {
 					InputPort p = new InputPort(bp, inputName);
 					if (syntacticType != null)
@@ -126,13 +141,13 @@ public class BeanshellXMLHandler implements XMLHandler {
 		}
 		// Handle outputs
 		Element outputList = beanshell.getChild("beanshelloutputlist",
-				XScufl.XScuflNS);
+				XScuflNS);
 		if (outputList != null) {
 			for (Iterator i = outputList.getChildren().iterator(); i.hasNext();) {
 				Element outputElement = (Element) i.next();
 				String outputName = outputElement.getTextTrim();
 				String syntacticType = outputElement.getAttributeValue(
-						"syntactictype", XScufl.XScuflNS);
+						"syntactictype", XScuflNS);
 				try {
 					OutputPort p = new OutputPort(bp, outputName);
 					if (syntacticType != null)
@@ -147,9 +162,12 @@ public class BeanshellXMLHandler implements XMLHandler {
 				}
 			}
 		}
+		DependencyXMLHandler.loadDependencies(bp, beanshell);
+		
 		// return new BeanshellProcessor(model, name, script, new String[0], new
 		// String[0]);
 		return bp;
 	}
+	
 
 }
