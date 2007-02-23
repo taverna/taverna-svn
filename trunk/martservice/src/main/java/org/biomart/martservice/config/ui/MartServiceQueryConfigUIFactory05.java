@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory05.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 11:22:44 $
+ * Last modified on   $Date: 2007-02-23 17:06:39 $
  *               by   $Author: davidwithers $
  * Created on 04-Apr-2006
  *****************************************************************/
@@ -3200,6 +3200,8 @@ class ExpandableBox extends JPanel {
 
 	private boolean expanded = true;
 
+	private boolean animated = false;
+	
 	private Timer timer = new Timer(1, null);
 
 	private Dimension minSize;
@@ -3251,6 +3253,12 @@ class ExpandableBox extends JPanel {
 	
 	public ExpandableBox(Component titleComponent, Color backgroundColor,
 			Color borderColor) {
+		this(titleComponent, backgroundColor, borderColor, false);
+	}
+	
+	public ExpandableBox(Component titleComponent, Color backgroundColor,
+			Color borderColor, boolean animated) {
+		this.animated = animated;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(backgroundColor);
 		setBorder(new CompoundBorder(new LineBorder(borderColor, 1),
@@ -3292,18 +3300,28 @@ class ExpandableBox extends JPanel {
 			if (expanded) {
 				expandButton.setIcon(MartServiceIcons.getIcon("contract"));
 				expandButton.setActionCommand("contract");
-				timer.stop();
-				timer.removeActionListener(closeAction);
-				timer.addActionListener(openAction);
-				timer.start();
+				if (animated) {
+					timer.stop();
+					timer.removeActionListener(closeAction);
+					timer.addActionListener(openAction);
+					timer.start();
+				} else {
+					setPreferredSize(new Dimension(maxSize.width, maxSize.height));
+				}
 			} else {
 				expandButton.setIcon(MartServiceIcons.getIcon("expand"));
 				expandButton.setActionCommand("expand");
-				timer.stop();
-				timer.removeActionListener(openAction);
-				timer.addActionListener(closeAction);
-				timer.start();
+				if (animated) {
+					timer.stop();
+					timer.removeActionListener(openAction);
+					timer.addActionListener(closeAction);
+					timer.start();
+				} else {
+					setPreferredSize(new Dimension(minSize.width, minSize.height));
+				}
 			}
+			revalidate();
+			repaint();
 		}
 		expandButton.setSelected(expanded);
 	}
