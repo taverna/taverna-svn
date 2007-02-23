@@ -224,14 +224,21 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 					Element arrayElement = buildElementFromObject(key, "");
 
 					String itemkey = "item";
+					boolean unbounded=false;
 					if (elementType instanceof ArrayTypeDescriptor) {
+						unbounded=((ArrayTypeDescriptor)elementType).isUnbounded();
 						TypeDescriptor arrayElementType = ((ArrayTypeDescriptor) elementType)
 								.getElementType();
-						if (arrayElementType.getName() != null
-								&& arrayElementType.getName().length() > 0) {
-							itemkey = arrayElementType.getName();
-						} else {
-							itemkey = arrayElementType.getType();
+						if (unbounded) {
+							itemkey=elementType.getName();
+						}
+						else {
+							if (arrayElementType.getName() != null
+									&& arrayElementType.getName().length() > 0) {
+								itemkey = arrayElementType.getName();
+							} else {
+								itemkey = arrayElementType.getType();
+							}
 						}
 
 					}
@@ -242,9 +249,14 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						Object itemObject = itemIterator.next();
 						Element dataElement = buildElementFromObject(itemkey,
 								itemObject);
-						arrayElement.addContent(dataElement);
+						if (unbounded) {
+							outputElement.addContent(dataElement);
+						}
+						else {
+							arrayElement.addContent(dataElement);
+						}
 					}
-					outputElement.addContent(arrayElement);
+					if (!unbounded) outputElement.addContent(arrayElement);
 				} else {
 					Element dataElement = buildElementFromObject(key,
 							dataObject);

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 14:50:17 $
+ * Last modified on   $Date: 2007-02-23 16:50:53 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -150,7 +150,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	 * @param portToSplit
 	 */
 	public void setUpOutputs(OutputPort portToSplit) {
-		TypeDescriptor typeDescriptor = getTypeDescriptor(portToSplit);
+		TypeDescriptor typeDescriptor = getTypeDescriptor(portToSplit);		
 		if (typeDescriptor != null)
 			defineFromTypeDescriptor();
 	}
@@ -189,6 +189,9 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 									.next();
 							if (desc.getName().equals(portToSplit.getName())) {
 								typeDescriptor = desc;
+								if (typeDescriptor instanceof ArrayTypeDescriptor) {
+									typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
+								}
 								break;
 							}
 						}
