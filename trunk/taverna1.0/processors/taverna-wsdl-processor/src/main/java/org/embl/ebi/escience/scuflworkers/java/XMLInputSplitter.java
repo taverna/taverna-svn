@@ -196,6 +196,9 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						TypeDescriptor desc = (TypeDescriptor) iterator.next();
 						if (desc.getName().equals(portToSplit.getName())) {
 							typeDescriptor = desc;
+							if (typeDescriptor instanceof ArrayTypeDescriptor && ((ArrayTypeDescriptor)typeDescriptor).isUnbounded()) {								
+								typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
+							}
 							break;
 						}
 					}
