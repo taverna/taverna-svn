@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-08 16:43:55 $
+ * Last modified on   $Date: 2007-02-23 14:50:18 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -152,7 +152,10 @@ public class TypeDescriptor {
 			if (descriptor instanceof ArrayTypeDescriptor) {
 				if (((ArrayTypeDescriptor) descriptor).getElementType() instanceof BaseTypeDescriptor) {
 					types[i] = String[].class;
-				} else {
+				} else if (((ArrayTypeDescriptor) descriptor).isUnbounded()) {
+					types[i] = org.w3c.dom.Element[].class;
+				}
+				else {
 					types[i] = org.w3c.dom.Element.class;
 				}
 			} else {
