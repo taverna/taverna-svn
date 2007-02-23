@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory05.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:09 $
+ * Last modified on   $Date: 2007-02-23 11:22:44 $
  *               by   $Author: davidwithers $
  * Created on 04-Apr-2006
  *****************************************************************/
@@ -45,6 +45,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -86,6 +87,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -153,13 +155,13 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 	private Map attributeToDisplayName = new HashMap();
 
 	private Map attributePageNameToComponent = new HashMap();
-	
+
 	private Map attributePageNameToButton = new HashMap();
 
 	private boolean settingAttributeState = false;
 
 	private List componentRegister = new ArrayList();
-	
+
 	public MartServiceQueryConfigUIFactory05(MartService martService,
 			QueryConfigController controller, MartDataset martDataset)
 			throws MartServiceException {
@@ -480,10 +482,10 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 					buttonBox.add(button);
 					componentMap.put(attributePages[i].getInternalName(),
 							component);
-					attributePageNameToComponent.put(attributePages[i].getInternalName(),
-							component);
-					attributePageNameToButton.put(attributePages[i].getInternalName(),
-							button);
+					attributePageNameToComponent.put(attributePages[i]
+							.getInternalName(), component);
+					attributePageNameToButton.put(attributePages[i]
+							.getInternalName(), button);
 				}
 			}
 
@@ -1361,7 +1363,7 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 					attributePanel.add(attributePagesComponent);
 
 					factory.registerComponents();
-					
+
 					factory.selectAttributePage(attributePages);
 
 				} catch (MartServiceException e) {
@@ -1395,7 +1397,7 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 			attributeComponents.add(component);
 		} else if (component instanceof ExpandableBox) {
 			Component[] children = ((ExpandableBox) component)
-					.getManagedComponents();
+					.getComponents();
 			for (int i = 0; i < children.length; i++) {
 				attributeComponents.addAll(getAttributeComponents(children[i]));
 			}
@@ -1416,7 +1418,7 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 			}
 		} else if (component instanceof ExpandableBox) {
 			Component[] children = ((ExpandableBox) component)
-					.getManagedComponents();
+					.getComponents();
 			for (int i = 0; i < children.length; i++) {
 				attributeComponents
 						.addAll(getSelectedAttributeComponents(children[i]));
@@ -1438,10 +1440,13 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 
 		for (int i = 0; i < attributePages.length; i++) {
 			if (QueryConfigUtils.display(attributePages[i])) {
-				Component component = (Component) attributePageNameToComponent.get(attributePages[i].getInternalName());
-				JRadioButton button = (JRadioButton) attributePageNameToButton.get(attributePages[i].getInternalName());
+				Component component = (Component) attributePageNameToComponent
+						.get(attributePages[i].getInternalName());
+				JRadioButton button = (JRadioButton) attributePageNameToButton
+						.get(attributePages[i].getInternalName());
 				if (component != null && button != null) {
-					int attributeCount = getSelectedAttributeComponents(component).size();
+					int attributeCount = getSelectedAttributeComponents(
+							component).size();
 					if (attributeCount > selectedAttributes) {
 						selectedAttributes = attributeCount;
 						selectedButton = button;
@@ -3189,14 +3194,61 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 }
 
 class ExpandableBox extends JPanel {
-	private Component[] components;
-
 	private JButton expandButton;
 
 	private JPanel labelBox;
 
 	private boolean expanded = true;
 
+	private Timer timer = new Timer(1, null);
+
+	private Dimension minSize;
+
+	private Dimension maxSize;
+	
+	private int height;
+	
+	private final int increment = 10;
+	
+	private ActionListener openAction = new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			if (height <= maxSize.height) {
+				setPreferredSize(new Dimension(maxSize.width,
+						height));
+				revalidate();
+				repaint();
+				height += increment;
+			} else {
+				timer.removeActionListener(this);
+				timer.stop();
+				setPreferredSize(new Dimension(maxSize.width,
+						maxSize.height));
+				revalidate();
+				repaint();
+			}
+		}
+	};
+	
+	private ActionListener closeAction = new ActionListener() {
+		public void actionPerformed(ActionEvent evt) {
+			if (height >= minSize.height) {
+				setPreferredSize(new Dimension(minSize.width,
+						height));
+				revalidate();
+				repaint();
+				height -= increment;
+			} else {
+				timer.removeActionListener(this);
+				timer.stop();
+				height = minSize.height;
+				setPreferredSize(new Dimension(minSize.width,
+						height));
+				revalidate();
+				repaint();
+			}
+		}
+	};
+	
 	public ExpandableBox(Component titleComponent, Color backgroundColor,
 			Color borderColor) {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -3228,34 +3280,32 @@ class ExpandableBox extends JPanel {
 		labelBox.add(titleComponent);
 		labelBox.add(Box.createHorizontalGlue());
 		add(labelBox);
+		minSize = getPreferredSize();
 	}
 
 	public void setExpanded(boolean expanded) {
+		if (maxSize == null || maxSize.height <= minSize.height) {
+			maxSize = getLayout().preferredLayoutSize(this);
+		}
 		if (this.expanded != expanded) {
 			this.expanded = expanded;
 			if (expanded) {
 				expandButton.setIcon(MartServiceIcons.getIcon("contract"));
 				expandButton.setActionCommand("contract");
-				for (int i = 0; i < components.length; i++) {
-					add((Component) components[i]);
-				}
-				revalidate();
-				repaint();
+				timer.stop();
+				timer.removeActionListener(closeAction);
+				timer.addActionListener(openAction);
+				timer.start();
 			} else {
 				expandButton.setIcon(MartServiceIcons.getIcon("expand"));
 				expandButton.setActionCommand("expand");
-				components = getComponents();
-				removeAll();
-				add(labelBox);
-				revalidate();
-				repaint();
+				timer.stop();
+				timer.removeActionListener(openAction);
+				timer.addActionListener(closeAction);
+				timer.start();
 			}
 		}
 		expandButton.setSelected(expanded);
-	}
-
-	public Component[] getManagedComponents() {
-		return components;
 	}
 
 }
