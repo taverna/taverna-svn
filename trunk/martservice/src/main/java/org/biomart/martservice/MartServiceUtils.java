@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-22 18:31:56 $
+ * Last modified on   $Date: 2007-02-23 10:53:07 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -326,7 +326,10 @@ public class MartServiceUtils {
 		// if there are no attributes and we're not doing a count there's no
 		// point in doing the query
 		if (attributes > 0 || count) {
-			String queryXml = queryToXML(splitAttributeLists(query));
+			// The 'new' 0.5 server now resolves the attribute lists so there's
+			// no need to do the split here any more
+			// String queryXml = queryToXML(splitAttributeLists(query));
+			String queryXml = queryToXML(query);
 			logger.info(queryXml);
 			NameValuePair[] data = { new NameValuePair(QUERY_ATTRIBUTE,
 					queryXml) };
@@ -541,9 +544,10 @@ public class MartServiceUtils {
 							return false;
 						}
 					} else if (nonProxyHosts[i].endsWith("*")) {
-						if (host.startsWith(nonProxyHosts[i].substring(0, nonProxyHosts[i].length() - 1))) {
+						if (host.startsWith(nonProxyHosts[i].substring(0,
+								nonProxyHosts[i].length() - 1))) {
 							return false;
-						}						
+						}
 					} else {
 						if (host.equals(nonProxyHosts[i])) {
 							return false;
@@ -551,8 +555,8 @@ public class MartServiceUtils {
 					}
 				}
 			} catch (MalformedURLException e) {
-				logger.warn("'" + location + "' is not a valid URL. " +
-						"Cannot compare host with http.nonProxyHosts", e);
+				logger.warn("'" + location + "' is not a valid URL. "
+						+ "Cannot compare host with http.nonProxyHosts", e);
 			}
 		}
 		return true;
