@@ -563,7 +563,7 @@ public class WSDLParser {
 					result = constructComplexType((DefinedType) type);
 				}
 			} else {
-				result = constructArrayType(type);
+				result = constructArrayType(type);				
 			}
 		} else {
 			if (type.getQName().getLocalPart().equals("Map")) {
@@ -661,6 +661,12 @@ public class WSDLParser {
 		result.setElementType(constructType(type.getRefType()));
 		result.setType(type.getQName().getLocalPart());
 		result.setQname(type.getQName());
+		if (type instanceof CollectionType) {
+			result.setWrapped(((CollectionType)type).isWrapped());
+		}
+		else {
+			result.setWrapped(true);
+		}
 
 		return result;
 	}

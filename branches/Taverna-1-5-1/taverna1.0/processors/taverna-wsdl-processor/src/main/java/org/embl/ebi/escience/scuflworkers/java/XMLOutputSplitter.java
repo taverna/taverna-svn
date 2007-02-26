@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.8.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-22 12:46:46 $
+ * Last modified on   $Date: 2007-02-26 15:55:32 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -150,7 +150,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	 * @param portToSplit
 	 */
 	public void setUpOutputs(OutputPort portToSplit) {
-		TypeDescriptor typeDescriptor = getTypeDescriptor(portToSplit);
+		TypeDescriptor typeDescriptor = getTypeDescriptor(portToSplit);		
 		if (typeDescriptor != null)
 			defineFromTypeDescriptor();
 	}
@@ -189,6 +189,9 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 									.next();
 							if (desc.getName().equals(portToSplit.getName())) {
 								typeDescriptor = desc;
+								if (typeDescriptor instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)typeDescriptor).isWrapped()) {									
+									typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
+								}
 								break;
 							}
 						}
@@ -321,28 +324,51 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	}
 
 	private void executeForComplexType(Map<String,DataThing> result, List outputNameList,
-			List children) {
+			List children) {		
+		
 		XMLOutputter outputter = new XMLOutputter();
 		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
 			Element child = (Element) iterator.next();
 			if (outputNameList.contains(child.getName())) {
 				int i = outputNameList.indexOf(child.getName());
-				if (outputTypes[i].equals("'text/xml'")
-						|| outputTypes[i].equals("l('text/xml')")) {
-					String xmlText = outputter.outputString(child);
-					result.put(child.getName(), new DataThing(xmlText));
-				} else if (outputTypes[i].equals("'application/octet-stream'")) { // base64Binary
-					byte[] data = Base64.decode(child.getText());
-					result.put(child.getName(), DataThingFactory.bake(data));
-				} else if (outputTypes[i].equals("l('text/plain')")) { // an inner element containing a list
-					result.put(child.getName(), new DataThing(extractBaseTypeArrayFromChildren(child.getChildren())));
+				TypeDescriptor descriptorForChild = ((ComplexTypeDescriptor)typeDescriptor).elementForName(outputNames[i]);
+				if (outputTypes[i].startsWith("l(") && descriptorForChild instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)descriptorForChild).isWrapped()) {
+					boolean isXMLContent=outputTypes[i].contains("text/xml");
+					result.put(child.getName(),new DataThing(extractDataListFromChildList(children,isXMLContent)));
+					break;
 				}
-				else {
-					result.put(child.getName(), new DataThing(child.getText()));
+				else {					
+					if (outputTypes[i].equals("'text/xml'")
+							|| outputTypes[i].equals("l('text/xml')")) {
+						String xmlText = outputter.outputString(child);
+						result.put(child.getName(), new DataThing(xmlText));
+					} else if (outputTypes[i].equals("'application/octet-stream'")) { // base64Binary
+						byte[] data = Base64.decode(child.getText());
+						result.put(child.getName(), DataThingFactory.bake(data));
+					} else if (outputTypes[i].equals("l('text/plain')")) { // an inner element containing a list					
+						result.put(child.getName(), new DataThing(extractBaseTypeArrayFromChildren(child.getChildren())));
+					}
+					else {
+						result.put(child.getName(), new DataThing(child.getText()));
+					}
 				}
 			}
-
 		}
+	}
+	
+	private List extractDataListFromChildList(List children,boolean isXMLContent) {
+		List<String> result = new ArrayList<String>();
+		XMLOutputter outputter = new XMLOutputter();
+		for (Object item : children) {
+			Element child=(Element)item;
+			if (!isXMLContent) {
+				result.add(child.getTextTrim());
+			}
+			else {
+				result.add(outputter.outputString(child));
+			}
+		}		
+		return result;
 	}
 	
 	private List<String> extractBaseTypeArrayFromChildren(List<Element> children) {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponsePrimitiveParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.3.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-02-26 15:55:33 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -73,7 +73,7 @@ public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 
 		if (response.size() > 1)
 			logger
-					.error("More than one element to the response Vector when parsing for primitive types:"
+					.warn("More than one element to the response Vector when parsing for primitive types:"
 							+ response);
 		RPCElement responseElement = (RPCElement) response.get(0);
 		List params = responseElement.getParams();

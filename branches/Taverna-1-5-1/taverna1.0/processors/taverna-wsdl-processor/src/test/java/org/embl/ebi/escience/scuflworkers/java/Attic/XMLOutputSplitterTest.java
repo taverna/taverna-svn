@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.5.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-22 12:46:46 $
+ * Last modified on   $Date: 2007-02-26 15:55:32 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -111,20 +111,20 @@ public class XMLOutputSplitterTest extends TestCase {
 				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
-	public void testProvideXML() throws Exception {
-		XMLOutputSplitter splitter = new XMLOutputSplitter();
-		ScuflModel model = new ScuflModel();
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-				model,
-				"testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
-				"run_eInfo");
-		splitter.setUpOutputs(processor.getOutputPorts()[1]);
-		Element element = splitter.provideXML();
-		String xml = new XMLOutputter().outputString(element);
-
-		assertEquals(eInfoProcessorXML(), xml);
-	}
+//	public void testProvideXML() throws Exception {
+//		XMLOutputSplitter splitter = new XMLOutputSplitter();
+//		ScuflModel model = new ScuflModel();
+//		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+//				model,
+//				"testProc",
+//				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+//				"run_eInfo");
+//		splitter.setUpOutputs(processor.getOutputPorts()[1]);
+//		Element element = splitter.provideXML();
+//		String xml = new XMLOutputter().outputString(element);
+//
+//		assertEquals(eInfoProcessorXML(), xml);
+//	}
 
 	public void testConsumeXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -243,7 +243,7 @@ public class XMLOutputSplitterTest extends TestCase {
 	}
 
 	public void testArrayWithinComplex() throws Exception {
-		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSearchResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"true\" typename=\"string\" name=\"AList\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Base\"/></s:elements></s:complextype></s:extensions>";
+		String splitterXML = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSearchResult\" name=\"parameters\"><s:elements><s:arraytype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"AList\"><s:elementtype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"\" /></s:elementtype></s:arraytype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"Base\"/></s:elements></s:complextype></s:extensions>";
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
 		splitter.consumeXML(new SAXBuilder().build(
 				new StringReader(splitterXML)).getRootElement());

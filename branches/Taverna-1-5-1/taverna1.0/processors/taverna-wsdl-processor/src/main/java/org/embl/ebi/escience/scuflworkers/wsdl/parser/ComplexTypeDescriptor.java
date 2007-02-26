@@ -8,13 +8,24 @@ import java.util.List;
  * 
  */
 public class ComplexTypeDescriptor extends TypeDescriptor {
-	private List elements = new ArrayList();
+	private List<TypeDescriptor> elements = new ArrayList<TypeDescriptor>();
 
-	public List getElements() {
+	public List<TypeDescriptor> getElements() {
 		return elements;
 	}
 
 	public void setElements(List elements) {
 		this.elements = elements;
+	}
+	
+	public TypeDescriptor elementForName(String name) {
+		TypeDescriptor result=null;
+		for (TypeDescriptor desc : getElements()) {
+			if (desc.getName().equals(name)) {
+				result=desc;
+				break;
+			}
+		}
+		return result;
 	}
 }

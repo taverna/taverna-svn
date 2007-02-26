@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLSplitterSerialisationHelper.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.2.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
+ * Last modified on   $Date: 2007-02-26 15:55:32 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -156,6 +156,9 @@ public class XMLSplitterSerialisationHelper {
 				.valueOf(descriptor.isOptional()));
 		element.setAttribute("unbounded", String.valueOf(descriptor
 				.isUnbounded()));
+		if (descriptor instanceof ArrayTypeDescriptor) {
+			element.setAttribute("wrapped",String.valueOf(((ArrayTypeDescriptor)descriptor).isWrapped()));
+		}
 		element.setAttribute("typename", descriptor.getType());
 		element.setAttribute("name", descriptor.getName() == null ? ""
 				: descriptor.getName());
@@ -202,6 +205,14 @@ public class XMLSplitterSerialisationHelper {
 						.setElementType(buildTypeDescriptorFromElement(
 								(Element) elementType.getChildren().get(0),
 								existingsTypes));
+				if (element.getAttribute("wrapped")!=null) {
+					((ArrayTypeDescriptor)result).setWrapped(element.getAttributeValue("wrapped").equalsIgnoreCase("true"));
+				}
+				else {
+					//prior to the addition of the wrapped attribute, in the majority of cases an array
+					//would not be wrapped if it was flagged as unbounded.
+					((ArrayTypeDescriptor)result).setWrapped(!result.isUnbounded());
+				}
 
 			} else if (element.getName().equalsIgnoreCase("basetype")) {
 				result = new BaseTypeDescriptor();
@@ -231,6 +242,7 @@ public class XMLSplitterSerialisationHelper {
 			array.setQname(descriptor.getQname());
 			array.setElementType(((ArrayTypeDescriptor) descriptor)
 					.getElementType());
+			array.setWrapped(((ArrayTypeDescriptor) descriptor).isWrapped());
 			result = array;
 		} else if (descriptor instanceof ComplexTypeDescriptor) {
 			ComplexTypeDescriptor complex = new ComplexTypeDescriptor();
@@ -253,7 +265,7 @@ public class XMLSplitterSerialisationHelper {
 
 		String unbounded = element.getAttributeValue("unbounded");
 		if (unbounded != null) {
-			result.setUnbounded(unbounded.equalsIgnoreCase("unbounded"));
+			result.setUnbounded(unbounded.equalsIgnoreCase("true"));
 		} else {
 			result.setUnbounded(descriptor.isUnbounded());
 		}

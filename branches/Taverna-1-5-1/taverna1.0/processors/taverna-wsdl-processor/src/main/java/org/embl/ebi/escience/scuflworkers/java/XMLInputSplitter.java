@@ -196,6 +196,9 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						TypeDescriptor desc = (TypeDescriptor) iterator.next();
 						if (desc.getName().equals(portToSplit.getName())) {
 							typeDescriptor = desc;
+							if (typeDescriptor instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)typeDescriptor).isWrapped()) {								
+								typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
+							}
 							break;
 						}
 					}
@@ -224,14 +227,21 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 					Element arrayElement = buildElementFromObject(key, "");
 
 					String itemkey = "item";
+					boolean wrapped=false;
 					if (elementType instanceof ArrayTypeDescriptor) {
+						wrapped=((ArrayTypeDescriptor)elementType).isWrapped();
 						TypeDescriptor arrayElementType = ((ArrayTypeDescriptor) elementType)
 								.getElementType();
-						if (arrayElementType.getName() != null
-								&& arrayElementType.getName().length() > 0) {
-							itemkey = arrayElementType.getName();
-						} else {
-							itemkey = arrayElementType.getType();
+						if (!wrapped) {
+							itemkey=elementType.getName();
+						}
+						else {
+							if (arrayElementType.getName() != null
+									&& arrayElementType.getName().length() > 0) {
+								itemkey = arrayElementType.getName();
+							} else {
+								itemkey = arrayElementType.getType();
+							}
 						}
 
 					}
@@ -242,9 +252,14 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						Object itemObject = itemIterator.next();
 						Element dataElement = buildElementFromObject(itemkey,
 								itemObject);
-						arrayElement.addContent(dataElement);
+						if (!wrapped) {
+							outputElement.addContent(dataElement);
+						}
+						else {
+							arrayElement.addContent(dataElement);
+						}
 					}
-					outputElement.addContent(arrayElement);
+					if (wrapped) outputElement.addContent(arrayElement);
 				} else {
 					Element dataElement = buildElementFromObject(key,
 							dataObject);
