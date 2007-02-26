@@ -6,6 +6,15 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
  */
 public class ArrayTypeDescriptor extends TypeDescriptor {
 	private TypeDescriptor elementType;
+	private boolean wrapped;
+	
+	public boolean isWrapped() {
+		return wrapped;
+	}
+
+	public void setWrapped(boolean wrapped) {
+		this.wrapped = wrapped;
+	}
 
 	public TypeDescriptor getElementType() {
 		return elementType;

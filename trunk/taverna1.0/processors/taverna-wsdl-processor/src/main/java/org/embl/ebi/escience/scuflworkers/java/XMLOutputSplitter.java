@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 17:45:39 $
+ * Last modified on   $Date: 2007-02-26 12:21:45 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -189,7 +189,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 									.next();
 							if (desc.getName().equals(portToSplit.getName())) {
 								typeDescriptor = desc;
-								if (typeDescriptor instanceof ArrayTypeDescriptor && ((ArrayTypeDescriptor)typeDescriptor).isUnbounded()) {									
+								if (typeDescriptor instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)typeDescriptor).isWrapped()) {									
 									typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
 								}
 								break;
@@ -332,7 +332,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			if (outputNameList.contains(child.getName())) {
 				int i = outputNameList.indexOf(child.getName());
 				TypeDescriptor descriptorForChild = ((ComplexTypeDescriptor)typeDescriptor).elementForName(outputNames[i]);
-				if (outputTypes[i].startsWith("l(") && descriptorForChild instanceof ArrayTypeDescriptor && ((ArrayTypeDescriptor)descriptorForChild).isUnbounded()) {
+				if (outputTypes[i].startsWith("l(") && descriptorForChild instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)descriptorForChild).isWrapped()) {
 					boolean isXMLContent=outputTypes[i].contains("text/xml");
 					result.put(child.getName(),new DataThing(extractDataListFromChildList(children,isXMLContent)));
 					break;
