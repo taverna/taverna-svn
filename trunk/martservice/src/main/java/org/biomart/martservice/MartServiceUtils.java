@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 10:53:07 $
+ * Last modified on   $Date: 2007-02-26 15:05:08 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -321,7 +321,8 @@ public class MartServiceUtils {
 	public static List[] getResults(String martServiceLocation,
 			String requestId, Query query) throws MartServiceException {
 		List[] results = new List[0];
-		int attributes = query.getAttributes().size();
+		// int attributes = query.getAttributes().size();
+		int attributes = getAttributeCount(query.getAttributes());
 		boolean count = query.getCount() == 1;
 		// if there are no attributes and we're not doing a count there's no
 		// point in doing the query
@@ -357,27 +358,40 @@ public class MartServiceUtils {
 		return results;
 	}
 
+	private static int getAttributeCount(List attributeList) {
+		int result = 0;
+		for (Iterator iterator = attributeList.iterator(); iterator
+				.hasNext();) {
+			Attribute attribute = (Attribute) iterator.next();
+			if (attribute.getAttributes() == null) {
+				result++;
+			} else {
+				String[] attributes = attribute.getAttributes().split(",");
+				for (int i = 0; i < attributes.length; i++) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+
 	private static List[] reassembleAttributeLists(List[] lists, Query query) {
 		int index = 0;
 		List result = new ArrayList();
-		for (Iterator iter = query.getDatasets().iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
-			List attributeList = dataset.getAttributes();
-			for (Iterator iterator = attributeList.iterator(); iterator
-					.hasNext();) {
-				Attribute attribute = (Attribute) iterator.next();
-				if (attribute.getAttributes() == null) {
-					result.add(lists[index]);
+		for (Iterator iterator = query.getAttributes().iterator(); iterator
+				.hasNext();) {
+			Attribute attribute = (Attribute) iterator.next();
+			if (attribute.getAttributes() == null) {
+				result.add(lists[index]);
+				index++;
+			} else {
+				String[] attributes = attribute.getAttributes().split(",");
+				List list = new ArrayList();
+				for (int i = 0; i < attributes.length; i++) {
+					list.add(lists[index]);
 					index++;
-				} else {
-					String[] attributes = attribute.getAttributes().split(",");
-					List list = new ArrayList();
-					for (int i = 0; i < attributes.length; i++) {
-						list.add(lists[index]);
-						index++;
-					}
-					result.add(list);
 				}
+				result.add(list);
 			}
 		}
 		return (List[]) result.toArray(new List[result.size()]);
