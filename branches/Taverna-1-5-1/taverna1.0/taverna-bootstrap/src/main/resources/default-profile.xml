@@ -1,7 +1,7 @@
-<profile version="1.5.1.3" name="Taverna Workbench">	
+<profile version="1.5.1.4" name="Taverna Workbench">	
 
 	<!--  processors -->			
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1"/>
+	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-java-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-stringconstant-processor" version="1.5.1"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-seqhound-processor" version="1.5.1"/> 

@@ -9,6 +9,7 @@
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-biomart-processor</artifactId>
   <name>BioMart Processor</name>  
+  <version>1.5.1.1</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
@@ -38,7 +39,7 @@
     <dependency>
       <groupId>org.biomart</groupId>
       <artifactId>martservice</artifactId>
-      <version>0.5.1</version>
+      <version>0.5.2</version>
     </dependency>
     <dependency>
       <groupId>jdom</groupId>
