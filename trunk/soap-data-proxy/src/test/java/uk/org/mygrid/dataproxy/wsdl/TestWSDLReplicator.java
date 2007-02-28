@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLReplicator.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-28 15:08:45 $
+ * Last modified on   $Date: 2007-02-28 16:54:10 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
@@ -72,7 +72,7 @@ public class TestWSDLReplicator {
 	
 	@After
 	public void deleteTemp() {
-		//deleteDir(tmpDir);		
+		deleteDir(tmpDir);		
 	}
 	
 	private void deleteDir(File dir) {
@@ -117,9 +117,9 @@ public class TestWSDLReplicator {
 	@Test 
 	public void followsExternalSchemas() throws Exception {
 		//TODO: use a service on phoebus, under myGrid control
-		URL url = new URL("http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/eutils_lite/eutils_lite.wsdl");
+		URL url = new URL("http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/eutils/eutils_lite.wsdl");
 		String wsdlID="11111";
-		replicator.replicateRemoteWSDL(wsdlID,"XEMBL.wsdl",url, tmpDir);
+		replicator.replicateRemoteWSDL(wsdlID,"eutils_lite.wsdl",url, tmpDir);
 		
 		File wsdlDir = new File(tmpDir,wsdlID);
 		File egquery = new File(wsdlDir,"egquery.xsd");
@@ -136,4 +136,42 @@ public class TestWSDLReplicator {
 		assertTrue("Local copy of schema elink.xsd does not exist",elink.exists());
 		assertTrue("Local copy of schema espell.xsd does not exist",espell.exists());		
 	}	
+	
+	@Test
+	public void followsIncludesWithinExternalSchemas() throws Exception {
+		URL url = new URL("http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/eutils/eutils.wsdl");
+		String wsdlID="11111";
+		replicator.replicateRemoteWSDL(wsdlID,"eutils.wsdl",url, tmpDir);
+		
+		File wsdlDir = new File(tmpDir,wsdlID);
+		File efetch = new File(wsdlDir,"efetch.xsd");
+		File efetch_taxon = new File(wsdlDir,"efetch_taxon.xsd");
+		File efetch_nlmc = new File(wsdlDir,"efetch_nlmc.xsd");
+		File efetch_pubmed = new File(wsdlDir,"efetch_pubmed.xsd");
+		File efetch_pmc = new File(wsdlDir,"efetch_pmc.xsd");
+		File efetch_bio = new File(wsdlDir,"efetch_bio.xsd");
+		
+		assertTrue("Local copy of schema efetch.xsd does not exist",efetch.exists());
+		assertTrue("Local copy of schema efetch_taxon.xsd does not exist",efetch_taxon.exists());
+		assertTrue("Local copy of schema efetch_nlmc.xsd does not exist",efetch_nlmc.exists());
+		assertTrue("Local copy of schema efetch_pubmed.xsd does not exist",efetch_pubmed.exists());
+		assertTrue("Local copy of schema efetch_pmc.xsd does not exist",efetch_pmc.exists());
+		assertTrue("Local copy of schema efetch_bio.xsd does not exist",efetch_bio.exists());		
+	}
+	
+	@Test
+	public void followsImportedSchemaToGreaterDepth() throws Exception {
+		URL url = new URL("http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/dummy_includes/dummy.wsdl");
+		String wsdlID="11111";
+		replicator.replicateRemoteWSDL(wsdlID,"dummy.wsdl",url, tmpDir);
+		
+		File wsdlDir = new File(tmpDir,wsdlID);
+		File schema1 = new File(wsdlDir,"schema1.xsd");
+		File schema2 = new File(wsdlDir,"schema2.xsd");
+		File schema3 = new File(wsdlDir,"schema3.xsd");
+		
+		assertTrue("Local copy of schema schema1.xsd does not exist",schema1.exists());
+		assertTrue("Local copy of schema schema2.xsd does not exist",schema2.exists());
+		assertTrue("Local copy of schema schema3.xsd does not exist",schema3.exists());
+	}
 }

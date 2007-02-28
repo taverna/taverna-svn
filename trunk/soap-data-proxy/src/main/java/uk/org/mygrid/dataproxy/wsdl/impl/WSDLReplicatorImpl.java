@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLReplicatorImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-28 15:08:45 $
+ * Last modified on   $Date: 2007-02-28 16:54:10 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
@@ -94,7 +94,7 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 		replicatedFile.createNewFile();		
 		
 		Document doc = changeEndpoint(wsdlID,new SAXReader().read(wsdlUrl.openStream()));
-		fetchSchemas(doc,wsdlDir,wsdlUrl);
+		fetchImportedSchemasFromWSDLDoc(doc,wsdlDir,wsdlUrl);
 		
 		
 		XMLWriter writer = new XMLWriter(new FileOutputStream(replicatedFile));
@@ -102,12 +102,38 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 		writer.close();		
 	}
 	
-	private void fetchSchemas(Document doc, File wsdlDir, URL wsdlURL) throws JaxenException {
+	private void fetchImportedSchemasFromWSDLDoc(Document doc, File wsdlDir, URL wsdlURL) throws JaxenException {
 		Dom4jXPath path = new Dom4jXPath("//wsdl:types/s:schema/s:import");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
 		
 		List nodes=path.selectNodes(doc);
+		fetchFromSchemaNodeList(wsdlDir, wsdlURL, nodes);
+		
+		path = new Dom4jXPath("//wsdl:types/s:schema/s:include");		
+		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
+		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
+		
+		nodes=path.selectNodes(doc);
+		fetchFromSchemaNodeList(wsdlDir, wsdlURL, nodes);
+	}
+	
+	private void fetchImportedSchemasFromSchemaDoc(Document doc, File wsdlDir, URL wsdlURL) throws JaxenException {
+		Dom4jXPath path = new Dom4jXPath("//s:schema/s:import");				
+		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
+		
+		List nodes=path.selectNodes(doc);
+		fetchFromSchemaNodeList(wsdlDir, wsdlURL, nodes);
+		
+		path = new Dom4jXPath("//s:schema/s:include");				
+		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
+		
+		nodes=path.selectNodes(doc);
+		fetchFromSchemaNodeList(wsdlDir, wsdlURL, nodes);
+	}
+
+
+	private void fetchFromSchemaNodeList(File wsdlDir, URL wsdlURL, List nodes) throws JaxenException {
 		for (Object node : nodes) {
 			Element el = (Element)node;
 			String schema = el.attributeValue("schemaLocation");
@@ -128,9 +154,9 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 				writer.close();
 				reader.close();
 				
-				//recurse to fetch any imbedded imports
+				//recurse to fetch any imbedded imports/includes
 				Document schemaDoc = new SAXReader().read(localCopy);
-				fetchSchemas(schemaDoc, wsdlDir, localCopy.toURL());
+				fetchImportedSchemasFromSchemaDoc(schemaDoc, wsdlDir, wsdlURL);
 				
 			} catch (MalformedURLException e) {
 				logger.error("Error with URL for schema",e);
