@@ -26,8 +26,15 @@
 			<elements>
 				<element>
 					<name>address</name>
-					<namespaceURI>http://testing.org</namespaceURI>
-					<replacement>address</replacement>
+					<namespaceURI>http://testing.org</namespaceURI>					
+				</element>
+				<element>
+					<name>data</name>
+					<namespaceURI>http://testing.org</namespaceURI>					
+				</element>
+				<element>
+					<name>data</name>
+					<namespaceURI>http://testing.org</namespaceURI>					
 				</element>
 			</elements>			
 			

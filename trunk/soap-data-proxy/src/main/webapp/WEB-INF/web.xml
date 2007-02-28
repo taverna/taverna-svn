@@ -21,8 +21,7 @@
 		<servlet-name>Proxy</servlet-name>
 		<url-pattern>/proxy</url-pattern>
 	</servlet-mapping>
-	
-	
+		
 	<mime-mapping>
 		<extension>xsd</extension>
 		<mime-type>text/xml</mime-type>
@@ -32,7 +31,5 @@
 		<extension>wsdl</extension>
 		<mime-type>text/xml</mime-type>
 	</mime-mapping>
-	
-	
-	 
+		 
 </web-app>
