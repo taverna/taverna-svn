@@ -6,10 +6,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.log4j.Logger;
@@ -71,7 +73,20 @@ public abstract class DependencyProcessor extends Processor {
 	 * Local dependencies, ie. filenames of JARs. The files should be present in
 	 * {@link #libDir}, and the paths should be relative.
 	 */
-	public final Set<String> localDependencies = new HashSet<String>();
+	public final LinkedHashSet<String> localDependencies = new LinkedHashSet<String>();
+
+	/**
+	 * Artifact dependencies. These artifacts should be available from
+	 * the centrally known repositories or from one of the listed repositories in
+	 * repositories.
+	 */
+	public final LinkedHashSet<BasicArtifact> artifactDependencies = new LinkedHashSet<BasicArtifact>();
+
+	/**
+	 * Repositories to use when searching for artifacts. In addition, the system
+	 * repositories will be searched.
+	 */
+	public final LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
 
 	/**
 	 * For persisting class loaders across iterations. Note that since each
