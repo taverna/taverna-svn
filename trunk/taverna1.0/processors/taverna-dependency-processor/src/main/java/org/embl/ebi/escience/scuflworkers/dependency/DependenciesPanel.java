@@ -19,10 +19,11 @@ import java.util.Set;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.sf.taverna.raven.repository.BasicArtifact;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor.ClassLoaderSharing;
@@ -50,7 +51,10 @@ public class DependenciesPanel extends JPanel {
 		c.weighty = 0.3;
 		add(new ClassloaderOptions(), c);
 		add(new JarFiles(), c);
+		add(new Artifacts(), c);
 	}
+	
+
 
 	public class ClassloaderOptions extends JPanel implements ActionListener {
 		private static final String FRESH = "Always fresh";
@@ -172,13 +176,19 @@ public class DependenciesPanel extends JPanel {
 
 			List<String> allJars = new ArrayList<String>();
 			allJars.addAll(files);
-			allJars.addAll(missing);
+			allJars.addAll(missing);		
 			Collections.sort(allJars);
 
 			GridBagConstraints c = new GridBagConstraints();
 			c.anchor = GridBagConstraints.FIRST_LINE_START;
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
+			if (allJars.isEmpty()) {
+				panel.add(new JLabel("<html><small>To depend on a JAR file, "
+					+ "copy it to the folder nam above</small></html>"), c);
+				return panel;
+			}
+
 			c.gridy = -1;
 			for (String jarFile : allJars) {
 				c.gridy++;
@@ -208,6 +218,24 @@ public class DependenciesPanel extends JPanel {
 		}
 	}
 
+	public class Artifacts extends JPanel {
+		public Artifacts() {
+			super(new GridBagLayout());
+			if (processor.artifactDependencies.isEmpty()) {
+				return; // Don't show anything
+			}
+			GridBagConstraints c = new GridBagConstraints();
+			c.anchor = GridBagConstraints.FIRST_LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = GridBagConstraints.RELATIVE;
+			add(new JLabel("<html><b>Artifacts:</b></html>"), c);
+			for (BasicArtifact artifact : processor.artifactDependencies) {
+				add(new JLabel(artifact.toString()), c);
+			}
+		}
+	}
+	
 	public class FileExtFilter implements FilenameFilter {
 
 		public FileExtFilter(String ext) {
