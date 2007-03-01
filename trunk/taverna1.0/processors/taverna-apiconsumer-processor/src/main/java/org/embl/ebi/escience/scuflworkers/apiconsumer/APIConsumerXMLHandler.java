@@ -26,8 +26,7 @@ public class APIConsumerXMLHandler implements XMLHandler {
 	public Element elementForProcessor(Processor p) {
 		APIConsumerProcessor ap = (APIConsumerProcessor) p;
 		Element apiconsumer = ap.definition.asXML();
-		Element dependencies = DependencyXMLHandler.saveDependencies(ap);
-		apiconsumer.addContent(dependencies);
+		apiconsumer.addContent(DependencyXMLHandler.saveDependencies(ap));
 		return apiconsumer;
 	}
 

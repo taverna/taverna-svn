@@ -3,7 +3,6 @@ package org.embl.ebi.escience.scuflworkers.beanshell;
 import static org.embl.ebi.escience.scufl.XScufl.XScuflNS;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.DuplicatePortNameException;
@@ -17,10 +16,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.XMLHandler;
-import org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor;
 import org.embl.ebi.escience.scuflworkers.dependency.DependencyXMLHandler;
-import org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor.ClassLoaderSharing;
-import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -66,10 +62,7 @@ public class BeanshellXMLHandler implements XMLHandler {
 			outputList.addContent(outputElement);
 		}
 		spec.addContent(outputList);
-		
-		Element dependencies = DependencyXMLHandler.saveDependencies(bp);
-		spec.addContent(dependencies);
-		
+		spec.addContent(DependencyXMLHandler.saveDependencies(bp));
 		return spec;
 	}
 
