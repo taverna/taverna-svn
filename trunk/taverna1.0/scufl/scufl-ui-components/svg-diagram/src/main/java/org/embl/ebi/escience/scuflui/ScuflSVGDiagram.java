@@ -257,11 +257,17 @@ public class ScuflSVGDiagram extends JComponent implements
 		out.print(dotText);
 		out.flush();
 		out.close();
-		return docFactory.createSVGDocument(
-				// Fake URI, just used for internal references like #fish
-				"http://taverna.sf.net/diagram/generated.svg",
-				// since we provide this fancy StringReader
-				new StringReader(devourer.blockOnOutput()));
+		
+
+		String svgText = devourer.blockOnOutput();
+		// Avoid TAV-424, replace buggy SVG outputted by "modern" GraphViz versions.
+		// http://www.graphviz.org/bugs/b1075.html
+		// Contributed by Marko Ullgren
+		svgText = svgText.replaceAll("font-weight:regular","font-weight:normal");
+
+		// Fake URI, just used for internal references like #fish
+		return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", 
+			new StringReader(svgText));
 	}
 
 	public void onDisplay() {
