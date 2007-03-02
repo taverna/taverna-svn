@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ3" author="Marc Logghe" title="Fetch wormbase image">The workflow fetches the image of the wormbase genome browser image for the entered landmark. This goes in two steps. First the default pages if fetched in order to find out which tracks are available. The user can deselect unwanted tracks and using that information the image is fetched.</s:workflowdescription>
+  <s:processor name="getDetailedView">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="getImageLinks">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks</s:local>
+  </s:processor>
+  <s:processor name="finddetailedViewImage">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.FilterStringList</s:local>
+  </s:processor>
+  <s:processor name="detailedViewURLRegex">
+    <s:stringconstant>.*/img/.+\.png</s:stringconstant>
+  </s:processor>
+  <s:processor name="query_string">
+    <s:beanshell>
+      <s:scriptvalue>url_out = source + "?name=" + name + ";width=" + width + ";label=" + label;</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">source</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">name</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">width</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">label</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">url_out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="GetPage">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="width">
+    <s:stringconstant>800</s:stringconstant>
+  </s:processor>
+  <s:processor name="extract_tracks">
+    <s:beanshell>
+      <s:scriptvalue>import java.util.regex.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.swing.*;
+
+trackHash = new java.util.HashMap();
+tracks = new java.util.ArrayList();
+
+Pattern pattern = Pattern.compile("(?si)href=\"\\?help=citations#([^\"]+)\"&gt;([^&lt;&gt;]+)");
+Matcher matcher = pattern.matcher(html);
+
+boolean okPressed = false;
+JFrame frame = new JFrame("Gbrowse track list");
+
+final JPanel trackPanel = new JPanel(new GridLayout(0, 2));
+
+JPanel okPanel = new JPanel();
+JButton okButton = new JButton("OK");
+
+while (matcher.find())
+{
+  label = matcher.group(1);
+  desc = matcher.group(2);
+  trackHash.put(desc,label);
+
+  trackPanel.add(new JCheckBox(desc, true));
+}
+
+
+okButton.addActionListener(new ActionListener() {
+	public void actionPerformed(ActionEvent ae) {
+		Component[] components = trackPanel.getComponents();
+		for (int i = 0; i &lt; components.length; i++) {
+			JCheckBox cb = (JCheckBox)components[i];
+			if (cb.isSelected( )){
+				String label = trackHash.get(cb.getText());
+				tracks.add(label);
+			}
+		}
+                okPressed = true;
+ 	}
+});
+
+
+okPanel.add(okButton);
+
+Container content = Box.createVerticalBox();
+content.add(trackPanel);
+content.add(okPanel);
+frame.getContentPane().add(content);
+
+frame.setSize(500,500);
+frame.setVisible(true);
+
+while (! okPressed)
+{
+  Thread.sleep(1000);
+}
+
+frame.dispose();</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">html</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">tracks</s:beanshelloutput>
+      </s:beanshelloutputlist>
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="gbrowse_base">
+    <s:stringconstant>http://www.wormbase.org</s:stringconstant>
+  </s:processor>
+  <s:processor name="source">
+    <s:stringconstant>wormbase</s:stringconstant>
+  </s:processor>
+  <s:processor name="getPageFirstTime">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</s:local>
+  </s:processor>
+  <s:processor name="hyphen">
+    <s:stringconstant>-</s:stringconstant>
+  </s:processor>
+  <s:processor name="label_query_string">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringListMerge</s:local>
+  </s:processor>
+  <s:processor name="path">
+    <s:stringconstant>/db/seq/gbrowse/</s:stringconstant>
+  </s:processor>
+  <s:processor name="gbrowse_url">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:link source="getImageLinks:imagelinks" sink="finddetailedViewImage:stringlist" />
+  <s:link source="detailedViewURLRegex:value" sink="finddetailedViewImage:regex" />
+  <s:link source="finddetailedViewImage:filteredlist" sink="getDetailedView:url" />
+  <s:link source="getDetailedView:image" sink="gbrowseImage" />
+  <s:link source="query_string:url_out" sink="GetPage:url" />
+  <s:link source="GetPage:contents" sink="getImageLinks:document" />
+  <s:link source="width:value" sink="query_string:width" />
+  <s:link source="getPageFirstTime:contents" sink="extract_tracks:html" />
+  <s:link source="source:value" sink="getPageFirstTime:url" />
+  <s:link source="source:value" sink="query_string:source" />
+  <s:link source="hyphen:value" sink="label_query_string:seperator" />
+  <s:link source="extract_tracks:tracks" sink="label_query_string:stringlist" />
+  <s:link source="label_query_string:concatenated" sink="query_string:label" />
+  <s:link source="gbrowse_base:value" sink="gbrowse_url:string1" />
+  <s:link source="path:value" sink="gbrowse_url:string2" />
+  <s:link source="gbrowse_url:output" sink="getPageFirstTime:base" />
+  <s:link source="gbrowse_url:output" sink="GetPage:base" />
+  <s:link source="gbrowse_base:value" sink="getDetailedView:base" />
+  <s:link source="name" sink="query_string:name" />
+  <s:source name="name">
+    <s:metadata>
+      <s:description>Enter landmark. Examples (no quotes): 'IV:120,000..130,000', 'unc-9','B0019', 'PCR_product:sjj_B0019.1'</s:description>
+    </s:metadata>
+  </s:source>
+  <s:sink name="gbrowseImage">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/*</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+
+
