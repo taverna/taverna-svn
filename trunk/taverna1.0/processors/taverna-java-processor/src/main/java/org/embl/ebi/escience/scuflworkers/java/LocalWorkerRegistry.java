@@ -25,17 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: LocalWorkerRegistry.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-06 14:51:25 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-03-02 11:31:00 $
+ *               by   $Author: stain $
  * Created on 1 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.java;
 
 import java.util.List;
-
-import net.sf.taverna.raven.spi.SpiRegistry;
 
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 

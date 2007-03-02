@@ -19,6 +19,7 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scufl.XScufl;
+import org.embl.ebi.escience.scuflworkers.java.actions.FlattenListEditAction;
 import org.jdom.Attribute;
 import org.jdom.DataConversionException;
 import org.jdom.Element;

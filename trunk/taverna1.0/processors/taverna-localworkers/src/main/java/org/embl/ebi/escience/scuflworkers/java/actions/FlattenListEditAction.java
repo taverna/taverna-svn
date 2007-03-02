@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.java;
+package org.embl.ebi.escience.scuflworkers.java.actions;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -16,6 +16,8 @@ import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflui.actions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflworkers.java.FlattenList;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 
 /**
  * Edit flattener depth action (right click on "Flatten List" local worker)
