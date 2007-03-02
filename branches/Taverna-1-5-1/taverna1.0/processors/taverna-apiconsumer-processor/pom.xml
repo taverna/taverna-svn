@@ -8,8 +8,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-apiconsumer-processor</artifactId>
-  <name>API Consumer Processor</name>  
+  <name>API Consumer Processor</name>
+  <version>1.5.1.1</version>
   <dependencies>
+    <dependency>
+      <groupId>uk.org.mygrid.taverna.processors</groupId>
+      <artifactId>taverna-dependency-processor</artifactId>
+    </dependency>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
       <artifactId>taverna-scavenger</artifactId>

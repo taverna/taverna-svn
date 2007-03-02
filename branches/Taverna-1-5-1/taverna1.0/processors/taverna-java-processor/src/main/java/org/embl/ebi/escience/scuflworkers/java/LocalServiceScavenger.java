@@ -94,7 +94,7 @@ public class LocalServiceScavenger extends Scavenger {
 		Map<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
 		for (Iterator i = workerList.keySet().iterator(); i.hasNext();) {
 			String key = (String) i.next();
-			Scavenger s = (Scavenger) workerList.get(key);
+			Scavenger s = workerList.get(key);
 			String category = "default";
 			if (key.split(":").length == 2) {
 				category = key.split(":")[0];
@@ -102,7 +102,7 @@ public class LocalServiceScavenger extends Scavenger {
 			// If the category doesn't exist create it
 			DefaultMutableTreeNode categoryNode;
 			if (nodeMap.containsKey(category)) {
-				categoryNode = (DefaultMutableTreeNode) nodeMap.get(category);
+				categoryNode = nodeMap.get(category);
 			} else {
 				categoryNode = new DefaultMutableTreeNode(category);
 				nodeMap.put(category, categoryNode);

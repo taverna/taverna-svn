@@ -64,6 +64,7 @@ import org.embl.ebi.escience.scufl.ScuflModelEventListener;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
+import org.embl.ebi.escience.scuflworkers.dependency.DependenciesPanel;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
@@ -74,13 +75,15 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * @author Tom Oinn, Chris Greenhalgh, Kevin Glover
+ * @author Tom Oinn
+ * @author Chris Greenhalgh
+ * @author Kevin Glover
  */
 public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 	ScuflModelEventListener {
-	
+
 	private static Logger logger = Logger.getLogger(BeanshellConfigPanel.class);
-	
+
 	private abstract class PortTableModel extends AbstractTableModel {
 		protected abstract Port[] getPorts();
 
@@ -397,7 +400,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 			KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 
 		JComboBox inputTypesCombo =
-			// Really Strings, but Properties.java is so 
+		// Really Strings, but Properties.java is so 
 			// outdated it claims to have Objects
 			new JComboBox(new Vector<Object>(DataThing.mimeTypes.values()));
 
@@ -446,8 +449,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 				// Add a port to the input model!
 				String portName = addInputField.getText();
 				try {
-					InputPort ip =
-						new InputPort(processor, portName);
+					InputPort ip = new InputPort(processor, portName);
 					ip.setSyntacticType("'text/plain'");
 					processor.addPort(ip);
 					addInputField.setText("");
@@ -551,8 +553,7 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 				// Add a port to the input model!
 				String portName = addOutputField.getText();
 				try {
-					OutputPort op =
-						new OutputPort(processor, portName);
+					OutputPort op = new OutputPort(processor, portName);
 					op.setSyntacticType("'text/plain'");
 					processor.addPort(op);
 					addOutputField.setText("");
@@ -600,9 +601,12 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 		outputEditPanel.add(outputFieldPanel, BorderLayout.SOUTH);
 		portEditPanel.add(outputEditPanel);
 
+		JPanel dependenciesPanel = new DependenciesPanel(bp);
+		
 		JTabbedPane tabbedPane = new JTabbedPane();
 		tabbedPane.addTab("Script", scriptEditPanel);
 		tabbedPane.addTab("Ports", portEditPanel);
+		tabbedPane.addTab("Dependencies", dependenciesPanel);
 		add(tabbedPane);
 
 		setVisible(true);

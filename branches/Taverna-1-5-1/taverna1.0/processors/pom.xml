@@ -16,6 +16,7 @@
     <module>taverna-beanshell-processor</module>
     <module>taverna-biomart-processor</module>
     <module>taverna-biomoby-processor</module>
+    <module>taverna-dependency-processor</module>
     <module>taverna-inferno-processor</module>
     <module>taverna-java-processor</module>
     <module>taverna-notification-processor</module>
@@ -26,5 +27,6 @@
     <module>taverna-stringconstant-processor</module>
     <module>taverna-talisman-processor</module>    
     <module>taverna-wsdl-processor</module>
+    <module>taverna-localworkers</module>
   </modules>
 </project>
