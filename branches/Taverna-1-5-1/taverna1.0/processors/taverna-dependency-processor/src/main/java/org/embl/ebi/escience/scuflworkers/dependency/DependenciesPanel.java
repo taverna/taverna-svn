@@ -185,7 +185,7 @@ public class DependenciesPanel extends JPanel {
 			c.gridx = 0;
 			if (allJars.isEmpty()) {
 				panel.add(new JLabel("<html><small>To depend on a JAR file, "
-					+ "copy it to the folder nam above</small></html>"), c);
+					+ "copy it to the folder named above</small></html>"), c);
 				return panel;
 			}
 
