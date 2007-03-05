@@ -51,19 +51,24 @@
 			<location>/local/.m2/repository/jaxen/jaxen/1.1/jaxen-1.1.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/retroweaver-rt-1.2.3.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/net/sourceforge/retroweaver/retroweaver-rt/1.2.3/retroweaver-rt-1.2.3.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/log4j-1.2.14.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/servlet-api-2.4.jar</name>
+			<name>src/main/webapp/WEB-INF/lib/backport-util-concurrent-2.1.jar</name>
 			<type>1</type>
-			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
+			<location>/local/.m2/repository/backport-util-concurrent/backport-util-concurrent/2.1/backport-util-concurrent-2.1.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/dom4j-1.6.1.jar</name>
+			<name>src/main/webapp/WEB-INF/lib/commons-fileupload-1.0.jar</name>
 			<type>1</type>
-			<location>/local/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar</location>
+			<location>/local/.m2/repository/commons-fileupload/commons-fileupload/1.0/commons-fileupload-1.0.jar</location>
 		</link>
 		<link>
 			<name>src/main/webapp/WEB-INF/lib/xercesImpl-2.6.2.jar</name>
@@ -76,6 +81,26 @@
 			<location>/local/.m2/repository/junit/junit/4.1/junit-4.1.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/jdom-1.0.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
+		</link>
+		<link>
+			<name>src/main/webapp/WEB-INF/lib/servlet-api-2.4.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
+		</link>
+		<link>
+			<name>src/main/webapp/WEB-INF/lib/thinwire-1.2-RC1.jar</name>
+			<type>1</type>
+			<location>/local/workspace/data-proxy/lib/thinwire-1.2-RC1.jar</location>
+		</link>
+		<link>
+			<name>src/main/webapp/WEB-INF/lib/dom4j-1.6.1.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/xml-apis-1.0.b2.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar</location>
@@ -84,11 +109,6 @@
 			<name>src/main/webapp/WEB-INF/lib/xom-1.0.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/xom/xom/1.0/xom-1.0.jar</location>
-		</link>
-		<link>
-			<name>src/main/webapp/WEB-INF/lib/jdom-1.0.jar</name>
-			<type>1</type>
-			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
 		</link>
 	</linkedResources>
 </projectDescription>

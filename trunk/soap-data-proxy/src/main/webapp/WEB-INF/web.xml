@@ -10,10 +10,10 @@
 		<welcome-file>default.htm</welcome-file>
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
-	
+	 
 	<servlet>
 		<servlet-name>Proxy</servlet-name>
-		<servlet-class>uk.org.mygrid.dataproxy.ProxyServlet</servlet-class>	
+		<servlet-class>uk.org.mygrid.dataproxy.web.servlet.ProxyServlet</servlet-class>	
 		<load-on-startup>1</load-on-startup>	
 	</servlet>
 	
@@ -22,6 +22,33 @@
 		<url-pattern>/proxy</url-pattern>
 	</servlet-mapping>
 		
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		NewWSDLServlet</display-name>
+		<servlet-name>NewWSDLServlet</servlet-name>
+		<servlet-class>
+		thinwire.render.web.WebServlet</servlet-class>
+		<init-param>
+			<description>
+			</description>
+			<param-name>mainClass</param-name>
+			<param-value>uk.org.mygrid.dataproxy.web.thinwire.NewWSDL</param-value>
+		</init-param>
+		<init-param>
+			<description>
+			</description>
+			<param-name>extraArguments</param-name>
+			<param-value>initParam,clientInfo,header</param-value>
+		</init-param>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>NewWSDLServlet</servlet-name>
+		<url-pattern>/newwsdl/</url-pattern>
+	</servlet-mapping>
+	
 	<mime-mapping>
 		<extension>xsd</extension>
 		<mime-type>text/xml</mime-type>
@@ -31,5 +58,6 @@
 		<extension>wsdl</extension>
 		<mime-type>text/xml</mime-type>
 	</mime-mapping>
-		 
+
+	
 </web-app>

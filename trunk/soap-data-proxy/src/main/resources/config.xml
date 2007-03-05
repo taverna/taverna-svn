@@ -18,11 +18,11 @@
 				</element>
 			</elements>
 		</wsdl>
+		
 		<wsdl>
 			<id>22222</id>
 			<address></address>
-			<endpoint>http://localhost:8080/testwebservices/services/MyService</endpoint>
-			 
+			<endpoint>http://localhost:8080/testwebservices/services/MyService</endpoint>			 
 			<elements>
 				<element>
 					<name>address</name>

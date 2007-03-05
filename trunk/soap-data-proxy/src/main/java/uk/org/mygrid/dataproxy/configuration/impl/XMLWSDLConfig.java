@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-03-05 12:41:45 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -49,6 +49,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	private String ID;
 	private String address;
 	private String endpoint;
+	private String name;
 	private List<ElementDef> elements = new ArrayList<ElementDef>();	
 		
 	@SuppressWarnings("unchecked")
@@ -60,7 +61,11 @@ public class XMLWSDLConfig implements WSDLConfig {
 		
 		child = element.element("id");
 		if (child==null) throw new WSDLConfigException("No element 'id' defined");
-		ID=child.getTextTrim();
+		ID=child.getTextTrim();		
+		
+		child = element.element("name");
+		if (child==null) throw new WSDLConfigException("No element 'name' defined");
+		name=child.getTextTrim();
 		
 		child = element.element("endpoint");
 		if (child==null) throw new WSDLConfigException("No element 'endpont' defined");
@@ -80,6 +85,12 @@ public class XMLWSDLConfig implements WSDLConfig {
 				this.elements.add(def);						
 			}
 		}				
+	}
+	
+	
+
+	public String getName() {
+		return name;
 	}
 
 	public String getAddress() {

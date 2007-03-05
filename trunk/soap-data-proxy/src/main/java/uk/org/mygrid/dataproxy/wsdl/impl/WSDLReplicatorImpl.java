@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLReplicatorImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-28 16:54:10 $
+ * Last modified on   $Date: 2007-03-05 12:41:46 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
@@ -61,24 +61,30 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 	
 	private String rootPath = "";
 	private static Logger logger = Logger.getLogger(WSDLReplicatorImpl.class);
+	private String originalEndpoint=null;
 	
 	public WSDLReplicatorImpl(String rootPath) {
 		this.rootPath=rootPath;
 		if (!rootPath.endsWith("/")) rootPath+="/";
-	}	
-		
+	}
+	
+	public String getOriginalEndpoint() {
+		return this.originalEndpoint;
+	}
 	
 	private Document changeEndpoint(String wsdlID, Document doc) throws JaxenException {	
 		Dom4jXPath path = new Dom4jXPath("//wsdl:service/wsdl:port/soap:address");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("soap", "http://schemas.xmlsoap.org/wsdl/soap/");
 		Element el = (Element)path.selectSingleNode(doc);	
+		this.originalEndpoint=el.attributeValue("location");
 		el.attribute("location").setValue(rootPath+"proxy?id="+wsdlID);
 		
 		return doc;
 	}
 
-	public void replicateRemoteWSDL(String wsdlID, String wsdlName, URL wsdlUrl, File destinationDirectory) throws Exception {		
+	public void replicateRemoteWSDL(String wsdlID, String wsdlName, URL wsdlUrl, File destinationDirectory) throws Exception {
+		this.originalEndpoint=null;
 		File wsdlDir = new File(destinationDirectory,wsdlID);
 		if (!wsdlDir.exists()) {
 			wsdlDir.mkdir();

@@ -25,15 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLReplicator.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-28 16:54:10 $
+ * Last modified on   $Date: 2007-03-05 12:41:46 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.wsdl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -111,7 +111,8 @@ public class TestWSDLReplicator {
 		Element port=service.element("port");
 		Element address=port.element("address");		
 		String endpoint=address.attributeValue("location").trim();
-		assertTrue("Endpoint should end with /proxy?id=11111",endpoint.endsWith("/proxy?id=11111"));
+		assertEquals("Endpoint should be http://localhost:8080/data-proxy/proxy?id=11111","http://localhost:8080/data-proxy/proxy?id=11111",endpoint);
+		assertEquals("Original Endpoint is incorrect","http://www.ebi.ac.uk:80/cgi-bin/xembl/XEMBL-SOAP.pl",replicator.getOriginalEndpoint());
 	}
 	
 	@Test 
@@ -134,7 +135,9 @@ public class TestWSDLReplicator {
 		assertTrue("Local copy of schema esearch.xsd does not exist",esearch.exists());
 		assertTrue("Local copy of schema esummary.xsd does not exist",esummary.exists());
 		assertTrue("Local copy of schema elink.xsd does not exist",elink.exists());
-		assertTrue("Local copy of schema espell.xsd does not exist",espell.exists());		
+		assertTrue("Local copy of schema espell.xsd does not exist",espell.exists());
+		assertEquals("Original Endpoint is incorrect","http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi",replicator.getOriginalEndpoint());
+		
 	}	
 	
 	@Test
@@ -157,6 +160,8 @@ public class TestWSDLReplicator {
 		assertTrue("Local copy of schema efetch_pubmed.xsd does not exist",efetch_pubmed.exists());
 		assertTrue("Local copy of schema efetch_pmc.xsd does not exist",efetch_pmc.exists());
 		assertTrue("Local copy of schema efetch_bio.xsd does not exist",efetch_bio.exists());		
+		
+		assertEquals("Original Endpoint is incorrect","http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi",replicator.getOriginalEndpoint());
 	}
 	
 	@Test

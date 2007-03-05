@@ -24,20 +24,37 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: WSDLReplicator.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ProxyConfigFactory.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-03-05 12:41:45 $
  *               by   $Author: sowen70 $
- * Created on 22 Feb 2007
+ * Created on 5 Mar 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.wsdl;
+package uk.org.mygrid.dataproxy.configuration;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
+import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
-public interface WSDLReplicator {	
-	public void replicateRemoteWSDL(String wsdlID,String wsdlName,URL wsdlUrl, File destinationDirectory) throws Exception;
-	public String getOriginalEndpoint();
+import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
+import uk.org.mygrid.dataproxy.web.servlet.ProxyServlet;
+
+public class ProxyConfigFactory {
+	private static ProxyConfig instance;
+	private static Logger logger = Logger.getLogger(ProxyConfigFactory.class);
+	
+	public static ProxyConfig getInstance() {
+		if (instance==null) {
+			try {								
+				SAXReader reader = new SAXReader();
+				Element element = reader.read(ProxyServlet.class.getResourceAsStream("/config.xml")).getRootElement();
+				instance=new XMLProxyConfig(element);
+			}
+			catch(Exception e) {
+				logger.error("Exception reading the XML configuration file",e);
+			}
+		}
+		return instance;
+	}
 }

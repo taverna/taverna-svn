@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-19 16:10:08 $
+ * Last modified on   $Date: 2007-03-05 12:41:46 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy;
+package uk.org.mygrid.dataproxy.web.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -78,14 +78,7 @@ public class ProxyServlet extends HttpServlet {
 	
 	private ProxyConfig getConfig() {		
 		if (config==null) {
-			try {								
-				SAXReader reader = new SAXReader();
-				Element element = reader.read(ProxyServlet.class.getResourceAsStream("/config.xml")).getRootElement();
-				config=new XMLProxyConfig(element);
-			}
-			catch(Exception e) {
-				logger.error("Exception reading the XML configuration file",e);
-			}
+			
 		}
 		return config;
 	}	
