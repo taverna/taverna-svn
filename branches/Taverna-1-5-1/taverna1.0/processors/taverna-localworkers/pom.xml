@@ -9,11 +9,12 @@
 	<groupId>uk.org.mygrid.taverna.processors</groupId>
 	<artifactId>taverna-localworkers</artifactId>
 	<name>Local workers</name>
-	<version>1.5.1</version>
+	<version>1.5.1.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-java-processor</artifactId>
+			<version>1.5.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

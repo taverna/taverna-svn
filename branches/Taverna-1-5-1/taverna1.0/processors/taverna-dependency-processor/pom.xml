@@ -15,7 +15,7 @@
 		class and helpers for GUI and XML serialisation to be able to
 		define dependencies on local JAR files or Raven artefacts.
 	</description>
-	<version>1.5.1</version>
+	<version>1.5.1.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.baclava</groupId>
