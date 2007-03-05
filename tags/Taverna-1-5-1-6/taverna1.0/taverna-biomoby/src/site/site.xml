@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Taverna Biomoby">
+  <body>
+    <breadcrumbs>
+      <item name="Taverna" href="../index.html" />
+    </breadcrumbs>
+    <links>
+      <item name="Taverna" href="../index.html" />
+    </links>
+    ${modules}
+    ${reports}
+  </body>
+</project>
