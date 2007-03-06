@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLReplicatorImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:46 $
+ * Last modified on   $Date: 2007-03-06 15:43:54 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
@@ -83,7 +83,7 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 		return doc;
 	}
 
-	public void replicateRemoteWSDL(String wsdlID, String wsdlName, URL wsdlUrl, File destinationDirectory) throws Exception {
+	public void replicateRemoteWSDL(String wsdlID, String wsdlFileName, URL wsdlUrl, File destinationDirectory) throws Exception {
 		this.originalEndpoint=null;
 		File wsdlDir = new File(destinationDirectory,wsdlID);
 		if (!wsdlDir.exists()) {
@@ -95,7 +95,7 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 			}
 		}
 				
-		File replicatedFile = new File(wsdlDir,wsdlName);
+		File replicatedFile = new File(wsdlDir,wsdlFileName);
 		//TODO: handle overwriting existing file.
 		replicatedFile.createNewFile();		
 		
@@ -143,37 +143,39 @@ public class WSDLReplicatorImpl implements WSDLReplicator {
 		for (Object node : nodes) {
 			Element el = (Element)node;
 			String schema = el.attributeValue("schemaLocation");
-			//FIXME: handle paths like ../schema.xsd and full URL locations http://myhost.net/schema.xsd
-			logger.info("Making local copy of imported schema:"+schema+" for wsdl "+wsdlURL.toExternalForm());
-			File localCopy=null;
-			try {
-				URL url = new URL(wsdlURL,schema);
-				localCopy=new File(wsdlDir,schema);
-				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-				BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(localCopy)));
-				
-				String line;
-				while ((line = reader.readLine()) != null) {
-					writer.write(line+"\n");
+			if (schema!=null) {
+				//FIXME: handle paths like ../schema.xsd and full URL locations http://myhost.net/schema.xsd
+				logger.info("Making local copy of imported schema:"+schema+" for wsdl "+wsdlURL.toExternalForm());
+				File localCopy=null;
+				try {
+					URL url = new URL(wsdlURL,schema);
+					localCopy=new File(wsdlDir,schema);
+					
+					BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(localCopy)));
+					
+					String line;
+					while ((line = reader.readLine()) != null) {
+						writer.write(line+"\n");
+					}
+					writer.close();
+					reader.close();
+					
+					//recurse to fetch any imbedded imports/includes
+					Document schemaDoc = new SAXReader().read(localCopy);
+					fetchImportedSchemasFromSchemaDoc(schemaDoc, wsdlDir, wsdlURL);
+					
+				} catch (MalformedURLException e) {
+					logger.error("Error with URL for schema",e);
 				}
-				writer.close();
-				reader.close();
-				
-				//recurse to fetch any imbedded imports/includes
-				Document schemaDoc = new SAXReader().read(localCopy);
-				fetchImportedSchemasFromSchemaDoc(schemaDoc, wsdlDir, wsdlURL);
-				
-			} catch (MalformedURLException e) {
-				logger.error("Error with URL for schema",e);
-			}
-			catch (IOException e) {
-				logger.error("Error copying a local version of remote schema.",e);
-				if (localCopy!=null && localCopy.exists()) localCopy.delete();
-				
-			} catch (DocumentException e) {
-				logger.error("Error reading XML of local copy of XML schema document",e);
-			}
+				catch (IOException e) {
+					logger.error("Error copying a local version of remote schema.",e);
+					if (localCopy!=null && localCopy.exists()) localCopy.delete();
+					
+				} catch (DocumentException e) {
+					logger.error("Error reading XML of local copy of XML schema document",e);
+				}
+			}			
 		}
 	}
 }

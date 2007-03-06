@@ -24,27 +24,66 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ProxyConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: NewWSDLConfig.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-03-06 15:43:53 $
  *               by   $Author: sowen70 $
- * Created on 14 Feb 2007
+ * Created on 5 Mar 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.configuration;
+package uk.org.mygrid.dataproxy.configuration.impl;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
-import uk.org.mygrid.dataproxy.configuration.impl.WSDLConfigException;
+import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 
-public interface ProxyConfig {
+public class NewWSDLConfig implements WSDLConfig {
 	
-	//FIXME: is this more useful as a string rather than a URL???
-	public URL getStoreBaseURL();
-	public WSDLConfig getWSDLConfigForID(String ID);
-	public void addWSDLConfig(WSDLConfig config) throws WSDLConfigException;
-	public List<WSDLConfig> getWSDLConfigs();
+	private String name;
+	private String id;
+	private String filename;
+	private String endpoint;
+	private String address;
+	private List<ElementDef> elements = new ArrayList<ElementDef>();
+	public List<ElementDef> getElements() {
+		return elements;
+	}
 	
-	public String toStringForm();
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setElements(List<ElementDef> elements) {
+		this.elements = elements;
+	}
+	public String getEndpoint() {
+		return endpoint;
+	}
+	public void setEndpoint(String endpoint) {
+		this.endpoint = endpoint;
+	}
+	public String getWSDLFilename() {
+		return filename;
+	}
+	public void setWSDLFilename(String filename) {
+		this.filename = filename;
+	}
+	public String getWSDLID() {
+		return id;
+	}
+	public void setWSDLID(String id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}	
 }

@@ -2,6 +2,8 @@
 	<store>
 		<baseURL>file:/tmp/dataproxy-testing/</baseURL>
 	</store>
+	
+	<!-- 
 	<wsdls>
 		<wsdl>
 			<id>11111</id>
@@ -40,5 +42,6 @@
 			
 		</wsdl>
 	</wsdls>	
+	 -->
 
 </config>

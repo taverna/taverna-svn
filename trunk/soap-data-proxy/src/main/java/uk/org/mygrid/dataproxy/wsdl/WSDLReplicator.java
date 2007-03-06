@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLReplicator.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:45 $
+ * Last modified on   $Date: 2007-03-06 15:43:54 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
@@ -38,6 +38,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 public interface WSDLReplicator {	
-	public void replicateRemoteWSDL(String wsdlID,String wsdlName,URL wsdlUrl, File destinationDirectory) throws Exception;
+	public void replicateRemoteWSDL(String wsdlID,String wsdlFileName,URL wsdlUrl, File destinationDirectory) throws Exception;
 	public String getOriginalEndpoint();
 }

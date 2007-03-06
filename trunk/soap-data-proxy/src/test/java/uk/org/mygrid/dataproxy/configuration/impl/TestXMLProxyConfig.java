@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLProxyConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:45 $
+ * Last modified on   $Date: 2007-03-06 15:43:53 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -58,7 +58,7 @@ public class TestXMLProxyConfig {
 	
 	@Test
 	public void testOneWSDLDefined() throws Exception {
-		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
 		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
@@ -72,6 +72,72 @@ public class TestXMLProxyConfig {
 		assertEquals("http://wsdl",wsdlConfig.getAddress());
 		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
 		assertEquals("test wsdl",wsdlConfig.getName());
+		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
+		assertEquals(0,wsdlConfig.getElements().size());
+	}
+	
+	@Test
+	public void testToStringForm() throws Exception {
+		String xml="<config><store><baseURL>file:/tmp/</baseURL></store></config>";
+		Element el = xmlToElement(xml);
+		ProxyConfig config = new XMLProxyConfig(el);
+		
+		xml = config.toStringForm();
+		config = new XMLProxyConfig(xmlToElement(xml));
+		
+		assertEquals("file:/tmp/",config.getStoreBaseURL().toExternalForm());
+	}
+	
+	@Test
+	public void testToStringFormWithOneWSDL() throws Exception {
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
+		
+		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
+		
+		xml = config.toStringForm();
+		config = new XMLProxyConfig(xmlToElement(xml));
+		
+		assertEquals("file:/url",config.getStoreBaseURL().toExternalForm());
+		assertNotNull(config.getWSDLConfigForID("1"));
+		
+		WSDLConfig wsdlConfig = config.getWSDLConfigForID("1");
+		
+		assertEquals("1",wsdlConfig.getWSDLID());
+		assertEquals("http://wsdl",wsdlConfig.getAddress());
+		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
+		assertEquals("test wsdl",wsdlConfig.getName());
+		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
+		assertEquals(0,wsdlConfig.getElements().size());
+	}
+	
+	@Test
+	public void testToStringWithNewWSDL() throws Exception {		
+		String xml="<config><store><baseURL>file:/url</baseURL></store></config>";
+		
+		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
+		
+		NewWSDLConfig newWsdl = new NewWSDLConfig();
+		newWsdl.setWSDLID("1");
+		newWsdl.setAddress("http://wsdl");
+		newWsdl.setEndpoint("http://endpoint");
+		newWsdl.setName("test wsdl");
+		newWsdl.setWSDLFilename("/tmp/wsdls/file");
+		config.addWSDLConfig(newWsdl);
+		
+		xml = config.toStringForm();
+		config = new XMLProxyConfig(xmlToElement(xml));
+		
+		assertEquals("file:/url",config.getStoreBaseURL().toExternalForm());
+		assertNotNull(config.getWSDLConfigForID("1"));
+		
+		WSDLConfig wsdlConfig = config.getWSDLConfigForID("1");
+		
+		assertEquals("1",wsdlConfig.getWSDLID());
+		assertEquals("http://wsdl",wsdlConfig.getAddress());
+		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
+		assertEquals("test wsdl",wsdlConfig.getName());
+		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
 		assertEquals(0,wsdlConfig.getElements().size());
 	}
 		
@@ -79,5 +145,7 @@ public class TestXMLProxyConfig {
 		SAXReader reader = new SAXReader();
 		return reader.read(new ByteArrayInputStream(xml.getBytes())).getRootElement();		
 	}
+	
+	
 	
 }

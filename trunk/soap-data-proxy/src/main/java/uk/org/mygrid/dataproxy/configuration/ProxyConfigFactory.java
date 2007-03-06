@@ -25,30 +25,40 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfigFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:45 $
+ * Last modified on   $Date: 2007-03-06 15:43:53 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.Writer;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
-import uk.org.mygrid.dataproxy.web.servlet.ProxyServlet;
 
 public class ProxyConfigFactory {
 	private static ProxyConfig instance;
 	private static Logger logger = Logger.getLogger(ProxyConfigFactory.class);
 	
+	//FIXME: hardcoded writable config path
+	private static String localConfig = "/tmp/config.xml";
+	
 	public static ProxyConfig getInstance() {
 		if (instance==null) {
 			try {								
 				SAXReader reader = new SAXReader();
-				Element element = reader.read(ProxyServlet.class.getResourceAsStream("/config.xml")).getRootElement();
+				InputStream stream = getConfigInputStream();
+				Element element = reader.read(stream).getRootElement();
 				instance=new XMLProxyConfig(element);
 			}
 			catch(Exception e) {
@@ -56,5 +66,27 @@ public class ProxyConfigFactory {
 			}
 		}
 		return instance;
+	}
+	
+	private static InputStream getConfigInputStream() {
+		File file = new File(localConfig);
+		if (file.exists()) {
+			try {
+				return new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				return ProxyConfigFactory.class.getResourceAsStream("/config.xml");
+			}
+		}
+		else {
+			return ProxyConfigFactory.class.getResourceAsStream("/config.xml");
+		}
+	}
+	
+	public static void writeConfig() throws Exception {
+		ProxyConfig config = getInstance();
+		String textConfig = config.toStringForm();
+		Writer writer = new FileWriter(localConfig);
+		writer.write(textConfig);
+		writer.close();
 	}
 }

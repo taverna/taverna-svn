@@ -24,37 +24,52 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: NewWSDL.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-03-06 15:43:54 $
  *               by   $Author: sowen70 $
- * Created on 5 Mar 2007
+ * Created on 6 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
 
-import org.apache.log4j.Logger;
-
 import thinwire.ui.Application;
+import thinwire.ui.Button;
 import thinwire.ui.Component;
 import thinwire.ui.Frame;
+import thinwire.ui.Label;
+import thinwire.ui.Panel;
+import thinwire.ui.event.ActionEvent;
+import thinwire.ui.event.ActionListener;
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
+import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
-public class NewWSDL {
+public class ConfigureWSDLPanel extends Panel {
+
+	private WSDLConfig config;
 	
-	private static Logger logger = Logger.getLogger(NewWSDL.class);	
-	
-	public void start() {
-		Frame frame = Application.current().getFrame();	
-		frame.setTitle("Configure WSDL");
-				
+	public ConfigureWSDLPanel(String wsdlID) {		
+		config=ProxyConfigFactory.getInstance().getWSDLConfigForID(wsdlID);
+		Label label = new Label(config.getName());
+		label.setBounds(0, 0, 100, 30);
+		getChildren().add(label);		
 		
-		final Component comp = new NewWSDLPanel();
-		comp.setBounds(0,0,Application.current().getFrame().getInnerWidth(), Application.current().getFrame().getInnerHeight());
-		comp.setVisible(true);
-		frame.getChildren().add(comp);
+		Button back = new Button("Back");
+		back.setBounds(0, 30, 100, 30);
+		
+		getChildren().add(back);
+		
+		back.addActionListener(Button.ACTION_CLICK, new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {				
+				Frame frame=Application.current().getFrame();
+				frame.getChildren().clear();
+				final Component comp = new NewWSDLPanel();	
+				comp.setBounds(0,0,Application.current().getFrame().getInnerWidth(), Application.current().getFrame().getInnerHeight());
+				comp.setVisible(true);
+				frame.getChildren().add(comp);
+			}			
+		});
 	}
 	
-	public static void main(String[] args) {	
-		new NewWSDL().start();
-	}	
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:46 $
+ * Last modified on   $Date: 2007-03-06 15:43:54 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -49,13 +49,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.xml.sax.SAXException;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDef;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
@@ -69,18 +67,14 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 public class ProxyServlet extends HttpServlet {
 		
 	private static Logger logger = Logger.getLogger(ProxyServlet.class);	
-	
-	private ProxyConfig config = null;
+		
 		
 	public ProxyServlet() {		
 		logger.info("Instantiating Proxy Servlet.");					
 	}
 	
 	private ProxyConfig getConfig() {		
-		if (config==null) {
-			
-		}
-		return config;
+		return ProxyConfigFactory.getInstance();
 	}	
 	
 	@Override

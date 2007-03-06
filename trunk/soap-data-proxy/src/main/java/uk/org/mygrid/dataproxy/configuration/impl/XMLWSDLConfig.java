@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:45 $
+ * Last modified on   $Date: 2007-03-06 15:43:53 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
@@ -50,6 +52,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	private String address;
 	private String endpoint;
 	private String name;
+	private String filename;
 	private List<ElementDef> elements = new ArrayList<ElementDef>();	
 		
 	@SuppressWarnings("unchecked")
@@ -68,8 +71,12 @@ public class XMLWSDLConfig implements WSDLConfig {
 		name=child.getTextTrim();
 		
 		child = element.element("endpoint");
-		if (child==null) throw new WSDLConfigException("No element 'endpont' defined");
-		endpoint=child.getTextTrim();		
+		if (child==null) throw new WSDLConfigException("No element 'endpiont' defined");
+		endpoint=child.getTextTrim();	
+		
+		child = element.element("filename");
+		if (child==null) throw new WSDLConfigException("No element 'filename' defined");
+		filename=child.getTextTrim();
 		
 		child = element.element("elements");
 		if (child!=null) {
@@ -86,8 +93,10 @@ public class XMLWSDLConfig implements WSDLConfig {
 			}
 		}				
 	}
-	
-	
+
+	public String getWSDLFilename() {
+		return filename;
+	}
 
 	public String getName() {
 		return name;
@@ -107,6 +116,26 @@ public class XMLWSDLConfig implements WSDLConfig {
 
 	public String getWSDLID() {
 		return ID;
+	}
+	
+	public Element toElement() {
+		Document doc = DocumentFactory.getInstance().createDocument();
+		Element wsdlChild = doc.addElement("wsdl");
+		wsdlChild.addElement("id").setText(getWSDLID());
+		wsdlChild.addElement("address").setText(getAddress());
+		wsdlChild.addElement("name").setText(getName());
+		wsdlChild.addElement("endpoint").setText(getEndpoint());
+		wsdlChild.addElement("filename").setText(getWSDLFilename());
+		
+		if (elements.size()>0) {
+			Element elChild = wsdlChild.addElement("elements");
+			for (ElementDef elDef : elements) {
+				Element element = elChild.addElement("element");
+				element.addElement("name").setText(elDef.getElementName());
+				element.addElement("namespace").setText(elDef.getElementName());
+			}
+		}
+		return doc.getRootElement();
 	}
 
 }

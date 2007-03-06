@@ -21,6 +21,17 @@
 		<servlet-name>Proxy</servlet-name>
 		<url-pattern>/proxy</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>ViewWSDL</servlet-name>
+		<servlet-class>uk.org.mygrid.dataproxy.web.servlet.ViewWSDLServlet</servlet-class>	
+		<load-on-startup>1</load-on-startup>	
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>ViewWSDL</servlet-name>
+		<url-pattern>/viewwsdl</url-pattern>
+	</servlet-mapping>
 		
 	<servlet>
 		<description>
@@ -42,12 +53,12 @@
 			<param-name>extraArguments</param-name>
 			<param-value>initParam,clientInfo,header</param-value>
 		</init-param>
-	</servlet>
+	</servlet>	
 
 	<servlet-mapping>
 		<servlet-name>NewWSDLServlet</servlet-name>
 		<url-pattern>/newwsdl/</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>	
 	
 	<mime-mapping>
 		<extension>xsd</extension>
