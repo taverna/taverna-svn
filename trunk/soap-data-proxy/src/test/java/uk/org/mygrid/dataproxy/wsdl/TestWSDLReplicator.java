@@ -25,15 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLReplicator.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-05 12:41:46 $
+ * Last modified on   $Date: 2007-03-12 11:17:32 $
  *               by   $Author: sowen70 $
  * Created on 22 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.wsdl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;

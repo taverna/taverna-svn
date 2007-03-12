@@ -25,13 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:54 $
+ * Last modified on   $Date: 2007-03-12 11:17:32 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
+
+import org.apache.log4j.Logger;
 
 import thinwire.ui.Application;
 import thinwire.ui.Button;
@@ -45,19 +47,37 @@ import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
 public class ConfigureWSDLPanel extends Panel {
+	
+	private static Logger logger = Logger.getLogger(ConfigureWSDLPanel.class);
 
 	private WSDLConfig config;
 	
 	public ConfigureWSDLPanel(String wsdlID) {		
 		config=ProxyConfigFactory.getInstance().getWSDLConfigForID(wsdlID);
 		Label label = new Label(config.getName());
+		Label status = new Label("");
+		
+		status.setBounds(0,200,100, 30);
+		
 		label.setBounds(0, 0, 100, 30);
 		getChildren().add(label);		
 		
 		Button back = new Button("Back");
 		back.setBounds(0, 30, 100, 30);
 		
+		Button commit = new Button("Commit");
+		commit.setBounds(0, 60, 100, 30);
+		
 		getChildren().add(back);
+		getChildren().add(commit);
+		getChildren().add(status);
+		
+		try {
+			status.setText("Starting to parse WSDL");			
+			status.setText("Finished parsing WSDL");
+		} catch (Exception e){
+			logger.error("Error parsing the WSDL "+config.getAddress(),e);
+		}
 		
 		back.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 

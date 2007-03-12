@@ -24,19 +24,28 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: WSDLReplicator.java,v $
- * Revision           $Revision: 1.4 $
+ * Filename           $RCSfile: SchemaParsingException.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-03-12 11:17:30 $
  *               by   $Author: sowen70 $
- * Created on 22 Feb 2007
+ * Created on 8 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.wsdl;
 
-import java.io.File;
-import java.net.URL;
+public class SchemaParsingException extends Exception {
+	
 
-public interface WSDLReplicator {	
-	public void replicateRemoteWSDL(String wsdlID,String wsdlFileName,URL wsdlUrl, File destinationDirectory) throws Exception;
-	public String getOriginalEndpoint();
+	public SchemaParsingException(String message) {
+		super(message);
+	}
+
+	public SchemaParsingException(Throwable cause) {
+		super(cause); 
+	}
+
+	public SchemaParsingException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }
