@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestAxisBasedSchemaParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-12 11:17:32 $
+ * Last modified on   $Date: 2007-03-12 11:18:01 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -139,43 +139,5 @@ public class TestAxisBasedSchemaParser {
 		assertEquals("There should be 5 elements of type string",5,expanded.elements("string").size());
 		assertNotNull("There should be an element for type FieldListType",expanded.element("FieldListType"));
 		assertNotNull("There should be an element for type LinkListType",expanded.element("LinkListType"));		
-	}	
-	
-	private void printTypes(List<Element> operations, String wsdlUrl) throws Exception {
-		for (Element op : operations) {
-			
-			Element typeElement = (Element)op.elements("elements").get(0);
-			for (Element element : (List<Element>)typeElement.elements("element")) {
-				for (Element element2 : (List<Element>)element.elements())
-				if (!element2.getName().equalsIgnoreCase("name")){
-					Element el = parser.expandType(wsdlUrl, element2);					
-					XMLWriter writer = new XMLWriter(System.out,OutputFormat.createPrettyPrint());
-					System.out.println("--------------------------------------");
-					writer.write(el);
-					System.out.println("--------------------------------------");	
-					if (el.elements().size()>0) {
-						for (Element child : (List<Element>)el.elements()) {
-							if (!child.getNamespaceURI().equals("http://www.w3.org/2001/XMLSchema")) {
-								child = parser.expandType(wsdlUrl, child);
-								writer = new XMLWriter(System.out,OutputFormat.createPrettyPrint());
-								System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-								writer.write(child);
-								System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-							}
-						}
-					}
-				}
-			}
-
-		}
-	}
-	
-	private void printElements(List<Element> elements) throws Exception {
-		for (Element el : elements) {
-			XMLWriter writer = new XMLWriter(System.out,OutputFormat.createPrettyPrint());
-			System.out.println("------------------------------------------------------");
-			writer.write(el);
-			System.out.println("------------------------------------------------------");
-		}
-	}
+	}		
 }
