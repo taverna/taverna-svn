@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-12 11:17:31 $
+ * Last modified on   $Date: 2007-03-14 09:10:31 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -35,6 +35,7 @@ package uk.org.mygrid.dataproxy.wsdl.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
 public class AxisBasedSchemaParserImpl implements SchemaParser {
 
 	private static Logger logger = Logger.getLogger(AxisBasedSchemaParserImpl.class);
-	Map<String,SymbolTable> tableMap = new HashMap<String, SymbolTable>();
+	private static Map<String,SymbolTable> tableMap = Collections.synchronizedMap(new HashMap<String, SymbolTable>());
 
 	public List<QName> parseTypes(String wsdlUrl) throws SchemaParsingException {
 		
@@ -78,10 +79,8 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 			if (e instanceof javax.xml.namespace.QName) {
 				javax.xml.namespace.QName qname = (javax.xml.namespace.QName)e;					
 				result.add(new QName(qname.getLocalPart(),new Namespace(qname.getPrefix(),qname.getNamespaceURI())));
-			}
-			
-		}
-							
+			}			
+		}						
 		return result;
 	}
 	
@@ -208,8 +207,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 								}
 								else {
 									logger.warn("No elementName or typeName for the part:"+part);
-								}
-																
+								}																
 							}
 						}
 						result.add(doc.getRootElement());
