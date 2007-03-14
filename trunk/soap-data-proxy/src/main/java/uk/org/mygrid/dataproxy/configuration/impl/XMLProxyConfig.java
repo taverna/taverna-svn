@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-14 10:00:23 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -87,6 +87,16 @@ public class XMLProxyConfig implements ProxyConfig {
 
 	public URL getStoreBaseURL() {
 		return baseURL;
+	}
+	
+	public void deleteWSDLConfig(WSDLConfig config) {
+		String id = config.getWSDLID();
+		if (wsdlMap.containsKey(id)) {
+			wsdlMap.remove(id);
+		}
+		else {
+			logger.warn("Trying to delete a WSDLConfig that isn't defined, ID="+id);
+		}		
 	}
 
 	public WSDLConfig getWSDLConfigForID(String ID) {

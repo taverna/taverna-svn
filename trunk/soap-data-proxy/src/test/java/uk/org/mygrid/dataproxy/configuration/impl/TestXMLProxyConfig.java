@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLProxyConfig.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-14 10:00:23 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 
@@ -74,6 +73,23 @@ public class TestXMLProxyConfig {
 		assertEquals("test wsdl",wsdlConfig.getName());
 		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
 		assertEquals(0,wsdlConfig.getElements().size());
+	}
+	
+	@Test
+	public void testDeleteWSDL() throws Exception {
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
+		
+		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
+		
+		WSDLConfig wsdlConfig = config.getWSDLConfigForID("1");
+		config.deleteWSDLConfig(wsdlConfig);
+		
+		assertNull(config.getWSDLConfigForID("1"));
+		
+		xml = config.toStringForm();
+		
+		assertEquals("Incorrect xml",xml,"<config><store><baseURL>file:/url</baseURL></store></config>");
 	}
 	
 	@Test

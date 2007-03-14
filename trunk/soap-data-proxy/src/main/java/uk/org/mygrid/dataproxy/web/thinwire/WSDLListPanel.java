@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:54 $
+ * Last modified on   $Date: 2007-03-14 10:00:24 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -35,23 +35,28 @@ package uk.org.mygrid.dataproxy.web.thinwire;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import thinwire.ui.Application;
 import thinwire.ui.Button;
 import thinwire.ui.Component;
 import thinwire.ui.Frame;
 import thinwire.ui.Hyperlink;
+import thinwire.ui.MessageBox;
 import thinwire.ui.Panel;
 import thinwire.ui.TextField;
 import thinwire.ui.event.ActionEvent;
 import thinwire.ui.event.ActionListener;
 import thinwire.ui.layout.TableLayout;
+import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
 public class WSDLListPanel extends Panel {
 	
+	private static Logger logger = Logger.getLogger(WSDLListPanel.class);
+	
 	public WSDLListPanel () {		
-		//getStyle().getFX().setVisibleChange(Effect.Motion.SLOW_SMOOTH);
 		TableLayout layout = new TableLayout();
 		setLayout(layout);
 		refresh();
@@ -66,7 +71,7 @@ public class WSDLListPanel extends Panel {
 		layout.getRows().clear();
 		List<WSDLConfig> configs = ProxyConfigFactory.getInstance().getWSDLConfigs();
 				
-		for (int c=0;c<5;c++) {
+		for (int c=0;c<6;c++) {
 			TableLayout.Column col = new TableLayout.Column(0);			
 			layout.getColumns().add(col);			
 		}
@@ -95,12 +100,34 @@ public class WSDLListPanel extends Panel {
 					configureClicked(config.getWSDLID());
 				}				
 			});
-						
-			row.set(4,button);
-		}
+			
+			Button deleteButton = new Button("Delete");
+			row.set(5,deleteButton);
+			
+			deleteButton.addActionListener(Button.ACTION_CLICK, new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					deleteClicked(config.getWSDLID());
+				}				
+			});								
+		}			
+	}
+	
+	private void deleteClicked(String wsdlID) {		
+		ProxyConfig proxyConfig = ProxyConfigFactory.getInstance();
+		WSDLConfig wsdlConfig = proxyConfig.getWSDLConfigForID(wsdlID);
 		
-		//setVisible(true);
-					
+		//FIXME: clicking the 'X' is taken to mean Ok.
+		int response=MessageBox.confirm(null,"Delete WSDL", "Are you sure you want to delete the WSDL defined with the name "+wsdlConfig.getName(),"Ok|Cancel");
+		
+		if (response==0) {		
+			proxyConfig.deleteWSDLConfig(wsdlConfig);
+			try {
+				ProxyConfigFactory.writeConfig();
+			} catch (Exception e) {
+				logger.error("Error writing proxy config",e);
+			}
+			refresh();
+		}
 	}
 	
 	private void configureClicked(String wsdlID) {

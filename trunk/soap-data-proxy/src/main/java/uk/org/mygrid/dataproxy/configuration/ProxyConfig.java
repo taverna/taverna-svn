@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfig.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-14 10:00:24 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -44,6 +44,7 @@ public interface ProxyConfig {
 	public URL getStoreBaseURL();
 	public WSDLConfig getWSDLConfigForID(String ID);
 	public void addWSDLConfig(WSDLConfig config) throws WSDLConfigException;
+	public void deleteWSDLConfig(WSDLConfig config);
 	public List<WSDLConfig> getWSDLConfigs();
 	
 	public String toStringForm();
