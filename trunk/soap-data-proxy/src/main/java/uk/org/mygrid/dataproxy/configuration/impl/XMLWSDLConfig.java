@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -84,11 +84,17 @@ public class XMLWSDLConfig implements WSDLConfig {
 			logger.info(elements.size()+" elements defined in config for WSDLID:"+ID);
 			for (Element el : elements) {
 				Element name=el.element("name");
-				Element namespaceURI=el.element("namespaceURI");				
+				Element namespaceURI=el.element("namespaceURI");
+				Element path = el.element("path");
+				Element operation = el.element("operation");
 				
-				if (name == null) throw new WSDLConfigException("No element 'name' defined within the element block");				
+				if (name == null) throw new WSDLConfigException("No element 'name' defined within the element block");
+				if (path == null) throw new WSDLConfigException("No element 'path' defined within the element block");
+				if (operation == null) throw new WSDLConfigException("No element 'operation' defined within the element block");
+				
 				if (namespaceURI == null) logger.warn("No namespace defined for Element name='"+name.getText()+"' for WSDLID:"+ID);
-				ElementDef def = new ElementDef(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "");
+				
+				ElementDef def = new ElementDef(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim());
 				this.elements.add(def);						
 			}
 		}				
@@ -132,7 +138,9 @@ public class XMLWSDLConfig implements WSDLConfig {
 			for (ElementDef elDef : elements) {
 				Element element = elChild.addElement("element");
 				element.addElement("name").setText(elDef.getElementName());
-				element.addElement("namespace").setText(elDef.getElementName());
+				element.addElement("namespace").setText(elDef.getNamespaceURI());
+				element.addElement("operation").setText(elDef.getOperation());
+				element.addElement("path").setText(elDef.getPath());				
 			}
 		}
 		return doc.getRootElement();

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -49,7 +49,7 @@ public class TestXMLWSDLConfig {
 	@Test
 	public void testSimple() throws Exception {
 		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint>";
-		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI></element></elements>";
+		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/path</path><operation>op</operation></element></elements>";
 		xml+="</wsdl>";
 		
 		WSDLConfig config = new XMLWSDLConfig(xmlToElement(xml));
@@ -65,14 +65,16 @@ public class TestXMLWSDLConfig {
 		
 		assertEquals("AnElement",def.getElementName());
 		assertEquals("uri",def.getNamespaceURI());				
+		assertEquals("*/path",def.getPath());
+		assertEquals("op",def.getOperation());
 	}
 	
 	@Test
 	public void testMultipleElements() throws Exception {
 		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint><elements>";
-		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI></element>";
-		xml+="<element><name>AnElement2</name><namespaceURI>uri</namespaceURI></element>";
-		xml+="<element><name>AnElement3</name><namespaceURI>uri</namespaceURI></element>";
+		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/AnElement</path><operation>op</operation></element>";
+		xml+="<element><name>AnElement2</name><namespaceURI>uri</namespaceURI><path>*/AnElement2</path><operation>op</operation></element>";
+		xml+="<element><name>AnElement3</name><namespaceURI>uri</namespaceURI><path>*/AnElement3</path><operation>op</operation></element>";
 		xml+="</elements></wsdl>";
 		
 		WSDLConfig config = new XMLWSDLConfig(xmlToElement(xml));
@@ -84,22 +86,29 @@ public class TestXMLWSDLConfig {
 		
 		ElementDef def = config.getElements().get(0);
 		assertEquals("AnElement",def.getElementName());
-		assertEquals("uri",def.getNamespaceURI());		
+		assertEquals("uri",def.getNamespaceURI());	
+		assertEquals("*/AnElement",def.getPath());
+		assertEquals("op",def.getOperation());
+		
 		
 		def = config.getElements().get(1);
 		assertEquals("AnElement2",def.getElementName());
-		assertEquals("uri",def.getNamespaceURI());		
+		assertEquals("uri",def.getNamespaceURI());	
+		assertEquals("*/AnElement2",def.getPath());
+		assertEquals("op",def.getOperation());
 		
 		def = config.getElements().get(2);
 		assertEquals("AnElement3",def.getElementName());
-		assertEquals("uri",def.getNamespaceURI());		
+		assertEquals("uri",def.getNamespaceURI());
+		assertEquals("*/AnElement3",def.getPath());
+		assertEquals("op",def.getOperation());
 	}
 	
 	@Test
 	public void testMissingNamespace() throws Exception {
 		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint><elements>";
-		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI><replacement>AnElement-replaced</replacement></element>";
-		xml+="<element><name>AnElement2</name><replacement>AnElement2-replaced</replacement></element>";		
+		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/AnElement</path><operation>op</operation></element>";
+		xml+="<element><name>AnElement2</name><path>*/AnElement2</path><operation>op</operation></element>";		
 		xml+="</elements></wsdl>";
 		
 		WSDLConfig config = new XMLWSDLConfig(xmlToElement(xml));
@@ -108,11 +117,15 @@ public class TestXMLWSDLConfig {
 		
 		ElementDef def = config.getElements().get(0);
 		assertEquals("AnElement",def.getElementName());
-		assertEquals("uri",def.getNamespaceURI());		
+		assertEquals("uri",def.getNamespaceURI());	
+		assertEquals("*/AnElement",def.getPath());
+		assertEquals("op",def.getOperation());
 		
 		def = config.getElements().get(1);
 		assertEquals("AnElement2",def.getElementName());
-		assertEquals("",def.getNamespaceURI());		
+		assertEquals("",def.getNamespaceURI());	
+		assertEquals("*/AnElement2",def.getPath());
+		assertEquals("op",def.getOperation());
 	}
 	
 	

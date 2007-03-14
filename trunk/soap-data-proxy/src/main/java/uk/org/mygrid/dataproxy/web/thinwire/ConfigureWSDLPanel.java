@@ -25,14 +25,16 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 09:10:32 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -52,6 +54,7 @@ import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.SchemaParser;
 import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
 import uk.org.mygrid.dataproxy.wsdl.impl.AxisBasedSchemaParserImpl;
+import uk.org.mygrid.dataproxy.xml.ElementDef;
 
 public class ConfigureWSDLPanel extends Panel {
 	
@@ -61,7 +64,8 @@ public class ConfigureWSDLPanel extends Panel {
 	private SchemaParser parser=null;
 	private final Label status = new Label("");
 	private final Tree tree = new Tree();	
-	private final Button toggleProxy = new Button("Toggle");		
+	private final Button toggleProxy = new Button("Toggle");
+	private List<Element> selectedForProxy = new ArrayList<Element>();
 	
 	public ConfigureWSDLPanel(String wsdlID) {		
 		config=ProxyConfigFactory.getInstance().getWSDLConfigForID(wsdlID);
@@ -111,21 +115,34 @@ public class ConfigureWSDLPanel extends Panel {
 				if (el==null) {
 					logger.error("Unable to find element associated with "+treeItem.getText());					
 				}
-				try {
-					el=getParser().expandType(config.getAddress(), el);
-				} catch (SchemaParsingException e) {
-					logger.error("An error occurred expanding the type element:"+e);
-				}
-				if (el.elements().size()>0) {
-					for (Element child : (List<Element>)el.elements()) {
-						addTypeElementToTreeNode(treeItem, child);
+				else {
+					try {
+						el=getParser().expandType(config.getAddress(), el);
+					} catch (SchemaParsingException e) {
+						logger.error("An error occurred expanding the type element:"+e);
 					}
+					if (el.elements().size()>0) {
+						for (Element child : (List<Element>)el.elements()) {
+							addTypeElementToTreeNode(treeItem, child);
+						}
+					}
+				}
+			}			
+		});	
+		
+		tree.addActionListener(Tree.ACTION_CLICK, new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (tree.getSelectedItem().getUserObject()!=null && tree.getSelectedItem().getUserObject() instanceof Element) {
+					toggleProxy.setEnabled(true);
+				}
+				else {
+					toggleProxy.setEnabled(false);
 				}				
-			}
-			
-		});				
+			}								
+		});
 				
 		toggleProxy.setBounds(0,90, 100, 30);
+		toggleProxy.setEnabled(false);
 		
 		getChildren().add(back);
 		getChildren().add(commit);
@@ -144,17 +161,19 @@ public class ConfigureWSDLPanel extends Panel {
 				comp.setVisible(true);
 				frame.getChildren().add(comp);
 			}			
-		});		
+		});	
+		
+		commit.addActionListener(Button.ACTION_CLICK, new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				commitClicked(config);
+			}			
+		});
+	
 		
 		toggleProxy.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Tree.Item item = tree.getSelectedItem();
-				if (item.getImage()==null) {
-					item.setImage("class:/server.png");
-				}
-				else {
-					item.setImage(null);
-				}
+				toggleClicked(tree.getSelectedItem());
 			}			
 		});
 		
@@ -163,6 +182,83 @@ public class ConfigureWSDLPanel extends Panel {
 		} catch (InterruptedException e) {
 			logger.error("Error joining background thread");
 		}
+	}
+	
+	private void commitClicked(WSDLConfig config) {
+		List<ElementDef> elementDefs = config.getElements();
+		elementDefs.clear();
+		for (Element el : selectedForProxy) {
+			String xpath=convertToXPath(el);
+			String operation=getOperationFromTypeElement(el);
+			logger.info("XPATH="+xpath);
+			ElementDef def = new ElementDef(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation);
+			elementDefs.add(def);
+		}
+		try {
+			ProxyConfigFactory.writeConfig();
+		} catch (Exception e) {
+			logger.error("Error writing config",e);
+		}
+	}
+	
+	private String getOperationFromTypeElement(Element el) {
+		Element parent = el;
+		while (parent!=null && !parent.getName().equals("operation")) {
+			parent=parent.getParent();
+		}
+		return parent.element("name").getTextTrim();
+	}
+	
+	private String convertToXPath(Element el) {
+		String result="*/";
+		List<Element>elements = new ArrayList<Element>();
+		Element parent = el;
+		while(parent != null && !parent.getName().equals("element")) {
+			elements.add(parent);
+			parent = parent.getParent();
+		}		
+		
+		Collections.reverse(elements);
+		boolean first=true;
+		for (Element element : elements) {
+			if (first) {
+				result+=element.getName()+"/";
+				first=false;
+			}
+			else {
+				if (element.attributeValue("name")!=null) {
+					result+=element.attributeValue("name")+"/";
+				}
+				else {
+					result+="*/";
+				}
+			}
+		}
+		
+		if (result.endsWith("/")) result = result.substring(0,result.length()-1);
+		return result;
+	}
+	
+	private void toggleClicked(Tree.Item selectedItem) {
+		
+		if (selectedItem.getText().startsWith("XXX: ")) {
+			toggleOff(selectedItem);
+		}
+		else {
+			toggleOn(selectedItem);
+		}		
+	}
+	
+	private void toggleOff(Tree.Item selectedItem) {
+		selectedItem.setText(selectedItem.getText().replaceAll("XXX: ",""));
+		Element typeElement = (Element)selectedItem.getUserObject();
+		selectedForProxy.remove(typeElement);
+	}
+	
+	private void toggleOn(Tree.Item selectedItem) {
+		selectedItem.setText("XXX: "+selectedItem.getText());
+		Element typeElement = (Element)selectedItem.getUserObject();
+		selectedForProxy.add(typeElement);
 	}
 	
 	private void addOperationToTree(Element operationElement) {

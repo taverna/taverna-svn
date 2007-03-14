@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 10:00:24 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -106,21 +106,19 @@ public class WSDLListPanel extends Panel {
 			
 			deleteButton.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					deleteClicked(config.getWSDLID());
+					deleteClicked(config);
 				}				
 			});								
 		}			
 	}
 	
-	private void deleteClicked(String wsdlID) {		
-		ProxyConfig proxyConfig = ProxyConfigFactory.getInstance();
-		WSDLConfig wsdlConfig = proxyConfig.getWSDLConfigForID(wsdlID);
-		
+	private void deleteClicked(WSDLConfig wsdlConfig) {
+						
 		//FIXME: clicking the 'X' is taken to mean Ok.
 		int response=MessageBox.confirm(null,"Delete WSDL", "Are you sure you want to delete the WSDL defined with the name "+wsdlConfig.getName(),"Ok|Cancel");
 		
 		if (response==0) {		
-			proxyConfig.deleteWSDLConfig(wsdlConfig);
+			ProxyConfigFactory.getInstance().deleteWSDLConfig(wsdlConfig);
 			try {
 				ProxyConfigFactory.writeConfig();
 			} catch (Exception e) {

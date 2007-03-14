@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDef.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 15:30:03 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -46,11 +46,11 @@ public class TestElementDef {
 
 	@Test
 	public void testEquals() {
-		ElementDef a = new ElementDef("a","namespace");
-		ElementDef a2 = new ElementDef("a","namespace");
+		ElementDef a = new ElementDef("a","namespace","*/a","operation");
+		ElementDef a2 = new ElementDef("a","namespace","*/a","operation");
 		
-		ElementDef b = new ElementDef("b","namespace");
-		ElementDef b_nons = new ElementDef("b","");
+		ElementDef b = new ElementDef("b","namespace","*/b","operation");
+		ElementDef b_nons = new ElementDef("b","","*/b","operation");
 		
 		assertTrue(a.equals(a2));
 		assertTrue(a2.equals(a));
@@ -62,11 +62,11 @@ public class TestElementDef {
 	
 	@Test
 	public void testMap() {
-		ElementDef a = new ElementDef("a","namespace");
-		ElementDef a2 = new ElementDef("a","namespace");
+		ElementDef a = new ElementDef("a","namespace","*/a","operation");
+		ElementDef a2 = new ElementDef("a","namespace","*/a","operation");
 		
-		ElementDef b = new ElementDef("b","namespace");
-		ElementDef b_nons = new ElementDef("b","");
+		ElementDef b = new ElementDef("b","namespace","*/b","operation");
+		ElementDef b_nons = new ElementDef("b","","*/b","operation");
 		
 		Map<ElementDef,String> map= new HashMap<ElementDef,String>();
 		
@@ -76,15 +76,11 @@ public class TestElementDef {
 		
 		assertEquals("a",map.get(a));
 		assertEquals("a",map.get(a2));
-		assertEquals("a",map.get(new ElementDef("a","namespace")));
+		assertEquals("a",map.get(new ElementDef("a","namespace","*/a","operation")));
 		
 				
 		assertEquals("b",map.get(b));
 		assertEquals("b_nons",map.get(b_nons));
-		assertEquals("b_nons",map.get(new ElementDef("b","")));
-		
-	}
-	
-	
-	
+		assertEquals("b_nons",map.get(new ElementDef("b","","*/b","operation")));		
+	}	
 }

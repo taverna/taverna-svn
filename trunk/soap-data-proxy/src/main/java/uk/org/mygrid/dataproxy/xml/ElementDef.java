@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDef.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-03-14 16:56:16 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -35,11 +35,38 @@ package uk.org.mygrid.dataproxy.xml;
 
 public class ElementDef {
 	private String elementName;
+
 	private String namespaceURI;
-	
+
+	private String path;
+
+	private String operation;
+
+	public ElementDef(String elementName, String namespaceURI, String path,
+			String operation) {
+		if (elementName == null)
+			elementName = "*";
+		if (path == null)
+			path = "*";
+		if (operation == null)
+			operation = "*";
+		this.elementName = elementName;
+		this.namespaceURI = namespaceURI;
+		this.path = path;
+		this.operation = operation;
+	}
+
+	// FIXME: remove and fix tests
 	public ElementDef(String elementName, String namespaceURI) {
-		this.elementName=elementName;
-		this.namespaceURI=namespaceURI;
+		this(elementName, namespaceURI, null, null);
+	}
+
+	public String getOperation() {
+		return operation;
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 	public String getElementName() {
@@ -49,26 +76,29 @@ public class ElementDef {
 	public String getNamespaceURI() {
 		return namespaceURI;
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
-		return (getElementName()+getNamespaceURI()).hashCode();
+		return (getElementName() + getNamespaceURI() + getPath() + getOperation())
+				.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj.getClass() != this.getClass()) return false;
-		
-		ElementDef elDef = (ElementDef)obj;
-		
-		return ((this.getElementName().equals(elDef.getElementName())) && (this.getNamespaceURI().equals(elDef.getNamespaceURI())));
-	}	
-	
-	public String toString() {
-		return namespaceURI+":"+elementName;
+		if (obj.getClass() != this.getClass())
+			return false;
+
+		ElementDef elDef = (ElementDef) obj;
+
+		return (this.getElementName().equals(elDef.getElementName())
+				&& this.getNamespaceURI().equals(elDef.getNamespaceURI())
+				&& this.getPath().equals(elDef.getPath()) 
+				&& this.getOperation().equals(elDef.getOperation())
+				);
 	}
-	
-	
+
+	public String toString() {
+		return namespaceURI + ":" + elementName;
+	}
+
 }
