@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory04.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:08 $
+ * Last modified on   $Date: 2007-03-14 12:26:40 $
  *               by   $Author: davidwithers $
  * Created on 04-Apr-2006
  *****************************************************************/
@@ -145,7 +145,7 @@ public class MartServiceQueryConfigUIFactory04 implements QueryConfigUIFactory {
 		this.martService = martService;
 		this.controller = controller;
 		this.martDataset = martDataset;
-		version = martService.getVersion(martDataset.getMartURLLocation());
+		version = "0.4";
 	}
 
 	/**
