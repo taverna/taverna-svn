@@ -24,28 +24,24 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: NewWSDL.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: Configuration.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:54 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
 
-import org.apache.log4j.Logger;
-
 import thinwire.ui.Application;
 import thinwire.ui.Component;
 import thinwire.ui.Frame;
 
-public class NewWSDL {
-	
-	private static Logger logger = Logger.getLogger(NewWSDL.class);	
-	
+public class Configuration
+{	
 	public void start() {
 		Frame frame = Application.current().getFrame();	
-		frame.setTitle("Configure WSDL");
+		frame.setTitle("Proxy Configuration");
 				
 		
 		final Component comp = new NewWSDLPanel();
@@ -54,7 +50,7 @@ public class NewWSDL {
 		frame.getChildren().add(comp);
 	}
 	
-	public static void main(String[] args) {	
-		new NewWSDL().start();
+	public static void main(String[] args) {			
+		new Configuration().start();
 	}	
 }

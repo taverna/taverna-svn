@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:54 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import thinwire.ui.Button;
 import thinwire.ui.Component;
 import thinwire.ui.Label;
+import thinwire.ui.MessageBox;
 import thinwire.ui.Panel;
 import thinwire.ui.TextField;
 import thinwire.ui.event.ActionEvent;
@@ -55,6 +56,7 @@ import thinwire.ui.style.Color;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
+import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.wsdl.WSDLReplicator;
 import uk.org.mygrid.dataproxy.wsdl.impl.WSDLReplicatorImpl;
 
@@ -83,20 +85,25 @@ public class NewWSDLPanel extends Panel {
 				
 		addButton.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 
-			public void actionPerformed(ActionEvent e) { 
-				try {					
-					status.setVisible(false);
-					status.getStyle().getFont().setColor(Color.BLACK);
-					addWSDL(comp.getText(), name.getText());
-				} catch (MalformedURLException exception) {
-					status.getStyle().getFont().setColor(Color.RED);
-					updateStatus("Invalid URL: "+exception.getMessage());					
-				} catch (Exception exception) {
-					status.getStyle().getFont().setColor(Color.RED);
-					updateStatus("An error occurred processing the WSDL: "+exception.getMessage());
+			public void actionPerformed(ActionEvent e) {
+				if (name.getText().length()>0) {
+					updateStatus("You must provide a name for the wsdl");
 				}
-				addButton.setEnabled(true);
-				listPanel.refresh();
+				else {
+					try {					
+						status.setVisible(false);
+						status.getStyle().getFont().setColor(Color.BLACK);
+						addWSDL(comp.getText(), name.getText());
+					} catch (MalformedURLException exception) {
+						status.getStyle().getFont().setColor(Color.RED);
+						updateStatus("Invalid URL: "+exception.getMessage());					
+					} catch (Exception exception) {
+						status.getStyle().getFont().setColor(Color.RED);
+						updateStatus("An error occurred processing the WSDL: "+exception.getMessage());
+					}
+					addButton.setEnabled(true);
+					listPanel.refresh();
+				}
 			}			
 		});
 		
@@ -126,17 +133,13 @@ public class NewWSDLPanel extends Panel {
 		updateStatus("Starting to process WSDL");
 		updateStatus("Making local copy of WSDL");		
 		
-		//FIXME: hardcoded root url
-		WSDLReplicator replicator = new WSDLReplicatorImpl("http://localhost:8080/data-proxy/");
+		WSDLReplicator replicator = new WSDLReplicatorImpl(ServerInfo.contextPath);
 		
-		//FIXME: use a shorter ID but check is unique
-		String uuid=UUID.randomUUID().toString();
-		String wsdlID=uuid.split("-")[0];		
+		String wsdlID=ProxyConfigFactory.getUniqueWSDLID();
 		
 		File dest = getRootWSDLCopyPath();
 		logger.info("Making local copy of wsdl to "+dest.getAbsolutePath());
 		
-		//FIXME: no testing for name
 		replicator.replicateRemoteWSDL(wsdlID, wsdlName+".wsdl", url, dest);
 		
 		NewWSDLConfig config = new NewWSDLConfig();
@@ -157,9 +160,7 @@ public class NewWSDLPanel extends Panel {
 		logger.info("New WSDL added with ID="+wsdlID);
 	}
 	
-	//FIXME: currently uses path hardcoded to config.xml
-	private File getRootWSDLCopyPath() throws URISyntaxException {
-		
+	private File getRootWSDLCopyPath() throws URISyntaxException {		
 		ProxyConfig config = ProxyConfigFactory.getInstance();
 		URL basePath = config.getStoreBaseURL();		
 		return new File(basePath.toURI());		

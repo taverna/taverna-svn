@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 09:10:31 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -66,148 +66,169 @@ import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
 
 public class AxisBasedSchemaParserImpl implements SchemaParser {
 
-	private static Logger logger = Logger.getLogger(AxisBasedSchemaParserImpl.class);
-	private static Map<String,SymbolTable> tableMap = Collections.synchronizedMap(new HashMap<String, SymbolTable>());
+	private static Logger logger = Logger
+			.getLogger(AxisBasedSchemaParserImpl.class);
+
+	private static Map<String, SymbolTable> tableMap = Collections
+			.synchronizedMap(new HashMap<String, SymbolTable>());
 
 	public List<QName> parseTypes(String wsdlUrl) throws SchemaParsingException {
-		
+
 		SymbolTable symbolTable = getSymbolTable(wsdlUrl);
-		
+
 		List<QName> result = new ArrayList<QName>();
-		
+
 		for (Object e : symbolTable.getElementIndex().keySet()) {
 			if (e instanceof javax.xml.namespace.QName) {
-				javax.xml.namespace.QName qname = (javax.xml.namespace.QName)e;					
-				result.add(new QName(qname.getLocalPart(),new Namespace(qname.getPrefix(),qname.getNamespaceURI())));
-			}			
-		}						
+				javax.xml.namespace.QName qname = (javax.xml.namespace.QName) e;
+				result.add(new QName(qname.getLocalPart(), new Namespace(qname
+						.getPrefix(), qname.getNamespaceURI())));
+			}
+		}
 		return result;
 	}
-	
-	
 
-	public Element expandType(String wsdlUrl, Element type) throws SchemaParsingException {				
+	@SuppressWarnings("unchecked")
+	public Element expandType(String wsdlUrl, Element type)
+			throws SchemaParsingException {
+
+		if (type.elements().size()>0) {
+			throw new SchemaParsingException("Type {"+type.getNamespaceURI()+"}"+type.getQualifiedName()+" is already expanded");
+		}
 		
 		SymbolTable table = getSymbolTable(wsdlUrl);
-		QName qname = new QName(type.getName(),type.getNamespace());
-		TypeEntry o=null;
-		
+		QName qname = new QName(type.getName(), type.getNamespace());
+		TypeEntry o = null;
+
 		o = table.getElement(convertQName(qname));
-		if (o==null) {
+		if (o == null) {
 			o = table.getType(convertQName(qname));
 		}
-		if (o!=null) {			
-			
-			if (!o.isBaseType()) {								
-				
-				if (o.getRefType()!=null) {	
+		if (o != null) {
+
+			if (!o.isBaseType()) {
+
+				if (o.getRefType() != null) {
 					if (o instanceof DefinedType) {
-						type.addElement(convertQName(o.getRefType().getQName()));
+						type
+								.addElement(convertQName(o.getRefType()
+										.getQName()));
+					} else {
+						populateWithContainedElements(type, o.getRefType()
+								.getContainedElements());
 					}
-					else {
-						populateWithContainedElements(type, o.getRefType().getContainedElements());
-					}
-				}
-				else {
-					if (o.getContainedElements()!=null) {
-						Vector<ElementDecl>containedElements = (Vector<ElementDecl>)o.getContainedElements();
+				} else {
+					if (o.getContainedElements() != null) {
+						Vector<ElementDecl> containedElements = (Vector<ElementDecl>) o
+								.getContainedElements();
 						populateWithContainedElements(type, containedElements);
-					}
-					else {
+					} else {
 						type.addElement(convertQName(o.getComponentType()));
 					}
-					
+
 				}
 			}
 		}
-		
-			else {
-				logger.warn("No partType defined for element: "+type.asXML());
-			}
-		
-		
-		return type;				
+
+		else {
+			logger.warn("No partType defined for element: " + type.asXML());
+		}
+
+		return type;
 	}
 
-
-
-	private void populateWithContainedElements(Element type, Vector<ElementDecl> containedElements) {
+	private void populateWithContainedElements(Element type,
+			Vector<ElementDecl> containedElements) {
 		for (ElementDecl elementEntry : containedElements) {
-			Element addedElement = type.addElement(convertQName(elementEntry.getType().getQName()));	
-			//work around for bug http://issues.apache.org/jira/browse/AXIS-2105
-			//is to parse the QName and take after the last '>' as the name.
-			//getName always returns null.
-			int x=elementEntry.getQName().getLocalPart().lastIndexOf(">");
-			if (x>-1) {
-				String name=elementEntry.getQName().getLocalPart().substring(x+1);
-				addedElement.addAttribute("name", name);						
+			Element addedElement = type.addElement(convertQName(elementEntry
+					.getType().getQName()));
+			// work around for bug
+			// http://issues.apache.org/jira/browse/AXIS-2105
+			// is to parse the QName and take after the last '>' as the name.
+			// getName always returns null.
+			int x = elementEntry.getQName().getLocalPart().lastIndexOf(">");
+			if (x > -1) {
+				String name = elementEntry.getQName().getLocalPart().substring(
+						x + 1);
+				addedElement.addAttribute("name", name);
 			}
 		}
 	}
 
-
-
-	private SymbolTable getSymbolTable(String wsdlUrl) throws SchemaParsingException {
+	private SymbolTable getSymbolTable(String wsdlUrl)
+			throws SchemaParsingException {
 		SymbolTable symbolTable = tableMap.get(wsdlUrl);
-		if (symbolTable==null) {
+		if (symbolTable == null) {
 			try {
 				symbolTable = populateSymbolTable(wsdlUrl);
 				tableMap.put(wsdlUrl, symbolTable);
-			}
-			catch(Exception e) {
-				logger.error("Error processing the wsdl:"+wsdlUrl,e);
-				throw new SchemaParsingException("Error processing wsdl schema:"+e.getMessage(),e);
+			} catch (Exception e) {
+				logger.error("Error processing the wsdl:" + wsdlUrl, e);
+				throw new SchemaParsingException(
+						"Error processing wsdl schema:" + e.getMessage(), e);
 			}
 		}
 		return symbolTable;
 	}
 
 	public void flush(String wsdlUrl) {
-		tableMap.remove(wsdlUrl);		
+		tableMap.remove(wsdlUrl);
 	}
-	
-	private SymbolTable populateSymbolTable(String wsdlUrl) throws IOException, WSDLException, SAXException, ParserConfigurationException {
+
+	private SymbolTable populateSymbolTable(String wsdlUrl) throws IOException,
+			WSDLException, SAXException, ParserConfigurationException {
 
 		SymbolTable symbolTable = new SymbolTable(new NoopFactory()
-		.getBaseTypeMapping(), true, false, false);	
+				.getBaseTypeMapping(), true, false, false);
 		symbolTable.populate(wsdlUrl);
 		return symbolTable;
 	}
 
-	public List<Element> parseOperations(String wsdlUrl) throws SchemaParsingException {		
+	public List<Element> parseOperations(String wsdlUrl)
+			throws SchemaParsingException {
 		List<Element> result = new ArrayList<Element>();
-		
+
 		SymbolTable symbolTable = getSymbolTable(wsdlUrl);
 		Definition def = symbolTable.getDefinition();
 		for (Object o : def.getBindings().values()) {
 			if (o instanceof Binding) {
-				List operations = ((Binding)o).getPortType().getOperations();
+				List operations = ((Binding) o).getPortType().getOperations();
 				for (Object op : operations) {
 					if (op instanceof Operation) {
-						Operation operation = (Operation)op;
-						Document doc = DocumentFactory.getInstance().createDocument();
-						Element operationElement=doc.addElement("operation");										
-						operationElement.addElement("name").setText(operation.getName());
-						
-						Element elements = operationElement.addElement("elements");
-						for (Object partObj : operation.getOutput().getMessage().getParts().values()) {
+						Operation operation = (Operation) op;
+						Document doc = DocumentFactory.getInstance()
+								.createDocument();
+						Element operationElement = doc.addElement("operation");
+						operationElement.addElement("name").setText(
+								operation.getName());
+
+						Element elements = operationElement
+								.addElement("elements");
+						for (Object partObj : operation.getOutput()
+								.getMessage().getParts().values()) {
 							if (partObj instanceof Part) {
-								Part part = (Part)partObj;
-								Element element = elements.addElement("element");
-								//element.addElement("name").setText(part.getName());
-								if (part.getTypeName()!=null) {
-									Element added=element.addElement(convertQName(part.getTypeName()));
+								Part part = (Part) partObj;
+								Element element = elements
+										.addElement("element");
+								// element.addElement("name").setText(part.getName());
+								if (part.getTypeName() != null) {
+									Element added = element
+											.addElement(convertQName(part
+													.getTypeName()));
 									added.addAttribute("partType", "typename");
 									added.addAttribute("name", part.getName());
-								}
-								else if (part.getElementName()!=null) {
-									Element added=element.addElement(convertQName(part.getElementName()));
-									added.addAttribute("partType", "elementname");
+								} else if (part.getElementName() != null) {
+									Element added = element
+											.addElement(convertQName(part
+													.getElementName()));
+									added.addAttribute("partType",
+											"elementname");
 									added.addAttribute("name", part.getName());
+								} else {
+									logger
+											.warn("No elementName or typeName for the part:"
+													+ part);
 								}
-								else {
-									logger.warn("No elementName or typeName for the part:"+part);
-								}																
 							}
 						}
 						result.add(doc.getRootElement());
@@ -215,18 +236,18 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 				}
 			}
 		}
-		return result;		
-	}	
-	
-	private QName convertQName(javax.xml.namespace.QName qname) {
-		QName result = new QName(qname.getLocalPart(),new Namespace(qname.getPrefix(),qname.getNamespaceURI()));
 		return result;
 	}
-	
+
+	private QName convertQName(javax.xml.namespace.QName qname) {
+		QName result = new QName(qname.getLocalPart(), new Namespace(qname
+				.getPrefix(), qname.getNamespaceURI()));
+		return result;
+	}
+
 	private javax.xml.namespace.QName convertQName(QName qname) {
-		javax.xml.namespace.QName result = new javax.xml.namespace.QName(qname.getNamespaceURI(),qname.getName());
+		javax.xml.namespace.QName result = new javax.xml.namespace.QName(qname
+				.getNamespaceURI(), qname.getName());
 		return result;
 	}
 }
-
-

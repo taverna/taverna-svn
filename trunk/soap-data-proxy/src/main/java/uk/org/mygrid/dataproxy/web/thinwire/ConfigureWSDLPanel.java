@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -108,26 +108,13 @@ public class ConfigureWSDLPanel extends Panel {
 		
 		tree.addActionListener(Tree.ACTION_DOUBLE_CLICK, new ActionListener() {
 
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent arg0) {
 				Tree.Item treeItem = tree.getSelectedItem();
-				Element el = (Element)treeItem.getUserObject();
-				
-				if (el==null) {
-					logger.error("Unable to find element associated with "+treeItem.getText());					
-				}
-				else {
-					try {
-						el=getParser().expandType(config.getAddress(), el);
-					} catch (SchemaParsingException e) {
-						logger.error("An error occurred expanding the type element:"+e);
-					}
-					if (el.elements().size()>0) {
-						for (Element child : (List<Element>)el.elements()) {
-							addTypeElementToTreeNode(treeItem, child);
-						}
-					}
-				}
-			}			
+				expandTreeItem(treeItem);
+			}
+
+					
 		});	
 		
 		tree.addActionListener(Tree.ACTION_CLICK, new ActionListener() {
@@ -183,6 +170,29 @@ public class ConfigureWSDLPanel extends Panel {
 			logger.error("Error joining background thread");
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void expandTreeItem(Tree.Item treeItem) {
+		Element el = (Element)treeItem.getUserObject();
+		if (el.elements().size()==0) {		
+			if (el==null) {
+				logger.error("Unable to find element associated with "+treeItem.getText());					
+			}
+			else {
+				try {
+					el=getParser().expandType(config.getAddress(), el);
+				} catch (SchemaParsingException e) {
+					logger.error("An error occurred expanding the type element:"+e);
+				}
+				if (el.elements().size()>0) {
+					treeItem.getChildren().clear();
+					for (Element child : (List<Element>)el.elements()) {
+						addTypeElementToTreeNode(treeItem, child);
+					}
+				}
+			}
+		}
+	}	
 	
 	private void commitClicked(WSDLConfig config) {
 		List<ElementDef> elementDefs = config.getElements();
@@ -261,6 +271,7 @@ public class ConfigureWSDLPanel extends Panel {
 		selectedForProxy.add(typeElement);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addOperationToTree(Element operationElement) {
 		String name = operationElement.elementTextTrim("name");
 		Tree.Item treeItem = new Tree.Item(name);
@@ -276,15 +287,14 @@ public class ConfigureWSDLPanel extends Panel {
 	}
 	
 	private void addTypeElementToTreeNode(Tree.Item treeItem, Element element) {
-		//FIXME: prevent already expanded elements being expanded again
+		
 		String name=element.attributeValue("name");
 		if (name==null) name="";
 		String type = element.getName();
 		
 		Tree.Item typeItem = new Tree.Item(name+":"+type);
 		typeItem.setUserObject(element);		
-		treeItem.getChildren().add(typeItem);
-		
+		treeItem.getChildren().add(typeItem);		
 	}
 	
 	private SchemaParser getParser() {

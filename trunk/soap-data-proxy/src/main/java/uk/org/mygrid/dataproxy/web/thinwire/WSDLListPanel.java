@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
 
 import java.util.List;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 
@@ -48,7 +50,6 @@ import thinwire.ui.TextField;
 import thinwire.ui.event.ActionEvent;
 import thinwire.ui.event.ActionListener;
 import thinwire.ui.layout.TableLayout;
-import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
@@ -63,6 +64,7 @@ public class WSDLListPanel extends Panel {
 	}
 	
 	public void refresh() {
+		System.out.println(Application.current().toString());
 		
 		//setVisible(false);
 		setScrollType(Panel.ScrollType.ALWAYS);
@@ -89,8 +91,9 @@ public class WSDLListPanel extends Panel {
 			row.set(1,tf);
 			tf=new TextField(config.getAddress());
 			row.set(2,tf);
-//			FIXME: hardcoded deployment location
-			Hyperlink link = new Hyperlink("WSDL","http://localhost:8080/data-proxy/viewwsdl?id="+config.getWSDLID());					
+			
+			Hyperlink link = new Hyperlink("WSDL","viewwsdl?id="+config.getWSDLID());
+			
 			row.set(3,link);
 			Button button = new Button("Configure");
 			row.set(4,button);

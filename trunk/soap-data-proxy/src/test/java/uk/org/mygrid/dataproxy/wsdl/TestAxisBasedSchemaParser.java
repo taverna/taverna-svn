@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestAxisBasedSchemaParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-12 11:18:01 $
+ * Last modified on   $Date: 2007-03-15 16:05:34 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -39,8 +39,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -93,6 +91,19 @@ public class TestAxisBasedSchemaParser {
 		assertEquals("Expanded type should be string","string",child.getName());
 		assertEquals("Name should be out","out",child.attribute("name").getText());
 		assertEquals("Incorrect namespace","http://www.w3.org/2001/XMLSchema",child.getNamespaceURI());	
+	}
+	
+	@Test (expected=SchemaParsingException.class)
+	public void testRepeatedExpand() throws Exception {
+		String wsdl="http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/gominer/GMService.wsdl";
+		List<Element> operations = parser.parseOperations(wsdl);
+		Element el = operations.get(0);
+		Element getReportResponse = el.element("elements").element("element").element("getReportResponse");
+		assertEquals("There should be no children before expansion",0,getReportResponse.elements().size());
+		Element expanded = parser.expandType(wsdl, getReportResponse);
+		assertEquals("There should be 1 child after expansion",1,expanded.elements().size());
+		
+		expanded = parser.expandType(wsdl, expanded);						
 	}
 	
 	@Test

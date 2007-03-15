@@ -24,29 +24,19 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: SchemaParsingException.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: ServerInfo.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-15 16:05:35 $
  *               by   $Author: sowen70 $
- * Created on 8 Mar 2007
+ * Created on 15 Mar 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.wsdl;
+package uk.org.mygrid.dataproxy.web;
 
-@SuppressWarnings("serial")
-public class SchemaParsingException extends Exception {
+public class ServerInfo {
+	//FIXME: this context path is hard coded.
+	public static String contextPath = "http://localhost:8080/data-proxy/";
 	
-
-	public SchemaParsingException(String message) {
-		super(message);
-	}
-
-	public SchemaParsingException(Throwable cause) {
-		super(cause); 
-	}
-
-	public SchemaParsingException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	//FIXME: this location is hard coded
+	public static String configFileLocation="/tmp/config.xml";
 }
