@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:29:00 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -47,12 +47,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 
 public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLStreamParser {
-	private Map<ElementDef,TagInterceptor> interceptors = new HashMap<ElementDef,TagInterceptor>();
+	private Map<ElementDefinition,TagInterceptor> interceptors = new HashMap<ElementDefinition,TagInterceptor>();
 	
 	private static Logger logger = Logger
 			.getLogger(AbstractXMLStreamParser.class);
@@ -80,7 +80,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLSt
 	
 	protected TagInterceptor getInterceptorForElement(String element, String uri) {
 		//FIXME: i don't like these wildcards at the end.
-		return interceptors.get(new ElementDef(element,uri,"*/*","*"));
+		return interceptors.get(new ElementDefinition(element,uri,"*/*","*"));
 	}
 		
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -42,7 +42,7 @@ import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public class XMLWSDLConfig implements WSDLConfig {
 	
@@ -53,7 +53,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	private String endpoint;
 	private String name;
 	private String filename;
-	private List<ElementDef> elements = new ArrayList<ElementDef>();	
+	private List<ElementDefinition> elements = new ArrayList<ElementDefinition>();	
 		
 	@SuppressWarnings("unchecked")
 	public XMLWSDLConfig(Element element) throws WSDLConfigException {		
@@ -94,7 +94,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 				
 				if (namespaceURI == null) logger.warn("No namespace defined for Element name='"+name.getText()+"' for WSDLID:"+ID);
 				
-				ElementDef def = new ElementDef(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim());
+				ElementDefinition def = new ElementDefinition(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim());
 				this.elements.add(def);						
 			}
 		}				
@@ -112,7 +112,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		return address;
 	}
 
-	public List<ElementDef> getElements() {
+	public List<ElementDefinition> getElements() {
 		return elements;
 	}
 
@@ -135,7 +135,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		
 		if (elements.size()>0) {
 			Element elChild = wsdlChild.addElement("elements");
-			for (ElementDef elDef : elements) {
+			for (ElementDefinition elDef : elements) {
 				Element element = elChild.addElement("element");
 				element.addElement("name").setText(elDef.getElementName());
 				element.addElement("namespaceURI").setText(elDef.getNamespaceURI());

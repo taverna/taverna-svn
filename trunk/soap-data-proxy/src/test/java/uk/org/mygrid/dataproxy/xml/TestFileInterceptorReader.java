@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorReader.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 16 Feb 2007
  *****************************************************************/
@@ -90,7 +90,7 @@ public class TestFileInterceptorReader {
 		output.close();
 		
 		String xml = "<somexml><data>"+dataFile.toURL().toExternalForm()+"</data></somexml>";
-		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),new FileInterceptorReaderFactory());
+		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),new FileInterceptorReaderFactory());
 		parser.addTagInterceptor(interceptor);
 		
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -109,7 +109,7 @@ public class TestFileInterceptorReader {
 		output.close();
 		
 		String xml = "<somexml><data>"+dataFile.toURL().toExternalForm()+"</data></somexml>";
-		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),new FileInterceptorReaderFactory());
+		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),new FileInterceptorReaderFactory());
 		parser.addTagInterceptor(interceptor);
 		
 		parser.read(new ByteArrayInputStream(xml.getBytes()));

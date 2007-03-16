@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestRequestXMLStreamParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -64,7 +64,7 @@ public class TestRequestXMLStreamParser {
 		readerFactory.addStringData("1", "data1");
 		readerFactory.addStringData("2", "data2");
 		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),readerFactory));
+		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),readerFactory));
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
 		String finalXML = outputStream.toString();
@@ -79,7 +79,7 @@ public class TestRequestXMLStreamParser {
 		readerFactory.addStringData("ref:1982223", "11111111");
 		readerFactory.addStringData("ref:2392348", "22222222");
 		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),readerFactory));
+		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),readerFactory));
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
 		String finalXML = outputStream.toString();

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:14:33 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -55,7 +55,7 @@ import org.xml.sax.SAXException;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
@@ -98,7 +98,7 @@ public class ProxyServlet extends HttpServlet {
 		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));
 		
 		XMLStreamParser requestParser = new RequestXMLStreamParserImpl();
-		for (ElementDef elementDef : wsdlConfig.getElements()) {
+		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
 			requestParser.addTagInterceptor(new RequestTagInterceptorImpl(elementDef,new FileInterceptorReaderFactory()));
 		}
 		
@@ -126,7 +126,7 @@ public class ProxyServlet extends HttpServlet {
 		}
 		
 		XMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
-		for (ElementDef elementDef : wsdlConfig.getElements()) {
+		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
 			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
 		}
 			

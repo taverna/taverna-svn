@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -54,7 +54,7 @@ import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.SchemaParser;
 import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
 import uk.org.mygrid.dataproxy.wsdl.impl.AxisBasedSchemaParserImpl;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public class ConfigureWSDLPanel extends Panel {
 	
@@ -195,13 +195,13 @@ public class ConfigureWSDLPanel extends Panel {
 	}	
 	
 	private void commitClicked(WSDLConfig config) {
-		List<ElementDef> elementDefs = config.getElements();
+		List<ElementDefinition> elementDefs = config.getElements();
 		elementDefs.clear();
 		for (Element el : selectedForProxy) {
 			String xpath=convertToXPath(el);
 			String operation=getOperationFromTypeElement(el);
 			logger.info("XPATH="+xpath);
-			ElementDef def = new ElementDef(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation);
+			ElementDefinition def = new ElementDefinition(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation);
 			elementDefs.add(def);
 		}
 		try {

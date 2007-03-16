@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLConfig.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public class NewWSDLConfig implements WSDLConfig {
 	
@@ -46,8 +46,8 @@ public class NewWSDLConfig implements WSDLConfig {
 	private String filename;
 	private String endpoint;
 	private String address;
-	private List<ElementDef> elements = new ArrayList<ElementDef>();
-	public List<ElementDef> getElements() {
+	private List<ElementDefinition> elements = new ArrayList<ElementDefinition>();
+	public List<ElementDefinition> getElements() {
 		return elements;
 	}
 	
@@ -59,7 +59,7 @@ public class NewWSDLConfig implements WSDLConfig {
 		this.address = address;
 	}
 
-	public void setElements(List<ElementDef> elements) {
+	public void setElements(List<ElementDefinition> elements) {
 		this.elements = elements;
 	}
 	public String getEndpoint() {

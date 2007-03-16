@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ElementDef.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: ElementDefinition.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -36,7 +36,7 @@ package uk.org.mygrid.dataproxy.xml;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ElementDef {
+public class ElementDefinition {
 	private String elementName;
 
 	private String namespaceURI;
@@ -45,7 +45,7 @@ public class ElementDef {
 
 	private String operation;
 
-	public ElementDef(String elementName, String namespaceURI, String path,
+	public ElementDefinition(String elementName, String namespaceURI, String path,
 			String operation) {
 		if (elementName == null)
 			elementName = "*";
@@ -59,7 +59,7 @@ public class ElementDef {
 		this.operation = operation;
 	}
 
-	public boolean checkPath(String comparePath) {
+	public boolean isMatchingPath(String comparePath) {
 		String regexp = path.replaceAll("/[\\*/]*/","/*/"); //resolve multiple continuous wildcards
 		regexp = regexp.replaceAll("/\\*/", "/+*");	//convert /*/ to /+*	
 		regexp = regexp.replaceAll("\\*", ".*"); //replace any * to .*
@@ -110,7 +110,7 @@ public class ElementDef {
 		if (obj.getClass() != this.getClass())
 			return false;
 
-		ElementDef elDef = (ElementDef) obj;
+		ElementDefinition elDef = (ElementDefinition) obj;
 
 		//FIXME: needs to take into account path and operation
 		return this.getElementName().equals(elDef.getElementName()) && this.getNamespaceURI().equals(elDef.getNamespaceURI());

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -47,7 +47,7 @@ import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public class XMLProxyConfig implements ProxyConfig {
 	
@@ -131,7 +131,7 @@ public class XMLProxyConfig implements ProxyConfig {
 					
 					if (wsdl.getElements().size()>0) {
 						Element elChild = wsdlChild.addElement("elements");
-						for (ElementDef elDef : wsdl.getElements()) {
+						for (ElementDefinition elDef : wsdl.getElements()) {
 							Element element = elChild.addElement("element");
 							element.addElement("name").setText(elDef.getElementName());
 							element.addElement("namespaceURI").setText(elDef.getNamespaceURI());

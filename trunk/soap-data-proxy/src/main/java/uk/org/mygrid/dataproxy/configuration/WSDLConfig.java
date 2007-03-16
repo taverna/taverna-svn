@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfig.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:53 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -35,7 +35,7 @@ package uk.org.mygrid.dataproxy.configuration;
 
 import java.util.List;
 
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public interface WSDLConfig {
 	
@@ -43,6 +43,6 @@ public interface WSDLConfig {
 	public String getAddress();
 	public String getName();
 	public String getWSDLFilename();
-	public List<ElementDef> getElements();	
+	public List<ElementDefinition> getElements();	
 	public String getEndpoint();		
 }

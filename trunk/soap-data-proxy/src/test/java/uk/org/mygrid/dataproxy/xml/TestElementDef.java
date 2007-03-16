@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDef.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -46,11 +46,11 @@ public class TestElementDef {
 
 	@Test
 	public void testEquals() {
-		ElementDef a = new ElementDef("a","namespace","*/a","operation");
-		ElementDef a2 = new ElementDef("a","namespace","*/a","operation");
+		ElementDefinition a = new ElementDefinition("a","namespace","*/a","operation");
+		ElementDefinition a2 = new ElementDefinition("a","namespace","*/a","operation");
 		
-		ElementDef b = new ElementDef("b","namespace","*/b","operation");
-		ElementDef b_nons = new ElementDef("b","","*/b","operation");
+		ElementDefinition b = new ElementDefinition("b","namespace","*/b","operation");
+		ElementDefinition b_nons = new ElementDefinition("b","","*/b","operation");
 		
 		assertTrue(a.equals(a2));
 		assertTrue(a2.equals(a));
@@ -62,13 +62,13 @@ public class TestElementDef {
 	
 	@Test
 	public void testMap() {
-		ElementDef a = new ElementDef("a","namespace","*/a","operation");
-		ElementDef a2 = new ElementDef("a","namespace","*/a","operation");
+		ElementDefinition a = new ElementDefinition("a","namespace","*/a","operation");
+		ElementDefinition a2 = new ElementDefinition("a","namespace","*/a","operation");
 		
-		ElementDef b = new ElementDef("b","namespace","*/b","operation");
-		ElementDef b_nons = new ElementDef("b","","*/b","operation");
+		ElementDefinition b = new ElementDefinition("b","namespace","*/b","operation");
+		ElementDefinition b_nons = new ElementDefinition("b","","*/b","operation");
 		
-		Map<ElementDef,String> map= new HashMap<ElementDef,String>();
+		Map<ElementDefinition,String> map= new HashMap<ElementDefinition,String>();
 		
 		map.put(a, "a");		
 		map.put(b, "b");
@@ -76,11 +76,20 @@ public class TestElementDef {
 		
 		assertEquals("a",map.get(a));
 		assertEquals("a",map.get(a2));
-		assertEquals("a",map.get(new ElementDef("a","namespace","*/a","operation")));
+		assertEquals("a",map.get(new ElementDefinition("a","namespace","*/a","operation")));
 		
 				
 		assertEquals("b",map.get(b));
 		assertEquals("b_nons",map.get(b_nons));
-		assertEquals("b_nons",map.get(new ElementDef("b","","*/b","operation")));		
+		assertEquals("b_nons",map.get(new ElementDefinition("b","","*/b","operation")));		
 	}	
+	
+	@Test
+	public void testPathAndOpIgnored() throws Exception {
+		ElementDefinition a = new ElementDefinition("a","namespace","*/a","operation");
+		ElementDefinition b = new ElementDefinition("a","namespace","sdfsdfsdfsdf","kkkkk");
+		
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+	}
 }

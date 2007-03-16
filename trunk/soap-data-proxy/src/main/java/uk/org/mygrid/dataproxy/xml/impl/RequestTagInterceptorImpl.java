@@ -25,24 +25,24 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:41 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
 import uk.org.mygrid.dataproxy.xml.RequestTagInterceptor;
 
 public class RequestTagInterceptorImpl implements RequestTagInterceptor {
 
-	private ElementDef target;
+	private ElementDefinition target;
 	private ReaderFactory readerFactory;
 	
-	public RequestTagInterceptorImpl(ElementDef target, ReaderFactory readerFactory) {
+	public RequestTagInterceptorImpl(ElementDefinition target, ReaderFactory readerFactory) {
 		this.target=target;
 		this.readerFactory=readerFactory;
 	}
@@ -51,7 +51,7 @@ public class RequestTagInterceptorImpl implements RequestTagInterceptor {
 		return readerFactory;
 	}
 
-	public ElementDef getTargetElementDef() {
+	public ElementDefinition getTargetElementDef() {
 		return target;
 	}
 

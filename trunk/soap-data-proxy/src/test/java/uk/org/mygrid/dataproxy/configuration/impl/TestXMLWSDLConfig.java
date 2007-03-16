@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:58 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -42,7 +42,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.Test;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.xml.ElementDef;
+import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 public class TestXMLWSDLConfig {
 
@@ -61,7 +61,7 @@ public class TestXMLWSDLConfig {
 		assertEquals("/tmp/wsdls/file",config.getWSDLFilename());
 		assertEquals(1,config.getElements().size());
 		
-		ElementDef def = config.getElements().get(0);
+		ElementDefinition def = config.getElements().get(0);
 		
 		assertEquals("AnElement",def.getElementName());
 		assertEquals("uri",def.getNamespaceURI());				
@@ -84,7 +84,7 @@ public class TestXMLWSDLConfig {
 		assertEquals("http://endpoint.cgi",config.getEndpoint());
 		assertEquals(3,config.getElements().size());
 		
-		ElementDef def = config.getElements().get(0);
+		ElementDefinition def = config.getElements().get(0);
 		assertEquals("AnElement",def.getElementName());
 		assertEquals("uri",def.getNamespaceURI());	
 		assertEquals("*/AnElement",def.getPath());
@@ -115,7 +115,7 @@ public class TestXMLWSDLConfig {
 				
 		assertEquals(2,config.getElements().size());
 		
-		ElementDef def = config.getElements().get(0);
+		ElementDefinition def = config.getElements().get(0);
 		assertEquals("AnElement",def.getElementName());
 		assertEquals("uri",def.getNamespaceURI());	
 		assertEquals("*/AnElement",def.getPath());

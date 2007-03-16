@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDefPathMatching.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
@@ -41,53 +41,52 @@ public class TestElementDefPathMatching {
 	@Test
 	public void testDirectMatch() throws Exception
 	{
-		ElementDef a = new ElementDef("name","namespace","*/name","operation");
+		ElementDefinition a = new ElementDefinition("name","namespace","*/name","operation");
 		
-		assertTrue(a.checkPath("name"));
-		assertFalse(a.checkPath("bob"));
+		assertTrue(a.isMatchingPath("name"));
+		assertFalse(a.isMatchingPath("bob"));
 	}
 	
 	@Test
 	public void testSimplePath() throws Exception 
 	{
-		ElementDef a = new ElementDef("name","namespace","*/start/*/end","operation");
+		ElementDefinition a = new ElementDefinition("name","namespace","*/start/*/end","operation");
 		
-		assertTrue(a.checkPath("start/middle/end"));
-		assertTrue(a.checkPath("beginning/start/middle/end"));
-		assertTrue(a.checkPath("start/bob/end"));
-		assertTrue(a.checkPath("start/end"));
-		assertFalse(a.checkPath("beginning/middle/end"));		
+		assertTrue(a.isMatchingPath("start/middle/end"));
+		assertTrue(a.isMatchingPath("beginning/start/middle/end"));
+		assertTrue(a.isMatchingPath("start/bob/end"));
+		assertTrue(a.isMatchingPath("start/end"));
+		assertFalse(a.isMatchingPath("beginning/middle/end"));		
 	}
 	
 	public void testOpenEndedPath() throws Exception
 	{
-		ElementDef a = new ElementDef("name","namespace","*/start/*","operation");
-		assertTrue(a.checkPath("start/bob/monkey"));
-		assertTrue(a.checkPath("start/bob"));
-		assertTrue(a.checkPath("start/bob/monkey/parrot"));
-		assertTrue(a.checkPath("cheese/start/bob/monkey/parrot"));
-		assertTrue(a.checkPath("chicken/cheese/start/bob/monkey/parrot"));
-		assertTrue(a.checkPath("/start"));
+		ElementDefinition a = new ElementDefinition("name","namespace","*/start/*","operation");
+		assertTrue(a.isMatchingPath("start/bob/monkey"));
+		assertTrue(a.isMatchingPath("start/bob"));
+		assertTrue(a.isMatchingPath("start/bob/monkey/parrot"));
+		assertTrue(a.isMatchingPath("cheese/start/bob/monkey/parrot"));
+		assertTrue(a.isMatchingPath("chicken/cheese/start/bob/monkey/parrot"));
+		assertTrue(a.isMatchingPath("/start"));
 		
-		assertFalse(a.checkPath("start"));
-		assertFalse(a.checkPath("starta"));
-		assertFalse(a.checkPath("astarta"));
-		assertFalse(a.checkPath("astart"));
-		assertFalse(a.checkPath("bob/monkey/parrot"));
-		
+		assertFalse(a.isMatchingPath("start"));
+		assertFalse(a.isMatchingPath("starta"));
+		assertFalse(a.isMatchingPath("astarta"));
+		assertFalse(a.isMatchingPath("astart"));
+		assertFalse(a.isMatchingPath("bob/monkey/parrot"));		
 	}
 	
 	@Test
 	public void testMultiLevelsOfWildcard() throws Exception {
-		ElementDef a = new ElementDef("name","namespace","*/start/*/*/bob","*");
+		ElementDefinition a = new ElementDefinition("name","namespace","*/start/*/*/bob","*");
 		
-		assertTrue(a.checkPath("start/bob"));
-		assertTrue(a.checkPath("start/middle/bob"));
-		assertTrue(a.checkPath("start/middle/end/bob"));
+		assertTrue(a.isMatchingPath("start/bob"));
+		assertTrue(a.isMatchingPath("start/middle/bob"));
+		assertTrue(a.isMatchingPath("start/middle/end/bob"));
 		
-		assertTrue(a.checkPath("prestart/start/middle/end/bob"));
+		assertTrue(a.isMatchingPath("prestart/start/middle/end/bob"));
 		
-		assertFalse(a.checkPath("astart/bob"));
-		assertFalse(a.checkPath("startbob"));
+		assertFalse(a.isMatchingPath("astart/bob"));
+		assertFalse(a.isMatchingPath("startbob"));
 	}
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:28:59 $
+ * Last modified on   $Date: 2007-03-16 15:34:57 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -90,7 +90,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -114,7 +114,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -135,7 +135,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testPrefix() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDef("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
