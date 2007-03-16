@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:29:00 $
+ * Last modified on   $Date: 2007-03-16 16:47:08 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -163,8 +163,9 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	}
 
 	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {
-		writeTagList();
-		TagInterceptor interceptor = getInterceptorForElement(localName,uri);
+		String path = currentPath();
+		//FIXME: pass operation rather than *
+		TagInterceptor interceptor = getInterceptorForElement(localName,uri,path,"*");
 		if (interceptor!=null && interceptor instanceof ResponseTagInterceptor) {		
 			if (logger.isDebugEnabled()) logger.debug("Found matching start tag for :"+localName);
 			activeTag=localName;
@@ -179,15 +180,13 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 		return interceptor!=null;
 	}
 	
-	private void writeTagList() {
-		String str="*";
-		boolean bodyFound=false;
+	private String currentPath() {
+		String result="*";		
 		for (String s : tagHistory) {
-			if (bodyFound) str+="/"+s;
-			if (s.equals("Body")) bodyFound=true;
+			result+="/"+s;			
 		}
-		logger.info("TagPath = "+str);
-	}
+		return result;
+	}	
 
 	@Override
 	public void warning(SAXParseException e) throws SAXException {

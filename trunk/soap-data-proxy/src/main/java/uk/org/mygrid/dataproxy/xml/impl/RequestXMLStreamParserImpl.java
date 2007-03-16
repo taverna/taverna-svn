@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-19 16:10:07 $
+ * Last modified on   $Date: 2007-03-16 16:47:08 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -100,7 +100,7 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException {
-		TagInterceptor interceptor = getInterceptorForElement(localName, uri);	
+		TagInterceptor interceptor = getInterceptorForElement(localName, uri,localName,"*");	
 		if (logger.isDebugEnabled()) logger.debug("Met start element: "+localName+", namespaceuri="+uri+", qName="+qName);
 		if (interceptor!=null && interceptor instanceof RequestTagInterceptor) {
 			if (logger.isDebugEnabled()) logger.debug("Interceptor found for start element: "+localName+", namespaceuri="+uri+", qName="+qName);

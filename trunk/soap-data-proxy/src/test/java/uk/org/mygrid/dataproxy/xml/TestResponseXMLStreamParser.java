@@ -38,9 +38,9 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestResponseXMLStreamParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-16 16:47:08 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -64,7 +64,7 @@ public class TestResponseXMLStreamParser {
 		StringWriterFactory paraWriterFactory = new StringWriterFactory();
 		StringWriterFactory linkWriterFactory = new StringWriterFactory();
 		ResponseTagInterceptor paraInterceptor=new ResponseTagInterceptorImpl(new ElementDefinition("para","","*/section/para","*"),paraWriterFactory);
-		ResponseTagInterceptor linkInterceptor=new ResponseTagInterceptorImpl(new ElementDefinition("link","","*/section/para/link","*"),linkWriterFactory);
+		ResponseTagInterceptor linkInterceptor=new ResponseTagInterceptorImpl(new ElementDefinition("link","","*/section/link","*"),linkWriterFactory);
 		
 		parser.addTagInterceptor(paraInterceptor);
 		parser.addTagInterceptor(linkInterceptor);
@@ -218,7 +218,7 @@ public class TestResponseXMLStreamParser {
 		String finalXML=outputStream.toString();
 		
 		assertEquals("<a><b>1</b></a>",finalXML);
-	}
+	}	
 }
 
 
