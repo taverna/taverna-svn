@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TestOutgoingXMLStreamParser.java,v $
+ * Filename           $RCSfile: TestRequestXMLStreamParser.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:43 $
+ * Last modified on   $Date: 2007-03-16 15:28:59 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -44,7 +44,7 @@ import org.junit.Test;
 import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 
-public class TestOutgoingXMLStreamParser {
+public class TestRequestXMLStreamParser {
 
 	private XMLStreamParser parser = null;
 	private ByteArrayOutputStream outputStream = null;
@@ -64,7 +64,7 @@ public class TestOutgoingXMLStreamParser {
 		readerFactory.addStringData("1", "data1");
 		readerFactory.addStringData("2", "data2");
 		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data",""),readerFactory));
+		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),readerFactory));
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
 		String finalXML = outputStream.toString();
@@ -79,7 +79,7 @@ public class TestOutgoingXMLStreamParser {
 		readerFactory.addStringData("ref:1982223", "11111111");
 		readerFactory.addStringData("ref:2392348", "22222222");
 		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data",""),readerFactory));
+		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDef("data","","*/data","*"),readerFactory));
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
 		String finalXML = outputStream.toString();

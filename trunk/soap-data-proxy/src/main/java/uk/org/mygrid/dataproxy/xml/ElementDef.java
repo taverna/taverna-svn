@@ -25,20 +25,23 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDef.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-16 15:28:59 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ElementDef {
 	private String elementName;
 
 	private String namespaceURI;
 
-	private String path;
+	private String path;	
 
 	private String operation;
 
@@ -52,13 +55,30 @@ public class ElementDef {
 			operation = "*";
 		this.elementName = elementName;
 		this.namespaceURI = namespaceURI;
-		this.path = path;
+		this.path = path;		
 		this.operation = operation;
 	}
 
-	// FIXME: remove and fix tests
-	public ElementDef(String elementName, String namespaceURI) {
-		this(elementName, namespaceURI, null, null);
+	public boolean checkPath(String comparePath) {
+		String regexp = path.replaceAll("/[\\*/]*/","/*/"); //resolve multiple continuous wildcards
+		regexp = regexp.replaceAll("/\\*/", "/+*");	//convert /*/ to /+*	
+		regexp = regexp.replaceAll("\\*", ".*"); //replace any * to .*
+		if (regexp.startsWith(".*/")) { //matches if it starts with .*/ or is the start of the path
+			regexp=regexp.substring(3,regexp.length());
+			Pattern pattern = Pattern.compile(".*/"+regexp);
+			Matcher matcher = pattern.matcher(comparePath);
+			if (matcher.matches()) return true;
+			else {
+				pattern=Pattern.compile("^"+regexp);
+				matcher=pattern.matcher(comparePath);
+				return matcher.matches();
+			}
+		}
+		else {		
+			Pattern pattern = Pattern.compile(regexp);
+			Matcher matcher = pattern.matcher(comparePath);
+			return matcher.matches();
+		}
 	}
 
 	public String getOperation() {

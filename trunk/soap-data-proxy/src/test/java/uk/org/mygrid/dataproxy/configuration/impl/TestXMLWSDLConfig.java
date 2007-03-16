@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-16 15:28:59 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -126,6 +126,20 @@ public class TestXMLWSDLConfig {
 		assertEquals("",def.getNamespaceURI());	
 		assertEquals("*/AnElement2",def.getPath());
 		assertEquals("op",def.getOperation());
+	}
+	
+	@Test
+	public void testToXML() throws Exception {
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint>";
+		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/path</path><operation>op</operation></element></elements>";
+		xml+="</wsdl>";
+				
+		XMLWSDLConfig config = new XMLWSDLConfig(xmlToElement(xml));
+		
+		String xml2=config.toElement().asXML();
+		
+		assertEquals("XML is incorrect",xml,xml2);
+		
 	}
 	
 	

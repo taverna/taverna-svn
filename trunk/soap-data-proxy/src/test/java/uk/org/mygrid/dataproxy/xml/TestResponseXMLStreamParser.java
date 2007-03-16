@@ -37,15 +37,15 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TestXMLStreamParser.java,v $
- * Revision           $Revision: 1.8 $
+ * Filename           $RCSfile: TestResponseXMLStreamParser.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:43 $
+ * Last modified on   $Date: 2007-03-16 15:28:59 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
 
-public class TestXMLStreamParser {
+public class TestResponseXMLStreamParser {
 
 	private XMLStreamParser parser = null;
 	ByteArrayOutputStream outputStream;
@@ -63,8 +63,8 @@ public class TestXMLStreamParser {
 				
 		StringWriterFactory paraWriterFactory = new StringWriterFactory();
 		StringWriterFactory linkWriterFactory = new StringWriterFactory();
-		ResponseTagInterceptor paraInterceptor=new ResponseTagInterceptorImpl(new ElementDef("para",""),paraWriterFactory);
-		ResponseTagInterceptor linkInterceptor=new ResponseTagInterceptorImpl(new ElementDef("link",""),linkWriterFactory);
+		ResponseTagInterceptor paraInterceptor=new ResponseTagInterceptorImpl(new ElementDef("para","","*/section/para","*"),paraWriterFactory);
+		ResponseTagInterceptor linkInterceptor=new ResponseTagInterceptorImpl(new ElementDef("link","","*/section/para/link","*"),linkWriterFactory);
 		
 		parser.addTagInterceptor(paraInterceptor);
 		parser.addTagInterceptor(linkInterceptor);
@@ -88,7 +88,7 @@ public class TestXMLStreamParser {
 	public void multipleElements() throws Exception {
 		String xml = "<a><b>bbbbb</b><c>c</c><b>bbb</b></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","","*/b","*"),bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -107,7 +107,7 @@ public class TestXMLStreamParser {
 	public void nested() throws Exception {
 		String xml = "<a><b><c>c</c><b>bbbbb</b></b><c>c</c></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);		
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","","*/b","*"),bWriterFactory);		
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -126,8 +126,8 @@ public class TestXMLStreamParser {
 		String xml="<a><b><c>ccc</c></b></a>";
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
 		StringWriterFactory cWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptorB=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);		
-		ResponseTagInterceptor interceptorC=new ResponseTagInterceptorImpl(new ElementDef("c",""),cWriterFactory);
+		ResponseTagInterceptor interceptorB=new ResponseTagInterceptorImpl(new ElementDef("b","","*/b","*"),bWriterFactory);		
+		ResponseTagInterceptor interceptorC=new ResponseTagInterceptorImpl(new ElementDef("c","","*/c","*"),cWriterFactory);
 		
 		parser.addTagInterceptor(interceptorB);
 		parser.addTagInterceptor(interceptorC);
@@ -149,7 +149,7 @@ public class TestXMLStreamParser {
 		String xml = "<ns1:a xmlns:ns1=\"a\"><ns1:b>bbb</ns1:b></ns1:a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","a"),bWriterFactory);
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","a","*/a/b","*"),bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -168,7 +168,7 @@ public class TestXMLStreamParser {
 		String xml = "<ns1:a xmlns:ns1=\"a\"><b>bbb</b></ns1:a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","","*/a/b","*"),bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -187,7 +187,7 @@ public class TestXMLStreamParser {
 		String xml = "<a><b/></a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","","*/b","*"),bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		
@@ -206,7 +206,7 @@ public class TestXMLStreamParser {
 		String xml = "<a><b></b></a>";
 		
 		StringWriterFactory bWriterFactory=new StringWriterFactory();
-		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b",""),bWriterFactory);
+		ResponseTagInterceptor interceptor=new ResponseTagInterceptorImpl(new ElementDef("b","","*/a/b","*"),bWriterFactory);
 		
 		parser.addTagInterceptor(interceptor);
 		

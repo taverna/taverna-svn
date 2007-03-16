@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-03-16 15:29:00 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -53,7 +55,7 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	private int activeTagCount = 0;
 	private String activeTag = null;
 	private InterceptorWriter activeWriter = null;
-			
+	private List<String> tagHistory = new ArrayList<String>();			
 
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
@@ -71,6 +73,14 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
+		
+		if (tagHistory.get(tagHistory.size()-1).equals(localName)) {
+			tagHistory.remove(tagHistory.size()-1);
+		}
+		else {
+			logger.warn("Last tag in list does not match end element");
+		}
+		
 		if (activeWriter!=null) {
 			
 			if (activeTag.equals(localName)) {
@@ -91,7 +101,7 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 				writeEndTagToActiveWriter(qName); //write inner tags, but not the tag of the element being stripped
 			}
 		}
-		else {
+		else {				
 			super.endElement(uri, localName, qName);
 		}
 	}
@@ -110,9 +120,10 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	}	
 	
 	@Override
-	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {		
+	public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {				
+		tagHistory.add(localName);
 		
-		if (activeTag==null) {
+		if (activeTag==null) {			
 			if (checkForNewStartElement(uri, localName, qName)) {
 				writeReplacementStartElement(uri, localName, qName);
 			}
@@ -152,6 +163,7 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	}
 
 	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {
+		writeTagList();
 		TagInterceptor interceptor = getInterceptorForElement(localName,uri);
 		if (interceptor!=null && interceptor instanceof ResponseTagInterceptor) {		
 			if (logger.isDebugEnabled()) logger.debug("Found matching start tag for :"+localName);
@@ -165,6 +177,16 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 			}													
 		}
 		return interceptor!=null;
+	}
+	
+	private void writeTagList() {
+		String str="*";
+		boolean bodyFound=false;
+		for (String s : tagHistory) {
+			if (bodyFound) str+="/"+s;
+			if (s.equals("Body")) bodyFound=true;
+		}
+		logger.info("TagPath = "+str);
 	}
 
 	@Override
