@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-16 10:14:33 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -43,6 +43,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.UUID;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -66,9 +67,8 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 @SuppressWarnings("serial")
 public class ProxyServlet extends HttpServlet {
 		
-	private static Logger logger = Logger.getLogger(ProxyServlet.class);	
-		
-		
+	private static Logger logger = Logger.getLogger(ProxyServlet.class);		
+
 	public ProxyServlet() {		
 		logger.info("Instantiating Proxy Servlet.");					
 	}

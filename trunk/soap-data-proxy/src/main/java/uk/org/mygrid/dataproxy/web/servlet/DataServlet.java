@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataServlet.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-16 10:14:33 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
@@ -91,14 +91,9 @@ public class DataServlet extends HttpServlet{
 				InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
 				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
 				char buf[]=new char[255];
-				while (true) {
-					int l=reader.read(buf);
-					if (l>0) {
-						writer.write(buf,0,l);
-					}
-					else {
-						break;
-					}
+				int l;
+				while ((l=reader.read(buf))>0) {					
+					writer.write(buf,0,l);					
 				}				
 				writer.close();
 				reader.close();
