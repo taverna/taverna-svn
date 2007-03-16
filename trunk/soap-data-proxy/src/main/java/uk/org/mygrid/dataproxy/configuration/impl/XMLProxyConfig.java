@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -124,19 +124,19 @@ public class XMLProxyConfig implements ProxyConfig {
 				else {												
 					Element wsdlChild = wsdls.addElement("wsdl");
 					wsdlChild.addElement("id").setText(wsdl.getWSDLID());
-					wsdlChild.addElement("address").setText(wsdl.getAddress());
 					wsdlChild.addElement("name").setText(wsdl.getName());
-					wsdlChild.addElement("endpoint").setText(wsdl.getEndpoint());
+					wsdlChild.addElement("address").setText(wsdl.getAddress());
 					wsdlChild.addElement("filename").setText(wsdl.getWSDLFilename());
+					wsdlChild.addElement("endpoint").setText(wsdl.getEndpoint());					
 					
 					if (wsdl.getElements().size()>0) {
 						Element elChild = wsdlChild.addElement("elements");
 						for (ElementDef elDef : wsdl.getElements()) {
 							Element element = elChild.addElement("element");
 							element.addElement("name").setText(elDef.getElementName());
-							element.addElement("namespace").setText(elDef.getNamespaceURI());
-							element.addElement("operation").setText(elDef.getOperation());
-							element.addElement("path").setText(elDef.getPath());							
+							element.addElement("namespaceURI").setText(elDef.getNamespaceURI());
+							element.addElement("path").setText(elDef.getPath());
+							element.addElement("operation").setText(elDef.getOperation());													
 						}
 					}					
 				}

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -128,19 +128,19 @@ public class XMLWSDLConfig implements WSDLConfig {
 		Document doc = DocumentFactory.getInstance().createDocument();
 		Element wsdlChild = doc.addElement("wsdl");
 		wsdlChild.addElement("id").setText(getWSDLID());
-		wsdlChild.addElement("address").setText(getAddress());
 		wsdlChild.addElement("name").setText(getName());
-		wsdlChild.addElement("endpoint").setText(getEndpoint());
+		wsdlChild.addElement("address").setText(getAddress());	
 		wsdlChild.addElement("filename").setText(getWSDLFilename());
+		wsdlChild.addElement("endpoint").setText(getEndpoint());		
 		
 		if (elements.size()>0) {
 			Element elChild = wsdlChild.addElement("elements");
 			for (ElementDef elDef : elements) {
 				Element element = elChild.addElement("element");
 				element.addElement("name").setText(elDef.getElementName());
-				element.addElement("namespace").setText(elDef.getNamespaceURI());
-				element.addElement("operation").setText(elDef.getOperation());
-				element.addElement("path").setText(elDef.getPath());				
+				element.addElement("namespaceURI").setText(elDef.getNamespaceURI());
+				element.addElement("path").setText(elDef.getPath());
+				element.addElement("operation").setText(elDef.getOperation());							
 			}
 		}
 		return doc.getRootElement();

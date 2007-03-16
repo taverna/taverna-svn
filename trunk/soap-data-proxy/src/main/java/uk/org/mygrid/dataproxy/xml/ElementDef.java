@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDef.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 16:56:16 $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -79,8 +79,10 @@ public class ElementDef {
 
 	@Override
 	public int hashCode() {
-		return (getElementName() + getNamespaceURI() + getPath() + getOperation())
-				.hashCode();
+//		FIXME: needs to take into account path and operation
+		return (getElementName()+getNamespaceURI()).hashCode();
+//		return (getElementName() + getNamespaceURI() + getPath() + getOperation())
+//				.hashCode();
 	}
 
 	@Override
@@ -90,11 +92,14 @@ public class ElementDef {
 
 		ElementDef elDef = (ElementDef) obj;
 
-		return (this.getElementName().equals(elDef.getElementName())
-				&& this.getNamespaceURI().equals(elDef.getNamespaceURI())
-				&& this.getPath().equals(elDef.getPath()) 
-				&& this.getOperation().equals(elDef.getOperation())
-				);
+		//FIXME: needs to take into account path and operation
+		return this.getElementName().equals(elDef.getElementName()) && this.getNamespaceURI().equals(elDef.getNamespaceURI());
+		
+//		return (this.getElementName().equals(elDef.getElementName())
+//				&& this.getNamespaceURI().equals(elDef.getNamespaceURI())
+//				&& this.getPath().equals(elDef.getPath()) 
+//				&& this.getOperation().equals(elDef.getOperation())
+//				);
 	}
 
 	public String toString() {

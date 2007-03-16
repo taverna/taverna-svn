@@ -1,0 +1,116 @@
+/*
+ * Copyright (C) 2003 The University of Manchester 
+ *
+ * Modifications to the initial code base are copyright of their
+ * respective authors, or their employers as appropriate.  Authorship
+ * of the modifications may be determined from the ChangeLog placed at
+ * the end of this file.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+ * USA.
+ *
+ ****************************************************************
+ * Source code information
+ * -----------------------
+ * Filename           $RCSfile: DataServlet.java,v $
+ * Revision           $Revision: 1.1 $
+ * Release status     $State: Exp $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
+ *               by   $Author: sowen70 $
+ * Created on 15 Mar 2007
+ *****************************************************************/
+package uk.org.mygrid.dataproxy.web.servlet;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
+
+public class DataServlet extends HttpServlet{
+	
+	private static Logger logger = Logger.getLogger(DataServlet.class);
+
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String dataID = request.getParameter("dataid");
+		if (dataID==null) {
+			response.getWriter().println("No dataid provided.\n");
+		}
+		
+		String wsdlID = request.getParameter("wsdlid");
+		if (wsdlID==null) {
+			response.getWriter().println("No wsdlid provided.\n");
+		}
+		
+		String invocationID = request.getParameter("invocationid");
+		if (invocationID==null) {
+			response.getWriter().println("No invocationid provided. \n");
+		}
+		
+		if (dataID!=null && wsdlID!=null && dataID!=null) {
+			
+			File file = null;
+			try {				
+				URL base = ProxyConfigFactory.getInstance().getStoreBaseURL();
+				file = new File(base.toURI());
+				file=new File(file,wsdlID);
+				file=new File(file,invocationID);
+				file=new File(file,dataID);
+				logger.info("Reading data from "+file.getAbsolutePath());
+				
+				InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
+				OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
+				char buf[]=new char[255];
+				while (true) {
+					int l=reader.read(buf);
+					if (l>0) {
+						writer.write(buf,0,l);
+					}
+					else {
+						break;
+					}
+				}				
+				writer.close();
+				reader.close();
+			}
+			catch(FileNotFoundException e) {			
+				logger.error("Data did not exist at url:"+file.getAbsolutePath(),e);
+				response.getWriter().println("Unable to find data!");
+			}	
+			catch(URISyntaxException e) {
+				logger.error("Error with URI syntax of "+ProxyConfigFactory.getInstance().getStoreBaseURL(),e);
+				response.getWriter().println("Unable to find data!");
+			}
+		}
+	}	
+}

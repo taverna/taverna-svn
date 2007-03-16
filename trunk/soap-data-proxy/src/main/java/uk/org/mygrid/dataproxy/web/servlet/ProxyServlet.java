@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-06 15:43:54 $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -119,7 +119,7 @@ public class ProxyServlet extends HttpServlet {
 		
 		URL dataStoreLocation;
 		try {
-			dataStoreLocation = getDataStoreLocation();
+			dataStoreLocation = getDataStoreLocation(wsdlConfig.getWSDLID());
 		} catch (Exception e1) {
 			logger.error("An error occurred creating the data store location");
 			throw new ServletException("An error occurred creating the data store location",e1);
@@ -141,7 +141,7 @@ public class ProxyServlet extends HttpServlet {
 		}		
 	}	
 	
-	private URL getDataStoreLocation() throws Exception {
+	private URL getDataStoreLocation(String wsdlID) throws Exception {
 		URL result = null;
 		
 		URL base = getConfig().getStoreBaseURL();

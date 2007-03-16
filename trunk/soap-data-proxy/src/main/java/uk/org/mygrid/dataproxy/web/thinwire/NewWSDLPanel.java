@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-16 10:00:31 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -86,7 +86,7 @@ public class NewWSDLPanel extends Panel {
 		addButton.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if (name.getText().length()>0) {
+				if (name.getText().length()<=0) {
 					updateStatus("You must provide a name for the wsdl");
 				}
 				else {
