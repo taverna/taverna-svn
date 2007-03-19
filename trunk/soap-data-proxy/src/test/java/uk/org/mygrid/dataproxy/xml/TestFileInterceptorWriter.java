@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-19 14:48:52 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -40,6 +40,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -90,7 +91,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -99,8 +100,13 @@ public class TestFileInterceptorWriter {
 		
 		Element el = doc.getRootElement().element("data");
 		String strURL=el.getTextTrim();
+		
+		assertEquals("Incorrect reference to data","http://localhost/data&dataid=data1",strURL);
+		
+		File dataFile = new File(tmpDir,"data1");
 				
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(strURL).openStream()));
+				
+		BufferedReader reader = new BufferedReader(new FileReader(dataFile));
 		String result="";
 		String line=null;
 		while ((line=reader.readLine())!=null) {
@@ -114,7 +120,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -127,28 +133,9 @@ public class TestFileInterceptorWriter {
 		int c=1;
 		for (Element el : (List<Element>)elements) {
 			String url=el.getTextTrim();
-			assertTrue("should end with "+c,url.endsWith(String.valueOf(c)));
+			assertEquals("url to data is incorrect","http://localhost/data&dataid=data"+c,url);			
 			c++;
 		}		
-	}
-	
-	@Test
-	public void testPrefix() throws Exception {
-		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"prefix"));
-		
-		parser.addTagInterceptor(interceptor);
-		parser.read(new ByteArrayInputStream(xml.getBytes()));
-		
-		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
-		
-		Element el = doc.getRootElement().element("data");
-		String strURL=el.getTextTrim();
-		URL url = new URL(strURL);
-		String file=url.getFile();
-		file=file.substring(file.lastIndexOf("/")+1);
-		assertTrue("File should start with 'prefix'",file.startsWith("prefix"));
-		
-	}
+	}	
 	
 }

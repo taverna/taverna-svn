@@ -25,23 +25,21 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriterWithPathMatching.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 16:47:08 $
+ * Last modified on   $Date: 2007-03-19 14:48:52 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -91,7 +89,7 @@ public class TestFileInterceptorWriterWithPathMatching {
 	@Test
 	public void testMatchingPath() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/section/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/section/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -107,7 +105,7 @@ public class TestFileInterceptorWriterWithPathMatching {
 	@Test
 	public void testNonMatchingPath() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/anelement/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/anelement/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));

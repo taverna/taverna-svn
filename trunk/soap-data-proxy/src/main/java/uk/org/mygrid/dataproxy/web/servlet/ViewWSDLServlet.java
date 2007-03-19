@@ -42,6 +42,7 @@ public class ViewWSDLServlet extends javax.servlet.http.HttpServlet implements j
 			ProxyConfig config = ProxyConfigFactory.getInstance();
 			WSDLConfig wsdlConfig = config.getWSDLConfigForID(wsdlID);
 			if (wsdlConfig!=null) {
+				response.setContentType("text/xml");
 				URL filebase = new URL(config.getStoreBaseURL(),wsdlID+"/");
 				URL file = new URL(filebase,wsdlConfig.getWSDLFilename());
 				BufferedReader reader = new BufferedReader(new InputStreamReader(file.openStream()));

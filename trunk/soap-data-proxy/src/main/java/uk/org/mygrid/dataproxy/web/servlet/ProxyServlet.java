@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-03-19 14:48:53 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -40,10 +40,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.UUID;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +55,7 @@ import org.xml.sax.SAXException;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
@@ -117,17 +118,21 @@ public class ProxyServlet extends HttpServlet {
 		connection.getOutputStream().write(message.getBytes());
 		InputStream in = connection.getInputStream();		
 		
+		String invocationID;
 		URL dataStoreLocation;
 		try {
-			dataStoreLocation = getDataStoreLocation(wsdlConfig.getWSDLID());
+			invocationID=generateInvocationID(wsdlConfig.getWSDLID());
+			dataStoreLocation = getDataStoreLocation(wsdlConfig.getWSDLID(), invocationID);
 		} catch (Exception e1) {
 			logger.error("An error occurred creating the data store location");
 			throw new ServletException("An error occurred creating the data store location",e1);
 		}
 		
+		String baseReference = ServerInfo.contextPath+"/data?wsdlid="+wsdlConfig.getWSDLID()+"&invocationid="+invocationID;
+		
 		XMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
 		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
-			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,elementDef.getElementName())));
+			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,baseReference,elementDef.getElementName())));
 		}
 			
 		responseParser.setOutputStream(response.getOutputStream());
@@ -139,10 +144,50 @@ public class ProxyServlet extends HttpServlet {
 		} catch (SAXException e) {
 			logger.error("Error parsing SOAP response",e);
 		}		
+		
+		clearEmptyDirectories(dataStoreLocation);
 	}	
 	
-	private URL getDataStoreLocation(String wsdlID) throws Exception {
-		URL result = null;
+	private void clearEmptyDirectories(URL dataDirectory) {		
+		try {
+			File dir = new File(dataDirectory.toURI());
+			if (dir.exists()) {
+				if (dir.isDirectory()) {
+					if (dir.listFiles().length==0) {
+						dir.delete();
+					}
+				}
+			}
+		} catch (URISyntaxException e) {
+			logger.error("Error deleting empty data directory");
+		}		
+	}
+	
+	private String generateInvocationID(String wsdlID) throws URISyntaxException {
+		URL base = getConfig().getStoreBaseURL();
+		File dir = new File(base.toURI());
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		
+		dir=new File(dir,wsdlID);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+		
+		String invID=UUID.randomUUID().toString().split("-")[0];
+		while (true) {
+			if (new File(dir,invID).exists()) {
+				invID=UUID.randomUUID().toString().split("-")[0];
+			}
+			else {
+				break;
+			}			
+		}
+		return invID;
+	}
+	
+	private URL getDataStoreLocation(String wsdlID, String invocationID) throws Exception {		
 		
 		URL base = getConfig().getStoreBaseURL();
 		File dir = new File(base.toURI());
@@ -150,17 +195,18 @@ public class ProxyServlet extends HttpServlet {
 			dir.mkdir();
 		}
 		
-		while(true) {
-			String uuid=UUID.randomUUID().toString();
-			File invocationDir = new File(dir,uuid);
-			if (!invocationDir.exists()) {
-				invocationDir.mkdir();
-				result=invocationDir.toURL();
-				break;
-			}
+		dir=new File(dir,wsdlID);
+		if (!dir.exists()) {
+			dir.mkdir();
 		}
-		
-		return result;
+					
+		//FIXME: it generates this directory whether there is data put there or not.
+		dir = new File(dir,invocationID);
+		if (!dir.exists()) {
+			dir.mkdir();
+		}
+				
+		return dir.toURL();
 	}
 	
 	private HttpURLConnection createEndpointConnection(String endPoint, String soapAction) throws MalformedURLException, IOException, ProtocolException {

@@ -64,12 +64,12 @@
 			<param-name>extraArguments</param-name>
 			<param-value>initParam,clientInfo,header</param-value>
 		</init-param>
-	</servlet>	
-
+	</servlet>
+	
 	<servlet-mapping>
 		<servlet-name>ThinwireServlet</servlet-name>
 		<url-pattern>/</url-pattern>
-	</servlet-mapping>	
+	</servlet-mapping>
 	
 	<mime-mapping>
 		<extension>xsd</extension>

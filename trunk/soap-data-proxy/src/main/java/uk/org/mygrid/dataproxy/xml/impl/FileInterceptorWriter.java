@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriter.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-03-19 14:48:53 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -46,18 +46,18 @@ import java.net.URL;
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 
 public class FileInterceptorWriter implements InterceptorWriter {
-
-	private URL fileURL;
-	private Writer writer;
 	
-	public FileInterceptorWriter(URL fileURL) throws FileNotFoundException, URISyntaxException {
-		this.fileURL=fileURL;
+	private Writer writer;
+	private String destinationReference;
+	
+	public FileInterceptorWriter(URL fileURL,String reference) throws FileNotFoundException, URISyntaxException {		
 		FileOutputStream outStream=new FileOutputStream(new File(fileURL.toURI()));
 		writer = new BufferedWriter(new OutputStreamWriter(outStream));
+		this.destinationReference=reference;
 	}
 	
 	public String getDestinationReference() {
-		return fileURL.toExternalForm();
+		return this.destinationReference;
 	}
 
 	public void write(char[] ch, int start, int length) throws IOException {

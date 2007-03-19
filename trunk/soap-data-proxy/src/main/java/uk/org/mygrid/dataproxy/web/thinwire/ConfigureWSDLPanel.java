@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 10:32:27 $
+ * Last modified on   $Date: 2007-03-19 14:48:53 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -80,7 +80,7 @@ public class ConfigureWSDLPanel extends Panel {
 			getParser().flush(wsdl);
 			List<Element> operations=getParser().parseOperations(wsdl);
 			
-			for (Element el : operations) {
+			for (Element el : operations) {				
 				addOperationToTree(el);
 			}
 			status.setText("Finished parsing WSDL, "+operations.size()+" operations found.");
@@ -144,7 +144,6 @@ public class ConfigureWSDLPanel extends Panel {
 		});	
 		
 		commit.addActionListener(Button.ACTION_CLICK, new ActionListener() {
-
 			public void actionPerformed(ActionEvent arg0) {
 				commitClicked(config);
 			}			
@@ -168,6 +167,7 @@ public class ConfigureWSDLPanel extends Panel {
 			else {
 				try {
 					el=getParser().expandType(config.getAddress(), el);
+					logger.info("Expanded element XML = "+el.asXML());
 				} catch (SchemaParsingException e) {
 					logger.error("An error occurred expanding the type element:"+e);
 				}
