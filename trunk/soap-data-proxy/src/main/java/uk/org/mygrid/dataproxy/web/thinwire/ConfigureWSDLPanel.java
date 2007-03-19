@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-03-19 10:32:27 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -74,26 +74,19 @@ public class ConfigureWSDLPanel extends Panel {
 		tree.setBounds(198, 58, 350, 450);
 		
 		final String wsdl = config.getAddress();
-		
-		Thread backgroundThread = new Thread(new Runnable() {
-
-			public void run() {
-				try {
-					status.setText("Starting to parse WSDL");			
-					getParser().flush(wsdl);
-					List<Element> operations=getParser().parseOperations(wsdl);
-					
-					for (Element el : operations) {
-						addOperationToTree(el);
-					}
-					status.setText("Finished parsing WSDL, "+operations.size()+" operations found.");
-				} catch (Exception e){
-					logger.error("Error parsing the WSDL "+config.getAddress(),e);
-				}				
-			}
+				
+		try {
+			status.setText("Starting to parse WSDL");			
+			getParser().flush(wsdl);
+			List<Element> operations=getParser().parseOperations(wsdl);
 			
-		});
-		backgroundThread.start();
+			for (Element el : operations) {
+				addOperationToTree(el);
+			}
+			status.setText("Finished parsing WSDL, "+operations.size()+" operations found.");
+		} catch (SchemaParsingException e){
+			logger.error("Error parsing the WSDL "+config.getAddress(),e);
+		}						
 		
 		status.setBounds(0,200,500, 30);
 		
@@ -162,13 +155,7 @@ public class ConfigureWSDLPanel extends Panel {
 			public void actionPerformed(ActionEvent arg0) {
 				toggleClicked(tree.getSelectedItem());
 			}			
-		});
-		
-		try {
-			backgroundThread.join();
-		} catch (InterruptedException e) {
-			logger.error("Error joining background thread");
-		}
+		});		
 	}
 	
 	@SuppressWarnings("unchecked")
