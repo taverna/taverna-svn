@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:53 $
+ * Last modified on   $Date: 2007-03-20 16:36:43 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -187,7 +187,7 @@ public class ConfigureWSDLPanel extends Panel {
 		for (Element el : selectedForProxy) {
 			String xpath=convertToXPath(el);
 			String operation=getOperationFromTypeElement(el);
-			logger.info("XPATH="+xpath);
+			logger.info("path="+xpath);
 			ElementDefinition def = new ElementDefinition(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation);
 			elementDefs.add(def);
 		}

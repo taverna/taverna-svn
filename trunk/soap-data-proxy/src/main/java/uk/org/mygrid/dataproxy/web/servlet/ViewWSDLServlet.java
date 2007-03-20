@@ -9,9 +9,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+import org.dom4j.DocumentException;
+import org.jaxen.JaxenException;
+
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.wsdl.WSDLProxy;
+import uk.org.mygrid.dataproxy.wsdl.impl.WSDLProxyImpl;
 
 /**
  * Servlet implementation class for Servlet: ViewWSDLServlet
@@ -19,33 +25,34 @@ import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
  */
  @SuppressWarnings("serial")
 public class ViewWSDLServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-    /* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#HttpServlet()
-	 */
+    private static Logger logger = Logger.getLogger(ViewWSDLServlet.class);
+    
 	public ViewWSDLServlet() {
 		super();
 	}   	
-	
-	/* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+		
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request,response);
 	}  	
-	
-	/* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+		
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String wsdlID=request.getParameter("id");
 		if (wsdlID!=null) {
 			ProxyConfig config = ProxyConfigFactory.getInstance();
 			WSDLConfig wsdlConfig = config.getWSDLConfigForID(wsdlID);
 			if (wsdlConfig!=null) {
+				wsdlConfig.getAddress();
 				response.setContentType("text/xml");
-				URL filebase = new URL(config.getStoreBaseURL(),wsdlID+"/");
-				URL file = new URL(filebase,wsdlConfig.getWSDLFilename());
-				BufferedReader reader = new BufferedReader(new InputStreamReader(file.openStream()));
+				
+				WSDLProxy proxy = getWSDLProxy(wsdlConfig);				
+				
+				BufferedReader reader;
+				try {
+					reader = new BufferedReader(new InputStreamReader(proxy.getStream()));
+				} catch (Exception e) {
+					logger.error("Error proxying wsdl",e);
+					throw new ServletException(e);
+				}
 				String line=null;
 				while ((line = reader.readLine())!=null) {
 					response.getWriter().write(line+"\r\n");
@@ -58,5 +65,9 @@ public class ViewWSDLServlet extends javax.servlet.http.HttpServlet implements j
 		else {
 			response.getWriter().write("No id provided");
 		}
-	}   	  	    
+	}   
+	
+	private WSDLProxy getWSDLProxy(WSDLConfig config) {
+		return new WSDLProxyImpl(config);
+	}
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestAxisBasedSchemaParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-20 16:36:42 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -90,7 +90,7 @@ public class TestAxisBasedSchemaParser {
 		
 		assertEquals("Expanded type should be string","string",child.getName());
 		assertEquals("Name should be out","out",child.attribute("name").getText());
-		assertEquals("Incorrect namespace","http://www.w3.org/2001/XMLSchema",child.getNamespaceURI());	
+		assertEquals("Incorrect namespace","http://webservice.gominer.lmp.nci.nih.gov",child.getNamespaceURI());	
 	}
 	
 	@Test (expected=SchemaParsingException.class)
@@ -130,7 +130,7 @@ public class TestAxisBasedSchemaParser {
 		assertNotNull("There should be an element string",inner);
 		assertEquals("Incorrect tagname","string",inner.getName());
 		assertEquals("Incorrect name","ERROR",inner.attribute("name").getText());
-		assertEquals("Incorrect namespace","http://www.w3.org/2001/XMLSchema",inner.getNamespaceURI());		
+		assertEquals("Incorrect namespace","http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",inner.getNamespaceURI());		
 		
 		inner = expanded.element("DbListType");
 		assertNotNull("There should be an element DbListType",inner);

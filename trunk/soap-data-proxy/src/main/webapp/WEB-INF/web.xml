@@ -65,10 +65,23 @@
 			<param-value>initParam,clientInfo,header</param-value>
 		</init-param>
 	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>
+		ViewSchemaServlet</display-name>
+		<servlet-name>ViewSchemaServlet</servlet-name>
+		<servlet-class>
+		uk.org.mygrid.dataproxy.web.servlet.ViewSchemaServlet</servlet-class>
+	</servlet>
 	
 	<servlet-mapping>
 		<servlet-name>ThinwireServlet</servlet-name>
 		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ViewSchemaServlet</servlet-name>
+		<url-pattern>/schema</url-pattern>
 	</servlet-mapping>
 	
 	<mime-mapping>
