@@ -25,27 +25,30 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:00:31 $
+ * Last modified on   $Date: 2007-03-20 16:56:10 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.thinwire;
 
-import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.jaxen.JaxenException;
+import org.jaxen.dom4j.Dom4jXPath;
 
 import thinwire.ui.Button;
 import thinwire.ui.Component;
 import thinwire.ui.Label;
-import thinwire.ui.MessageBox;
 import thinwire.ui.Panel;
 import thinwire.ui.TextField;
 import thinwire.ui.event.ActionEvent;
@@ -53,12 +56,8 @@ import thinwire.ui.event.ActionListener;
 import thinwire.ui.layout.Layout;
 import thinwire.ui.layout.TableLayout;
 import thinwire.ui.style.Color;
-import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
-import uk.org.mygrid.dataproxy.web.ServerInfo;
-import uk.org.mygrid.dataproxy.wsdl.WSDLReplicator;
-import uk.org.mygrid.dataproxy.wsdl.impl.WSDLReplicatorImpl;
 
 public class NewWSDLPanel extends Panel {
 
@@ -128,23 +127,16 @@ public class NewWSDLPanel extends Panel {
 	}
 	
 	private void addWSDL(String wsdlLocation,String wsdlName) throws Exception {
-		addButton.setEnabled(false);
-		URL url = new URL(wsdlLocation);
+		addButton.setEnabled(false);		
 		updateStatus("Starting to process WSDL");
 		updateStatus("Making local copy of WSDL");		
+			
 		
-		WSDLReplicator replicator = new WSDLReplicatorImpl(ServerInfo.contextPath);
-		
-		String wsdlID=ProxyConfigFactory.getUniqueWSDLID();
-		
-		File dest = getRootWSDLCopyPath();
-		logger.info("Making local copy of wsdl to "+dest.getAbsolutePath());
-		
-		replicator.replicateRemoteWSDL(wsdlID, wsdlName+".wsdl", url, dest);
+		String wsdlID=ProxyConfigFactory.getUniqueWSDLID();		
 		
 		NewWSDLConfig config = new NewWSDLConfig();
 		config.setWSDLID(wsdlID);
-		config.setEndpoint(replicator.getOriginalEndpoint());
+		config.setEndpoint(fetchServiceEndpoint(wsdlLocation));
 		config.setName(wsdlName);
 		config.setWSDLFilename(wsdlName+".wsdl");
 		config.setAddress(wsdlLocation);
@@ -160,9 +152,13 @@ public class NewWSDLPanel extends Panel {
 		logger.info("New WSDL added with ID="+wsdlID);
 	}
 	
-	private File getRootWSDLCopyPath() throws URISyntaxException {		
-		ProxyConfig config = ProxyConfigFactory.getInstance();
-		URL basePath = config.getStoreBaseURL();		
-		return new File(basePath.toURI());		
-	}
+	private String fetchServiceEndpoint(String wsdlLocation) throws DocumentException, IOException, JaxenException {
+		URL url = new URL(wsdlLocation);
+		Document doc = new SAXReader().read(url.openStream());
+		Dom4jXPath path = new Dom4jXPath("//wsdl:service/wsdl:port/soap:address");		
+		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
+		path.addNamespace("soap", "http://schemas.xmlsoap.org/wsdl/soap/");
+		Element el = (Element)path.selectSingleNode(doc);
+		return el.attributeValue("location");
+	}	
 }
