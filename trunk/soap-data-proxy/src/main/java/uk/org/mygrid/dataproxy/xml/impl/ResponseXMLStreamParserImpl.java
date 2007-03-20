@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:53 $
+ * Last modified on   $Date: 2007-03-20 16:58:54 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Attribute;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
