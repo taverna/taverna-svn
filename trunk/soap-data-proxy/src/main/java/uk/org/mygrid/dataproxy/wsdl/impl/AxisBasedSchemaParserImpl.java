@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-20 13:41:07 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -99,7 +99,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 		SymbolTable table = getSymbolTable(wsdlUrl);
 		QName qname = new QName(type.getName(), type.getNamespace());
 		TypeEntry o = null;
-
+		
 		o = table.getElement(convertQName(qname));
 		if (o == null) {
 			o = table.getType(convertQName(qname));
@@ -125,7 +125,6 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 					} else {
 						type.addElement(convertQName(o.getComponentType()));
 					}
-
 				}
 			}
 		}
@@ -140,8 +139,13 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 	private void populateWithContainedElements(Element type,
 			Vector<ElementDecl> containedElements) {
 		for (ElementDecl elementEntry : containedElements) {
-			Element addedElement = type.addElement(convertQName(elementEntry
-					.getType().getQName()));
+			Element addedElement = type.addElement(new QName(elementEntry
+					.getType().getQName().getLocalPart(),new Namespace("",elementEntry.getQName().getNamespaceURI())));
+			
+			logger.info("ElementDecl class = "+elementEntry.getClass().toString());
+			logger.info("Element qname ={"+elementEntry.getQName().getNamespaceURI()+"}"+elementEntry.getQName().getLocalPart());
+			logger.info("Element type qname ={"+elementEntry.getType().getQName().getNamespaceURI()+"}"+elementEntry.getType().getQName().getLocalPart());
+			
 			// work around for bug
 			// http://issues.apache.org/jira/browse/AXIS-2105
 			// is to parse the QName and take after the last '>' as the name.
@@ -150,9 +154,9 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 			if (x > -1) {
 				String name = elementEntry.getQName().getLocalPart().substring(
 						x + 1);
-				addedElement.addAttribute("name", name);
-			}
-		}
+				addedElement.addAttribute("name", name);				
+			}			
+		}		
 	}
 
 	private SymbolTable getSymbolTable(String wsdlUrl)
