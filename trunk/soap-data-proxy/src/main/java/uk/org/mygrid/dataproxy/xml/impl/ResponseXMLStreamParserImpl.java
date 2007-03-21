@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-03-21 18:22:45 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -142,7 +142,7 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	}
 
 	private void writeStartTagToActiveWriter(String localName, String qName, Attributes atts) {
-				
+						
 		String attributesString="";
 		for (int i=0;i<atts.getLength();i++) {
 			attributesString+=atts.getQName(i)+"=\""+atts.getValue(i)+"\" ";
@@ -156,8 +156,13 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 		}
 	}
 
-	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {		
-		super.startElement(uri,localName,qName,new AttributesImpl());
+	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		
+		attributes.addAttribute("http://www.w3.org/1999/xlink", "xlink", "xlink:href", "xlink", activeWriter.getDestinationReference());
+		attributes.addAttribute("http://www.w3.org/1999/xlink", "xmlns", "xmlns:xlink", "xmlns", "http://www.w3.org/1999/xlink");
+		
+		super.startElement(uri,localName,qName,attributes);
 		String destinationName=activeWriter.getDestinationReference();		
 		super.characters(destinationName.toCharArray(), 0, destinationName.length());		
 	}
