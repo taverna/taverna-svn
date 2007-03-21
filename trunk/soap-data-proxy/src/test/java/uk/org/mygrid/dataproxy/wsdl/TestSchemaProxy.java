@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestSchemaProxy.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:42 $
+ * Last modified on   $Date: 2007-03-21 16:45:18 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -60,9 +60,9 @@ public class TestSchemaProxy {
 		List<Element>include = doc.getRootElement().elements("include");
 		
 		Element taxon = include.get(0);		
-		assertEquals("inluded schema should have been rewritten to use proxy",taxon.attributeValue("schemaLocation"),"schema?wsdlid=1&xsd=efetch_taxon.xsd");
+		assertEquals("included schema should have been rewritten to use proxy",taxon.attributeValue("schemaLocation"),"schema?wsdlid=1&xsd=efetch_taxon.xsd");
 		
 		Element pubmed = include.get(3);
-		assertEquals("inluded schema should have been rewritten to use proxy",pubmed.attributeValue("schemaLocation"),"schema?wsdlid=1&xsd=efetch_pubmed.xsd");		
+		assertEquals("included schema should have been rewritten to use proxy",pubmed.attributeValue("schemaLocation"),"schema?wsdlid=1&xsd=efetch_pubmed.xsd");		
 	}
 }

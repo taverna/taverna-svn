@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SchemaProxyImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:42 $
+ * Last modified on   $Date: 2007-03-21 16:45:18 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -53,20 +53,19 @@ import org.jaxen.dom4j.Dom4jXPath;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.SchemaProxy;
 
-public class SchemaProxyImpl implements SchemaProxy {
+public class SchemaProxyImpl extends WSDLProxyImpl implements SchemaProxy {
 	
 	private static Logger logger = Logger.getLogger(SchemaProxyImpl.class);
-	
-	private WSDLConfig config;
+		
 	private String xsd;
 	
 	public SchemaProxyImpl(WSDLConfig config, String xsd) {		
-		this.config = config;
+		super(config);
 		this.xsd = xsd;
 	}
 
 	public InputStream getStream() throws JaxenException, IOException, DocumentException {
-		URL schemaUrl = new URL(config.getAddress());
+		URL schemaUrl = new URL(getConfig().getAddress());
 		schemaUrl=new URL(schemaUrl,xsd);
 		logger.info("Proxying schema for address:"+schemaUrl.toExternalForm());
 		Document doc = new SAXReader().read(schemaUrl.openStream());
@@ -82,9 +81,8 @@ public class SchemaProxyImpl implements SchemaProxy {
 		return result;
 	}
 	
-	//FIXME: this code is duplicated across wsdl and schema proxies
 	@SuppressWarnings("unchecked")
-	private void changeIncludes(Document doc) throws JaxenException
+	protected void changeIncludes(Document doc) throws JaxenException
 	{
 		Dom4jXPath path = new Dom4jXPath("//s:schema/s:include");	
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
@@ -95,24 +93,12 @@ public class SchemaProxyImpl implements SchemaProxy {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void changeImports(Document doc) throws JaxenException {
+	protected void changeImports(Document doc) throws JaxenException {
 		Dom4jXPath path = new Dom4jXPath("//s:schema/s:import");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
 		
 		List<Element> nodes=path.selectNodes(doc);
 		rewriteSchemaLocations(nodes);		
-	}
-	
-	private void rewriteSchemaLocations(List<Element> nodes) {
-		for (Element element : nodes) {
-			String schemaLocation = element.attributeValue("schemaLocation");
-			if (schemaLocation!=null) {
-				element.attribute("schemaLocation").setValue("schema?wsdlid="+config.getWSDLID()+"&xsd="+schemaLocation);
-			}
-		}
-	}
-	
-	
-	
+	}		
 }

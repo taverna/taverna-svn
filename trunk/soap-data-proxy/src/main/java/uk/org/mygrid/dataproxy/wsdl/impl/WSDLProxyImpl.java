@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProxyImpl.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:42 $
+ * Last modified on   $Date: 2007-03-21 16:45:18 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -58,7 +58,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 	
 	private static Logger logger = Logger.getLogger(WSDLProxyImpl.class);
 	
-	private WSDLConfig config;
+	private WSDLConfig config;	
 
 	public WSDLProxyImpl(WSDLConfig config) {
 		this.config = config;
@@ -81,7 +81,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void changeIncludes(Document doc) throws JaxenException
+	protected void changeIncludes(Document doc) throws JaxenException
 	{
 		Dom4jXPath path = new Dom4jXPath("//wsdl:types/s:schema/s:include");	
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
@@ -92,7 +92,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void changeImports(Document doc) throws JaxenException {
+	protected void changeImports(Document doc) throws JaxenException {
 		Dom4jXPath path = new Dom4jXPath("//wsdl:types/s:schema/s:import");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("s", "http://www.w3.org/2001/XMLSchema");
@@ -101,7 +101,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 		rewriteSchemaLocations(nodes);		
 	}
 
-	private void rewriteSchemaLocations(List<Element> nodes) {
+	protected void rewriteSchemaLocations(List<Element> nodes) {
 		for (Element element : nodes) {
 			String schemaLocation = element.attributeValue("schemaLocation");
 			if (schemaLocation!=null) {
@@ -119,6 +119,9 @@ public class WSDLProxyImpl implements WSDLProxy {
 		
 		return doc;
 	}
-	
+		
+	protected WSDLConfig getConfig() {
+		return config;
+	}
 	
 }
