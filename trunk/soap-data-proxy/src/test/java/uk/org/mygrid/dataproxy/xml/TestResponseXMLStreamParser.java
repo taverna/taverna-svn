@@ -38,16 +38,16 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestResponseXMLStreamParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 16:47:08 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
 
 public class TestResponseXMLStreamParser {
 
-	private XMLStreamParser parser = null;
+	private InterceptingXMLStreamParser parser = null;
 	ByteArrayOutputStream outputStream;
 	
 	@Before

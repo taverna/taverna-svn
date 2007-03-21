@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriterWithPathMatching.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:52 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
@@ -62,7 +62,7 @@ public class TestFileInterceptorWriterWithPathMatching {
 
 	private ByteArrayOutputStream outStream;
 
-	private XMLStreamParser parser;
+	private InterceptingXMLStreamParser parser;
 
 	@Before
 	public void setUp() throws Exception {

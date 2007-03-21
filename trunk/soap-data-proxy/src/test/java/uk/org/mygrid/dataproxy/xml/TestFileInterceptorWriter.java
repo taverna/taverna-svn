@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:52 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -65,7 +65,7 @@ public class TestFileInterceptorWriter {
 	
 	private File tmpDir;
 	private ByteArrayOutputStream outStream;
-	private XMLStreamParser parser;
+	private InterceptingXMLStreamParser parser;
 	
 	@Before
 	public void setUp() throws Exception {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:22:42 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -43,9 +43,9 @@ import uk.org.mygrid.dataproxy.xml.InterceptorReader;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
 import uk.org.mygrid.dataproxy.xml.RequestTagInterceptor;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
-import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 
-public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implements XMLStreamParser {
+public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implements InterceptingXMLStreamParser {
 
 	private static Logger logger = Logger
 			.getLogger(RequestXMLStreamParserImpl.class);

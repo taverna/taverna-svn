@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.6 $
+ * Filename           $RCSfile: InterceptingXMLStreamParser.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 09:51:51 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -38,13 +38,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-//TODO: bit vague, move some methods up from AbstractXMLStreamParser
 
-public interface XMLStreamParser {
+public interface InterceptingXMLStreamParser {
 			
 	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
 	public void addTagInterceptor(TagInterceptor interceptor);		
 	public void read(InputStream stream)  throws SAXException, IOException;
+	
+	public void characters(char[] ch, int start, int length) throws SAXException;
+	public void endElement(String uri, String localName, String qName) throws SAXException;
+	public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException;
 }

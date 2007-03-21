@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:22:42 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -49,17 +49,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
-import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 
-public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLStreamParser {
+public abstract class AbstractXMLStreamParser extends XMLWriter implements InterceptingXMLStreamParser {
 	private Map<ElementDefinition,TagInterceptor> interceptors = new HashMap<ElementDefinition,TagInterceptor>();
 	
 	private static Logger logger = Logger
-			.getLogger(AbstractXMLStreamParser.class);
-	
-	public AbstractXMLStreamParser() {
-		//setEscapeText(false); //prevents inserted XML being escaped.
-	}
+			.getLogger(AbstractXMLStreamParser.class);	
 	
 	@Override
 	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		

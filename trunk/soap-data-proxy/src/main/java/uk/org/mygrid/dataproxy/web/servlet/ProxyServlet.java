@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:53 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -57,7 +57,7 @@ import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
-import uk.org.mygrid.dataproxy.xml.XMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
 import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
 import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
@@ -98,7 +98,7 @@ public class ProxyServlet extends HttpServlet {
 
 		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));
 		
-		XMLStreamParser requestParser = new RequestXMLStreamParserImpl();
+		InterceptingXMLStreamParser requestParser = new RequestXMLStreamParserImpl();
 		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
 			requestParser.addTagInterceptor(new RequestTagInterceptorImpl(elementDef,new FileInterceptorReaderFactory()));
 		}
@@ -130,7 +130,7 @@ public class ProxyServlet extends HttpServlet {
 		
 		String baseReference = ServerInfo.contextPath+"/data?wsdlid="+wsdlConfig.getWSDLID()+"&invocationid="+invocationID;
 		
-		XMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
+		InterceptingXMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
 		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
 			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,baseReference,elementDef.getElementName())));
 		}

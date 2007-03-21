@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestRequestXMLStreamParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-21 16:37:30 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -46,7 +46,7 @@ import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 
 public class TestRequestXMLStreamParser {
 
-	private XMLStreamParser parser = null;
+	private InterceptingXMLStreamParser parser = null;
 	private ByteArrayOutputStream outputStream = null;
 	
 	@Before
