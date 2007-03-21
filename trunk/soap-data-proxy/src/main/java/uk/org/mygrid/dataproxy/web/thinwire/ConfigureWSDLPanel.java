@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:43 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -80,7 +81,8 @@ public class ConfigureWSDLPanel extends Panel {
 			getParser().flush(wsdl);
 			List<Element> operations=getParser().parseOperations(wsdl);
 			
-			for (Element el : operations) {				
+			for (Element el : operations) {
+				logger.debug("Operation xml = "+el.asXML());
 				addOperationToTree(el);
 			}
 			status.setText("Finished parsing WSDL, "+operations.size()+" operations found.");
@@ -186,9 +188,9 @@ public class ConfigureWSDLPanel extends Panel {
 		elementDefs.clear();
 		for (Element el : selectedForProxy) {
 			String xpath=convertToXPath(el);
-			String operation=getOperationFromTypeElement(el);
-			logger.info("path="+xpath);
-			ElementDefinition def = new ElementDefinition(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation);
+			String operation=getOperationFromTypeElement(el);			
+			logger.info("path="+xpath);						
+			ElementDefinition def = new ElementDefinition(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation,(Element)el.clone());		
 			elementDefs.add(def);
 		}
 		try {
@@ -203,6 +205,7 @@ public class ConfigureWSDLPanel extends Panel {
 		while (parent!=null && !parent.getName().equals("operation")) {
 			parent=parent.getParent();
 		}
+		//FIXME: potential NPE if no element called operation exists as a parent
 		return parent.element("name").getTextTrim();
 	}
 	
@@ -255,6 +258,11 @@ public class ConfigureWSDLPanel extends Panel {
 	private void toggleOn(Tree.Item selectedItem) {
 		selectedItem.setText("XXX: "+selectedItem.getText());
 		Element typeElement = (Element)selectedItem.getUserObject();
+		if (logger.isDebugEnabled()) {
+			Element parent = typeElement;
+			while (parent.getParent()!=null) parent=parent.getParent();
+			logger.debug("Type element toggled on: "+parent.asXML());
+		}
 		selectedForProxy.add(typeElement);
 	}
 	

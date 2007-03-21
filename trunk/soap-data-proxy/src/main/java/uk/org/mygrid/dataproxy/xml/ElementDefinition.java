@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -35,6 +35,8 @@ package uk.org.mygrid.dataproxy.xml;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.dom4j.Element;
 
 public class ElementDefinition {
 	private String elementName;
@@ -44,9 +46,19 @@ public class ElementDefinition {
 	private String path;	
 
 	private String operation;
+	
+	private Element typeElement;
 
+	public Element getTypeElement() {
+		return typeElement;
+	}
+
+	public ElementDefinition(String elementName, String namespaceURI, String path, String operation) {
+		this(elementName,namespaceURI,path,operation,null);
+	}
+				
 	public ElementDefinition(String elementName, String namespaceURI, String path,
-			String operation) {
+			String operation, Element typeElement) {
 		if (elementName == null)
 			elementName = "*";
 		if (path == null)
@@ -57,6 +69,7 @@ public class ElementDefinition {
 		this.namespaceURI = namespaceURI;
 		this.path = path;		
 		this.operation = operation;
+		this.typeElement=typeElement;
 	}
 
 	public boolean isMatchingPath(String comparePath) {
@@ -101,8 +114,6 @@ public class ElementDefinition {
 	public int hashCode() {
 //		FIXME: needs to take into account path and operation
 		return (getElementName()+getNamespaceURI()).hashCode();
-//		return (getElementName() + getNamespaceURI() + getPath() + getOperation())
-//				.hashCode();
 	}
 
 	@Override
@@ -114,12 +125,6 @@ public class ElementDefinition {
 
 		//FIXME: needs to take into account path and operation
 		return this.getElementName().equals(elDef.getElementName()) && this.getNamespaceURI().equals(elDef.getNamespaceURI());
-		
-//		return (this.getElementName().equals(elDef.getElementName())
-//				&& this.getNamespaceURI().equals(elDef.getNamespaceURI())
-//				&& this.getPath().equals(elDef.getPath()) 
-//				&& this.getOperation().equals(elDef.getOperation())
-//				);
 	}
 
 	public String toString() {

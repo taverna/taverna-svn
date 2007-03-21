@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 09:51:51 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -70,23 +70,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 			.getLogger(AxisBasedSchemaParserImpl.class);
 
 	private static Map<String, SymbolTable> tableMap = Collections
-			.synchronizedMap(new HashMap<String, SymbolTable>());
-
-	public List<QName> parseTypes(String wsdlUrl) throws SchemaParsingException {
-
-		SymbolTable symbolTable = getSymbolTable(wsdlUrl);
-
-		List<QName> result = new ArrayList<QName>();
-
-		for (Object e : symbolTable.getElementIndex().keySet()) {
-			if (e instanceof javax.xml.namespace.QName) {
-				javax.xml.namespace.QName qname = (javax.xml.namespace.QName) e;
-				result.add(new QName(qname.getLocalPart(), new Namespace(qname
-						.getPrefix(), qname.getNamespaceURI())));
-			}
-		}
-		return result;
-	}
+			.synchronizedMap(new HashMap<String, SymbolTable>());	
 
 	@SuppressWarnings("unchecked")
 	public Element expandType(String wsdlUrl, Element type)
@@ -110,8 +94,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 
 				if (o.getRefType() != null) {
 					if (o instanceof DefinedType) {
-						type
-								.addElement(convertQName(o.getRefType()
+						type.addElement(convertQName(o.getRefType()
 										.getQName()));
 					} else {
 						populateWithContainedElements(type, o.getRefType()
@@ -216,7 +199,6 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 								Part part = (Part) partObj;
 								Element element = elements
 										.addElement("element");
-								// element.addElement("name").setText(part.getName());
 								if (part.getTypeName() != null) {
 									Element added = element
 											.addElement(convertQName(part

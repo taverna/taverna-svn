@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SchemaParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-12 11:17:30 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -36,10 +36,8 @@ package uk.org.mygrid.dataproxy.wsdl;
 import java.util.List;
 
 import org.dom4j.Element;
-import org.dom4j.QName;
 
 public interface SchemaParser {
-	public List<QName> parseTypes(String wsdlUrl)  throws SchemaParsingException;
 	
 	public void flush(String wsdlUrl);
 	

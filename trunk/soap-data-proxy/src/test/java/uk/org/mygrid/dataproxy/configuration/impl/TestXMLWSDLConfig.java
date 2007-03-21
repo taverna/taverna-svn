@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -140,6 +140,21 @@ public class TestXMLWSDLConfig {
 		
 		assertEquals("XML is incorrect",xml,xml2);
 		
+	}
+	
+	@Test
+	public void testTypeElementToXML() throws Exception {
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint>";
+		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/path</path><operation>op</operation><type><a><b></b></a></type></element></elements>";
+		xml+="</wsdl>";
+				
+		XMLWSDLConfig config = new XMLWSDLConfig(xmlToElement(xml));
+		Element el = config.getElements().get(0).getTypeElement();
+		
+		assertEquals("name should be a","a",el.getName());
+		assertEquals("should have 1 child",1,el.elements().size());
+		
+		String xml2=config.toElement().asXML();		
 	}
 	
 	

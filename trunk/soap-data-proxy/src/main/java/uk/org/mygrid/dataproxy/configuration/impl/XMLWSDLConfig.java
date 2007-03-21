@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-21 12:35:27 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -41,6 +41,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 
+import sun.rmi.runtime.GetThreadPoolAction;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
@@ -87,6 +88,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 				Element namespaceURI=el.element("namespaceURI");
 				Element path = el.element("path");
 				Element operation = el.element("operation");
+				Element typeElement = el.element("type");
 				
 				if (name == null) throw new WSDLConfigException("No element 'name' defined within the element block");
 				if (path == null) throw new WSDLConfigException("No element 'path' defined within the element block");
@@ -94,7 +96,12 @@ public class XMLWSDLConfig implements WSDLConfig {
 				
 				if (namespaceURI == null) logger.warn("No namespace defined for Element name='"+name.getText()+"' for WSDLID:"+ID);
 				
-				ElementDefinition def = new ElementDefinition(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim());
+				if (typeElement!=null) {
+					Element typeChild = (Element)typeElement.elements().get(0);
+					typeElement = (Element)typeChild.clone(); //to seperate from existing parent.
+				}
+				
+				ElementDefinition def = new ElementDefinition(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim(),typeElement);
 				this.elements.add(def);						
 			}
 		}				
@@ -140,7 +147,11 @@ public class XMLWSDLConfig implements WSDLConfig {
 				element.addElement("name").setText(elDef.getElementName());
 				element.addElement("namespaceURI").setText(elDef.getNamespaceURI());
 				element.addElement("path").setText(elDef.getPath());
-				element.addElement("operation").setText(elDef.getOperation());							
+				element.addElement("operation").setText(elDef.getOperation());	
+				if (elDef.getTypeElement()!=null) {
+					Element type = element.addElement("type");
+					type.add(elDef.getTypeElement());
+				}
 			}
 		}
 		return doc.getRootElement();
