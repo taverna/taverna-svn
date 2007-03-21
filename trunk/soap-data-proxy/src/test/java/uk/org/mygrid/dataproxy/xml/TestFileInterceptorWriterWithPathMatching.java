@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriterWithPathMatching.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-03-21 19:53:34 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
@@ -90,6 +90,22 @@ public class TestFileInterceptorWriterWithPathMatching {
 	public void testMatchingPath() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
 		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/section/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
+		
+		parser.addTagInterceptor(interceptor);
+		parser.read(new ByteArrayInputStream(xml.getBytes()));
+		
+		Document doc = new SAXReader().read(new ByteArrayInputStream(outStream.toByteArray()));
+		
+		Element el = doc.getRootElement().element("data");
+		String data=el.getTextTrim();						
+		
+		assertFalse("some data".equals(data));
+	}
+	
+	@Test
+	public void testMatchingWildcardName() throws Exception {
+		String xml="<section><title>Title</title><data>some data</data></section>";
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("*","","*/section/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));

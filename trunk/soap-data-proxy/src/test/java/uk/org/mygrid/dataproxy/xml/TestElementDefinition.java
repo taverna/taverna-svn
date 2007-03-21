@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TestElementDef.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: TestElementDefinition.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-03-21 19:53:34 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -45,7 +45,7 @@ import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 import org.junit.Test;
 
-public class TestElementDef {
+public class TestElementDefinition {
 
 	@Test
 	public void testEquals() {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:13:29 $
+ * Last modified on   $Date: 2007-03-21 19:53:34 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -105,6 +105,26 @@ public class ElementDefinition {
 		return (getElementName()+getNamespaceURI()).hashCode();
 	}
 
+	/**
+	 * Returns true rhs matches this. Wildcards on either side for name,namespace and operation match, but path must be this must match the rhs path.
+	 * This makes it assymetrical, preventing the use of equals.
+	 * @param rhs
+	 * @return
+	 */
+	public boolean matches(ElementDefinition rhs) {
+		boolean result = false;
+		if (getElementName().equals(rhs.getElementName()) || getElementName().equals("*") || rhs.getElementName().equals("*")) {
+			if (getNamespaceURI().equals(rhs.getNamespaceURI()) || getNamespaceURI().equals("*") || rhs.getNamespaceURI().equals("*")) {
+				if (getOperation().equals(rhs.getOperation()) || getOperation().equals("*") || rhs.getOperation().equals("*")) {
+					if (isMatchingPath(rhs.getPath())) {
+						result=true;
+					}
+				}							
+			}
+		}
+		return result;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj.getClass() != this.getClass())

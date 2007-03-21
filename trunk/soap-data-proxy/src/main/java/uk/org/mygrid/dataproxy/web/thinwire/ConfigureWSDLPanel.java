@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:13:30 $
+ * Last modified on   $Date: 2007-03-21 19:53:35 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -313,10 +313,8 @@ public class ConfigureWSDLPanel extends Panel {
 		ElementDefinition def = createElementDefFromXML(element); 
 		
 		for (ElementDefinition storedDef : defsSelectedForProxy) {
-			if (storedDef.getNamespaceURI().equals(def.getNamespaceURI())) {
-				if (def.equals(storedDef)) {
-					return storedDef.getPath().equals(def.getPath());
-				}
+			if (storedDef.matches(def)) {
+				return storedDef.getPath().equals(def.getPath());
 			}
 		}
 		return false;
