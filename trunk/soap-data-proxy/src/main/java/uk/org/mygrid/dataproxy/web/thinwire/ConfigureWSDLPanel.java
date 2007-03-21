@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-03-21 16:13:30 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -65,11 +64,13 @@ public class ConfigureWSDLPanel extends Panel {
 	private SchemaParser parser=null;
 	private final Label status = new Label("");
 	private final Tree tree = new Tree();	
-	private final Button toggleProxy = new Button("Toggle");
-	private List<Element> selectedForProxy = new ArrayList<Element>();
+	private final Button toggleProxy = new Button("Toggle");	
+	private List<ElementDefinition> defsSelectedForProxy = new ArrayList<ElementDefinition>();
 	
 	public ConfigureWSDLPanel(String wsdlID) {		
 		config=ProxyConfigFactory.getInstance().getWSDLConfigForID(wsdlID);
+		defsSelectedForProxy.addAll(config.getElements());
+		
 		Label label = new Label(config.getName());		
 		
 		tree.setBounds(198, 58, 350, 450);
@@ -130,8 +131,7 @@ public class ConfigureWSDLPanel extends Panel {
 		getChildren().add(commit);
 		getChildren().add(status);
 		getChildren().add(tree);		
-		getChildren().add(toggleProxy);
-				
+		getChildren().add(toggleProxy);				
 		
 		back.addActionListener(Button.ACTION_CLICK, new ActionListener() {
 
@@ -162,7 +162,8 @@ public class ConfigureWSDLPanel extends Panel {
 	@SuppressWarnings("unchecked")
 	private void expandTreeItem(Tree.Item treeItem) {
 		Element el = (Element)treeItem.getUserObject();
-		if (el.elements().size()==0) {		
+		
+		if (el!=null && el.elements().size()==0) {		
 			if (el==null) {
 				logger.error("Unable to find element associated with "+treeItem.getText());					
 			}
@@ -186,18 +187,24 @@ public class ConfigureWSDLPanel extends Panel {
 	private void commitClicked(WSDLConfig config) {
 		List<ElementDefinition> elementDefs = config.getElements();
 		elementDefs.clear();
-		for (Element el : selectedForProxy) {
-			String xpath=convertToXPath(el);
-			String operation=getOperationFromTypeElement(el);			
-			logger.info("path="+xpath);						
-			ElementDefinition def = new ElementDefinition(el.attributeValue("name"),el.getNamespaceURI(),xpath,operation,(Element)el.clone());		
-			elementDefs.add(def);
-		}
+		elementDefs.addAll(defsSelectedForProxy);
 		try {
 			ProxyConfigFactory.writeConfig();
 		} catch (Exception e) {
 			logger.error("Error writing config",e);
 		}
+	}
+
+	private ElementDefinition createElementDefFromXML(Element el) {
+		String xpath=convertToPath(el);
+		String operation=getOperationFromTypeElement(el);			
+		logger.info("path="+xpath);						
+		String name=el.attributeValue("name");
+		if (el.getParent()!=null && el.getParent().getName().equals("element")) {
+			name=el.getName(); //use type name as name for outer element, this is how it will appear in the SOAP message.
+		}
+		ElementDefinition def = new ElementDefinition(name,el.getNamespaceURI(),xpath,operation);
+		return def;
 	}
 	
 	private String getOperationFromTypeElement(Element el) {
@@ -209,7 +216,7 @@ public class ConfigureWSDLPanel extends Panel {
 		return parent.element("name").getTextTrim();
 	}
 	
-	private String convertToXPath(Element el) {
+	private String convertToPath(Element el) {
 		String result="*/";
 		List<Element>elements = new ArrayList<Element>();
 		Element parent = el;
@@ -251,19 +258,21 @@ public class ConfigureWSDLPanel extends Panel {
 	
 	private void toggleOff(Tree.Item selectedItem) {
 		selectedItem.setText(selectedItem.getText().replaceAll("XXX: ",""));
-		Element typeElement = (Element)selectedItem.getUserObject();
-		selectedForProxy.remove(typeElement);
+		Element typeElement = (Element)selectedItem.getUserObject();		
+		ElementDefinition def = createElementDefFromXML(typeElement);
+		defsSelectedForProxy.remove(def);
 	}
 	
 	private void toggleOn(Tree.Item selectedItem) {
-		selectedItem.setText("XXX: "+selectedItem.getText());
+		selectedItem.setText("XXX: "+selectedItem.getText());		
 		Element typeElement = (Element)selectedItem.getUserObject();
+		ElementDefinition def = createElementDefFromXML(typeElement);
+		defsSelectedForProxy.add(def);
 		if (logger.isDebugEnabled()) {
 			Element parent = typeElement;
 			while (parent.getParent()!=null) parent=parent.getParent();
 			logger.debug("Type element toggled on: "+parent.asXML());
-		}
-		selectedForProxy.add(typeElement);
+		}		
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -288,6 +297,7 @@ public class ConfigureWSDLPanel extends Panel {
 		String type = element.getName();
 		
 		Tree.Item typeItem = new Tree.Item(name+":"+type);
+		if (matchesSelectedElementDefs(element)) typeItem.setText("XXX: "+typeItem.getText());
 		typeItem.setUserObject(element);		
 		treeItem.getChildren().add(typeItem);		
 	}
@@ -297,6 +307,19 @@ public class ConfigureWSDLPanel extends Panel {
 			parser=new AxisBasedSchemaParserImpl();
 		}
 		return parser;
+	}
+	
+	private boolean matchesSelectedElementDefs(Element element) {
+		ElementDefinition def = createElementDefFromXML(element); 
+		
+		for (ElementDefinition storedDef : defsSelectedForProxy) {
+			if (storedDef.getNamespaceURI().equals(def.getNamespaceURI())) {
+				if (def.equals(storedDef)) {
+					return storedDef.getPath().equals(def.getPath());
+				}
+			}
+		}
+		return false;
 	}
 	
 	

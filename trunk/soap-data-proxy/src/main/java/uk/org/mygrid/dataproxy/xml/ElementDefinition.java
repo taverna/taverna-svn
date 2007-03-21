@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-03-21 16:13:29 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -46,19 +46,9 @@ public class ElementDefinition {
 	private String path;	
 
 	private String operation;
-	
-	private Element typeElement;
-
-	public Element getTypeElement() {
-		return typeElement;
-	}
-
-	public ElementDefinition(String elementName, String namespaceURI, String path, String operation) {
-		this(elementName,namespaceURI,path,operation,null);
-	}
 				
 	public ElementDefinition(String elementName, String namespaceURI, String path,
-			String operation, Element typeElement) {
+			String operation) {
 		if (elementName == null)
 			elementName = "*";
 		if (path == null)
@@ -69,7 +59,6 @@ public class ElementDefinition {
 		this.namespaceURI = namespaceURI;
 		this.path = path;		
 		this.operation = operation;
-		this.typeElement=typeElement;
 	}
 
 	public boolean isMatchingPath(String comparePath) {

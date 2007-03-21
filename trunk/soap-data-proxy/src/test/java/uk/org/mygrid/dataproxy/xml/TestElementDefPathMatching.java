@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDefPathMatching.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-21 16:13:30 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
@@ -41,8 +41,7 @@ public class TestElementDefPathMatching {
 	@Test
 	public void testDirectMatch() throws Exception
 	{
-		ElementDefinition a = new ElementDefinition("name","namespace","*/name","operation");
-		
+		ElementDefinition a = new ElementDefinition("name","namespace","*/name","operation");		
 		assertTrue(a.isMatchingPath("name"));
 		assertFalse(a.isMatchingPath("bob"));
 	}

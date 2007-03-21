@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-03-21 16:13:30 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -79,7 +79,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLSt
 	}
 	
 	protected TagInterceptor getInterceptorForElement(String element, String uri, String path, String operation) {
-		ElementDefinition def = new ElementDefinition(element,uri,path,operation,null);
+		ElementDefinition def = new ElementDefinition(element,uri,path,operation);
 		for (TagInterceptor interceptor : interceptors.values()) {
 			if (interceptor.getTargetElementDef().equals(def)) {
 				if (interceptor.getTargetElementDef().isMatchingPath(path)) {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-03-21 16:13:30 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -41,7 +41,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
 
-import sun.rmi.runtime.GetThreadPoolAction;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
@@ -101,7 +100,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 					typeElement = (Element)typeChild.clone(); //to seperate from existing parent.
 				}
 				
-				ElementDefinition def = new ElementDefinition(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim(),typeElement);
+				ElementDefinition def = new ElementDefinition(name.getTextTrim(),namespaceURI!=null ? namespaceURI.getTextTrim() : "",path.getTextTrim(),operation.getTextTrim());
 				this.elements.add(def);						
 			}
 		}				
@@ -147,11 +146,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 				element.addElement("name").setText(elDef.getElementName());
 				element.addElement("namespaceURI").setText(elDef.getNamespaceURI());
 				element.addElement("path").setText(elDef.getPath());
-				element.addElement("operation").setText(elDef.getOperation());	
-				if (elDef.getTypeElement()!=null) {
-					Element type = element.addElement("type");
-					type.add(elDef.getTypeElement());
-				}
+				element.addElement("operation").setText(elDef.getOperation());					
 			}
 		}
 		return doc.getRootElement();
