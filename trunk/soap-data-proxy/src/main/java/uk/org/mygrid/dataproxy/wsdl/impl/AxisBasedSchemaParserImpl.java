@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 13:41:07 $
+ * Last modified on   $Date: 2007-03-21 09:51:51 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -142,19 +142,21 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 			Element addedElement = type.addElement(new QName(elementEntry
 					.getType().getQName().getLocalPart(),new Namespace("",elementEntry.getQName().getNamespaceURI())));
 			
-			logger.info("ElementDecl class = "+elementEntry.getClass().toString());
-			logger.info("Element qname ={"+elementEntry.getQName().getNamespaceURI()+"}"+elementEntry.getQName().getLocalPart());
-			logger.info("Element type qname ={"+elementEntry.getType().getQName().getNamespaceURI()+"}"+elementEntry.getType().getQName().getLocalPart());
+			if (logger.isDebugEnabled()) {
+				logger.debug("Element qname ={"+elementEntry.getQName().getNamespaceURI()+"}"+elementEntry.getQName().getLocalPart());
+				logger.debug("Element type qname ={"+elementEntry.getType().getQName().getNamespaceURI()+"}"+elementEntry.getType().getQName().getLocalPart());
+			}
 			
 			// work around for bug
 			// http://issues.apache.org/jira/browse/AXIS-2105
 			// is to parse the QName and take after the last '>' as the name.
 			// getName always returns null.
 			int x = elementEntry.getQName().getLocalPart().lastIndexOf(">");
-			if (x > -1) {
+			if (x > -1) {				
 				String name = elementEntry.getQName().getLocalPart().substring(
 						x + 1);
-				addedElement.addAttribute("name", name);				
+				addedElement.addAttribute("name", name);
+				if (logger.isDebugEnabled()) logger.debug("Extracted name from "+elementEntry.getQName().getLocalPart()+" as " + name);
 			}			
 		}		
 	}

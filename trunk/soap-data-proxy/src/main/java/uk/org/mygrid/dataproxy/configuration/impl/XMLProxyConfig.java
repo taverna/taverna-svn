@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:57 $
+ * Last modified on   $Date: 2007-03-21 09:51:51 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -70,7 +70,7 @@ public class XMLProxyConfig implements ProxyConfig {
 			throw new ProxyConfigException("MalforedException with baseURL:'"+baseURLStr+"'");
 		}
 		
-		logger.info("BaseURL defined in config as:"+baseURLStr);
+		logger.debug("BaseURL defined in config as:"+baseURLStr);
 		
 		Element wsdlsElement = element.element("wsdls");
 		if (wsdlsElement!=null) {
@@ -80,7 +80,7 @@ public class XMLProxyConfig implements ProxyConfig {
 			{
 				WSDLConfig wsdlConfig = new XMLWSDLConfig(wsdlElement);
 				wsdlMap.put(wsdlConfig.getWSDLID(),wsdlConfig);
-				logger.info("WSDL added from config with ID:"+wsdlConfig.getWSDLID()+", Endpoint:"+wsdlConfig.getEndpoint());
+				if (logger.isDebugEnabled()) logger.debug("WSDL added from config with ID:"+wsdlConfig.getWSDLID()+", Endpoint:"+wsdlConfig.getEndpoint());
 			}
 		}
 	}

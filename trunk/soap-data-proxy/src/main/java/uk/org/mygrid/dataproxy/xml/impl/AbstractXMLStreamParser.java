@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 16:47:08 $
+ * Last modified on   $Date: 2007-03-21 09:51:52 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -75,7 +75,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLSt
 	
 	public void addTagInterceptor(TagInterceptor interceptor) {
 		interceptors.put(interceptor.getTargetElementDef(),interceptor);
-		logger.info("Interceptor added class="+interceptor.getClass()+" for elementDef: "+interceptor.getTargetElementDef());
+		logger.debug("Interceptor added class="+interceptor.getClass()+" for elementDef: "+interceptor.getTargetElementDef());
 	}
 	
 	protected TagInterceptor getInterceptorForElement(String element, String uri, String path, String operation) {

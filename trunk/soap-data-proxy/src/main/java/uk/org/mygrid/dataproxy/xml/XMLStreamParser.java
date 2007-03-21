@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-03-21 09:51:51 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -39,6 +39,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.xml.sax.SAXException;
+
+//TODO: bit vague, move some methods up from AbstractXMLStreamParser
 
 public interface XMLStreamParser {
 			
