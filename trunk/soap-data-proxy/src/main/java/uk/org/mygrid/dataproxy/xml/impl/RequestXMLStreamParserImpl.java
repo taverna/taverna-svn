@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 16:47:08 $
+ * Last modified on   $Date: 2007-03-21 16:22:42 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -68,7 +68,9 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (activeReaderFactory!=null) {
+			setEscapeText(false);
 			insertDataFromReference();
+			setEscapeText(true);
 			activeReaderFactory=null;
 			reference=null;
 		}

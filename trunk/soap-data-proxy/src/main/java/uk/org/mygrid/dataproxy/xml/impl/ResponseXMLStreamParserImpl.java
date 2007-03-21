@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:58:54 $
+ * Last modified on   $Date: 2007-03-21 16:22:42 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -158,12 +158,8 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 
 	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {		
 		super.startElement(uri,localName,qName,new AttributesImpl());
-		String destinationName=activeWriter.getDestinationReference();
-		
-		//TODO: escape or CDATA??		
-		super.setEscapeText(true);
-		super.characters(destinationName.toCharArray(), 0, destinationName.length());
-		super.setEscapeText(false);
+		String destinationName=activeWriter.getDestinationReference();		
+		super.characters(destinationName.toCharArray(), 0, destinationName.length());		
 	}
 
 	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:13:30 $
+ * Last modified on   $Date: 2007-03-21 16:22:42 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -58,7 +58,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements XMLSt
 			.getLogger(AbstractXMLStreamParser.class);
 	
 	public AbstractXMLStreamParser() {
-		setEscapeText(false); //prevents inserted XML being escaped.
+		//setEscapeText(false); //prevents inserted XML being escaped.
 	}
 	
 	@Override
