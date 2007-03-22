@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-03-22 10:07:35 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -63,10 +63,7 @@ public class WSDLListPanel extends Panel {
 		refresh();
 	}
 	
-	public void refresh() {
-		System.out.println(Application.current().toString());
-		
-		//setVisible(false);
+	public void refresh() {				
 		setScrollType(Panel.ScrollType.ALWAYS);
 		TableLayout layout=(TableLayout)getLayout();
 		layout.getColumns().clear();

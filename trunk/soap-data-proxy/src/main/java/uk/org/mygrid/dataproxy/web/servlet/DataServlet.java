@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataServlet.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 10:14:33 $
+ * Last modified on   $Date: 2007-03-22 10:07:35 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
@@ -62,23 +62,16 @@ public class DataServlet extends HttpServlet{
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String dataID = request.getParameter("dataid");
-		if (dataID==null) {
-			response.getWriter().println("No dataid provided.\n");
+		String id=request.getParameter("id");
+		String parts[]=id.split("-");
+		if (parts.length!=3) {
+			response.getWriter().println("Invalid id, there should be 3 parts to it: <wsdlID>-<invocationID>-<dataID>");
 		}
-		
-		String wsdlID = request.getParameter("wsdlid");
-		if (wsdlID==null) {
-			response.getWriter().println("No wsdlid provided.\n");
-		}
-		
-		String invocationID = request.getParameter("invocationid");
-		if (invocationID==null) {
-			response.getWriter().println("No invocationid provided. \n");
-		}
-		
-		if (dataID!=null && wsdlID!=null && dataID!=null) {
-			
+		else {	
+			String wsdlID=parts[0];
+			String invocationID=parts[1];
+			String dataID=parts[2];
+							
 			File file = null;
 			try {				
 				URL base = ProxyConfigFactory.getInstance().getStoreBaseURL();
@@ -105,7 +98,7 @@ public class DataServlet extends HttpServlet{
 			catch(URISyntaxException e) {
 				logger.error("Error with URI syntax of "+ProxyConfigFactory.getInstance().getStoreBaseURL(),e);
 				response.getWriter().println("Unable to find data!");
-			}
+			}			
 		}
 	}	
 }

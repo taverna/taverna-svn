@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:53 $
+ * Last modified on   $Date: 2007-03-22 10:07:34 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -59,7 +59,7 @@ public class FileInterceptorWriterFactory implements WriterFactory {
 	public InterceptorWriter newWriter() throws Exception {
 		String fileName=prefix+String.valueOf(c++);
 		URL fileURL=new URL(baseURL,fileName);
-		String reference=baseReference+"&dataid="+fileName;
+		String reference=baseReference+"-"+fileName;
 		if (logger.isDebugEnabled()) logger.debug("Created FileInterceptorWriter to write to file:"+fileURL.toExternalForm()+", for href:"+reference);
 		return new FileInterceptorWriter(fileURL,reference);
 	}
