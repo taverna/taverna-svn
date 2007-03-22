@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestFileInterceptorWriter.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-03-22 15:08:14 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -91,7 +91,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testWritesToFile() throws Exception {
 		String xml="<section><title>Title</title><data>some data</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data?id=wsdl1-inv1","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -101,7 +101,7 @@ public class TestFileInterceptorWriter {
 		Element el = doc.getRootElement().element("data");
 		String strURL=el.getTextTrim();
 		
-		assertEquals("Incorrect reference to data","http://localhost/data&dataid=data1",strURL);
+		assertEquals("Incorrect reference to data","http://localhost/data?id=wsdl1-inv1-data1",strURL);
 		
 		File dataFile = new File(tmpDir,"data1");
 				
@@ -120,7 +120,7 @@ public class TestFileInterceptorWriter {
 	@Test
 	public void testIncrementsDestinationCorrectly() throws Exception {
 		String xml="<section><data>one</data><data>two</data><data>three</data></section>";
-		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data","data"));
+		ResponseTagInterceptor interceptor = new ResponseTagInterceptorImpl(new ElementDefinition("data","","*/data","*"), new FileInterceptorWriterFactory(tmpDir.toURL(),"http://localhost/data?id=wsdl1-inv1","data"));
 		
 		parser.addTagInterceptor(interceptor);
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
@@ -133,7 +133,7 @@ public class TestFileInterceptorWriter {
 		int c=1;
 		for (Element el : (List<Element>)elements) {
 			String url=el.getTextTrim();
-			assertEquals("url to data is incorrect","http://localhost/data&dataid=data"+c,url);			
+			assertEquals("url to data is incorrect","http://localhost/data?id=wsdl1-inv1-data"+c,url);			
 			c++;
 		}		
 	}	

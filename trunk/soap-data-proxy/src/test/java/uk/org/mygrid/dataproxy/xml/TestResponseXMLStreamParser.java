@@ -38,9 +38,9 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestResponseXMLStreamParser.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 18:22:45 $
+ * Last modified on   $Date: 2007-03-22 15:08:13 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -79,7 +79,6 @@ public class TestResponseXMLStreamParser {
 		
 		
 		String finalXML=outputStream.toString();
-		System.out.println(finalXML);
 		
 		assertEquals("<section><para xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</para><link xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</link></section>",finalXML);
 		

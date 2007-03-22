@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 19:53:35 $
+ * Last modified on   $Date: 2007-03-22 15:08:14 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -196,14 +196,11 @@ public class ConfigureWSDLPanel extends Panel {
 	}
 
 	private ElementDefinition createElementDefFromXML(Element el) {
-		String xpath=convertToPath(el);
+		String path=convertToPath(el);
 		String operation=getOperationFromTypeElement(el);			
-		logger.info("path="+xpath);						
-		String name=el.attributeValue("name");
-		if (el.getParent()!=null && el.getParent().getName().equals("element")) {
-			name=el.getName(); //use type name as name for outer element, this is how it will appear in the SOAP message.
-		}
-		ElementDefinition def = new ElementDefinition(name,el.getNamespaceURI(),xpath,operation);
+		logger.info("path="+path);						
+		String name=determineExpectedElementName(el);
+		ElementDefinition def = new ElementDefinition(name,el.getNamespaceURI(),path,operation);
 		return def;
 	}
 	
@@ -212,8 +209,12 @@ public class ConfigureWSDLPanel extends Panel {
 		while (parent!=null && !parent.getName().equals("operation")) {
 			parent=parent.getParent();
 		}
-		//FIXME: potential NPE if no element called operation exists as a parent
-		return parent.element("name").getTextTrim();
+		if (parent!=null) {
+			return parent.element("name").getTextTrim();
+		}
+		else {
+			return null;
+		}
 	}
 	
 	private String convertToPath(Element el) {
@@ -226,24 +227,31 @@ public class ConfigureWSDLPanel extends Panel {
 		}		
 		
 		Collections.reverse(elements);
-		boolean first=true;
-		for (Element element : elements) {
-			if (first) {
-				result+=element.getName()+"/";
-				first=false;
-			}
-			else {
-				if (element.attributeValue("name")!=null) {
-					result+=element.attributeValue("name")+"/";
-				}
-				else {
-					result+="*/";
-				}
-			}
-		}
 		
+		for (Element element : elements) {
+			System.out.println(element.asXML());									
+			String name = determineExpectedElementName(element);
+			result+=name+"/";
+		}
+			
 		if (result.endsWith("/")) result = result.substring(0,result.length()-1);
 		return result;
+	}
+
+	private String determineExpectedElementName(Element element) {
+		String name;
+		if ("elementname".equals(element.attributeValue("partType"))) {
+			name=element.getName();					
+		}
+		else {
+			if (element.attributeValue("name")!=null) {
+				name=element.attributeValue("name");
+			}
+			else {
+				name="*";
+			}
+		}
+		return name;
 	}
 	
 	private void toggleClicked(Tree.Item selectedItem) {
