@@ -40,7 +40,7 @@ import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
  * extant ports at creation time.
  * <p>
  * 
- * @version $Id: BiomobyProcessor.java,v 1.2 2006-07-10 14:07:28 sowen70 Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.3 2007-04-04 14:29:55 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable, HTMLSummarisableProcessor {
@@ -124,6 +124,7 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable,
 
 				MobyService pattern = new MobyService(serviceName);
 				pattern.setAuthority(authorityName);
+				pattern.setCategory("");
 				MobyService[] services = worker.findService(pattern);
 				if (services == null || services.length == 0)
 					throw new ProcessorCreationException(formatError("I cannot find the service."));
@@ -384,5 +385,4 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable,
 	public int htmlTablePlacement() {
 		return 4;
 	}
-
 }

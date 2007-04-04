@@ -128,6 +128,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 
 			// what services does this object feed into?
 			template.setInputs(new MobyData[] { data });
+			template.setCategory("");
 			MobyService[] services = null;
 			try {
 				services = central.findService(template, null, true, action.searchParentTypes);
@@ -145,7 +146,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 			// what services return this object?
 			template = null;
 			template = new MobyService("dummy");
-
+			template.setCategory("");
 			template.setOutputs(new MobyData[] { data });
 			services = null;
 			try {
@@ -206,7 +207,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 								JMenuItem item = new JMenuItem("Add service - " + selectedService
 										+ " to the workflow?");
 								item
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 								item.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										String defaultName = selectedService;
@@ -268,7 +269,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 								JMenuItem details = new JMenuItem("Find out about "
 										+ selectedService);
 								details
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 								details.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										Dimension loc = new Dimension(100, 100);
@@ -292,6 +293,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 										try {
 											Central central = new CentralImpl(endpoint);
 											service.setAuthority(selectedAuthority);
+											service.setCategory("");
 											MobyService[] services = central.findService(service);
 											if (services == null || services.length != 1) {
 												return "Couldn't retrieve a description on the BioMoby service '"
@@ -618,7 +620,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#canHandle(org.embl.ebi.escience.scufl.Processor)
 	 */
 	public boolean canHandle(Processor processor) {
-		return (processor instanceof BiomobyObjectProcessor);
+		return (processor instanceof BiomobyObjectProcessor) && (((BiomobyObjectProcessor) processor).getMobyObject() != null);
 	}
 
 	/*

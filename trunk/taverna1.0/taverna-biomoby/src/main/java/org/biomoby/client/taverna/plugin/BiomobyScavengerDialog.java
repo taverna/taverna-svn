@@ -7,7 +7,6 @@ package org.biomoby.client.taverna.plugin;
 
 import java.awt.GridLayout;
 
-import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -21,6 +20,7 @@ public class BiomobyScavengerDialog extends JPanel {
 
 	private static final long serialVersionUID = -57047613557546674L;
 	private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
+	private JTextField registryURI = new JTextField("http://mobycentral.icapture.ubc.ca/MOBY/Central");
 
     /**
      * Default constructor.
@@ -33,7 +33,10 @@ public class BiomobyScavengerDialog extends JPanel {
         add(new ShadedLabel("Location (URL) of your BioMoby central registry: ", ShadedLabel.TAVERNA_BLUE, true));
         registryEndpoint.setToolTipText("BioMoby Services will be retrieved from the endpoint that you specify here!");
         add(registryEndpoint);
-        add(Box.createHorizontalGlue());add(Box.createHorizontalGlue());
+        add(new ShadedLabel("Namespace (URI) of your BioMoby central registry: ", ShadedLabel.TAVERNA_BLUE, true));
+        registryURI.setToolTipText("BioMoby Services will be retrieved from the endpoint/URI that you specify here!");
+        add(registryURI);
+        //add(Box.createHorizontalGlue());add(Box.createHorizontalGlue());
         setPreferredSize(this.getPreferredSize());
         setMinimumSize(this.getPreferredSize());
         setMaximumSize(this.getPreferredSize());
@@ -46,4 +49,13 @@ public class BiomobyScavengerDialog extends JPanel {
     public String getRegistryEndpoint() {
         return registryEndpoint.getText();
     }
+    
+    /**
+     * 
+     * @return the string representation of the BioMoby Registry endpoint
+     */
+    public String getRegistryURI() {
+        return registryURI.getText();
+    }
 }
+
