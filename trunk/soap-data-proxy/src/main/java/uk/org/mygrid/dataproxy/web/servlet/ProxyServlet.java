@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-22 10:07:35 $
+ * Last modified on   $Date: 2007-04-05 15:46:09 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -128,7 +128,7 @@ public class ProxyServlet extends HttpServlet {
 			throw new ServletException("An error occurred creating the data store location",e1);
 		}
 		
-		String baseReference = ServerInfo.contextPath+"/data?id="+wsdlConfig.getWSDLID()+"-"+invocationID;
+		String baseReference = ProxyConfigFactory.getInstance().getContextPath()+"/data?id="+wsdlConfig.getWSDLID()+"-"+invocationID;
 		
 		InterceptingXMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
 		for (ElementDefinition elementDef : wsdlConfig.getElements()) {

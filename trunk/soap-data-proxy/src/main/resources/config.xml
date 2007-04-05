@@ -1,6 +1,7 @@
 <config>
+	<contextPath></contextPath>
 	<store>
-		<baseURL>file:/tmp/dataproxy-testing/</baseURL>
+		<baseURL>file:/tmp/data/</baseURL>
 	</store>
 	
 	<!-- 

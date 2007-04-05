@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProxyImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:45:18 $
+ * Last modified on   $Date: 2007-04-05 15:46:08 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -50,6 +50,7 @@ import org.dom4j.io.XMLWriter;
 import org.jaxen.JaxenException;
 import org.jaxen.dom4j.Dom4jXPath;
 
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.wsdl.WSDLProxy;
@@ -115,7 +116,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("soap", "http://schemas.xmlsoap.org/wsdl/soap/");
 		Element el = (Element)path.selectSingleNode(doc);			
-		el.attribute("location").setValue(ServerInfo.contextPath+"proxy?id="+config.getWSDLID());
+		el.attribute("location").setValue(ProxyConfigFactory.getInstance().getContextPath()+"proxy?id="+config.getWSDLID());
 		
 		return doc;
 	}

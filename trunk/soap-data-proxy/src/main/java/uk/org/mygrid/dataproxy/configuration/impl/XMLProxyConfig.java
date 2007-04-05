@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:36 $
+ * Last modified on   $Date: 2007-04-05 15:46:08 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -53,11 +53,16 @@ public class XMLProxyConfig implements ProxyConfig {
 	
 	private static Logger logger = Logger.getLogger(XMLProxyConfig.class);
 	
-	private URL baseURL;
-	private Map<String,WSDLConfig> wsdlMap = new HashMap<String, WSDLConfig>();	
-	
+	private URL storeBaseURL;
+	private String contextPath;
+	private Map<String,WSDLConfig> wsdlMap = new HashMap<String, WSDLConfig>();		
+
 	@SuppressWarnings("unchecked")
 	public XMLProxyConfig(Element element) throws ProxyConfigException,WSDLConfigException {
+		Element contextPathElement = element.element("contextPath");
+		if (contextPathElement == null) throw new ProxyConfigException("No element 'contextPath' defined");
+		contextPath = contextPathElement.getTextTrim();
+		
 		Element storeElement = element.element("store");
 		if (storeElement == null) throw new ProxyConfigException("No element 'store' defined");
 		Element baseURLElement = storeElement.element("baseURL");
@@ -65,7 +70,7 @@ public class XMLProxyConfig implements ProxyConfig {
 		
 		String baseURLStr = baseURLElement.getTextTrim();
 		try {
-			baseURL=new URL(baseURLStr);			
+			storeBaseURL=new URL(baseURLStr);			
 		} catch (MalformedURLException e) {
 			throw new ProxyConfigException("MalforedException with baseURL:'"+baseURLStr+"'");
 		}
@@ -84,9 +89,22 @@ public class XMLProxyConfig implements ProxyConfig {
 			}
 		}
 	}
+	
+	public String getContextPath() {		
+		return contextPath;
+	}
+
+	public void setContextPath(String contextPath) {
+		if (!contextPath.endsWith("/")) contextPath+="/";
+		this.contextPath = contextPath;		
+	}
 
 	public URL getStoreBaseURL() {
-		return baseURL;
+		return storeBaseURL;
+	}
+	
+	public void setStoreBaseURL(URL storeBaseURL) {
+		this.storeBaseURL=storeBaseURL;
 	}
 	
 	public void deleteWSDLConfig(WSDLConfig config) {
@@ -113,6 +131,8 @@ public class XMLProxyConfig implements ProxyConfig {
 	public Element toElement() {
 		Document doc = DocumentFactory.getInstance().createDocument();
 		Element config = doc.addElement("config");
+		Element contextPathElement = config.addElement("contextPath");
+		contextPathElement.setText(contextPath);
 		Element store = config.addElement("store");
 		store.addElement("baseURL").setText(getStoreBaseURL().toExternalForm());		
 		if (wsdlMap.size()>0) {

@@ -25,17 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:35 $
+ * Last modified on   $Date: 2007-04-05 15:46:09 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web;
 
-public class ServerInfo {
-	//FIXME: this context path is hard coded.
-	public static String contextPath = "http://localhost:8080/data-proxy/";
+public class ServerInfo {	
 	
 	//FIXME: this location is hard coded
 	public static String configFileLocation="/tmp/config.xml";

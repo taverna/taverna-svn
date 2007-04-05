@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLProxy.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:42 $
+ * Last modified on   $Date: 2007-04-05 15:46:09 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -41,6 +41,7 @@ import org.dom4j.io.SAXReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
 import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.wsdl.impl.WSDLProxyImpl;
@@ -50,12 +51,11 @@ public class TestWSDLProxy {
 	@Test
 	public void testEndpointReWritten() throws Exception 
 	{
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost:8080/dataproxy/");
 		NewWSDLConfig config = new NewWSDLConfig();
 		config.setAddress("http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/gominer/GMService.wsdl");
 		config.setWSDLID("1");
 		WSDLProxy proxy = new WSDLProxyImpl(config);
-		
-		ServerInfo.contextPath="http://localhost:8080/dataproxy/";
 		
 		Document doc = new SAXReader().read(proxy.getStream());
 		Element service=doc.getRootElement().element("service");
@@ -75,7 +75,7 @@ public class TestWSDLProxy {
 		config.setWSDLID("1");
 		WSDLProxy proxy = new WSDLProxyImpl(config);
 		
-		ServerInfo.contextPath="http://localhost:8080/dataproxy/";
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost:8080/dataproxy/");
 		
 		Document doc = new SAXReader().read(proxy.getStream());
 		

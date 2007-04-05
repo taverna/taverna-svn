@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:16 $
+ * Last modified on   $Date: 2007-04-05 15:46:09 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -36,22 +36,32 @@ package uk.org.mygrid.dataproxy.web.wings;
 import javax.servlet.http.HttpServletRequest;
 
 import org.wings.SBorderLayout;
+import org.wings.SConstants;
+import org.wings.SDimension;
 import org.wings.SFrame;
 import org.wings.SLabel;
 import org.wings.SPanel;
 import org.wings.session.SessionManager;
 
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
+
 public class Configuration {
-	public Configuration() {
-		setServerInfo(SessionManager.getSession().getServletRequest());
+	public Configuration() {		
 		
 		SBorderLayout layout = new SBorderLayout();
 		SPanel panel = new SPanel();
 		
+		panel.setPreferredSize(SDimension.FULLAREA);
 		panel.setLayout(layout);
-		SLabel title = new SLabel("Data Proxy");		
+		SLabel title = new SLabel("Data Proxy");
+		title.setPreferredSize(SDimension.FULLAREA);
+		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		panel.add(title,SBorderLayout.NORTH);		
-		panel.add(new WSDLListPanel(),SBorderLayout.CENTER);
+		SPanel centrePanel;
+		centrePanel = startCentrePanel();
+		centrePanel.setPreferredSize(SDimension.FULLAREA);
+		centrePanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
+		panel.add(centrePanel,SBorderLayout.CENTER);		
 		
 		SLabel status = new SLabel();
 		panel.add(status,SBorderLayout.SOUTH);		
@@ -61,16 +71,15 @@ public class Configuration {
         rootFrame.getContentPane().add(panel);
         rootFrame.setVisible(true);
 	}
-	
-	private void setServerInfo(HttpServletRequest request) {
-		String host=request.getServerName();
-		int port=request.getServerPort();
-		String path=request.getContextPath();
-		String scheme=request.getScheme();				
-		
-		String portStr="";
-		if (port!=80) portStr=":"+port;
-		
-		String fullpath=scheme+"//"+host+portStr+path;		
-	}
+
+	private SPanel startCentrePanel() {
+		SPanel centrePanel;
+		if (ProxyConfigFactory.getInstance().getContextPath().length()==0) {
+		 	centrePanel= new AdminPanel();
+		}
+		else {
+			centrePanel = new WSDLListPanel();
+		}
+		return centrePanel;
+	}	
  }

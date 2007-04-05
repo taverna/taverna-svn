@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfig.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 10:00:24 $
+ * Last modified on   $Date: 2007-04-05 15:46:09 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -39,9 +39,13 @@ import java.util.List;
 import uk.org.mygrid.dataproxy.configuration.impl.WSDLConfigException;
 
 public interface ProxyConfig {
+		
+	public String getContextPath();
+	public void setContextPath(String contextPath);
 	
 	//FIXME: is this more useful as a string rather than a URL???
 	public URL getStoreBaseURL();
+	public void setStoreBaseURL(URL storeBaseURL);
 	public WSDLConfig getWSDLConfigForID(String ID);
 	public void addWSDLConfig(WSDLConfig config) throws WSDLConfigException;
 	public void deleteWSDLConfig(WSDLConfig config);

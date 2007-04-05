@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLProxyConfig.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:36 $
+ * Last modified on   $Date: 2007-04-05 15:46:08 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -48,20 +48,22 @@ public class TestXMLProxyConfig {
 
 	@Test
 	public void testSimple() throws Exception {
-		String xml="<config><store><baseURL>file:/tmp/</baseURL></store></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/tmp/</baseURL></store></config>";
 		Element el = xmlToElement(xml);
 		ProxyConfig config = new XMLProxyConfig(el);
 		
 		assertEquals("file:/tmp/",config.getStoreBaseURL().toExternalForm());
+		assertEquals("context",config.getContextPath());
 	}
 	
 	@Test
 	public void testOneWSDLDefined() throws Exception {
 		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
-		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
 		
+		assertEquals("context",config.getContextPath());
 		assertEquals("file:/url",config.getStoreBaseURL().toExternalForm());
 		assertNotNull(config.getWSDLConfigForID("1"));
 		
@@ -77,7 +79,7 @@ public class TestXMLProxyConfig {
 	@Test
 	public void testDeleteWSDL() throws Exception {
 		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
-		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
 		
@@ -88,12 +90,12 @@ public class TestXMLProxyConfig {
 		
 		xml = config.toStringForm();
 		
-		assertEquals("Incorrect xml",xml,"<config><store><baseURL>file:/url</baseURL></store></config>");
+		assertEquals("Incorrect xml",xml,"<config><contextPath>context</contextPath><store><baseURL>file:/url</baseURL></store></config>");
 	}
 	
 	@Test
 	public void testToStringForm() throws Exception {
-		String xml="<config><store><baseURL>file:/tmp/</baseURL></store></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/tmp/</baseURL></store></config>";
 		Element el = xmlToElement(xml);
 		ProxyConfig config = new XMLProxyConfig(el);
 		
@@ -101,18 +103,20 @@ public class TestXMLProxyConfig {
 		config = new XMLProxyConfig(xmlToElement(xml));
 		
 		assertEquals("file:/tmp/",config.getStoreBaseURL().toExternalForm());
+		assertEquals("context",config.getContextPath());
 	}
 	
 	@Test
 	public void testToStringFormWithOneWSDL() throws Exception {
 		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
-		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
 		
 		xml = config.toStringForm();
 		config = new XMLProxyConfig(xmlToElement(xml));
 		
+		assertEquals("context",config.getContextPath());
 		assertEquals("file:/url",config.getStoreBaseURL().toExternalForm());
 		assertNotNull(config.getWSDLConfigForID("1"));
 		
@@ -127,7 +131,7 @@ public class TestXMLProxyConfig {
 	
 	@Test
 	public void testToStringWithNewWSDL() throws Exception {		
-		String xml="<config><store><baseURL>file:/url</baseURL></store></config>";
+		String xml="<config><contextPath>context</contextPath><store><baseURL>file:/url</baseURL></store></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
 		
@@ -141,6 +145,7 @@ public class TestXMLProxyConfig {
 		xml = config.toStringForm();
 		config = new XMLProxyConfig(xmlToElement(xml));
 		
+		assertEquals("context",config.getContextPath());
 		assertEquals("file:/url",config.getStoreBaseURL().toExternalForm());
 		assertNotNull(config.getWSDLConfigForID("1"));
 		
