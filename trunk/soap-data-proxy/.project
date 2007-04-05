@@ -66,11 +66,6 @@
 			<location>/local/.m2/repository/axis/axis/1.4/axis-1.4.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/commons-fileupload-1.0.jar</name>
-			<type>1</type>
-			<location>/local/.m2/repository/commons-fileupload/commons-fileupload/1.0/commons-fileupload-1.0.jar</location>
-		</link>
-		<link>
 			<name>src/main/webapp/WEB-INF/lib/xercesImpl-2.6.2.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar</location>
@@ -86,19 +81,14 @@
 			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/servlet-api-2.4.jar</name>
-			<type>1</type>
-			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
-		</link>
-		<link>
 			<name>src/main/webapp/WEB-INF/lib/axis-saaj-1.4.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/axis/axis-saaj/1.4/axis-saaj-1.4.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/thinwire-1.2_RC1.jar</name>
+			<name>src/main/webapp/WEB-INF/lib/servlet-api-2.4.jar</name>
 			<type>1</type>
-			<location>/local/.m2/repository/uk/org/mygrid/resources/thinwire/1.2_RC1/thinwire-1.2_RC1.jar</location>
+			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
 		</link>
 		<link>
 			<name>src/main/webapp/WEB-INF/lib/tango-icon-theme-0.8.0.jar</name>
