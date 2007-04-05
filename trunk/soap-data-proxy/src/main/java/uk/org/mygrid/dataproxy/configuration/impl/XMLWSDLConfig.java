@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:13:30 $
+ * Last modified on   $Date: 2007-04-05 13:47:36 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -51,8 +51,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	private String ID;
 	private String address;
 	private String endpoint;
-	private String name;
-	private String filename;
+	private String name;	
 	private List<ElementDefinition> elements = new ArrayList<ElementDefinition>();	
 		
 	@SuppressWarnings("unchecked")
@@ -72,11 +71,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		
 		child = element.element("endpoint");
 		if (child==null) throw new WSDLConfigException("No element 'endpiont' defined");
-		endpoint=child.getTextTrim();	
-		
-		child = element.element("filename");
-		if (child==null) throw new WSDLConfigException("No element 'filename' defined");
-		filename=child.getTextTrim();
+		endpoint=child.getTextTrim();			
 		
 		child = element.element("elements");
 		if (child!=null) {
@@ -104,11 +99,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 				this.elements.add(def);						
 			}
 		}				
-	}
-
-	public String getWSDLFilename() {
-		return filename;
-	}
+	}	
 
 	public String getName() {
 		return name;
@@ -135,8 +126,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		Element wsdlChild = doc.addElement("wsdl");
 		wsdlChild.addElement("id").setText(getWSDLID());
 		wsdlChild.addElement("name").setText(getName());
-		wsdlChild.addElement("address").setText(getAddress());	
-		wsdlChild.addElement("filename").setText(getWSDLFilename());
+		wsdlChild.addElement("address").setText(getAddress());			
 		wsdlChild.addElement("endpoint").setText(getEndpoint());		
 		
 		if (elements.size()>0) {

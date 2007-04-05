@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLWSDLConfig.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:13:30 $
+ * Last modified on   $Date: 2007-04-05 13:47:36 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -48,7 +48,7 @@ public class TestXMLWSDLConfig {
 
 	@Test
 	public void testSimple() throws Exception {
-		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint>";
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><endpoint>http://endpoint.cgi</endpoint>";
 		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/path</path><operation>op</operation></element></elements>";
 		xml+="</wsdl>";
 		
@@ -57,8 +57,7 @@ public class TestXMLWSDLConfig {
 		assertEquals("1",config.getWSDLID());
 		assertEquals("http://address",config.getAddress());
 		assertEquals("http://endpoint.cgi",config.getEndpoint());
-		assertEquals("wsdl1",config.getName());
-		assertEquals("/tmp/wsdls/file",config.getWSDLFilename());
+		assertEquals("wsdl1",config.getName());		
 		assertEquals(1,config.getElements().size());
 		
 		ElementDefinition def = config.getElements().get(0);
@@ -71,7 +70,7 @@ public class TestXMLWSDLConfig {
 	
 	@Test
 	public void testMultipleElements() throws Exception {
-		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint><elements>";
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><endpoint>http://endpoint.cgi</endpoint><elements>";
 		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/AnElement</path><operation>op</operation></element>";
 		xml+="<element><name>AnElement2</name><namespaceURI>uri</namespaceURI><path>*/AnElement2</path><operation>op</operation></element>";
 		xml+="<element><name>AnElement3</name><namespaceURI>uri</namespaceURI><path>*/AnElement3</path><operation>op</operation></element>";
@@ -106,7 +105,7 @@ public class TestXMLWSDLConfig {
 	
 	@Test
 	public void testMissingNamespace() throws Exception {
-		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint><elements>";
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><endpoint>http://endpoint.cgi</endpoint><elements>";
 		xml+="<element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/AnElement</path><operation>op</operation></element>";
 		xml+="<element><name>AnElement2</name><path>*/AnElement2</path><operation>op</operation></element>";		
 		xml+="</elements></wsdl>";
@@ -130,7 +129,7 @@ public class TestXMLWSDLConfig {
 	
 	@Test
 	public void testToXML() throws Exception {
-		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint.cgi</endpoint>";
+		String xml = "<wsdl><id>1</id><name>wsdl1</name><address>http://address</address><endpoint>http://endpoint.cgi</endpoint>";
 		xml+="<elements><element><name>AnElement</name><namespaceURI>uri</namespaceURI><path>*/path</path><operation>op</operation></element></elements>";
 		xml+="</wsdl>";
 				

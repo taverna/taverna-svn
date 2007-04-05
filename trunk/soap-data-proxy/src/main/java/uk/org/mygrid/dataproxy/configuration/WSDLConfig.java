@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfig.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-04-05 13:47:37 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -41,8 +41,7 @@ public interface WSDLConfig {
 	
 	public String getWSDLID();
 	public String getAddress();
-	public String getName();
-	public String getWSDLFilename();
+	public String getName();	
 	public List<ElementDefinition> getElements();	
 	public String getEndpoint();		
 }

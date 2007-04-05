@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-05 13:47:37 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -105,8 +105,6 @@ public class AddWSDLPanel extends SPanel {
 			config.setWSDLID(ProxyConfigFactory.getUniqueWSDLID());
 			config.setEndpoint(fetchServiceEndpoint(location));
 			config.setName(name);
-			//TODO: is wsdl filename needed??
-			config.setWSDLFilename(name+".wsdl");
 			config.setAddress(location);
 			
 			ProxyConfigFactory.getInstance().addWSDLConfig(config);

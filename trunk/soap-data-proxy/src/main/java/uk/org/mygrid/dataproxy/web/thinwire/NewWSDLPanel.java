@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:56:10 $
+ * Last modified on   $Date: 2007-04-05 13:47:37 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -137,8 +137,7 @@ public class NewWSDLPanel extends Panel {
 		NewWSDLConfig config = new NewWSDLConfig();
 		config.setWSDLID(wsdlID);
 		config.setEndpoint(fetchServiceEndpoint(wsdlLocation));
-		config.setName(wsdlName);
-		config.setWSDLFilename(wsdlName+".wsdl");
+		config.setName(wsdlName);		
 		config.setAddress(wsdlLocation);
 		
 		ProxyConfigFactory.getInstance().addWSDLConfig(config);

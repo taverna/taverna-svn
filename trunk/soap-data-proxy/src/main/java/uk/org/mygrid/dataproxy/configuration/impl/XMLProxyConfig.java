@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 09:51:51 $
+ * Last modified on   $Date: 2007-04-05 13:47:36 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -125,8 +125,7 @@ public class XMLProxyConfig implements ProxyConfig {
 					Element wsdlChild = wsdls.addElement("wsdl");
 					wsdlChild.addElement("id").setText(wsdl.getWSDLID());
 					wsdlChild.addElement("name").setText(wsdl.getName());
-					wsdlChild.addElement("address").setText(wsdl.getAddress());
-					wsdlChild.addElement("filename").setText(wsdl.getWSDLFilename());
+					wsdlChild.addElement("address").setText(wsdl.getAddress());					
 					wsdlChild.addElement("endpoint").setText(wsdl.getEndpoint());					
 					
 					if (wsdl.getElements().size()>0) {

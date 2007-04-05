@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLProxyConfig.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-14 10:00:23 $
+ * Last modified on   $Date: 2007-04-05 13:47:36 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -57,7 +57,7 @@ public class TestXMLProxyConfig {
 	
 	@Test
 	public void testOneWSDLDefined() throws Exception {
-		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
 		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
@@ -70,14 +70,13 @@ public class TestXMLProxyConfig {
 		assertEquals("1",wsdlConfig.getWSDLID());
 		assertEquals("http://wsdl",wsdlConfig.getAddress());
 		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
-		assertEquals("test wsdl",wsdlConfig.getName());
-		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
+		assertEquals("test wsdl",wsdlConfig.getName());		
 		assertEquals(0,wsdlConfig.getElements().size());
 	}
 	
 	@Test
 	public void testDeleteWSDL() throws Exception {
-		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
 		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
@@ -106,7 +105,7 @@ public class TestXMLProxyConfig {
 	
 	@Test
 	public void testToStringFormWithOneWSDL() throws Exception {
-		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><filename>/tmp/wsdls/file</filename><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
+		String wsdlXML="<wsdl><id>1</id><name>test wsdl</name><address>http://wsdl</address><endpoint>http://endpoint</endpoint><elements></elements></wsdl>";
 		String xml="<config><store><baseURL>file:/url</baseURL></store><wsdls>"+wsdlXML+"</wsdls></config>";
 		
 		ProxyConfig config = new XMLProxyConfig(xmlToElement(xml));
@@ -122,8 +121,7 @@ public class TestXMLProxyConfig {
 		assertEquals("1",wsdlConfig.getWSDLID());
 		assertEquals("http://wsdl",wsdlConfig.getAddress());
 		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
-		assertEquals("test wsdl",wsdlConfig.getName());
-		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
+		assertEquals("test wsdl",wsdlConfig.getName());		
 		assertEquals(0,wsdlConfig.getElements().size());
 	}
 	
@@ -137,8 +135,7 @@ public class TestXMLProxyConfig {
 		newWsdl.setWSDLID("1");
 		newWsdl.setAddress("http://wsdl");
 		newWsdl.setEndpoint("http://endpoint");
-		newWsdl.setName("test wsdl");
-		newWsdl.setWSDLFilename("/tmp/wsdls/file");
+		newWsdl.setName("test wsdl");		
 		config.addWSDLConfig(newWsdl);
 		
 		xml = config.toStringForm();
@@ -152,8 +149,7 @@ public class TestXMLProxyConfig {
 		assertEquals("1",wsdlConfig.getWSDLID());
 		assertEquals("http://wsdl",wsdlConfig.getAddress());
 		assertEquals("http://endpoint",wsdlConfig.getEndpoint());
-		assertEquals("test wsdl",wsdlConfig.getName());
-		assertEquals("/tmp/wsdls/file",wsdlConfig.getWSDLFilename());
+		assertEquals("test wsdl",wsdlConfig.getName());		
 		assertEquals(0,wsdlConfig.getElements().size());
 	}
 		
