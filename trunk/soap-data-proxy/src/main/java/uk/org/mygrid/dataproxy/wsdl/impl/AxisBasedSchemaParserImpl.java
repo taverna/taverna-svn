@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-04-05 13:34:16 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -97,8 +97,13 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 						type.addElement(convertQName(o.getRefType()
 										.getQName()));
 					} else {
-						populateWithContainedElements(type, o.getRefType()
-								.getContainedElements());
+						if (o.getRefType().getContainedElements()==null) {
+							//FIXME: getContainedElements is unexpectedly nul							
+						}
+						else {
+							populateWithContainedElements(type, o.getRefType()
+									.getContainedElements());
+						}
 					}
 				} else {
 					if (o.getContainedElements() != null) {
@@ -120,7 +125,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 	}
 
 	private void populateWithContainedElements(Element type,
-			Vector<ElementDecl> containedElements) {
+			Vector<ElementDecl> containedElements) {		
 		for (ElementDecl elementEntry : containedElements) {
 			Element addedElement = type.addElement(new QName(elementEntry
 					.getType().getQName().getLocalPart(),new Namespace("",elementEntry.getQName().getNamespaceURI())));

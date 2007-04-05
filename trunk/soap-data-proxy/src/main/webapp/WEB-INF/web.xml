@@ -43,6 +43,21 @@
 		<servlet-name>ViewWSDL</servlet-name>
 		<url-pattern>/viewwsdl</url-pattern>
 	</servlet-mapping>
+	
+	
+	<servlet>
+        <servlet-name>WingS</servlet-name>
+        <servlet-class>org.wings.session.WingServlet</servlet-class>
+        <init-param>
+            <param-name>wings.mainclass</param-name>
+            <param-value>uk.org.mygrid.dataproxy.web.wings.Configuration</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>WingS</servlet-name>
+        <url-pattern>/config/*</url-pattern>
+    </servlet-mapping>	
 		
 	<servlet>
 		<description>

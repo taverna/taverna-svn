@@ -86,19 +86,24 @@
 			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/axis-saaj-1.4.jar</name>
-			<type>1</type>
-			<location>/local/.m2/repository/axis/axis-saaj/1.4/axis-saaj-1.4.jar</location>
-		</link>
-		<link>
 			<name>src/main/webapp/WEB-INF/lib/servlet-api-2.4.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/axis-saaj-1.4.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/axis/axis-saaj/1.4/axis-saaj-1.4.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/thinwire-1.2_RC1.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/uk/org/mygrid/resources/thinwire/1.2_RC1/thinwire-1.2_RC1.jar</location>
+		</link>
+		<link>
+			<name>src/main/webapp/WEB-INF/lib/tango-icon-theme-0.8.0.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/org/tango-project/tango-icon-theme/0.8.0/tango-icon-theme-0.8.0.jar</location>
 		</link>
 		<link>
 			<name>src/main/webapp/WEB-INF/lib/dom4j-1.6.1.jar</name>

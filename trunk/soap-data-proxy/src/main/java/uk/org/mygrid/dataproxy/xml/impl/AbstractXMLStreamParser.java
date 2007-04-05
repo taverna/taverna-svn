@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 19:53:35 $
+ * Last modified on   $Date: 2007-04-05 13:34:16 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -66,7 +66,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 	public void read(InputStream stream) throws SAXException, IOException {
 		XMLReader reader = XMLReaderFactory.createXMLReader();
 		reader.setContentHandler(this);				
-		reader.parse(new InputSource(stream));
+		reader.parse(new InputSource(stream));		
 	}
 	
 	public void addTagInterceptor(TagInterceptor interceptor) {

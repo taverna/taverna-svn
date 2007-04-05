@@ -113,5 +113,10 @@
       <artifactId>thinwire</artifactId>
       <version>1.2_RC1</version>
     </dependency>    
+    <dependency>
+  		<groupId>org.tango-project</groupId>
+  		<artifactId>tango-icon-theme</artifactId>
+  		<version>0.8.0</version>
+	</dependency>
   </dependencies>
 </project>

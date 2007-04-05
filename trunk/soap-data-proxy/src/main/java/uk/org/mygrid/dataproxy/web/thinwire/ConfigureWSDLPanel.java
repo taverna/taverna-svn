@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ConfigureWSDLPanel.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-22 15:08:14 $
+ * Last modified on   $Date: 2007-04-05 13:34:16 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -272,7 +272,8 @@ public class ConfigureWSDLPanel extends Panel {
 	}
 	
 	private void toggleOn(Tree.Item selectedItem) {
-		selectedItem.setText("XXX: "+selectedItem.getText());		
+		selectedItem.setText("XXX: "+selectedItem.getText());
+		
 		Element typeElement = (Element)selectedItem.getUserObject();
 		ElementDefinition def = createElementDefFromXML(typeElement);
 		defsSelectedForProxy.add(def);
