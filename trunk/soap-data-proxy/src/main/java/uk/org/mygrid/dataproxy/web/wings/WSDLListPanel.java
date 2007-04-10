@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-10 13:06:52 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -113,6 +113,8 @@ public class WSDLListPanel extends CentrePanel{
 			}
 			
 		});
+		table.setSelectedRow(0);
+		
 		SToolBar toolBar = new SToolBar();		
 		toolBar.add(configureButton);
 		toolBar.add(new SSpacer(5,10));
@@ -122,7 +124,15 @@ public class WSDLListPanel extends CentrePanel{
 		
 		add(new AddWSDLPanel(table));
 		
-		table.setSelectedRow(0);
+		SButton editPaths = new SButton("Edit Paths");
+		editPaths.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchPanel(new AdminPanel());				
+			}			
+		});
+		
+		add(editPaths);
+				
 	}
 	
 	private void deleteWSDL(WSDLConfig config) {

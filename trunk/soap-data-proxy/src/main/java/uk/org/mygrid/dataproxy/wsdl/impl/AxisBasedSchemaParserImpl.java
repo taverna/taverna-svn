@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:16 $
+ * Last modified on   $Date: 2007-04-10 13:06:52 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -82,36 +82,35 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 		
 		SymbolTable table = getSymbolTable(wsdlUrl);
 		QName qname = new QName(type.getName(), type.getNamespace());
-		TypeEntry o = null;
+		TypeEntry typeEntry = null;
 		
-		o = table.getElement(convertQName(qname));
-		if (o == null) {
-			o = table.getType(convertQName(qname));
+		typeEntry = table.getElement(convertQName(qname));
+		if (typeEntry == null) {
+			typeEntry = table.getType(convertQName(qname));
 		}
-		if (o != null) {
+		if (typeEntry != null) {
+			if (!typeEntry.isBaseType()) {
 
-			if (!o.isBaseType()) {
-
-				if (o.getRefType() != null) {
-					if (o instanceof DefinedType) {
-						type.addElement(convertQName(o.getRefType()
+				if (typeEntry.getRefType() != null) {
+					if (typeEntry instanceof DefinedType) {
+						type.addElement(convertQName(typeEntry.getRefType()
 										.getQName()));
 					} else {
-						if (o.getRefType().getContainedElements()==null) {
-							//FIXME: getContainedElements is unexpectedly nul							
+						if (typeEntry.getRefType().getContainedElements()==null) {
+							//FIXME: getContainedElements is unexpectedly null							
 						}
 						else {
-							populateWithContainedElements(type, o.getRefType()
+							populateWithContainedElements(type, typeEntry.getRefType()
 									.getContainedElements());
 						}
 					}
 				} else {
-					if (o.getContainedElements() != null) {
-						Vector<ElementDecl> containedElements = (Vector<ElementDecl>) o
+					if (typeEntry.getContainedElements() != null) {
+						Vector<ElementDecl> containedElements = (Vector<ElementDecl>) typeEntry
 								.getContainedElements();
 						populateWithContainedElements(type, containedElements);
 					} else {
-						type.addElement(convertQName(o.getComponentType()));
+						type.addElement(convertQName(typeEntry.getComponentType()));
 					}
 				}
 			}

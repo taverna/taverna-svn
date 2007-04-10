@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AdminPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:08 $
+ * Last modified on   $Date: 2007-04-10 13:06:52 $
  *               by   $Author: sowen70 $
  * Created on 5 Apr 2007
  *****************************************************************/
@@ -66,7 +66,7 @@ public class AdminPanel extends CentrePanel {
 		SForm form = new SForm(new SGridLayout(2));		
 		
 		contextTextField.setText(defaultContextPath());
-		dataPathTextField.setText(config.getStoreBaseURL().toExternalForm());			
+		dataPathTextField.setText(config.getStoreBaseURL().toExternalForm().substring(5));			
 		
 		contextTextField.setPreferredSize(SDimension.FULLWIDTH);
 		dataPathTextField.setPreferredSize(SDimension.FULLWIDTH);
@@ -107,7 +107,7 @@ public class AdminPanel extends CentrePanel {
 			String portStr="";
 			if (port!=80) portStr=":"+port;
 			
-			String fullpath=scheme+"//"+host+portStr+path;	
+			String fullpath=scheme+ "://" +host+portStr+path;	
 			if (!fullpath.endsWith("/")) fullpath+="/";
 		
 			return fullpath;
