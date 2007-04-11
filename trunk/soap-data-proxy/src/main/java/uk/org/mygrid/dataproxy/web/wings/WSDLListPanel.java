@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-10 13:06:52 $
+ * Last modified on   $Date: 2007-04-11 10:44:01 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -41,7 +41,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+import org.wings.SBoxLayout;
 import org.wings.SButton;
+import org.wings.SDimension;
 import org.wings.SGridLayout;
 import org.wings.SImageIcon;
 import org.wings.SOptionPane;
@@ -64,22 +66,56 @@ public class WSDLListPanel extends CentrePanel{
 	
 	public WSDLListPanel() {				
 				
-		setLayout(new SGridLayout(1));
-		table = new WSDLTable();		
-		deleteButton = new SButton(new SImageIcon(Icons.getIcon("delete")));
-		deleteButton.setToolTipText("Delete WSDL");		
-		configureButton = new SButton(new SImageIcon(Icons.getIcon("configure")));
-		configureButton.setToolTipText("Configure WSDL");
+		setLayout(new SBoxLayout(SBoxLayout.VERTICAL));			
+				
+		createConfigureButton();		
+		createDeleteButton();				
+		disableButtons();
+		createWSDLTable();
+					
+		SToolBar toolBar = new SToolBar();		
+		toolBar.add(configureButton);
+		toolBar.add(new SSpacer(5,10));
+		toolBar.add(deleteButton);
+		add(toolBar);
 		
-		configureButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {				
-				WSDLConfig config = getSelectedWSDLConfig();
-				if (config!=null) {
-					switchPanel(new WSDLConfigurationPanel(config));
+		add(table);			
+		
+		add(new AddWSDLPanel(table));
+
+		SButton editPaths = new SButton("Edit Paths");
+		editPaths.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchPanel(new AdminPanel());				
+			}			
+		});
+		editPaths.setShowAsFormComponent(true);
+		add(editPaths);
+				
+	}
+
+	private void createWSDLTable() {
+		table = new WSDLTable();
+		table.setSelectionMode(STable.SINGLE_SELECTION);	
+		table.setShowHorizontalLines(true);
+		table.setPreferredSize(new SDimension("80%","100%"));
+		
+		table.addSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (table.getSelectedRow()>-1) {
+					enableButtons();
+				}
+				else {
+					disableButtons();
 				}
 			}			
 		});
-		
+		table.setSelectedRow(0);
+	}
+
+	private void createDeleteButton() {
+		deleteButton = new SButton(new SImageIcon(Icons.getIcon("delete")));
+		deleteButton.setToolTipText("Delete WSDL");
 		deleteButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final WSDLConfig config = getSelectedWSDLConfig();
@@ -93,46 +129,20 @@ public class WSDLListPanel extends CentrePanel{
 				SOptionPane.showYesNoDialog(table, "Are you sure you want to delete "+config.getName()+"?\nYou will lose any configurations you have made to this WSDL but stored data will remain.", "Delete WSDL?",optionListener);				
 			}			
 		});
-		
-		
-		disableButtons();
-						
-		add(table);
-		
-		table.setSelectionMode(STable.SINGLE_SELECTION);		
-		
-		table.addSelectionListener(new ListSelectionListener() {
+	}
 
-			public void valueChanged(ListSelectionEvent e) {
-				if (table.getSelectedRow()>-1) {
-					enableButtons();
+	private void createConfigureButton() {
+		configureButton = new SButton(new SImageIcon(Icons.getIcon("configure")));
+		configureButton.setToolTipText("Configure WSDL");
+		
+		configureButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				WSDLConfig config = getSelectedWSDLConfig();
+				if (config!=null) {
+					switchPanel(new WSDLConfigurationPanel(config));
 				}
-				else {
-					disableButtons();
-				}
-			}
-			
-		});
-		table.setSelectedRow(0);
-		
-		SToolBar toolBar = new SToolBar();		
-		toolBar.add(configureButton);
-		toolBar.add(new SSpacer(5,10));
-		toolBar.add(deleteButton);
-		
-		add(toolBar);
-		
-		add(new AddWSDLPanel(table));
-		
-		SButton editPaths = new SButton("Edit Paths");
-		editPaths.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				switchPanel(new AdminPanel());				
 			}			
 		});
-		
-		add(editPaths);
-				
 	}
 	
 	private void deleteWSDL(WSDLConfig config) {

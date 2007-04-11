@@ -25,20 +25,25 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CentrePanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-11 10:44:01 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.wings;
 
 import org.wings.SBorderLayout;
+import org.wings.SConstants;
+import org.wings.SDimension;
 import org.wings.SPanel;
 
+@SuppressWarnings("serial")
 public class CentrePanel extends SPanel{
 
 	protected void switchPanel(SPanel panel) {
+		panel.setPreferredSize(SDimension.FULLAREA);
+		panel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		getParent().add(panel,SBorderLayout.CENTER);
 	}
 	

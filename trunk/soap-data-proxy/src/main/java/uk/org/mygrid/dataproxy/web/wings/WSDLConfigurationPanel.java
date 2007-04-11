@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-10 13:06:52 $
+ * Last modified on   $Date: 2007-04-11 10:44:01 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -40,7 +40,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.wings.SButton;
 import org.wings.SGridLayout;
-import org.wings.SLabel;
 import org.wings.STree;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
@@ -60,8 +59,57 @@ public class WSDLConfigurationPanel extends CentrePanel{
 
 	public WSDLConfigurationPanel(WSDLConfig config) {
 		this.config=config;
-		setLayout(new SGridLayout(1));
-		SButton backButton = new SButton("Back");		
+		setLayout(new SGridLayout(1));		
+		SButton backButton = createBackButton();		
+		SButton toggleButton = createToggleButton();		
+		SButton commitButton = createCommitButton();
+				
+		initialiseTree();						
+		add(tree);
+		add(toggleButton);						
+		add(backButton);
+		add(commitButton);
+	}
+
+	private void initialiseTree() {
+		model = new WSDLTreeModel(config);
+		try {
+			model.populate();			
+		} catch (SchemaParsingException e) {
+			logger.error("Error parsing the wsdl:"+config.getAddress(),e);
+			setError("Error parsing the wsdl:"+e.getMessage());
+		}
+		
+		tree.setCellRenderer(new WSDLTreeCellRenderer());
+		tree.setModel(model);		
+		tree.setRootVisible(true);
+		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);
+	}
+
+	private SButton createCommitButton() {
+		SButton commitButton = new SButton("Commit");
+		commitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				commit();				
+			}			
+		});
+		return commitButton;
+	}
+
+	private SButton createToggleButton() {
+		SButton toggleButton = new SButton("Toggle");
+		toggleButton.setShowAsFormComponent(true);
+		toggleButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleSelectedTreeItem();				
+			}			
+		});
+		return toggleButton;
+	}
+
+	private SButton createBackButton() {
+		SButton backButton;
+		backButton = new SButton("Back");		
 		backButton.setShowAsFormComponent(true);		
 		backButton.addActionListener(new ActionListener() {
 
@@ -70,41 +118,7 @@ public class WSDLConfigurationPanel extends CentrePanel{
 			}
 			
 		});
-		
-		SButton toggleButton = new SButton("Toggle");
-		toggleButton.setShowAsFormComponent(true);
-		toggleButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				toggleSelectedTreeItem();				
-			}			
-		});
-		
-		SButton commitButton = new SButton("Commit");
-		commitButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				commit();				
-			}			
-		});
-				
-		model = new WSDLTreeModel(config);
-		try {
-			model.populate();			
-		} catch (SchemaParsingException e1) {
-			logger.error("Error parsing the wsdl:"+config.getAddress(),e1);
-			setError("Error parsing the wsdl:"+e1.getMessage());
-		}
-		
-		tree.setCellRenderer(new WSDLTreeCellRenderer());
-		tree.setModel(model);		
-		tree.setRootVisible(true);
-		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);		
-		
-		add(new SLabel(config.getName()));
-		add(new SLabel(config.getWSDLID()));
-		add(tree);
-		add(toggleButton);						
-		add(backButton);
-		add(commitButton);
+		return backButton;
 	}	
 	
 	private void commit() {

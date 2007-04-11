@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:37 $
+ * Last modified on   $Date: 2007-04-11 10:44:01 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -53,7 +53,6 @@ import org.wings.SOptionPane;
 import org.wings.SPanel;
 import org.wings.STextField;
 
-import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
 

@@ -66,6 +66,16 @@
 			<location>/local/.m2/repository/axis/axis/1.4/axis-1.4.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/wings-css-NO-VERSION.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/uk/org/mygrid/resources/wings-css/NO-VERSION/wings-css-NO-VERSION.jar</location>
+		</link>
+		<link>
+			<name>src/main/webapp/WEB-INF/lib/bsh-core-2.0b4.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/org/beanshell/bsh-core/2.0b4/bsh-core-2.0b4.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/xercesImpl-2.6.2.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar</location>
@@ -81,6 +91,11 @@
 			<location>/local/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/dwr-2.0.rc1.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/org/directwebremoting/dwr/2.0.rc1/dwr-2.0.rc1.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/axis-saaj-1.4.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/axis/axis-saaj/1.4/axis-saaj-1.4.jar</location>
@@ -91,14 +106,19 @@
 			<location>/local/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar</location>
 		</link>
 		<link>
+			<name>src/main/webapp/WEB-INF/lib/dom4j-1.6.1.jar</name>
+			<type>1</type>
+			<location>/local/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar</location>
+		</link>
+		<link>
 			<name>src/main/webapp/WEB-INF/lib/tango-icon-theme-0.8.0.jar</name>
 			<type>1</type>
 			<location>/local/.m2/repository/org/tango-project/tango-icon-theme/0.8.0/tango-icon-theme-0.8.0.jar</location>
 		</link>
 		<link>
-			<name>src/main/webapp/WEB-INF/lib/dom4j-1.6.1.jar</name>
+			<name>src/main/webapp/WEB-INF/lib/j-wings-3.0-beta1.jar</name>
 			<type>1</type>
-			<location>/local/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar</location>
+			<location>/local/.m2/repository/uk/org/mygrid/resources/j-wings/3.0-beta1/j-wings-3.0-beta1.jar</location>
 		</link>
 		<link>
 			<name>src/main/webapp/WEB-INF/lib/xml-apis-1.0.b2.jar</name>

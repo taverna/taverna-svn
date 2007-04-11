@@ -25,23 +25,23 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:09 $
+ * Last modified on   $Date: 2007-04-11 10:44:01 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.wings;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.wings.SBorderLayout;
+import org.wings.SBoxLayout;
 import org.wings.SConstants;
 import org.wings.SDimension;
 import org.wings.SFrame;
+import org.wings.SIcon;
 import org.wings.SLabel;
 import org.wings.SPanel;
-import org.wings.session.SessionManager;
+import org.wings.SResourceIcon;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
@@ -53,23 +53,39 @@ public class Configuration {
 		
 		panel.setPreferredSize(SDimension.FULLAREA);
 		panel.setLayout(layout);
-		SLabel title = new SLabel("Data Proxy");
-		title.setPreferredSize(SDimension.FULLAREA);
-		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);
-		panel.add(title,SBorderLayout.NORTH);		
+		
+		setUpNorthPane(panel);		
+		
 		SPanel centrePanel;
 		centrePanel = startCentrePanel();
 		centrePanel.setPreferredSize(SDimension.FULLAREA);
 		centrePanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		panel.add(centrePanel,SBorderLayout.CENTER);		
 		
-		SLabel status = new SLabel();
+		SLabel status = new SLabel("Status Label");
 		panel.add(status,SBorderLayout.SOUTH);		
 		
 		SFrame rootFrame = new SFrame();
 		rootFrame.setTitle("Data Proxy");
         rootFrame.getContentPane().add(panel);
         rootFrame.setVisible(true);
+	}
+
+	private void setUpNorthPane(SPanel panel) {
+		SPanel northPanel = new SPanel(new SBoxLayout(SBoxLayout.HORIZONTAL));
+		northPanel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		
+		SLabel title = new SLabel("Large Data Proxy");
+		title.setPreferredSize(SDimension.FULLAREA);
+		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);	
+		title.setStyle("font=bold");
+		
+		
+		SIcon mygridImage = new SResourceIcon("/mygridLogo.gif");
+		
+		northPanel.add(new SLabel(mygridImage));
+		northPanel.add(title);		
+		panel.add(northPanel,SBorderLayout.NORTH);
 	}
 
 	private SPanel startCentrePanel() {
