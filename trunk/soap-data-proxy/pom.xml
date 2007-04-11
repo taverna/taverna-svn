@@ -46,16 +46,7 @@
       <id>mygrid-proxy</id>
       <name>MyGrid Proxy Repository</name>
       <url>http://www.mygrid.org.uk/maven/proxy/</url>
-    </repository>
-    <repository>
-      <releases />
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>soapui-repository</id>
-      <name>SoapUI Repository</name>
-      <url>http://www.eviware.com/repository/maven2/</url>
-    </repository>
+    </repository>    
   </repositories>
   <pluginRepositories>
     <pluginRepository>
