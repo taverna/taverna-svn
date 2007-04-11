@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 10:44:01 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -37,9 +37,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.tree.TreePath;
+
 import org.apache.log4j.Logger;
+import org.wings.SBoxLayout;
 import org.wings.SButton;
-import org.wings.SGridLayout;
+import org.wings.SConstants;
+import org.wings.SDimension;
+import org.wings.SForm;
+import org.wings.SOptionPane;
+import org.wings.SScrollPane;
+import org.wings.SSeparator;
 import org.wings.STree;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
@@ -59,16 +67,28 @@ public class WSDLConfigurationPanel extends CentrePanel{
 
 	public WSDLConfigurationPanel(WSDLConfig config) {
 		this.config=config;
-		setLayout(new SGridLayout(1));		
+		setLayout(new SBoxLayout(SBoxLayout.HORIZONTAL));	
 		SButton backButton = createBackButton();		
 		SButton toggleButton = createToggleButton();		
 		SButton commitButton = createCommitButton();
+		
+		SForm buttonPanel = new SForm(new SBoxLayout(SBoxLayout.VERTICAL));		
+		buttonPanel.setVerticalAlignment(SConstants.TOP);		
+		buttonPanel.add(backButton);
+		buttonPanel.add(new SSeparator());
+		buttonPanel.add(toggleButton);								
+		buttonPanel.add(commitButton);
+		backButton.setPreferredSize(SDimension.FULLWIDTH);
+		toggleButton.setPreferredSize(SDimension.FULLWIDTH);
+		commitButton.setPreferredSize(SDimension.FULLWIDTH);
 				
-		initialiseTree();						
-		add(tree);
-		add(toggleButton);						
-		add(backButton);
-		add(commitButton);
+		initialiseTree();		
+		
+		SScrollPane treeScrollPane = new SScrollPane(tree);
+		treeScrollPane.setPreferredSize(new SDimension("90%","100%"));
+		add(buttonPanel);
+		add(treeScrollPane);
+		
 	}
 
 	private void initialiseTree() {
@@ -82,7 +102,7 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		
 		tree.setCellRenderer(new WSDLTreeCellRenderer());
 		tree.setModel(model);		
-		tree.setRootVisible(true);
+		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);
 	}
 
@@ -90,7 +110,14 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		SButton commitButton = new SButton("Commit");
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				commit();				
+				ActionListener optionListener = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if (e.getActionCommand().equals(SOptionPane.YES_ACTION)) {
+							commit();
+						}
+					}					
+				};
+				SOptionPane.showYesNoDialog(WSDLConfigurationPanel.this, "Are you sure you want to commit your changes? "+config.getName()+"?\nYou will lose any configurations you have made to this WSDL but stored data will remain.", "Delete WSDL?",optionListener);				
 			}			
 		});
 		return commitButton;
@@ -134,12 +161,14 @@ public class WSDLConfigurationPanel extends CentrePanel{
 	}
 	
 	private void toggleSelectedTreeItem() {
-		Object selectedObj = tree.getLastSelectedPathComponent();		
+		TreePath selectedPath = tree.getSelectionPath();
+		Object selectedObj = selectedPath.getLastPathComponent();		
 		if (selectedObj instanceof TypeNode) {
 			TypeNode node = (TypeNode)selectedObj;
 			model.toggleNode(node);
 			tree.collapseRow(0);
 			tree.expandRow(0);
+			tree.setSelectionPath(selectedPath);						
 		}		
 	}	
 }

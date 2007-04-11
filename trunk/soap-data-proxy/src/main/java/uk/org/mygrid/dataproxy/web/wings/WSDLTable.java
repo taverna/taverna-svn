@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTable.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -39,9 +39,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.wings.SComponent;
+import org.wings.SLabel;
 import org.wings.STable;
 import org.wings.event.SMouseEvent;
 import org.wings.event.SMouseListener;
+import org.wings.table.STableCellRenderer;
+
+import com.sun.jndi.url.corbaname.corbanameURLContextFactory;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
@@ -52,7 +57,8 @@ public class WSDLTable extends STable{
 	
 	public WSDLTable() {
 		wsdlList=ProxyConfigFactory.getInstance().getWSDLConfigs();
-		setModel(new WSDLTableModel(wsdlList));				
+		setModel(new WSDLTableModel(wsdlList));		
+		setHeaderRenderer(new TableHeaderRenderer()); 					
 	}	
 	
 	public WSDLConfig getWSDLConfigForIndex(int index) {
@@ -64,4 +70,21 @@ public class WSDLTable extends STable{
 		WSDLTableModel model = (WSDLTableModel)getModel();
 		model.update(wsdlList);
 	}
+}
+
+class TableHeaderRenderer implements STableCellRenderer {
+
+	SComponent[] headings;
+	
+	public TableHeaderRenderer() {
+		headings = new SComponent[3];
+		headings[0]=new SLabel("WSDL Name");
+		headings[1]=new SLabel("Original WSDL Address");
+		headings[2]=new SLabel("Proxy WSDL");		
+	}
+	
+	public SComponent getTableCellRendererComponent(STable table, Object value, boolean selected, int row, int column) {
+		 return headings[column];
+	}
+	
 }

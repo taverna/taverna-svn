@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTreeModel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 3 Apr 2007
  *****************************************************************/
@@ -84,7 +84,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 	private void addOperation(Element operationElement) throws SchemaParsingException {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)getRoot();		
 		DefaultMutableTreeNode operationNode = new OperationNode();
-		operationNode.setUserObject(operationElement);
+		operationNode.setUserObject(operationElement);		
 		root.add(operationNode);
 		List<String> parentTypes = new ArrayList<String>();
 		

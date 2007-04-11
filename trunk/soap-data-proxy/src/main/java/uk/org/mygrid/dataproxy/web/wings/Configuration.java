@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 10:44:01 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -37,45 +37,51 @@ import org.wings.SBorderLayout;
 import org.wings.SBoxLayout;
 import org.wings.SConstants;
 import org.wings.SDimension;
+import org.wings.SForm;
 import org.wings.SFrame;
 import org.wings.SIcon;
 import org.wings.SLabel;
 import org.wings.SPanel;
 import org.wings.SResourceIcon;
+import org.wings.STabbedPane;
+import org.wings.frames.SFrameSet;
+import org.wings.session.Session;
+import org.wings.session.SessionManager;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
 public class Configuration {
-	public Configuration() {		
-		
+	
+	public Configuration() {			
 		SBorderLayout layout = new SBorderLayout();
-		SPanel panel = new SPanel();
-		
-		panel.setPreferredSize(SDimension.FULLAREA);
+		layout.setPreferredSize(SDimension.FULLAREA);
+		SPanel panel = new SPanel();				
 		panel.setLayout(layout);
+		panel.setPreferredSize(SDimension.FULLAREA);		
 		
 		setUpNorthPane(panel);		
 		
 		SPanel centrePanel;
 		centrePanel = startCentrePanel();
 		centrePanel.setPreferredSize(SDimension.FULLAREA);
+		centrePanel.setVerticalAlignment(SConstants.TOP_ALIGN);
 		centrePanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		panel.add(centrePanel,SBorderLayout.CENTER);		
 		
 		SLabel status = new SLabel("Status Label");
-		panel.add(status,SBorderLayout.SOUTH);		
+		panel.add(status,SBorderLayout.SOUTH);			
 		
-		SFrame rootFrame = new SFrame();
-		rootFrame.setTitle("Data Proxy");
+		SFrame rootFrame = new SFrame("Webservice Data Proxy");		
         rootFrame.getContentPane().add(panel);
-        rootFrame.setVisible(true);
+        rootFrame.getContentPane().setPreferredSize(new SDimension("100%","600px"));        
+        rootFrame.show();
 	}
 
 	private void setUpNorthPane(SPanel panel) {
 		SPanel northPanel = new SPanel(new SBoxLayout(SBoxLayout.HORIZONTAL));
 		northPanel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
 		
-		SLabel title = new SLabel("Large Data Proxy");
+		SLabel title = new SLabel("Webservice Data Proxy");
 		title.setPreferredSize(SDimension.FULLAREA);
 		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);	
 		title.setStyle("font=bold");

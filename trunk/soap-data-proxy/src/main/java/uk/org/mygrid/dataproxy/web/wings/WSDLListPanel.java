@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 10:44:01 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -43,6 +43,7 @@ import javax.swing.event.ListSelectionListener;
 import org.apache.log4j.Logger;
 import org.wings.SBoxLayout;
 import org.wings.SButton;
+import org.wings.SConstants;
 import org.wings.SDimension;
 import org.wings.SGridLayout;
 import org.wings.SImageIcon;
@@ -77,6 +78,7 @@ public class WSDLListPanel extends CentrePanel{
 		toolBar.add(configureButton);
 		toolBar.add(new SSpacer(5,10));
 		toolBar.add(deleteButton);
+		toolBar.setHorizontalAlignment(SConstants.LEFT_ALIGN);
 		add(toolBar);
 		
 		add(table);			
@@ -98,7 +100,7 @@ public class WSDLListPanel extends CentrePanel{
 		table = new WSDLTable();
 		table.setSelectionMode(STable.SINGLE_SELECTION);	
 		table.setShowHorizontalLines(true);
-		table.setPreferredSize(new SDimension("80%","100%"));
+		table.setPreferredSize(new SDimension("95%","100%"));
 		
 		table.addSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTableModel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -46,6 +46,7 @@ import org.wings.SImageIcon;
 import org.wings.SLabel;
 import org.wings.session.SessionManager;
 
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.web.ServerInfo;
 
@@ -81,13 +82,19 @@ public class WSDLTableModel extends AbstractTableModel {
 	private void setUpData() {
 		data=new Object[wsdlList.size()][getColumnCount()];
 		int row=0;
-		for (WSDLConfig config : wsdlList) {
+		for (WSDLConfig config : wsdlList) {			
 			SLabel label = new SLabel(config.getName());
 			data[row][0]=label;
-			data[row][1]=config.getAddress();
-			SAnchor anchor = new SAnchor("../viewwsdl?id="+config.getWSDLID());
-			anchor.add(new SLabel(new SImageIcon(Icons.getIcon("configure"))));
-			data[row][2]=anchor;
+			
+			SAnchor originalWSDLAnchor = new SAnchor(config.getAddress());
+			originalWSDLAnchor.add(new SLabel(config.getAddress()));
+			data[row][1]=originalWSDLAnchor;
+			
+			SAnchor proxyWSDLAnchor = new SAnchor("../viewwsdl?id="+config.getWSDLID());
+			String proxyWSDLAddress = ProxyConfigFactory.getInstance().getContextPath()+"viewwsdl?id="+config.getWSDLID();
+			proxyWSDLAnchor.add(new SLabel(proxyWSDLAddress));
+			//proxyWSDLAnchor.add(new SLabel(new SImageIcon(Icons.getIcon("view"))));
+			data[row][2]=proxyWSDLAnchor;
 			
 						
 			row++;

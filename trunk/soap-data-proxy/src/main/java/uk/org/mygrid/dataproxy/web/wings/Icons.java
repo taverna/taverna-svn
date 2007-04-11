@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Icons.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:12 $
+ * Last modified on   $Date: 2007-04-11 16:43:14 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -43,14 +43,17 @@ public class Icons {
 	private static Map<String,ImageIcon> iconMap = new HashMap<String, ImageIcon>();
 	
 	static {
-		ImageIcon icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/16x16/places/user-trash.png")));
+		ImageIcon icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/places/user-trash.png")));
 		iconMap.put("delete",icon);
 		
-		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/16x16/status/network-idle.png")));
+		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/actions/document-properties.png")));
 		iconMap.put("configure",icon);
 		
 		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/16x16/actions/go-jump.png")));
 		iconMap.put("selected", icon);
+		
+		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/actions/document-open.png")));
+		iconMap.put("view", icon);
 	}
 	
 	public static ImageIcon getIcon(String name) {
