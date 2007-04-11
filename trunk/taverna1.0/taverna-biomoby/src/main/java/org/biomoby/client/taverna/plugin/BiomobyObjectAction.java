@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.biomoby.shared.MobyPrimaryDataSimple;
 import org.biomoby.shared.MobyService;
 import org.biomoby.shared.data.MobyDataInstance;
 import org.biomoby.shared.data.MobyDataObject;
+import org.biomoby.shared.data.MobyDataObjectSet;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -130,15 +132,24 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 			template.setInputs(new MobyData[] { data });
 			template.setCategory("");
 			MobyService[] services = null;
+			Set<MobyService> theServices = new TreeSet<MobyService>();
 			try {
 				services = central.findService(template, null, true, action.searchParentTypes);
+				
+				theServices.addAll(Arrays.asList(services));
+				MobyDataObjectSet set = new MobyDataObjectSet("");
+				set.add(data);
+				template.setInputs(null);
+				template.setInputs(new MobyData[]{set});
+				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
 			} catch (MobyException e) {
 				panel.add(new JTree(new String[] { "Error finding services",
 						"TODO: create a better Error" }), BorderLayout.CENTER);
 				panel.updateUI();
 				return;
 			}
-			createTreeNodes(inputNode, services);
+			createTreeNodes(inputNode, theServices.toArray(new MobyService[]{}));
 			if (inputNode.getChildCount() == 0)
 				inputNode.insert(new DefaultMutableTreeNode(
 						"Object Doesn't Currently Feed Into Any Services"), 0);
@@ -149,15 +160,23 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 			template.setCategory("");
 			template.setOutputs(new MobyData[] { data });
 			services = null;
+			theServices = new TreeSet<MobyService>();
 			try {
 				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
+				MobyDataObjectSet set = new MobyDataObjectSet("");
+				set.add(data);
+				template.setOutputs(null);
+				template.setOutputs(new MobyData[]{set});
+				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
 			} catch (MobyException e) {
 				panel.add(new JTree(new String[] { "Error finding services",
 						"TODO: create a better Error" }), BorderLayout.CENTER);
 				panel.updateUI();
 				return;
 			}
-			createTreeNodes(outputNode, services);
+			createTreeNodes(outputNode, theServices.toArray(new MobyService[]{}));
 			if (outputNode.getChildCount() == 0)
 				outputNode.insert(new DefaultMutableTreeNode(
 						"Object Isn't Produced By Any Services"), 0);
