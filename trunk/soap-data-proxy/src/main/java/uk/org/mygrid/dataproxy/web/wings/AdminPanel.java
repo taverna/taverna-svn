@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AdminPanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-10 13:06:52 $
+ * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
  * Created on 5 Apr 2007
  *****************************************************************/
@@ -41,13 +41,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.wings.SBorderLayout;
+import org.wings.SBoxLayout;
 import org.wings.SButton;
 import org.wings.SConstants;
 import org.wings.SDimension;
 import org.wings.SForm;
-import org.wings.SGridLayout;
+import org.wings.SImageIcon;
 import org.wings.SLabel;
 import org.wings.STextField;
+import org.wings.SToolBar;
+import org.wings.border.STitledBorder;
 import org.wings.session.SessionManager;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
@@ -63,7 +66,7 @@ public class AdminPanel extends CentrePanel {
 	
 	public AdminPanel() {		
 		setLayout(new SBorderLayout());
-		SForm form = new SForm(new SGridLayout(2));		
+		SForm form = new SForm(new SBoxLayout(SBoxLayout.VERTICAL));		
 		
 		contextTextField.setText(defaultContextPath());
 		dataPathTextField.setText(config.getStoreBaseURL().toExternalForm().substring(5));			
@@ -71,15 +74,15 @@ public class AdminPanel extends CentrePanel {
 		contextTextField.setPreferredSize(SDimension.FULLWIDTH);
 		dataPathTextField.setPreferredSize(SDimension.FULLWIDTH);
 		
-		form.add(new SLabel("Server Context:"));
+		form.add(new SLabel("Server Context"));
 		form.add(contextTextField);
-		
-		form.add(new SLabel("Data Storage Location:"));
+		form.add(new SLabel(" "));
+		form.add(new SLabel("Data Storage Location"));
 		form.add(dataPathTextField);
 		
 		form.add(new SLabel());
 		
-		SButton okButton = new SButton("Ok");
+		SButton okButton = new SButton("OK");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
 				saveData();
@@ -87,11 +90,30 @@ public class AdminPanel extends CentrePanel {
 		});
 		okButton.setHorizontalAlignment(SConstants.RIGHT_ALIGN);
 		form.add(okButton);
-		SLabel label = new SLabel("Some basic settings need configuring before and further configuration");
-		label.setPreferredSize(SDimension.FULLWIDTH);
-		label.setHorizontalAlignment(SConstants.CENTER_ALIGN);
-		add(label,SBorderLayout.NORTH);
-		form.setPreferredSize(SDimension.FULLAREA);
+		
+		if (ProxyConfigFactory.getInstance().getContextPath().length()==0) {
+			SLabel label = new SLabel("Some basic settings need configuring before using the data proxy...");
+			label.setPreferredSize(SDimension.FULLWIDTH);
+			label.setHorizontalAlignment(SConstants.CENTER_ALIGN);
+			add(label,SBorderLayout.NORTH);
+		}
+		else {
+			SToolBar toolbar = new SToolBar();
+			toolbar.setHorizontalAlignment(SConstants.LEFT);
+			SButton backButton = new SButton(new SImageIcon(Icons.getIcon("back")));
+			backButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					switchPanel(new WSDLListPanel());
+				}				
+			});
+			toolbar.add(backButton);
+			add(toolbar,SBorderLayout.NORTH);
+		}
+		
+		form.setPreferredSize(new SDimension("450px","100%"));
+		form.setBorder(new STitledBorder("Server configuration"));
+		form.setHorizontalAlignment(SConstants.CENTER_ALIGN);
+		form.setVerticalAlignment(SConstants.TOP_ALIGN);
 		add(form,SBorderLayout.CENTER);
 		
 	}

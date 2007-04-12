@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 13:50:17 $
+ * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -37,17 +37,12 @@ import org.wings.SBorderLayout;
 import org.wings.SBoxLayout;
 import org.wings.SConstants;
 import org.wings.SDimension;
-import org.wings.SForm;
 import org.wings.SFrame;
 import org.wings.SIcon;
 import org.wings.SLabel;
 import org.wings.SPanel;
 import org.wings.SResourceIcon;
-import org.wings.STabbedPane;
-import org.wings.frames.SFrameSet;
 import org.wings.header.StyleSheetHeader;
-import org.wings.session.Session;
-import org.wings.session.SessionManager;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
@@ -68,9 +63,9 @@ public class Configuration {
 		centrePanel.setVerticalAlignment(SConstants.TOP_ALIGN);
 		centrePanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		panel.add(centrePanel,SBorderLayout.CENTER);		
-		
-		SLabel status = new SLabel("Status Label");
-		panel.add(status,SBorderLayout.SOUTH);			
+				
+		StatusPanel statusPanel = new StatusPanel();		
+		panel.add(statusPanel,SBorderLayout.SOUTH);			
 		
 		SFrame rootFrame = new SFrame("Webservice Data Proxy");		
 		StyleSheetHeader style = new StyleSheetHeader("../css/style.css");
@@ -86,9 +81,7 @@ public class Configuration {
 		
 		SLabel title = new SLabel("Webservice Data Proxy");
 		title.setPreferredSize(SDimension.FULLAREA);
-		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);	
-		title.setStyle("font=bold");
-		
+		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);					
 		
 		SIcon mygridImage = new SResourceIcon("/mygridLogo.gif");
 		

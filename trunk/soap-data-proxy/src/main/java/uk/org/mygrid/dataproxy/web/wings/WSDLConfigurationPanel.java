@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -40,15 +40,19 @@ import java.util.List;
 import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
+import org.wings.SBorderLayout;
 import org.wings.SBoxLayout;
 import org.wings.SButton;
 import org.wings.SConstants;
 import org.wings.SDimension;
-import org.wings.SForm;
+import org.wings.SImageIcon;
+import org.wings.SLabel;
 import org.wings.SOptionPane;
+import org.wings.SPanel;
 import org.wings.SScrollPane;
-import org.wings.SSeparator;
+import org.wings.SToolBar;
 import org.wings.STree;
+import org.wings.border.STitledBorder;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
@@ -66,29 +70,43 @@ public class WSDLConfigurationPanel extends CentrePanel{
 	private WSDLConfig config;
 
 	public WSDLConfigurationPanel(WSDLConfig config) {
+		
 		this.config=config;
-		setLayout(new SBoxLayout(SBoxLayout.HORIZONTAL));	
-		SButton backButton = createBackButton();		
+		setLayout(new SBorderLayout());
+		
+		SButton backButton = createBackButton();
+		SToolBar toolbar = new SToolBar();
+		toolbar.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		toolbar.add(backButton);
+		add(toolbar,SBorderLayout.NORTH);
+		
+		SPanel mainPanel = new SPanel(new SBorderLayout());
+						
 		SButton toggleButton = createToggleButton();		
 		SButton commitButton = createCommitButton();
+								
+		SPanel mainToolBar = new SPanel(new SBoxLayout(SBoxLayout.VERTICAL));
+		mainToolBar.setVerticalAlignment(SConstants.TOP);
+		mainToolBar.add(toggleButton);	
+		mainToolBar.add(new SLabel(" "));
+		mainToolBar.add(commitButton);
 		
-		SForm buttonPanel = new SForm(new SBoxLayout(SBoxLayout.VERTICAL));		
-		buttonPanel.setVerticalAlignment(SConstants.TOP);		
-		buttonPanel.add(backButton);
-		buttonPanel.add(new SSeparator());
-		buttonPanel.add(toggleButton);								
-		buttonPanel.add(commitButton);
-		backButton.setPreferredSize(SDimension.FULLWIDTH);
 		toggleButton.setPreferredSize(SDimension.FULLWIDTH);
 		commitButton.setPreferredSize(SDimension.FULLWIDTH);
 				
-		initialiseTree();		
+		initialiseTree();
 		
 		SScrollPane treeScrollPane = new SScrollPane(tree);
-		treeScrollPane.setPreferredSize(new SDimension("90%","100%"));
-		add(buttonPanel);
-		add(treeScrollPane);
+		treeScrollPane.setPreferredSize(SDimension.FULLAREA);
+		treeScrollPane.setBorder(new STitledBorder("Toggle service response elements for referencing"));
 		
+		mainPanel.add(mainToolBar,SBorderLayout.WEST);
+		mainPanel.add(treeScrollPane,SBorderLayout.CENTER);						
+		mainPanel.setPreferredSize(new SDimension("95%","95%"));		
+		mainPanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
+		mainPanel.setVerticalAlignment(SConstants.TOP_ALIGN);
+		
+		add(mainPanel,SBorderLayout.CENTER);		
 	}
 
 	private void initialiseTree() {
@@ -104,10 +122,12 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		tree.setModel(model);		
 		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);
+		//tree.setPreferredSize(SDimension.FULLAREA);
 	}
 
 	private SButton createCommitButton() {
-		SButton commitButton = new SButton("Commit");
+		SButton commitButton = new SButton(new SImageIcon(Icons.getIcon("save")));
+		commitButton.setToolTipText("Save changes");
 		commitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ActionListener optionListener = new ActionListener() {
@@ -117,14 +137,15 @@ public class WSDLConfigurationPanel extends CentrePanel{
 						}
 					}					
 				};
-				SOptionPane.showYesNoDialog(WSDLConfigurationPanel.this, "Are you sure you want to commit your changes? "+config.getName()+"?\nYou will lose any configurations you have made to this WSDL but stored data will remain.", "Delete WSDL?",optionListener);				
+				SOptionPane.showYesNoDialog(WSDLConfigurationPanel.this, "Are you sure you want to commit your changes to "+config.getName()+"?\nYou will overwrite the previous configuration, but stored data will remain.", "Delete WSDL?",optionListener);				
 			}			
 		});
 		return commitButton;
 	}
 
 	private SButton createToggleButton() {
-		SButton toggleButton = new SButton("Toggle");
+		SButton toggleButton = new SButton(new SImageIcon(Icons.getIcon("toggle")));
+		toggleButton.setToolTipText("Toggle selected element");
 		toggleButton.setShowAsFormComponent(true);
 		toggleButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -136,7 +157,7 @@ public class WSDLConfigurationPanel extends CentrePanel{
 
 	private SButton createBackButton() {
 		SButton backButton;
-		backButton = new SButton("Back");		
+		backButton = new SButton(new SImageIcon(Icons.getIcon("back")));		
 		backButton.setShowAsFormComponent(true);		
 		backButton.addActionListener(new ActionListener() {
 

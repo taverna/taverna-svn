@@ -24,59 +24,62 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: WSDLTable.java,v $
- * Revision           $Revision: 1.3 $
+ * Filename           $RCSfile: StatusPanel.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
  * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
- * Created on 23 Mar 2007
+ * Created on 12 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.wings;
 
-import java.util.List;
+import java.awt.Color;
 
-import org.wings.SComponent;
+import org.wings.SBoxLayout;
+import org.wings.SConstants;
+import org.wings.SDimension;
 import org.wings.SLabel;
-import org.wings.STable;
-import org.wings.table.STableCellRenderer;
+import org.wings.SPanel;
+import org.wings.SProgressBar;
 
-import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
-import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+@SuppressWarnings("serial")
+public class StatusPanel extends SPanel {
 
-public class WSDLTable extends STable{
-
-	private List<WSDLConfig> wsdlList;	
+	private SLabel statusLabel = new SLabel(" ");	
+	private SProgressBar progressBar = new SProgressBar();
 	
-	public WSDLTable() {
-		wsdlList=ProxyConfigFactory.getInstance().getWSDLConfigs();
-		setModel(new WSDLTableModel(wsdlList));		
-		setHeaderRenderer(new TableHeaderRenderer()); 					
-	}	
-	
-	public WSDLConfig getWSDLConfigForIndex(int index) {
-		return wsdlList.get(index);
+	public StatusPanel() {
+		setLayout(new SBoxLayout(SBoxLayout.HORIZONTAL));
+		setPreferredSize(SDimension.FULLWIDTH);
+		
+		statusLabel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		
+		statusLabel.setPreferredSize(new SDimension("70%","100%"));
+		progressBar.setPreferredSize(new SDimension("30%","100%"));
+		progressBar.setFilledColor(Color.BLUE);		
+		
+		
+		add(statusLabel);
+		add(progressBar);				
+		
+		updateProgress(0);
 	}
 	
-	public void update() {
-		this.wsdlList=ProxyConfigFactory.getInstance().getWSDLConfigs();
-		WSDLTableModel model = (WSDLTableModel)getModel();
-		model.update(wsdlList);
-	}
-}
-
-class TableHeaderRenderer implements STableCellRenderer {
-
-	SComponent[] headings;
-	
-	public TableHeaderRenderer() {
-		headings = new SComponent[3];
-		headings[0]=new SLabel("WSDL Name");
-		headings[1]=new SLabel("Original WSDL Address");
-		headings[2]=new SLabel("Proxy WSDL");		
+	public void reportError(String error) {
+		if (error.length()==0) error=" ";
+		statusLabel.setForeground(Color.RED);
+		statusLabel.setText(error);
 	}
 	
-	public SComponent getTableCellRendererComponent(STable table, Object value, boolean selected, int row, int column) {
-		 return headings[column];
+	public void reportStatus(String status) {
+		if (status.length()==0) status=" ";
+		statusLabel.setForeground(Color.BLACK);
+		statusLabel.setText(status);
 	}
 	
+	public void updateProgress(int percent) {
+		if (percent<=0) progressBar.setVisible(false);
+		else progressBar.setVisible(true);
+		progressBar.setValue(percent);		
+	}
 }

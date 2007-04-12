@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTreeModel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
  * Created on 3 Apr 2007
  *****************************************************************/
@@ -42,8 +42,6 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.SchemaParser;

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 13:50:17 $
+ * Last modified on   $Date: 2007-04-12 15:46:01 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -93,7 +93,10 @@ public class WSDLListPanel extends CentrePanel{
 		add(spacer);
 		add(table);			
 				
-		add(new AddWSDLPanel(table));			
+		SPanel addPanel = new AddWSDLPanel(table);
+		
+		addPanel.setVerticalAlignment(SConstants.TOP_ALIGN);
+		add(addPanel);			
 	}	
 
 	private void createWSDLTable() {
