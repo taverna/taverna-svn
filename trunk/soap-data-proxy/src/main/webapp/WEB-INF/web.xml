@@ -17,40 +17,41 @@
 	-->
 
 	<!-- Uncomment and modify if necessary to control access to the configuration pages
-		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. 
+		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. -->
 	<security-constraint> 
 		<web-resource-collection>
 			<web-resource-name>Configuration</web-resource-name>
 			<url-pattern>/config/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>administrator</role-name>
+			<role-name>manager</role-name>
 		</auth-constraint>
 	</security-constraint>
 	
 	<security-role>
-		<role-name>administrator</role-name>
+		<role-name>manager</role-name>
 	</security-role>
-	-->
+	
+	<login-config>
+   		<auth-method>BASIC</auth-method>
+   		<realm-name>WebService data proxy administration</realm-name>
+	</login-config>
+	
 	 
 
 	<!-- Blocks anybody reading the config.xml file if stored within the webapp context
-		 due to ConfigFileLocation not being defined (see above) 
+		 due to ConfigFileLocation not being defined (see above) -->
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Configuration File</web-resource-name>
 			<url-pattern>/config.xml</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>nobody</role-name>
+			<role-name>manager</role-name>
 		</auth-constraint>		
 	</security-constraint>
 	
-	<security-role>
-		<description>Security role defining files that are blocked for everybody</description>
-		<role-name>nobody</role-name>
-	</security-role>
-	-->
+	
 
 	<servlet>
 		<servlet-name>Data</servlet-name>
