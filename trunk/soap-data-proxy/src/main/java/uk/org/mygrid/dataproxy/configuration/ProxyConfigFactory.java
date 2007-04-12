@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfigFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:35 $
+ * Last modified on   $Date: 2007-04-12 16:55:06 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -68,7 +68,7 @@ public class ProxyConfigFactory {
 	}
 	
 	private static InputStream getConfigInputStream() {
-		File file = new File(ServerInfo.configFileLocation);
+		File file = new File(ServerInfo.getConfigFileLocation());
 		if (file.exists()) {
 			try {
 				return new FileInputStream(file);
@@ -96,8 +96,8 @@ public class ProxyConfigFactory {
 	public static void writeConfig() throws Exception {
 		ProxyConfig config = getInstance();
 		String textConfig = config.toStringForm();
-		Writer writer = new FileWriter(ServerInfo.configFileLocation);
+		Writer writer = new FileWriter(ServerInfo.getConfigFileLocation());
 		writer.write(textConfig);
 		writer.close();
-	}
+	}	
 }

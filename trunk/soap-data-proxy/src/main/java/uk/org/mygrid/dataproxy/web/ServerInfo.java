@@ -25,16 +25,39 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:09 $
+ * Last modified on   $Date: 2007-04-12 16:55:06 $
  *               by   $Author: sowen70 $
- * Created on 15 Mar 2007
+ * Created on 12 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web;
 
-public class ServerInfo {	
+import org.apache.log4j.Logger;
+import org.wings.session.SessionManager;
+
+public class ServerInfo {
 	
-	//FIXME: this location is hard coded
-	public static String configFileLocation="/tmp/config.xml";
+	private static Logger logger = Logger.getLogger(ServerInfo.class);
+	
+	private static String location = null;
+	
+	public static String getConfigFileLocation() {
+		if (location == null) {			
+			location=locationParam();
+			if (location==null) {
+				location=SessionManager.getSession().getServletContext().getRealPath("config.xml");
+				logger.warn("Storing config within web app context!\n Modify the ConfigFileLocation parameter in the web.xml to specify the location that the config file should be stored.");
+				logger.warn("This location is:"+location);
+			}
+			else {
+				logger.info("Location for configuration file defined as:"+location);
+			}
+		}
+		return location;
+	}
+	
+	private static String locationParam() {
+		return SessionManager.getSession().getServletContext().getInitParameter("ConfigFileLocation");
+	}
 }
