@@ -25,30 +25,23 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTableModel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-12 13:50:17 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.wings;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.wings.SAnchor;
-import org.wings.SButton;
-import org.wings.SImageIcon;
 import org.wings.SLabel;
-import org.wings.session.SessionManager;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.web.ServerInfo;
 
 
 @SuppressWarnings("serial")
@@ -92,11 +85,9 @@ public class WSDLTableModel extends AbstractTableModel {
 			
 			SAnchor proxyWSDLAnchor = new SAnchor("../viewwsdl?id="+config.getWSDLID());
 			String proxyWSDLAddress = ProxyConfigFactory.getInstance().getContextPath()+"viewwsdl?id="+config.getWSDLID();
-			proxyWSDLAnchor.add(new SLabel(proxyWSDLAddress));
-			//proxyWSDLAnchor.add(new SLabel(new SImageIcon(Icons.getIcon("view"))));
+			proxyWSDLAnchor.add(new SLabel(proxyWSDLAddress));			
 			data[row][2]=proxyWSDLAnchor;
-			
-						
+									
 			row++;
 		}
 	}

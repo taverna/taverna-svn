@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-12 13:50:17 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -45,6 +45,7 @@ import org.wings.SPanel;
 import org.wings.SResourceIcon;
 import org.wings.STabbedPane;
 import org.wings.frames.SFrameSet;
+import org.wings.header.StyleSheetHeader;
 import org.wings.session.Session;
 import org.wings.session.SessionManager;
 
@@ -72,8 +73,10 @@ public class Configuration {
 		panel.add(status,SBorderLayout.SOUTH);			
 		
 		SFrame rootFrame = new SFrame("Webservice Data Proxy");		
+		StyleSheetHeader style = new StyleSheetHeader("../css/style.css");
+		rootFrame.addHeader(style);
         rootFrame.getContentPane().add(panel);
-        rootFrame.getContentPane().setPreferredSize(new SDimension("100%","600px"));        
+        rootFrame.getContentPane().setPreferredSize(SDimension.FULLAREA);        
         rootFrame.show();
 	}
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 10:44:01 $
+ * Last modified on   $Date: 2007-04-12 13:50:17 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -45,13 +45,17 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.jaxen.JaxenException;
 import org.jaxen.dom4j.Dom4jXPath;
+import org.wings.SBoxLayout;
 import org.wings.SButton;
+import org.wings.SConstants;
+import org.wings.SDimension;
 import org.wings.SForm;
-import org.wings.SGridLayout;
 import org.wings.SLabel;
 import org.wings.SOptionPane;
 import org.wings.SPanel;
 import org.wings.STextField;
+import org.wings.SToolBar;
+import org.wings.border.STitledBorder;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
@@ -66,17 +70,30 @@ public class AddWSDLPanel extends SPanel {
 	private WSDLTable wsdlTable;
 	
 	public AddWSDLPanel(WSDLTable wsdlTable) {
-		this.wsdlTable=wsdlTable;
-		SForm form = new SForm(new SGridLayout(2));
+		this.wsdlTable=wsdlTable;				
+		setHorizontalAlignment(SConstants.CENTER);
+		nameField.setPreferredSize(SDimension.FULLWIDTH);
+		locationField.setPreferredSize(SDimension.FULLWIDTH);
+		SForm form = new SForm(new SBoxLayout(SBoxLayout.VERTICAL));
+		form.setBorder(new STitledBorder("Add new WSDL"));
 		form.add(new SLabel("Name:"));
 		form.add(nameField);
 		form.add(new SLabel("Address:"));
 		form.add(locationField);
-		form.add(new SLabel());
+		form.add(new SLabel(" "));		
 		
-		SButton button = new SButton("Add");
-		form.add(button);
+		SButton button = createAddButton();
+		SToolBar toolbar=new SToolBar();
+		toolbar.setHorizontalAlignment(SConstants.RIGHT_ALIGN);
+		toolbar.add(button);
+		form.add(toolbar);		
 		
+		form.setPreferredSize(new SDimension("450px","100%"));
+		add(form);
+	}
+
+	private SButton createAddButton() {
+		SButton button = new SButton("Add");				
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -91,8 +108,7 @@ public class AddWSDLPanel extends SPanel {
 				}
 			}			
 		});
-		
-		add(form);
+		return button;
 	}
 	
 	private void addWSDL() {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-12 13:50:17 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -35,7 +35,6 @@ package uk.org.mygrid.dataproxy.web.wings;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -44,10 +43,9 @@ import org.apache.log4j.Logger;
 import org.wings.SBoxLayout;
 import org.wings.SButton;
 import org.wings.SConstants;
-import org.wings.SDimension;
-import org.wings.SGridLayout;
 import org.wings.SImageIcon;
 import org.wings.SOptionPane;
+import org.wings.SPanel;
 import org.wings.SSpacer;
 import org.wings.STable;
 import org.wings.SToolBar;
@@ -64,43 +62,45 @@ public class WSDLListPanel extends CentrePanel{
 	private WSDLTable table;
 	private SButton deleteButton;	
 	private SButton configureButton;	
+	private SButton adminButton;
 	
 	public WSDLListPanel() {				
 				
 		setLayout(new SBoxLayout(SBoxLayout.VERTICAL));			
 				
 		createConfigureButton();		
-		createDeleteButton();				
+		createDeleteButton();
+		createAdminButton();
 		disableButtons();
 		createWSDLTable();
 					
-		SToolBar toolBar = new SToolBar();		
+		SToolBar toolBar = new SToolBar();
+		toolBar.add(adminButton);
 		toolBar.add(configureButton);
 		toolBar.add(new SSpacer(5,10));
 		toolBar.add(deleteButton);
 		toolBar.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		
+		SPanel toolbarPanel = new SPanel();
+		toolbarPanel.add(toolBar);
+		toolbarPanel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		toolbarPanel.setVerticalAlignment(SConstants.TOP_ALIGN);
+		toolbarPanel.setName("toolbar");		
+		
+		SPanel spacer = new SPanel();
+		spacer.setName("topspacer");
 		add(toolBar);
-		
+		add(spacer);
 		add(table);			
-		
-		add(new AddWSDLPanel(table));
-
-		SButton editPaths = new SButton("Edit Paths");
-		editPaths.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				switchPanel(new AdminPanel());				
-			}			
-		});
-		editPaths.setShowAsFormComponent(true);
-		add(editPaths);
 				
-	}
+		add(new AddWSDLPanel(table));			
+	}	
 
 	private void createWSDLTable() {
 		table = new WSDLTable();
 		table.setSelectionMode(STable.SINGLE_SELECTION);	
 		table.setShowHorizontalLines(true);
-		table.setPreferredSize(new SDimension("95%","100%"));
+		table.setVerticalAlignment(SConstants.TOP_ALIGN);
 		
 		table.addSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -147,6 +147,17 @@ public class WSDLListPanel extends CentrePanel{
 		});
 	}
 	
+	private void createAdminButton() {
+		adminButton = new SButton(new SImageIcon(Icons.getIcon("admin")));
+		adminButton.setToolTipText("Server administration");
+		adminButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				switchPanel(new AdminPanel());				
+			}			
+		});
+		adminButton.setShowAsFormComponent(true);
+	}
+	
 	private void deleteWSDL(WSDLConfig config) {
 		logger.info("Deleting WSDL named: "+config.getName());
 		ProxyConfigFactory.getInstance().deleteWSDLConfig(config);
@@ -178,7 +189,7 @@ public class WSDLListPanel extends CentrePanel{
 		configureButton.setEnabled(true);
 	}
 	
-	private void disableButtons() {		
+	private void disableButtons() {			
 		deleteButton.setEnabled(false);
 		configureButton.setEnabled(false);
 	}	
