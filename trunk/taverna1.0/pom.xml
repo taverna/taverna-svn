@@ -451,7 +451,7 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>uk.org.mygrid.taverna</groupId>
+				<groupId>biomoby.org</groupId>
 				<artifactId>taverna-biomoby</artifactId>
 				<version>1.5.1-SNAPSHOT</version>
 			</dependency>

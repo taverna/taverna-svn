@@ -12,7 +12,7 @@
   <version>1.5.1-SNAPSHOT</version>
   <dependencies>
     <dependency>
-      <groupId>uk.org.mygrid.taverna</groupId>
+      <groupId>biomoby.org</groupId>
       <artifactId>taverna-biomoby</artifactId>
     </dependency>
     <dependency>
