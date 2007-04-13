@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-07 15:08:26 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2007-04-13 12:06:27 $
+ *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
@@ -383,7 +383,7 @@ public class WorkflowLauncher {
 	private WorkflowLauncher(String[] args) throws MalformedURLException {
 		// For compatability with old-style code using
 		// System.getProperty("taverna.*")
-		MyGridConfiguration.loadMygridProperties();
+		MyGridConfiguration.loadMygridProperties();		
 
 		// Return code to exit with, normally 0
 		int error = 0;
@@ -521,11 +521,15 @@ public class WorkflowLauncher {
 			}
 		}
 		// Make sure the output directory exists
-		if (!outputDir.isDirectory()) {
-			if (!outputDir.mkdirs()) {
-				System.err.println("Could not create output directory "
-						+ outputDir);
-				System.exit(5);
+		// but only generate this if an outputdoc hasn't been specified or output has been
+		// explicitly specified
+		if (!line.hasOption("outputdoc") || line.hasOption("output")) {
+			if (!outputDir.isDirectory()) {
+				if (!outputDir.mkdirs()) {
+					System.err.println("Could not create output directory "
+							+ outputDir);
+					System.exit(5);
+				}
 			}
 		}
 
@@ -576,16 +580,18 @@ public class WorkflowLauncher {
 			System.exit(9);
 			return;
 		}
-		// After this point, the workflow HAS executed, and we should not exit
-		// until the end. Set error instead of System.exit();
-
-		String report = launcher.getProgressReportXML();
-		try {
-			FileUtils.writeStringToFile(reportName, report, "utf8");
-		} catch (IOException e) {
-			System.err.println("Could not save progress report " + reportName
-					+ ": " + e);
-			error = 10;
+		
+		//only write progress report if explicitly asked for it or not writing an outputdoc
+		if (!line.hasOption("outputdoc") || line.hasOption("report") || line.hasOption("output"))
+		{
+			String report = launcher.getProgressReportXML();
+			try {
+				FileUtils.writeStringToFile(reportName, report, "utf8");
+			} catch (IOException e) {
+				System.err.println("Could not save progress report " + reportName
+						+ ": " + e);
+				error = 10;
+			}
 		}
 
 		/**
