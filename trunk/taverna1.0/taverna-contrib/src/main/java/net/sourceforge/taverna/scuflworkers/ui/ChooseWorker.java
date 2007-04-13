@@ -3,6 +3,10 @@ package net.sourceforge.taverna.scuflworkers.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -21,7 +25,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput title The title to be displayed in the dialog box's titlebar
  * @tavinput message The prompt message to be displayed
@@ -44,19 +48,34 @@ public class ChooseWorker implements LocalWorker {
 		HashMap outputMap = new HashMap();
 		DataThingAdapter outAdapter = new DataThingAdapter(outputMap);
 		String[] valueList = inAdapter.getStringArray("selectionValues");
+		ButtonGroup group = new ButtonGroup();
+		JPanel messagePanel = new JPanel();
+		messagePanel.setLayout(new BoxLayout(messagePanel,BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
+		messagePanel.add(new JLabel(inAdapter.getString("message")));
+		
+		
 		JRadioButton[] buttonArray = new JRadioButton[valueList.length];
-		for (int i = 0; i < valueList.length; i++) {
+		for (int i = 0; i < valueList.length; i++) {			
 			buttonArray[i] = new JRadioButton(valueList[i]);
-		}
+			if (i==0) buttonArray[i].setSelected(true);
+			group.add(buttonArray[i]);
+			messagePanel.add(buttonArray[i]);
+		}				
 
-		int value = JOptionPane.showOptionDialog(null, inAdapter.getString("message"), inAdapter.getString("title"),
-				JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, buttonArray, buttonArray[0]
+		JOptionPane.showOptionDialog(null, messagePanel, inAdapter.getString("title"),
+				JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"OK"}, null
 
 		);
+		
+		String value="";
+		for (JRadioButton button : buttonArray) {
+			if (button.isSelected()) {
+				value=button.getText();
+			}
+		}
 
-		outAdapter.putString("answer", buttonArray[value].getText());
+		outAdapter.putString("answer", value);
 
 		return outputMap;
 	}
