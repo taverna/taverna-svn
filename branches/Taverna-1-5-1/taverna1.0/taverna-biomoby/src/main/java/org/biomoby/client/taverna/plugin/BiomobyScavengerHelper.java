@@ -18,10 +18,6 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
-import org.biomoby.client.CentralImpl;
-import org.biomoby.shared.Central;
-import org.biomoby.shared.MobyException;
-import org.biomoby.shared.MobyResourceRef;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
@@ -39,13 +35,14 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * @version $Id: BiomobyScavengerHelper.java,v 1.2 2004/10/01 13:38:21 mereden
  *          Exp $
  * @author Martin Senger
+ * @author Edward Kawas
  */
 public class BiomobyScavengerHelper implements ScavengerHelper {
 	
 	private static Logger logger = Logger.getLogger(BiomobyScavengerHelper.class);
 
     @SuppressWarnings("unused")
-	private String defaultResourceURL = "http://biomoby.org/RESOURCES/MOBY-S/Objects";
+	private String uri = "http://mobycentral.icapture.ubc.ca/MOBY/Central";
 
     private String endpoint = "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl";
 
@@ -59,7 +56,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
             public void actionPerformed(ActionEvent ae) {
 
                 final JDialog dialog = new JDialog(s.getContainingFrame(),
-                        "Add Your Custom BioMoby Registry & Object RDF", true);
+                        "Add Your Custom BioMoby Registry", true);
                 final BiomobyScavengerDialog msp = new BiomobyScavengerDialog();
                 dialog.getContentPane().add(msp);
                 JButton accept = new JButton("Okay");
@@ -70,47 +67,44 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
                     public void actionPerformed(ActionEvent ae2) {
                         if (dialog.isVisible()) {
                             String registryEndpoint = "";
+                            String registryURI = "";
+                            
                             if (msp.getRegistryEndpoint().equals(""))
                                 registryEndpoint = endpoint;
                             else
                                 registryEndpoint = msp.getRegistryEndpoint();
+                            
+                            if (msp.getRegistryEndpoint().equals(""))
+                                registryURI = uri;
+                            else
+                                registryURI = msp.getRegistryURI();
+                            
                             try {
-                                Central central = new CentralImpl(
-                                        registryEndpoint);
-                                MobyResourceRef mrr[] = central
-                                        .getResourceRefs();
-                                String resourceURL = null;
-                                for (int x = 0; x < mrr.length; x++) {
-                                    MobyResourceRef ref = mrr[x];
-                                    if (!ref.getResourceName().equals("Object"))
-                                        continue;
-                                    resourceURL = ref.getResourceLocation()
-                                            .toExternalForm();
-                                    break;
-                                }
-
-                                if (resourceURL == null)
-                                    throw new MobyException(
-                                            "Could not retrieve the location of the Moby Datatype RDF Document from the given endpoint "
-                                                    + registryEndpoint);
-                                BiomobyScavenger bs = new BiomobyScavenger(
-                                        registryEndpoint, resourceURL);
-                                s.addScavenger(bs);
-                            } catch (ScavengerCreationException sce) {
+                            	final String url = registryEndpoint;
+                            	final String uri = registryURI;
+                            	Thread t = new Thread() {
+            						public void run() {
+            							s.scavengingStarting("Adding BioMOBY scavenger");
+            							try {
+            								BiomobyScavenger bs = new BiomobyScavenger(
+                                                    url, uri);
+                                            s.addScavenger(bs);
+            							} catch (ScavengerCreationException sce) {
+            								JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
+            										"Exception!", JOptionPane.ERROR_MESSAGE);
+            							}
+            							s.scavengingDone();
+            						}
+                            	};
+                            	t.start();
+                            } catch (Exception e) {
                                 JOptionPane
                                         .showMessageDialog(s.getContainingFrame(),
                                                 "Unable to create scavenger!\n"
-                                                        + sce.getMessage(),
+                                                        + e.getMessage(),
                                                 "Exception!",
                                                 JOptionPane.ERROR_MESSAGE);
-                                sce.printStackTrace();
-                            } catch (MobyException e) {
-                                JOptionPane.showMessageDialog(s.getContainingFrame(),
-                                        "Unable to create scavenger!\n"
-                                                + e.getMessage(), "Exception!",
-                                        JOptionPane.ERROR_MESSAGE);
-                                e.printStackTrace();
-                                e.printStackTrace();
+                                logger.error("Exception thrown:", e);
                             } finally {
                                 dialog.setVisible(false);
                                 dialog.dispose();
@@ -128,6 +122,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
                 });
                 dialog.setResizable(false);
                 dialog.getContentPane().add(msp);
+                dialog.setLocationRelativeTo(null);
                 dialog.pack();
                 dialog.setVisible(true);
 
@@ -163,7 +158,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 				try {
 					result.add(new BiomobyScavenger(loc));
 				} catch (ScavengerCreationException e) {
-					logger.warn("Error creating TalismanScavenger", e);
+					logger.warn("Error creating Biomoby Scavenger", e);
 				}
 			}
 		}

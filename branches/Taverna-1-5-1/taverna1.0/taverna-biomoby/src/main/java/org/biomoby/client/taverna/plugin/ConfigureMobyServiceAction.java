@@ -45,7 +45,7 @@ public class ConfigureMobyServiceAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#canHandle(org.embl.ebi.escience.scufl.Processor)
 	 */
 	public boolean canHandle(Processor processor) {
-		if (processor instanceof BiomobyProcessor) {
+		if (processor instanceof BiomobyProcessor && (((BiomobyProcessor) processor).getMobyService() != null)) {
 			if (((BiomobyProcessor) processor).containsSecondaries())
 				return true;
 		}

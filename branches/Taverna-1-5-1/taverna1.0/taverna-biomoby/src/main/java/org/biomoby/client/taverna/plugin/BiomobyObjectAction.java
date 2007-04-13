@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.biomoby.shared.MobyPrimaryDataSimple;
 import org.biomoby.shared.MobyService;
 import org.biomoby.shared.data.MobyDataInstance;
 import org.biomoby.shared.data.MobyDataObject;
+import org.biomoby.shared.data.MobyDataObjectSet;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -128,16 +130,26 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 
 			// what services does this object feed into?
 			template.setInputs(new MobyData[] { data });
+			template.setCategory("");
 			MobyService[] services = null;
+			Set<MobyService> theServices = new TreeSet<MobyService>();
 			try {
 				services = central.findService(template, null, true, action.searchParentTypes);
+				
+				theServices.addAll(Arrays.asList(services));
+				MobyDataObjectSet set = new MobyDataObjectSet("");
+				set.add(data);
+				template.setInputs(null);
+				template.setInputs(new MobyData[]{set});
+				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
 			} catch (MobyException e) {
 				panel.add(new JTree(new String[] { "Error finding services",
 						"TODO: create a better Error" }), BorderLayout.CENTER);
 				panel.updateUI();
 				return;
 			}
-			createTreeNodes(inputNode, services);
+			createTreeNodes(inputNode, theServices.toArray(new MobyService[]{}));
 			if (inputNode.getChildCount() == 0)
 				inputNode.insert(new DefaultMutableTreeNode(
 						"Object Doesn't Currently Feed Into Any Services"), 0);
@@ -145,18 +157,26 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 			// what services return this object?
 			template = null;
 			template = new MobyService("dummy");
-
+			template.setCategory("");
 			template.setOutputs(new MobyData[] { data });
 			services = null;
+			theServices = new TreeSet<MobyService>();
 			try {
 				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
+				MobyDataObjectSet set = new MobyDataObjectSet("");
+				set.add(data);
+				template.setOutputs(null);
+				template.setOutputs(new MobyData[]{set});
+				services = central.findService(template, null, true, action.searchParentTypes);
+				theServices.addAll(Arrays.asList(services));
 			} catch (MobyException e) {
 				panel.add(new JTree(new String[] { "Error finding services",
 						"TODO: create a better Error" }), BorderLayout.CENTER);
 				panel.updateUI();
 				return;
 			}
-			createTreeNodes(outputNode, services);
+			createTreeNodes(outputNode, theServices.toArray(new MobyService[]{}));
 			if (outputNode.getChildCount() == 0)
 				outputNode.insert(new DefaultMutableTreeNode(
 						"Object Isn't Produced By Any Services"), 0);
@@ -206,7 +226,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 								JMenuItem item = new JMenuItem("Add service - " + selectedService
 										+ " to the workflow?");
 								item
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 								item.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										String defaultName = selectedService;
@@ -268,7 +288,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 								JMenuItem details = new JMenuItem("Find out about "
 										+ selectedService);
 								details
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 								details.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										Dimension loc = new Dimension(100, 100);
@@ -292,6 +312,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 										try {
 											Central central = new CentralImpl(endpoint);
 											service.setAuthority(selectedAuthority);
+											service.setCategory("");
 											MobyService[] services = central.findService(service);
 											if (services == null || services.length != 1) {
 												return "Couldn't retrieve a description on the BioMoby service '"
@@ -618,7 +639,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#canHandle(org.embl.ebi.escience.scufl.Processor)
 	 */
 	public boolean canHandle(Processor processor) {
-		return (processor instanceof BiomobyObjectProcessor);
+		return (processor instanceof BiomobyObjectProcessor) && (((BiomobyObjectProcessor) processor).getMobyObject() != null);
 	}
 
 	/*

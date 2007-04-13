@@ -5,6 +5,7 @@
  */
 package org.biomoby.client.taverna.plugin;
 
+import org.biomoby.client.CentralImpl;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 // import java.lang.Class;
@@ -14,23 +15,32 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  * Implementation of ProcessorFactory that creates
  * BiomobyProcessor nodes. <p>
  *
- * @version $Id: BiomobyProcessorFactory.java,v 1.2 2006-07-10 14:07:28 sowen70 Exp $
+ * @version $Id: BiomobyProcessorFactory.java,v 1.2.2.1 2007-04-13 15:36:06 sowen70 Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessorFactory extends ProcessorFactory {
 
-    private String mobyEndpoint;
+    private String registry_url;
+    
+    private String registry_uri;
 
     private String serviceName;
 
     private String authorityName;
+    
+    // DEFAULT to Alive status
+    private boolean isAlive = true;
 
     /**
      * 
      * @return the mobycentral registry endpoint
      */
     public String getMobyEndpoint() {
-        return this.mobyEndpoint;
+        return this.registry_url;
+    }
+    
+    public String getMobyURI(){
+    	return this.registry_uri;
     }
 
     /**
@@ -53,10 +63,36 @@ public class BiomobyProcessorFactory extends ProcessorFactory {
      * Create a new factory configured with the specified
      * endpoint base and application name, which will 
      * be concatenated to produce the endpoint URL.
+     * 
+     * @param mobyEndpoint the registry endpoint.
+     * @param authorityName the service providers' authority
+     * @param serviceName the name of the service
+     * 
      */
     public BiomobyProcessorFactory(String mobyEndpoint, String authorityName,
             String serviceName) {
-        this.mobyEndpoint = mobyEndpoint;
+        this.registry_url = mobyEndpoint;
+        this.registry_uri = CentralImpl.DEFAULT_NAMESPACE;
+        this.authorityName = authorityName;
+        this.serviceName = serviceName;
+        setName(serviceName);
+    }
+
+    /**
+     * Create a new factory configured with the specified
+     * endpoint base and application name, which will 
+     * be concatenated to produce the endpoint URL.
+     * 
+     * @param registry_url the registry endpoint.
+     * @param registry_uri the registry namespace.
+     * @param authorityName the service providers' authority
+     * @param serviceName the name of the service
+     * 
+     */
+    public BiomobyProcessorFactory(String registry_url, String registry_uri, String authorityName,
+            String serviceName) {
+        this.registry_url = registry_url;
+        this.registry_uri = registry_uri;
         this.authorityName = authorityName;
         this.serviceName = serviceName;
         setName(serviceName);
@@ -67,7 +103,7 @@ public class BiomobyProcessorFactory extends ProcessorFactory {
      */
     public String getProcessorDescription() {
         return "A processor based on Biomoby registry located at "
-                + mobyEndpoint;
+                + registry_url;
     }
 
     /**
@@ -77,5 +113,19 @@ public class BiomobyProcessorFactory extends ProcessorFactory {
     public Class getProcessorClass() {
         return org.biomoby.client.taverna.plugin.BiomobyProcessor.class;
     }
+
+	/**
+	 * @return the isAlive
+	 */
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	/**
+	 * @param isAlive the isAlive to set
+	 */
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
 
 }

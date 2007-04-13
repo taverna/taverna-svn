@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.4.2.1 $
+ * Revision           $Revision: 1.4.2.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:25:43 $
+ * Last modified on   $Date: 2007-04-13 15:36:07 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -80,6 +80,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
@@ -131,12 +132,12 @@ public class WorkflowLauncher {
 			UnknownProcessorException, UnknownPortException,
 			DuplicateProcessorNameException, MalformedNameException,
 			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException {	
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
 		initialiseSPIRegistry();
 		model = openWorkflowModel(xmlStream);
 		this.userContext = userContext;
 	}
-	
+
 	/**
 	 * Set <code>userContext</code> and instantiate the WorkflowLauncher,
 	 * constructing an instance of the ScuflModel from the XML provided by the
@@ -222,7 +223,7 @@ public class WorkflowLauncher {
 	 * @param model
 	 *            a {@link ScuflModel}
 	 */
-	public WorkflowLauncher(ScuflModel model) {		
+	public WorkflowLauncher(ScuflModel model) {
 		initialiseSPIRegistry();
 		this.model = model;
 	}
@@ -269,8 +270,9 @@ public class WorkflowLauncher {
 
 	public Map execute(Map inputs) throws WorkflowSubmissionException,
 			InvalidInputException {
-		
+
 		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
+		Map result;
 
 		final WorkflowInstance workflowInstance = enactor.compileWorkflow(
 				model, inputs, userContext);
@@ -291,23 +293,33 @@ public class WorkflowLauncher {
 				}
 			}
 		};
-		WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
 		
 		try {
-			workflowInstance.run();
-			synchronized (lock) {
-				try {
-					// We'll wait here until workflowCompleted or workflowFailed
-					// happens
-					lock.wait();
-				} catch (InterruptedException e) {
+			WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
+
+			try {
+				workflowInstance.run();
+				synchronized (lock) {
+					try {
+						// We'll wait here until workflowCompleted or workflowFailed happens						
+						lock.wait();
+					} catch (InterruptedException e) {
+					}
 				}
-			}		
-		} finally {
-			progressReportXML = workflowInstance.getProgressReportXMLString();
+			} finally {
+				progressReportXML = workflowInstance
+						.getProgressReportXMLString();
+			}
+
+			result = workflowInstance.getOutput();
+		} finally {			
+			WorkflowEventDispatcher.DISPATCHER
+					.removeListener(completionListener);
+			workflowInstance.destroy();
 		}
-		
-		return workflowInstance.getOutput();
+
+		return result;
+
 	}
 
 	/**
@@ -357,45 +369,46 @@ public class WorkflowLauncher {
 		return execute(inputs);
 
 	}
-	
+
 	private void initialiseSPIRegistry() {
-		Repository repository;
+		Repository repository = null;
 		try {
 			LocalArtifactClassLoader acl = (LocalArtifactClassLoader) getClass()
 					.getClassLoader();
-			repository = acl.getRepository();						
+			repository = acl.getRepository();
 		} catch (ClassCastException cce) {
 			// Running from outside of Raven - won't expect this to work
-			// properly!			
-			repository = LocalRepository.getRepository(new File(
-					Bootstrap.TAVERNA_CACHE));			
-			for (URL remoteRepository : Bootstrap.remoteRepositories) {
-				repository.addRemoteRepository(remoteRepository);
-			}					
-		}				
-		TavernaSPIRegistry.setRepository(repository);
+			// properly!
+			if (Bootstrap.remoteRepositories != null) {
+				repository = LocalRepository.getRepository(new File(
+						Bootstrap.TAVERNA_CACHE));
+				for (URL remoteRepository : Bootstrap.remoteRepositories) {
+					repository.addRemoteRepository(remoteRepository);
+				}
+			}
+		}
+		if (repository != null)
+			TavernaSPIRegistry.setRepository(repository);
 	}
-	
-	private WorkflowLauncher(String [] args)  throws MalformedURLException {
-//		 For compatability with old-style code using System.getProperty("taverna.*")
+
+	@SuppressWarnings("static-access")
+	private WorkflowLauncher(String[] args) throws MalformedURLException {
+		// For compatability with old-style code using
+		// System.getProperty("taverna.*")
 		MyGridConfiguration.loadMygridProperties();
-		
+
 		// Return code to exit with, normally 0
 		int error = 0;
 
 		// Current directory is from where files are read if not otherwise
 		// specified
 		URL here = new URL("file:");
-		
-		initialiseSPIRegistry();		
-		
+
+		initialiseSPIRegistry();
+
 		// Construct command line options
 		Option helpOption = new Option("help", "print this message");
-		// Option version = new Option("version",
-		// "print the version information and exit");
-		// Option quiet = new Option("quiet", "be extra quiet");
-		// Option verbose = new Option("verbose", "be extra verbose");
-		// Option debug = new Option("debug", "print debugging information");
+		
 		Option outputOption = OptionBuilder
 				.withArgName("directory")
 				.hasArg()
@@ -461,14 +474,16 @@ public class WorkflowLauncher {
 			try {
 				inputs = loadInputDoc(inputDoc);
 			} catch (JDOMException e) {
-				System.err.println("Could not parse input document " + inputDoc + ": " + e.getMessage());
+				System.err.println("Could not parse input document " + inputDoc
+						+ ": " + e.getMessage());
 				System.exit(13);
 			} catch (IOException e) {
-				System.err.println("Could not open input document " + inputDoc + ": " + e.getMessage());
+				System.err.println("Could not open input document " + inputDoc
+						+ ": " + e.getMessage());
 				System.exit(14);
 			}
 		}
-		
+
 		if (line.hasOption("input")) {
 			String[] inputParams = line.getOptionValues("input");
 			for (int i = 0; i < inputParams.length; i = i + 2) {
@@ -500,10 +515,10 @@ public class WorkflowLauncher {
 			outputDir = new File(line.getOptionValue("output"));
 		} else {
 			// We'll name it after our workflow file name
-			String workflowPath = new URL(workflowURL, ".").getPath();			
+			String workflowPath = new URL(workflowURL, ".").getPath();
 			// Remove the directory part, ie. a nasty basename() on URLs
 			String[] workflowPaths = workflowURL.getFile().split("/");
-			String workflowName = workflowPaths[workflowPaths.length-1];	
+			String workflowName = workflowPaths[workflowPaths.length - 1];
 			String outputName = workflowName + "_output";
 			if (workflowURL.getProtocol().equals("file")) {
 				// Store it with the workflow
@@ -514,11 +529,16 @@ public class WorkflowLauncher {
 			}
 		}
 		// Make sure the output directory exists
-		if (!outputDir.isDirectory()) {
-			if (!outputDir.mkdirs()) {
-				System.err.println("Could not create output directory "
-						+ outputDir);
-				System.exit(5);
+		// but only generate this if an outputdoc hasn't been specified or
+		// output has been
+		// explicitly specified
+		if (!line.hasOption("outputdoc") || line.hasOption("output")) {
+			if (!outputDir.isDirectory()) {
+				if (!outputDir.mkdirs()) {
+					System.err.println("Could not create output directory "
+							+ outputDir);
+					System.exit(5);
+				}
 			}
 		}
 
@@ -534,7 +554,7 @@ public class WorkflowLauncher {
 			reportName = new File(outputDir, "progressReport.xml");
 		}
 
-		// PUH! Ok, all the file stuff set up, let's get to work		
+		// PUH! Ok, all the file stuff set up, let's get to work
 		Map outputs;
 		WorkflowLauncher launcher;
 		try {
@@ -548,7 +568,7 @@ public class WorkflowLauncher {
 			System.err.println("Could not parse workflow " + workflowURL + ": "
 					+ e.getMessage());
 			System.exit(15);
-			return;			
+			return;
 		} catch (ScuflException e) {
 			System.err.println("Could not load workflow " + workflowURL + ": "
 					+ e);
@@ -569,16 +589,19 @@ public class WorkflowLauncher {
 			System.exit(9);
 			return;
 		}
-		// After this point, the workflow HAS executed, and we should not exit
-		// until the end. Set error instead of System.exit();
 
-		String report = launcher.getProgressReportXML();
-		try {
-			FileUtils.writeStringToFile(reportName, report, "utf8");
-		} catch (IOException e) {
-			System.err.println("Could not save progress report " + reportName
-					+ ": " + e);
-			error = 10;
+		// only write progress report if explicitly asked for it or not writing
+		// an outputdoc
+		if (!line.hasOption("outputdoc") || line.hasOption("report")
+				|| line.hasOption("output")) {
+			String report = launcher.getProgressReportXML();
+			try {
+				FileUtils.writeStringToFile(reportName, report, "utf8");
+			} catch (IOException e) {
+				System.err.println("Could not save progress report "
+						+ reportName + ": " + e);
+				error = 10;
+			}
 		}
 
 		/**
@@ -617,29 +640,33 @@ public class WorkflowLauncher {
 	 * @param args
 	 * @throws MalformedURLException
 	 */
-	@SuppressWarnings({ "deprecation", "static-access" })
+	@SuppressWarnings( { "deprecation", "static-access" })
 	public static void main(String args[]) throws MalformedURLException {
 		new WorkflowLauncher(args);
 	}
 
-	private static Map loadInputDoc(File file) throws JDOMException, IOException {
-		SAXBuilder builder = new SAXBuilder();		
-		Document inputDoc = builder.build(new FileReader(file));		
-		return DataThingXMLFactory.parseDataDocument(inputDoc);				
+	private static Map loadInputDoc(File file) throws JDOMException,
+			IOException {
+		SAXBuilder builder = new SAXBuilder();
+		Document inputDoc = builder.build(new FileReader(file));
+		return DataThingXMLFactory.parseDataDocument(inputDoc);
 	}
 
 	/**
-	 * Save workflow outputs as an DataThing XML document 
+	 * Save workflow outputs as an DataThing XML document
 	 * 
-	 * @param outputs Map of DataThing to save
-	 * @param outputDoc File to write the document
-	 * @throws IOException If the file cannot be written
+	 * @param outputs
+	 *            Map of DataThing to save
+	 * @param outputDoc
+	 *            File to write the document
+	 * @throws IOException
+	 *             If the file cannot be written
 	 */
 	private static void saveOutputDoc(Map outputs, File outputDoc)
 			throws IOException {
 		Document doc = DataThingXMLFactory.getDataDocument(outputs);
 		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
-		String xmlString = xo.outputString(doc);		
+		String xmlString = xo.outputString(doc);
 		FileUtils.writeStringToFile(outputDoc, xmlString, "utf8");
 	}
 

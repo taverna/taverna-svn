@@ -226,7 +226,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							JMenuItem item = new JMenuItem("Add Datatype - " + selectedObject
 									+ " to the workflow?");
 							item
-									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+									.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 							item.addActionListener(new ActionListener() {
 								// private boolean added = false;
 
@@ -282,7 +282,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							// Create and add a menu item for service details
 							JMenuItem details = new JMenuItem("Find out about " + selectedObject);
 							details
-									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+									.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 							details.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {
 									Dimension loc = new Dimension(100, 100);
@@ -327,7 +327,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							JMenuItem item = new JMenuItem("Add Datatype - " + selectedObject
 									+ " to the workflow?");
 							item
-									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+									.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 							item.addActionListener(new ActionListener() {
 								// private boolean added = false;
 
@@ -385,7 +385,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 							// Create and add a menu item for service details
 							JMenuItem details = new JMenuItem("Find out about " + selectedObject);
 							details
-									.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+									.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 							details.addActionListener(new ActionListener() {
 								public void actionPerformed(ActionEvent ae) {
 									Dimension loc = new Dimension(100, 100);
@@ -447,7 +447,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								JMenuItem item = new JMenuItem("Find Services that Consume "
 										+ selectedObject + " - brief search");
 								item
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 								final String potentialCollectionString = path.getParentPath()
 										.getLastPathComponent().toString();
 								final boolean isCollection = potentialCollectionString
@@ -567,7 +567,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								JMenuItem item2 = new JMenuItem("Find Services that Consume "
 										+ selectedObject + " - semantic search");
 								item2
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Search24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Search24.gif"));
 								item2.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										// you would like to search for
@@ -669,7 +669,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 								JMenuItem item3 = new JMenuItem("Add parser for " + selectedObject
 										+ " to the workflow");
 								item3
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Cut24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Cut24.gif"));
 								item3.addActionListener(new ActionListener() {
 
 									public void actionPerformed(ActionEvent ae) {
@@ -830,7 +830,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 	 * @see org.embl.ebi.escience.scuflui.processoractions.ProcessorActionSPI#canHandle(org.embl.ebi.escience.scufl.Processor)
 	 */
 	public boolean canHandle(Processor processor) {
-		return (processor instanceof BiomobyProcessor);
+		return (processor instanceof BiomobyProcessor) && ((((BiomobyProcessor) processor)).getMobyService() != null);
 	}
 
 	/*
