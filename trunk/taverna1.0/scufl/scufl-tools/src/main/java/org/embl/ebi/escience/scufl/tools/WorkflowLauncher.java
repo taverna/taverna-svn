@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-13 12:06:27 $
+ * Last modified on   $Date: 2007-04-13 13:10:51 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -80,6 +80,7 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
@@ -271,6 +272,7 @@ public class WorkflowLauncher {
 			InvalidInputException {
 
 		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
+		Map result;
 
 		final WorkflowInstance workflowInstance = enactor.compileWorkflow(
 				model, inputs, userContext);
@@ -285,30 +287,39 @@ public class WorkflowLauncher {
 					}
 				}
 			}
-
 			public void workflowFailed(WorkflowFailureEvent e) {
 				synchronized (lock) {
 					lock.notifyAll();
 				}
 			}
 		};
-		WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
-
+		
 		try {
-			workflowInstance.run();
-			synchronized (lock) {
-				try {
-					// We'll wait here until workflowCompleted or workflowFailed
-					// happens
-					lock.wait();
-				} catch (InterruptedException e) {
+			WorkflowEventDispatcher.DISPATCHER.addListener(completionListener);
+
+			try {
+				workflowInstance.run();
+				synchronized (lock) {
+					try {
+						// We'll wait here until workflowCompleted or workflowFailed happens						
+						lock.wait();
+					} catch (InterruptedException e) {
+					}
 				}
+			} finally {
+				progressReportXML = workflowInstance
+						.getProgressReportXMLString();
 			}
-		} finally {
-			progressReportXML = workflowInstance.getProgressReportXMLString();
+
+			result = workflowInstance.getOutput();
+		} finally {			
+			WorkflowEventDispatcher.DISPATCHER
+					.removeListener(completionListener);
+			workflowInstance.destroy();
 		}
 
-		return workflowInstance.getOutput();
+		return result;
+
 	}
 
 	/**
@@ -380,10 +391,11 @@ public class WorkflowLauncher {
 			TavernaSPIRegistry.setRepository(repository);
 	}
 
+	@SuppressWarnings("static-access")
 	private WorkflowLauncher(String[] args) throws MalformedURLException {
 		// For compatability with old-style code using
 		// System.getProperty("taverna.*")
-		MyGridConfiguration.loadMygridProperties();		
+		MyGridConfiguration.loadMygridProperties();
 
 		// Return code to exit with, normally 0
 		int error = 0;
@@ -396,11 +408,7 @@ public class WorkflowLauncher {
 
 		// Construct command line options
 		Option helpOption = new Option("help", "print this message");
-		// Option version = new Option("version",
-		// "print the version information and exit");
-		// Option quiet = new Option("quiet", "be extra quiet");
-		// Option verbose = new Option("verbose", "be extra verbose");
-		// Option debug = new Option("debug", "print debugging information");
+		
 		Option outputOption = OptionBuilder
 				.withArgName("directory")
 				.hasArg()
@@ -521,7 +529,8 @@ public class WorkflowLauncher {
 			}
 		}
 		// Make sure the output directory exists
-		// but only generate this if an outputdoc hasn't been specified or output has been
+		// but only generate this if an outputdoc hasn't been specified or
+		// output has been
 		// explicitly specified
 		if (!line.hasOption("outputdoc") || line.hasOption("output")) {
 			if (!outputDir.isDirectory()) {
@@ -580,16 +589,17 @@ public class WorkflowLauncher {
 			System.exit(9);
 			return;
 		}
-		
-		//only write progress report if explicitly asked for it or not writing an outputdoc
-		if (!line.hasOption("outputdoc") || line.hasOption("report") || line.hasOption("output"))
-		{
+
+		// only write progress report if explicitly asked for it or not writing
+		// an outputdoc
+		if (!line.hasOption("outputdoc") || line.hasOption("report")
+				|| line.hasOption("output")) {
 			String report = launcher.getProgressReportXML();
 			try {
 				FileUtils.writeStringToFile(reportName, report, "utf8");
 			} catch (IOException e) {
-				System.err.println("Could not save progress report " + reportName
-						+ ": " + e);
+				System.err.println("Could not save progress report "
+						+ reportName + ": " + e);
 				error = 10;
 			}
 		}
