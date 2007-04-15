@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTreeModel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 15:17:34 $
  *               by   $Author: sowen70 $
  * Created on 3 Apr 2007
  *****************************************************************/
@@ -79,6 +79,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 		return selectedForProxy;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addOperation(Element operationElement) throws SchemaParsingException {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)getRoot();		
 		DefaultMutableTreeNode operationNode = new OperationNode();
@@ -110,6 +111,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 		}		
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void expandTypeElement(DefaultMutableTreeNode parentNode, Element typeElement,List<String> parentTypes) throws SchemaParsingException {
 		getParser().expandType(config.getAddress(), typeElement);
 		if (typeElement.elements().size()>0) {

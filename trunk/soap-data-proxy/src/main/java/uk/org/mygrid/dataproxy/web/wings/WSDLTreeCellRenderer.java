@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTreeCellRenderer.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 16:43:14 $
+ * Last modified on   $Date: 2007-04-15 15:17:34 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -53,6 +53,7 @@ public class WSDLTreeCellRenderer implements STreeCellRenderer{
 			Element el = (Element)node.getUserObject();
 			if (el.getName().equals("operation")) {
 				text=el.elementTextTrim("name");
+				icon=Icons.getIcon("tree-op");
 			}			
 		}
 		else if (value instanceof TypeNode) {
@@ -68,7 +69,7 @@ public class WSDLTreeCellRenderer implements STreeCellRenderer{
 		SPanel result = new SPanel();
 		if (icon!=null)
 			result.add(new SLabel(new SImageIcon(icon)));		
-		result.add(new SLabel(text));			
+		result.add(new SLabel(text));	
 		return result;
 	}
 	

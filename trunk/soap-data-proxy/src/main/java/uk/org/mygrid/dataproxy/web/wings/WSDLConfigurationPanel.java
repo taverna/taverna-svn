@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 15:17:34 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -84,12 +84,17 @@ public class WSDLConfigurationPanel extends CentrePanel{
 						
 		SButton toggleButton = createToggleButton();		
 		SButton commitButton = createCommitButton();
+		
+		SButton expandButton = createExpandButton();
+		SButton collapseButon = createCollapseButton();
 								
 		SPanel mainToolBar = new SPanel(new SBoxLayout(SBoxLayout.VERTICAL));
 		mainToolBar.setVerticalAlignment(SConstants.TOP);
 		mainToolBar.add(toggleButton);	
-		mainToolBar.add(new SLabel(" "));
 		mainToolBar.add(commitButton);
+		mainToolBar.add(new SLabel(" "));
+		mainToolBar.add(expandButton);
+		mainToolBar.add(collapseButon);
 		
 		toggleButton.setPreferredSize(SDimension.FULLWIDTH);
 		commitButton.setPreferredSize(SDimension.FULLWIDTH);
@@ -97,9 +102,13 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		initialiseTree();
 		
 		SScrollPane treeScrollPane = new SScrollPane(tree);
-		treeScrollPane.setPreferredSize(SDimension.FULLAREA);
-		treeScrollPane.setBorder(new STitledBorder("Toggle service response elements for referencing"));
+		treeScrollPane.setName("treescrollpane");
+		treeScrollPane.setVerticalAlignment(SConstants.TOP_ALIGN);
+		treeScrollPane.setMode(SScrollPane.MODE_COMPLETE);
+		treeScrollPane.setPreferredSize(new SDimension("95%",null));
 		
+		mainPanel.setBorder(new STitledBorder("Toggle service response elements for referencing"));
+		mainPanel.setName("typetreepanel");
 		mainPanel.add(mainToolBar,SBorderLayout.WEST);
 		mainPanel.add(treeScrollPane,SBorderLayout.CENTER);						
 		mainPanel.setPreferredSize(new SDimension("95%","95%"));		
@@ -122,7 +131,11 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		tree.setModel(model);		
 		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);
-		//tree.setPreferredSize(SDimension.FULLAREA);
+		for (int i=0;i<tree.getRowCount();i++) {
+			tree.expandRow(i);
+		}
+		tree.setShowAsFormComponent(false);
+		tree.setNodeIndentDepth(20);
 	}
 
 	private SButton createCommitButton() {
@@ -168,6 +181,32 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		});
 		return backButton;
 	}	
+	
+	private SButton createExpandButton() {
+		SButton expandButton = new SButton(new SImageIcon(Icons.getIcon("expand")));
+		expandButton.setToolTipText("Expand all");
+		expandButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i=0; i< tree.getRowCount(); i++) {
+					tree.expandRow(i);
+				}
+			}
+		});
+		return expandButton;
+	}
+	
+	private SButton createCollapseButton() {
+		SButton collapseButton = new SButton(new SImageIcon(Icons.getIcon("collapse")));
+		collapseButton.setToolTipText("Collapse all");
+		collapseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (int i=0; i< tree.getRowCount(); i++) {
+					tree.collapseRow(i);
+				}
+			}
+		});
+		return collapseButton;
+	}
 	
 	private void commit() {
 		List<ElementDefinition> elementDefs = config.getElements();

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Icons.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 15:17:34 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -66,6 +66,17 @@ public class Icons {
 		
 		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/devices/media-floppy.png")));
 		iconMap.put("save", icon);
+		
+		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/16x16/categories/applications-system.png")));
+		iconMap.put("tree-op", icon);
+		
+		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/actions/list-add.png")));
+		iconMap.put("expand", icon);
+		
+		icon = new ImageIcon(Icons.class.getResource(("/org/tango-project/tango-icon-theme/22x22/actions/list-remove.png")));
+		iconMap.put("collapse", icon);
+		
+		
 		
 		
 	}

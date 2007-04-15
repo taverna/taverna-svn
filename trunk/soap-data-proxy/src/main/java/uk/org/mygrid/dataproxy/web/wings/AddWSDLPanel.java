@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 13:50:17 $
+ * Last modified on   $Date: 2007-04-15 15:17:34 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -70,6 +70,7 @@ public class AddWSDLPanel extends SPanel {
 	private WSDLTable wsdlTable;
 	
 	public AddWSDLPanel(WSDLTable wsdlTable) {
+		setName("addwsdlpanel");
 		this.wsdlTable=wsdlTable;				
 		setHorizontalAlignment(SConstants.CENTER);
 		nameField.setPreferredSize(SDimension.FULLWIDTH);
