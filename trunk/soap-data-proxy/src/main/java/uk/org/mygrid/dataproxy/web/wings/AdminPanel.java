@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AdminPanel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 5 Apr 2007
  *****************************************************************/
@@ -64,7 +64,7 @@ public class AdminPanel extends CentrePanel {
 	private STextField dataPathTextField = new STextField();
 	private ProxyConfig config = ProxyConfigFactory.getInstance();
 	
-	public AdminPanel() {		
+	public AdminPanel() {
 		setLayout(new SBorderLayout());
 		SForm form = new SForm(new SBoxLayout(SBoxLayout.VERTICAL));		
 		

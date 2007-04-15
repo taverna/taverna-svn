@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 15:17:34 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -50,7 +50,6 @@ import org.wings.SLabel;
 import org.wings.SOptionPane;
 import org.wings.SPanel;
 import org.wings.SScrollPane;
-import org.wings.SToolBar;
 import org.wings.STree;
 import org.wings.border.STitledBorder;
 
@@ -68,16 +67,20 @@ public class WSDLConfigurationPanel extends CentrePanel{
 	private STree tree = new STree();
 	private WSDLTreeModel model;
 	private WSDLConfig config;
+	private boolean changesMade=false;
 
 	public WSDLConfigurationPanel(WSDLConfig config) {
-		
 		this.config=config;
 		setLayout(new SBorderLayout());
 		
 		SButton backButton = createBackButton();
-		SToolBar toolbar = new SToolBar();
+		SPanel toolbar = new SPanel(new SBoxLayout(SBoxLayout.VERTICAL));
 		toolbar.setHorizontalAlignment(SConstants.LEFT_ALIGN);
 		toolbar.add(backButton);
+		SPanel spacer = new SPanel();
+		spacer.setName("topspacer");
+		spacer.setPreferredSize(new SDimension(null,"20px"));
+		toolbar.add(spacer);
 		add(toolbar,SBorderLayout.NORTH);
 		
 		SPanel mainPanel = new SPanel(new SBorderLayout());
@@ -124,7 +127,7 @@ public class WSDLConfigurationPanel extends CentrePanel{
 			model.populate();			
 		} catch (SchemaParsingException e) {
 			logger.error("Error parsing the wsdl:"+config.getAddress(),e);
-			setError("Error parsing the wsdl:"+e.getMessage());
+			reportError("Error parsing the wsdl:"+e.getMessage());
 		}
 		
 		tree.setCellRenderer(new WSDLTreeCellRenderer());
@@ -175,7 +178,19 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		backButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				switchPanel(new WSDLListPanel());				
+				if (changesMade) {
+					ActionListener optionListener = new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if (e.getActionCommand().equals(SOptionPane.YES_ACTION)) {
+								switchPanel(new WSDLListPanel());
+							}
+						}					
+					};
+					SOptionPane.showYesNoDialog(WSDLConfigurationPanel.this, "You have made uncommitted changes, are you sure wish to go back?", "Lose changes?",optionListener);
+				}
+				else {
+					switchPanel(new WSDLListPanel());
+				}
 			}
 			
 		});
@@ -214,9 +229,11 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		elementDefs.addAll(model.getSelectedForProxy());
 		try {
 			ProxyConfigFactory.writeConfig();
+			reportStatus("Changes successfully committed");
+			changesMade=false;
 		} catch (Exception e) {
-			//TODO: report back error
 			logger.error("Error writing config",e);
+			reportError("An error occurred rewriting the config after committing changes:"+e.getMessage());
 		}
 	}
 	
@@ -228,7 +245,10 @@ public class WSDLConfigurationPanel extends CentrePanel{
 			model.toggleNode(node);
 			tree.collapseRow(0);
 			tree.expandRow(0);
-			tree.setSelectionPath(selectedPath);						
+			tree.setSelectionPath(selectedPath);
+			reportStatus("Uncommitted changes made");
+			changesMade=true;
 		}		
+		
 	}	
 }

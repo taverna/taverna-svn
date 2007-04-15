@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: CentrePanel.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-11 10:44:01 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -40,14 +40,34 @@ import org.wings.SPanel;
 
 @SuppressWarnings("serial")
 public class CentrePanel extends SPanel{
+	
+	protected StatusPanel statusPanel;
+	
+	public CentrePanel(StatusPanel statusPanel) {
+		this.statusPanel = statusPanel;
+	}
+	
+	public CentrePanel() {
+		this.statusPanel=null;
+	}
+	
+	protected void setStatusPanel(StatusPanel statusPanel) {
+		this.statusPanel = statusPanel;
+	}
 
-	protected void switchPanel(SPanel panel) {
+	protected void switchPanel(CentrePanel panel) {
+		panel.setStatusPanel(statusPanel);
+		statusPanel.reportStatus(""); //reset any previous message
 		panel.setPreferredSize(SDimension.FULLAREA);
 		panel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
 		getParent().add(panel,SBorderLayout.CENTER);
 	}
 	
-	protected void setError(String errorMsg) {
-		//TODO: display the error
+	protected void reportError(String errorMsg) {
+		if (statusPanel!=null) statusPanel.reportError(errorMsg);
+	}
+	
+	protected void reportStatus(String statusMsg) {
+		if (statusPanel!=null) statusPanel.reportStatus(statusMsg);
 	}
 }

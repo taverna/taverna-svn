@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTableModel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 13:50:17 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -83,8 +83,9 @@ public class WSDLTableModel extends AbstractTableModel {
 			originalWSDLAnchor.add(new SLabel(config.getAddress()));
 			data[row][1]=originalWSDLAnchor;
 			
-			SAnchor proxyWSDLAnchor = new SAnchor("../viewwsdl?id="+config.getWSDLID());
+			
 			String proxyWSDLAddress = ProxyConfigFactory.getInstance().getContextPath()+"viewwsdl?id="+config.getWSDLID();
+			SAnchor proxyWSDLAnchor = new SAnchor(proxyWSDLAddress);
 			proxyWSDLAnchor.add(new SLabel(proxyWSDLAddress));			
 			data[row][2]=proxyWSDLAnchor;
 									

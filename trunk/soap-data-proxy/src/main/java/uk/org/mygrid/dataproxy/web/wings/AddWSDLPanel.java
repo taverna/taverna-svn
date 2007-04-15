@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 15:17:34 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -68,6 +68,7 @@ public class AddWSDLPanel extends SPanel {
 	private STextField nameField = new STextField();
 	private STextField locationField = new STextField();
 	private WSDLTable wsdlTable;
+	private StatusPanel statusPanel;
 	
 	public AddWSDLPanel(WSDLTable wsdlTable) {
 		setName("addwsdlpanel");
@@ -91,6 +92,10 @@ public class AddWSDLPanel extends SPanel {
 		
 		form.setPreferredSize(new SDimension("450px","100%"));
 		add(form);
+	}
+	
+	public void setStatusPanel(StatusPanel statusPanel) {
+		this.statusPanel = statusPanel;
 	}
 
 	private SButton createAddButton() {
@@ -126,10 +131,15 @@ public class AddWSDLPanel extends SPanel {
 			ProxyConfigFactory.getInstance().addWSDLConfig(config);
 			ProxyConfigFactory.writeConfig();
 			wsdlTable.update();
+			if (statusPanel != null ){
+				statusPanel.reportStatus("WSDL Successfully added.");
+			}
 		}
 		catch(Exception e) {
 			logger.error("Error adding new WSDL",e);
-			//TODO: report back error
+			if (statusPanel != null ){
+				statusPanel.reportError("Error adding WSDL:"+e.getMessage());
+			}
 		}
 	}
 	

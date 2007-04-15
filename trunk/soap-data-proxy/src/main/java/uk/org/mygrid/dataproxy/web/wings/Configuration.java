@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -55,16 +55,19 @@ public class Configuration {
 		panel.setLayout(layout);
 		panel.setPreferredSize(SDimension.FULLAREA);		
 		
-		setUpNorthPane(panel);		
+		setUpLogoPanel(panel);		
 		
-		SPanel centrePanel;
+		CentrePanel centrePanel;
 		centrePanel = startCentrePanel();
 		centrePanel.setPreferredSize(SDimension.FULLAREA);
 		centrePanel.setVerticalAlignment(SConstants.TOP_ALIGN);
 		centrePanel.setHorizontalAlignment(SConstants.CENTER_ALIGN);
+		
+		StatusPanel statusPanel = new StatusPanel();
+		centrePanel.setStatusPanel(statusPanel);
+		
 		panel.add(centrePanel,SBorderLayout.CENTER);		
 				
-		StatusPanel statusPanel = new StatusPanel();		
 		panel.add(statusPanel,SBorderLayout.SOUTH);			
 		
 		SFrame rootFrame = new SFrame("Webservice Data Proxy");		
@@ -75,23 +78,27 @@ public class Configuration {
         rootFrame.show();
 	}
 
-	private void setUpNorthPane(SPanel panel) {
+	private void setUpLogoPanel(SPanel panel) {
 		SPanel northPanel = new SPanel(new SBoxLayout(SBoxLayout.HORIZONTAL));
 		northPanel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
+		northPanel.setPreferredSize(SDimension.FULLWIDTH);
 		
 		SLabel title = new SLabel("Webservice Data Proxy");
-		title.setPreferredSize(SDimension.FULLAREA);
-		title.setHorizontalAlignment(SConstants.CENTER_ALIGN);					
+		title.setName("logotitle");
+		title.setPreferredSize(SDimension.FULLWIDTH);
 		
 		SIcon mygridImage = new SResourceIcon("/mygridLogo.gif");
+		SLabel imageLabel = new SLabel(mygridImage);
+		imageLabel.setName("mygridlogo");
+		imageLabel.setPreferredSize(new SDimension("30%",null));		
 		
-		northPanel.add(new SLabel(mygridImage));
-		northPanel.add(title);		
+		northPanel.add(imageLabel);
+		northPanel.add(title);
 		panel.add(northPanel,SBorderLayout.NORTH);
 	}
 
-	private SPanel startCentrePanel() {
-		SPanel centrePanel;
+	private CentrePanel startCentrePanel() {
+		CentrePanel centrePanel;
 		if (ProxyConfigFactory.getInstance().getContextPath().length()==0) {
 		 	centrePanel= new AdminPanel();
 		}

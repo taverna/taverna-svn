@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLListPanel.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-15 18:00:54 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -63,9 +63,9 @@ public class WSDLListPanel extends CentrePanel{
 	private SButton deleteButton;	
 	private SButton configureButton;	
 	private SButton adminButton;
+	private AddWSDLPanel addPanel;
 	
-	public WSDLListPanel() {				
-				
+	public WSDLListPanel() {						
 		setLayout(new SBoxLayout(SBoxLayout.VERTICAL));			
 				
 		createConfigureButton();		
@@ -93,7 +93,7 @@ public class WSDLListPanel extends CentrePanel{
 		add(spacer);
 		add(table);			
 				
-		SPanel addPanel = new AddWSDLPanel(table);
+		addPanel = new AddWSDLPanel(table);
 		
 		addPanel.setVerticalAlignment(SConstants.TOP_ALIGN);
 		add(addPanel);			
@@ -166,8 +166,10 @@ public class WSDLListPanel extends CentrePanel{
 		ProxyConfigFactory.getInstance().deleteWSDLConfig(config);
 		try {
 			ProxyConfigFactory.writeConfig();
+			reportStatus("WSDL "+config.getName()+" successfully deleted");
 		} catch (Exception e) {
 			logger.error("Error writing proxy config",e);
+			reportError("An error occurred rewriting the config after WSDL deletion:"+e.getMessage());
 		}
 		table.update();
 	}
@@ -195,5 +197,13 @@ public class WSDLListPanel extends CentrePanel{
 	private void disableButtons() {			
 		deleteButton.setEnabled(false);
 		configureButton.setEnabled(false);
+	}
+
+	@Override
+	protected void setStatusPanel(StatusPanel statusPanel) {
+		super.setStatusPanel(statusPanel);
+		addPanel.setStatusPanel(statusPanel);
 	}	
+	
+	
 }
