@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriter.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-19 14:48:53 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -43,14 +43,20 @@ import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.apache.log4j.Logger;
+
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 
 public class FileInterceptorWriter implements InterceptorWriter {
 	
+	private static Logger logger = Logger
+			.getLogger(FileInterceptorWriter.class);
+	
 	private Writer writer;
 	private String destinationReference;
 	
-	public FileInterceptorWriter(URL fileURL,String reference) throws FileNotFoundException, URISyntaxException {		
+	public FileInterceptorWriter(URL fileURL,String reference) throws FileNotFoundException, URISyntaxException {
+		if (logger.isDebugEnabled()) logger.debug("Creating new FileInterceptorWriter to file: "+fileURL.toExternalForm());
 		FileOutputStream outStream=new FileOutputStream(new File(fileURL.toURI()));
 		writer = new BufferedWriter(new OutputStreamWriter(outStream));
 		this.destinationReference=reference;
@@ -60,7 +66,7 @@ public class FileInterceptorWriter implements InterceptorWriter {
 		return this.destinationReference;
 	}
 
-	public void write(char[] ch, int start, int length) throws IOException {
+	public void write(char[] ch, int start, int length) throws IOException {		
 		writer.write(ch,start,length);
 		
 	}

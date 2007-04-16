@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AdminPanel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 18:00:54 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 5 Apr 2007
  *****************************************************************/
@@ -56,6 +56,7 @@ import org.wings.session.SessionManager;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
+@SuppressWarnings("serial")
 public class AdminPanel extends CentrePanel {
 
 	private static Logger logger = Logger.getLogger(AdminPanel.class);
@@ -149,7 +150,7 @@ public class AdminPanel extends CentrePanel {
 		}
 		catch(Exception e) {
 			logger.error("Error setting admin data");
-			//TODO: report back error
+			reportError("An error occurred setting the data: "+e.getMessage());
 		}		
 	}
 }

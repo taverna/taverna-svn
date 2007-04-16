@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataServlet.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 15:38:15 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
@@ -43,7 +43,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,6 +50,7 @@ import org.apache.log4j.Logger;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
+@SuppressWarnings("serial")
 public class DataServlet extends ProxyBaseServlet{
 	
 	private static Logger logger = Logger.getLogger(DataServlet.class);

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 15:38:15 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -45,17 +45,14 @@ import java.net.URL;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.DataURLInterceptor;
@@ -188,7 +185,6 @@ public class ProxyServlet extends ProxyBaseServlet {
 			dir.mkdir();
 		}
 					
-		//FIXME: it generates this directory whether there is data put there or not.
 		dir = new File(dir,invocationID);
 		if (!dir.exists()) {
 			dir.mkdir();

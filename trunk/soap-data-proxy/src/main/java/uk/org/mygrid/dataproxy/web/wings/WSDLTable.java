@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTable.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 15:46:01 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -43,6 +43,7 @@ import org.wings.table.STableCellRenderer;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 
+@SuppressWarnings("serial")
 public class WSDLTable extends STable{
 
 	private List<WSDLConfig> wsdlList;	

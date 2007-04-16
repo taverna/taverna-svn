@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OperationNode.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:16 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 5 Apr 2007
  *****************************************************************/
@@ -35,6 +35,7 @@ package uk.org.mygrid.dataproxy.web.wings;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+@SuppressWarnings("serial")
 public class OperationNode extends DefaultMutableTreeNode {
 
 }

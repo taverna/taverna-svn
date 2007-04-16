@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-16 16:37:14 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -99,7 +99,7 @@ public class ElementDefinition {
 
 	@Override
 	public int hashCode() {
-//		FIXME: needs to take into account path and operation
+//		TODO: needs to take into account path and operation
 		return (getElementName()+getNamespaceURI()).hashCode();
 	}
 
@@ -130,7 +130,7 @@ public class ElementDefinition {
 
 		ElementDefinition elDef = (ElementDefinition) obj;
 
-		//FIXME: needs to take into account path and operation
+		//TODO: needs to take into account path and operation
 		return this.getElementName().equals(elDef.getElementName()) && this.getNamespaceURI().equals(elDef.getNamespaceURI());
 	}
 

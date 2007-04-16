@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerConfigPanel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:16 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -35,6 +35,7 @@ package uk.org.mygrid.dataproxy.web.wings;
 
 import org.wings.SPanel;
 
+@SuppressWarnings("serial")
 public class ServerConfigPanel extends SPanel {
 
 }

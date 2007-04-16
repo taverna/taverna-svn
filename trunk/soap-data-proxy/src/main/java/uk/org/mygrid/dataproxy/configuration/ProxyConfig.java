@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfig.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:09 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -43,7 +43,7 @@ public interface ProxyConfig {
 	public String getContextPath();
 	public void setContextPath(String contextPath);
 	
-	//FIXME: is this more useful as a string rather than a URL???
+	//TODO: is this more useful as a string rather than a URL???
 	public URL getStoreBaseURL();
 	public void setStoreBaseURL(URL storeBaseURL);
 	public WSDLConfig getWSDLConfigForID(String ID);

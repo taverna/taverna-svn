@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <definitions name="XEMBL" targetNamespace="http://www.ebi.ac.uk/XEMBL"
 	xmlns:tns="http://www.ebi.ac.uk/XEMBL"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"

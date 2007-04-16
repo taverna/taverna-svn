@@ -25,16 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyBaseServlet.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 15:38:15 $
+ * Last modified on   $Date: 2007-04-16 16:37:15 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.servlet;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import uk.org.mygrid.dataproxy.web.ServerInfo;
