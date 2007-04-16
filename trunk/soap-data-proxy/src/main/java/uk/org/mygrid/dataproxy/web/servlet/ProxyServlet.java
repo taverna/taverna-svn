@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:16 $
+ * Last modified on   $Date: 2007-04-16 15:38:15 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -55,6 +55,7 @@ import org.xml.sax.SAXException;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
+import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.impl.DataURLInterceptor;
@@ -64,31 +65,22 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
 
 @SuppressWarnings("serial")
-public class ProxyServlet extends HttpServlet {
+public class ProxyServlet extends ProxyBaseServlet {
 		
 	private static Logger logger = Logger.getLogger(ProxyServlet.class);		
 
 	public ProxyServlet() {		
 		logger.info("Instantiating Proxy Servlet.");					
-	}
-	
-	private ProxyConfig getConfig() {		
-		return ProxyConfigFactory.getInstance();
 	}	
-	
-	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		getConfig();		
-		super.doGet(request, response);
-	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		setContextOnServerInfo();
 		
 		String id=request.getParameter("id");				
 		logger.info("Proxying request for wsdlID="+id);
 		
-		WSDLConfig wsdlConfig = getConfig().getWSDLConfigForID(id);
+		WSDLConfig wsdlConfig = ProxyConfigFactory.getInstance().getWSDLConfigForID(id);
 		if (wsdlConfig==null) {
 			logger.error("Identifier "+id+" not recognised when looking for WSDL configuration details");
 			throw new ServletException("Identifier "+id+" not recognised when looking for WSDL configuration details");
@@ -160,7 +152,7 @@ public class ProxyServlet extends HttpServlet {
 	}
 	
 	private String generateInvocationID(String wsdlID) throws URISyntaxException {
-		URL base = getConfig().getStoreBaseURL();
+		URL base = ProxyConfigFactory.getInstance().getStoreBaseURL();
 		File dir = new File(base.toURI());
 		if (!dir.exists()) {
 			dir.mkdir();
@@ -185,7 +177,7 @@ public class ProxyServlet extends HttpServlet {
 	
 	private URL getDataStoreLocation(String wsdlID, String invocationID) throws Exception {		
 		
-		URL base = getConfig().getStoreBaseURL();
+		URL base = ProxyConfigFactory.getInstance().getStoreBaseURL();
 		File dir = new File(base.toURI());
 		if (!dir.exists()) {
 			dir.mkdir();

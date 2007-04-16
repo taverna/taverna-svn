@@ -25,32 +25,35 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 14:20:49 $
+ * Last modified on   $Date: 2007-04-16 15:38:15 $
  *               by   $Author: sowen70 $
  * Created on 12 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web;
+
+import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.wings.session.SessionManager;
 
 public class ServerInfo {
 	
-	private static Logger logger = Logger.getLogger(ServerInfo.class);
-	
+	private static Logger logger = Logger.getLogger(ServerInfo.class);	
 	private static String location = null;
+	private static ServletContext context=null;
 	
 	public static String getConfigFileLocation() {
 		if (location == null) {			
 			location=locationParam();
-			if (location==null) {
-				if (SessionManager.getSession()!=null) {
-					location=SessionManager.getSession().getServletContext().getRealPath("config.xml");
+			if (location==null) {	
+				ServletContext c = getServletContext();
+				if (c!=null) {
+					location=c.getRealPath("config.xml");
 					logger.warn("Storing config within web app context!\n Modify the ConfigFileLocation parameter in the web.xml to specify the location that the config file should be stored.");
 					logger.warn("This location is:"+location);
-				}				
+				}							
 			}
 			else {
 				logger.info("Location for configuration file defined as:"+location);
@@ -61,12 +64,22 @@ public class ServerInfo {
 	
 	private static String locationParam() {
 		String result = null;
-		if (SessionManager.getSession()!=null) {			
-			result=SessionManager.getSession().getServletContext().getInitParameter("ConfigFileLocation");
+		ServletContext c=getServletContext();
+		if (c!=null) {
+			result=getServletContext().getInitParameter("ConfigFileLocation");
 		}
-		else {
-			logger.warn("No session found");
-		}
+		
 		return result;
+	}
+	
+	public static void setServletContext(ServletContext context) {
+		ServerInfo.context=context;
+	}
+	
+	public static ServletContext getServletContext() {
+		if (context==null && SessionManager.getSession()!=null) {
+			context=SessionManager.getSession().getServletContext();
+		}
+		return context;
 	}
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataServlet.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-22 10:49:52 $
+ * Last modified on   $Date: 2007-04-16 15:38:15 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
@@ -51,7 +51,7 @@ import org.apache.log4j.Logger;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
-public class DataServlet extends HttpServlet{
+public class DataServlet extends ProxyBaseServlet{
 	
 	private static Logger logger = Logger.getLogger(DataServlet.class);
 
@@ -62,6 +62,9 @@ public class DataServlet extends HttpServlet{
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		setContextOnServerInfo();
+		
 		String id=request.getParameter("id");
 		String parts[]=id.split("-");
 		if (parts.length!=3) {

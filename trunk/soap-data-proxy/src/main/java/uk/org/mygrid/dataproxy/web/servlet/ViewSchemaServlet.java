@@ -20,14 +20,10 @@ import uk.org.mygrid.dataproxy.wsdl.impl.SchemaProxyImpl;
  *
  */
  @SuppressWarnings("serial")
-public class ViewSchemaServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
+public class ViewSchemaServlet extends ProxyBaseServlet {
 	 
     private static Logger logger = Logger.getLogger(ViewSchemaServlet.class);
 	 
-	public ViewSchemaServlet() {
-		super();
-	}   	
-	
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doPost(request, response);
@@ -35,6 +31,9 @@ public class ViewSchemaServlet extends javax.servlet.http.HttpServlet implements
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		setContextOnServerInfo();
+		
 		String wsdlID=request.getParameter("wsdlid");
 		String xsd=request.getParameter("xsd");
 		
