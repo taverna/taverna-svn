@@ -1,1 +1,0 @@
-<config><contextPath>http://localhost:8080/data-proxy/</contextPath><store><baseURL>file:/tmp/data/</baseURL></store></config>
