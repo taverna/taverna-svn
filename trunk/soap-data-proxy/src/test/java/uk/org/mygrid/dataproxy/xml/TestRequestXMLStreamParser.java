@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestRequestXMLStreamParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -41,7 +41,6 @@ import java.io.ByteArrayOutputStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 
 public class TestRequestXMLStreamParser {
@@ -58,33 +57,35 @@ public class TestRequestXMLStreamParser {
 	
 	@Test
 	public void testRewriteData() throws Exception {
-		String xml="<somexml><data>1</data><data>2</data></somexml>";
+		String xml="<somexml><header>header</header><data>1</data><data>2</data></somexml>";
 		
 		StringReaderFactory readerFactory=new StringReaderFactory();
 		readerFactory.addStringData("1", "data1");
 		readerFactory.addStringData("2", "data2");
 		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),readerFactory));
+		parser.addContentInterceptor(new TestContentInterceptor(readerFactory));
+				
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
 		String finalXML = outputStream.toString();
 		
-		assertEquals("<somexml><data>data1</data><data>data2</data></somexml>",finalXML);						
+		assertEquals("<somexml><header>header</header><data>data1</data><data>data2</data></somexml>",finalXML);						
 	}
 	
+	@Test
 	public void testRewriteData2() throws Exception {
-		String xml="<somexml><data>ref:1982223</data><data>ref:2392348</data></somexml>";
+		String xml="<somexml><data>ref:1982223</data><data>ref:2392348</data><footer>footer</footer></somexml>";
 		
 		StringReaderFactory readerFactory=new StringReaderFactory();
 		readerFactory.addStringData("ref:1982223", "11111111");
 		readerFactory.addStringData("ref:2392348", "22222222");
-		
-		parser.addTagInterceptor(new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),readerFactory));
-		parser.read(new ByteArrayInputStream(xml.getBytes()));
+				
+		parser.addContentInterceptor(new TestContentInterceptor(readerFactory));
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
 				
 		String finalXML = outputStream.toString();
 		
-		assertEquals("<somexml><data>11111111</data><data>22222222</data></somexml>",finalXML);						
+		assertEquals("<somexml><data>11111111</data><data>22222222</data><footer>footer</footer></somexml>",finalXML);						
 	}
 	
 }

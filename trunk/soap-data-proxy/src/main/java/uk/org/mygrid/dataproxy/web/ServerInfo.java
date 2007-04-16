@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-12 16:55:06 $
+ * Last modified on   $Date: 2007-04-16 13:53:16 $
  *               by   $Author: sowen70 $
  * Created on 12 Apr 2007
  *****************************************************************/
@@ -46,9 +46,11 @@ public class ServerInfo {
 		if (location == null) {			
 			location=locationParam();
 			if (location==null) {
-				location=SessionManager.getSession().getServletContext().getRealPath("config.xml");
-				logger.warn("Storing config within web app context!\n Modify the ConfigFileLocation parameter in the web.xml to specify the location that the config file should be stored.");
-				logger.warn("This location is:"+location);
+				if (SessionManager.getSession()!=null) {
+					location=SessionManager.getSession().getServletContext().getRealPath("config.xml");
+					logger.warn("Storing config within web app context!\n Modify the ConfigFileLocation parameter in the web.xml to specify the location that the config file should be stored.");
+					logger.warn("This location is:"+location);
+				}				
 			}
 			else {
 				logger.info("Location for configuration file defined as:"+location);
@@ -58,6 +60,13 @@ public class ServerInfo {
 	}
 	
 	private static String locationParam() {
-		return SessionManager.getSession().getServletContext().getInitParameter("ConfigFileLocation");
+		String result = null;
+		if (SessionManager.getSession()!=null) {
+			result=SessionManager.getSession().getServletContext().getInitParameter("ConfigFileLocation");
+		}
+		else {
+			logger.warn("No session found");
+		}
+		return result;
 	}
 }

@@ -24,15 +24,27 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: RequestTagInterceptor.java,v $
+ * Filename           $RCSfile: TestContentInterceptor.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
- * Created on 15 Feb 2007
+ * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-public interface RequestTagInterceptor extends TagInterceptor {
-	public ReaderFactory getReaderFactory();
+public class TestContentInterceptor implements EmbeddedReferenceInterceptor {
+	private StringReaderFactory factory;
+	public TestContentInterceptor(StringReaderFactory factory) {
+		this.factory = factory;
+	}
+	public boolean referenceMatches(String ref) {		
+		InterceptorReader reader = factory.getReaderForContent(ref);
+		return (reader!=null);
+	}
+	public ReaderFactory getReaderFactory() {
+		return factory;
+	}		
+	
+	
 }

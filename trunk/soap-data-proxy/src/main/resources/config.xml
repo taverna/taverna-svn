@@ -2,47 +2,5 @@
 	<contextPath></contextPath>
 	<store>
 		<baseURL>file:/tmp/data/</baseURL>
-	</store>
-	
-	<!-- 
-	<wsdls>
-		<wsdl>
-			<id>11111</id>
-			<address></address>
-			<endpoint>http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/soap_adapter_1_5.cgi</endpoint>
-			<elements>				
-				<element>
-					<name>Field</name>
-					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>					
-				</element>				
-				<element>
-					<name>Link</name>
-					<namespaceURI>http://www.ncbi.nlm.nih.gov/soap/eutils/einfo</namespaceURI>					
-				</element>
-			</elements>
-		</wsdl>
-		
-		<wsdl>
-			<id>22222</id>
-			<address></address>
-			<endpoint>http://localhost:8080/testwebservices/services/MyService</endpoint>			 
-			<elements>
-				<element>
-					<name>address</name>
-					<namespaceURI>http://testing.org</namespaceURI>					
-				</element>
-				<element>
-					<name>data</name>
-					<namespaceURI>http://testing.org</namespaceURI>					
-				</element>
-				<element>
-					<name>data</name>
-					<namespaceURI>http://testing.org</namespaceURI>					
-				</element>
-			</elements>			
-			
-		</wsdl>
-	</wsdls>	
-	 -->
-
+	</store>	
 </config>

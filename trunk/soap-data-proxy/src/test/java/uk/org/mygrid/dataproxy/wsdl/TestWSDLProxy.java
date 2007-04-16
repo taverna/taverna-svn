@@ -25,13 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLProxy.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:09 $
+ * Last modified on   $Date: 2007-04-16 13:53:16 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.wsdl;
+
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
@@ -39,11 +41,9 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.impl.NewWSDLConfig;
-import uk.org.mygrid.dataproxy.web.ServerInfo;
 import uk.org.mygrid.dataproxy.wsdl.impl.WSDLProxyImpl;
 
 public class TestWSDLProxy {

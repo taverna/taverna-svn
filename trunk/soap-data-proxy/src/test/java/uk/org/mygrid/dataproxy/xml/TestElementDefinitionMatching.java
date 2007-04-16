@@ -25,16 +25,18 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDefinitionMatching.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 19:53:34 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestElementDefinitionMatching {
 

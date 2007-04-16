@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseTagInterceptor.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -35,5 +35,5 @@ package uk.org.mygrid.dataproxy.xml;
 
 
 public interface ResponseTagInterceptor extends TagInterceptor {	
-	public WriterFactory getWriterFactory();	
+	public WriterFactory getWriterFactory();		
 }

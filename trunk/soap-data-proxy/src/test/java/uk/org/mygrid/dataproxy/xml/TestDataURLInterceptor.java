@@ -24,22 +24,22 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TestFileInterceptorReader.java,v $
- * Revision           $Revision: 1.5 $
+ * Filename           $RCSfile: TestDataURLInterceptor.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
- * Created on 16 Feb 2007
+ * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
@@ -47,21 +47,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorReaderFactory;
-import uk.org.mygrid.dataproxy.xml.impl.RequestTagInterceptorImpl;
+import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
+import uk.org.mygrid.dataproxy.xml.impl.DataURLInterceptor;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 
-public class TestFileInterceptorReader {
+public class TestDataURLInterceptor {
 	
 	private static Logger logger = Logger
-			.getLogger(TestFileInterceptorReader.class);
-
-	private File tmpDir;
+			.getLogger(TestDataURLInterceptor.class);
+	
+	private File tmpDir,wsdlDir,dataDir,data;
 	private ByteArrayOutputStream outStream;
 	private InterceptingXMLStreamParser parser;
-	
+
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception{
 		try {
 			tmpDir = File.createTempFile("dataproxy-test", "");
 			// But we want a directory!
@@ -70,53 +70,44 @@ public class TestFileInterceptorReader {
 		}
 		tmpDir.delete();
 		tmpDir.mkdir();
+		
+		wsdlDir=new File(tmpDir,"73f13fba");
+		wsdlDir.mkdir();
+		
+		dataDir=new File(wsdlDir,"1671a4df");
+		dataDir.mkdir();
+		
+		data=new File(dataDir,"data1");
+		BufferedWriter writer = new BufferedWriter(new FileWriter(data));
+		writer.write("the meaning of life is 42");
+		writer.close();		
+		
 		outStream = new ByteArrayOutputStream();
 		parser=new RequestXMLStreamParserImpl();
 		parser.setOutputStream(outStream);
-		
 	}
 	
 	@After
-	public void clearUp() {
-		for (File file : tmpDir.listFiles()) file.delete();
+	public void tearDown() {
+		data.delete();
+		dataDir.delete();
+		wsdlDir.delete();
 		tmpDir.delete();
 	}
 	
 	@Test
-	public void simpleTest() throws Exception {
-		File dataFile = new File(tmpDir,"data1");
-		BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(dataFile));
-		output.write("hello world".getBytes());
-		output.close();
+	public void testDereferencingOfURL() throws Exception {
+
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost/dataproxy/");
+		ProxyConfigFactory.getInstance().setStoreBaseURL(tmpDir.toURL());
+		String xml = "<somexml><header>header</header><data>http://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><footer>footer</footer></somexml>";
 		
-		String xml = "<somexml><data>"+dataFile.toURL().toExternalForm()+"</data></somexml>";
-		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),new FileInterceptorReaderFactory());
-		parser.addTagInterceptor(interceptor);
+		parser.addContentInterceptor(new DataURLInterceptor());
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outStream.toString();
 		
-		parser.read(new ByteArrayInputStream(xml.getBytes()));
-		
-		String finalXML=new String(outStream.toByteArray());
-		
-		assertEquals("<somexml><data>hello world</data></somexml>", finalXML);
+		assertEquals("Url wasn't correctly dereferenced","<somexml><header>header</header><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 
 		
 	}
-	
-	@Test
-	public void insertingXML() throws Exception {
-		File dataFile = new File(tmpDir,"data1");
-		BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(dataFile));
-		output.write("<hello><world>blah blah blah</world></hello>".getBytes());
-		output.close();
-		
-		String xml = "<somexml><data>"+dataFile.toURL().toExternalForm()+"</data></somexml>";
-		TagInterceptor interceptor = new RequestTagInterceptorImpl(new ElementDefinition("data","","*/data","*"),new FileInterceptorReaderFactory());
-		parser.addTagInterceptor(interceptor);
-		
-		parser.read(new ByteArrayInputStream(xml.getBytes()));
-		
-		String finalXML=new String(outStream.toByteArray());
-		
-		assertEquals("<somexml><data><hello><world>blah blah blah</world></hello></data></somexml>", finalXML);
-	}
-	
 }

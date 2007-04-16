@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptingXMLStreamParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -45,7 +45,9 @@ import org.xml.sax.SAXException;
 public interface InterceptingXMLStreamParser {
 			
 	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);		
+	public void addTagInterceptor(TagInterceptor interceptor);	
+	public void addContentInterceptor(EmbeddedReferenceInterceptor interceptor);
+	
 	public void read(InputStream stream)  throws SAXException, IOException;
 	
 	public void characters(char[] ch, int start, int length) throws SAXException;

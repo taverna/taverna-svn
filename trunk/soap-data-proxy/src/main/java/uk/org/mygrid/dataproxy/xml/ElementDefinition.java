@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 19:53:34 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -35,8 +35,6 @@ package uk.org.mygrid.dataproxy.xml;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.dom4j.Element;
 
 public class ElementDefinition {
 	private String elementName;

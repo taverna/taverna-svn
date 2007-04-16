@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorReader.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-19 16:10:07 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
  * Created on 16 Feb 2007
  *****************************************************************/
@@ -55,5 +55,12 @@ public class FileInterceptorReader implements InterceptorReader {
 	public int read(char[] buffer, int offset, int len) throws IOException {
 		return reader.read(buffer,offset,len);
 	}
+
+	public void close() throws IOException {
+		if (reader!=null) reader.close();
+		
+	}
+	
+	
 
 }

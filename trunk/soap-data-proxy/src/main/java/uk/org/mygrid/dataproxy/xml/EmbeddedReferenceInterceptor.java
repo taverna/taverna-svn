@@ -24,35 +24,16 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: RequestTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: EmbeddedReferenceInterceptor.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
- * Created on 15 Feb 2007
+ * Created on 16 Apr 2007
  *****************************************************************/
-package uk.org.mygrid.dataproxy.xml.impl;
+package uk.org.mygrid.dataproxy.xml;
 
-import uk.org.mygrid.dataproxy.xml.ElementDefinition;
-import uk.org.mygrid.dataproxy.xml.ReaderFactory;
-import uk.org.mygrid.dataproxy.xml.RequestTagInterceptor;
-
-public class RequestTagInterceptorImpl implements RequestTagInterceptor {
-
-	private ElementDefinition target;
-	private ReaderFactory readerFactory;
-	
-	public RequestTagInterceptorImpl(ElementDefinition target, ReaderFactory readerFactory) {
-		this.target=target;
-		this.readerFactory=readerFactory;
-	}
-	
-	public ReaderFactory getReaderFactory() {
-		return readerFactory;
-	}
-
-	public ElementDefinition getTargetElementDef() {
-		return target;
-	}
-
+public interface EmbeddedReferenceInterceptor {	
+	public boolean referenceMatches(String reference);	
+	public ReaderFactory getReaderFactory();
 }

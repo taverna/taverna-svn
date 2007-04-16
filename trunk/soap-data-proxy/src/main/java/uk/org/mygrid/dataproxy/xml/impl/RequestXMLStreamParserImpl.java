@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:37:30 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -36,79 +36,54 @@ package uk.org.mygrid.dataproxy.xml.impl;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
+import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
-import uk.org.mygrid.dataproxy.xml.RequestTagInterceptor;
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
-import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.RequestContentInterceptor;
 
 public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implements InterceptingXMLStreamParser {
 
 	private static Logger logger = Logger
 			.getLogger(RequestXMLStreamParserImpl.class);
-	
-	private ReaderFactory activeReaderFactory = null;
-	private String reference;
+			
 		
 	
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
-		if (activeReaderFactory!=null) {
-			reference+=String.valueOf(ch, start, length);
-		}
-		else {
-			super.characters(ch, start, length);
-		}
-				
-	}
-
-	@Override
-	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if (activeReaderFactory!=null) {
-			setEscapeText(false);
-			insertDataFromReference();
-			setEscapeText(true);
-			activeReaderFactory=null;
-			reference=null;
-		}
-		super.endElement(uri, localName, qName);
-	}
-	
-	private void insertDataFromReference() throws SAXException{
-		InterceptorReader reader;
-		try {			
-			reader = activeReaderFactory.getReaderForReference(reference);
-			if (logger.isDebugEnabled()) logger.debug("Found reader for reference:"+reference);
-		}
-		catch(Exception e) {
-			logger.error("Unable to create reader for reference '"+reference+"'");
-			throw new SAXException("Unable to create reader for reference '"+reference+"'",e);
-		}
-		char [] buffer = new char[255];
-		int len=0;
-		try {
-			while ((len = reader.read(buffer))!= -1) {
-				if (logger.isDebugEnabled()) logger.debug("Data read:"+String.valueOf(buffer,0,len));
-				super.characters(buffer, 0, len);
+		if (length<1024) { // an upper limit for checking for content interceptor
+			String content = String.valueOf(ch,start,length);
+			EmbeddedReferenceInterceptor interceptor = getContentInterceptor(content);
+			if (interceptor !=null && interceptor instanceof RequestContentInterceptor) {			
+				writeInterceptedContent(content, interceptor);												
+			}
+			else {
+				super.characters(ch, start, length);
 			}
 		}
-		catch(IOException e) {
-			logger.error("IOException reading from data stream");
+		else {
+			logger.info("content length too big to check for ContentInterceptor, length was:"+length);
+			super.characters(ch, start, length);
 		}
 	}
 
-	@Override
-	public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException {
-		TagInterceptor interceptor = getInterceptorForElement(localName, uri,localName,"*");	
-		if (logger.isDebugEnabled()) logger.debug("Met start element: "+localName+", namespaceuri="+uri+", qName="+qName);
-		if (interceptor!=null && interceptor instanceof RequestTagInterceptor) {
-			if (logger.isDebugEnabled()) logger.debug("Interceptor found for start element: "+localName+", namespaceuri="+uri+", qName="+qName);
-			activeReaderFactory = ((RequestTagInterceptor)interceptor).getReaderFactory();
-			reference="";
-		}		
-		super.startElement(uri, localName, qName, attr);		
-	}	
+	private void writeInterceptedContent(String content, EmbeddedReferenceInterceptor interceptor) throws SAXException {
+		ReaderFactory factory = ((RequestContentInterceptor)interceptor).getReaderFactory();				
+		InterceptorReader reader = factory.getReaderForContent(content);
+		
+		int len = 0;
+		char[] buffer=new char[255];
+		
+		try {
+			while ((len = reader.read(buffer))!=-1) {
+				super.characters(buffer, 0, len);
+			}
+			reader.close();
+		} catch (IOException e) {
+			logger.error("Error occurred reading data from reader",e);
+			throw new SAXException("Unable to read from InterceptorReader for content '"+content+"'",e);
+		}
+	}			
 }

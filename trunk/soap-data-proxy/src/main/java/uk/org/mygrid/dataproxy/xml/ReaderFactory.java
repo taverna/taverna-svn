@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ReaderFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -35,5 +35,5 @@ package uk.org.mygrid.dataproxy.xml;
 
 
 public interface ReaderFactory {
-	public InterceptorReader getReaderForReference(String reference) throws Exception;
+	public InterceptorReader getReaderForContent(String content);
 }

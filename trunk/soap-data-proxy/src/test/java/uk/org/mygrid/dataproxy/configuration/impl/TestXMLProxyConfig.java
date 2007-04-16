@@ -25,15 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestXMLProxyConfig.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:08 $
+ * Last modified on   $Date: 2007-04-16 13:53:16 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 

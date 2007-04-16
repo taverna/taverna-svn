@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptorReader.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 14:01:44 $
+ * Last modified on   $Date: 2007-04-16 13:53:14 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -39,4 +39,5 @@ public interface InterceptorReader {
 	
 	public int read(char [] buffer) throws IOException;
 	public int read(char [] buffer, int offset, int len) throws IOException;
+	public void close() throws IOException;
 }

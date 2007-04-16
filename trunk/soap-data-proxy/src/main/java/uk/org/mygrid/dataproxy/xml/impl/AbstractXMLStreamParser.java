@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:34:16 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -37,7 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -47,12 +49,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
-import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
+import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 
 public abstract class AbstractXMLStreamParser extends XMLWriter implements InterceptingXMLStreamParser {
-	private Map<ElementDefinition,TagInterceptor> interceptors = new HashMap<ElementDefinition,TagInterceptor>();
+	private Map<ElementDefinition,TagInterceptor> tagInterceptors = new HashMap<ElementDefinition,TagInterceptor>();
+	private List<EmbeddedReferenceInterceptor> contentInterceptors = new ArrayList<EmbeddedReferenceInterceptor>();
 	
 	private static Logger logger = Logger
 			.getLogger(AbstractXMLStreamParser.class);	
@@ -70,15 +74,28 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 	}
 	
 	public void addTagInterceptor(TagInterceptor interceptor) {
-		interceptors.put(interceptor.getTargetElementDef(),interceptor);
+		tagInterceptors.put(interceptor.getTargetElementDef(),interceptor);
 		logger.debug("Interceptor added class="+interceptor.getClass()+" for elementDef: "+interceptor.getTargetElementDef());
 	}
 	
-	protected TagInterceptor getInterceptorForElement(String element, String uri, String path, String operation) {
+	public void addContentInterceptor(EmbeddedReferenceInterceptor interceptor) {
+		contentInterceptors.add(interceptor);
+	}
+	
+	protected TagInterceptor getTagInterceptorForElement(String element, String uri, String path, String operation) {
 		ElementDefinition def = new ElementDefinition(element,uri,path,operation);
-		for (TagInterceptor interceptor : interceptors.values()) {
+		for (TagInterceptor interceptor : tagInterceptors.values()) {
 			if (interceptor.getTargetElementDef().matches(def)) {				
 				return interceptor; 				
+			}
+		}
+		return null;
+	}
+	
+	protected EmbeddedReferenceInterceptor getContentInterceptor(String content) {
+		for (EmbeddedReferenceInterceptor interceptor : contentInterceptors) {
+			if (interceptor.referenceMatches(content)) {
+				return interceptor;
 			}
 		}
 		return null;

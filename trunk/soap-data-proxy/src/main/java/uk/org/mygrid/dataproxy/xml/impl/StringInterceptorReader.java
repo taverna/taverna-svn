@@ -24,23 +24,39 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: FileInterceptorReaderFactory.java,v $
+ * Filename           $RCSfile: StringInterceptorReader.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-04-16 13:53:15 $
  *               by   $Author: sowen70 $
- * Created on 16 Feb 2007
+ * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.StringReader;
 
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
-import uk.org.mygrid.dataproxy.xml.ReaderFactory;
 
-public class FileInterceptorReaderFactory implements ReaderFactory
-{
-	public InterceptorReader getReaderForReference(String reference) throws Exception {
-		return new FileInterceptorReader(new URL(reference));
+public class StringInterceptorReader implements InterceptorReader {
+	private StringReader reader;
+	
+	public StringInterceptorReader(String data) {
+		reader = new StringReader(data);			
 	}
+
+	public int read(char[] buffer, int offset, int len) throws IOException {
+		return reader.read(buffer,offset,len);
+	}
+
+	public int read(char[] buffer) throws IOException {
+		return reader.read(buffer);			
+	}
+
+	public void close() throws IOException {
+		if (reader!=null) reader.close();
+	}
+	
+	
+	
 }
