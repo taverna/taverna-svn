@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestDataURLInterceptor.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-16 14:20:48 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
@@ -56,7 +56,7 @@ public class TestDataURLInterceptor {
 	private static Logger logger = Logger
 			.getLogger(TestDataURLInterceptor.class);
 	
-	private File tmpDir,wsdlDir,dataDir,data;
+	private File tmpDir,wsdlDir,dataDir,data,xmldata;
 	private ByteArrayOutputStream outStream;
 	private InterceptingXMLStreamParser parser;
 
@@ -80,7 +80,12 @@ public class TestDataURLInterceptor {
 		data=new File(dataDir,"data1");
 		BufferedWriter writer = new BufferedWriter(new FileWriter(data));
 		writer.write("the meaning of life is 42");
-		writer.close();		
+		writer.close();	
+		
+		xmldata=new File(dataDir,"xmldata1");
+		writer = new BufferedWriter(new FileWriter(xmldata));
+		writer.write("<somedata>xxx</somedata>");
+		writer.close();
 		
 		outStream = new ByteArrayOutputStream();
 		parser=new RequestXMLStreamParserImpl();
@@ -90,6 +95,7 @@ public class TestDataURLInterceptor {
 	@After
 	public void tearDown() {
 		data.delete();
+		xmldata.delete();
 		dataDir.delete();
 		wsdlDir.delete();
 		tmpDir.delete();
@@ -107,7 +113,65 @@ public class TestDataURLInterceptor {
 				
 		String finalXML = outStream.toString();
 		
-		assertEquals("Url wasn't correctly dereferenced","<somexml><header>header</header><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 
+		assertEquals("Url wasn't correctly dereferenced - xml is probably escaped","<somexml><header>header</header><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 		
+	}
+	
+	@Test
+	public void testTrimLeadingSpaces() throws Exception {
+
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost/dataproxy/");
+		ProxyConfigFactory.getInstance().setStoreBaseURL(tmpDir.toURL());
+		String xml = "<somexml><header>header</header><data>   http://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><footer>footer</footer></somexml>";
 		
+		parser.addContentInterceptor(new DataURLInterceptor());
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outStream.toString();
+		
+		assertEquals("Url wasn't correctly dereferenced - xml is probably escaped","<somexml><header>header</header><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 		
+	}
+	
+	@Test
+	public void testMultipleDefinitions() throws Exception {
+
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost/dataproxy/");
+		ProxyConfigFactory.getInstance().setStoreBaseURL(tmpDir.toURL());
+		String xml = "<somexml><header>header</header><data>http://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><data>http://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><data>http://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><footer>footer</footer></somexml>";
+		
+		parser.addContentInterceptor(new DataURLInterceptor());
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outStream.toString();
+		
+		assertEquals("Url wasn't correctly dereferenced - xml is probably escaped","<somexml><header>header</header><data>the meaning of life is 42</data><data>the meaning of life is 42</data><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 		
+	}
+	
+	@Test
+	public void testTrimLeadingNewLine() throws Exception {
+
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost/dataproxy/");
+		ProxyConfigFactory.getInstance().setStoreBaseURL(tmpDir.toURL());
+		String xml = "<somexml><header>header</header><data>\n\nhttp://localhost/dataproxy/data?id=73f13fba-1671a4df-data1</data><footer>footer</footer></somexml>";
+		
+		parser.addContentInterceptor(new DataURLInterceptor());
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outStream.toString();
+		
+		assertEquals("Url wasn't correctly dereferenced - xml is probably escaped","<somexml><header>header</header><data>the meaning of life is 42</data><footer>footer</footer></somexml>",finalXML); 		
+	}
+	
+	@Test
+	public void testEmbeddedXML() throws Exception {
+		ProxyConfigFactory.getInstance().setContextPath("http://localhost/dataproxy/");
+		ProxyConfigFactory.getInstance().setStoreBaseURL(tmpDir.toURL());
+		String xml = "<somexml><header>header</header><data>http://localhost/dataproxy/data?id=73f13fba-1671a4df-xmldata1</data><footer>footer</footer></somexml>";
+		
+		parser.addContentInterceptor(new DataURLInterceptor());
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outStream.toString();
+		
+		assertEquals("Url wasn't correctly dereferenced","<somexml><header>header</header><data><somedata>xxx</somedata></data><footer>footer</footer></somexml>",finalXML);
 	}
 }

@@ -24,22 +24,22 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: TestContentInterceptor.java,v $
+ * Filename           $RCSfile: DummyContentInterceptor.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-16 14:20:47 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-public class TestContentInterceptor implements EmbeddedReferenceInterceptor {
+public class DummyContentInterceptor implements EmbeddedReferenceInterceptor {
 	private StringReaderFactory factory;
-	public TestContentInterceptor(StringReaderFactory factory) {
+	public DummyContentInterceptor(StringReaderFactory factory) {
 		this.factory = factory;
 	}
 	public boolean referenceMatches(String ref) {		
-		InterceptorReader reader = factory.getReaderForContent(ref);
+		InterceptorReader reader = factory.getReaderForContent(ref.trim());
 		return (reader!=null);
 	}
 	public ReaderFactory getReaderFactory() {

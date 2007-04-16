@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-16 14:20:48 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -49,8 +49,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
+import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 
@@ -64,7 +64,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 	@Override
 	public void setOutputStream(OutputStream out) throws UnsupportedEncodingException {		
 		super.setOutputStream(out);
-		super.getOutputFormat().setSuppressDeclaration(true);
+		super.getOutputFormat().setSuppressDeclaration(true); //prevents <?xml ... /> at the start of the xml
 	}
 	
 	public void read(InputStream stream) throws SAXException, IOException {
@@ -94,7 +94,7 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 	
 	protected EmbeddedReferenceInterceptor getContentInterceptor(String content) {
 		for (EmbeddedReferenceInterceptor interceptor : contentInterceptors) {
-			if (interceptor.referenceMatches(content)) {
+			if (interceptor.referenceMatches(content.trim())) {
 				return interceptor;
 			}
 		}

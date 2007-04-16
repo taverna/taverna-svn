@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-16 14:20:48 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -42,7 +42,6 @@ import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
-import uk.org.mygrid.dataproxy.xml.RequestContentInterceptor;
 
 public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implements InterceptingXMLStreamParser {
 
@@ -56,7 +55,7 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 		if (length<1024) { // an upper limit for checking for content interceptor
 			String content = String.valueOf(ch,start,length);
 			EmbeddedReferenceInterceptor interceptor = getContentInterceptor(content);
-			if (interceptor !=null && interceptor instanceof RequestContentInterceptor) {			
+			if (interceptor !=null && interceptor instanceof EmbeddedReferenceInterceptor) {			
 				writeInterceptedContent(content, interceptor);												
 			}
 			else {
@@ -70,20 +69,25 @@ public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implemen
 	}
 
 	private void writeInterceptedContent(String content, EmbeddedReferenceInterceptor interceptor) throws SAXException {
-		ReaderFactory factory = ((RequestContentInterceptor)interceptor).getReaderFactory();				
-		InterceptorReader reader = factory.getReaderForContent(content);
+		ReaderFactory factory = ((EmbeddedReferenceInterceptor)interceptor).getReaderFactory();				
+		InterceptorReader reader = factory.getReaderForContent(content.trim());
 		
 		int len = 0;
 		char[] buffer=new char[255];
+		setEscapeText(false);
 		
 		try {
+			
 			while ((len = reader.read(buffer))!=-1) {
 				super.characters(buffer, 0, len);
 			}
 			reader.close();
+			
 		} catch (IOException e) {
 			logger.error("Error occurred reading data from reader",e);
 			throw new SAXException("Unable to read from InterceptorReader for content '"+content+"'",e);
 		}
+		
+		setEscapeText(true);		
 	}			
 }

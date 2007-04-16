@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:16 $
+ * Last modified on   $Date: 2007-04-16 14:20:49 $
  *               by   $Author: sowen70 $
  * Created on 12 Apr 2007
  *****************************************************************/
@@ -61,7 +61,7 @@ public class ServerInfo {
 	
 	private static String locationParam() {
 		String result = null;
-		if (SessionManager.getSession()!=null) {
+		if (SessionManager.getSession()!=null) {			
 			result=SessionManager.getSession().getServletContext().getInitParameter("ConfigFileLocation");
 		}
 		else {

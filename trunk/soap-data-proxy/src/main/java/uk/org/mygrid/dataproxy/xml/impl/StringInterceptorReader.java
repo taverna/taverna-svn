@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: StringInterceptorReader.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-16 14:20:48 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
@@ -54,7 +54,7 @@ public class StringInterceptorReader implements InterceptorReader {
 	}
 
 	public void close() throws IOException {
-		if (reader!=null) reader.close();
+		reader.reset();
 	}
 	
 	

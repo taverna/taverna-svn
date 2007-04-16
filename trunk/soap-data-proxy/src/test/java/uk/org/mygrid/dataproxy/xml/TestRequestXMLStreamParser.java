@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestRequestXMLStreamParser.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-16 14:20:48 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -63,7 +63,7 @@ public class TestRequestXMLStreamParser {
 		readerFactory.addStringData("1", "data1");
 		readerFactory.addStringData("2", "data2");
 		
-		parser.addContentInterceptor(new TestContentInterceptor(readerFactory));
+		parser.addContentInterceptor(new DummyContentInterceptor(readerFactory));
 				
 		parser.read(new ByteArrayInputStream(xml.getBytes()));
 				
@@ -80,12 +80,28 @@ public class TestRequestXMLStreamParser {
 		readerFactory.addStringData("ref:1982223", "11111111");
 		readerFactory.addStringData("ref:2392348", "22222222");
 				
-		parser.addContentInterceptor(new TestContentInterceptor(readerFactory));
+		parser.addContentInterceptor(new DummyContentInterceptor(readerFactory));
 		parser.read(new ByteArrayInputStream(xml.getBytes()));		
 				
 		String finalXML = outputStream.toString();
 		
 		assertEquals("<somexml><data>11111111</data><data>22222222</data><footer>footer</footer></somexml>",finalXML);						
+	}
+	
+	@Test
+	public void testTrimLeadingSpacesOrNewlines() throws Exception {
+		String xml="<somexml><data>    ref:1982223</data><data>\nref:2392348</data><data>\n\rref:2392348</data><footer>footer</footer></somexml>";
+		
+		StringReaderFactory readerFactory=new StringReaderFactory();
+		readerFactory.addStringData("ref:1982223", "11111111");
+		readerFactory.addStringData("ref:2392348", "22222222");
+				
+		parser.addContentInterceptor(new DummyContentInterceptor(readerFactory));
+		parser.read(new ByteArrayInputStream(xml.getBytes()));		
+				
+		String finalXML = outputStream.toString();
+		
+		assertEquals("<somexml><data>11111111</data><data>22222222</data><data>22222222</data><footer>footer</footer></somexml>",finalXML);						
 	}
 	
 }
