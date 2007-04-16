@@ -24,12 +24,12 @@
 			<url-pattern>/config/*</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>manager</role-name>
+			<role-name>administrator</role-name>
 		</auth-constraint>
 	</security-constraint>
 	
 	<security-role>
-		<role-name>manager</role-name>
+		<role-name>administrator</role-name>
 	</security-role>
 	
 	<login-config>
@@ -47,7 +47,7 @@
 			<url-pattern>/config.xml</url-pattern>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>manager</role-name>
+			<role-name>administrator</role-name>
 		</auth-constraint>		
 	</security-constraint>
 	
