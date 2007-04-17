@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 16:37:15 $
+ * Last modified on   $Date: 2007-04-17 14:06:44 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -51,6 +51,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
+import sun.security.krb5.internal.bi;
+import sun.security.krb5.internal.p;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
@@ -117,7 +119,11 @@ public class ProxyServlet extends ProxyBaseServlet {
 		
 		InterceptingXMLStreamParser responseParser = new ResponseXMLStreamParserImpl();	
 		for (ElementDefinition elementDef : wsdlConfig.getElements()) {
-			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,baseReference,elementDef.getElementName())));
+			String prefix=elementDef.getElementName();
+			if (prefix.equals("*")) {
+				prefix = createPrefixForWildcard(elementDef);
+			}
+			responseParser.addTagInterceptor(new ResponseTagInterceptorImpl(elementDef,new FileInterceptorWriterFactory(dataStoreLocation,baseReference,prefix)));
 		}
 			
 		responseParser.setOutputStream(response.getOutputStream());
@@ -131,6 +137,22 @@ public class ProxyServlet extends ProxyBaseServlet {
 		}		
 		
 		clearEmptyDirectories(dataStoreLocation);
+	}
+
+	private String createPrefixForWildcard(ElementDefinition elementDef) {
+		String prefix=null;
+		String path=elementDef.getPath();
+		String bits[]=path.split("/"); 
+		for (int i=(bits.length-1);i>=0;i--) { //use an earlier part of the path as the data prefix, appended with _item
+			if (!bits[i].equals("*")) {
+				prefix=bits[i]+"_item";
+				break;
+			}			
+		}
+		
+		//failings this use part of a UUID
+		if (prefix==null) prefix=UUID.randomUUID().toString().split("-")[0];
+		return prefix;
 	}	
 	
 	private void clearEmptyDirectories(URL dataDirectory) {		
