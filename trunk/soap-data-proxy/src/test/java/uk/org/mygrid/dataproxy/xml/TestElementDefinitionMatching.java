@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestElementDefinitionMatching.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-17 14:08:02 $
  *               by   $Author: sowen70 $
  * Created on 16 Mar 2007
  *****************************************************************/
@@ -125,6 +125,15 @@ public class TestElementDefinitionMatching {
 	public void testWildcardOperationMatching() throws Exception {
 		ElementDefinition def = new ElementDefinition("name","namespace","*/start/end","operation");
 		ElementDefinition def2 = new ElementDefinition("name","namespace","*/start/end","*");
+		
+		assertTrue("they should match",def.matches(def2));
+		assertTrue("they should match",def2.matches(def));
+	}
+	
+	@Test
+	public void testIgnoreEmptyNamespace() throws Exception {
+		ElementDefinition def = new ElementDefinition("name","namespace","*/start/end","operation");
+		ElementDefinition def2 = new ElementDefinition("name","","*/start/end","*");
 		
 		assertTrue("they should match",def.matches(def2));
 		assertTrue("they should match",def2.matches(def));

@@ -25,16 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 16:37:15 $
+ * Last modified on   $Date: 2007-04-17 14:08:03 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml.impl;
 
-import java.io.File;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
@@ -64,14 +62,5 @@ public class FileInterceptorWriterFactory implements WriterFactory {
 		String reference=baseReference+"-"+fileName;
 		if (logger.isDebugEnabled()) logger.debug("Created FileInterceptorWriter to write to file:"+fileURL.toExternalForm()+", for href:"+reference);
 		return new FileInterceptorWriter(fileURL,reference);
-	}
-	
-	private void createBaseDir() throws URISyntaxException {
-		File file = new File(baseURL.toURI());
-		if (!file.exists()) {
-			if (logger.isDebugEnabled()) logger.debug("Creating invocation directory: "+baseURL.toExternalForm());
-			file.mkdir();
-		}
-	}
-
+	}	
 }

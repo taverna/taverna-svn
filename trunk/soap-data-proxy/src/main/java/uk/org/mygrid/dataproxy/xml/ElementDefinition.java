@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ElementDefinition.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 16:37:14 $
+ * Last modified on   $Date: 2007-04-17 14:08:02 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -53,6 +53,9 @@ public class ElementDefinition {
 			path = "*";
 		if (operation == null)
 			operation = "*";
+		if (namespaceURI==null) 
+			namespaceURI = "*";
+					
 		this.elementName = elementName;
 		this.namespaceURI = namespaceURI;
 		this.path = path;		
@@ -111,8 +114,17 @@ public class ElementDefinition {
 	 */
 	public boolean matches(ElementDefinition rhs) {
 		boolean result = false;
+		
+		//if a namespace is blank it is taken as a wildcard, this is to 
+		//cover some webservices that do not reply a namespace on the return		
+		String namespace=getNamespaceURI();
+		if (namespace=="") namespace="*";
+		
+		String rhsnamespace=getNamespaceURI();
+		if (rhsnamespace=="") rhsnamespace="*";
+		
 		if (getElementName().equals(rhs.getElementName()) || getElementName().equals("*") || rhs.getElementName().equals("*")) {
-			if (getNamespaceURI().equals(rhs.getNamespaceURI()) || getNamespaceURI().equals("*") || rhs.getNamespaceURI().equals("*")) {
+			if (namespace.equals(rhsnamespace) || namespace.equals("*") || rhsnamespace.equals("*")) {
 				if (getOperation().equals(rhs.getOperation()) || getOperation().equals("*") || rhs.getOperation().equals("*")) {
 					if (isMatchingPath(rhs.getPath())) {
 						result=true;
