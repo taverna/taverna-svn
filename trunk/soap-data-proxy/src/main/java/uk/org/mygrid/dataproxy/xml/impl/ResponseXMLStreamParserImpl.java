@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 16:37:15 $
+ * Last modified on   $Date: 2007-04-17 15:02:41 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -159,8 +159,8 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
 		AttributesImpl attributes = new AttributesImpl();
 		
-		attributes.addAttribute("http://www.w3.org/1999/xlink", "xlink", "xlink:href", "xlink", activeWriter.getDestinationReference());
-		attributes.addAttribute("http://www.w3.org/1999/xlink", "xmlns", "xmlns:xlink", "xmlns", "http://www.w3.org/1999/xlink");
+//		attributes.addAttribute("http://www.w3.org/1999/xlink", "xlink", "xlink:href", "xlink", activeWriter.getDestinationReference());
+//		attributes.addAttribute("http://www.w3.org/1999/xlink", "xmlns", "xmlns:xlink", "xmlns", "http://www.w3.org/1999/xlink");
 		
 		super.startElement(uri,localName,qName,attributes);
 		String destinationName=activeWriter.getDestinationReference();		

@@ -38,9 +38,9 @@ import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestResponseXMLStreamParser.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-22 15:08:13 $
+ * Last modified on   $Date: 2007-04-17 15:02:40 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -80,9 +80,8 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<section><para xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</para><link xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</link></section>",finalXML);
-		
-	}
+		assertEquals("<section><para>1</para><link>1</link></section>",finalXML);		
+	}	
 	
 	@Test
 	public void multipleElements() throws Exception {
@@ -100,7 +99,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<a><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b><c>c</c><b xlink:href=\"2\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">2</b></a>",finalXML);
+		assertEquals("<a><b>1</b><c>c</c><b>2</b></a>",finalXML);
 	}
 	
 	@Test 
@@ -118,7 +117,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<a><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b><c>c</c></a>",finalXML);
+		assertEquals("<a><b>1</b><c>c</c></a>",finalXML);
 	}
 	
 	@Test 
@@ -141,7 +140,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<a><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b></a>",finalXML);
+		assertEquals("<a><b>1</b></a>",finalXML);
 	}
 	
 	@Test
@@ -162,8 +161,8 @@ public class TestResponseXMLStreamParser {
 		
 		
 				
-		assertEquals("<ns1:a xmlns:ns1=\"a\"><ns1:b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</ns1:b></ns1:a>",finalXML);
-	}
+		assertEquals("<ns1:a xmlns:ns1=\"a\"><ns1:b>1</ns1:b></ns1:a>",finalXML);
+	}	
 	
 	@Test
 	public void testNamespace2() throws Exception {
@@ -181,7 +180,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 				
-		assertEquals("<ns1:a xmlns:ns1=\"a\"><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b></ns1:a>",finalXML);
+		assertEquals("<ns1:a xmlns:ns1=\"a\"><b>1</b></ns1:a>",finalXML);
 	}
 	
 	@Test 
@@ -200,7 +199,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<a><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b></a>",finalXML);
+		assertEquals("<a><b>1</b></a>",finalXML);
 	}		
 	
 	@Test 
@@ -219,7 +218,7 @@ public class TestResponseXMLStreamParser {
 		
 		String finalXML=outputStream.toString();
 		
-		assertEquals("<a><b xlink:href=\"1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">1</b></a>",finalXML);
+		assertEquals("<a><b>1</b></a>",finalXML);
 	}	
 }
 
