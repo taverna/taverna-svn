@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.15 $
+ * Revision           $Revision: 1.16 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-17 14:06:44 $
+ * Last modified on   $Date: 2007-04-17 15:21:12 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -51,8 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import sun.security.krb5.internal.bi;
-import sun.security.krb5.internal.p;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
