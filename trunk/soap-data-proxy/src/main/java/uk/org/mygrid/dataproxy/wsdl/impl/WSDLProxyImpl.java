@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProxyImpl.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -54,12 +54,27 @@ import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.WSDLProxy;
 
+/**
+ * An implementation of the WSDLProxy that rewrites any imported schemas to be proxied via the 
+ * ViewSchemaServlet, and also rewrites the endpoint to use the ProxyServlet.
+ * 
+ * @see uk.org.mygrid.dataproxy.web.servlet.ViewSchemaServlet
+ * @see uk.org.mygrid.dataproxy.web.servlet.ProxyServlet
+ * 
+ * @author Stuart Owen
+ */
+
 public class WSDLProxyImpl implements WSDLProxy {
 	
 	private static Logger logger = Logger.getLogger(WSDLProxyImpl.class);
 	
 	private WSDLConfig config;	
 
+	/**
+	 * Constructor requiring the WSDLConfig for the wsdl to be proxied.
+	 * 
+	 * @param config
+	 */
 	public WSDLProxyImpl(WSDLConfig config) {
 		this.config = config;
 	}

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.16 $
+ * Revision           $Revision: 1.17 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-17 15:21:12 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -60,6 +60,17 @@ import uk.org.mygrid.dataproxy.xml.impl.FileInterceptorWriterFactory;
 import uk.org.mygrid.dataproxy.xml.impl.RequestXMLStreamParserImpl;
 import uk.org.mygrid.dataproxy.xml.impl.ResponseTagInterceptorImpl;
 import uk.org.mygrid.dataproxy.xml.impl.ResponseXMLStreamParserImpl;
+
+/**
+ * The servlet responsible for acting as a proxying webservice endpoint. It pipes the incoming SOAP stream, de-referencing any data urls, and forwarding to the original endpoint.
+ * The received SOAP message response from the 'real' webservice is parsed, and if any elements match those that have been marked for referencing then 
+ * the incoming data stream is redirectred to a file until the matching closing tag is met. The data itself is replaced with a URL to the data, using the
+ * DataServlet.
+ * 
+ * @see uk.org.mygrid.dataproxy.web.servlet.DataServlet
+ * 
+ * @author Stuart Owen
+ */
 
 @SuppressWarnings("serial")
 public class ProxyServlet extends ProxyBaseServlet {

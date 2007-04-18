@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfig.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:37 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -37,11 +37,40 @@ import java.util.List;
 
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
+/**
+ * An interface to the configuration details for a single WSDL.
+ * @author Stuart Owen
+ *
+ */
+
 public interface WSDLConfig {
 	
+	/**
+	 * 
+	 * @return the ID of the WSDL
+	 */
 	public String getWSDLID();
+	
+	/**
+	 * 
+	 * @return the original address of the WSDL
+	 */
 	public String getAddress();
+	
+	/**
+	 * 
+	 * @return the name for this WSDL as provided by the user.
+	 */
 	public String getName();	
+	
+	/**
+	 * 
+	 * @return a list of Element definitions for the WSDL. These define which elements should be stored and replaced with a reference.
+	 */
 	public List<ElementDefinition> getElements();	
+	
+	/**
+	 * @return the original endpoint for the WSDL.
+	 */
 	public String getEndpoint();		
 }

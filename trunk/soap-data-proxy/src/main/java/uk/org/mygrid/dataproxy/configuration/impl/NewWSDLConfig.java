@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLConfig.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:36 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -38,6 +38,15 @@ import java.util.List;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
+
+/**
+ * An implementation of WSDLConfig for a new wsdl. It allows access to provide new values to the 
+ * settings.
+ * 
+ * @see uk.org.mygrid.dataproxy.configuration.WSDLConfig
+ * 
+ * @author Stuart Owen
+ */
 
 public class NewWSDLConfig implements WSDLConfig {
 	

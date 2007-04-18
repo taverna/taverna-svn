@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 13:47:36 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -43,6 +43,13 @@ import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
+
+/**
+ * An XML based implementation of WSDLConfig
+ * 
+ * @see uk.org.mygrid.dataproxy.configuration.WSDLConfig
+ * @author Stuart Owen
+ */
 
 public class XMLWSDLConfig implements WSDLConfig {
 	

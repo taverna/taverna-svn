@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 18:00:54 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -55,7 +55,7 @@ import org.wings.border.STitledBorder;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
+import uk.org.mygrid.dataproxy.wsdl.WSDLParsingException;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
 @SuppressWarnings("serial")
@@ -125,7 +125,7 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		model = new WSDLTreeModel(config);
 		try {
 			model.populate();			
-		} catch (SchemaParsingException e) {
+		} catch (WSDLParsingException e) {
 			logger.error("Error parsing the wsdl:"+config.getAddress(),e);
 			reportError("Error parsing the wsdl:"+e.getMessage());
 		}

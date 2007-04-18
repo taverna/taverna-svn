@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AbstractXMLStreamParser.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 14:20:48 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -54,6 +54,15 @@ import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
 
+/**
+ * An abstract implementation of an XMLStreamParser and acts as the content handler for the dom4j XMLWriter. It is used as a common base class
+ * by the ResponseXMLStreamParser and RequestXMLStreamParser.
+ * 
+ * Its main function is to parse the XML and provide helper methods that detect if an element or content matches
+ * an encountered element or element content.
+ * 
+ * @author Stuart Owen
+ */
 public abstract class AbstractXMLStreamParser extends XMLWriter implements InterceptingXMLStreamParser {
 	private Map<ElementDefinition,TagInterceptor> tagInterceptors = new HashMap<ElementDefinition,TagInterceptor>();
 	private List<EmbeddedReferenceInterceptor> contentInterceptors = new ArrayList<EmbeddedReferenceInterceptor>();
@@ -82,6 +91,14 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 		contentInterceptors.add(interceptor);
 	}
 	
+	/**
+	 * Returns a TagInterceptor if its ElementDefinition matches the element details provided.
+	 * @param element
+	 * @param uri
+	 * @param path
+	 * @param operation
+	 * @return
+	 */
 	protected TagInterceptor getTagInterceptorForElement(String element, String uri, String path, String operation) {
 		ElementDefinition def = new ElementDefinition(element,uri,path,operation);
 		for (TagInterceptor interceptor : tagInterceptors.values()) {
@@ -92,6 +109,12 @@ public abstract class AbstractXMLStreamParser extends XMLWriter implements Inter
 		return null;
 	}
 	
+	/**
+	 * Returns an EmbeddedReferenceInterceptor if the content matches its criteria.
+	 * 
+	 * @param content
+	 * @return
+	 */
 	protected EmbeddedReferenceInterceptor getContentInterceptor(String content) {
 		for (EmbeddedReferenceInterceptor interceptor : contentInterceptors) {
 			if (interceptor.referenceMatches(content.trim())) {

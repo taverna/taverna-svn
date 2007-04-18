@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AxisBasedSchemaParserImpl.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-10 13:06:52 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -61,10 +61,17 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.xml.sax.SAXException;
 
-import uk.org.mygrid.dataproxy.wsdl.SchemaParser;
-import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
+import uk.org.mygrid.dataproxy.wsdl.WSDLParser;
+import uk.org.mygrid.dataproxy.wsdl.WSDLParsingException;
 
-public class AxisBasedSchemaParserImpl implements SchemaParser {
+/**
+ * An implementation of WSDLParser based around Axis 1, using SymbolTable to process the wsdl and
+ * provide the operations and details about the types.
+ * 
+ * @author Stuart Owen
+ */
+
+public class AxisBasedSchemaParserImpl implements WSDLParser {
 
 	private static Logger logger = Logger
 			.getLogger(AxisBasedSchemaParserImpl.class);
@@ -74,10 +81,10 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 
 	@SuppressWarnings("unchecked")
 	public Element expandType(String wsdlUrl, Element type)
-			throws SchemaParsingException {
+			throws WSDLParsingException {
 
 		if (type.elements().size()>0) {
-			throw new SchemaParsingException("Type {"+type.getNamespaceURI()+"}"+type.getQualifiedName()+" is already expanded");
+			throw new WSDLParsingException("Type {"+type.getNamespaceURI()+"}"+type.getQualifiedName()+" is already expanded");
 		}
 		
 		SymbolTable table = getSymbolTable(wsdlUrl);
@@ -149,7 +156,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 	}
 
 	private SymbolTable getSymbolTable(String wsdlUrl)
-			throws SchemaParsingException {
+			throws WSDLParsingException {
 		SymbolTable symbolTable = tableMap.get(wsdlUrl);
 		if (symbolTable == null) {
 			try {
@@ -157,7 +164,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 				tableMap.put(wsdlUrl, symbolTable);
 			} catch (Exception e) {
 				logger.error("Error processing the wsdl:" + wsdlUrl, e);
-				throw new SchemaParsingException(
+				throw new WSDLParsingException(
 						"Error processing wsdl schema:" + e.getMessage(), e);
 			}
 		}
@@ -178,7 +185,7 @@ public class AxisBasedSchemaParserImpl implements SchemaParser {
 	}
 
 	public List<Element> parseOperations(String wsdlUrl)
-			throws SchemaParsingException {
+			throws WSDLParsingException {
 		List<Element> result = new ArrayList<Element>();
 
 		SymbolTable symbolTable = getSymbolTable(wsdlUrl);

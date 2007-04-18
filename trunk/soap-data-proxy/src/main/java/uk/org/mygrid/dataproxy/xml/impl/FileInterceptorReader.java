@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorReader.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 16 Feb 2007
  *****************************************************************/
@@ -39,6 +39,12 @@ import java.io.Reader;
 import java.net.URL;
 
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
+
+/**
+ * A file based InterceptorReader.
+ *  
+ * @author Stuart Owen
+ */
 
 public class FileInterceptorReader implements InterceptorReader {
 	

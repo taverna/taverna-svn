@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataServlet.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 16:37:15 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 15 Mar 2007
  *****************************************************************/
@@ -49,6 +49,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
+
+/**
+ * A servlet responsibly for providing a data stream to the data identified by data?id='....'.
+ * The ID is of the form <wsdlID>-<invocationID>-<dataID> 
+ * 
+ * An error is reported back if no data is found that matches the ID.
+ * @author Stuart Owen
+ *
+ */
 
 @SuppressWarnings("serial")
 public class DataServlet extends ProxyBaseServlet{

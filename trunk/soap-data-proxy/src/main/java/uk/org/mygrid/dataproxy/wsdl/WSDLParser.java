@@ -24,10 +24,10 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: SchemaParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: WSDLParser.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 12:35:27 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -37,12 +37,37 @@ import java.util.List;
 
 import org.dom4j.Element;
 
-public interface SchemaParser {
+/**
+ * An interface defining the ability to parse a WSDL, providing a list of the available operations
+ * and also the ability to examine the types declared within the WSDL schema.
+ * 
+ * @author Stuart Owen
+ */
+
+public interface WSDLParser {
 	
+	/**
+	 * Flushes any cached wsdl definitions.
+	 * @param wsdlUrl
+	 */
 	public void flush(String wsdlUrl);
 	
-	public Element expandType(String wsdlUrl,Element type) throws SchemaParsingException;
+	/**
+	 * Expands a type into its nested elements, represented as XML.
+	 * 
+	 * @param wsdlUrl
+	 * @param type
+	 * @return
+	 * @throws WSDLParsingException
+	 */
+	public Element expandType(String wsdlUrl,Element type) throws WSDLParsingException;
 	
-	public List<Element> parseOperations(String wsdlUrl) throws SchemaParsingException;
+	/**
+	 * Provides a list of the available operations, and also the response types (unexpanded).
+	 * @param wsdlUrl
+	 * @return
+	 * @throws WSDLParsingException
+	 */
+	public List<Element> parseOperations(String wsdlUrl) throws WSDLParsingException;
 }
 

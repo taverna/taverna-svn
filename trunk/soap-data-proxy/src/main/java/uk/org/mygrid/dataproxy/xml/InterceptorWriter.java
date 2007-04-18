@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptorWriter.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-16 16:13:58 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -35,6 +35,12 @@ package uk.org.mygrid.dataproxy.xml;
 
 import java.io.IOException;
 
+/**
+ * An interface to a writer that is provided by the WriterFactory. 
+ * The implementation is responsible for how and where the data is written to.
+ * 
+ * @author Stuart Owen
+ */
 public interface InterceptorWriter {
 	
 	public String getDestinationReference();

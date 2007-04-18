@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProxy.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:43 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -38,7 +38,11 @@ import java.io.InputStream;
 
 import org.dom4j.DocumentException;
 import org.jaxen.JaxenException;
-
+/**
+ * An interface to a proxy that provides a stream to a proxied WSDL.
+ * 
+ * @author Stuart Owen
+ */
 public interface WSDLProxy {
 	InputStream getStream() throws JaxenException, DocumentException, IOException;
 }

@@ -24,28 +24,33 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: SchemaParsingException.java,v $
- * Revision           $Revision: 1.2 $
+ * Filename           $RCSfile: WSDLParsingException.java,v $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-15 16:05:34 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 8 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.wsdl;
 
+/**
+ * An exception relating to an error parsing a WSDL
+ * @author Stuart Owen
+ *
+ */
 @SuppressWarnings("serial")
-public class SchemaParsingException extends Exception {
+public class WSDLParsingException extends Exception {
 	
 
-	public SchemaParsingException(String message) {
+	public WSDLParsingException(String message) {
 		super(message);
 	}
 
-	public SchemaParsingException(Throwable cause) {
+	public WSDLParsingException(Throwable cause) {
 		super(cause); 
 	}
 
-	public SchemaParsingException(String message, Throwable cause) {
+	public WSDLParsingException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

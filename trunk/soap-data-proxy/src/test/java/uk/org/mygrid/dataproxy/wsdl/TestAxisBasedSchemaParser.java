@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestAxisBasedSchemaParser.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-20 16:36:42 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 6 Mar 2007
  *****************************************************************/
@@ -46,7 +46,7 @@ import uk.org.mygrid.dataproxy.wsdl.impl.AxisBasedSchemaParserImpl;
 
 public class TestAxisBasedSchemaParser {
 
-	SchemaParser parser;
+	WSDLParser parser;
 	@Before
 	public void setUp() {
 		parser=new AxisBasedSchemaParserImpl();
@@ -93,7 +93,7 @@ public class TestAxisBasedSchemaParser {
 		assertEquals("Incorrect namespace","http://webservice.gominer.lmp.nci.nih.gov",child.getNamespaceURI());	
 	}
 	
-	@Test (expected=SchemaParsingException.class)
+	@Test (expected=WSDLParsingException.class)
 	public void testRepeatedExpand() throws Exception {
 		String wsdl="http://www.cs.man.ac.uk/~sowen/proxytests/wsdls/gominer/GMService.wsdl";
 		List<Element> operations = parser.parseOperations(wsdl);

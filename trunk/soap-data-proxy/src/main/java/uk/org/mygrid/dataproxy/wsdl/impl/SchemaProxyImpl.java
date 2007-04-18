@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SchemaProxyImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-21 16:45:18 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -52,6 +52,16 @@ import org.jaxen.dom4j.Dom4jXPath;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.wsdl.SchemaProxy;
+
+/**
+ * An implementation of a proxy that provides a stream to a modified schema. The schema is modified to
+ * rewrite any additional schema includes or imports to also be proxied using the ViewSchemaServlet.
+ *  
+ *  @see uk.org.mygrid.dataproxy.web.servlet.ViewSchemaServlet
+ *  @see uk.org.mygrid.dataproxy.wsdl.SchemaProxy
+ *  
+ *  @author Stuart Owen
+ */
 
 public class SchemaProxyImpl extends WSDLProxyImpl implements SchemaProxy {
 	

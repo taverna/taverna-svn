@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-17 15:02:41 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -47,6 +47,13 @@ import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.ResponseTagInterceptor;
 import uk.org.mygrid.dataproxy.xml.TagInterceptor;
+
+/**
+ * A parser based upon the SOAP response, which will redirect the content of any elements that matches
+ * a TagInterceptor, redirecting the data to the writer provided by that interceptor.
+ * 
+ * @author Stuart Owen
+ */
 
 public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser implements InterceptingXMLStreamParser {	
 	

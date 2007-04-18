@@ -25,15 +25,34 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EmbeddedReferenceInterceptor.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
+/**
+ * An interceptor that checks for a reference within an XML data element.
+ * 
+ * @author Stuart Owen
+ *
+ */
+
 public interface EmbeddedReferenceInterceptor {	
-	public boolean referenceMatches(String reference);	
+	/**
+	 * Returns true if the data content matches the given reference
+	 * @param reference
+	 * @return
+	 */
+	public boolean referenceMatches(String reference);
+	
+	/**
+	 * Provideds a ReaderFactory appropriate to the implementation
+	 * 
+	 * @see ReaderFactory
+	 * @return
+	 */
 	public ReaderFactory getReaderFactory();
 }

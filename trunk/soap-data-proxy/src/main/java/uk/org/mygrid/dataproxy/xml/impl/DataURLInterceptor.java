@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DataURLInterceptor.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:15 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 16 Apr 2007
  *****************************************************************/
@@ -45,6 +45,16 @@ import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
 
+/**
+ * An EmbeddedReferenceInterceptor that matches the content if the trimmed content matches
+ * the base URL to the proxy's DataServlet. This is <ServerInfo.getContextPath>/data?id
+ * 
+ * @see uk.org.mygrid.dataproxy.web.ServerInfo
+ * @see uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor
+ * 
+ * @author Stuart Owen
+ */
+
 public class DataURLInterceptor implements EmbeddedReferenceInterceptor{
 
 	private static String dataURL;
@@ -54,6 +64,9 @@ public class DataURLInterceptor implements EmbeddedReferenceInterceptor{
 		return factory;
 	}
 
+	/**
+	 * Returns true if the provided content matches the base URL to the proxy's DataServlet.
+	 */
 	public boolean referenceMatches(String content) {
 		return content.startsWith(getServerDataURL());
 	}
@@ -69,6 +82,12 @@ public class DataURLInterceptor implements EmbeddedReferenceInterceptor{
 
 }
 
+/**
+ * A class responsible for reading the data from the data reference url. Rather than read via the URL,
+ * it breaks down its ID to determine the actual file and reads directly from the file.
+ * 
+ * @author Stuart Owen
+ */
 class DataURLReaderFactory implements ReaderFactory
 {
 	private static Logger logger = Logger.getLogger(DataURLReaderFactory.class);

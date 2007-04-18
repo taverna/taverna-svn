@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfigFactory.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:16 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -48,10 +48,20 @@ import org.dom4j.io.SAXReader;
 import uk.org.mygrid.dataproxy.configuration.impl.XMLProxyConfig;
 import uk.org.mygrid.dataproxy.web.ServerInfo;
 
-public class ProxyConfigFactory {
+/**
+ * Factory singleton class that provides access to the ProxyConfig server configuration object. 
+ * @author Stuart Owen
+ *
+ */
+
+public class ProxyConfigFactory {	
 	private static ProxyConfig instance;
 	private static Logger logger = Logger.getLogger(ProxyConfigFactory.class);	
 	
+	/**
+	 * 
+	 * @return a singleton instance of the configuration
+	 */
 	public static ProxyConfig getInstance() {
 		if (instance==null) {
 			try {								
@@ -66,7 +76,7 @@ public class ProxyConfigFactory {
 		}
 		return instance;
 	}
-	
+		
 	private static InputStream getConfigInputStream() {
 		String configFileLocation = ServerInfo.getConfigFileLocation();		
 		File file = null;
@@ -83,6 +93,11 @@ public class ProxyConfigFactory {
 		}
 	}
 	
+	/**
+	 * Generates a unique ID for a WSDL. Its based upon a UUID and check is performed that
+	 * a corresponding ID doesn't already exist.
+	 * @return
+	 */
 	public static String getUniqueWSDLID() {
 		String wsdlID;
 		while (true) {
@@ -95,6 +110,16 @@ public class ProxyConfigFactory {
 		return wsdlID;
 	}
 	
+	/**
+	 * Writes the String representation of the configuration to a file, the file location defined
+	 * by the ServerInfo.getConfigFileLocation
+	 * 
+	 * @see uk.org.mygrid.dataproxy.web.ServerInfo#getConfigurationLocation
+	 * @see uk.org.mygrid.dataproxy.configuration.ProxyConfig#toStringForm
+	 * 
+	 * @throws Exception
+	 * 
+	 */
 	public static void writeConfig() throws Exception {
 		ProxyConfig config = getInstance();
 		String textConfig = config.toStringForm();

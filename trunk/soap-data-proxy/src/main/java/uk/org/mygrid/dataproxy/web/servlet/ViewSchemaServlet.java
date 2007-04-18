@@ -16,7 +16,9 @@ import uk.org.mygrid.dataproxy.wsdl.SchemaProxy;
 import uk.org.mygrid.dataproxy.wsdl.impl.SchemaProxyImpl;
 
 /**
- * Servlet implementation class for Servlet: ViewSchemaServlet
+ * Redirects to the original schema, replacing any includes or imports with new urls pointing to use
+ * this shema servlet. Currently the schema is not modified, future improvments include modifying the
+ * schema itself to reflect elements configured to have the data referenced.
  *
  */
  @SuppressWarnings("serial")

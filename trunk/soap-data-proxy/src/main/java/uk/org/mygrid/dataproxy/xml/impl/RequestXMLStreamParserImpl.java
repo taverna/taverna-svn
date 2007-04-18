@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RequestXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 14:20:48 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -42,6 +42,13 @@ import uk.org.mygrid.dataproxy.xml.EmbeddedReferenceInterceptor;
 import uk.org.mygrid.dataproxy.xml.InterceptingXMLStreamParser;
 import uk.org.mygrid.dataproxy.xml.InterceptorReader;
 import uk.org.mygrid.dataproxy.xml.ReaderFactory;
+
+/**
+ * A parser based upon the SOAP request, which will de-reference any content that matches
+ * a EmbeddedReferenceInterceptor
+ * 
+ * @author Stuart Owen
+ */
 
 public class RequestXMLStreamParserImpl extends AbstractXMLStreamParser implements InterceptingXMLStreamParser {
 

@@ -17,7 +17,11 @@ import uk.org.mygrid.dataproxy.wsdl.WSDLProxy;
 import uk.org.mygrid.dataproxy.wsdl.impl.WSDLProxyImpl;
 
 /**
- * Servlet implementation class for Servlet: ViewWSDLServlet
+ * A servlet that rewrites the original wsdl. Any imported schema declarations are replaced
+ * to use the ViewSchemaWSDL. The endpoints are replaced to point the the ProxyServlet
+ * 
+ * @see uk.org.mygrid.dataproxy.web.servlet.ViewSchemaServlet
+ * @see uk.org.mygrid.dataproxy.web.servlet.ProxyServlet
  *
  */
  @SuppressWarnings("serial")

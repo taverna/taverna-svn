@@ -25,15 +25,21 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ReaderFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
-
+/**
+ * An interface to a factory that provides an InterceptorReader according to the supplied content
+ * 
+ * @see EmbeddedReferenceInterceptor
+ * 
+ * @author Stuart Owen
+ */
 public interface ReaderFactory {
 	public InterceptorReader getReaderForContent(String content);
 }

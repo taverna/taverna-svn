@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-05 15:46:08 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -48,6 +48,14 @@ import org.dom4j.Element;
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
+
+/**
+ * An XML based implementation of the ProxyConfig
+ * 
+ * @see uk.org.mygrid.dataproxy.configuration.ProxyConfig 
+ * @author Stuart Owen
+ *
+ */
 
 public class XMLProxyConfig implements ProxyConfig {
 	
@@ -128,7 +136,11 @@ public class XMLProxyConfig implements ProxyConfig {
 		wsdlMap.put(id, config);
 	}
 	
-	public Element toElement() {
+	/**
+	 * 
+	 * @return an org.dom4j.Element containing the serialized XML representation of the ProxyConfig
+	 */
+	private Element toElement() {
 		Document doc = DocumentFactory.getInstance().createDocument();
 		Element config = doc.addElement("config");
 		Element contextPathElement = config.addElement("contextPath");
@@ -164,6 +176,9 @@ public class XMLProxyConfig implements ProxyConfig {
 		return doc.getRootElement();
 	}
 	
+	/**
+	 * @return the XML representation of the ProxyConfig as a String
+	 */
 	public String toStringForm() {
 		String xml = toElement().asXML();
 		if (logger.isDebugEnabled()) {
@@ -177,8 +192,4 @@ public class XMLProxyConfig implements ProxyConfig {
 		List<WSDLConfig> result = new ArrayList<WSDLConfig>(wsdlMap.values());
 		return result;
 	}
-	
-	
-	
-
 }

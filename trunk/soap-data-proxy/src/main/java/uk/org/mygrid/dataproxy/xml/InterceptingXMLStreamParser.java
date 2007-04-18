@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptingXMLStreamParser.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -41,16 +41,68 @@ import java.io.UnsupportedEncodingException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+/**
+ * An event driven XMLStreamParser that intercepts according to supplied ReferenceInterceptors or TagInterceptors. If an interceptor matches
+ * then the stream is modified according to the behaviour of this interceptor.
+ * @author Stuart Owen
+ *
+ */
 
 public interface InterceptingXMLStreamParser {
 			
+	/**
+	 * Sets the stream that the parsed XML stream will be forwarded to.
+	 * @param stream
+	 * @throws UnsupportedEncodingException
+	 */
 	public void setOutputStream(OutputStream stream) throws UnsupportedEncodingException;	
-	public void addTagInterceptor(TagInterceptor interceptor);	
+	
+	/**
+	 * Adds a TagInterceptor
+	 * @param interceptor
+	 */
+	public void addTagInterceptor(TagInterceptor interceptor);
+	
+	/**
+	 * Adds a EmbeddedReferenceInterceptor
+	 * @param interceptor
+	 */
 	public void addContentInterceptor(EmbeddedReferenceInterceptor interceptor);
 	
+	/**
+	 * Recieves an InputStream and starts to parse it, forwarding the modified stream (modified according to the supplied interceptors) to the 
+	 * output stream provided by setOutputStream
+	 * @param stream
+	 * @throws SAXException
+	 * @throws IOException
+	 */
 	public void read(InputStream stream)  throws SAXException, IOException;
 	
+	/**
+	 * The callback method called when element content data is encountered
+	 * @param ch
+	 * @param start
+	 * @param length
+	 * @throws SAXException
+	 */
 	public void characters(char[] ch, int start, int length) throws SAXException;
+	
+	/**
+	 * Callback method when an endtag is encountered
+	 * @param uri - tag namespace uri
+	 * @param localName - localname for the tag
+	 * @param qName - the QName for the tag of the form {namespaceuri}localName
+	 * @throws SAXException
+	 */
 	public void endElement(String uri, String localName, String qName) throws SAXException;
+	
+	/**
+	 * Callback method when a starttag is encountered
+	 * @param uri - tag namespace uri
+	 * @param localName - localname for the tag
+	 * @param qName - the QName for the tag of the form {namespaceuri}localName
+	 * @param attr - the attributes for the tag.
+	 * @throws SAXException
+	 */
 	public void startElement(String uri, String localName, String qName, Attributes attr) throws SAXException;
 }

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: FileInterceptorWriterFactory.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-17 14:08:03 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 9 Feb 2007
  *****************************************************************/
@@ -40,6 +40,11 @@ import org.apache.log4j.Logger;
 import uk.org.mygrid.dataproxy.xml.InterceptorWriter;
 import uk.org.mygrid.dataproxy.xml.WriterFactory;
 
+/**
+ * A Factory that creates a new FileInterceptorWriter when requested.
+ * @author Stuart Owen
+ *
+ */
 public class FileInterceptorWriterFactory implements WriterFactory {
 	
 	private static Logger logger = Logger
@@ -56,6 +61,10 @@ public class FileInterceptorWriterFactory implements WriterFactory {
 		this.baseReference=baseReference;
 	}
 	
+	/**
+	 * Creates a new file based FileInterceptorWriter. The file is based upon the baseURL and the dataFilePrefix. The datafile
+	 * has a count appended which increments for each element if contained in a list.
+	 */
 	public InterceptorWriter newWriter() throws Exception {
 		String fileName=prefix+String.valueOf(c++);				
 		URL fileURL=new URL(baseURL,fileName);

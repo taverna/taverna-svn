@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ServerInfo.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 15:38:15 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 12 Apr 2007
  *****************************************************************/
@@ -38,12 +38,25 @@ import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import org.wings.session.SessionManager;
 
+/**
+ * Provides some basic information about the running server.
+ * 
+ * @author Stuart Owen
+ */
+
 public class ServerInfo {
 	
 	private static Logger logger = Logger.getLogger(ServerInfo.class);	
 	private static String location = null;
 	private static ServletContext context=null;
 	
+	/**
+	 * Provides the location of the config.xml file that proxy configuration information is stored.
+	 * This either declared as an init parameter in the web.xml, or if missing there is stored the
+	 * root of the web-app (this is not advisable, but is secured against viewing in the web.xml).
+	 * 
+	 * @return
+	 */
 	public static String getConfigFileLocation() {
 		if (location == null) {			
 			location=locationParam();
@@ -72,10 +85,17 @@ public class ServerInfo {
 		return result;
 	}
 	
+	/**
+	 * Sets the ServletContext, which is used to examine servlet paremeters declared in the web.xml
+	 * @param context
+	 */
 	public static void setServletContext(ServletContext context) {
 		ServerInfo.context=context;
 	}
 	
+	/**
+	 * @return the ServletContext
+	 */
 	public static ServletContext getServletContext() {
 		if (context==null && SessionManager.getSession()!=null) {
 			context=SessionManager.getSession().getServletContext();

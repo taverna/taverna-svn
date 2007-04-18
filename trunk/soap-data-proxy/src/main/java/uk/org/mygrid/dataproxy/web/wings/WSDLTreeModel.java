@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLTreeModel.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 15:17:34 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 3 Apr 2007
  *****************************************************************/
@@ -44,8 +44,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
-import uk.org.mygrid.dataproxy.wsdl.SchemaParser;
-import uk.org.mygrid.dataproxy.wsdl.SchemaParsingException;
+import uk.org.mygrid.dataproxy.wsdl.WSDLParser;
+import uk.org.mygrid.dataproxy.wsdl.WSDLParsingException;
 import uk.org.mygrid.dataproxy.wsdl.impl.AxisBasedSchemaParserImpl;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 
@@ -54,7 +54,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 	
 	private static Logger logger = Logger.getLogger(WSDLTreeModel.class);
 	private WSDLConfig config;
-	private static SchemaParser parser;
+	private static WSDLParser parser;
 	
 	private List<ElementDefinition> selectedForProxy = new ArrayList<ElementDefinition>();
 	
@@ -63,9 +63,9 @@ public class WSDLTreeModel extends DefaultTreeModel{
 		this.config=config;				
 	}
 	
-	public void populate() throws SchemaParsingException {
+	public void populate() throws WSDLParsingException {
 		logger.debug("populating tree model for WSDL: "+config.getName());		
-		SchemaParser parser = getParser();
+		WSDLParser parser = getParser();
 		selectedForProxy.addAll(config.getElements());
 		
 		List<Element> operations = parser.parseOperations(config.getAddress());
@@ -80,7 +80,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addOperation(Element operationElement) throws SchemaParsingException {
+	private void addOperation(Element operationElement) throws WSDLParsingException {
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)getRoot();		
 		DefaultMutableTreeNode operationNode = new OperationNode();
 		operationNode.setUserObject(operationElement);		
@@ -95,7 +95,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 		}
 	}
 	
-	private void addTypeElementToNode(DefaultMutableTreeNode parentNode, Element element,List<String>parentTypes) throws SchemaParsingException {				
+	private void addTypeElementToNode(DefaultMutableTreeNode parentNode, Element element,List<String>parentTypes) throws WSDLParsingException {				
 		String type=element.getName();
 		if (!parentTypes.contains(type) && parentTypes.size()<6) {
 			parentTypes.add(type);
@@ -112,7 +112,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void expandTypeElement(DefaultMutableTreeNode parentNode, Element typeElement,List<String> parentTypes) throws SchemaParsingException {
+	private void expandTypeElement(DefaultMutableTreeNode parentNode, Element typeElement,List<String> parentTypes) throws WSDLParsingException {
 		getParser().expandType(config.getAddress(), typeElement);
 		if (typeElement.elements().size()>0) {
 			for (Element childElement : (List<Element>)typeElement.elements()) {
@@ -121,7 +121,7 @@ public class WSDLTreeModel extends DefaultTreeModel{
 		}		
 	}
 	
-	private SchemaParser getParser() {
+	private WSDLParser getParser() {
 		if (parser==null) {
 			parser=new AxisBasedSchemaParserImpl();
 		}

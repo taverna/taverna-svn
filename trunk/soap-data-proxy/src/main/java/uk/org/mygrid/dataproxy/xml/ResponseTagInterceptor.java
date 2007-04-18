@@ -25,14 +25,21 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseTagInterceptor.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.xml;
 
+/**
+ * A Tag interceptor that defines an interceptor that is used to intercept a response stream
+ * from a SOAP response based on the element. When such an interception takes place the data is redirected
+ * to the writer provided by the WriterFactory until a matching endtag is encountered.
+ * @author Stuart Owen
+ *
+ */
 
 public interface ResponseTagInterceptor extends TagInterceptor {	
 	public WriterFactory getWriterFactory();		

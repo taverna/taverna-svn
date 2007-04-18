@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseTagInterceptorImpl.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-03-16 15:34:58 $
+ * Last modified on   $Date: 2007-04-18 16:09:53 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -36,6 +36,12 @@ package uk.org.mygrid.dataproxy.xml.impl;
 import uk.org.mygrid.dataproxy.xml.ElementDefinition;
 import uk.org.mygrid.dataproxy.xml.ResponseTagInterceptor;
 import uk.org.mygrid.dataproxy.xml.WriterFactory;
+
+/**
+ * 
+ * @author Stuart Owen
+ *
+ */
 
 public class ResponseTagInterceptorImpl implements ResponseTagInterceptor {
 

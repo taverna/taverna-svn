@@ -25,14 +25,19 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyConfigException.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 15:30:03 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.configuration.impl;
 
+/**
+ * An exception representing an error with a ProxyConfig
+ * 
+ * @author Stuart Owen
+ */
 @SuppressWarnings("serial")
 public class ProxyConfigException extends Exception {
 	

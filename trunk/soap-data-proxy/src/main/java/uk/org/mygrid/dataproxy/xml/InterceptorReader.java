@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: InterceptorReader.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:14 $
+ * Last modified on   $Date: 2007-04-18 16:09:52 $
  *               by   $Author: sowen70 $
  * Created on 15 Feb 2007
  *****************************************************************/
@@ -35,6 +35,12 @@ package uk.org.mygrid.dataproxy.xml;
 
 import java.io.IOException;
 
+/**
+ * In interface for a reader that is provided by the ReaderFactory.
+ * The implementation is responsible for how and where this data is read from.
+ * @author Stuart Owen
+ *
+ */
 public interface InterceptorReader {
 	
 	public int read(char [] buffer) throws IOException;
