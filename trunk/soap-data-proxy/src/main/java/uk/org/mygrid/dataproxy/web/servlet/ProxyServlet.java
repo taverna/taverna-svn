@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.18 $
+ * Revision           $Revision: 1.19 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-19 16:30:16 $
+ * Last modified on   $Date: 2007-04-19 16:44:42 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
@@ -41,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -108,8 +109,15 @@ public class ProxyServlet extends ProxyBaseServlet {
 		} catch (SAXException e2) {
 			logger.error("Error parsing request SOAP message",e2);
 		}					
-				
-		InputStream in = connection.getInputStream();		
+		
+		InputStream in;
+		try {
+			in = connection.getInputStream();
+		}
+		catch(IOException e) {
+			//use error stream to get soap:fault.
+			in = connection.getErrorStream();
+		}
 		
 		String invocationID;
 		URL dataStoreLocation;
