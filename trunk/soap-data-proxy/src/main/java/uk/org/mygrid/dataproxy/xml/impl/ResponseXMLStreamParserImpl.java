@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ResponseXMLStreamParserImpl.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:53 $
+ * Last modified on   $Date: 2007-04-19 09:43:36 $
  *               by   $Author: sowen70 $
  * Created on 8 Feb 2007
  *****************************************************************/
@@ -166,9 +166,6 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 	private void writeReplacementStartElement(String uri, String localName, String qName) throws SAXException {
 		AttributesImpl attributes = new AttributesImpl();
 		
-//		attributes.addAttribute("http://www.w3.org/1999/xlink", "xlink", "xlink:href", "xlink", activeWriter.getDestinationReference());
-//		attributes.addAttribute("http://www.w3.org/1999/xlink", "xmlns", "xmlns:xlink", "xmlns", "http://www.w3.org/1999/xlink");
-		
 		super.startElement(uri,localName,qName,attributes);
 		String destinationName=activeWriter.getDestinationReference();		
 		super.characters(destinationName.toCharArray(), 0, destinationName.length());		
@@ -176,7 +173,7 @@ public class ResponseXMLStreamParserImpl extends AbstractXMLStreamParser impleme
 
 	private boolean checkForNewStartElement(String uri, String localName, String qName) throws SAXException {
 		String path = currentPath();
-		//TODO: pass operation rather than *
+		//TODO: in the future pass operation rather than *, though currently the path will indicate the operation
 		TagInterceptor interceptor = getTagInterceptorForElement(localName,uri,path,"*");
 		if (interceptor!=null && interceptor instanceof ResponseTagInterceptor) {		
 			if (logger.isDebugEnabled()) logger.debug("Found matching start tag for :"+localName);
