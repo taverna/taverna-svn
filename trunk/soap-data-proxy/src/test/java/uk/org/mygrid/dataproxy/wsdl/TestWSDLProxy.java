@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestWSDLProxy.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-16 13:53:16 $
+ * Last modified on   $Date: 2007-04-19 16:30:16 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -63,7 +63,7 @@ public class TestWSDLProxy {
 		Element address=port.element("address");		
 		String endpoint=address.attributeValue("location").trim();
 		
-		assertEquals("Incorrect endpoint","http://localhost:8080/dataproxy/proxy?id=1",endpoint);		
+		assertEquals("Incorrect endpoint","http://localhost:8080/dataproxy/proxy?id=1&ep=0",endpoint);		
 	}
 	
 	@SuppressWarnings("unchecked")

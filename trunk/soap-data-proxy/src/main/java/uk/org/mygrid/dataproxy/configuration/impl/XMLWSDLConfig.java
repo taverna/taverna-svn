@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:52 $
+ * Last modified on   $Date: 2007-04-19 16:30:15 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -57,7 +57,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 	
 	private String ID;
 	private String address;
-	private String endpoint;
+	private List<String> endpoints=new ArrayList<String>();
 	private String name;	
 	private List<ElementDefinition> elements = new ArrayList<ElementDefinition>();	
 		
@@ -76,9 +76,11 @@ public class XMLWSDLConfig implements WSDLConfig {
 		if (child==null) throw new WSDLConfigException("No element 'name' defined");
 		name=child.getTextTrim();
 		
-		child = element.element("endpoint");
-		if (child==null) throw new WSDLConfigException("No element 'endpiont' defined");
-		endpoint=child.getTextTrim();			
+		child = element.element("endpoints");
+		if (child==null) throw new WSDLConfigException("No element 'endpionts' defined");
+		for (Element endp : (List<Element>)child.elements("endpoint")) {			
+			endpoints.add(endp.getTextTrim());
+		}
 		
 		child = element.element("elements");
 		if (child!=null) {
@@ -120,8 +122,8 @@ public class XMLWSDLConfig implements WSDLConfig {
 		return elements;
 	}
 
-	public String getEndpoint() {
-		return endpoint;
+	public List<String> getEndpoints() {
+		return endpoints;
 	}	
 
 	public String getWSDLID() {
@@ -134,7 +136,10 @@ public class XMLWSDLConfig implements WSDLConfig {
 		wsdlChild.addElement("id").setText(getWSDLID());
 		wsdlChild.addElement("name").setText(getName());
 		wsdlChild.addElement("address").setText(getAddress());			
-		wsdlChild.addElement("endpoint").setText(getEndpoint());		
+		Element endpoints=wsdlChild.addElement("endpoints");
+		for (String endpoint : getEndpoints()) {
+			endpoints.addElement("endpoint").setText(endpoint);
+		}
 		
 		if (elements.size()>0) {
 			Element elChild = wsdlChild.addElement("elements");

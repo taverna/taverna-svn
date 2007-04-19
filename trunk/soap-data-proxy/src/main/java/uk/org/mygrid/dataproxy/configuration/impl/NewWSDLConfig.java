@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NewWSDLConfig.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:52 $
+ * Last modified on   $Date: 2007-04-19 16:30:15 $
  *               by   $Author: sowen70 $
  * Created on 5 Mar 2007
  *****************************************************************/
@@ -52,7 +52,7 @@ public class NewWSDLConfig implements WSDLConfig {
 	
 	private String name;
 	private String id;	
-	private String endpoint;
+	private List<String> endpoints = new ArrayList<String>();
 	private String address;
 	private List<ElementDefinition> elements = new ArrayList<ElementDefinition>();
 	public List<ElementDefinition> getElements() {
@@ -70,11 +70,11 @@ public class NewWSDLConfig implements WSDLConfig {
 	public void setElements(List<ElementDefinition> elements) {
 		this.elements = elements;
 	}
-	public String getEndpoint() {
-		return endpoint;
+	public List<String> getEndpoints() {
+		return endpoints;
 	}
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
+	public void addEndpoint(String endpoint) {
+		this.endpoints.add(endpoint);
 	}
 	
 	public String getWSDLID() {

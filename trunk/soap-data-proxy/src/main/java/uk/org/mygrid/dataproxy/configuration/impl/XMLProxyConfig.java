@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLProxyConfig.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:52 $
+ * Last modified on   $Date: 2007-04-19 16:30:15 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -44,6 +44,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
+
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfig;
 import uk.org.mygrid.dataproxy.configuration.WSDLConfig;
@@ -93,7 +95,7 @@ public class XMLProxyConfig implements ProxyConfig {
 			{
 				WSDLConfig wsdlConfig = new XMLWSDLConfig(wsdlElement);
 				wsdlMap.put(wsdlConfig.getWSDLID(),wsdlConfig);
-				if (logger.isDebugEnabled()) logger.debug("WSDL added from config with ID:"+wsdlConfig.getWSDLID()+", Endpoint:"+wsdlConfig.getEndpoint());
+				if (logger.isDebugEnabled()) logger.debug("WSDL added from config with ID:"+wsdlConfig.getWSDLID()+", Endpoints:"+wsdlConfig.getEndpoints());
 			}
 		}
 	}
@@ -158,7 +160,10 @@ public class XMLProxyConfig implements ProxyConfig {
 					wsdlChild.addElement("id").setText(wsdl.getWSDLID());
 					wsdlChild.addElement("name").setText(wsdl.getName());
 					wsdlChild.addElement("address").setText(wsdl.getAddress());					
-					wsdlChild.addElement("endpoint").setText(wsdl.getEndpoint());					
+					Element endpoints = wsdlChild.addElement("endpoints");
+					for (String endp : wsdl.getEndpoints()) {
+						endpoints.addElement("endpoint").setText(endp);
+					}
 					
 					if (wsdl.getElements().size()>0) {
 						Element elChild = wsdlChild.addElement("elements");

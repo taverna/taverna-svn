@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 18:00:54 $
+ * Last modified on   $Date: 2007-04-19 16:30:16 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -37,6 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
@@ -124,7 +126,9 @@ public class AddWSDLPanel extends SPanel {
 		try {			
 			NewWSDLConfig config = new NewWSDLConfig();
 			config.setWSDLID(ProxyConfigFactory.getUniqueWSDLID());
-			config.setEndpoint(fetchServiceEndpoint(location));
+			for (String endpoint : fetchServiceEndpoints(location)) {
+				config.addEndpoint(endpoint);
+			}
 			config.setName(name);
 			config.setAddress(location);
 			
@@ -143,14 +147,18 @@ public class AddWSDLPanel extends SPanel {
 		}
 	}
 	
-	private String fetchServiceEndpoint(String wsdlLocation) throws DocumentException, IOException, JaxenException {
+	private List<String> fetchServiceEndpoints(String wsdlLocation) throws DocumentException, IOException, JaxenException {
+		List<String> result = new ArrayList<String>();
 		URL url = new URL(wsdlLocation);
 		Document doc = new SAXReader().read(url.openStream());
 		Dom4jXPath path = new Dom4jXPath("//wsdl:service/wsdl:port/soap:address");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("soap", "http://schemas.xmlsoap.org/wsdl/soap/");
-		Element el = (Element)path.selectSingleNode(doc);
-		return el.attributeValue("location");
+		List<Element> locations = (List<Element>)path.selectNodes(doc);
+		for (Element loc : locations) {
+			result.add(loc.attributeValue("location"));
+		}
+		return result;
 	}	
 	
 }

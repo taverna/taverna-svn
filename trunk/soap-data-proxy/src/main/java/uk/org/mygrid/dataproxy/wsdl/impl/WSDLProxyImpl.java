@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLProxyImpl.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:53 $
+ * Last modified on   $Date: 2007-04-19 16:30:16 $
  *               by   $Author: sowen70 $
  * Created on 20 Mar 2007
  *****************************************************************/
@@ -82,7 +82,7 @@ public class WSDLProxyImpl implements WSDLProxy {
 	public InputStream getStream() throws JaxenException, DocumentException, IOException {
 		URL wsdlURL = new URL(config.getAddress());
 		logger.info("Proxying wsdl for address:"+wsdlURL.toExternalForm());
-		Document doc = changeEndpoint(new SAXReader().read(wsdlURL.openStream()));
+		Document doc = changeEndpoints(new SAXReader().read(wsdlURL.openStream()));
 		changeImports(doc);
 		changeIncludes(doc);
 		
@@ -125,14 +125,32 @@ public class WSDLProxyImpl implements WSDLProxy {
 		}
 	}
 	
-	private Document changeEndpoint(Document doc) throws JaxenException {	
+	@SuppressWarnings("unchecked")
+	private Document changeEndpoints(Document doc) throws JaxenException {			
 		Dom4jXPath path = new Dom4jXPath("//wsdl:service/wsdl:port/soap:address");		
 		path.addNamespace("wsdl", "http://schemas.xmlsoap.org/wsdl/");
 		path.addNamespace("soap", "http://schemas.xmlsoap.org/wsdl/soap/");
-		Element el = (Element)path.selectSingleNode(doc);			
-		el.attribute("location").setValue(ProxyConfigFactory.getInstance().getContextPath()+"proxy?id="+config.getWSDLID());
+		List<Element> locations = (List<Element>)path.selectNodes(doc);		
+		for (Element el : locations) {
+			String originalEndpoint=el.attributeValue("location");
+			int i=endpointIndex(originalEndpoint);
+			el.attribute("location").setValue(ProxyConfigFactory.getInstance().getContextPath()+"proxy?id="+config.getWSDLID()+"&ep="+i);			
+		}
 		
 		return doc;
+	}
+	
+	private int endpointIndex(String endpoint) {		
+		List<String> endpoints = config.getEndpoints();
+		int i=0;
+		for (String ep : endpoints) {
+			if (ep.equals(endpoint)) {
+				return i;
+			}
+			i++;
+		}
+		logger.error("Endpoint: '"+endpoint+"' not found in wsdl config (ID="+config.getWSDLID()+"), using an index of 0");
+		return 0;
 	}
 		
 	protected WSDLConfig getConfig() {

@@ -25,15 +25,14 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProxyServlet.java,v $
- * Revision           $Revision: 1.17 $
+ * Revision           $Revision: 1.18 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:53 $
+ * Last modified on   $Date: 2007-04-19 16:30:16 $
  *               by   $Author: sowen70 $
  * Created on 7 Feb 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.servlet;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,33 +84,31 @@ public class ProxyServlet extends ProxyBaseServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		setContextOnServerInfo();
 		
-		String id=request.getParameter("id");				
-		logger.info("Proxying request for wsdlID="+id);
-		
+		String id=request.getParameter("id");						
+		String ep=request.getParameter("ep");
+		logger.info("Proxying request for wsdlID="+id+", ep="+ep);
+				
 		WSDLConfig wsdlConfig = ProxyConfigFactory.getInstance().getWSDLConfigForID(id);
 		if (wsdlConfig==null) {
 			logger.error("Identifier "+id+" not recognised when looking for WSDL configuration details");
 			throw new ServletException("Identifier "+id+" not recognised when looking for WSDL configuration details");
 		}
+		
+		String endpoint = determineEndpoint(ep, wsdlConfig);
 
-		HttpURLConnection connection = createEndpointConnection(wsdlConfig.getEndpoint(), request.getHeader("SOAPAction"));
+		HttpURLConnection connection = createEndpointConnection(endpoint, request.getHeader("SOAPAction"));		
 		
 		InterceptingXMLStreamParser requestParser = new RequestXMLStreamParserImpl();
 		requestParser.addContentInterceptor(new DataURLInterceptor());
-		
-		ByteArrayOutputStream outstream = new ByteArrayOutputStream();
-		requestParser.setOutputStream(outstream);
+				
+		requestParser.setOutputStream(connection.getOutputStream());		
 		
 		try {
 			requestParser.read(request.getInputStream());
 		} catch (SAXException e2) {
 			logger.error("Error parsing request SOAP message",e2);
 		}					
-		
-		String message = outstream.toString();		
-		
-		
-		connection.getOutputStream().write(message.getBytes());
+				
 		InputStream in = connection.getInputStream();		
 		
 		String invocationID;
@@ -146,6 +143,25 @@ public class ProxyServlet extends ProxyBaseServlet {
 		}		
 		
 		clearEmptyDirectories(dataStoreLocation);
+	}
+
+	private String determineEndpoint(String ep, WSDLConfig wsdlConfig) {
+		String endpoint=null;
+		try {
+			int endpointIndex=Integer.valueOf(ep);
+			if (endpointIndex >=0 && endpointIndex < wsdlConfig.getEndpoints().size()) {
+				endpoint=wsdlConfig.getEndpoints().get(endpointIndex);
+			}
+			else {
+				logger.error("Endpoint index is out of range, using the first endpoint");
+			}
+		}
+		catch(NumberFormatException e) {
+			logger.error("ep is not a number",e);
+		}
+		
+		if (endpoint==null) endpoint=wsdlConfig.getEndpoints().get(0);
+		return endpoint;
 	}
 
 	private String createPrefixForWildcard(ElementDefinition elementDef) {
