@@ -277,11 +277,7 @@ is stored. Without this parameter it is stored in the root of the webapp context
           not affect document/literal style services or rpc.encoded services
           that return a primitive type.</para>
         </listitem>
-
-        <listitem>
-          <para>Services that contain multiple endpoints may not work as
-          expected.</para>
-        </listitem>
+        
       </itemizedlist> These will be addressed depending upon the uptake of
     this utility and the impact of these constaints.</para>
   </section>
