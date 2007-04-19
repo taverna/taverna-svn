@@ -9,15 +9,15 @@
 	</welcome-file-list>
 
 	<!-- Uncomment and modify the value to define the location that the configuration file
-		is stored. Without this parameter it is stored in the root of the webapp context. --> 
+		is stored. Without this parameter it is stored in the root of the webapp context.  
 		<context-param>
 		<param-name>ConfigFileLocation</param-name>
 		<param-value>/tmp/config.xml</param-value>
 		</context-param>
-	
+	-->
 
 	<!-- Uncomment and modify if necessary to control access to the configuration pages
-		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. -->
+		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. 
 	<security-constraint> 
 		<web-resource-collection>
 			<web-resource-name>Configuration</web-resource-name>
@@ -36,7 +36,7 @@
    		<auth-method>BASIC</auth-method>
    		<realm-name>WebService data proxy administration</realm-name>
 	</login-config>
-	
+	-->
 	 
 
 	<!-- Blocks anybody reading the config.xml file if stored within the webapp context
