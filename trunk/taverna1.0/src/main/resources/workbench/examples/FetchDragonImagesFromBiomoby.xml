@@ -10,9 +10,6 @@
   <s:processor name="Decode_base64_to_byte">
     <s:local>org.embl.ebi.escience.scuflworkers.java.DecodeBase64</s:local>
   </s:processor>
-  <s:processor name="Parse_moby_data___updated__2006">
-    <s:local>org.biomoby.client.taverna.plugin.ExtractMobyData</s:local>
-  </s:processor>
   <s:processor name="getJpegFromAnnotatedImage">
     <s:description>This service takes in an annotated jpeg image and returns just the image.</s:description>
     <s:biomobywsdl>
@@ -37,13 +34,33 @@
       <s:authorityName />
     </s:biomobyobject>
   </s:processor>
-  <s:link source="Decode_base64_to_byte:bytes" sink="images" />
+  <s:processor name="Parse_Moby_Data_JPEGImage">
+    <s:description>Processor to parse the datatype b64_encoded_jpeg</s:description>
+    <s:biomobyparser>
+      <s:endpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:endpoint>
+      <s:datatype>b64_encoded_jpeg</s:datatype>
+      <s:articleName>image</s:articleName>
+      <s:description>Processor to parse the datatype b64_encoded_jpeg</s:description>
+    </s:biomobyparser>
+  </s:processor>
+  <s:processor name="Parse_Moby_Data_SimpleAnnotatedJPEGImage">
+    <s:description>Processor to parse the datatype SimpleAnnotatedJPEGImage</s:description>
+    <s:biomobyparser>
+      <s:endpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:endpoint>
+      <s:datatype>SimpleAnnotatedJPEGImage</s:datatype>
+      <s:articleName>image</s:articleName>
+      <s:description>Processor to parse the datatype SimpleAnnotatedJPEGImage</s:description>
+    </s:biomobyparser>
+  </s:processor>
   <s:link source="Object:mobyData" sink="getDragonSimpleAnnotatedImages:Object(input)" />
-  <s:link source="Parse_moby_data___updated__2006:value" sink="Decode_base64_to_byte:base64" />
+  <s:link source="Parse_Moby_Data_JPEGImage:image_'content'" sink="Decode_base64_to_byte:base64" />
+  <s:link source="Parse_Moby_Data_SimpleAnnotatedJPEGImage:image_'Description'" sink="annotations" />
+  <s:link source="getDragonSimpleAnnotatedImages:SimpleAnnotatedJPEGImage(Collection - 'image' As Simples)" sink="Parse_Moby_Data_SimpleAnnotatedJPEGImage:mobyData('SimpleAnnotatedJPEGImage')" />
   <s:link source="getDragonSimpleAnnotatedImages:SimpleAnnotatedJPEGImage(Collection - 'image' As Simples)" sink="getJpegFromAnnotatedImage:SimpleAnnotatedJPEGImage(annotatedImage)" />
-  <s:link source="getJpegFromAnnotatedImage:b64_encoded_jpeg(image)" sink="Parse_moby_data___updated__2006:mobydata" />
+  <s:link source="getJpegFromAnnotatedImage:b64_encoded_jpeg(image)" sink="Parse_Moby_Data_JPEGImage:mobyData('b64_encoded_jpeg')" />
   <s:link source="id:value" sink="Object:id" />
   <s:link source="namespace:value" sink="Object:namespace" />
+  <s:link source="Decode_base64_to_byte:bytes" sink="images" />
   <s:sink name="images">
     <s:metadata>
       <s:mimeTypes>
@@ -51,5 +68,6 @@
       </s:mimeTypes>
     </s:metadata>
   </s:sink>
+  <s:sink name="annotations" />
 </s:scufl>
 
