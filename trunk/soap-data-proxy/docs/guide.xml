@@ -77,19 +77,19 @@ is stored. Without this parameter it is stored in the root of the webapp context
     the config directory. An example is:</para>
 
     <screen>&lt;tomcat-users&gt;
-  &lt;user name="tomcat" password="tomcat" roles="tomcat"/&gt;
-  &lt;user name="role1" password="tomcat" roles="role1"/&gt;
+  &lt;role rolename="administrator"/&gt;
+  &lt;role rolename="manager"/&gt;
+  &lt;user name="tomcat" password="tomcat" roles="tomcat,manager"/&gt;
   &lt;user name="elvis" password="12345" roles="administrator"/&gt;
-  &lt;user name="both" password="tomcat" roles="tomcat,role1"/&gt;
 &lt;/tomcat-users&gt;</screen>
 
     <para>By default BASIC authentication is used using the MemoryRealm. This
     is adequate for most cases, but bear in mind that names and passwords are
-    not encrypted. The paranoid might want to investigate configuring
-    different <ulink
+    not stored or transported as encrypted. The paranoid might want to
+    investigate configuring different <ulink
     url="http://tomcat.apache.org/tomcat-5.0-doc/realm-howto.html">Realms</ulink>.
     The Realm is defined in META-INF/context.xml - note that with Tomcat 4
-    this needs to be configured in the Tomcat server.xml.</para>
+    this needs to be configured in the Tomcat conf/server.xml.</para>
 
     <para>The application is now ready to be deployed. If using the source
     code then it first needs to be build using <ulink
@@ -132,7 +132,7 @@ is stored. Without this parameter it is stored in the root of the webapp context
     <title>Adding Webservices</title>
 
     <para>Once configured you should be presented with a page that gives a
-    table of defined webservices, and a form to add a new webservices.
+    table of defined webservices, and a form to add a new webservice.
     Webservices are added by specifying the WSDL address together with a
     meaningful name. Once successfully added it will appear in the table, any
     errors are reported within the page footer.</para>
@@ -274,10 +274,9 @@ is stored. Without this parameter it is stored in the root of the webapp context
           url="http://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383512">SOAP
           Encoding</ulink> leading to the XML structure being
           multi-referenced. The data proxy does handle this. This problem does
-          not affect document/literal style services or rpc.encoded services
+          not affect document/literal style services or rpc/encoded services
           that return a primitive type.</para>
         </listitem>
-        
       </itemizedlist> These will be addressed depending upon the uptake of
     this utility and the impact of these constaints.</para>
   </section>

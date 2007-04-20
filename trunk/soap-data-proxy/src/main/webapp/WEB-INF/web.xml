@@ -15,6 +15,8 @@
 		<param-value>/tmp/config.xml</param-value>
 		</context-param>
 	-->
+	
+	
 
 	<!-- Uncomment and modify if necessary to control access to the configuration pages
 		 You can define roles and users/passwords in the tomcat-users.xml of your tomcat installation. 
@@ -27,18 +29,8 @@
 			<role-name>administrator</role-name>
 		</auth-constraint>
 	</security-constraint>
-	
-	<security-role>
-		<role-name>administrator</role-name>
-	</security-role>
-	
-	<login-config>
-   		<auth-method>BASIC</auth-method>
-   		<realm-name>WebService data proxy administration</realm-name>
-	</login-config>
 	-->
-	 
-
+	
 	<!-- Blocks anybody reading the config.xml file if stored within the webapp context
 		 due to ConfigFileLocation not being defined (see above) -->
 	<security-constraint>
@@ -51,6 +43,15 @@
 		</auth-constraint>		
 	</security-constraint>
 	
+	<security-role>
+		<role-name>administrator</role-name>
+	</security-role>
+	
+	
+	<login-config>
+   		<auth-method>BASIC</auth-method>
+   		<realm-name>WebService data proxy administration</realm-name>
+	</login-config>	 		
 	
 
 	<servlet>

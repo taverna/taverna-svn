@@ -25,28 +25,31 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-15 18:00:54 $
+ * Last modified on   $Date: 2007-04-20 11:33:58 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
 package uk.org.mygrid.dataproxy.web.wings;
 
+import java.io.IOException;
+
+import org.apache.log4j.Logger;
 import org.wings.SBorderLayout;
-import org.wings.SBoxLayout;
 import org.wings.SConstants;
 import org.wings.SDimension;
 import org.wings.SFrame;
-import org.wings.SIcon;
-import org.wings.SLabel;
 import org.wings.SPanel;
-import org.wings.SResourceIcon;
+import org.wings.STemplateLayout;
 import org.wings.header.StyleSheetHeader;
+import org.wings.session.SessionManager;
 
 import uk.org.mygrid.dataproxy.configuration.ProxyConfigFactory;
 
 public class Configuration {
+	
+	private static Logger logger = Logger.getLogger(Configuration.class);
 	
 	public Configuration() {			
 		SBorderLayout layout = new SBorderLayout();
@@ -79,23 +82,18 @@ public class Configuration {
 	}
 
 	private void setUpLogoPanel(SPanel panel) {
-		SPanel northPanel = new SPanel(new SBoxLayout(SBoxLayout.HORIZONTAL));
-		northPanel.setHorizontalAlignment(SConstants.LEFT_ALIGN);
-		northPanel.setPreferredSize(SDimension.FULLWIDTH);
 		
-		SLabel title = new SLabel("Webservice Data Proxy");
-		title.setName("logotitle");
-		title.setPreferredSize(SDimension.FULLWIDTH);
-		
-		SIcon mygridImage = new SResourceIcon("/mygridLogo.gif");
-		SLabel imageLabel = new SLabel(mygridImage);
-		imageLabel.setName("mygridlogo");
-		imageLabel.setPreferredSize(new SDimension("30%",null));		
-		
-		northPanel.add(imageLabel);
-		northPanel.add(title);
-		panel.add(northPanel,SBorderLayout.NORTH);
-	}
+		SPanel logoPanel = new SPanel();
+		logoPanel.setPreferredSize(SDimension.FULLWIDTH);
+		try {
+			logoPanel.setLayout(new STemplateLayout(SessionManager.getSession().
+			        getServletContext().getRealPath("/templates/logopanel.html")));
+		} catch (IOException e) {
+			logger.error("Couldn't find templates/logopanel.thtml");
+		}			
+
+		panel.add(logoPanel,SBorderLayout.NORTH);
+	}	
 
 	private CentrePanel startCentrePanel() {
 		CentrePanel centrePanel;

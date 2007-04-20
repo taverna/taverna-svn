@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLConfigurationPanel.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-18 16:09:52 $
+ * Last modified on   $Date: 2007-04-20 11:33:59 $
  *               by   $Author: sowen70 $
  * Created on 23 Mar 2007
  *****************************************************************/
@@ -134,9 +134,11 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		tree.setModel(model);		
 		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(STree.SINGLE_TREE_SELECTION);
-		for (int i=0;i<tree.getRowCount();i++) {
-			tree.expandRow(i);
-		}
+		
+		//expand and collapse so that when opening an operation all its inner nodes are expanded.
+		expandTree();
+		collapseTree();
+		
 		tree.setShowAsFormComponent(false);
 		tree.setNodeIndentDepth(20);
 	}
@@ -202,12 +204,22 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		expandButton.setToolTipText("Expand all");
 		expandButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for (int i=0; i< tree.getRowCount(); i++) {
-					tree.expandRow(i);
-				}
-			}
+				expandTree();
+			}			
 		});
 		return expandButton;
+	}
+	
+	private void expandTree() {
+		for (int i=0; i< tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+	}
+	
+	private void collapseTree() {
+		for (int i=0; i< tree.getRowCount(); i++) {
+			tree.collapseRow(i);
+		}
 	}
 	
 	private SButton createCollapseButton() {
@@ -215,10 +227,8 @@ public class WSDLConfigurationPanel extends CentrePanel{
 		collapseButton.setToolTipText("Collapse all");
 		collapseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				for (int i=0; i< tree.getRowCount(); i++) {
-					tree.collapseRow(i);
-				}
-			}
+				collapseTree();
+			}			
 		});
 		return collapseButton;
 	}

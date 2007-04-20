@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AddWSDLPanel.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-19 16:30:16 $
+ * Last modified on   $Date: 2007-04-20 11:33:58 $
  *               by   $Author: sowen70 $
  * Created on 4 Apr 2007
  *****************************************************************/
@@ -147,6 +147,7 @@ public class AddWSDLPanel extends SPanel {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private List<String> fetchServiceEndpoints(String wsdlLocation) throws DocumentException, IOException, JaxenException {
 		List<String> result = new ArrayList<String>();
 		URL url = new URL(wsdlLocation);
