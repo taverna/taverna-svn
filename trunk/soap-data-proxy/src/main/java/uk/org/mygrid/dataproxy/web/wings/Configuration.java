@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Configuration.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-20 11:33:58 $
+ * Last modified on   $Date: 2007-04-23 10:45:36 $
  *               by   $Author: sowen70 $
  * Created on 22 Mar 2007
  *****************************************************************/
@@ -89,7 +89,7 @@ public class Configuration {
 			logoPanel.setLayout(new STemplateLayout(SessionManager.getSession().
 			        getServletContext().getRealPath("/templates/logopanel.html")));
 		} catch (IOException e) {
-			logger.error("Couldn't find templates/logopanel.thtml");
+			logger.error("Couldn't find templates/logopanel.html");
 		}			
 
 		panel.add(logoPanel,SBorderLayout.NORTH);
