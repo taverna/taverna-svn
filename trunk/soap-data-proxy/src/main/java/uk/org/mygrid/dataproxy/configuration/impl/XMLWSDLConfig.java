@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLWSDLConfig.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-19 16:30:15 $
+ * Last modified on   $Date: 2007-04-23 10:31:17 $
  *               by   $Author: sowen70 $
  * Created on 14 Feb 2007
  *****************************************************************/
@@ -77,7 +77,7 @@ public class XMLWSDLConfig implements WSDLConfig {
 		name=child.getTextTrim();
 		
 		child = element.element("endpoints");
-		if (child==null) throw new WSDLConfigException("No element 'endpionts' defined");
+		if (child==null) throw new WSDLConfigException("No element 'endpoints' defined");
 		for (Element endp : (List<Element>)child.elements("endpoint")) {			
 			endpoints.add(endp.getTextTrim());
 		}
