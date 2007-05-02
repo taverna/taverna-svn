@@ -1,0 +1,26 @@
+package net.sf.taverna.t2.cloudone;
+
+/**
+ * Thrown when an attempt is made to construct an entity identifier subclass
+ * from a string and where that string doesn't contain a well formed identifier.
+ * 
+ * @author Tom Oinn
+ * @author Matthew Pocock
+ * 
+ */
+public class MalformedIdentifierException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public MalformedIdentifierException(String message) {
+		super(message);
+	}
+
+	public MalformedIdentifierException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+}

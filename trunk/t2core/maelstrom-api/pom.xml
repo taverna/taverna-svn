@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>maelstrom-api</artifactId>
+	<version>0.1</version>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.1</version>
+	</parent>
+	<description>
+		Core workflow object model for Taverna 2 workflows. Depends on
+		the data layer but nothing else, intended as lightweight
+		platform for applications using Taverna APIs as well as the core
+		for the new enactor and model.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>cloudone-api</artifactId>
+			<version>0.1</version>
+		</dependency>
+	</dependencies>
+</project>

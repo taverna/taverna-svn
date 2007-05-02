@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>cloudone-api</artifactId>
+	<version>0.1</version>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.1</version>
+	</parent>
+	<description>
+		API definition for the CloudOne federating data layer. This is
+		the data management layer used by the Tempest workflow engine
+		but can also be used in other applications.
+	</description>
+</project>
