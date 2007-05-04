@@ -8,9 +8,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
-public class Job {
+public class JobOld {
 
-	private static Logger logger = Logger.getLogger(Job.class);
+	private static Logger logger = Logger.getLogger(JobOld.class);
 	
 	// Different from Freefluo:
 	// QUEUED, DEQUEUED
@@ -24,7 +24,7 @@ public class Job {
 	Map<String, DataThing> inputs;
 	public final String id;
 
-	public Job(ScuflModel workflow, Map<String, DataThing> inputs) {
+	public JobOld(ScuflModel workflow, Map<String, DataThing> inputs) {
 		this.workflow = workflow;
 		this.inputs = inputs;
 		this.created = new Date();
@@ -51,6 +51,7 @@ public class Job {
 	}
 	
 	synchronized void setResults(Map<String, DataThing> results) {
+		
 		if (! getState().equals(State.RUNNING)) {
 			logger.warn("Trying to set results, but state is " + state);
 			throw new IllegalStateException("Not running");
@@ -80,31 +81,7 @@ public class Job {
 		return inputs;
 	}
 	
-	/**
-	 * Wait for the maximum specified amount of milliseconds for
-	 * the job to complete.
-	 * 
-	 * Return the state. 
-	 * 
-	 * @param millis
-	 * @return The state 
-	 */
-	public synchronized State waitForCompletion(int millis) {
-		long started = new Date().getTime();		
-		while (! isFinished()) {					
-			long used_millis = new Date().getTime() - started;
-			if (used_millis >= millis) {
-				// We'll have to give up even if it might not be finished
-				break;
-			}
-			try {				
-				this.wait(millis - used_millis);
-			} catch (InterruptedException e) {
-				// Expected
-			}
-		}
-		return getState();
-	}
+	
 
 	public String getProgressReport() {
 		if (progressReport == null) {

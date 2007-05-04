@@ -1,31 +1,23 @@
 package net.sf.taverna.service.queue;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
-import net.sf.taverna.service.queue.Job.State;
-
-import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.scufl.ScuflException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.parser.XScuflParser;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-
 
 public class TavernaQueue {
 	
-	private static Logger logger = Logger.getLogger(TavernaQueue.class);
+	//private static Logger logger = Logger.getLogger(TavernaQueue.class);
 	
 	Queue<Job> queue;
+	
+	private static DAOFactory daoFactory = DAOFactory.getFactory();
 	
 	public TavernaQueue() {
 		queue = new LinkedBlockingQueue<Job>();
@@ -35,32 +27,23 @@ public class TavernaQueue {
 		return queue.size();
 	}
 	
-	public Job add(String workflow, String inputDoc) throws QueueException {
-		ScuflModel model = new ScuflModel();
-		try {
-			XScuflParser.populate(workflow, model, null);
-		} catch (ScuflException ex) {
-			logger.warn("Could not load workflow:\n" + workflow, ex);
-			throw new QueueException("Could not load workflow", ex);
-		}
-		Map<String, DataThing> inputs;
-		if (inputDoc.equals("")) {
-			inputs = new HashMap<String, DataThing>();
-		} else {
-			try {
-				inputs = parseDataDoc(inputDoc);
-			} catch (JDOMException e) {
-				throw new QueueException("Could not parse input document:\n"+ inputDoc, e);
-			}
-		}
-		
-		Job job = new Job(model, inputs);
-	
+	public Job add(String scufl, String inputDoc) throws QueueException, ParseException {
+		Job job = new Job();
+		Workflow workflow = new Workflow();
+		workflow.setScufl(scufl);
+		daoFactory.getWorkflowDAO().create(workflow);
+		job.setWorkflow(workflow);
+		DataDoc inputs = new DataDoc();
+		inputs.setBaclava(inputDoc);
+		daoFactory.getDataDocDAO().create(inputs);
+		job.setInputs(inputs);	
+		daoFactory.getJobDAO().create(job);
 		synchronized(this) {
 			if (! queue.offer(job)) {
 				throw new QueueException("Can't add to queue");
 			}
 			job.setState(State.QUEUED);
+			daoFactory.getJobDAO().update(job);
 			this.notifyAll();
 			return job;	
 		}
@@ -74,21 +57,10 @@ public class TavernaQueue {
 		Job job = queue.poll();
 		if (job != null) {
 			job.setState(State.DEQUEUED);
+			daoFactory.getJobDAO().update(job);
 			this.notifyAll();
 		}
 		return job;
-	}
-
-	public static Map<String, DataThing> parseDataDoc(String xml) throws JDOMException {
-		SAXBuilder builder = new SAXBuilder();		
-		Document doc;
-		try {
-			doc = builder.build(new StringReader(xml));
-		} catch (IOException e) {
-			logger.error("Could not read inputDoc with StringReader", e);
-			throw new RuntimeException(e);
-		}
-		return DataThingXMLFactory.parseDataDocument(doc);				
 	}
 			
 }

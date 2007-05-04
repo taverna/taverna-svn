@@ -1,6 +1,9 @@
 package net.sf.taverna.service.queue;
 
-import net.sf.taverna.service.queue.Job.State;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.datastore.dao.JobDAO;
 
 import org.apache.log4j.Logger;
 
@@ -8,6 +11,10 @@ import org.apache.log4j.Logger;
 
 public abstract class QueueListener implements Runnable {
 
+	DAOFactory daoFactory = DAOFactory.getFactory();
+	
+	JobDAO jobDao = daoFactory.getJobDAO();
+	
 	private static Logger logger = Logger.getLogger(QueueListener.class);
 	
 	final static int QUEUE_TIMEOUT = 100;
@@ -44,6 +51,8 @@ public abstract class QueueListener implements Runnable {
 
 	void process(Job job) {		
 		job.setState(State.RUNNING);
+		//jobDao.update(job);
+		daoFactory.commit();
 		try {
 			logger.debug("Executing job " + job);
 			execute(job);			
@@ -54,6 +63,8 @@ public abstract class QueueListener implements Runnable {
 		} catch (Throwable t) {
 			logger.warn("Job " + job + " processing failed", t);
 			job.setState(State.FAILED);
+			jobDao.update(job);
+			daoFactory.commit(); // again?
 			if (t instanceof Error) {
 				// Serious stuff we should not catch
 				throw (Error) t;

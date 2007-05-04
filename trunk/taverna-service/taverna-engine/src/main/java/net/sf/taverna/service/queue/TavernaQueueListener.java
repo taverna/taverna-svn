@@ -3,10 +3,19 @@ package net.sf.taverna.service.queue;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.service.queue.Job.State;
+import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.datastore.dao.DataDocDAO;
+import net.sf.taverna.service.datastore.dao.JobDAO;
+import net.sf.taverna.service.interfaces.ParseException;
+import net.sf.taverna.service.util.XMLUtils;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflException;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
@@ -35,11 +44,17 @@ public class TavernaQueueListener extends QueueListener {
 
 	private static Logger logger = Logger.getLogger(TavernaQueueListener.class);
 
+	private static DAOFactory daoFactory = DAOFactory.getFactory();
+	
+	private JobDAO jobDao = daoFactory.getJobDAO();
+	
+	private DataDocDAO dataDocDao = daoFactory.getDataDocDAO();
+	
 	Map<WorkflowInstance, Job> jobs = new HashMap<WorkflowInstance, Job>();
 
 	Map<Job, WorkflowInstance> wfInstances =
 		new HashMap<Job, WorkflowInstance>();
-
+	
 	Map<WorkflowInstance, Object> locks =
 		new HashMap<WorkflowInstance, Object>();
 
@@ -50,10 +65,14 @@ public class TavernaQueueListener extends QueueListener {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	void execute(final Job job) throws ScuflException, InvalidInputException {
+	void execute(final Job job) throws ScuflException, InvalidInputException, ParseException {
 		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
+		
+		ScuflModel workflow = XMLUtils.parseXScufl(job.getWorkflow().getScufl());
+		Map<String, DataThing> inputs = job.getInputs().getDataMap();
+		
 		WorkflowInstance workflowInstance =
-			enactor.compileWorkflow(job.workflow, job.inputs, null);
+			enactor.compileWorkflow(workflow, inputs, null);
 		jobs.put(workflowInstance, job);
 		wfInstances.put(job, workflowInstance);
 		Object lock = new Object();
@@ -137,8 +156,14 @@ public class TavernaQueueListener extends QueueListener {
 			try {
 				updateProgressReport(event);
 				Job job = jobFromEvent(event);
-				job.setResults(event.getWorkflowInstance().getOutput());
+				Map<String, DataThing> outputs = event.getWorkflowInstance().getOutput();
+				DataDoc outputDoc = new DataDoc();
+				outputDoc.setDataMap(outputs);
+				job.setResultDoc(outputDoc);
 				job.setState(State.COMPLETE);
+				dataDocDao.create(outputDoc);
+				jobDao.update(job);
+				daoFactory.commit();
 			} finally {
 				Object lock = locks.get(event.getWorkflowInstance());
 				synchronized (lock) {
@@ -159,6 +184,8 @@ public class TavernaQueueListener extends QueueListener {
 				updateProgressReport(event);
 				Job job = jobFromEvent(event);
 				job.setState(State.FAILED);
+				jobDao.update(job);
+				daoFactory.commit();
 			} finally {
 				Object lock = locks.get(event.getWorkflowInstance());
 				synchronized (lock) {

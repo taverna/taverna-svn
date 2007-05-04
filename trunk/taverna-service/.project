@@ -3,6 +3,8 @@
 	<name>taverna-service</name>
 	<comment></comment>
 	<projects>
+		<project>restlet-1.0.0</project>
+		<project>Servers2</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

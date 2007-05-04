@@ -1,41 +1,62 @@
 package net.sf.taverna.service.queue;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import java.util.Map;
 
-import net.sf.taverna.service.TestCommon;
+import net.sf.taverna.service.test.TestCommon;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.datastore.dao.JobDAO;
+import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
-import net.sf.taverna.service.queue.Job.State;
+import net.sf.taverna.service.util.XMLUtils;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.junit.Test;
 
 
 
 public class TavernaQueueTest extends TestCommon {
 	
-	public void testCreateQueue() {
+	private DAOFactory daoFactory = DAOFactory.getFactory();
+	
+	@Test
+	public void createQueue() {
 		TavernaQueue queue = new TavernaQueue();
 		assertEquals(0, queue.size());			
 	}
 	
-	public void testAddQueue() throws InterruptedException, QueueException {
+	@Test
+	public void addQueue() throws InterruptedException, QueueException, ParseException {
 		TavernaQueue queue = new TavernaQueue();
 		Date before = new Date();
 		Thread.sleep(5);
 		Job job = queue.add(workflow, "");
+		daoFactory.getJobDAO().create(job);
 		assertEquals(1, queue.size());
 		assertEquals(job, queue.peek());
 		// Check timestamp
-		assertTrue(job.created.after(before));
+		assertTrue(job.getCreated().after(before));
 		Thread.sleep(5);
-		assertTrue(job.created.before(new Date()));
+		assertTrue(job.getCreated().before(new Date()));
 		// And that it was parsed..
-		assertEquals(8, job.workflow.getProcessors().length);
-		assertEquals(1, job.workflow.getWorkflowSinkPorts().length);
+		ScuflModel workflow = XMLUtils.parseXScufl(job.getWorkflow().getScufl());
+		assertEquals(8, workflow.getProcessors().length);
+		assertEquals(1, workflow.getWorkflowSinkPorts().length);
 		assertEquals(State.QUEUED, job.getState());
 	}
 	
-	public void testAddNonWorkflow() {
+	@Test
+	public void addNonWorkflow() throws ParseException {
 		TavernaQueue queue = new TavernaQueue();
 		try {
 			queue.add("Not a workflow", "");
@@ -45,7 +66,8 @@ public class TavernaQueueTest extends TestCommon {
 		}
 	}
 	
-	public void testAddNonInputDoc() {
+	@Test
+	public void addNonInputDoc() throws ParseException {
 		TavernaQueue queue = new TavernaQueue();
 		try {
 			queue.add(workflow, "Not an input document");
@@ -55,14 +77,16 @@ public class TavernaQueueTest extends TestCommon {
 		}
 	}
 		
-	public void testPoll() throws QueueException {
+	@Test
+	public void poll() throws QueueException, ParseException {
 		TavernaQueue queue = new TavernaQueue();
 		queue.add(workflow, "");
 		Job job = queue.poll();
 		assertEquals(State.DEQUEUED, job.getState());
 	}
 	
-	public void testAddAndPollMany() throws QueueException {
+	@Test
+	public void addAndPollMany() throws QueueException, ParseException {
 		TavernaQueue queue = new TavernaQueue();
 		Job job1 = queue.add(workflow, "");
 		Job job2 = queue.add(workflow, "");					
@@ -75,7 +99,7 @@ public class TavernaQueueTest extends TestCommon {
 	}
 
 	
-	public void testQueueListener() throws QueueException {
+	public void testQueueListener() throws QueueException, ParseException {
 		TavernaQueue queue = new TavernaQueue();		
 		final StringBuffer progress = new StringBuffer();
 		QueueListener listener = new QueueListener(queue){						
@@ -107,14 +131,20 @@ public class TavernaQueueTest extends TestCommon {
 		}		
 	}
 	
-	public void testTavernaQueue() throws QueueException {
+	public void testTavernaQueue() throws QueueException, ParseException {
+		JobDAO jobDao = daoFactory.getJobDAO();
 		TavernaQueue queue = new TavernaQueue();
 		QueueListener listener = new TavernaQueueListener(queue);
 		new Thread(listener).start();
 		Job job = queue.add(workflow, "");
-		State state = job.waitForCompletion(2000);
-		assertEquals(State.COMPLETE, state);
-		Map<String, DataThing> result = job.getResults();
+		jobDao.create(job);
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+		jobDao.refresh(job);
+		assertEquals(State.COMPLETE, job.getState());
+		Map<String, DataThing> result = job.getResultDoc().getDataMap();
 		DataThing thing = result.get("Output");
 		assertEquals("[[square red cat, square greenrabbit], [circular red cat, circular greenrabbit], [triangularred cat, triangulargreenrabbit]]",
 			thing.getDataObject().toString());

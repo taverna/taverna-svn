@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.service.backend.Engine;
-import net.sf.taverna.service.interfaces.QueueException;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.interfaces.UnknownJobException;
 import net.sf.taverna.tools.Bootstrap;
@@ -35,37 +34,6 @@ public class Taverna implements TavernaService {
 		prepare();
 	}
 
-	public String runWorkflow(String scufl, String inputDoc) throws QueueException, IOException {
-		return engine.runWorkflow(scufl, inputDoc);
-	}
-
-	public String runWorkflowFile(String filename, String inputDoc) throws QueueException, IOException {
-		return engine.runWorkflowFile(filename, inputDoc);
-	}
-
-	public String jobStatus(String job_id) {
-		return engine.jobStatus(job_id);
-	}
-
-	public String jobs() {
-		return engine.jobs();
-	}
-
-	public String getResultDocument(String job_id) throws UnknownJobException {
-		return engine.getResultDocument(job_id);
-	}
-
-	public String getProgressReport(String job_id) throws UnknownJobException {
-		return engine.getProgressReport(job_id);
-	}
-
-	public String getWorkflow(String job_id) throws UnknownJobException {
-		return engine.getWorkflow(job_id);
-	}
-
-	public String getInputs(String job_id) throws UnknownJobException {
-		return engine.getInputs(job_id);
-	}
 
 	private synchronized void prepare() {
 		try {
@@ -119,5 +87,85 @@ public class Taverna implements TavernaService {
 		Bootstrap.getLoaderUrls(localLoaderUrls, remoteLoaderUrls);
 		Bootstrap.addSystemLoaderArtifacts();
 		engine = Engine.getInstance();
+	}
+
+	public String addJob(String username, String password, String scuflId, String baclavaId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void changePassword(String username, String password, String newPassword) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public String getDataDoc(String username, String password, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getJob(String username, String password, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getJobStatus(String username, String password, String job_id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getJobs(String username, String password) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getProgressReport(String username, String password, String job_id) throws UnknownJobException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getQueue(String username, String password, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getQueues(String username, String password, String workerURL) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getResultDocument(String username, String password, String job_id) throws UnknownJobException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getWorkflow(String username, String password, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String putDataDoc(String username, String password, String baclava) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String putWorkflow(String username, String password, String scufl) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void register(String username, String password, String email) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void registerWorker(String username, String password, String workerURL) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unregisterWorker(String username, String password, String workerURL) {
+		// TODO Auto-generated method stub
+		
 	}
 }

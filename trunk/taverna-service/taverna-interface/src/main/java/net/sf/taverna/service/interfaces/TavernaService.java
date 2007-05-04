@@ -1,27 +1,61 @@
 package net.sf.taverna.service.interfaces;
 
-import java.io.IOException;
 
 public interface TavernaService {
 
-	public static final String NS = "http://service.taverna.sf.net/";	
+	public static final String NS = "http://taverna.sf.net/service";	
+
 	
-	public String jobs();
+	// Mime types
+	
+	public static final String restType = "application/vnd.taverna.rest+xml";
 
-	public String runWorkflowFile(String filename, String inputDoc)
-		throws IOException, QueueException;
+	public static final String scuflType = "application/vnd.taverna.baclava+xml";
 
-	public String runWorkflow(String scufl, String inputDoc)
-		throws IOException, QueueException;
+	public static final String baclavaType = "application/vnd.taverna.scufl+xml";
+	
+	
+	public void register(String username, String password, String email);
+	
+	public void changePassword(String username, String password, String newPassword);
 
-	public String jobStatus(String job_id);
+	
+	public String putWorkflow(String username, String password, String scufl);
+	
+	public String getWorkflow(String username, String password, String id);
+	
+	
+	public String putDataDoc(String username, String password, String baclava);
 
-	public String getResultDocument(String job_id) throws UnknownJobException;
+	public String getDataDoc(String username, String password, String id);
 
-	public String getProgressReport(String job_id) throws UnknownJobException;
+	
+	public String addJob(String username, String password, String scuflId, String baclavaId);
 
-	public String getWorkflow(String job_id) throws UnknownJobException;
+	public String getJobs(String username, String password);
 
-	public String getInputs(String job_id) throws UnknownJobException;
+	public String getJob(String username, String password, String id);
+
+	
+	public String getJobStatus(String username, String password, String job_id);
+
+	
+	public String getResultDocument(String username, String password, String job_id) throws UnknownJobException;
+	
+	public String getProgressReport(String username, String password, String job_id) throws UnknownJobException;
+
+	
+	
+	public void registerWorker(String username, String password, String workerURL);
+
+	public void unregisterWorker(String username, String password, String workerURL);
+
+	
+	public String getQueues(String username, String password, String workerURL);
+	
+	public String getQueue(String username, String password, String id);
+	
+	
+	
 
 }

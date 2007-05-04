@@ -51,8 +51,6 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	private JLabel endpointStatus = new JLabel();
 	
 	private EndpointField endpointField = new EndpointField();
-
-	private Taverna taverna = null;
 	
 	private Jobs jobs = new Jobs();
 	
@@ -72,15 +70,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		URL oldUrl = endpoint;
 		endpoint = url;
 		endpointField.updateEndpoint();
-		endpointField.notice("Loading..");
-		try {
-			taverna = TavernaService.connect(url);
-		} catch (ServiceException ex) {
-			logger.warn("Could not connect to "+ url);
-			endpointField.warning(ex.toString());
-			endpoint = oldUrl; // flip back, but don't modify the field
-		}
-		endpointField.notice("Loaded");
+		
+
 		jobs.refresh();
 		logger.info("Connected to " + url);
 	}
@@ -321,12 +312,12 @@ public class ExecuteRemotelyPanel extends JPanel implements
 			}
 			String scufl = XScuflView.getXMLText(model);
 			// FIXME: Support input parameters
-			try {
-				taverna.runWorkflow(scufl, "");
-			} catch (RemoteException ex) {
-				logger.warn("Could not execute " + model + " at " + getEndpoint(), ex);
-				return;
-			}
+			//try {
+				//taverna.runWorkflow("", "", scufl, "");
+			//} catch (RemoteException ex) {
+				//logger.warn("Could not execute " + model + " at " + getEndpoint(), ex);
+			//	return;
+			//}
 			jobs.refresh();
 		}
 

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://taverna.sf.net/service"
+	elementFormDefault="qualified"
+	xmlns:tav="http://taverna.sf.net/service"
+	xmlns:xlink="http://www.w3.org/1999/xlink">
+
+	<!-- <import namespace="http://www.w3.org/1999/xlink"
+		schemaLocation="http://www.loc.gov/standards/mets/xlink.xsd" />
+	-->
+	<import namespace="http://www.w3.org/1999/xlink"
+		schemaLocation="xlink.xsd" />
+
+
+	<complexType name="Linked">
+		<attribute ref="xlink:href" use="optional" />
+	</complexType>
+	<complexType name="Identified">
+		<complexContent>
+			<extension base="tav:Linked">
+				<attribute name="id" type="string"></attribute>
+
+			</extension>
+		</complexContent>
+	</complexType>
+	<complexType name="Owned">
+		<complexContent>
+			<extension base="tav:Identified">
+				<sequence>
+					<element name="owner" type="tav:User"></element>
+				</sequence>
+
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<complexType name="Capabilities">
+		<sequence>
+			<element name="users" type="tav:Users"></element>
+			<element name="workers" type="tav:Workers"></element>
+			<element name="queues" type="tav:Queues"></element>
+		</sequence>
+	</complexType>
+
+
+	<complexType name="Users">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="user" type="tav:User"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="User">
+		<complexContent>
+			<extension base="tav:Identified">
+				<sequence>
+					<element name="username" type="string"></element>
+					<element name="jobs" type="tav:Jobs"></element>
+					<element name="workflows" type="tav:Workflows"></element>
+					<element name="datas" type="tav:Datas"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="Jobs">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="job" type="tav:Job"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Job">
+		<complexContent>
+			<extension base="tav:Owned">
+				<sequence>
+					<element name="workflow" type="tav:Workflow"></element>
+					<element name="inputs" type="tav:Data"></element>
+					<element name="outputs" type="tav:Data"></element>
+					<element name="status" type="tav:StatusType"></element>
+					<element name="report" type="tav:Report"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<simpleType name="StatusType">
+		<annotation>
+			<documentation>
+				The status of the job. Generally the status will
+				progress further down the enumeration, although it might
+				skip some states.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="NEW"></enumeration>
+			<enumeration value="QUEUED"></enumeration>
+			<enumeration value="DEQUEUED"></enumeration>
+			<enumeration value="RUNNING"></enumeration>
+			<enumeration value="PAUSED"></enumeration>
+			<enumeration value="FAILING"></enumeration>
+			<enumeration value="CANCELLING"></enumeration>
+			<enumeration value="CANCELLED"></enumeration>
+			<enumeration value="COMPLETE"></enumeration>
+			<enumeration value="FAILED"></enumeration>
+			<enumeration value="DESTROYED"></enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="Report">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<any minOccurs="1" maxOccurs="1" namespace="##any"
+						processContents="skip">
+					</any>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="Workflows">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="workflow" type="tav:Workflow"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="Workflow">
+		<complexContent>
+			<extension base="tav:Owned">
+				<sequence>
+					<element name="scufl" type="tav:Scufl"></element>
+
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Datas">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="data" type="tav:Data"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Data">
+		<complexContent>
+			<extension base="tav:Owned">
+				<sequence>
+					<element name="baclava" type="tav:Baclava"></element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+
+
+	<complexType name="Workers">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="worker" type="tav:Worker"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+	<complexType name="Worker">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="uri" type="anyURI"></element>
+					<element name="jobs" type="tav:Jobs"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+					<element name="queues" type="tav:Queues"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+
+	<complexType name="Queues">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element name="queue" type="tav:Queue"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Queue">
+		<complexContent>
+			<extension base="tav:Identified">
+				<sequence>
+					<element name="jobs" type="tav:Jobs" maxOccurs="1"
+						minOccurs="1">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<element name="capabilities" type="tav:Capabilities"></element>
+
+	<element name="users" type="tav:Users"></element>
+	<element name="user" type="tav:User"></element>
+
+	<element name="jobs" type="tav:Jobs"></element>
+	<element name="job" type="tav:Job"></element>
+
+	<element name="data" type="tav:Data"></element>
+
+	<element name="workflows" type="tav:Workflows"></element>
+	<element name="workflow" type="tav:Workflow"></element>
+
+	<element name="queues" type="tav:Queues"></element>
+	<element name="queue" type="tav:Queue"></element>
+
+	<element name="workers" type="tav:Workers"></element>
+	<element name="worker" type="tav:Worker"></element>
+
+	<complexType name="Scufl">
+		<sequence>
+			<any minOccurs="1" maxOccurs="1"
+				namespace="http://org.embl.ebi.escience/xscufl/0.1alpha"
+				processContents="skip">
+			</any>
+		</sequence>
+	</complexType>
+	<complexType name="Baclava">
+		<sequence>
+			<any minOccurs="1" maxOccurs="1"
+				namespace="http://org.embl.ebi.escience/baclava/0.1alpha"
+				processContents="skip">
+			</any>
+		</sequence>
+	</complexType>
+
+</schema>

@@ -107,7 +107,17 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+                    <!--<skip>true</skip> -->
+					<systemProperties>
+						<property>
+							<name>derby.drda.startNetworkServer</name>
+							<value>true</value>
+						</property>
+						<!--<property>
+							<name>derby.drda.portNumber</name>
+							<value>1337</value>
+						</property>-->
+					</systemProperties>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -125,7 +135,7 @@
 			</repository-->
 		<repository>
 			<id>apache</id>
-			<name>Apache Repository</name>
+			<name>Apache repository</name>
 			<url>http://www.apache.org/dist/maven-repository</url>
 			<snapshots>
 				<enabled>false</enabled>
@@ -135,8 +145,19 @@
 			</releases>
 		</repository>
 		<repository>
+			<id>restlet</id>
+			<name>Restlet repository</name>
+            <url>http://maven.restlet.org</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
 			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
+			<name>myGrid repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
 			<snapshots>
 				<enabled>false</enabled>
@@ -147,7 +168,7 @@
 		</repository>
 		<repository>
 			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
+			<name>myGrid Snapshot repository</name>
 			<url>
 				http://www.mygrid.org.uk/maven/snapshot-repository
 			</url>
@@ -185,7 +206,7 @@
 		<!-- use the following if you're not using a snapshot version. -->
 		<repository>
 			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
+			<name>myGrid repository</name>
 			<url>
 				scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository
 			</url>
@@ -193,7 +214,7 @@
 		<!-- use the following if you ARE using a snapshot version. -->
 		<snapshotRepository>
 			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
+			<name>myGrid Snapshot repository</name>
 			<url>
 				scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository
 			</url>
@@ -205,9 +226,13 @@
 		</site>
 	</distributionManagement>
 	<modules>
-		<module>taverna-engine</module>
 		<module>taverna-interface</module>
+		<module>taverna-datastore</module>
+		<module>taverna-engine</module>
 		<module>taverna-wsdl</module>
-		<module>execute-remotely-plugin</module>
+		<module>taverna-rest</module>
+		<module>taverna-rest-xmlbeans</module>
+		<module>taverna-rest-client</module>
+		<!--module>execute-remotely-plugin</module-->
 	</modules>
 </project>
