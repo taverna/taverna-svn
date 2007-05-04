@@ -1,7 +1,6 @@
 package org.embl.ebi.escience.scuflworkers.wsdl.parser;
 
 import java.io.IOException;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import javax.wsdl.extensions.soap.SOAPBody;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.axis.client.Call;
 import org.apache.axis.wsdl.gen.NoopFactory;
 import org.apache.axis.wsdl.symbolTable.BindingEntry;
 import org.apache.axis.wsdl.symbolTable.CollectionElement;
@@ -661,13 +659,16 @@ public class WSDLParser {
 		result.setElementType(constructType(type.getRefType()));
 		result.setType(type.getQName().getLocalPart());
 		result.setQname(type.getQName());
+		
 		if (type instanceof CollectionType) {
 			result.setWrapped(((CollectionType)type).isWrapped());
 		}
 		else {
 			result.setWrapped(true);
-		}
-
+		}		
+		
+		logger.info("Wrapped flag for type "+type+" is "+result.isWrapped());
+		
 		return result;
 	}
 

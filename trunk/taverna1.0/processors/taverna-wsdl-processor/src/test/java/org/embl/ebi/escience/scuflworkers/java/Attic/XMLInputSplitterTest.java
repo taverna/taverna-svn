@@ -69,7 +69,7 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters><db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -121,7 +121,7 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters><db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -196,7 +196,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<db xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a database</db><tool xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">a tool</tool><email xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\">an email</email>") != -1);
+						.indexOf("<db>a database</db><tool>a tool</tool><email>an email</email>") != -1);
 
 	}
 
@@ -228,7 +228,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<in0 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>0</string></in0><in1 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\"><string>1</string></in1><in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">2</in2><in3 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">3</in3><in4 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">4</in4><in5 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in5><in6 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in6><in7 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\">true</in7>") != -1);
+						.indexOf("<in0><string>0</string></in0><in1><string>1</string></in1><in2>2</in2><in3>3</in3><in4>4</in4><in5>true</in5><in6>true</in6><in7>true</in7>") != -1);
 
 	}
 
@@ -255,7 +255,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml incorrect",
 				xmlOutput
-						.indexOf("<in2 xmlns=\"http://webservice.gominer.lmp.nci.nih.gov\" nil=\"true\" />") != -1);
+						.indexOf("<in2 nil=\"true\" />") != -1);
 	}
 
 	public void testBase64EncodeInputData() throws Exception {
@@ -281,7 +281,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"XML should contain base64Binary encoded String for byte array",
 				xmlOutput
-						.contains("<binaryData xmlns=\"http://testing.org\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
+						.contains("<binaryData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
 	}
 
 }

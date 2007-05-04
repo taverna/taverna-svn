@@ -26,6 +26,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
@@ -266,10 +267,10 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 					outputElement.addContent(dataElement);
 				}
 			}
-		}
-
+		}		
+		outputElement.setNamespace(Namespace.getNamespace(typeDescriptor.getNamespaceURI()));	
 		XMLOutputter outputter = new XMLOutputter();
-		String xmlText = outputter.outputString(outputElement);
+		String xmlText = outputter.outputString(outputElement);		
 		DataThing outputThing = new DataThing(xmlText);
 		result.put(outputNames[0], outputThing);
 	}
@@ -296,14 +297,17 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 
 	private Element buildElementFromObject(String key, Object dataObject)
 			throws JDOMException, IOException {
-		String namespaceURI = typeDescriptor.getNamespaceURI();
+		String namespaceURI = typeDescriptor.getNamespaceURI();		
 
 		Element dataElement;
 
-		if (namespaceURI != null && namespaceURI.length() > 0)
-			dataElement = new Element(key, typeDescriptor.getNamespaceURI());
-		else
+		if (namespaceURI != null && namespaceURI.length() > 0) {
+			dataElement = new Element(key);			
+			dataElement.setNamespace(Namespace.getNamespace(namespaceURI));
+		}
+		else {
 			dataElement = new Element(key);
+		}
 		if (isXMLInput(key)) {
 			String xml = dataObject.toString();
 			if (xml.length() > 0) {

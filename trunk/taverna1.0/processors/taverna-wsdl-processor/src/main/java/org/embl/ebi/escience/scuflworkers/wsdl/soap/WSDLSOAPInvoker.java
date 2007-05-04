@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-15 10:49:52 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-05-04 15:56:46 $
+ *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -55,6 +55,7 @@ import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
+import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
@@ -72,7 +73,9 @@ import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -112,7 +115,8 @@ public class WSDLSOAPInvoker {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map invoke(Map inputMap, EngineConfiguration config) throws Exception {
+	public Map invoke(Map inputMap, EngineConfiguration config)
+			throws Exception {
 
 		Call call = getCall();
 		if (config != null) {
@@ -122,7 +126,13 @@ public class WSDLSOAPInvoker {
 		call.setTimeout(getTimeout());
 		SOAPBodyElement body = buildBody(inputMap);
 
-		List response = (List) call.invoke(new Object[] { body });
+		SOAPEnvelope requestEnv = new SOAPEnvelope();
+
+		requestEnv.addBodyElement(body);
+
+		SOAPEnvelope responseEnv = call.invoke(requestEnv);
+
+		List response = responseEnv.getBodyElements();
 
 		logger.info("SOAP response was:" + response);
 
@@ -135,28 +145,32 @@ public class WSDLSOAPInvoker {
 
 		return result;
 	}
-	
+
 	/**
 	 * Reads the property taverna.wsdl.timeout, default to 5 minutes if missing.
+	 * 
 	 * @return
 	 */
 	private Integer getTimeout() {
-		int result=300000;
-		String minutesStr=System.getProperty("taverna.wsdl.timeout");
-		
-		if (minutesStr==null) {
-			logger.warn("Missing property for taverna.wsdl.timeout. Using default of 5 minutes");
+		int result = 300000;
+		String minutesStr = System.getProperty("taverna.wsdl.timeout");
+
+		if (minutesStr == null) {
+			logger
+					.warn("Missing property for taverna.wsdl.timeout. Using default of 5 minutes");
 			return result;
 		}
 		try {
-			int minutes=Integer.parseInt(minutesStr.trim());
-			result=minutes*1000*60;
-		}
-		catch(NumberFormatException e) {
-			logger.error("Error with number format for timeout setting taverna.wsdl.timeout",e);
+			int minutes = Integer.parseInt(minutesStr.trim());
+			result = minutes * 1000 * 60;
+		} catch (NumberFormatException e) {
+			logger
+					.error(
+							"Error with number format for timeout setting taverna.wsdl.timeout",
+							e);
 			return result;
-		}		
-		logger.info("Using a timout of "+result+"ms");
+		}
+		logger.info("Using a timout of " + result + "ms");
 		return result;
 	}
 
@@ -190,7 +204,7 @@ public class WSDLSOAPInvoker {
 		String operationName = processor.getOperationName();
 		String use = processor.getParser().getUse(operationName);
 		Call result = (((WSIFPort_ApacheAxis) ((WSIFOperation_ApacheAxis) processor
-				.getWSIFOperation()).getWSIFPort()).getCall());		
+				.getWSIFOperation()).getWSIFPort()).getCall());
 		result.setUseSOAPAction(true);
 		result.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR,
 				Boolean.FALSE);
@@ -242,8 +256,14 @@ public class WSDLSOAPInvoker {
 		Map<String, String> namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();
 
-		SOAPBodyElement body = new SOAPBodyElement(XMLUtils.StringToElement(
-				operationNamespace, operationName, ""));
+		SOAPBodyElement body = new SOAPBodyElement(operationNamespace,
+				operationName);
+
+		try {
+			logger.info("Initial body = " + body.getAsString());
+		} catch (Exception e1) {
+			logger.error(e1);
+		}
 
 		// its important to preserve the order of the inputs!
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
@@ -273,7 +293,7 @@ public class WSDLSOAPInvoker {
 
 					String ns = namespaceMappings.get(descriptor
 							.getNamespaceURI());
-					if (ns != null) {
+					if (ns != null && getUse().equals("encoded")) {
 						el.setAttribute("xsi:type", ns + ":"
 								+ descriptor.getType());
 					}
@@ -290,19 +310,18 @@ public class WSDLSOAPInvoker {
 			}
 		}
 
-		for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
-				.hasNext();) {
-			String namespaceURI = (String) iterator.next();
-			String ns = (String) namespaceMappings.get(namespaceURI);
-			if (!ns.equals("xsd") && !ns.equals("xsi")) {
-				body.addNamespaceDeclaration(ns, namespaceURI);
+		if (getUse().equalsIgnoreCase("encoded"))
+		{
+			for (Iterator iterator = namespaceMappings.keySet().iterator(); iterator
+					.hasNext();) {
+				String namespaceURI = (String) iterator.next();
+				String ns = (String) namespaceMappings.get(namespaceURI);
+				if (!ns.equals("xsd") && !ns.equals("xsi")) {
+					body.addNamespaceDeclaration(ns, namespaceURI);
+				}				
 			}
-		}
-
-		if (getProcessor().getParser().getUse(operationName).equals("encoded")) {
-			body.setAttribute("soapenv:encodingStyle",
-					"http://schemas.xmlsoap.org/soap/encoding/");
-		}
+			body.setAttribute("soapenv:encodingStyle","http://schemas.xmlsoap.org/soap/encoding/");
+		}		
 
 		if (logger.isInfoEnabled()) {
 			try {
@@ -312,6 +331,9 @@ public class WSDLSOAPInvoker {
 			}
 		}
 
+		if (getStyle().equalsIgnoreCase("document") && getUse().equalsIgnoreCase("literal")) {
+			stripAttributes(body);
+		}
 		return body;
 	}
 
@@ -333,13 +355,18 @@ public class WSDLSOAPInvoker {
 			Map<String, String> namespaceMappings, String inputName,
 			DataThing thing, TypeDescriptor descriptor, String mimeType,
 			String typeName) throws ParserConfigurationException, SAXException,
-			IOException {
+			IOException, UnknownOperationException {
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory
+				.newInstance();
+		builderFactory.setNamespaceAware(true);
+		DocumentBuilder docBuilder = builderFactory.newDocumentBuilder();
+
 		Element el;
 		ArrayTypeDescriptor arrayDescriptor = (ArrayTypeDescriptor) descriptor;
 		TypeDescriptor elementType = arrayDescriptor.getElementType();
 		int size = 0;
 
-		if (getStyle().equals("document"))
+		if (getUse().equals("literal"))
 			el = XMLUtils.StringToElement("", typeName, "");
 		else
 			el = XMLUtils.StringToElement("", inputName, "");
@@ -353,10 +380,9 @@ public class WSDLSOAPInvoker {
 			// if mime type is text/xml then the data is an array in xml form,
 			// else its just a single primitive element
 			if (mimeType.equals("'text/xml'")) {
-				DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-						.newDocumentBuilder();
-				Document doc = builder.parse(new ByteArrayInputStream(dataItem
-						.toString().getBytes()));
+
+				Document doc = docBuilder.parse(new ByteArrayInputStream(
+						dataItem.toString().getBytes()));
 				Node child = doc.getDocumentElement().getFirstChild();
 
 				while (child != null) {
@@ -379,16 +405,18 @@ public class WSDLSOAPInvoker {
 
 		}
 
-		String ns = namespaceMappings.get(elementType.getNamespaceURI());
-		if (ns != null) {
-			String elementNS = ns + ":" + elementType.getType() + "[" + size
-					+ "]";
-			el.setAttribute("soapenc:arrayType", elementNS);
-			el.setAttribute("xmlns:soapenc",
-					"http://schemas.xmlsoap.org/soap/encoding/");
-		}
+		if (getUse().equals("encoded")) {
+			String ns = namespaceMappings.get(elementType.getNamespaceURI());
+			if (ns != null) {
+				String elementNS = ns + ":" + elementType.getType() + "["
+						+ size + "]";
+				el.setAttribute("soapenc:arrayType", elementNS);
+				el.setAttribute("xmlns:soapenc",
+						"http://schemas.xmlsoap.org/soap/encoding/");
+			}
 
-		el.setAttribute("xsi:type", "soapenc:Array");
+			el.setAttribute("xsi:type", "soapenc:Array");
+		}
 
 		return el;
 	}
@@ -440,9 +468,11 @@ public class WSDLSOAPInvoker {
 	private void populateElementWithObjectData(String mimeType,
 			Element element, Object dataValue)
 			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder = factory.newDocumentBuilder();
+
 		if (mimeType.equals("'text/xml'")) {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-					.newDocumentBuilder();
 			Document doc = builder.parse(new ByteArrayInputStream(dataValue
 					.toString().getBytes()));
 			Node child = doc.getDocumentElement().getFirstChild();
@@ -586,5 +616,28 @@ public class WSDLSOAPInvoker {
 		}
 		return attachmentThing;
 	}
-
+	
+	private void stripAttributes(Node parent) {
+		if (parent.getNodeType()==Node.ELEMENT_NODE) {
+			Element el = (Element)parent;
+			if (parent.hasAttributes()) {
+				NamedNodeMap map = parent.getAttributes();
+				List<Node> attributeNodes = new ArrayList<Node>();
+				for (int i=0;i<map.getLength();i++) {
+					Node node = map.item(i);
+					attributeNodes.add(node);
+				}
+				
+				for (Node node : attributeNodes) {					
+					el.removeAttributeNS(node.getNamespaceURI(), node.getLocalName());					
+				}
+			}
+		}
+		
+		if (parent.hasChildNodes()) {
+			for (int i=0;i<parent.getChildNodes().getLength();i++) stripAttributes(parent.getChildNodes().item(i));
+		}
+	}
 }
+
+	
