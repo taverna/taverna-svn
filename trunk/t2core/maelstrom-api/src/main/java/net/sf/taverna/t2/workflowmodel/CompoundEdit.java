@@ -12,7 +12,7 @@ import java.util.List;
  * @author Tom Oinn
  * 
  */
-public class CompoundEdit implements Edit {
+public class CompoundEdit implements Edit<Object> {
 
 	private List<Edit> childEdits;
 
@@ -39,7 +39,7 @@ public class CompoundEdit implements Edit {
 	 * the exception is rethrown as the cause of a new EditException from the
 	 * CompoundEdit
 	 */
-	public synchronized void doEdit() throws EditException {
+	public synchronized Object doEdit() throws EditException {
 		if (isApplied()) {
 			throw new EditException("Cannot apply an edit more than once!");
 		}
@@ -60,7 +60,7 @@ public class CompoundEdit implements Edit {
 			applied = false;
 			throw new EditException("Failed child of compound edit", ee);
 		}
-
+		return null;
 	}
 
 	/**

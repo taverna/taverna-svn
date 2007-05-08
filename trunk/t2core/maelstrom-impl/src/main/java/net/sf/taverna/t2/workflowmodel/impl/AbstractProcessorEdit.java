@@ -11,7 +11,7 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  * @author Tom Oinn
  * 
  */
-public abstract class AbstractProcessorEdit implements Edit {
+public abstract class AbstractProcessorEdit implements Edit<Processor> {
 
 	private boolean applied = false;
 
@@ -25,7 +25,7 @@ public abstract class AbstractProcessorEdit implements Edit {
 		this.processor = p;
 	}
 
-	public final void doEdit() throws EditException {
+	public final Processor doEdit() throws EditException {
 		if (applied) {
 			throw new EditException("Edit has already been applied!");
 		}
@@ -38,6 +38,7 @@ public abstract class AbstractProcessorEdit implements Edit {
 			synchronized (pi) {
 				doEditAction(pi);
 				applied = true;
+				return this.processor;
 			}
 		} catch (EditException ee) {
 			applied = false;

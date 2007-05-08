@@ -11,7 +11,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface Edit {
+public interface Edit<TargetType> {
 
 	/**
 	 * Perform the edit
@@ -21,7 +21,7 @@ public interface Edit {
 	 *             try to ensure the subject is unaltered. Where this is
 	 *             impossible consider breaking edits down into a compound edit.
 	 */
-	public void doEdit() throws EditException;
+	public TargetType doEdit() throws EditException;
 
 	/**
 	 * Undo the edit, reverting the subject to the state it was in prior to the
