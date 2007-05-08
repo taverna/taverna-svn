@@ -195,7 +195,7 @@ public abstract class DispatchStackImpl implements DispatchStack {
 				// dispatch layer
 				if (conditionsSatisfied(enclosingProcess)) {
 					dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
-							(List<Service>) getServices());
+							 getServices());
 				}
 			} else {
 				queue = queues.get(e.getOwningProcess());
