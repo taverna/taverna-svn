@@ -22,9 +22,46 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
 
 public class DispatchStackTestWithParallelize extends TestCase {
 
+	private class BasicDispatchStackImpl extends DispatchStackImpl {
+		
+		private List<Service<?>> services;
+		
+		public BasicDispatchStackImpl(List<Service<?>> services) {
+			this.services = services;			
+		}
+
+		@Override
+		protected boolean conditionsSatisfied(String owningProcess) {
+			return true;
+		}
+
+		@Override
+		protected List<Service<?>> getServices() {
+			return this.services;
+		}
+
+		@Override
+		protected void pushEvent(Event e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected void finishedWith(String owningProcess) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		protected String getProcessName() {
+			return "process";
+		}
+		
+	}
+	
 	public void testStackConstructionAndSimpleInvocation() {
 		System.out.println("Multiple jobs, single process identifier");
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>());
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
@@ -42,7 +79,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 
 	public void testMultipleProcessIDs() {
 		System.out.println("Multiple jobs, multiple process identifiers");
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>());
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
@@ -69,13 +106,13 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	 */
 	public void testSingleJob() {
 		System.out.println("Single job");
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>());
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
 		try {
 			Thread.sleep(1000);
 			System.out.println("--------------------------------------------------\n");
@@ -90,13 +127,13 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	 */
 	public void testSingleJobWithStream() {
 		System.out.println("Single job with streaming");
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>());
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
 		try {
 			Thread.sleep(2000);
 			System.out.println("--------------------------------------------------\n");
@@ -122,7 +159,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 				System.out.println(" ** "+outputJob.toString());
 			}
 		};
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>()) {
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>()) {
 			protected void pushEvent(Event e) {
 				c.receiveEvent(e);
 			}
@@ -132,7 +169,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
 		try {
 			Thread.sleep(2000);
 			System.out.println("--------------------------------------------------\n");
@@ -147,7 +184,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	 */
 	public void testParallelJobsWithStream() {
 		System.out.println("Parallel jobs with streaming");
-		DispatchStackImpl d = new DispatchStackImpl(new ArrayList<Service>());
+		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
@@ -178,9 +215,9 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		for (int i = 0; i < jobs; i++) {
 			Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 			dataMap.put("Input1", nextID());
-			events.add(new Job(processID, new int[] { i }, dataMap));
+			events.add(new Job(processID+":processorName", new int[] { i }, dataMap));
 		}
-		events.add(new Completion(processID));
+		events.add(new Completion(processID+":processorName"));
 		return events;
 	}
 

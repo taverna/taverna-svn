@@ -35,12 +35,62 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public class DispatchStackImpl implements DispatchStack {
+public abstract class DispatchStackImpl implements DispatchStack {
 
-	private Map<String, BlockingQueue<Event>> queues;
+	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
 
-	private List<Service> services;
+	private List<DispatchLayer> dispatchLayers = new ArrayList<DispatchLayer>();
 
+	/**
+	 * Override to return the list of services to be used by this dispatch
+	 * stack.
+	 * 
+	 * @return list of services to be used by jobs in this dispatch stack
+	 */
+	protected abstract List<Service<?>> getServices();
+
+	/**
+	 * Called when an event (Completion or Job) hits the top of the dispatch
+	 * stack and needs to be pushed out of the processor
+	 * 
+	 * @param e
+	 */
+	protected abstract void pushEvent(Event e);
+
+	/**
+	 * Called to determine whether all the preconditions for this dispatch stack
+	 * are satisfied. Jobs with the given owningProcess are not processed by the
+	 * dispatch stack until this returns true. Once it has returned true for a
+	 * given owning process it must always return true, the precondition is not
+	 * allowed to change from true back to false.
+	 * 
+	 * @param owningProcess
+	 * @return whether all preconditions to invocation are satisfied.
+	 */
+	protected abstract boolean conditionsSatisfied(String owningProcess);
+
+	/**
+	 * Called when the specified owning process is finished with, that is to say
+	 * all invocation has been performed and any layer state caches have been
+	 * purged.
+	 * 
+	 * @param owningProcess
+	 */
+	protected abstract void finishedWith(String owningProcess);
+
+	/**
+	 * Defines the enclosing process name, usually Processor.getName() on the
+	 * parent
+	 */
+	protected abstract String getProcessName();
+
+	/**
+	 * XML Serialization
+	 * 
+	 * @return
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
 	public Element asXML() throws JDOMException, IOException {
 		Element stackElement = new Element("dispatch");
 		for (DispatchLayer layer : dispatchLayers) {
@@ -49,10 +99,21 @@ public class DispatchStackImpl implements DispatchStack {
 		return stackElement;
 	}
 
+	/**
+	 * XML Deserialization
+	 * 
+	 * @param e
+	 * @throws ArtifactNotFoundException
+	 * @throws ArtifactStateException
+	 * @throws ClassNotFoundException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
 	@SuppressWarnings("unchecked")
 	public void configureFromElement(Element e)
 			throws ArtifactNotFoundException, ArtifactStateException,
-			ClassNotFoundException, InstantiationException, IllegalAccessException {
+			ClassNotFoundException, InstantiationException,
+			IllegalAccessException {
 		dispatchLayers.clear();
 		for (Element layerElement : (List<Element>) e.getChildren("layer")) {
 			DispatchLayer layer = Tools.buildDispatchLayer(layerElement);
@@ -90,11 +151,12 @@ public class DispatchStackImpl implements DispatchStack {
 			for (DispatchLayer layer : dispatchLayers) {
 				layer.finishedWith(owningProcess);
 			}
+			DispatchStackImpl.this.finishedWith(owningProcess);
 		}
 
 		public void configure(Object config) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		public Object getConfiguration() {
@@ -104,49 +166,91 @@ public class DispatchStackImpl implements DispatchStack {
 	};
 
 	/**
-	 * Called when an event (Completion or Job) hits the top of the dispatch
-	 * stack and needs to be pushed out of the processor
+	 * Receive an event to be fed into the top layer of the dispatch stack for
+	 * processing. This has the effect of creating a queue if there isn't one
+	 * already, honouring any conditions that may be defined by an enclosing
+	 * processor through the conditionsSatisfied() check method.
+	 * <p>
+	 * Because the condition checking logic must check against the enclosing
+	 * process any attempt to call this method with an owning process without a
+	 * colon in will fail with an index array out of bounds error. All owning
+	 * process identifiers must resemble 'enclosingProcess:processorName' at the
+	 * minimum.
 	 * 
 	 * @param e
-	 */
-	protected void pushEvent(Event e) {
-		//
-	}
-
-	public DispatchStackImpl(List<Service> services) {
-		this.services = services;
-		queues = new HashMap<String, BlockingQueue<Event>>();
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workflowmodel.processor.service.dispatch.DispatchStack#receiveEvent(net.sf.taverna.t2.invocation.Event)
 	 */
 	@SuppressWarnings("unchecked")
 	public void receiveEvent(Event e) {
 		BlockingQueue<Event> queue = null;
 		String owningProcess = e.getOwningProcess();
 		synchronized (queues) {
+			String enclosingProcess = owningProcess.substring(0, owningProcess
+					.lastIndexOf(':'));
 			if (queues.containsKey(owningProcess) == false) {
 				queue = new LinkedBlockingQueue<Event>();
 				queues.put(owningProcess, queue);
 				queue.add(e);
-				dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
-						(List<Service>)services);
+				// If all preconditions are satisfied push the queue to the
+				// dispatch layer
+				if (conditionsSatisfied(enclosingProcess)) {
+					dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
+							(List<Service>) getServices());
+				}
 			} else {
 				queue = queues.get(e.getOwningProcess());
 				queue.add(e);
-				for (DispatchLayer layer : dispatchLayers) {
-					if (layer instanceof NotifiableLayer) {
-						((NotifiableLayer) layer).eventAdded(owningProcess);
+				// If all preconditions are satisfied then notify the queue
+				// addition to any NotifiableLayer instances. If the
+				// preconditions are not satisfied the queue isn't visible to
+				// the dispatch stack yet so do nothing.
+				if (conditionsSatisfied(enclosingProcess)) {
+					for (DispatchLayer layer : dispatchLayers) {
+						if (layer instanceof NotifiableLayer) {
+							((NotifiableLayer) layer).eventAdded(owningProcess);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private List<DispatchLayer> dispatchLayers = new ArrayList<DispatchLayer>();
+	/**
+	 * Called when a set of conditions which were unsatisfied in the context of
+	 * a given owning process become satisfied. At this point any jobs in the
+	 * queue for that owning process identifier should be pushed through to the
+	 * dispatch mechanism. As the queue itself will not have been pushed through
+	 * at this point this just consists of messaging the first layer with the
+	 * queue and service set.
+	 * 
+	 * @param owningProcess
+	 */
+	@SuppressWarnings("unchecked")
+	public void satisfyConditions(String enclosingProcess) {
+		if (conditionsSatisfied(enclosingProcess)) {
+			String owningProcess = enclosingProcess + ":" + getProcessName();
+			synchronized (queues) {
+				if (queues.containsKey(owningProcess)) {
+					// At least one event has been received with this process ID
+					// and
+					// a queue exists for it.
+					dispatchLayers.get(0).receiveJobQueue(owningProcess,
+							queues.get(owningProcess), getServices());
+				} else {
+					// Do nothing, if the conditions are satisfied before any
+					// jobs
+					// are received this mechanism is effectively redundant and
+					// the
+					// normal notification system for the events will let
+					// everything
+					// work through as per usual
+				}
+			}
+		}
+	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.service.dispatch.DispatchStack#getLayers()
 	 */
 	public List<DispatchLayer> getLayers() {
@@ -157,15 +261,15 @@ public class DispatchStackImpl implements DispatchStack {
 		dispatchLayers.add(newLayer);
 		newLayer.setDispatchStack(this);
 	}
-	
+
 	public void addLayer(DispatchLayer newLayer, int index) {
 		dispatchLayers.add(index, newLayer);
 		newLayer.setDispatchStack(this);
 	}
-	
+
 	public int removeLayer(DispatchLayer layer) {
 		int priorIndex = dispatchLayers.indexOf(layer);
-		dispatchLayers.remove(layer);		
+		dispatchLayers.remove(layer);
 		return priorIndex;
 	}
 
@@ -176,8 +280,8 @@ public class DispatchStackImpl implements DispatchStack {
 	 * errors and completion events bubble back up the dispatch stack.
 	 * <p>
 	 * The top layer within the dispatch stack is always invisible and is held
-	 * within the DispatchStackImpl object itself, being used to route data out of
-	 * the entire stack
+	 * within the DispatchStackImpl object itself, being used to route data out
+	 * of the entire stack
 	 * 
 	 * @param layer
 	 * @return
@@ -205,9 +309,5 @@ public class DispatchStackImpl implements DispatchStack {
 			return null;
 		}
 	}
-
-	
-
-	
 
 }

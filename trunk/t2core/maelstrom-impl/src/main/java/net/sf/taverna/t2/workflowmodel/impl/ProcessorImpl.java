@@ -2,13 +2,16 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -16,6 +19,7 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
+import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
 import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
@@ -29,6 +33,10 @@ import org.jdom.JDOMException;
  * 
  */
 public final class ProcessorImpl implements Processor {
+
+	protected List<ConditionImpl> conditions = new ArrayList<ConditionImpl>();
+
+	protected List<ConditionImpl> controlledConditions = new ArrayList<ConditionImpl>();
 
 	protected List<ProcessorInputPortImpl> inputPorts = new ArrayList<ProcessorInputPortImpl>();
 
@@ -44,14 +52,14 @@ public final class ProcessorImpl implements Processor {
 
 	private static int pNameCounter = 0;
 
-	private String name;
+	protected String name;
 
 	/**
 	 * Create a new processor implementation with default blank iteration
 	 * strategy and dispatch stack
 	 * 
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	public ProcessorImpl() {
 
@@ -68,10 +76,54 @@ public final class ProcessorImpl implements Processor {
 		iterationStack.addStrategy(new IterationStrategyImpl());
 
 		// Configure dispatch stack to push output events to the crystalizer
-		List serviceList = this.serviceList;
-		dispatchStack = new DispatchStackImpl(serviceList) {
+		dispatchStack = new DispatchStackImpl() {
+
+			protected String getProcessName() {
+				return ProcessorImpl.this.name;
+			}
+			
+			/**
+			 * Called when an event bubbles out of the top of the dispatch
+			 * stack. In this case we pass it into the crystalizer.
+			 */
+			@Override
 			protected void pushEvent(Event e) {
 				crystalizer.receiveEvent(e);
+			}
+
+			/**
+			 * Iterate over all the preconditions and return true if and only if
+			 * all are satisfied for the given process identifier.
+			 */
+			@Override
+			protected boolean conditionsSatisfied(String owningProcess) {
+				for (Condition c : conditions) {
+					if (c.isSatisfied(owningProcess) == false) {
+						return false;
+					}
+				}
+				return true;
+			}
+
+			@Override
+			protected List<Service<?>> getServices() {
+				return ProcessorImpl.this.getServiceList();
+			}
+
+			/**
+			 * We've finished here, set the satisfied property on any controlled
+			 * condition objects to true and notify the targets.
+			 */
+			@Override
+			protected void finishedWith(String owningProcess) {
+				if (controlledConditions.isEmpty() == false) {
+					String enclosingProcess = owningProcess.substring(0, owningProcess.lastIndexOf(':'));
+					for (ConditionImpl ci : controlledConditions) {
+						ci.satisfy(enclosingProcess);
+						ci.getTarget().getDispatchStack().satisfyConditions(enclosingProcess);
+					}
+				}
+
 			}
 		};
 
@@ -80,10 +132,8 @@ public final class ProcessorImpl implements Processor {
 
 	}
 
-	
-	
 	/* Serialization handling */
-	
+
 	public Element asXML() throws JDOMException, IOException {
 		Element e = new Element("processor");
 		e.setAttribute("name", name);
@@ -145,12 +195,11 @@ public final class ProcessorImpl implements Processor {
 		}
 	}
 
-	
-	
 	/* Utility methods */
-		
+
 	// Used as temp caches for output and input names to port instances
 	private Map<String, ProcessorInputPortImpl> inputPortNameCache = new HashMap<String, ProcessorInputPortImpl>();
+
 	protected ProcessorInputPortImpl getInputPortWithName(String name) {
 		synchronized (inputPortNameCache) {
 			if (inputPortNameCache.isEmpty()) {
@@ -165,6 +214,7 @@ public final class ProcessorImpl implements Processor {
 
 	// Used as temp caches for output and input names to port instances
 	private Map<String, ProcessorOutputPortImpl> outputPortNameCache = new HashMap<String, ProcessorOutputPortImpl>();
+
 	protected ProcessorOutputPortImpl getOutputPortWithName(String name) {
 		synchronized (outputPortNameCache) {
 			if (outputPortNameCache.isEmpty()) {
@@ -177,10 +227,22 @@ public final class ProcessorImpl implements Processor {
 		return outputPortNameCache.get(name);
 	}
 
-	
-	
 	/* Implementations of Processor interface */
-		
+
+	public void fire(String enclosingProcess) {
+		Job newJob = new Job(enclosingProcess+":"+this.name, new int[0],
+				new HashMap<String, EntityIdentifier>());
+		dispatchStack.receiveEvent(newJob);
+	}
+
+	public List<? extends Condition> getPreconditionList() {
+		return Collections.unmodifiableList(conditions);
+	}
+
+	public List<? extends Condition> getControlledPreconditionList() {
+		return Collections.unmodifiableList(controlledConditions);
+	}
+
 	public DispatchStackImpl getDispatchStack() {
 		return dispatchStack;
 	}
@@ -190,15 +252,15 @@ public final class ProcessorImpl implements Processor {
 	}
 
 	public List<? extends FilteringInputPort> getInputPorts() {
-		return inputPorts;
+		return Collections.unmodifiableList(inputPorts);
 	}
 
 	public List<? extends OutputPort> getOutputPorts() {
-		return outputPorts;
+		return Collections.unmodifiableList(outputPorts);
 	}
 
 	public List<Service<?>> getServiceList() {
-		return this.serviceList;
+		return Collections.unmodifiableList(serviceList);
 	}
 
 	protected void setName(String newName) {

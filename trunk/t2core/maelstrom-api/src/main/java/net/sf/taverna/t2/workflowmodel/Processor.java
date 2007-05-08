@@ -79,4 +79,36 @@ public interface Processor extends NamedWorkflowEntity {
 	 */
 	public List<Service<?>> getServiceList();
 
+	/**
+	 * A processor with no inputs cannot be driven by the supply of data tokens
+	 * as it has nowhere to receive such tokens. This method allows a processor
+	 * to fire on an empty input set, in this case the owning process identifier
+	 * must be passed explicitly to the processor. Internally this pushes a
+	 * single empty job event into the dispatch queue, bypassing the iteration
+	 * logic (which is entirely predicated on the existence of input ports).
+	 * Callers must ensure that an appropriate process identifier is specified,
+	 * the behaviour on missing or duplicate process identifiers is not defined.
+	 */
+	public void fire(String owningProcess);
+
+	/**
+	 * A processor has zero or more preconditions explicitly declared. All such
+	 * preconditions must be satisfied before any jobs are passed into the
+	 * dispatch stack. These preconditions replace and generalize the
+	 * coordination constraints from Taverna 1.
+	 * 
+	 * @return a List of Condition objects defining constraints on this
+	 *         processor's execution
+	 */
+	public List<? extends Condition> getPreconditionList();
+
+	/**
+	 * A processor may control zero or more other processors within the same
+	 * level of the workflow through preconditions.
+	 * 
+	 * @return a List of Condition objects for which this is the controlling
+	 *         processor
+	 */
+	public List<? extends Condition> getControlledPreconditionList();
+
 }
