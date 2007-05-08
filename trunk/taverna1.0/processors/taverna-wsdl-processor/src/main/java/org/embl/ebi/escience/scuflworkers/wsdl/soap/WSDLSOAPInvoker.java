@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-04 15:56:46 $
+ * Last modified on   $Date: 2007-05-08 13:56:53 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -75,7 +75,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -323,6 +322,10 @@ public class WSDLSOAPInvoker {
 			body.setAttribute("soapenv:encodingStyle","http://schemas.xmlsoap.org/soap/encoding/");
 		}		
 
+		if (getStyle().equalsIgnoreCase("document") && getUse().equalsIgnoreCase("literal")) {
+			stripTypeAttributes(body);
+		}
+		
 		if (logger.isInfoEnabled()) {
 			try {
 				logger.info("Generated SOAP body:" + body.getAsString());
@@ -330,10 +333,7 @@ public class WSDLSOAPInvoker {
 				logger.warn("Cant display soap body", e);
 			}
 		}
-
-		if (getStyle().equalsIgnoreCase("document") && getUse().equalsIgnoreCase("literal")) {
-			stripAttributes(body);
-		}
+		
 		return body;
 	}
 
@@ -617,27 +617,32 @@ public class WSDLSOAPInvoker {
 		return attachmentThing;
 	}
 	
-	private void stripAttributes(Node parent) {
+	private void stripTypeAttributes(Node parent) {
 		if (parent.getNodeType()==Node.ELEMENT_NODE) {
 			Element el = (Element)parent;
 			if (parent.hasAttributes()) {
 				NamedNodeMap map = parent.getAttributes();
-				List<Node> attributeNodes = new ArrayList<Node>();
+				List<Node> attributeNodesForRemoval = new ArrayList<Node>();
 				for (int i=0;i<map.getLength();i++) {
 					Node node = map.item(i);
-					attributeNodes.add(node);
+					
+					if ((node.getLocalName()!=null && node.getLocalName().equals("type")) || (node.getPrefix()!=null && node.getPrefix().equals("xmlns"))) {
+						attributeNodesForRemoval.add(node);
+					}
 				}
 				
-				for (Node node : attributeNodes) {					
+				for (Node node : attributeNodesForRemoval) {	
+					if (logger.isDebugEnabled()) logger.debug("Removing attribute from body: {"+el.getNamespaceURI()+"}"+el.getLocalName());
 					el.removeAttributeNS(node.getNamespaceURI(), node.getLocalName());					
 				}
 			}
 		}
 		
 		if (parent.hasChildNodes()) {
-			for (int i=0;i<parent.getChildNodes().getLength();i++) stripAttributes(parent.getChildNodes().item(i));
+			for (int i=0;i<parent.getChildNodes().getLength();i++) stripTypeAttributes(parent.getChildNodes().item(i));
 		}
 	}
 }
 
+	
 	
