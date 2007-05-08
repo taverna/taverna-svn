@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +37,7 @@ public class BasicEventForwardingOutputPort extends
 	 * Implements EventForwardingOutputPort
 	 */
 	public final Set<EventHandlingInputPort> getTargets() {
-		return this.targets;
+		return Collections.unmodifiableSet(this.targets);
 	}
 
 	/**
