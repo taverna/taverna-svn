@@ -150,11 +150,11 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		System.out.println("Single job with streaming");
 		ContextManager.baseManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
 		final AbstractCrystalizer c = new AbstractCrystalizer() {
-			@Override
+		
 			public void completionCreated(Completion completion) {
 				System.out.println(" ** "+completion.toString());
 			}
-			@Override
+		
 			public void jobCreated(Job outputJob) {
 				System.out.println(" ** "+outputJob.toString());
 			}
