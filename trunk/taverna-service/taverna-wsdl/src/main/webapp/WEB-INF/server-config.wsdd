@@ -24,43 +24,19 @@
  <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
  <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
  <service name="Taverna" provider="java:RPC" style="wrapped" use="literal">
-  <operation name="reset" qname="ns1:reset" soapAction="" xmlns:ns1="http://wsdl.service.taverna.sf.net"/>
-  <operation name="jobs" qname="ns2:jobs" returnQName="ns2:jobsReturn" returnType="xsd:string" soapAction="" xmlns:ns2="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
-  <operation name="runWorkflow" qname="ns3:runWorkflow" returnQName="ns3:runWorkflowReturn" returnType="xsd:string" soapAction="" xmlns:ns3="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns3:scufl" type="xsd:string"/>
-   <parameter qname="ns3:inputDoc" type="xsd:string"/>
-  </operation>
-  <operation name="runWorkflowFile" qname="ns4:runWorkflowFile" returnQName="ns4:runWorkflowFileReturn" returnType="xsd:string" soapAction="" xmlns:ns4="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns4:filename" type="xsd:string"/>
-   <parameter qname="ns4:inputDoc" type="xsd:string"/>
-  </operation>
-  <operation name="jobStatus" qname="ns5:jobStatus" returnQName="ns5:jobStatusReturn" returnType="xsd:string" soapAction="" xmlns:ns5="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns5:job_id" type="xsd:string"/>
-  </operation>
-  <operation name="getResultDocument" qname="ns6:getResultDocument" returnQName="ns6:getResultDocumentReturn" returnType="xsd:string" soapAction="" xmlns:ns6="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns6:job_id" type="xsd:string"/>
-   <fault class="net.sf.taverna.service.wsdl.UnknownJobException" qname="ns6:fault" type="ns6:UnknownJobException"/>
-  </operation>
-  <operation name="getProgressReport" qname="ns7:getProgressReport" returnQName="ns7:getProgressReportReturn" returnType="xsd:string" soapAction="" xmlns:ns7="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns7:job_id" type="xsd:string"/>
-   <fault class="net.sf.taverna.service.wsdl.UnknownJobException" qname="ns7:fault" type="ns7:UnknownJobException"/>
-  </operation>
-  <operation name="getWorkflow" qname="ns8:getWorkflow" returnQName="ns8:getWorkflowReturn" returnType="xsd:string" soapAction="" xmlns:ns8="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns8:job_id" type="xsd:string"/>
-  </operation>
-  <operation name="getInputs" qname="ns9:getInputs" returnQName="ns9:getInputsReturn" returnType="xsd:string" soapAction="" xmlns:ns9="http://wsdl.service.taverna.sf.net" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-   <parameter qname="ns9:job_id" type="xsd:string"/>
-  </operation>
-  <parameter name="allowedMethods" value="getInputs jobStatus getResultDocument reset getProgressReport jobs getWorkflow runWorkflowFile runWorkflow"/>
+  <parameter name="allowedMethods" value="*"/>
   <parameter name="typeMappingVersion" value="1.2"/>
   <parameter name="wsdlPortType" value="Taverna"/>
-  <parameter name="className" value="net.sf.taverna.service.wsdl.Taverna"/>
+  <parameter name="className" value="net.sf.taverna.service.wsdl.TavernaSoapBindingSkeleton"/>
   <parameter name="wsdlServicePort" value="Taverna"/>
-  <parameter name="schemaQualified" value="http://wsdl.service.taverna.sf.net"/>
+  <parameter name="schemaQualified" value="http://wsdl.service.taverna.sf.net,http://interfaces.service.taverna.sf.net"/>
   <parameter name="wsdlTargetNamespace" value="http://wsdl.service.taverna.sf.net"/>
   <parameter name="wsdlServiceElement" value="TavernaService"/>
-  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns10:UnknownJobException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.wsdl.UnknownJobException" xmlns:ns10="http://wsdl.service.taverna.sf.net"/>
-  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns11:TavernaException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.wsdl.TavernaException" xmlns:ns11="http://wsdl.service.taverna.sf.net"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns1:TavernaException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.interfaces.TavernaException" xmlns:ns1="http://interfaces.service.taverna.sf.net"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns2:asdads" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.wsdl.Asdads" xmlns:ns2="http://wsdl.service.taverna.sf.net"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns3:QueueException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.interfaces.QueueException" xmlns:ns3="http://interfaces.service.taverna.sf.net"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns4:UnknownJobException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.interfaces.UnknownJobException" xmlns:ns4="http://interfaces.service.taverna.sf.net"/>
+  <typeMapping deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory" encodingStyle="" qname="ns5:ParseException" serializer="org.apache.axis.encoding.ser.BeanSerializerFactory" type="java:net.sf.taverna.service.interfaces.ParseException" xmlns:ns5="http://interfaces.service.taverna.sf.net"/>
  </service>
  <service name="AdminService" provider="java:MSG">
   <parameter name="allowedMethods" value="AdminService"/>

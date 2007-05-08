@@ -16,6 +16,7 @@
 	</description>
 	<build>
 		<plugins>
+            <!--
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>axistools-maven-plugin</artifactId>
@@ -48,6 +49,7 @@
 					</fileNamespaceToPackage>
 				</configuration>
 			</plugin>
+            -->
 		</plugins>
 	</build>
 	<pluginRepositories>
@@ -67,25 +69,21 @@
 			<version>1.5.1</version>
 		</dependency>
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
-			<version>1.3</version>
+			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<artifactId>taverna-interface</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.3</version>
+			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<artifactId>taverna-rest-xmlbeans</artifactId>
+			<version>1.0.0</version>
 		</dependency>
-		<!--dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis-wsdl4j</artifactId>
-			<version>1.5.1</version>
-			</dependency-->
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis-saaj</artifactId>
-			<version>1.3</version>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>1.0.0</version>
 		</dependency>
-
 	</dependencies>
+
+
 </project>
