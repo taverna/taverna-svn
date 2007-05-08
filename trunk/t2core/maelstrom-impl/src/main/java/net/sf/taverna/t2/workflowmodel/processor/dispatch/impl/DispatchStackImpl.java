@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,7 +255,7 @@ public abstract class DispatchStackImpl implements DispatchStack {
 	 * @see net.sf.taverna.t2.workflowmodel.processor.service.dispatch.DispatchStack#getLayers()
 	 */
 	public List<DispatchLayer> getLayers() {
-		return this.dispatchLayers;
+		return Collections.unmodifiableList(this.dispatchLayers);
 	}
 
 	public void addLayer(DispatchLayer newLayer) {
