@@ -80,7 +80,7 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 	 * Only inputs provided are included as tags within the resulting XML.
 	 */
 	public Map execute(Map inputMap) throws TaskExecutionException {
-		Map<String,DataThing> result = new HashMap<String,DataThing>();
+		Map<String, DataThing> result = new HashMap<String, DataThing>();
 
 		Element outputElement = (this.typeDescriptor.getName().length() > 0 ? new Element(
 				this.typeDescriptor.getName())
@@ -106,6 +106,7 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 										key, listIterator.next());
 								dataElement.addContent(itemElement);
 							}
+
 							XMLOutputter outputter = new XMLOutputter();
 							String xmlText = outputter
 									.outputString(dataElement);
@@ -197,8 +198,11 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						TypeDescriptor desc = (TypeDescriptor) iterator.next();
 						if (desc.getName().equals(portToSplit.getName())) {
 							typeDescriptor = desc;
-							if (typeDescriptor instanceof ArrayTypeDescriptor && !((ArrayTypeDescriptor)typeDescriptor).isWrapped()) {								
-								typeDescriptor=((ArrayTypeDescriptor)typeDescriptor).getElementType();
+							if (typeDescriptor instanceof ArrayTypeDescriptor
+									&& !((ArrayTypeDescriptor) typeDescriptor)
+											.isWrapped()) {
+								typeDescriptor = ((ArrayTypeDescriptor) typeDescriptor)
+										.getElementType();
 							}
 							break;
 						}
@@ -213,8 +217,9 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			defineFromTypeDescriptor();
 	}
 
-	private void executeForComplexType(Map inputMap, Map<String,DataThing> result,
-			Element outputElement) throws JDOMException, IOException {
+	private void executeForComplexType(Map inputMap,
+			Map<String, DataThing> result, Element outputElement)
+			throws JDOMException, IOException {
 		ComplexTypeDescriptor complexDescriptor = (ComplexTypeDescriptor) typeDescriptor;
 		for (Iterator inputIterator = complexDescriptor.getElements()
 				.iterator(); inputIterator.hasNext();) {
@@ -228,15 +233,15 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 					Element arrayElement = buildElementFromObject(key, "");
 
 					String itemkey = "item";
-					boolean wrapped=false;
+					boolean wrapped = false;
 					if (elementType instanceof ArrayTypeDescriptor) {
-						wrapped=((ArrayTypeDescriptor)elementType).isWrapped();
+						wrapped = ((ArrayTypeDescriptor) elementType)
+								.isWrapped();
 						TypeDescriptor arrayElementType = ((ArrayTypeDescriptor) elementType)
 								.getElementType();
 						if (!wrapped) {
-							itemkey=elementType.getName();
-						}
-						else {
+							itemkey = elementType.getName();
+						} else {
 							if (arrayElementType.getName() != null
 									&& arrayElementType.getName().length() > 0) {
 								itemkey = arrayElementType.getName();
@@ -255,22 +260,23 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 								itemObject);
 						if (!wrapped) {
 							outputElement.addContent(dataElement);
-						}
-						else {
+						} else {
 							arrayElement.addContent(dataElement);
 						}
 					}
-					if (wrapped) outputElement.addContent(arrayElement);
+					if (wrapped)
+						outputElement.addContent(arrayElement);
 				} else {
 					Element dataElement = buildElementFromObject(key,
 							dataObject);
 					outputElement.addContent(dataElement);
 				}
 			}
-		}		
-		outputElement.setNamespace(Namespace.getNamespace(typeDescriptor.getNamespaceURI()));	
+		}
+		outputElement.setNamespace(Namespace.getNamespace(typeDescriptor
+				.getNamespaceURI()));
 		XMLOutputter outputter = new XMLOutputter();
-		String xmlText = outputter.outputString(outputElement);		
+		String xmlText = outputter.outputString(outputElement);
 		DataThing outputThing = new DataThing(xmlText);
 		result.put(outputNames[0], outputThing);
 	}
@@ -297,29 +303,21 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 
 	private Element buildElementFromObject(String key, Object dataObject)
 			throws JDOMException, IOException {
-		String namespaceURI = typeDescriptor.getNamespaceURI();		
 
-		Element dataElement;
+		Element dataElement = null;
 
-		if (namespaceURI != null && namespaceURI.length() > 0) {
-			dataElement = new Element(key);			
-			dataElement.setNamespace(Namespace.getNamespace(namespaceURI));
-		}
-		else {
-			dataElement = new Element(key);
-		}
 		if (isXMLInput(key)) {
-			String xml = dataObject.toString();
-			if (xml.length() > 0) {
-				Document doc = new SAXBuilder().build(new StringReader(xml));
-				dataElement = doc.getRootElement();
-				dataElement.detach();
-			}
+			dataElement = createDataElementForXMLInput(dataObject,key);
 		} else {
+			dataElement = new Element(key);
+			String namespaceURI = typeDescriptor.getNamespaceURI();
+			if (namespaceURI != null && namespaceURI.length() > 0) {
+				dataElement.setNamespace(Namespace.getNamespace(namespaceURI));
+			}
 			if (dataObject.toString().equals("nil")) {
 				dataElement.setAttribute("nil", "true"); // changes nil value
-															// to nil=true
-															// attribute.
+				// to nil=true
+				// attribute.
 			} else {
 				if (dataObject instanceof byte[]) {
 					dataElement
@@ -337,6 +335,47 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		}
 		return dataElement;
 	}
+
+	private Element createDataElementForXMLInput(Object dataObject, String key) throws JDOMException, IOException {
+		Element dataElement = null;
+		String xml = dataObject.toString();
+		if (xml.length() > 0) {
+			Document doc = new SAXBuilder().build(new StringReader(xml));
+			dataElement = doc.getRootElement();
+			dataElement.detach();
+		}
+		else {
+			dataElement = new Element(key);
+		}
+		//set the namespace if it can be determined from the element TypeDescriptor
+		if (typeDescriptor instanceof ComplexTypeDescriptor) {
+			TypeDescriptor elementTypeDescriptor = ((ComplexTypeDescriptor)typeDescriptor).elementForName(key);
+			if (elementTypeDescriptor!=null && elementTypeDescriptor.getNamespaceURI()!=null && elementTypeDescriptor.getNamespaceURI().length()>0) {
+				updateElementNamespace(dataElement,elementTypeDescriptor.getNamespaceURI());
+			}
+		}
+		return dataElement;
+	}
+	
+	/**
+	 * Updates the element namespace, and also iterates all descendant elements. If these elements have no default namespace, or is blank
+	 * then it is also set to namespaceURI (JDOM by default will not set the child elements to the same namespace as the element modified but will override them with blank namespaces).
+	 * @param dataElement
+	 * @param namespaceURI
+	 */
+	private void updateElementNamespace(Element dataElement, String namespaceURI) {
+		dataElement.setNamespace(Namespace.getNamespace(namespaceURI));
+		Iterator iterator = dataElement.getDescendants();
+		while (iterator.hasNext()) {
+			Object descendantObject = iterator.next();
+			if (descendantObject instanceof Element) {
+				Element childElement = (Element)descendantObject;
+				if (childElement.getNamespaceURI()==null || childElement.getNamespaceURI().length()==0)
+					childElement.setNamespace(Namespace.getNamespace(namespaceURI));
+			}
+		}
+	}
+	
 
 	private void defineFromTypeDescriptor() {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
