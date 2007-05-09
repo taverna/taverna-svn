@@ -59,9 +59,10 @@ public class WorkflowsResource extends AbstractUserResource {
 	
 	@Override
 	public void post(Representation entity) {
-		if (! restType.includes(entity.getMediaType())) {
+		if (! scuflType.includes(entity.getMediaType())) {
+			logger.warn("Post of unknown workflow media type " + entity.getMediaType());
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, 
-				"Content type must be " + restType);
+				"Content type must be " + scuflType);
 			return;
 		}
 		if (overMaxSize(entity)) {
@@ -74,9 +75,10 @@ public class WorkflowsResource extends AbstractUserResource {
 		} catch (IOException e) {
 			logger.warn("Could not receive Scufl", e);
 		}
+		wf.setOwner(user);
 		wfDao.create(wf);
 		daoFactory.commit();
-		getResponse().setRedirectRef("/workflows/" + wf.getId());
+		getResponse().setRedirectRef(uriFactory.getURI(wf));
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 		
 	}

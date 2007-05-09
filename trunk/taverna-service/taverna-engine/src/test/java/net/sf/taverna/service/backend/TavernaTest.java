@@ -16,14 +16,14 @@ import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
 import net.sf.taverna.service.interfaces.UnknownJobException;
-import net.sf.taverna.service.test.TestCommon;
+import net.sf.taverna.service.test.EngineTest;
 import net.sf.taverna.service.util.XMLUtils;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TavernaTest extends TestCommon {
+public class TavernaTest extends EngineTest {
 
 	private Engine engine;
 	

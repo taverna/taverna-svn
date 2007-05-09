@@ -10,13 +10,16 @@ import java.util.List;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.util.XMLUtils;
+import net.sf.taverna.service.xml.Workflow;
+import net.sf.taverna.service.xml.WorkflowDocument;
 
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
@@ -26,6 +29,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Unit tests for workflow resource creation and retrieval
@@ -42,25 +46,24 @@ public class TestWorkflow extends ClientTest {
 		justCreated = null;
 	}
 	
-	@Ignore
 	@Test
 	public void getAll() throws IOException {
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/workflows");
+		request.setResourceRef(useruri + "/workflows");
+		System.out.println("Checking " + request.getResourceRef());
 		request.setMethod(Method.GET);
 		Response response = client.handle(request);
-		assertTrue(response.getStatus().isSuccess());
-		//response.getEntity().write(System.out);
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
+		response.getEntity().write(System.out);
 	}
 
-	@Ignore
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getAllXML() throws IOException, ParseException {
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/workflows");
+		request.setResourceRef(useruri + "/workflows");
 		request.setMethod(Method.GET);
 		request.getClientInfo().getAcceptedMediaTypes().add(
 			new Preference<MediaType>(restType));
@@ -81,32 +84,31 @@ public class TestWorkflow extends ClientTest {
 		}
 	}
 
-	@Ignore
 	@Test
 	public void create() throws IOException {
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/workflows");
+		request.setResourceRef(useruri + "/workflows");
 		request.setMethod(Method.POST);
 		request.setEntity(workflow, scuflType);
 		Response response = client.handle(request);
-		assertTrue(response.getStatus().isSuccess());
+		assertEquals(Status.SUCCESS_CREATED, response.getStatus());
 		justCreated = response.getRedirectRef();
+		System.out.println("Created " + justCreated);
 	}
 
-	@Ignore
 	@Test
 	public void readJustCreated() throws IOException {
 		if (justCreated == null) {
 			create();
 		}
 		assertNotNull("create() must be run first", justCreated);
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
 		Response response = client.handle(request);
-		assertTrue(response.getStatus().isSuccess());
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		String result = response.getEntity().getText();
 		// Should do text/plain as fallback
 		assertTrue(MediaType.TEXT_PLAIN.includes(response.getEntity().getMediaType()));
@@ -115,23 +117,25 @@ public class TestWorkflow extends ClientTest {
 	}
 
 	@Test
-	public void readJustCreatedXML() throws IOException {
+	public void readJustCreatedXML() throws IOException, XmlException {
 		if (justCreated == null) {
 			create();
 		}
 		assertNotNull("create() must be run first", justCreated);
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
 		request.getClientInfo().getAcceptedMediaTypes().add(
 			new Preference<MediaType>(restType));
 		Response response = client.handle(request);
-		assertTrue(response.getStatus().isSuccess());
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertTrue(restType.includes(response.getEntity().getMediaType()));
-		System.out.println("xml");
-		System.out.println(response.getEntity().getText());
-		assertTrue(response.getEntity().getText().contains("s:scufl"));
+
+		
+		Workflow wf = WorkflowDocument.Factory.parse(response.getEntity().getStream()).getWorkflow();
+		assertEquals("User URI didn't match owner", useruri, wf.getOwner().getHref());
+		System.out.println("Compared *** " + wf.getScufl().equals(XmlObject.Factory.parse(workflow)));
 	}
 
 	@Test
@@ -140,16 +144,16 @@ public class TestWorkflow extends ClientTest {
 			create();
 		}
 		assertNotNull("create() must be run first", justCreated);
-		Request request = new Request();
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
 		request.getClientInfo().getAcceptedMediaTypes().add(
 			new Preference<MediaType>(scuflType));
 		Response response = client.handle(request);
-		assertTrue(response.getStatus().isSuccess());
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertTrue(scuflType.includes(response.getEntity().getMediaType()));
-		System.out.println("scufl");
+		System.out.println("scufl is");
 		System.out.println(response.getEntity().getText());
 		assertTrue(response.getEntity().getText().equals(workflow));
 	}

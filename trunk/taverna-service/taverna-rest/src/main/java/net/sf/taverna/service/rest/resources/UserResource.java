@@ -35,7 +35,6 @@ public class UserResource extends AbstractUserResource {
 		sb.append("User ").append(user.getUsername()).append('\n');
 		sb.append("Created: ").append(user.getCreated()).append('\n');
 		sb.append("Last-Modified: ").append(user.getLastModified()).append('\n');
-		sb.append(generateRef("{rb}/job/{m}"));
 
 		if (user.getEmail() != null) {
 			sb.append("Email: ").append(user.getEmail());

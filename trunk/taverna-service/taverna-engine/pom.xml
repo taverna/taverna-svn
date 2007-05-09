@@ -41,8 +41,8 @@
 			<groupId>uk.org.mygrid.tavernaservice</groupId>
 			<artifactId>taverna-datastore</artifactId>
 			<version>1.0.0</version>
-            <type>test-jar</type>
-            <scope>test</scope>
+			<type>test-jar</type>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Core Taverna bindings -->
@@ -130,4 +130,60 @@
 		</dependency>
 
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>start derby test db</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<!--<echo message="Starting Apache Derby" />-->
+								<java
+									classname="org.apache.derby.drda.NetworkServerControl"
+									fork="yes" spawn="yes" dir="target">
+									<classpath
+										refid="maven.test.classpath" />
+									<arg line="start -p 1337" />
+								</java>
+								<echo message="Started Apache Derby" />
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop derby test db</id>
+						<phase>test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<!--<echo message="Stopping Apache Derby" />-->
+								<java
+									classname="org.apache.derby.drda.NetworkServerControl"
+									fork="yes" failonerror="yes">
+									<classpath
+										refid="maven.test.classpath" />
+									<arg line="shutdown -p 1337" />
+								</java>
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

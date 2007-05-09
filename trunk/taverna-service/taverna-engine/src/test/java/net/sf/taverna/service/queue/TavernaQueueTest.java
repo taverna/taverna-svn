@@ -10,13 +10,13 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import java.util.Map;
 
-import net.sf.taverna.service.test.TestCommon;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Job.State;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
+import net.sf.taverna.service.test.EngineTest;
 import net.sf.taverna.service.util.XMLUtils;
 
 import org.embl.ebi.escience.baclava.DataThing;
@@ -25,7 +25,7 @@ import org.junit.Test;
 
 
 
-public class TavernaQueueTest extends TestCommon {
+public class TavernaQueueTest extends EngineTest {
 	
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 	

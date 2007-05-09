@@ -45,7 +45,7 @@ public class TestUser extends ClientTest {
 		Request request = new Request();
 		userName = "test-" + UUID.randomUUID();
 		Client client = new Client(Protocol.HTTP);
-		String url = BASE_URL + "/v1/users";
+		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
 		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
@@ -68,7 +68,7 @@ public class TestUser extends ClientTest {
 	public void createMinimal() throws IOException {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
-		String url = BASE_URL + "/v1/users";
+		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
 		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +

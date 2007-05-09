@@ -2,19 +2,22 @@ package net.sf.taverna.service.rest.client;
 
 import static org.junit.Assert.assertEquals;
 
+import net.sf.taverna.service.rest.ClientTest;
+
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
 
 
-public class TestTavernaService {
+public class TestTavernaService extends ClientTest {
 	private static Logger logger = Logger.getLogger(TestTavernaService.class);
+	
 	private RESTContext context;
 	
 	@Before
 	public void findUser() throws NotSuccessException {
-		context = RESTContext.register("http://localhost:8976/v1/");
+		context = RESTContext.register(BASE_URL);
 	}
 	
 	@Test

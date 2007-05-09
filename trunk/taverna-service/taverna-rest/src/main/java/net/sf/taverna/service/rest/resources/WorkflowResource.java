@@ -13,6 +13,9 @@ import org.apache.xmlbeans.XmlString;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.StringRepresentation;
+import org.restlet.resource.Variant;
 
 public class WorkflowResource extends AbstractResource {
 
@@ -27,6 +30,7 @@ public class WorkflowResource extends AbstractResource {
 		String wf_id = (String) request.getAttributes().get("workflow");
 		workflow = dao.read(wf_id);
 		checkEntity(workflow);
+		getVariants().add(new Variant(scuflType));
 	}
 
 	@Override
@@ -50,15 +54,25 @@ public class WorkflowResource extends AbstractResource {
 		net.sf.taverna.service.xml.Workflow wfElem = wfDoc.addNewWorkflow();
 		if (workflow.getOwner() != null) {
 			wfElem.addNewOwner().setHref(uriFactory.getURI(workflow.getOwner()));
+			//wfElem.getOwner().setUsername(workflow.getOwner().getUsername());
 		}
 		wfElem.setId(workflow.getId());
 		try {
 			wfElem.addNewScufl().set(XmlString.Factory.parse(workflow.getScufl()));
 		} catch (XmlException e) {
-			// TODO Auto-generated catch block
-			logger.warn("An error occured", e);
+			logger.warn("Could not include invalid XScufl for " + workflow, e);
 		}
+		
+		System.out.println("Validated as: " + wfElem.validate(xmlOptions));
 		return wfElem.xmlText(xmlOptions);
+	}
+	
+	@Override
+	public Representation getRepresentation(Variant variant) {
+		if (scuflType.includes(variant.getMediaType())) {
+			return new StringRepresentation(workflow.getScufl(), scuflType);
+		}
+		return super.getRepresentation(variant);
 	}
 
 }

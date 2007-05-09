@@ -48,7 +48,7 @@ public class TestDataDoc extends ClientTest {
 	public void getAll() throws IOException {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/data");
+		request.setResourceRef(BASE_URL + "data");
 		request.setMethod(Method.GET);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
@@ -60,7 +60,7 @@ public class TestDataDoc extends ClientTest {
 	public void getAllXML() throws IOException, ParseException {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/data");
+		request.setResourceRef(BASE_URL + "data");
 		request.setMethod(Method.GET);
 		request.getClientInfo().getAcceptedMediaTypes().add(
 			new Preference<MediaType>(restType));
@@ -87,7 +87,7 @@ public class TestDataDoc extends ClientTest {
 	public void create() throws IOException {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
-		request.setResourceRef(BASE_URL + "/data");
+		request.setResourceRef(BASE_URL + "data");
 		request.setMethod(Method.POST);
 		request.setEntity(datadoc, baclavaType);
 		Response response = client.handle(request);
