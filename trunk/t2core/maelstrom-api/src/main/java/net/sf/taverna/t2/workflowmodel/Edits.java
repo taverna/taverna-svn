@@ -52,6 +52,23 @@ public interface Edits {
 			Service<?> service);
 
 	/**
+	 * Connect the output port of the specified processor to a target input
+	 * port. To connect multiple inputs use this method multiple times with
+	 * different targetPort arguments.
+	 * 
+	 * @param processor
+	 *            Processor to link from
+	 * @param outputPortName
+	 *            Name of the output port within the specified processor to link
+	 *            from
+	 * @param targetPort
+	 *            Input port (specifically an EventHandlingInputPort) to forward
+	 *            data events to.
+	 */
+	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
+			String outputPortName, EventHandlingInputPort targetPort);
+
+	/**
 	 * Add a new layer to the specified dispath stack
 	 * 
 	 * @param stack

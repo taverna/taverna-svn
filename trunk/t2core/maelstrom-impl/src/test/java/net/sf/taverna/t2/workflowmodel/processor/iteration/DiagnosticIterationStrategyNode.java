@@ -98,4 +98,9 @@ public class DiagnosticIterationStrategyNode extends
 		}
 		jobs.add(newJob);
 	}
+
+	public int getIterationDepth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

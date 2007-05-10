@@ -43,6 +43,16 @@ public class IterationStrategyImpl implements IterationStrategy {
 
 	private TerminalNode terminal = new TerminalNode();
 
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	public void setDepth(String inputName, int depth) {
+		for (NamedInputPortNode nipn : inputs) {
+			if (nipn.getPortName().equals(inputName)) {
+				nipn.setObservedIterationDepth(depth);
+			}
+		}
+	}
+
 	class TerminalNode extends AbstractIterationStrategyNode {
 
 		public void receiveCompletion(int inputIndex, Completion completion) {
@@ -76,6 +86,14 @@ public class IterationStrategyImpl implements IterationStrategy {
 				} else {
 					below.receiveEvent(e);
 				}
+			}
+		}
+
+		public int getIterationDepth() {
+			if (getChildren().isEmpty()) {
+				return -1;
+			} else {
+				return getChildren().get(0).getIterationDepth();
 			}
 		}
 
@@ -120,9 +138,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 		}
 		Enumeration children = node.children();
 		while (children.hasMoreElements()) {
-			TreeNode tn = (TreeNode)children.nextElement();
+			TreeNode tn = (TreeNode) children.nextElement();
 			nodeElement
-			.addContent(elementForNode((AbstractIterationStrategyNode) tn));
+					.addContent(elementForNode((AbstractIterationStrategyNode) tn));
 		}
 		return nodeElement;
 	}
@@ -191,6 +209,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 						.getOwningProcess());
 				NamedInputPortNode ipn = nodeForName(portName);
 				int desiredDepth = ipn.getCardinality();
+				ipn
+						.setObservedIterationDepth(dataRef.getDepth()
+								- desiredDepth);
 				Iterator<ContextualizedIdentifier> ids = manager.traverse(
 						dataRef, desiredDepth);
 				while (ids.hasNext()) {
@@ -293,9 +314,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 			CrossProduct cp = new CrossProduct();
 			cp.setParent(terminal);
 			nipn.setParent(cp);
-		}
-		else {
-			AbstractIterationStrategyNode node = (AbstractIterationStrategyNode)(terminal.getChildAt(0));
+		} else {
+			AbstractIterationStrategyNode node = (AbstractIterationStrategyNode) (terminal
+					.getChildAt(0));
 			nipn.setParent(node);
 		}
 	}

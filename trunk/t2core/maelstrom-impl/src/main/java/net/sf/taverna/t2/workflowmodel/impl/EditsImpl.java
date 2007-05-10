@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -57,6 +58,10 @@ public class EditsImpl implements Edits {
 	public Edit<Processor> getRenameProcessorEdit(Processor processor,
 			String newName) {
 		return new RenameProcessorEdit(processor, newName);
+	}
+
+	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor, String outputPortName, EventHandlingInputPort targetPort) {
+		return new ConnectProcessorOutputEdit(processor, outputPortName, targetPort);
 	}
 
 }

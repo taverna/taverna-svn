@@ -42,4 +42,6 @@ public interface IterationStrategyNode extends TreeNode {
 	
 	public void clear();
 	
+	public int getIterationDepth();
+	
 }

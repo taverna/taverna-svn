@@ -32,10 +32,16 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort {
 				.lastIndexOf(':'));
 		sendEvent(new WorkflowDataToken(newOwner, token
 					.getIndex(), token.getData()));
-		for (EventHandlingInputPort target : targets) {
-			target.receiveEvent(new WorkflowDataToken(newOwner, token
-					.getIndex(), token.getData()));
+	}
+	
+	protected void addTarget(EventHandlingInputPort newTarget) {
+		if (targets.contains(newTarget) == false) {
+			targets.add(newTarget);
 		}
+	}
+	
+	protected void removeTarget(EventHandlingInputPort target) {
+		targets.remove(target);
 	}
 
 }

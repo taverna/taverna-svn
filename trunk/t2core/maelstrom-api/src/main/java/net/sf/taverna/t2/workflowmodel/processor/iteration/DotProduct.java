@@ -20,10 +20,10 @@ public class DotProduct extends AbstractIterationStrategyNode {
 
 	Map<String, TreeCache[]> ownerToCache = new HashMap<String, TreeCache[]>();
 
-	/**
-	 * Receive a job, emit jobs corresponding to the orthogonal join of the new
-	 * job with all jobs in all other input lists.
-	 */
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	private int oid = -1;
+
 	public synchronized void receiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
 		if (!ownerToCache.containsKey(owningProcess)) {
@@ -73,7 +73,17 @@ public class DotProduct extends AbstractIterationStrategyNode {
 					.getOwningProcess(), inputIndex);
 			if (allDone) {
 				ownerToCache.remove(completion.getOwningProcess());
+				pushCompletion(completion);
 			}
+		}
+	}
+
+	public int getIterationDepth() {
+		if (oid > -1) {
+			return oid;
+		} else {
+			this.oid = getChildren().get(0).getIterationDepth();
+			return this.oid;
 		}
 	}
 

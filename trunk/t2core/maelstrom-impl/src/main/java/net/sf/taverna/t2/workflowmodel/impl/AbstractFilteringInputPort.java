@@ -24,20 +24,32 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 
 	protected AbstractFilteringInputPort(String name, int depth) {
 		super(name, depth);
+		this.filterDepth = depth;
 	}
 
-	private int filterDepth = -1;
+	private int filterDepth;
 
 	public void receiveEvent(Event e) {
 		if (e instanceof WorkflowDataToken) {
-			receiveToken((WorkflowDataToken)e);
-		}
-		else {
-			throw new WorkflowStructureException("Filtering input port only accepts WorkflowDataToken");
+			receiveToken((WorkflowDataToken) e);
+		} else {
+			throw new WorkflowStructureException(
+					"Filtering input port only accepts WorkflowDataToken");
 		}
 	}
-	
+
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	private int oid = -1;
+
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	public int getObservedDepth() {
+		return this.oid;
+	}
+
 	public void receiveToken(WorkflowDataToken token) {
+		this.oid = token.getIndex().length + token.getData().getDepth();
 		String newOwner = transformOwningProcess(token.getOwningProcess());
 		if (filterDepth == -1) {
 			throw new WorkflowStructureException(
@@ -78,14 +90,25 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 				// Convert to a completion event and push into the iteration
 				// strategy
 				pushCompletion(getName(), newOwner, token.getIndex());
-			}
-
-			pushData(getName(), newOwner, token.getIndex(), token.getData());
-			// If we're filtering and the filter depth is equal to the port
-			// depth then everything's easy, we can just ignore anything finer
-			// grained.
-			if (filterDepth == getDepth()) {
-
+			} else if (tokenDepth < filterDepth) {
+				// Normally we can ignore these, but there is a special case
+				// where token depth is less than filter depth and there is no
+				// index array. In this case we can't throw the token away as
+				// there will never be an enclosing one so we have to use the
+				// data manager to register a new single element collection and
+				// recurse.
+				if (token.getIndex().length == 0) {
+					DataManager dManager = ContextManager
+							.getDataManager(newOwner);
+					EntityIdentifier ref = token.getData();
+					int currentDepth = tokenDepth;
+					while (currentDepth < filterDepth) {
+						ref = dManager
+								.registerList(new EntityIdentifier[] { ref });
+						currentDepth++;
+					}
+					pushData(getName(), newOwner, new int[0], ref);
+				}
 			}
 		}
 	}

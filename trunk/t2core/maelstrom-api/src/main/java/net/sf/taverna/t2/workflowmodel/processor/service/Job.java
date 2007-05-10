@@ -66,6 +66,12 @@ public class Job extends Event {
 		this.owner = owner;
 		this.index = index;
 		this.dataMap = data;
+		if (index == null) {
+			throw new RuntimeException("Job index cannot be null");
+		}
+		if (owner == null) {
+			throw new RuntimeException("Owning process cannot be null");
+		}
 	}
 
 	/**

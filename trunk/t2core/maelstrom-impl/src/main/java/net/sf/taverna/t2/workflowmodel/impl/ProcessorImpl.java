@@ -70,6 +70,7 @@ public final class ProcessorImpl implements Processor {
 		// events to the dispatch stack.
 		iterationStack = new IterationStrategyStackImpl() {
 			protected void receiveEventFromStrategy(Event e) {
+				//System.out.println("Sending event to dispatch stack "+e);
 				dispatchStack.receiveEvent(e);
 			}
 		};
@@ -88,6 +89,7 @@ public final class ProcessorImpl implements Processor {
 			 */
 			@Override
 			protected void pushEvent(Event e) {
+				//System.out.println("Sending event to crystalizer : "+e);
 				crystalizer.receiveEvent(e);
 			}
 
@@ -269,6 +271,15 @@ public final class ProcessorImpl implements Processor {
 
 	public String getLocalName() {
 		return this.name;
+	}
+
+	public int getEmptyListDepth(String owningProcess) {
+		return this.iterationStack.getIterationDepth();
+	}
+
+	public void forgetDepthFor(String owningProcess) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

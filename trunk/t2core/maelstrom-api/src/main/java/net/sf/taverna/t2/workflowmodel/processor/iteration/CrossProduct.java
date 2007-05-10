@@ -24,6 +24,10 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 
 	private Map<String, List<Set<Job>>> ownerToCache = new HashMap<String, List<Set<Job>>>();
 
+	/**
+	 * Receive a job, emit jobs corresponding to the orthogonal join of the new
+	 * job with all jobs in all other input lists.
+	 */
 	public synchronized void receiveJob(int inputIndex, Job newJob) {
 		if (!ownerToCache.containsKey(newJob.getOwningProcess())) {
 			List<Set<Job>> perInputCache = new ArrayList<Set<Job>>();
@@ -87,12 +91,29 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 	public synchronized void receiveCompletion(int inputIndex,
 			Completion completion) {
 		if (completion.isFinal()) {
-			boolean allDone = receiveFinalCompletion(completion.getOwningProcess(), inputIndex);
+			boolean allDone = receiveFinalCompletion(completion
+					.getOwningProcess(), inputIndex);
 			if (allDone) {
 				ownerToCache.remove(completion.getOwningProcess());
 			}
 		}
 
+	}
+
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	private int oid = -1;
+
+	public synchronized int getIterationDepth() {
+		if (this.oid > -1) {
+			return this.oid;
+		} else {
+			this.oid = 0;
+			for (IterationStrategyNode child : getChildren()) {
+				this.oid += child.getIterationDepth();
+			}
+			return this.oid;
+		}
 	}
 
 }

@@ -24,6 +24,14 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 
 	private List<IterationStrategyImpl> strategies = new ArrayList<IterationStrategyImpl>();
 
+	public int getIterationDepth() {
+		int depth = 0;
+		for (IterationStrategyImpl isi : strategies) {
+			depth += isi.getTerminal().getIterationDepth();
+		}
+		return depth;
+	}
+	
 	public void addStrategy(IterationStrategy is) {
 		if (is instanceof IterationStrategyImpl) {
 			IterationStrategyImpl isi = (IterationStrategyImpl)is;

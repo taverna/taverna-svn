@@ -86,6 +86,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 		List<Service> newServiceList = new ArrayList<Service>();
 		newServiceList.add(services.get(0));
 		getBelow().receiveJob(job, newServiceList);
+		
 	}
 
 	class FailoverState extends JobState {

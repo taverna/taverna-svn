@@ -23,8 +23,7 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
  * of simultaneous jobs to the layer below. It observes failure, data and
  * completion events coming up and uses these to determine when to push more
  * jobs downwards into the stack as well as when it can safely emit completion
- * events from the queue.
- * <table>
+ * events from the queue. <table>
  * <tr>
  * <th>DispatchMessageType</th>
  * <th>DispatchLayerAction</th>
@@ -60,20 +59,22 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
  * @author Tom Oinn
  * 
  */
-public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig> implements
-		NotifiableLayer {
+public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
+		implements NotifiableLayer {
 
 	private Map<String, StateModel> stateMap = new HashMap<String, StateModel>();
 
 	private ParallelizeConfig config = new ParallelizeConfig();
-	
+
 	public Parallelize() {
 		super();
-		messageActions.put(DispatchMessageType.JOBQUEUE, DispatchLayerAction.ACTNORELAY);
-		messageActions.put(DispatchMessageType.JOB, DispatchLayerAction.FORBIDDEN);
+		messageActions.put(DispatchMessageType.JOBQUEUE,
+				DispatchLayerAction.ACTNORELAY);
+		messageActions.put(DispatchMessageType.JOB,
+				DispatchLayerAction.FORBIDDEN);
 		producesMessage.put(DispatchMessageType.JOB, true);
 	}
-	
+
 	public Parallelize(int maxJobs) {
 		super();
 		config.setMaximumJobs(maxJobs);
@@ -160,7 +161,11 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig> implem
 		@SuppressWarnings("unchecked")
 		public void receiveEvent(Event e) {
 			synchronized (pendingEvents) {
-				pendingEvents.add(e);
+				if (e instanceof Completion && pendingEvents.isEmpty()) {
+					getAbove().receiveResultCompletion((Completion) e);
+				} else {
+					pendingEvents.add(e);
+				}
 			}
 			if (e instanceof Job) {
 				activeJobs++;
@@ -232,7 +237,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig> implem
 	}
 
 	public void configure(ParallelizeConfig config) {
-		this.config = config;		
+		this.config = config;
 	}
 
 	public ParallelizeConfig getConfiguration() {

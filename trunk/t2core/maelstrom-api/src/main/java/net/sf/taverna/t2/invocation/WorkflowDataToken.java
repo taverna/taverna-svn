@@ -24,6 +24,8 @@ public class WorkflowDataToken extends Event {
 	 */
 	public WorkflowDataToken(String owningProcess, int[] index, EntityIdentifier dataRef) {
 		this.dataRef = dataRef;
+		this.index = index;
+		this.owner = owningProcess;
 	}
 
 	@Override
@@ -46,6 +48,29 @@ public class WorkflowDataToken extends Event {
 	 */
 	public EntityIdentifier getData() {
 		return this.dataRef;
+	}
+	
+	/**
+	 * Show the owner, index array and data map in textual form for debugging
+	 * and any other purpose. Jobs appear in the form :
+	 * 
+	 * <pre>
+	 * Job(Process1)[2,0]{Input2=dataID4,Input1=dataID3}
+	 * </pre>
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("Token(" + owner + ")[");
+		for (int i = 0; i < index.length; i++) {
+			if (i > 0) {
+				sb.append(",");
+			}
+			sb.append(index[i] + "");
+		}
+		sb.append("]{");
+		sb.append(dataRef.toString());
+		sb.append("}");
+		return sb.toString();
 	}
 
 }

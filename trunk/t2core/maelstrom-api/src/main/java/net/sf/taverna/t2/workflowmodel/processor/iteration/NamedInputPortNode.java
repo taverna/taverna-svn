@@ -18,6 +18,10 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 
 	private int desiredCardinality;
 
+	// FIXME - this should really be per-process or at least be possible to
+	// reset.
+	private int oid = -1;
+
 	public NamedInputPortNode(String name, int cardinality) {
 		super();
 		this.portName = name;
@@ -70,6 +74,27 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 	 */
 	public boolean getAllowsChildren() {
 		return false;
+	}
+
+	/**
+	 * The iteration depth is the difference between cardinality of the given
+	 * and expected input data plus the index array length of that data. For
+	 * example, if this input port expected a single item and was given an array
+	 * with an index length 2 the value returned here would be 3, one for the
+	 * single step mismatch in depth and two for the index array defining the
+	 * position of that input list within its parent collection. This is set by
+	 * the internal logic of the workflow when data is first received by a
+	 * processor input port.
+	 */
+	public void setObservedIterationDepth(int oid) {
+		this.oid = oid;
+	}
+
+	/**
+	 * Returns the value defined by the setObservedIterationDepth method.
+	 */
+	public int getIterationDepth() {
+		return this.oid;
 	}
 
 }

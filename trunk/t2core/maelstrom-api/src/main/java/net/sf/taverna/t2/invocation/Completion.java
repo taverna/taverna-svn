@@ -5,6 +5,10 @@ package net.sf.taverna.t2.invocation;
  * statement that no further events will occur on this channel with an index
  * prefixed by the completion index. As with Job events completion events have
  * an owning process with the same semantics as that of the Job class
+ * <p>
+ * The conceptual depth of a completion is the sum of the length of index array
+ * for any data tokens the completion shares a stream with and the depth of
+ * those tokens. This should be constant for any given token stream.
  * 
  * @author Tom Oinn
  * 
@@ -33,7 +37,7 @@ public class Completion extends Event {
 		this.owner = owningProcess;
 		this.index = new int[0];
 	}
-
+	
 	/**
 	 * A completion event is final if its index array is zero length
 	 * 

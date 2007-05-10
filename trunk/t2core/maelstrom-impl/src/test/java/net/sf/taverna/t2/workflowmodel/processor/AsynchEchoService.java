@@ -28,7 +28,6 @@ public class AsynchEchoService extends
 		EntityIdentifier inputID = data.get("input");
 		Map<String, EntityIdentifier> outputMap = new HashMap<String, EntityIdentifier>();
 		outputMap.put("output", inputID);
-		System.out.println(config.getFoo());
 		callback.receiveResult(outputMap, new int[0]);
 	}
 
