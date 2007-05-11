@@ -7,6 +7,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.log4j.Logger;
+
 /**
  * This class provides the base class for all Stream-based transmitters. These
  * transmitters transmit an object or a reflector containing a set of parameters
@@ -16,9 +21,13 @@ import java.util.Map;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class AbstractStreamTransmitter implements StreamTransmitter {
+	
+	private static Logger logger = Logger
+			.getLogger(AbstractStreamTransmitter.class);
+	
 	protected String serviceName = null;
 
 	protected HashMap mimeHeaders = null;
@@ -118,6 +127,27 @@ public abstract class AbstractStreamTransmitter implements StreamTransmitter {
 		ex.setDetailMsg(sb.toString());
 
 		return ex;
+	}
+	
+	protected void setProxy(HttpClient client) {
+		String host = System.getProperty("http.proxyHost");
+		String port = System.getProperty("http.proxyPort");
+		String user = System.getProperty("http.proxyUser");
+		String password = System.getProperty("http.proxyPassword");
+
+		if (host != null && port != null) {
+			try {
+				int portInteger = Integer.parseInt(port);
+				client.getHostConfiguration().setProxy(host, portInteger);
+				if (user != null && password != null) {
+					client.getState().setProxyCredentials(
+							new AuthScope(host, portInteger),
+							new UsernamePasswordCredentials(user, password));
+				}
+			} catch (NumberFormatException e) {
+				logger.error("Proxy port not an integer", e);
+			}
+		}
 	}
 
 }

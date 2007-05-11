@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GetStreamTransmitter extends AbstractStreamTransmitter {
 
@@ -66,6 +66,7 @@ public class GetStreamTransmitter extends AbstractStreamTransmitter {
 			config.setHost(host, port);
 			HttpClient client = new HttpClient();
 			client.setHostConfiguration(config);
+			setProxy(client);
 			// client.startSession(host, port);
 			client.executeMethod(method);
 

@@ -20,7 +20,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PostStreamTransmitter extends AbstractStreamTransmitter {
 
@@ -67,6 +67,7 @@ public class PostStreamTransmitter extends AbstractStreamTransmitter {
 			config.setHost(host, port);
 			HttpClient client = new HttpClient();
 			client.setHostConfiguration(config);
+			setProxy(client);
 			client.executeMethod(method);
 
 			outputMap = streamProcessor.processStream(method.getResponseBodyAsStream());
