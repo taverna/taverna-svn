@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 14:50:18 $
+ * Last modified on   $Date: 2007-05-11 15:34:16 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -197,17 +197,17 @@ public class TypeDescriptor {
 		if (!(descriptor instanceof BaseTypeDescriptor)) {
 			if (descriptor instanceof ComplexTypeDescriptor) {
 				result = testForCyclic((ComplexTypeDescriptor) descriptor,
-						new ArrayList());
+						new ArrayList<String>());
 			} else {
 				result = testForCyclic((ArrayTypeDescriptor) descriptor,
-						new ArrayList());
+						new ArrayList<String>());
 			}
 		}
 		return result;
 	}
 
 	private static boolean testForCyclic(ComplexTypeDescriptor descriptor,
-			List parents) {
+			List<String> parents) {
 		boolean result = false;
 		String descKey = descriptor.getQname().toString();
 		if (parents.contains(descKey))
@@ -236,7 +236,7 @@ public class TypeDescriptor {
 	}
 
 	private static boolean testForCyclic(ArrayTypeDescriptor descriptor,
-			List parents) {
+			List<String> parents) {
 		boolean result = false;
 		String descKey = descriptor.getQname().toString();
 		if (parents.contains(descKey))

@@ -258,7 +258,9 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						Object itemObject = itemIterator.next();
 						Element dataElement = buildElementFromObject(itemkey,
 								itemObject);
+						dataElement.setNamespace(Namespace.getNamespace(elementType.getNamespaceURI()));
 						if (!wrapped) {
+							dataElement.setName(itemkey);
 							outputElement.addContent(dataElement);
 						} else {
 							arrayElement.addContent(dataElement);
@@ -310,10 +312,8 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 			dataElement = createDataElementForXMLInput(dataObject,key);
 		} else {
 			dataElement = new Element(key);
-			String namespaceURI = typeDescriptor.getNamespaceURI();
-			if (namespaceURI != null && namespaceURI.length() > 0) {
-				dataElement.setNamespace(Namespace.getNamespace(namespaceURI));
-			}
+			String namespaceURI = null;
+			setDataElementNamespace(key, dataElement);
 			if (dataObject.toString().equals("nil")) {
 				dataElement.setAttribute("nil", "true"); // changes nil value
 				// to nil=true
@@ -347,14 +347,21 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		else {
 			dataElement = new Element(key);
 		}
-		//set the namespace if it can be determined from the element TypeDescriptor
+		
+		setDataElementNamespace(key, dataElement);
+		return dataElement;
+	}
+
+	//set the namespace if it can be determined from the element TypeDescriptor by the key
+	private void setDataElementNamespace(String key, Element dataElement) {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
 			TypeDescriptor elementTypeDescriptor = ((ComplexTypeDescriptor)typeDescriptor).elementForName(key);
-			if (elementTypeDescriptor!=null && elementTypeDescriptor.getNamespaceURI()!=null && elementTypeDescriptor.getNamespaceURI().length()>0) {
-				updateElementNamespace(dataElement,elementTypeDescriptor.getNamespaceURI());
+			if (!(elementTypeDescriptor instanceof BaseTypeDescriptor)) { // we rely on the namespace of the parent if it is a Base type
+				if (elementTypeDescriptor!=null && elementTypeDescriptor.getNamespaceURI()!=null && elementTypeDescriptor.getNamespaceURI().length()>0) {
+					updateElementNamespace(dataElement,elementTypeDescriptor.getNamespaceURI());
+				}
 			}
 		}
-		return dataElement;
 	}
 	
 	/**

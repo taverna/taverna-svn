@@ -1,12 +1,12 @@
 package org.embl.ebi.escience.scuflworkers.wsdl;
 
-import junit.framework.TestCase;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 
-public class WSDLBasedScavengerTest extends TestCase {
+public class WSDLBasedScavengerTest extends WSDLBasedTestCase {
 
 	public void testScavenger() throws Exception {
 		WSDLBasedScavenger scavenger = new WSDLBasedScavenger(
-				"http://webservices.oracle.com/ws/guid/oracle.ws.OTNGUIDGenerator?WSDL");
+				TESTWSDL_BASE+"GUIDGenerator.wsdl");
 		assertEquals(
 				"root description is incorrect",
 				"porttype: OTNGUIDGeneratorPortType [<font color=\"green\">RPC</font>]",
@@ -15,7 +15,7 @@ public class WSDLBasedScavengerTest extends TestCase {
 
 	public void testScavengerNCBIEutils_Lite() throws Exception {
 		WSDLBasedScavenger scavenger = new WSDLBasedScavenger(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 		assertEquals(
 				"root description is incorrect",
 				"porttype: eUtilsServiceSoap [<font color=\"blue\">DOCUMENT</font>]",

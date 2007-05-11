@@ -9,14 +9,15 @@ import javax.wsdl.Operation;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 
-public class WSDLParserTest extends TestCase {
+public class WSDLParserTest extends WSDLBasedTestCase {
 
 	private static Logger logger = Logger.getLogger(WSDLParser.class);
 
 	public void testGetOperations() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 		List operations = parser.getOperations();
 		assertEquals(
 				"wrong number of operations found (wsdl may have changed)", 12,
@@ -29,65 +30,14 @@ public class WSDLParserTest extends TestCase {
 
 	public void testGetActionURI() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 		String actionURI = parser.getSOAPActionURI("run_eInfo");
 		assertEquals("action uri is wrong", "einfo", actionURI);
 	}
 
-	// The WS this test is using is now dead :(
-	// commented out until we set up our own test web-services.
-	//FIXME: replace test to use reliable service.
-//	public void testGetOperationParameters() throws Exception {
-//		WSDLParser parser = new WSDLParser(
-//				"http://www.ebi.ac.uk/ws/WSFasta.wsdl");
-//
-//		List inputs = parser.getOperationInputParameters("doFasta");
-//		List outputs = parser.getOperationOutputParameters("doFasta");
-//		assertEquals("wrong number of inputs", 2, inputs.size());
-//		assertTrue(
-//				"wrong class type for descriptor - should be ComplexTypeDescriptor",
-//				inputs.get(0) instanceof ComplexTypeDescriptor);
-//		assertEquals("wrong type", "inputParams", ((TypeDescriptor) inputs
-//				.get(0)).getType());
-//		assertEquals("wrong name", "params", ((TypeDescriptor) inputs.get(0))
-//				.getName());
-//
-//		List inputParamsElements = ((ComplexTypeDescriptor) inputs.get(0))
-//				.getElements();
-//
-//		assertEquals("wrong number of elements", 18, inputParamsElements.size());
-//
-//		assertEquals("wrong name for first element", "program",
-//				((TypeDescriptor) inputParamsElements.get(0)).getName());
-//		assertEquals("wrong name for last element", "email",
-//				((TypeDescriptor) inputParamsElements.get(17)).getName());
-//		assertEquals("wrong type for first element", "string",
-//				((TypeDescriptor) inputParamsElements.get(0)).getType());
-//		assertEquals("wrong type for last element", "string",
-//				((TypeDescriptor) inputParamsElements.get(17)).getType());
-//
-//		assertTrue(
-//				"wrong class type for descriptor - should be TypeDescriptor",
-//				inputs.get(1) instanceof TypeDescriptor);
-//		assertEquals("wrong type", "base64Binary", ((TypeDescriptor) inputs
-//				.get(1)).getType());
-//		assertEquals("wrong name", "content", ((TypeDescriptor) inputs.get(1))
-//				.getName());
-//
-//		assertEquals("wrong number of outputs", 1, outputs.size());
-//		assertTrue(
-//				"wrong class type for descriptor - should be TypeDescriptor",
-//				outputs.get(0) instanceof TypeDescriptor);
-//		assertEquals("wrong type", "base64Binary", ((TypeDescriptor) outputs
-//				.get(0)).getType());
-//		assertEquals("wrong name", "result", ((TypeDescriptor) outputs.get(0))
-//				.getName());
-//
-//	}
-
 	public void testComplexTypeFromImport() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 
 		List inputs = parser.getOperationInputParameters("run_eInfo");
 		List outputs = parser.getOperationOutputParameters("run_eInfo");
@@ -123,7 +73,7 @@ public class WSDLParserTest extends TestCase {
 	}
 
 	public void testNestedComplexTypes() throws Exception {
-		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
+		WSDLParser parser = new WSDLParser(TESTWSDL_BASE+"bind.wsdl");
 
 		List inputs = parser.getOperationInputParameters("BIVGetComplexRecord");
 		List outputs = parser
@@ -180,8 +130,8 @@ public class WSDLParserTest extends TestCase {
 				((TypeDescriptor) typeDesc.getElements().get(6)).getType());
 	}
 
-	public void testSimpleTypes() throws Exception {
-		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
+	public void testBaseTypes() throws Exception {
+		WSDLParser parser = new WSDLParser(TESTWSDL_BASE+"bind.wsdl");
 
 		List inputs = parser.getOperationInputParameters("BIVGetRecord");
 		assertEquals("wrong number of inputs", 1, inputs.size());
@@ -194,7 +144,7 @@ public class WSDLParserTest extends TestCase {
 	}
 
 	public void testArrayType() throws Exception {
-		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
+		WSDLParser parser = new WSDLParser(TESTWSDL_BASE+"bind.wsdl");
 
 		List inputs = parser.getOperationInputParameters("BIVGetRecords");
 		List outputs = parser.getOperationOutputParameters("BIVGetRecords");
@@ -229,7 +179,7 @@ public class WSDLParserTest extends TestCase {
 
 	public void testGoVizNoOutputs() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl");
+				TESTWSDL_BASE+"GoViz.wsdl");
 
 		List inputs = parser.getOperationInputParameters("destroySession");
 		List outputs = parser.getOperationOutputParameters("destroySession");
@@ -245,21 +195,21 @@ public class WSDLParserTest extends TestCase {
 	}
 
 	public void testGetUseEncoded() throws Exception {
-		WSDLParser parser = new WSDLParser("http://soap.bind.ca/wsdl/bind.wsdl");
+		WSDLParser parser = new WSDLParser(TESTWSDL_BASE+"bind.wsdl");
 		String use = parser.getUse("BIVGetRecords");
 		assertEquals("use should be encoded", "encoded", use);
 	}
 
 	public void testGetUseLiteral() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 		String use = parser.getUse("run_eInfo");
 		assertEquals("use should be literal", "literal", use);
 	}
 
 	public void testGetOperationNamespace() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://www.freewebs.com/jimmy_cheng/CurrencyExchangeService.wsdl");
+				TESTWSDL_BASE+"CurrencyExchangeService.wsdl");
 		String operationNamespace = parser.getOperationNamespaceURI("getRate");
 		assertEquals("operation namespace is wrong",
 				"urn:xmethods-CurrencyExchange", operationNamespace);
@@ -267,7 +217,7 @@ public class WSDLParserTest extends TestCase {
 
 	public void testGetOperationNamespace2() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl");
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
 		String operationNamespace = parser
 				.getOperationNamespaceURI("run_eInfo");
 		assertEquals("operation namespace is wrong",
@@ -277,7 +227,7 @@ public class WSDLParserTest extends TestCase {
 
 	public void testHugeOutputFromEFetch() throws Exception {
 		WSDLParser parser = new WSDLParser(
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils.wsdl");
+				TESTWSDL_BASE+"eutils/eutils.wsdl");
 		List outputs = parser.getOperationOutputParameters("run_eFetch");
 
 		assertEquals("wrong number of outputs", 1, outputs.size());
@@ -306,7 +256,7 @@ public class WSDLParserTest extends TestCase {
 
 		try {
 			WSDLParser parser = new WSDLParser(
-					"http://biowulf.bu.edu/clover/glamwsdl");
+					TESTWSDL_BASE+"glamwsdl");
 			List inputs = parser.getOperationInputParameters("help");
 			TypeDescriptor type = (TypeDescriptor) inputs.get(0);
 			assertEquals("wrong namespace for base type string",
@@ -325,7 +275,7 @@ public class WSDLParserTest extends TestCase {
 			boolean editorPresent = false;
 			boolean contactPresent = false;
 			WSDLParser parser = new WSDLParser(
-					"http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl");
+					TESTWSDL_BASE+"ma.wsdl");
 			List outputs = parser.getOperationOutputParameters("getSubmission");
 			ComplexTypeDescriptor desc = (ComplexTypeDescriptor) outputs.get(0);
 			for (Iterator iterator = desc.getElements().iterator(); iterator

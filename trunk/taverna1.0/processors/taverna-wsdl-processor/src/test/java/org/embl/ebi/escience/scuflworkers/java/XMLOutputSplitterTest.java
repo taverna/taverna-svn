@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitterTest.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 14:50:18 $
+ * Last modified on   $Date: 2007-05-11 15:34:17 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -43,12 +43,13 @@ import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
-public class XMLOutputSplitterTest extends TestCase {
+public class XMLOutputSplitterTest extends WSDLBasedTestCase {
 
 	public void testSplitter() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();
@@ -56,7 +57,7 @@ public class XMLOutputSplitterTest extends TestCase {
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(
 				model,
 				"testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
 				"run_eInfo");
 		splitter.setUpOutputs(processor.getOutputPorts()[1]);
 
@@ -111,20 +112,22 @@ public class XMLOutputSplitterTest extends TestCase {
 				"<DbInfo><info>some info</info></DbInfo>", outputString);
 	}
 
-//	public void testProvideXML() throws Exception {
-//		XMLOutputSplitter splitter = new XMLOutputSplitter();
-//		ScuflModel model = new ScuflModel();
-//		WSDLBasedProcessor processor = new WSDLBasedProcessor(
-//				model,
-//				"testProc",
-//				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
-//				"run_eInfo");
-//		splitter.setUpOutputs(processor.getOutputPorts()[1]);
-//		Element element = splitter.provideXML();
-//		String xml = new XMLOutputter().outputString(element);
-//
-//		assertEquals(eInfoProcessorXML(), xml);
-//	}
+	public void testProvideXML() throws Exception {
+		XMLOutputSplitter splitter = new XMLOutputSplitter();
+		ScuflModel model = new ScuflModel();
+		WSDLBasedProcessor processor = new WSDLBasedProcessor(
+				model,
+				"testProc",
+				TESTWSDL_BASE+"TestServices-rpcencoded.wsdl",
+				"getPerson");
+		splitter.setUpOutputs(processor.getOutputPorts()[1]);
+		Element element = splitter.provideXML();
+		String xml = new XMLOutputter().outputString(element);
+
+		System.out.println(xml);
+		String expectedXML="<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Person\" name=\"getPersonReturn\" qname=\"{http://testing.org}Person\"><s:elements><s:complextype optional=\"false\" unbounded=\"false\" typename=\"Address\" name=\"address\" qname=\"Person&gt;address\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"city\" qname=\"Address&gt;city\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"number\" qname=\"Address&gt;number\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"road\" qname=\"Address&gt;road\" /></s:elements></s:complextype><s:basetype optional=\"false\" unbounded=\"false\" typename=\"int\" name=\"age\" qname=\"Person&gt;age\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"name\" qname=\"Person&gt;name\" /></s:elements></s:complextype></s:extensions>";
+		assertEquals(expectedXML, xml);
+	}
 
 	public void testConsumeXML() throws Exception {
 		XMLOutputSplitter splitter = new XMLOutputSplitter();

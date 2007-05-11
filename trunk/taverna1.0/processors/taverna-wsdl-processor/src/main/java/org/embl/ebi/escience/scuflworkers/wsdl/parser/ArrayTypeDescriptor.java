@@ -9,7 +9,7 @@ public class ArrayTypeDescriptor extends TypeDescriptor {
 	private boolean wrapped;
 	
 	public boolean isWrapped() {
-		return wrapped;
+		return wrapped;		
 	}
 
 	public void setWrapped(boolean wrapped) {

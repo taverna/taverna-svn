@@ -1,15 +1,14 @@
 package org.embl.ebi.escience.scuflworkers.java;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
@@ -22,7 +21,9 @@ import org.jdom.output.XMLOutputter;
  * 
  */
 
-public class XMLInputSplitterTest extends TestCase {
+public class XMLInputSplitterTest extends WSDLBasedTestCase {
+	
+	
 
 	/**
 	 * a general all round test of the XMLInputSplitter class
@@ -36,7 +37,7 @@ public class XMLInputSplitterTest extends TestCase {
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(
 				model,
 				"testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
@@ -69,7 +70,7 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -79,12 +80,12 @@ public class XMLInputSplitterTest extends TestCase {
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(
 				model,
 				"testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
 		String xml = new XMLOutputter().outputString(splitter.provideXML());
-		assertEquals(eInfoXML(), xml);
+		assertEquals("The xml generated is not as expected",eInfoXML(), xml);
 	}
 
 	public void testConsumeXML() throws Exception {
@@ -121,57 +122,16 @@ public class XMLInputSplitterTest extends TestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool></parameters>",
 				outputString);
 	}
 
 	private String eInfoXML() {
-		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}eSpellRequest\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
+		return "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"eSpellRequest\" name=\"parameters\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}eSpellRequest\"><s:elements><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"db\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;db\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"term\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;term\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"tool\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;tool\" /><s:basetype optional=\"true\" unbounded=\"false\" typename=\"string\" name=\"email\" qname=\"{http://www.ncbi.nlm.nih.gov/soap/eutils/espell}&gt;eSpellRequest&gt;email\" /></s:elements></s:complextype></s:extensions>";
 
 	}
 
-	//removed since WSDL no longer exists.
-	//FIXME use a wsdl under our own control.
-	
-//	public void testArrayTypes() throws Exception {
-//		XMLInputSplitter splitter = new XMLInputSplitter();
-//		ScuflModel model = new ScuflModel();
-//		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
-//				"testProc", "http://www.ebi.ac.uk/ws/WSFasta.wsdl", "runFasta");
-//		splitter.setUpInputs(processor.getInputPorts()[1]);
-//
-//		assertEquals("wrong number of inputs", 1, splitter.inputNames().length);
-//		assertEquals("wrong number of types", 1, splitter.inputTypes().length);
-//
-//		assertEquals("wrong name", "WSArrayofData", splitter.inputNames()[0]);
-//		assertEquals("wrong type", "l('text/xml')", splitter.inputTypes()[0]);
-//
-//		assertEquals("wrong name", "output", splitter.outputNames()[0]);
-//		assertEquals("wrong type", "'text/xml'", splitter.outputTypes()[0]);
-//
-//		ArrayList ins = new ArrayList();
-//
-//		ins.add("<data><type>type1</type><content>content1</content></data>");
-//		ins.add("<data><type>type2</type><content>content2</content></data>");
-//
-//		DataThing input = DataThingFactory.bake(ins);
-//
-//		Map inputMap = new HashMap();
-//		inputMap.put("WSArrayofData", input);
-//
-//		Map outputMap = splitter.execute(inputMap);
-//
-//		DataThing output = (DataThing) outputMap.get("output");
-//		assertNotNull("'output' did not exist in output map", output);
-//
-//		assertTrue("output should be a string",
-//				output.getDataObject() instanceof String);
-//
-//		assertEquals(
-//				"<WSArrayofData xmlns=\"http://www.ebi.ac.uk/WSFasta\"><data xmlns=\"\"><type>type1</type><content>content1</content></data><data xmlns=\"\"><type>type2</type><content>content2</content></data></WSArrayofData>",
-//				output.getDataObject().toString());
-//
-//	}
+
 
 	public void testOrderPreserved() throws Exception {
 		XMLInputSplitter splitter = new XMLInputSplitter();
@@ -179,7 +139,7 @@ public class XMLInputSplitterTest extends TestCase {
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(
 				model,
 				"testProc",
-				"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
+				TESTWSDL_BASE+"eutils/eutils_lite.wsdl",
 				"run_eSpell");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
@@ -196,7 +156,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<db>a database</db><tool>a tool</tool><email>an email</email>") != -1);
+						.indexOf("<db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool><email xmlns=\"\">an email</email>") != -1);
 
 	}
 
@@ -205,11 +165,11 @@ public class XMLInputSplitterTest extends TestCase {
 		ScuflModel model = new ScuflModel();
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
 				"testProc",
-				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl",
+				TESTWSDL_BASE+"GMService.wsdl",
 				"getReport");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 
-		Map inputMap = new HashMap();
+		Map<String,DataThing> inputMap = new HashMap<String,DataThing>();
 		inputMap.put("in0", new DataThing(new String[] { "0" }));
 		inputMap.put("in1", new DataThing(new String[] { "1" }));
 		inputMap.put("in6", new DataThing("true"));
@@ -225,6 +185,8 @@ public class XMLInputSplitterTest extends TestCase {
 		assertNotNull("'output' did not exist in output map", output);
 		String xmlOutput = output.getDataObject().toString();
 
+		xmlOutput=xmlOutput.replaceAll(" xmlns=\"\"", "");
+		
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
@@ -242,7 +204,7 @@ public class XMLInputSplitterTest extends TestCase {
 		ScuflModel model = new ScuflModel();
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(model,
 				"testProc",
-				"http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl",
+				TESTWSDL_BASE+"GMService.wsdl",
 				"getReport");
 		splitter.setUpInputs(processor.getInputPorts()[0]);
 		Map inputMap = new HashMap();
@@ -251,7 +213,7 @@ public class XMLInputSplitterTest extends TestCase {
 		Map outputMap = splitter.execute(inputMap);
 		DataThing output = (DataThing) outputMap.get("output");
 		String xmlOutput = output.getDataObject().toString();
-
+		xmlOutput=xmlOutput.replaceAll(" xmlns=\"\"", "");
 		assertTrue(
 				"xml incorrect",
 				xmlOutput
@@ -281,7 +243,7 @@ public class XMLInputSplitterTest extends TestCase {
 		assertTrue(
 				"XML should contain base64Binary encoded String for byte array",
 				xmlOutput
-						.contains("<binaryData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
+						.contains("<binaryData xmlns=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
 	}
 
 }

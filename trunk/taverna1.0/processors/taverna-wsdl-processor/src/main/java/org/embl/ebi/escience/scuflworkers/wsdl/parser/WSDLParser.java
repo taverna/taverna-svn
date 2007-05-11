@@ -180,6 +180,7 @@ public class WSDLParser {
 	 * @throws UnknownOperationException
 	 *             if no operation matches the name
 	 * @throws IOException
+	 * 
 	 */
 	public List<TypeDescriptor> getOperationInputParameters(String operationName)
 			throws UnknownOperationException, IOException {
@@ -648,6 +649,7 @@ public class WSDLParser {
 			elType.setOptional(el.getOptional() || el.getMinOccursIs0());
 			elType.setUnbounded(el.getMaxOccursIsUnbounded());
 			elType.setName(el.getQName().getLocalPart());
+			elType.setQname(el.getQName());
 			result.add(elType);
 		}
 
@@ -660,12 +662,7 @@ public class WSDLParser {
 		result.setType(type.getQName().getLocalPart());
 		result.setQname(type.getQName());
 		
-		if (type instanceof CollectionType) {
-			result.setWrapped(((CollectionType)type).isWrapped());
-		}
-		else {
-			result.setWrapped(true);
-		}		
+		result.setWrapped(type.getItemQName()!=null);
 		
 		logger.info("Wrapped flag for type "+type+" is "+result.isWrapped());
 		

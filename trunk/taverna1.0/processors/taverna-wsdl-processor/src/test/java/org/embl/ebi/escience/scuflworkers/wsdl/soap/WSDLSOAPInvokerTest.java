@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-22 12:46:46 $
+ * Last modified on   $Date: 2007-05-11 15:34:17 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -42,9 +42,10 @@ import junit.framework.TestCase;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 
-public class WSDLSOAPInvokerTest extends TestCase {
+public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 
 	private static Logger logger = Logger.getLogger(WSDLSOAPInvokerTest.class);
 	
@@ -54,7 +55,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",
-					"http://soap.genome.jp/KEGG.wsdl", "get_pathways_by_genes");
+					TESTWSDL_BASE+"KEGG.wsdl", "get_pathways_by_genes");
 		} catch (ProcessorCreationException e) {
 			logger
 					.error("Unable to connect to serivce in testComplexDocStyle, skipping test");
@@ -126,7 +127,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 		WSDLBasedProcessor processor = null;
 		try {
 			processor = new WSDLBasedProcessor(null, "procName",
-					"http://genex.hgu.mrc.ac.uk/axis/services/ma?wsdl",
+					TESTWSDL_BASE+"ma.wsdl",
 					"whatGeneInStage");
 
 		} catch (ProcessorCreationException e) {
@@ -154,15 +155,6 @@ public class WSDLSOAPInvokerTest extends TestCase {
 
 		assertEquals("output type should be of type String", String.class,
 				thing.getDataObject().getClass());
-
-        /*
-         * Disabled - returns an empty <whatGeneInStageReturn/> 
-         * 
-		assertTrue("invalid start to xml", thing.getDataObject().toString()
-				.startsWith("<whatGeneInStageReturn>"));
-		assertTrue("invalid end to xml", thing.getDataObject().toString()
-				.endsWith("</whatGeneInStageReturn>"));
-        */
 	}
 
 	public void testMultirefWithOutputNamespaced() throws Exception {
@@ -171,7 +163,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 			processor = new WSDLBasedProcessor(
 					null,
 					"procName",
-					"http://www.broad.mit.edu/webservices/genecruiser/services/Annotation?wsdl",
+					TESTWSDL_BASE+"Annotation.wsdl",
 					"getDatabasesWithDetails");
 
 		} catch (ProcessorCreationException e) {
@@ -220,7 +212,7 @@ public class WSDLSOAPInvokerTest extends TestCase {
 			processor = new WSDLBasedProcessor(
 					null,
 					"procName",
-					"http://www.oorsprong.org/websamples.countryinfo/CountryInfoService.wso?WSDL",
+					TESTWSDL_BASE+"CountryInfo.wsdl",
 					"CapitalCity");
 		} catch (ProcessorCreationException e) {
 			logger

@@ -12,6 +12,7 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflException;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 import uk.ac.soton.itinnovation.freefluo.core.flow.Flow;
@@ -19,7 +20,7 @@ import uk.ac.soton.itinnovation.freefluo.task.LogLevel;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
-public class WSDLInvocationTaskTest extends TestCase {
+public class WSDLInvocationTaskTest extends WSDLBasedTestCase {
 	
 	public void setUp() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
@@ -34,7 +35,7 @@ public class WSDLInvocationTaskTest extends TestCase {
 		Processor processor = new WSDLBasedProcessor(
 				null,
 				"guid",
-				"http://webservices.oracle.com/ws/guid/oracle.ws.OTNGUIDGenerator?WSDL",
+				TESTWSDL_BASE+"GUIDGenerator.wsdl",
 				"getGUID");
 		ProcessorTask procTask = new ProcessorTask("id", new Flow(null, null),
 				processor, new LogLevel(LogLevel.NONE), "bob", "ctx");
