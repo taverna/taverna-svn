@@ -20,11 +20,12 @@
   <section>
     <title>Initial Configuration and Installation</title>
 
-    <para>The Data Proxy source code can be downloaded from
-    &lt;downloadurl&gt;, or can be downloaded as a war file from
-    &lt;downloadurl&gt;. It is a JSP based application designed to be deployed
-    in a JSP container such as <ulink
-    url="http://tomcat.apache.org/download-55.cgi">Tomcat 5</ulink></para>
+    <para>The Data Proxy source code can be downloaded from <ulink
+    url="http://sourceforge.net/project/showfiles.php?group_id=74874">http://sourceforge.net/project/showfiles.php?group_id=74874</ulink>,
+    or can be downloaded as a war file from from the same location. It is a
+    JSP based application designed to be deployed in a JSP container such as
+    <ulink url="http://tomcat.apache.org/download-55.cgi">Tomcat
+    5</ulink></para>
 
     <para>Before deployment some minimal configuration is recommended. These
     are made by editing the web.xml which is found within the WEB-INF
