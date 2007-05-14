@@ -21,7 +21,7 @@ public class TreeCache {
 	/**
 	 * Show the tree structure, printing each node recursively
 	 */
-	public String toString() {
+	public synchronized String toString() {
 		StringBuffer sb = new StringBuffer();
 		if (root != null) {
 			printNode(root, sb, "");
@@ -32,7 +32,7 @@ public class TreeCache {
 		return sb.toString();
 	}
 	
-	private void printNode(NamedNode node, StringBuffer sb, String indent) {
+	private synchronized void printNode(NamedNode node, StringBuffer sb, String indent) {
 		sb.append(indent+"Node ("+node.contents+")\n");
 		String newIndent = indent + "  ";
 		for (NamedNode child : node.children) {
@@ -109,7 +109,7 @@ public class TreeCache {
 	 * 
 	 * @param j
 	 */
-	public void insertJob(Job j) {
+	public synchronized void insertJob(Job j) {
 		if (root == null) {
 			root = new NamedNode();
 		}
@@ -117,7 +117,7 @@ public class TreeCache {
 		root.insertJob(j);
 	}
 
-	protected NamedNode nodeAt(int[] position) {
+	protected synchronized NamedNode nodeAt(int[] position) {
 		if (root == null) {
 			return null;
 		}
@@ -134,7 +134,7 @@ public class TreeCache {
 	 * 
 	 * @param indexArray
 	 */
-	public void cut(int[] indexArray) {
+	public synchronized void cut(int[] indexArray) {
 		if (indexArray.length > 0) {
 			int[] newIndex = tail(indexArray);
 			NamedNode node = nodeAt(newIndex);
@@ -150,7 +150,7 @@ public class TreeCache {
 	 * Recursively fetch contents of all nodes under the specified index array,
 	 * used by the prefix matching iteration strategy
 	 */
-	public List<Job> jobsWithPrefix(int[] prefix) {
+	public synchronized List<Job> jobsWithPrefix(int[] prefix) {
 		List<Job> jobs = new ArrayList<Job>();
 		NamedNode prefixNode = nodeAt(prefix);
 		if (prefixNode != null) {
@@ -159,7 +159,7 @@ public class TreeCache {
 		return jobs;
 	}
 
-	private void getJobsUnder(NamedNode node, List<Job> jobs) {
+	private synchronized void getJobsUnder(NamedNode node, List<Job> jobs) {
 		if (node.contents != null) {
 			jobs.add(node.contents);
 		} else {
@@ -175,7 +175,7 @@ public class TreeCache {
 	 * @param location
 	 * @return whether the contents of the location are non null
 	 */
-	public boolean containsLocation(int[] location) {
+	public synchronized boolean containsLocation(int[] location) {
 		return (get(location) != null);
 	}
 
@@ -185,7 +185,7 @@ public class TreeCache {
 	 * @param location
 	 * @return Job at the specified location or null if no such job was found
 	 */
-	public Job get(int[] location) {
+	public synchronized Job get(int[] location) {
 		NamedNode n = nodeAt(location);
 		if (n == null) {
 			return null;
@@ -199,7 +199,7 @@ public class TreeCache {
 	 * @param arg
 	 * @return
 	 */
-	private int[] tail(int[] arg) {
+	private static int[] tail(int[] arg) {
 		int result[] = new int[arg.length - 1];
 		for (int i = 0; i < arg.length - 1; i++) {
 			result[i] = arg[i];
