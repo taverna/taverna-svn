@@ -158,6 +158,12 @@ public class DispatchStackTestWithParallelize extends TestCase {
 			public void jobCreated(Job outputJob) {
 				System.out.println(" ** "+outputJob.toString());
 			}
+
+			@Override
+			public Job getEmptyJob(String owningProcess, int[] index, int depth) {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		};
 		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Service<?>>()) {
 			protected void pushEvent(Event e) {

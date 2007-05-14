@@ -18,6 +18,33 @@ public class TreeCache {
 
 	private int indexDepth = -1;
 
+	/**
+	 * Show the tree structure, printing each node recursively
+	 */
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (root != null) {
+			printNode(root, sb, "");
+		}
+		else {
+			sb.append("No root node defined.");
+		}
+		return sb.toString();
+	}
+	
+	private void printNode(NamedNode node, StringBuffer sb, String indent) {
+		sb.append(indent+"Node ("+node.contents+")\n");
+		String newIndent = indent + "  ";
+		for (NamedNode child : node.children) {
+			if (child == null) {
+				sb.append(newIndent+"null\n");
+			}
+			else {
+				printNode(child, sb, newIndent);
+			}
+		}
+	}
+	
 	public class NamedNode {
 
 		public Job contents = null;
@@ -25,6 +52,7 @@ public class TreeCache {
 		public List<NamedNode> children = new ArrayList<NamedNode>();
 
 		public void insertJob(Job j) {
+			//System.out.println("Store : "+j);
 			insertJobAt(j, j.getIndex());
 		}
 
@@ -40,8 +68,12 @@ public class TreeCache {
 					children.add(null);
 				}
 			}
-			NamedNode child = new NamedNode();
-			children.set(firstIndex, child);
+			NamedNode child = children.get(firstIndex);
+			if (child == null) {
+				child = new NamedNode();
+				children.set(firstIndex, child);
+			}
+
 			int[] newTarget = new int[position.length - 1];
 			for (int i = 1; i < position.length; i++) {
 				newTarget[i - 1] = position[i];

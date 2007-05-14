@@ -30,11 +30,23 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 
 	private Map<String, CompletionAwareTreeCache> cacheMap = new HashMap<String, CompletionAwareTreeCache>();
 
+	protected int baseListDepth = -1;
+
+	public void setBaseListDepth(int newDepth) {
+		this.baseListDepth = newDepth;
+	}
+
+	public abstract Job getEmptyJob(String owningProcess, int[] index, int depth);
+
 	/**
 	 * Receive a Job or Completion, Jobs are emitted unaltered and cached,
 	 * Completion events trigger registration of a corresponding list - this may
 	 * be recursive in nature if the completion event's index implies nested
 	 * lists which have not been registered.
+	 * <p>
+	 * If the baseListDepth property is defined then completion events on nodes
+	 * which don't already exist create empty jobs instead and emit those, if
+	 * undefined the completion event is emited intact.
 	 * 
 	 * @param e
 	 */
@@ -84,32 +96,69 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 			if (n != null) {
 				assignNamesTo(n, completionIndex);
 			} else {
-				AbstractCrystalizer.this.completionCreated(new Completion(
-						owningProcess, completionIndex));
+				if (baseListDepth == -1) {
+					AbstractCrystalizer.this.completionCreated(new Completion(
+							owningProcess, completionIndex));
+				} else {
+					// We know what the list depth should be, so we can
+					// construct appropriate depth empty lists to fill in the
+					// gaps.
+					int wrappingDepth = baseListDepth - completionIndex.length;
+					Job j = getEmptyJob(owningProcess, completionIndex,
+							wrappingDepth);
+					// System.out.println("Inserting new empty collection "+j);
+					insertJob(j);
+					jobCreated(j);
+				}
 			}
 		}
 
 		private void assignNamesTo(NamedNode n, int[] index) {
 			// Only act if contents of this node undefined
+			// StringBuffer iString = new StringBuffer();
+			// for (int foo : index) {
+			//	iString.append(foo+" ");
+			//}
+			//System.out.println("assignNamesTo "+iString.toString());
 			if (n.contents == null) {
 				Map<String, List<EntityIdentifier>> listItems = new HashMap<String, List<EntityIdentifier>>();
 				int pos = 0;
+				// System.out.println(" Unnamed node : ["+iString.toString()+"]");
+				// for (NamedNode child : n.children) {
+				//	System.out.println("        ++ "+child);
+				// }
 				for (NamedNode child : n.children) {
+					
 					// If child doesn't have a defined name map yet then define
 					// it
-					if (child.contents == null) {
+					Job j;
+					if (child == null) {
+						// happens if we're completing a partially empty
+						// collection structure
 						int[] newIndex = new int[index.length + 1];
 						for (int i = 0; i < index.length; i++) {
 							newIndex[i] = index[i];
 						}
 						newIndex[index.length] = pos++;
-						assignNamesTo(child, newIndex);
+						j = getEmptyJob(owningProcess, newIndex, baseListDepth - newIndex.length);
+						AbstractCrystalizer.this.jobCreated(j);
 					} else {
-						pos++;
+						
+						if (child.contents == null) {
+							int[] newIndex = new int[index.length + 1];
+							for (int i = 0; i < index.length; i++) {
+								newIndex[i] = index[i];
+							}
+							newIndex[index.length] = pos++;
+							assignNamesTo(child, newIndex);
+						} else {
+							pos++;
+						}
+						j = child.contents;
 					}
 					// Now pull the names out of the child job map and push them
 					// into lists to be registered
-					Job j = child.contents;
+
 					for (String outputName : j.getData().keySet()) {
 						List<EntityIdentifier> items = listItems
 								.get(outputName);

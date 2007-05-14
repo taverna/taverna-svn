@@ -48,6 +48,32 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 		return this.oid;
 	}
 
+	public void pushToken(WorkflowDataToken dt, String owningProcess, int desiredDepth) {
+		if (dt.getData().getDepth() == desiredDepth) {
+			//System.out.println("** Job : "+dt.getData());
+			pushData(getName(), owningProcess, dt.getIndex(), dt.getData());
+		} else {
+			DataManager dManager = ContextManager.getDataManager(owningProcess);
+			Iterator<ContextualizedIdentifier> children = dManager.traverse(
+					dt.getData(), dt.getData().getDepth()-1);
+			while (children.hasNext()) {
+				ContextualizedIdentifier ci = children.next();
+				int[] newIndex = new int[dt.getIndex().length
+						+ ci.getIndex().length];
+				int i = 0;
+				for (int indx : dt.getIndex()) {
+					newIndex[i++] = indx;
+				}
+				for (int indx : ci.getIndex()) {
+					newIndex[i++] = indx;
+				}
+				pushToken(new WorkflowDataToken(owningProcess, newIndex, ci.getDataRef()), owningProcess, desiredDepth);
+			}
+			//System.out.println("** Completion : "+dt.getData());
+			pushCompletion(getName(), owningProcess, dt.getIndex());
+		}
+	}
+
 	public void receiveToken(WorkflowDataToken token) {
 		this.oid = token.getIndex().length + token.getData().getDepth();
 		String newOwner = transformOwningProcess(token.getOwningProcess());
@@ -63,6 +89,8 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 					pushData(getName(), newOwner, token.getIndex(), token
 							.getData());
 				} else {
+					pushToken(token, newOwner, getDepth());
+					/**
 					// Shred the input identifier into the appropriate port
 					// depth and send the events through, pushing a
 					// completion event at the end.
@@ -84,6 +112,7 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 						pushData(getName(), newOwner, newIndex, ci.getDataRef());
 					}
 					pushCompletion(getName(), newOwner, token.getIndex());
+					*/
 
 				}
 			} else if (tokenDepth > filterDepth) {

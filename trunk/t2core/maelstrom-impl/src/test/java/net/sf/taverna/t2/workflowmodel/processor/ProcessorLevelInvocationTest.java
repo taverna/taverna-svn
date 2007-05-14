@@ -60,7 +60,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 
 	DataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
-	
+
 	public void createProcessor() throws EditException, JDOMException,
 			IOException, ServiceConfigurationException,
 			MalformedIdentifierException {
@@ -71,7 +71,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 		processor = Tools.buildFromService(service);
 
 		// Set up data manager
-		ContextManager.baseManager = this.dManager; 
+		ContextManager.baseManager = this.dManager;
 
 		// Get an edit factory
 		Edits edits = new EditsImpl();
@@ -131,9 +131,41 @@ public class ProcessorLevelInvocationTest extends TestCase {
 		// functionality
 		processor.getInputPorts().get(0).setFilterDepth(1);
 		processor.getInputPorts().get(0).receiveEvent(token);
-		
+
 		// Should produce two outputs followed by a collection
 		assertTrue(deh.getEventCount() == 3);
+	}
+
+	public void testTopLevelEmptyCollection() throws EditException,
+			JDOMException, IOException, ServiceConfigurationException,
+			MalformedIdentifierException {
+		createProcessor();
+		System.out.println("Top level empty list (depth 2)");
+		EntityIdentifier listIdentifier = ContextManager.baseManager
+				.registerEmptyList(2);
+		processor.getInputPorts().get(0).setFilterDepth(0);
+		WorkflowDataToken token = new WorkflowDataToken("outerProcess4",
+				new int[0], listIdentifier);
+		processor.getInputPorts().get(0).receiveEvent(token);
+		assertTrue(deh.getEventCount() == 1);
+	}
+	
+	public void testPartiallyEmptyCollection() throws EditException, JDOMException, IOException, ServiceConfigurationException, MalformedIdentifierException {
+		createProcessor();
+		EntityIdentifier emptyListIdentifier = ContextManager.baseManager
+		.registerEmptyList(1);
+		System.out.println("Partially empty collection : {{}{foo, bar}}");
+		EntityIdentifier populatedListIdentifier = ContextManager.baseManager
+		.registerList(new EntityIdentifier[] {
+				Literal.buildLiteral("foo"),
+				Literal.buildLiteral("bar") });
+		EntityIdentifier listIdentifier = ContextManager.baseManager
+		.registerList(new EntityIdentifier[] {emptyListIdentifier, populatedListIdentifier});
+		processor.getInputPorts().get(0).setFilterDepth(2);
+		WorkflowDataToken token = new WorkflowDataToken("outerProcess5",
+				new int[0], listIdentifier);
+		processor.getInputPorts().get(0).receiveEvent(token);
+		assertTrue(deh.getEventCount() == 5);
 	}
 
 }

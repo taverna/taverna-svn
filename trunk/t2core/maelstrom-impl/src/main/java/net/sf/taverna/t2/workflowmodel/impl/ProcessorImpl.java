@@ -90,6 +90,8 @@ public final class ProcessorImpl implements Processor {
 			@Override
 			protected void pushEvent(Event e) {
 				//System.out.println("Sending event to crystalizer : "+e);
+				
+				crystalizer.baseListDepth = getEmptyListDepth(e.getOwningProcess());
 				crystalizer.receiveEvent(e);
 			}
 

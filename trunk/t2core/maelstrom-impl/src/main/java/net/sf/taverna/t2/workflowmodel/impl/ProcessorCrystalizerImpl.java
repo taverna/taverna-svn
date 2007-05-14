@@ -9,6 +9,7 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.ContextManager;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 
 /**
@@ -31,24 +32,10 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 	}
 
 	public void completionCreated(Completion completion) {
-		if (completion.getIndex().length == 0) {
-			int depth = parent.getEmptyListDepth(completion.getOwningProcess());
-			Map<String, EntityIdentifier> emptyJobMap = new HashMap<String, EntityIdentifier>();
-			DataManager dManager = ContextManager.getDataManager(completion.getOwningProcess());
-			for (OutputPort op : parent.getOutputPorts()) {
-				emptyJobMap.put(op.getName(), dManager.registerEmptyList(depth+op.getDepth()));
-			}
-			jobCreated(new Job(completion.getOwningProcess(), new int[0], emptyJobMap));
-		} else {
-			// We can ignore this here, it means we had an iteration over an
-			// empty list at some point but this will eventually be handled by
-			// the top level completion.
-			/**
-			 * throw new WorkflowStructureException( "Completion event emited by
-			 * crystalizer should never happen in the context of a
-			 * ProcessorImpl");
-			 */
-		}
+		throw new WorkflowStructureException(
+				"Should never see this if everything is working,"
+						+ "if this occurs it is likely that the internal "
+						+ "logic is broken, talk to Tom");
 	}
 
 	public void jobCreated(Job outputJob) {
@@ -61,6 +48,23 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 					.getData().get(outputPortName));
 			parent.getOutputPortWithName(outputPortName).receiveEvent(token);
 		}
+	}
+
+	@Override
+	/**
+	 * Used to construct a Job of empty lists at the appropriate depth in the
+	 * event of a completion hitting the crystalizer before it sees a child
+	 * node, i.e. the result of iterating over an empty collection structure of
+	 * some kind.
+	 */
+	public Job getEmptyJob(String owningProcess, int[] index, int depth) {
+		DataManager dManager = ContextManager.getDataManager(owningProcess);
+		Map<String, EntityIdentifier> emptyJobMap = new HashMap<String, EntityIdentifier>();
+		for (OutputPort op : parent.getOutputPorts()) {
+			emptyJobMap.put(op.getName(), dManager.registerEmptyList(depth
+					+ op.getDepth()));
+		}
+		return new Job(owningProcess, index, emptyJobMap);
 	}
 
 }
