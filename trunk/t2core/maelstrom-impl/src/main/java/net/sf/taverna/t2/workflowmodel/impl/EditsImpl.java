@@ -4,6 +4,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -62,6 +63,14 @@ public class EditsImpl implements Edits {
 
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor, String outputPortName, EventHandlingInputPort targetPort) {
 		return new ConnectProcessorOutputEdit(processor, outputPortName, targetPort);
+	}
+
+	public Edit<OrderedPair<Processor>> getCreateConditionEdit(Processor control, Processor target) {
+		return new CreateConditionEdit(control, target);
+	}
+
+	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(Processor control, Processor target) {
+		return new RemoveConditionEdit(control, target);
 	}
 
 }

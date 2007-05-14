@@ -148,4 +148,32 @@ public interface Edits {
 	public Edit<Processor> getRenameProcessorEdit(Processor processor,
 			String newName);
 
+	/**
+	 * Create a condition governing execution of the target processor. The
+	 * target will not consume jobs from any inputs until all control processors
+	 * linked through this edit have completed.
+	 * 
+	 * @param control
+	 *            Processor controlling execution - this must complete before
+	 *            the target can start.
+	 * @param target
+	 *            Processor controlled by this condition.
+	 */
+	public Edit<OrderedPair<Processor>> getCreateConditionEdit(
+			Processor control, Processor target);
+
+	/**
+	 * Remove a condition previously applied to the specified pair of Processor
+	 * instances
+	 * 
+	 * @param control
+	 *            Processor controlling execution - this must complete before
+	 *            the target can start.
+	 * @param target
+	 *            Processor controlled by this condition.
+	 * @return
+	 */
+	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(
+			Processor control, Processor target);
+
 }

@@ -25,9 +25,12 @@ public class ConditionImpl implements Condition {
 	}
 
 	public boolean isSatisfied(String owningProcess) {
+		//System.out.println("Condition check for : "+owningProcess);
 		if (stateMap.containsKey(owningProcess)) {
+			//System.out.println("  - "+stateMap.get(owningProcess));
 			return stateMap.get(owningProcess);
 		} else {
+			//System.out.println("  - not defined -> false");
 			return false;
 		}
 	}

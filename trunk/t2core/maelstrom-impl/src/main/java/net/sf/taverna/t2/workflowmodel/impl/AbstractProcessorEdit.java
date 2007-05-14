@@ -61,7 +61,7 @@ public abstract class AbstractProcessorEdit implements Edit<Processor> {
 	 */
 	protected abstract void undoEditAction(ProcessorImpl processor);
 
-	public final Object getSubject() {
+	public final Processor getSubject() {
 		return processor;
 	}
 

@@ -10,11 +10,9 @@ import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.InMemoryDataManager;
 import net.sf.taverna.t2.invocation.ContextManager;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
@@ -30,33 +28,6 @@ public class ProcessorLevelInvocationTest extends TestCase {
 	DiagnosticEventHandler deh = new DiagnosticEventHandler();
 
 	Processor processor;
-
-	class DiagnosticEventHandler implements EventHandlingInputPort {
-
-		private int eventCount = 0;
-
-		public void receiveEvent(Event e) {
-			eventCount++;
-			System.out.println(e.toString());
-		}
-
-		public int getEventCount() {
-			return this.eventCount;
-		}
-
-		public void reset() {
-			this.eventCount = 0;
-		}
-
-		public int getDepth() {
-			return 0;
-		}
-
-		public String getName() {
-			return "Test port";
-		}
-
-	}
 
 	DataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
