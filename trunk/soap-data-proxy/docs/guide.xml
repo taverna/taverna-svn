@@ -124,7 +124,9 @@ is stored. Without this parameter it is stored in the root of the webapp context
 
       <listitem>
         <para>Data Storage Location - this is the root location that the data
-        will be stored.</para>
+        will be stored. <emphasis role="bold">Note that if running in Windows
+        the path must be preceeded with a '/', e.g.
+        /C:/tmp/data</emphasis></para>
       </listitem>
     </itemizedlist>
   </section>
