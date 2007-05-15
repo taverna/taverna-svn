@@ -63,6 +63,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 			ArtifactStateException {
 		super(new URL[] { r.jarFile(a).toURI().toURL() }, parent);
 		repository = r;
+		this.artifact = a;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 			init(a); // Avoid people getting non-initialized instances
