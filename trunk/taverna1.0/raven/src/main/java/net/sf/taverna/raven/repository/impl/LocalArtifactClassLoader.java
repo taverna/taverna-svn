@@ -70,9 +70,10 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		}
 	}
 
-	protected LocalArtifactClassLoader(LocalRepository r, ClassLoader selfLoader) {
+	protected LocalArtifactClassLoader(LocalRepository r, ClassLoader selfLoader, Artifact ravenArtifact) {
 		super(new URL[0], selfLoader);				
 		repository = r;
+		this.artifact = ravenArtifact;
 	}
 
 	private void init(ArtifactImpl a) throws ArtifactStateException {
