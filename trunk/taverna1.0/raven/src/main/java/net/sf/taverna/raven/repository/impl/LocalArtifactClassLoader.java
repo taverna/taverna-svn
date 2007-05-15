@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.raven.log.Log;
+import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.Repository;
 import sun.misc.CompoundEnumeration;
@@ -40,10 +41,17 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		return repository;
 	}
 
+	public Artifact getArtifact() {
+		return this.artifact;
+	}
+	
+	private Artifact artifact;
+	
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a)
 			throws MalformedURLException, ArtifactStateException {
 		super(new URL[] { r.jarFile(a).toURI().toURL() });
 		repository = r;
+		this.artifact = a;
 		synchronized (LocalRepository.loaderMap) {
 			LocalRepository.loaderMap.put(a, this);
 			init(a); // Avoid people getting non-initialized instances
