@@ -1,10 +1,9 @@
-<profile version="1.5.1.0-SNAPSHOT" name="Taverna Workbench">	
+<profile version="1.5.2.0-SNAPSHOT" name="Taverna Workbench">	
 
 	<!--  processors -->			
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-biomart-processor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-localworkers" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-stringconstant-processor" version="1.5.1-SNAPSHOT"/>
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-seqhound-processor" version="1.5.1-SNAPSHOT"/> 
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-notification-processor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-beanshell-processor" version="1.5.1-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-soaplab-processor" version="1.5.1-SNAPSHOT"/>

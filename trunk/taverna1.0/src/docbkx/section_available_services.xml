@@ -196,7 +196,7 @@
       <title>Fetching service descriptions</title>
 
       <para>Some types of service support a level of self description.
-      Services based on soaplab, Biomoby, Seqhound and nested workflows can
+      Services based on soaplab, Biomoby and Nested Workflows can
       all provide textual descriptions of the operation the service performs.
       In order to fetch these descriptions the user can select the '<emphasis
       role="bold">Fetch descriptions</emphasis>' option from the context menu
@@ -227,8 +227,8 @@
       <section>
         <title>Context menu</title>
 
-        <para>The context menu for the root node in the service panel, available by 
-        right-clicking on 'Available Processors', can be used to add single 'scavengers' to the
+        <para>The context menu for the root node in the service panel labelled
+        'Available Processors' can be used to add single 'scavengers' to the
         tree. A scavenger in this context is a part of Taverna's code which
         allows it to find services. There are a variety of options the user
         can select:</para>
@@ -266,16 +266,12 @@
             such as caBIG, BioJava, JUMBO, CDK etc.</para>
           </listitem>
 
-          <listitem id="wsdl_scavenger">
+          <listitem>
             <para><emphasis role="bold">WSDL scavenger</emphasis> This
             scavenger asks the user for the location of a Web Service
             Description Language (WSDL) file on the web. It inspects this file
             to pull out all appropriate operations and adds them as WSDL based
-            service nodes to the services panel.
-            If you have a web page with links to several WSDLs, you can 
-            collect them all by using 
-             <link linkend="collect_from_web">Collect from web</link> instead.
-            </para>
+            service nodes to the services panel.</para>
           </listitem>
 
           <listitem>
@@ -305,7 +301,7 @@
             and Sanger Institute in the UK. </para>
           </listitem>
 
-          <listitem id="workflow_scavenger">
+          <listitem>
             <para><emphasis role="bold">Workflow scavenger</emphasis> This
             allows workflows to be added as services and asks the user for the
             URL to a single XScufl definition file. It adds the workflow as a
@@ -322,17 +318,13 @@
             that category. </para>
           </listitem>
 
-          <listitem id="collect_from_web">
+          <listitem>
             <para><emphasis role="bold">Collect from web</emphasis> Asks the
             user for an initial URL, uses this to start a web crawl looking
             for XScufl definitions and WSDL files. If it finds any it will add
             them below a top level 'web crawl starting from...' node in the
             service panel. This scavenger runs in the background as it can
             potentially take a considerable amount of time to complete.
-            Note that if you want to add a single WSDL, you can use the 
-            <link linkend="wsdl_scavenger">WSDL scavenger</link> instead, 
-            or to add a single XScufl workflow, the 
-            <link linkend="workflow_scavenger">Workflow scavenger</link>.
             </para>
           </listitem>
 
@@ -369,10 +361,7 @@
         service directly. Specific cases are where the service is providing
         some controlled vocabulary such as a list of valid database names, or
         where the node is actually a complete workflow as in the diagram under
-        the 'Drag and Drop' section below. In addition, in the process of exploring
-        available services, it might be useful to test-run the service to see
-        what it does without building a separate workflow. 
-        Any service node within the tree
+        the 'Drag and Drop' section below. Any service node within the tree
         may be called directly by right clicking on it and selecting
         '<emphasis role="bold">invoke</emphasis>' from the context
         menu:</para>
@@ -396,11 +385,6 @@
         engine is used to run the new workflow so the various input
         specification behaviours are the same as those used when running the
         main workflow from the workbench. </para>
-        <para>
-        Note that more complex services, such as WSDL-based services 
-        with complex types, or configurable services such as BioMart, can only 
-        be invoked as part of a workflow.
-        </para>
       </section>
 
       <section>

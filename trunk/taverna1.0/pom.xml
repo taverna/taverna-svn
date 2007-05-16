@@ -600,11 +600,6 @@
 			</dependency>
 			<dependency>
 				<groupId>uk.org.mygrid.taverna.processors</groupId>
-				<artifactId>taverna-seqhound-processor</artifactId>
-				<version>1.5.1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>uk.org.mygrid.taverna.processors</groupId>
 				<artifactId>taverna-soaplab-processor</artifactId>
 				<version>1.5.1-SNAPSHOT</version>
 			</dependency>

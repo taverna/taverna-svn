@@ -77,7 +77,7 @@
 
       <listitem>
         <para>Find an operation that is of certain type eg. WSDL processor,
-        Soaplab processor, Seqhound Processor etc.</para>
+        Soaplab processor etc.</para>
       </listitem>
 
       <listitem>
@@ -160,9 +160,6 @@
         <para>Purple icons are Local operations</para>
       </listitem>
 
-      <listitem>
-        <para>Blue icons are SeqHound operations</para>
-      </listitem>
     </itemizedlist>
 
     <para>In addition to the colour coded list of services the result panel
