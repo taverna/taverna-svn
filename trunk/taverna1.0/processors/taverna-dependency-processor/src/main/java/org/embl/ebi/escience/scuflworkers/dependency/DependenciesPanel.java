@@ -72,48 +72,48 @@ public class DependenciesPanel extends JPanel {
 			c.fill = GridBagConstraints.HORIZONTAL;
 			c.gridx = 0;
 			c.insets = new Insets(10,0,0,0);
-			add(new JLabel("Classloader persistance"), c);
+			add(new JLabel("Classloader persistence"), c);
 			c.insets = new Insets(0,0,0,0);
-			JComboBox classLoaderPersistance =
+			JComboBox classLoaderPersistence =
 				new JComboBox(new String[] { FRESH, ITERATION, WORKFLOW });
-			classLoaderPersistance.addActionListener(this);
+			classLoaderPersistence.addActionListener(this);
 			ClassLoaderSharing sharing = processor.getClassLoaderSharing();
 			if (sharing == ClassLoaderSharing.fresh) {
-				classLoaderPersistance.setSelectedItem(FRESH);
+				classLoaderPersistence.setSelectedItem(FRESH);
 			} else if (sharing == ClassLoaderSharing.iteration) {
-				classLoaderPersistance.setSelectedItem(ITERATION);
+				classLoaderPersistence.setSelectedItem(ITERATION);
 			} else if (sharing == ClassLoaderSharing.workflow) {
-				classLoaderPersistance.setSelectedItem(WORKFLOW);
+				classLoaderPersistence.setSelectedItem(WORKFLOW);
 			} else {
 				logger.error("Unknown classloader sharing: " + sharing);
 			}
-			add(classLoaderPersistance, c);
+			add(classLoaderPersistence, c);
 			c.insets = new Insets(0,30,0,0);
 			add(description, c);
 		}
 
-		// For classLoaderPersistance changes
+		// For classLoaderPersistence changes
 		public void actionPerformed(ActionEvent e) {
 			JComboBox cb = (JComboBox) e.getSource();
 			String classLoaderStyle = (String) cb.getSelectedItem();
 			if (classLoaderStyle.equals(FRESH)) {
 				description.setText("<html><small>"
-					+ "Classes will be reloaded for each processor and each invocation, state<br>"
+					+ "Classes will be reloaded for each processor and each invocation; state<br>"
 					+ "will not even be shared across iterations. This can be slow, but<br>"
-					+ "ensures each iteration starts from freshly initialized classes."
+					+ "ensures each iteration starts from freshly initialised classes."
 					+ "</small></html>");
 				processor.setClassLoaderSharing(ClassLoaderSharing.fresh);
 			} else if (classLoaderStyle.equals(ITERATION)) {
 				description.setText("<html><small>"
 					+ "Classes will be reloaded for each processor and workflow run, but<br>"
 					+ "will remain the same throughout an iteration. This is the recommended<br>"
-					+ "option for most cases as processors won't interfere with each others."
+					+ "option for most cases as processors won't interfere with each other."
 					+ "</small></html>");
 				processor.setClassLoaderSharing(ClassLoaderSharing.iteration);
 			} else if (classLoaderStyle.equals(WORKFLOW)) {
 				description.setText("<html><small>"
 					+ "Classes are shared across the whole workflow (with any processor also<br>"
-					+ "selecting this option), but are reinitialized for each workflow run.<br>"
+					+ "selecting this option), but are reinitialised for each workflow run.<br>"
 					+ "This might be needed if a processor passes objects to another, or <br>"
 					+ "state is shared within static members of loaded classes."
 					+ "</small></html>");
@@ -185,7 +185,7 @@ public class DependenciesPanel extends JPanel {
 			c.gridx = 0;
 			if (allJars.isEmpty()) {
 				panel.add(new JLabel("<html><small>To depend on a JAR file, "
-					+ "copy it to the folder nam above</small></html>"), c);
+					+ "copy it to the above-mentioned folder.</small></html>"), c);
 				return panel;
 			}
 
