@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-04-13 13:10:51 $
+ * Last modified on   $Date: 2007-05-16 09:18:13 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -288,8 +288,10 @@ public class WorkflowLauncher {
 				}
 			}
 			public void workflowFailed(WorkflowFailureEvent e) {
-				synchronized (lock) {
-					lock.notifyAll();
+				if (e.getWorkflowInstance() == workflowInstance) {
+					synchronized (lock) {
+						lock.notifyAll();					
+					}
 				}
 			}
 		};
