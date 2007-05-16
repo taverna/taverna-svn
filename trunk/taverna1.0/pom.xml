@@ -173,6 +173,9 @@
 				<configuration>
 					<xincludeSupported>true</xincludeSupported>
 					<chunkedOutput>true</chunkedOutput>
+                    <useIdAsFilename>true</useIdAsFilename>  
+                    <chunkFirstSections>true</chunkFirstSections>
+                    <htmlExtraHeadLinks>true</htmlExtraHeadLinks>
 				</configuration>
 			</plugin>
 			<plugin>
