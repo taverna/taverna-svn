@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  */
 public class LiteralBodyBuilder extends AbstractBodyBuilder {
 
-	private static Logger logger = Logger.getLogger(LiteralBodyBuilderTest.class);
+	private static Logger logger = Logger.getLogger(LiteralBodyBuilder.class);
 
 	public LiteralBodyBuilder(String style, WSDLBasedProcessor processor) {
 		super(style, processor);
@@ -64,7 +64,7 @@ public class LiteralBodyBuilder extends AbstractBodyBuilder {
 	protected Element createSkeletonElementForSingleItem(
 			Map<String, String> namespaceMappings, TypeDescriptor descriptor,
 			String inputName, String typeName) {
-		return XMLUtils.StringToElement("", typeName, "");
+		return XMLUtils.StringToElement("", descriptor.getQname().getLocalPart(), "");
 	}
 
 	private void stripTypeAttributes(Node parent) {

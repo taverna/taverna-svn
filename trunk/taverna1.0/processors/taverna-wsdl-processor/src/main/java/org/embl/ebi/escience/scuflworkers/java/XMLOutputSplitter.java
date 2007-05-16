@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: XMLOutputSplitter.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-26 12:21:45 $
+ * Last modified on   $Date: 2007-05-16 10:48:09 $
  *               by   $Author: sowen70 $
  * Created on 16-May-2006
  *****************************************************************/
@@ -305,7 +305,7 @@ public class XMLOutputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		return result;
 	}
 
-	private void executeForArrayType(Map<String,DataThing> result, List children) {
+	private void executeForArrayType(Map<String,DataThing> result, List<Element> children) {
 		ArrayTypeDescriptor arrayDescriptor = (ArrayTypeDescriptor) typeDescriptor;
 		List<String> values = new ArrayList<String>();
 		XMLOutputter outputter = new XMLOutputter();

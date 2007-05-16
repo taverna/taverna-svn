@@ -253,7 +253,6 @@ public class WSDLParserTest extends WSDLBasedTestCase {
 	}
 
 	public void testSetCorrectNamespaceForXSDBasetype() throws Exception {
-
 		try {
 			WSDLParser parser = new WSDLParser(
 					TESTWSDL_BASE+"glamwsdl");
@@ -267,7 +266,6 @@ public class WSDLParserTest extends WSDLBasedTestCase {
 							"IOException reading WSDL for testSetCorrectNamespaceForBasetype, test skipped",
 							e);
 		}
-
 	}
 
 	public void testForOverwritingOfNamesForDuplicateTypes() throws Exception {

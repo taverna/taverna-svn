@@ -684,7 +684,7 @@ public class WSDLParser {
 		} else {
 			result = new BaseTypeDescriptor();
 			result.setType(type.getRefType().getQName().getLocalPart());
-			result.setQname(type.getRefType().getQName());
+			result.setQname(type.getQName());
 		}
 		return result;
 	}
