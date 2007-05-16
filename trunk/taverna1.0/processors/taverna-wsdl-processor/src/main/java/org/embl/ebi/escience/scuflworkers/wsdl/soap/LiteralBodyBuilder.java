@@ -64,7 +64,12 @@ public class LiteralBodyBuilder extends AbstractBodyBuilder {
 	protected Element createSkeletonElementForSingleItem(
 			Map<String, String> namespaceMappings, TypeDescriptor descriptor,
 			String inputName, String typeName) {
-		return XMLUtils.StringToElement("", descriptor.getQname().getLocalPart(), "");
+		if (getStyle()==Style.DOCUMENT) {
+			return XMLUtils.StringToElement("", descriptor.getQname().getLocalPart(), "");
+		}
+		else {
+			return XMLUtils.StringToElement("", inputName, "");
+		}
 	}
 
 	private void stripTypeAttributes(Node parent) {
@@ -158,8 +163,13 @@ public class LiteralBodyBuilder extends AbstractBodyBuilder {
 
 	@Override
 	protected SOAPBodyElement addElementToBody(String operationNamespace, SOAPBodyElement body, Element el) throws SOAPException {
-		body = new SOAPBodyElement(el);
-		body.setNamespaceURI(operationNamespace);
+		if (getStyle()==Style.DOCUMENT) {
+			body = new SOAPBodyElement(el);
+			body.setNamespaceURI(operationNamespace);
+		}
+		else {
+			body.addChildElement(new SOAPBodyElement(el));
+		}
 		return body;
 	}
 	

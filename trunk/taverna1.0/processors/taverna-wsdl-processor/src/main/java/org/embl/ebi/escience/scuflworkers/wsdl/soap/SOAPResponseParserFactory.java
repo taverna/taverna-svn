@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseParserFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-05-16 15:29:02 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -77,7 +77,12 @@ public class SOAPResponseParserFactory {
 		List outputNames = outputNamesForProcessor(outputPorts);
 
 		if (outputIsPrimitive(outputPorts)) {
-			result = new SOAPResponsePrimitiveParser(outputNames);
+			if (use.equalsIgnoreCase("literal")) {
+				result = new SOAPResponsePrimitiveLiteralParser(outputNames);
+			}
+			else {
+				result = new SOAPResponsePrimitiveParser(outputNames);
+			}
 		} else if (use.equals("literal")) {
 			result = new SOAPResponseLiteralParser(outputNames);
 		} else {

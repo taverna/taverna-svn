@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralParser.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:56:59 $
+ * Last modified on   $Date: 2007-05-16 15:29:02 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -57,9 +57,9 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 	private static Logger logger = Logger
 			.getLogger(SOAPResponseLiteralParser.class);
 
-	List outputNames;
+	List<String>outputNames;
 
-	public SOAPResponseLiteralParser(List outputNames) {
+	public SOAPResponseLiteralParser(List<String>outputNames) {
 		this.outputNames = outputNames;
 	}
 
@@ -90,10 +90,9 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 		return result;
 	}
 
-	private String getOutputName() {
+	protected String getOutputName() {
 		String result = "";
-		for (Iterator iterator = outputNames.iterator(); iterator.hasNext();) {
-			String name = (String) iterator.next();
+		for (String name : outputNames) {
 			if (!name.equals("attachmentList")) {
 				result = name;
 				break;

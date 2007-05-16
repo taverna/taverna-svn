@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-25 13:57:00 $
+ * Last modified on   $Date: 2007-05-16 15:29:03 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -45,9 +45,11 @@ import junit.framework.TestCase;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
+import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.w3c.dom.Document;
 
-public class SOAPResponseLiteralTest extends TestCase {
+public class SOAPResponseLiteralTest extends WSDLBasedTestCase {
 
 	public void testLiteralParserResultInTextBlock() throws Exception {
 		List response = new ArrayList();
@@ -115,6 +117,33 @@ public class SOAPResponseLiteralTest extends TestCase {
 				"xml is wrong",
 				"<testResponse><out><data name=\"a\">some data</data><data name=\"b\">some more data</data></out></testResponse>",
 				testResponse.getDataObject().toString());
+	}
+	
+	public void testUnwrappedLiteralResponseParsing() throws Exception {
+		List response = new ArrayList();
+		
+		String xml = "<getStringReturn xmlns=\"http://testing.org\">a string</getStringReturn>";
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+		.newDocumentBuilder();
+		Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+
+		response.add(new SOAPBodyElement(doc.getDocumentElement()));
+
+		List outputNames = new ArrayList();
+		outputNames.add("attachmentList");
+		outputNames.add("getStringReturn");
+		
+		SOAPResponseLiteralParser parser = new SOAPResponsePrimitiveLiteralParser(
+				outputNames);
+
+		Map outputMap = parser.parse(response);
+
+		assertNotNull("no output map returned", outputMap);
+		assertEquals("map should contain 1 element", 1, outputMap.size());
+
+		DataThing stringReturn = (DataThing) outputMap.get("getStringReturn");
+		
+		assertEquals("value of data returned is wrong","a string",stringReturn.getDataObject().toString());
 	}
 
 }

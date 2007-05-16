@@ -6,6 +6,8 @@ import java.util.Map;
 import org.apache.axis.message.SOAPBodyElement;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.w3c.dom.Node;
@@ -62,10 +64,26 @@ public class LiteralBodyBuilderTest extends WSDLBasedTestCase {
 		assertEquals("First Array element should have the value '1'. xml = "+xml,"1",itemElement.getFirstChild().getNodeValue());
 	}
 	
+	public void testRPCLiteral() throws Exception {
+		BodyBuilder builder = createBuilder(TESTWSDL_BASE+"MyService-rpc-literal.wsdl", "countString");
+		
+		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
+		
+		Map<String,DataThing> inputMap = new HashMap<String, DataThing>();
+		inputMap.put("str", DataThingFactory.bake("abcdef"));
+		
+		SOAPBodyElement body = builder.build(inputMap);
+		
+		String xml = body.getAsString();
+		
+		assertEquals("Outer element should be named countString","countString",body.getNodeName());
+		Node strNode = body.getFirstChild();
+		assertEquals("Inner element should be called 'str'","str",strNode.getNodeName());
+		assertEquals("str content should be abcdef","abcdef",strNode.getFirstChild().getNextSibling().getNodeValue());
+	}
+	
 	protected BodyBuilder createBuilder(String wsdl, String operation) throws Exception {
-		WSDLBasedProcessor processor = new WSDLBasedProcessor(null, "test",
-				wsdl,
-				operation);
+		WSDLBasedProcessor processor = createProcessor(wsdl, operation);
 		return BodyBuilderFactory.instance().create(processor);
 	}
 }

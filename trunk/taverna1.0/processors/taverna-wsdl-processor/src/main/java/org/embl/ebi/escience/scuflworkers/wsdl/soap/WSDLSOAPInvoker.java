@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-11 15:34:16 $
+ * Last modified on   $Date: 2007-05-16 15:29:02 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -124,7 +124,8 @@ public class WSDLSOAPInvoker {
 		}
 		call.setTimeout(getTimeout());
 		
-		SOAPBodyElement body = BodyBuilderFactory.instance().create(getProcessor()).build(inputMap);
+		BodyBuilder builder = BodyBuilderFactory.instance().create(getProcessor());
+		SOAPBodyElement body = builder.build(inputMap);
 
 		SOAPEnvelope requestEnv = new SOAPEnvelope();
 

@@ -252,22 +252,6 @@ public class WSDLParserTest extends WSDLBasedTestCase {
 				((TypeDescriptor) desc.getElements().get(0)).getName());
 	}
 
-	public void testSetCorrectNamespaceForXSDBasetype() throws Exception {
-		try {
-			WSDLParser parser = new WSDLParser(
-					TESTWSDL_BASE+"glamwsdl");
-			List inputs = parser.getOperationInputParameters("help");
-			TypeDescriptor type = (TypeDescriptor) inputs.get(0);
-			assertEquals("wrong namespace for base type string",
-					"http://www.w3.org/2001/XMLSchema", type.getNamespaceURI());
-		} catch (IOException e) {
-			logger
-					.error(
-							"IOException reading WSDL for testSetCorrectNamespaceForBasetype, test skipped",
-							e);
-		}
-	}
-
 	public void testForOverwritingOfNamesForDuplicateTypes() throws Exception {
 		try {
 			boolean editorPresent = false;
