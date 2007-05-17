@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -298,7 +299,7 @@ public class LocalRepository implements Repository {
 					fetch(a, "pom");
 					moreToDo = true;
 				} catch (ArtifactNotFoundException e) {
-					logger.warn("Could not find artifact " + a, e);
+					logger.warn("Could not find artifact " + a);
 				}
 			} else if (s.equals(ArtifactStatus.Analyzed)) {
 				try {
@@ -589,7 +590,10 @@ public class LocalRepository implements Repository {
 				} catch (SocketTimeoutException e) {
 					logger.warn("Connection timed out while looking for" + a
 							+ " in " + repository);
+				} catch (UnknownHostException e) {
+					logger.error("Unable to determine host for:"+pomLocation.toExternalForm()+", maybe there is no network access?");
 				}
+				
 				if (is != null) {
 					// Where to write it?
 					File toFile = artifactFile(a, "." + suffix, true);

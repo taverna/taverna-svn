@@ -20,7 +20,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import org.apache.commons.io.FileUtils;
 import org.junit.runner.JUnitCore;
 
-public class ArtifactClassLoaderTest extends TestCase {
+public abstract class ArtifactClassLoaderTest extends TestCase {
 
 	// Sleep up to 200 ms
 	private static final int MAXSLEEP = 300;

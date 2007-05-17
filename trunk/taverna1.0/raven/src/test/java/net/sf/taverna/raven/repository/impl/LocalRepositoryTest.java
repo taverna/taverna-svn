@@ -37,7 +37,7 @@ public class LocalRepositoryTest {
 	
 	public LocalRepositoryTest() throws MalformedURLException {
 		super();
-		mavenMirror = new URL("http://mirrors.dotsrc.org/maven2/");
+		mavenMirror = new URL("http://maven.sateh.com/repository/");
 	}
 	
 	/*
@@ -56,6 +56,7 @@ public class LocalRepositoryTest {
 		LocalRepository.loaderMap.clear();
 		LocalRepository.repositoryCache.clear();
 		r = new LocalRepository(dir);
+		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.0.0-profile.xml");
 	}
 
 	@After

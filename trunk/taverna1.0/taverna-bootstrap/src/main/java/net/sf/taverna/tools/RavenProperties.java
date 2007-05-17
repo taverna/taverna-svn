@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-15 13:42:38 $
+ * Last modified on   $Date: 2007-05-17 10:05:47 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 /**
@@ -103,9 +104,13 @@ public class RavenProperties extends Properties {
 					found = true;
 					source = RavenPropertiesSource.REMOTE;
 					break;
-				} catch (Exception e) {
+				} catch (UnknownHostException e) {
+					System.out.println("Unable to find host:"+e.getMessage());
+				}
+				catch (Exception e) {
 					e.printStackTrace();
 				}
+				
 			}
 		}
 		else {
@@ -139,6 +144,9 @@ public class RavenProperties extends Properties {
 			load(localcopy.toURI().toURL().openStream());
 			source = RavenPropertiesSource.LOCAL;
 			found = true;
+		} catch (FileNotFoundException e) {
+			System.out.println("Unable to find local copy of raven.properties: "+e.getMessage());
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

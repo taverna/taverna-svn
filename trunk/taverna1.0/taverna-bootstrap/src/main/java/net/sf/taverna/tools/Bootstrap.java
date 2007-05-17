@@ -268,8 +268,8 @@ public class Bootstrap {
 					cacheDir, remoteRepositories, groupID, artifactID, version,
 					targetClassName, splashScreenURL, splashScreenTime);
 		} catch (InvocationTargetException e) {
-			System.err.println("Could not launch Raven");
-			e.getCause().printStackTrace();
+			String msg = e.getCause().getMessage()!=null ? e.getCause().getMessage() : "you should check you have network access.";			
+			System.err.println("Could not launch Raven: "+msg);			
 			System.exit(4);
 		}
 		return workbenchClass;
