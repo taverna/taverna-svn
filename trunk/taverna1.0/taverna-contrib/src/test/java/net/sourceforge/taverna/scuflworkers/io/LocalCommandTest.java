@@ -12,7 +12,7 @@ import net.sourceforge.taverna.baclava.DataThingAdapter;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class LocalCommandTest extends TestCase {
 
@@ -20,8 +20,15 @@ public class LocalCommandTest extends TestCase {
         
         LocalCommand cmd = new LocalCommand();
         Map inputMap = new HashMap();
+        
+        //use dir if windows, others ls
+        String command = "dir";
+        String os = System.getProperty("os.name");
+        if (os!=null && !os.startsWith("Windows")) {
+        	command="ls";
+        }
         DataThingAdapter inAdapter = new DataThingAdapter(inputMap);
-        inAdapter.putString("command","dir");
+        inAdapter.putString("command",command);
         inAdapter.putStringArray("args",new String[]{"/B"});
          
         Map outputMap = cmd.execute(inputMap);
