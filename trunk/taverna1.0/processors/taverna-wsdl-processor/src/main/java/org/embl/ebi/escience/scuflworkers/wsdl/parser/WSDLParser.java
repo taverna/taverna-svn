@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.wsdl.Binding;
 import javax.wsdl.BindingOperation;
@@ -559,7 +560,12 @@ public class WSDLParser {
 						result = constructComplexType((DefinedElement) type);
 					}
 				} else {
-					result = constructComplexType((DefinedType) type);
+					if (type.isSimpleType()) {
+						result = constructForSimpleType(type);
+					}
+					else {
+						result = constructComplexType((DefinedType) type);
+					}
 				}
 			} else {
 				result = constructArrayType(type);				
@@ -576,6 +582,15 @@ public class WSDLParser {
 		return result;
 	}
 
+	private TypeDescriptor constructForSimpleType(TypeEntry type) {
+		Set nested = type.getNestedTypes(getSymbolTable(), true);
+		
+		TypeDescriptor result = constructType((TypeEntry)nested.toArray()[0]);
+		result.setQname(type.getQName());
+		result.setName(type.getQName().getLocalPart());
+		return result;
+	}
+	
 	private ArrayTypeDescriptor constructMapType(TypeEntry type) {
 		ArrayTypeDescriptor result = new ArrayTypeDescriptor();
 		TypeEntry mapItem = getSymbolTable().getType(type.getItemQName());
