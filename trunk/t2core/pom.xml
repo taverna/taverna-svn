@@ -66,6 +66,13 @@
 					<maxmemory>512</maxmemory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</reporting>
 	<repositories>
@@ -90,4 +97,10 @@
 			</url>
 		</repository>
 	</repositories>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>file:///C:/project/</url>
+		</site>
+	</distributionManagement>
 </project>
