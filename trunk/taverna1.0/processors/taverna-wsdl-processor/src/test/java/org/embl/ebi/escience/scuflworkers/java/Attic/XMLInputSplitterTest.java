@@ -67,7 +67,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -119,7 +119,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 
 		assertEquals(
 				"output is incorrect",
-				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool></parameters>",
+				"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/espell\"><db>a database</db><tool>a tool</tool></parameters>",
 				outputString);
 	}
 
@@ -152,7 +152,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertTrue(
 				"xml returned is unexpected, element order should be same as defined by the webservice",
 				xmlOutput
-						.indexOf("<db xmlns=\"\">a database</db><tool xmlns=\"\">a tool</tool><email xmlns=\"\">an email</email>") != -1);
+						.indexOf("<db>a database</db><tool>a tool</tool><email>an email</email>") != -1);
 
 	}
 
@@ -220,7 +220,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		XMLInputSplitter splitter = new XMLInputSplitter();
 		Map<String,DataThing>inputMap = new HashMap<String,DataThing>();
 
-		String xml = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://www.w3.org/2001/XMLSchema}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
+		String xml = "<s:extensions xmlns:s=\"http://org.embl.ebi.escience/xscufl/0.1alpha\"><s:complextype optional=\"false\" unbounded=\"false\" typename=\"SomeData\" name=\"data\" qname=\"{http://testing.org}SomeData\"><s:elements><s:basetype optional=\"false\" unbounded=\"false\" typename=\"base64binary\" name=\"binaryData\" qname=\"{http://testing.org}base64Binary\" /><s:basetype optional=\"false\" unbounded=\"false\" typename=\"string\" name=\"value\" qname=\"{http://www.w3.org/2001/XMLSchema}string\" /></s:elements></s:complextype></s:extensions>";
 
 		splitter.consumeXML(new SAXBuilder().build(new StringReader(xml))
 				.getRootElement());
@@ -239,7 +239,7 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertTrue(
 				"XML should contain base64Binary encoded String for byte array",
 				xmlOutput
-						.contains("<binaryData xmlns=\"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
+						.contains("<binaryData xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"xsd:base64Binary\">AQIDBAU=</binaryData>"));
 	}
 
 	public void testForSimpleTypeEnumeration() throws Exception {
@@ -303,5 +303,61 @@ public class XMLInputSplitterTest extends WSDLBasedTestCase {
 		assertFalse("There should be no <value> element in the result",xml.contains("value"));
 		assertTrue("Error in the xml generated, xml:"+xml,xml.contains("<limit xmlns=\"\">5</limit>"));
 	}
-
+	
+	public void testUnqualified() throws Exception {
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"whatizit.wsdl", "queryPmid");
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+		inputMap.put("pipelineName", DataThingFactory.bake("pipeline"));
+		
+		Map outputs = splitter.execute(inputMap);
+		DataThing output = (DataThing)outputs.get("output");
+		String xml = output.getDataObject().toString();
+		
+		assertTrue("Content of xml is not as expected:"+xml,xml.contains("<pipelineName xmlns=\"\">pipeline</pipelineName>"));
+	}
+	
+	public void testQualified() throws Exception {
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"TestServices-wrapped.wsdl", "countString");
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+		inputMap.put("str", DataThingFactory.bake("a string"));
+		Map outputs = splitter.execute(inputMap);
+		DataThing output = (DataThing)outputs.get("output");
+		String xml = output.getDataObject().toString();
+		
+		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://testing.org\"><str>a string</str></parameters>");
+	}
+	
+	public void testQualifiedArray() throws Exception {
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"TestServices-wrapped.wsdl", "countStringArray");
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+		inputMap.put("array", DataThingFactory.bake(new String[] {"a","b","c"}));
+		Map outputs = splitter.execute(inputMap);
+		DataThing output = (DataThing)outputs.get("output");
+		String xml = output.getDataObject().toString();
+		
+		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://testing.org\"><array>a</array><array>b</array><array>c</array></parameters>");
+	}
+	
+	public void testQualified2() throws Exception {
+		WSDLBasedProcessor processor = createProcessor(TESTWSDL_BASE+"eutils/eutils_lite.wsdl", "run_eInfo");
+		XMLInputSplitter splitter = new XMLInputSplitter();
+		splitter.setUpInputs(processor.getInputPorts()[0]);
+		
+		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+		inputMap.put("db", DataThingFactory.bake("pubmed"));
+		Map outputs = splitter.execute(inputMap);
+		DataThing output = (DataThing)outputs.get("output");
+		String xml = output.getDataObject().toString();
+		
+		assertEquals("Content of xml is not as expected",xml,"<parameters xmlns=\"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo\"><db>pubmed</db></parameters>");
+	}
 }

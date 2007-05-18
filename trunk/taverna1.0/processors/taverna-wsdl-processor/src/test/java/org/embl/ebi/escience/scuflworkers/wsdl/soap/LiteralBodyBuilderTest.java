@@ -31,6 +31,18 @@ public class LiteralBodyBuilderTest extends WSDLBasedTestCase {
 		assertTrue("Wrapping element should have its namespace declared",xml.contains("<ns1:queryPmid"));
 	}
 	
+	public void testQualifiedUnwrapped() throws Exception {
+		BodyBuilder builder = createBuilder(TESTWSDL_BASE+"TestServices-unwrapped.wsdl", "countString");
+		
+		assertTrue("Is is the wrong type, it should be LiteralBodyBuilder",builder instanceof LiteralBodyBuilder);
+		Map<String,DataThing>inputMap = new HashMap<String, DataThing>();
+		inputMap.put("str", DataThingFactory.bake("bob"));
+		
+		String xml = builder.build(inputMap).getAsString();
+		
+		assertEquals("XML should containe qualifed namespace for str",xml,"<ns1:str xmlns:ns1=\"http://testing.org\">bob</ns1:str>");
+	}
+	
 	public void testUnwrappedSimple() throws Exception {
 		BodyBuilder builder = createBuilder(TESTWSDL_BASE+"TestServices-unwrapped.wsdl", "countString");
 		

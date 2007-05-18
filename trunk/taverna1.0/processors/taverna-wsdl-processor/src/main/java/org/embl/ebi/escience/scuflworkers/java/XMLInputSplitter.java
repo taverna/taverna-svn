@@ -258,7 +258,8 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 						Object itemObject = itemIterator.next();
 						Element dataElement = buildElementFromObject(itemkey,
 								itemObject);
-						dataElement.setNamespace(Namespace.getNamespace(elementType.getNamespaceURI()));
+						dataElement.setNamespace(Namespace
+								.getNamespace(elementType.getNamespaceURI()));
 						if (!wrapped) {
 							dataElement.setName(itemkey);
 							outputElement.addContent(dataElement);
@@ -309,10 +310,9 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		Element dataElement = null;
 
 		if (isXMLInput(key)) {
-			dataElement = createDataElementForXMLInput(dataObject,key);
+			dataElement = createDataElementForXMLInput(dataObject, key);
 		} else {
 			dataElement = new Element(key);
-			String namespaceURI = null;
 			setDataElementNamespace(key, dataElement);
 			if (dataObject.toString().equals("nil")) {
 				dataElement.setAttribute("nil", "true"); // changes nil value
@@ -336,37 +336,55 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		return dataElement;
 	}
 
-	private Element createDataElementForXMLInput(Object dataObject, String key) throws JDOMException, IOException {
+	private Element createDataElementForXMLInput(Object dataObject, String key)
+			throws JDOMException, IOException {
 		Element dataElement = null;
 		String xml = dataObject.toString();
 		if (xml.length() > 0) {
 			Document doc = new SAXBuilder().build(new StringReader(xml));
 			dataElement = doc.getRootElement();
 			dataElement.detach();
-		}
-		else {
+		} else {
 			dataElement = new Element(key);
 		}
-		
+
 		setDataElementNamespace(key, dataElement);
 		return dataElement;
 	}
 
-	//set the namespace if it can be determined from the element TypeDescriptor by the key
+	// set the namespace if it can be determined from the element TypeDescriptor
+	// by the key
 	private void setDataElementNamespace(String key, Element dataElement) {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
-			TypeDescriptor elementTypeDescriptor = ((ComplexTypeDescriptor)typeDescriptor).elementForName(key);
-			if (!(elementTypeDescriptor instanceof BaseTypeDescriptor)) { // we rely on the namespace of the parent if it is a Base type
-				if (elementTypeDescriptor!=null && elementTypeDescriptor.getNamespaceURI()!=null && elementTypeDescriptor.getNamespaceURI().length()>0) {
-					updateElementNamespace(dataElement,elementTypeDescriptor.getNamespaceURI());
+			TypeDescriptor elementTypeDescriptor = ((ComplexTypeDescriptor) typeDescriptor)
+					.elementForName(key);
+			if (elementTypeDescriptor != null) {
+				String nsURI=null;
+				if (elementTypeDescriptor instanceof BaseTypeDescriptor) {
+					nsURI=elementTypeDescriptor.getNamespaceURI();
+					//this is some protective code against old workflows that had the base element namespace incorrectly
+					//declared (it was using the type NS, rather than the element NS. 
+					if (nsURI.contains("XMLSchema") && nsURI.contains("http://www.w3.org")) {
+						nsURI=typeDescriptor.getNamespaceURI();
+					}
+				}
+				else {
+					nsURI=elementTypeDescriptor.getNamespaceURI();
+				}
+				if (nsURI!=null && nsURI.length()>0) {
+					updateElementNamespace(dataElement, nsURI);
 				}
 			}
 		}
 	}
-	
+
 	/**
-	 * Updates the element namespace, and also iterates all descendant elements. If these elements have no default namespace, or is blank
-	 * then it is also set to namespaceURI (JDOM by default will not set the child elements to the same namespace as the element modified but will override them with blank namespaces).
+	 * Updates the element namespace, and also iterates all descendant elements.
+	 * If these elements have no default namespace, or is blank then it is also
+	 * set to namespaceURI (JDOM by default will not set the child elements to
+	 * the same namespace as the element modified but will override them with
+	 * blank namespaces).
+	 * 
 	 * @param dataElement
 	 * @param namespaceURI
 	 */
@@ -376,13 +394,14 @@ public class XMLInputSplitter implements LocalWorkerWithPorts, XMLExtensible {
 		while (iterator.hasNext()) {
 			Object descendantObject = iterator.next();
 			if (descendantObject instanceof Element) {
-				Element childElement = (Element)descendantObject;
-				if (childElement.getNamespaceURI()==null || childElement.getNamespaceURI().length()==0)
-					childElement.setNamespace(Namespace.getNamespace(namespaceURI));
+				Element childElement = (Element) descendantObject;
+				if (childElement.getNamespaceURI() == null
+						|| childElement.getNamespaceURI().length() == 0)
+					childElement.setNamespace(Namespace
+							.getNamespace(namespaceURI));
 			}
 		}
 	}
-	
 
 	private void defineFromTypeDescriptor() {
 		if (typeDescriptor instanceof ComplexTypeDescriptor) {
