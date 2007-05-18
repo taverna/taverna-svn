@@ -124,7 +124,19 @@ public class ScuflModelTest extends TestCase {
 		return event.getMessage();
 	}
 	
-	
+	public void testNotifyThread() {
+		ScuflModel model = new ScuflModel();
+		assertNull("notify thread should be null",model.notifyThread);
+		ScuflModelEventListener listener = new ScuflModelEventListener() {
+			public void receiveModelEvent(ScuflModelEvent event) {
+			
+			}
+		};
+		model.addListener(listener);
+		assertNotNull("notify thread should not be null",model.notifyThread);
+		model.removeListener(listener);
+		assertNull("notify thread should be null",model.notifyThread);
+	}
 
 	@SuppressWarnings("serial")
 	public void testEventListening() throws Throwable {
@@ -150,8 +162,8 @@ public class ScuflModelTest extends TestCase {
 			public Properties getProperties() {				
 				return null;
 			}});
-		// FIXME: $4 is not constant
-		assertEquals("Added ScuflModelTest$4 proc", getEvent(events, model.notifyThread));
+	
+		assertTrue(getEvent(events, model.notifyThread).startsWith("Added ScuflModelTest"));
 				
 		NotifyThread notifyThread = model.notifyThread;
 		assertTrue(notifyThread.loop);		
@@ -166,7 +178,7 @@ public class ScuflModelTest extends TestCase {
 		notifyThread = model.notifyThread;
 		// Pretend we are running GC enforced destructor 
 		// (model=null;System.GC(); only works in 80% of cases)
-		model.finalize();
+		model.destroy();
 		notifyThread.join((long)(NotifyThread.max_sleep*1.1));
 		assertFalse(notifyThread.loop);
 		assertFalse(notifyThread.isAlive());

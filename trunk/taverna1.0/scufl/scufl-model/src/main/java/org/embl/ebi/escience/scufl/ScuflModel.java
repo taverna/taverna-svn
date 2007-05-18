@@ -26,7 +26,7 @@ import org.jdom.Document;
  * @author Tom Oinn
  * @author Stian Soiland
  */
-public class ScuflModel implements Serializable, LogAwareComponent {
+public class ScuflModel implements Serializable {
 
 	private static Logger logger = Logger.getLogger(ScuflModel.class);
 
@@ -106,17 +106,10 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 				.synchronizedList(new ArrayList<ScuflModelEventListener>());
 		pendingEvents = new ArrayList<ScuflModelEvent>();
 		initialize();
-		notifyThread = new NotifyThread(pendingEvents, listeners);
 	}
-
+	
 	protected void finalize() throws Throwable {
-		// Stop our event thread
-		if (notifyThread != null) {
-			synchronized (notifyThread) {
-				notifyThread.loop = false;
-				notifyThread.interrupt();
-			}
-		}
+		terminateNotifyThread();
 	}
 
 	public ScuflModel clone() throws CloneNotSupportedException {		
@@ -257,6 +250,23 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		}
 		this.description = description;
 	}
+	
+	/**
+	 * Cleans up the model when closed, allowing the garbage collector to clean up.
+	 *
+	 */
+	public void destroy() {
+		terminateNotifyThread();
+		listeners.clear();
+	}
+
+	private void terminateNotifyThread() {
+		if (notifyThread!=null) {
+			this.notifyThread.loop=false;
+			this.notifyThread.interrupt();
+			this.notifyThread=null;
+		}
+	}
 
 	/**
 	 * Get the next valid name based on the specified arbitrary string that
@@ -320,13 +330,15 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 		if (!isFiringEvents) {
 			return;
 		}		
-		synchronized (pendingEvents) {
-			pendingEvents.add(event);
+		if (!listeners.isEmpty()) {
+			synchronized (pendingEvents) {
+				pendingEvents.add(event);
+			}
+			// Poke the thread so it can process some
+	        synchronized (notifyThread) {            
+	            notifyThread.notify();
+	        }
 		}
-		// Poke the thread so it can process some
-        synchronized (notifyThread) {            
-            notifyThread.notify();
-        }
 	}
 
 	/**
@@ -523,18 +535,24 @@ public class ScuflModel implements Serializable, LogAwareComponent {
 	/**
 	 * Add a new ScuflModelEventListener to the listener list.
 	 */
-	public void addListener(ScuflModelEventListener listener) {
+	public synchronized void addListener(ScuflModelEventListener listener) {
         if (listener == null) {
             throw new NullPointerException("Attempt to add null listener");
         }
-		listeners.add(listener);
+        if (notifyThread==null) {
+        	notifyThread = new NotifyThread(pendingEvents, listeners);
+        }
+		listeners.add(listener);		
 	}
 
 	/**
 	 * Remove a ScuflModelEventListener from the listener list.
 	 */
 	public void removeListener(ScuflModelEventListener listener) {
-		listeners.remove(listener);
+		listeners.remove(listener);		
+		if (listeners.isEmpty()) {
+			terminateNotifyThread();
+		}
 	}
 
 	/**
@@ -686,7 +704,7 @@ class NotifyThread extends Thread {
 
 	protected NotifyThread(List<ScuflModelEvent> pendingEvents,
 			List<ScuflModelEventListener> listeners) {
-		super();
+		super("ScuflModelNotifyThread");
 		// We'll keep references to the events and listeners, but not the
 		// ScuflModel. That way, its destructor has a chance to stop us.
 		this.pendingEvents = pendingEvents;

@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-29 12:10:28 $
-//                              $Revision: 1.10 $
+//      Last commit info    :   $Author: sowen70 $
+//                              $Date: 2007-05-18 16:26:22 $
+//                              $Revision: 1.11 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 package org.embl.ebi.escience.scufl.enactor.implementation;
@@ -520,6 +520,7 @@ public class WorkflowInstanceImpl implements WorkflowInstance {
 			logger.error(msg, e);
 			throw new IllegalStateException(msg);
 		}
+		
 		logger.debug("Destroyed " + this);		
 	}
 	
