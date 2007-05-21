@@ -32,7 +32,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -69,9 +68,6 @@ import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-
 /**
  * A JPanel that can configure the beanshell processor type
  * 
@@ -79,6 +75,7 @@ import bsh.Interpreter;
  * @author Chris Greenhalgh
  * @author Kevin Glover
  */
+@SuppressWarnings("serial")
 public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 	ScuflModelEventListener {
 
@@ -347,22 +344,6 @@ public class BeanshellConfigPanel extends JPanel implements UIComponentSPI,
 		});
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-		JButton testScriptButton = new JButton("Test Script");
-		testScriptButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Interpreter interpreter = new Interpreter();
-					interpreter.eval(scriptText.getText());
-				} catch (EvalError e1) {
-					JOptionPane.showMessageDialog(BeanshellConfigPanel.this,
-						"Script error : \n" + e1.getMessage(), "Script error",
-						JOptionPane.ERROR_MESSAGE);
-					logger.warn("Could not evaluate test script", e1);
-				}
-			}
-		});
-		buttonPanel.add(testScriptButton);
 
 		JPanel scriptEditPanel = new JPanel(new BorderLayout());
 		scriptEditPanel.add(scriptText, BorderLayout.CENTER);
