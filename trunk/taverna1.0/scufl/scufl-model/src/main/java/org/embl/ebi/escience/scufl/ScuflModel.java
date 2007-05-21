@@ -26,6 +26,7 @@ import org.jdom.Document;
  * @author Tom Oinn
  * @author Stian Soiland
  */
+@SuppressWarnings("serial")
 public class ScuflModel implements Serializable {
 
 	private static Logger logger = Logger.getLogger(ScuflModel.class);
@@ -109,7 +110,7 @@ public class ScuflModel implements Serializable {
 	}
 	
 	protected void finalize() throws Throwable {
-		terminateNotifyThread();
+		removeListeners();
 	}
 
 	public ScuflModel clone() throws CloneNotSupportedException {		
@@ -252,12 +253,14 @@ public class ScuflModel implements Serializable {
 	}
 	
 	/**
-	 * Cleans up the model when closed, allowing the garbage collector to clean up.
+	 * Removes all listeners, and in effect terminates the NotifyThread
 	 *
 	 */
-	public void destroy() {
-		terminateNotifyThread();
-		listeners.clear();
+	public void removeListeners() {
+		synchronized(listeners) {
+			listeners.clear();
+			terminateNotifyThread();
+		}
 	}
 
 	private void terminateNotifyThread() {
@@ -454,6 +457,13 @@ public class ScuflModel implements Serializable {
 				return;
 			}
 		}
+		
+		//if processor is ScuflWorkflowProcessor (Nested workflows) then tell
+		//the interal model to remove all listeners to it.
+		if (processor instanceof ScuflWorkflowProcessor) {
+			((ScuflWorkflowProcessor)processor).removeInternalModelEventListener();
+		}
+		
 		// Iterate over all the data constraints, remove any that
 		// refer to this processor.
 		HashSet<Object> removed = new HashSet<Object>();
@@ -539,10 +549,12 @@ public class ScuflModel implements Serializable {
         if (listener == null) {
             throw new NullPointerException("Attempt to add null listener");
         }
-        if (notifyThread==null) {
-        	notifyThread = new NotifyThread(pendingEvents, listeners);
+        if (!listeners.contains(listener)) {
+	        listeners.add(listener);
+	        if (notifyThread==null) {
+	        	notifyThread = new NotifyThread(pendingEvents, listeners);
+	        }		
         }
-		listeners.add(listener);		
 	}
 
 	/**

@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowEditProcessorAction.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-11-20 16:05:10 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-05-21 09:50:41 $
+ *               by   $Author: sowen70 $
  * Created on 26 Oct 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.workflow;
@@ -44,25 +44,23 @@ import org.embl.ebi.escience.scuflui.shared.ScuflModelSet;
 import org.embl.ebi.escience.scuflui.spi.ProcessorActionSPI;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
-public class WorkflowEditProcessorAction implements ProcessorActionSPI
-{
+public class WorkflowEditProcessorAction implements ProcessorActionSPI {
 
 	WorkflowProcessor processor;
-	
+
 	public ActionListener getListener(Processor processor) {
-		this.processor=(WorkflowProcessor)processor;
-	return new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-		    handleAction();
-		}
-	    };	
+		this.processor = (WorkflowProcessor) processor;
+		return new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				handleAction();
+			}
+		};
 	}
 
 	private void handleAction() {
-		ScuflModel model= processor.getInternalModel();				
-		ScuflModelSet.getInstance().addModel(model);		
+		ScuflModel model = processor.getInternalModelForEditing();
+		ScuflModelSet.getInstance().addModel(model);
 	}
-		
 
 	public boolean canHandle(Processor processor) {
 		return (processor instanceof WorkflowProcessor);

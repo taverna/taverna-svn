@@ -589,7 +589,7 @@ public class Workbench extends JFrame {
 	public boolean closeWorkflow(ScuflModel model) {
 		if (safeToClose(model)) {
 			workflowModels.removeModel(model);
-			model.destroy();
+			model.removeListeners();
 			return true;
 		}
 		return false;

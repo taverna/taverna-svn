@@ -36,20 +36,23 @@ import org.jdom.Element;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("serial")
 public class WorkflowProcessor extends Processor implements ScuflWorkflowProcessor, Serializable {
 
 	private static Logger logger = Logger.getLogger(WorkflowProcessor.class);
 	
-	private ScuflModel theModel = null;
+	private ScuflModel theInternalModel = null;
 
 	private String definitionURL = null;
+	
+	private ScuflModelEventListener eventListener = null;
 
 	/**
 	 * Go offline
 	 */
 	public void setOffline() {
 		try {
-			this.theModel.setOffline(true);
+			this.theInternalModel.setOffline(true);
 			logger.info("Set nested processor offline");
 		} catch (SetOnlineException soe) {
 			logger.warn("Could not set nested processor offline", soe);			
@@ -61,7 +64,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	 */
 	public void setOnline() {
 		try {
-			this.theModel.setOffline(false);
+			this.theInternalModel.setOffline(false);
 			logger.info("Set nested processor online");			
 		} catch (SetOnlineException soe) {
 			logger.warn("Could not set nested processor online", soe);			
@@ -82,16 +85,15 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 		this.definitionURL = definitionURL;
 		try {
 			// Create a new model instance
-			this.theModel = new ScuflModel();
+			this.theInternalModel = new ScuflModel();
 			try {
-				this.theModel.setOffline(model.isOffline());
+				this.theInternalModel.setOffline(model.isOffline());
 			} catch (SetOnlineException soe) {
 				//
 			}
 			// Populate from the definition URL
-			XScuflParser.populate(new URL(definitionURL).openStream(), theModel, null);
+			XScuflParser.populate(new URL(definitionURL).openStream(), theInternalModel, null);
 			buildPorts();
-			createListener();
 		} catch (MalformedURLException mue) {
 			throw new ProcessorCreationException("The supplied definition URL was malformed, specified as '"
 					+ definitionURL + "'");
@@ -114,18 +116,17 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 		// so will not work with a new document instance
 		try {
 			Document doc = new Document((Element) scuflElement.clone());
-			this.theModel = new ScuflModel();
+			this.theInternalModel = new ScuflModel();
 			try {
 				if (model != null) {
-					this.theModel.setOffline(model.isOffline());
+					this.theInternalModel.setOffline(model.isOffline());
 				}
 			} catch (SetOnlineException soe) {
 				//
 			}
-			XScuflParser.populate(doc, theModel, null);
-			setDescription(theModel.getDescription().getText());
+			XScuflParser.populate(doc, theInternalModel, null);
+			setDescription(theInternalModel.getDescription().getText());
 			buildPorts();
-			createListener();
 		} catch (Exception e) {
 			throw new ProcessorCreationException("The workflow processor '" + name + "' caused an exception :\n"
 					+ e.getMessage() + "\n during creation. The exception had type :\n" + e.getClass().toString());
@@ -138,15 +139,14 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	public WorkflowProcessor(ScuflModel model, String name) throws ProcessorCreationException,
 			DuplicateProcessorNameException {
 		super(model, name);
-		this.theModel = new ScuflModel();
+		this.theInternalModel = new ScuflModel();
 		try {
 			if (model != null) {
-				this.theModel.setOffline(model.isOffline());
+				this.theInternalModel.setOffline(model.isOffline());
 			}
 		} catch (SetOnlineException soe) {
 			//
 		}
-		createListener();
 	}
 
 	/**
@@ -155,26 +155,29 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	 * has been changed, effectively performing a copy on write style caching.
 	 */
 	private void createListener() {
-		this.theModel.addListener(new ScuflModelEventListener() {
-			public void receiveModelEvent(ScuflModelEvent event) {
-				WorkflowProcessor.this.definitionURL = null;
-				try {
-					if (buildPorts() == false) {
-						// Only throw a new event up if nothing has changed in
-						// the port
-						// list, if something has been changed then the parent
-						// workflow
-						// will already have been kicked by the port creation or
-						// destruction
-						fireModelEvent(new ScuflModelEvent(WorkflowProcessor.this, "Underlying workflow changed"));
+		if (eventListener==null) {
+			eventListener=new ScuflModelEventListener() {
+				public void receiveModelEvent(ScuflModelEvent event) {
+					WorkflowProcessor.this.definitionURL = null;
+					try {
+						if (buildPorts() == false) {
+							// Only throw a new event up if nothing has changed in
+							// the port
+							// list, if something has been changed then the parent
+							// workflow
+							// will already have been kicked by the port creation or
+							// destruction
+							fireModelEvent(new ScuflModelEvent(WorkflowProcessor.this, "Underlying workflow changed"));
+						}
+					} catch (PortCreationException pce) {
+						//
+					} catch (DuplicatePortNameException dpne) {
+						//
 					}
-				} catch (PortCreationException pce) {
-					//
-				} catch (DuplicatePortNameException dpne) {
-					//
 				}
-			}
-		});
+			};
+		}
+		this.theInternalModel.addListener(eventListener);
 	}
 
 	/**
@@ -184,7 +187,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	private boolean buildPorts() throws PortCreationException, DuplicatePortNameException {
 		boolean changed = false;
 		// Iterate over the workflow sinks to get the output ports
-		Port[] outputs = this.theModel.getWorkflowSinkPorts();
+		Port[] outputs = this.theInternalModel.getWorkflowSinkPorts();
 		for (int i = 0; i < outputs.length; i++) {
 			// Create a new output port if it doesn't already exist
 			try {
@@ -198,7 +201,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 			}
 		}
 		// Iterate over workflow sources to get the input ports
-		Port[] inputs = this.theModel.getWorkflowSourcePorts();
+		Port[] inputs = this.theInternalModel.getWorkflowSourcePorts();
 		for (int i = 0; i < inputs.length; i++) {
 			// Create a new input port if it doesn't already exist
 			try {
@@ -220,7 +223,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 			// Try to find this in the nested model
 			String portName = ourInputPorts[i].getName();
 			try {
-				this.theModel.getWorkflowSourceProcessor().locatePort(portName);
+				this.theInternalModel.getWorkflowSourceProcessor().locatePort(portName);
 			} catch (UnknownPortException upe) {
 				removePort(ourInputPorts[i]);
 				changed = true;
@@ -231,7 +234,7 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 			// Try to find this in the nested model
 			String portName = ourOutputPorts[i].getName();
 			try {
-				this.theModel.getWorkflowSinkProcessor().locatePort(portName);
+				this.theInternalModel.getWorkflowSinkProcessor().locatePort(portName);
 			} catch (UnknownPortException upe) {
 				removePort(ourOutputPorts[i]);
 				changed = true;
@@ -239,9 +242,30 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 		}
 		return changed;
 	}
+	
+	
+	/**
+	 * Removes the ScuflModelEventListener from the internal ScuflModel
+	 */
+	public void removeInternalModelEventListener() {
+		this.theInternalModel.removeListener(eventListener);
+	}
 
+	/**
+	 * Returns a ScuflModel that is being listened to by the processor
+	 * So that any internal changes are automatically reflected in the processor
+	 * 
+	 * The client is responsible for calling ScuflModel.removeListeners once the model
+	 * is finished with.
+	 * @return
+	 */
+	public ScuflModel getInternalModelForEditing() {
+		createListener();
+		return this.theInternalModel;
+	}
+	
 	public ScuflModel getInternalModel() {
-		return this.theModel;
+		return this.theInternalModel;
 	}
 
 	/**

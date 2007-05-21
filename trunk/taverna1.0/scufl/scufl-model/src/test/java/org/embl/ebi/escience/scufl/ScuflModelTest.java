@@ -178,7 +178,7 @@ public class ScuflModelTest extends TestCase {
 		notifyThread = model.notifyThread;
 		// Pretend we are running GC enforced destructor 
 		// (model=null;System.GC(); only works in 80% of cases)
-		model.destroy();
+		model.removeListeners();
 		notifyThread.join((long)(NotifyThread.max_sleep*1.1));
 		assertFalse(notifyThread.loop);
 		assertFalse(notifyThread.isAlive());
