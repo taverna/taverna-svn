@@ -611,12 +611,20 @@ public class LocalRepository implements Repository {
 						logger.warn("Already existed, overwriting " + toFile);
 						toFile.delete();
 					}
-					toFile.createNewFile();
-					FileOutputStream fos = new FileOutputStream(toFile);
+					
+					//download to tmp file first
+					File tmpFile = new File(toFile.getAbsolutePath()+".tmp");
+					tmpFile.createNewFile();
+					
+					FileOutputStream fos = new FileOutputStream(tmpFile);
 					setStatus(a,
 							"pom".equals(suffix) ? ArtifactStatus.PomFetching
 									: ArtifactStatus.JarFetching);
 					copyStream(is, fos, a);
+					
+					//rename tmp file to real artifact file
+					tmpFile.renameTo(toFile);
+					
 					dlstatus.remove(a);
 					setStatus(a, "pom".equals(suffix) ? ArtifactStatus.Pom
 							: ArtifactStatus.Jar);
