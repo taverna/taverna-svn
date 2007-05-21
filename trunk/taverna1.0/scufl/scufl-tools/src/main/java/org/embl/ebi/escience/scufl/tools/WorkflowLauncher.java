@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.11 $
+ * Revision           $Revision: 1.12 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-16 09:18:13 $
+ * Last modified on   $Date: 2007-05-21 10:44:34 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -48,6 +48,7 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.commons.cli.CommandLine;
@@ -60,6 +61,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
@@ -103,6 +105,9 @@ import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
  */
 
 public class WorkflowLauncher {
+	
+	private static Logger logger = Logger.getLogger(WorkflowLauncher.class);
+	
 	private ScuflModel model;
 
 	private UserContext userContext;
@@ -133,7 +138,7 @@ public class WorkflowLauncher {
 			DuplicateProcessorNameException, MalformedNameException,
 			ConcurrencyConstraintCreationException,
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException {
-		initialiseSPIRegistry();
+		initialise();
 		model = openWorkflowModel(xmlStream);
 		this.userContext = userContext;
 	}
@@ -224,7 +229,7 @@ public class WorkflowLauncher {
 	 *            a {@link ScuflModel}
 	 */
 	public WorkflowLauncher(ScuflModel model) {
-		initialiseSPIRegistry();
+		initialise();
 		this.model = model;
 	}
 
@@ -239,7 +244,7 @@ public class WorkflowLauncher {
 	 *            a {@link UserContext}
 	 */
 	public WorkflowLauncher(ScuflModel model, UserContext userContext) {
-		initialiseSPIRegistry();
+		initialise();
 		this.model = model;
 		this.userContext = userContext;
 	}
@@ -342,7 +347,7 @@ public class WorkflowLauncher {
 	public Map execute(Map inputs,
 			WorkflowEventListener[] workflowEventListeners)
 			throws WorkflowSubmissionException, InvalidInputException {
-		initialiseSPIRegistry();
+		initialise();
 		for (int i = 0; i < workflowEventListeners.length; i++) {
 			WorkflowEventDispatcher.DISPATCHER
 					.addListener(workflowEventListeners[i]);
@@ -372,6 +377,22 @@ public class WorkflowLauncher {
 
 	}
 
+	private void initialise(){
+		initialiseSPIRegistry();
+		initialisePluginManager();
+	}
+	
+	private void initialisePluginManager() {
+		Repository repository = TavernaSPIRegistry.getRepository();
+		if (repository!=null) {
+			PluginManager.setRepository(TavernaSPIRegistry.getRepository());
+			PluginManager.getInstance();
+		}
+		else {
+			logger.warn("Repository is NULL when initialising Plugin Manager. Make sure initialiseSPIRegistry is called first.");
+		}
+	}
+	
 	private void initialiseSPIRegistry() {
 		Repository repository = null;
 		try {
@@ -406,7 +427,7 @@ public class WorkflowLauncher {
 		// specified
 		URL here = new URL("file:");
 
-		initialiseSPIRegistry();
+		initialise();
 
 		// Construct command line options
 		Option helpOption = new Option("help", "print this message");
@@ -644,6 +665,7 @@ public class WorkflowLauncher {
 	 */
 	@SuppressWarnings( { "deprecation", "static-access" })
 	public static void main(String args[]) throws MalformedURLException {
+		System.out.println("IN MAIN");
 		new WorkflowLauncher(args);
 	}
 

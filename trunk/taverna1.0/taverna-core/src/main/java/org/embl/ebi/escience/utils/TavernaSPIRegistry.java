@@ -138,7 +138,7 @@ public class TavernaSPIRegistry<T> {
 	 * 
 	 * @return an instance of the Repository, if set by setRepository
 	 */
-	protected static Repository getRepository() {
+	public static Repository getRepository() {
 		return repository;
 	}
 }
