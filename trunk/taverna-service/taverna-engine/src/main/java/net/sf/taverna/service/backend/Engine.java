@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.taverna.raven.repository.Repository;
@@ -96,6 +95,7 @@ public class Engine implements TavernaService {
 		listenerThread.start();
 	}
 
+	@Override
 	protected void finalize() {
 		listener.stop();
 	}
@@ -196,7 +196,7 @@ public class Engine implements TavernaService {
 			
 			Element statusElement = new Element("status", ns);
 			jobElement.setAttribute("href", "/jobs/" + j.getId() + "/status", nsXlink);
-			statusElement.addContent(j.getState().toString());
+			statusElement.addContent(j.getStatus().toString());
 			jobElement.addContent(statusElement);
 			jobsElement.addContent(jobElement);
 		}
@@ -227,14 +227,14 @@ public class Engine implements TavernaService {
 		} catch (UnknownJobException e) {
 			return "UNKNOWN";
 		}
-		String state = job.getState().toString();
+		String state = job.getStatus().toString();
 		daoFactory.close();
 		return state;
 	}
 
 	public String getResultDocument(String job_id) throws UnknownJobException {
     	Job job = getJob(job_id);
-    	String baclava = job.getResultDoc().getBaclava();
+    	String baclava = job.getOutputDoc().getBaclava();
     	daoFactory.close();
 		return baclava;
 	}
