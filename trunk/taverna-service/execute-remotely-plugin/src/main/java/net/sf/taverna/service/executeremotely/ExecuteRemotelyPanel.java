@@ -42,6 +42,11 @@ import org.jdom.input.SAXBuilder;
 public class ExecuteRemotelyPanel extends JPanel implements
 	WorkflowModelViewSPI {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3941327167079803885L;
+
 	private static Logger logger = Logger.getLogger(ExecuteRemotelyPanel.class);
 
 	private ScuflModel model;
@@ -85,6 +90,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		return TavernaIcons.runIcon;
 	}
 
+	@Override
 	public String getName() {
 		return "Execute remotely";
 	}
@@ -97,7 +103,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	}
 
 	public void detachFromModel() {
-		this.model = null;
+		model = null;
 	}
 
 	public void onDispose() {
@@ -164,7 +170,17 @@ public class ExecuteRemotelyPanel extends JPanel implements
 
 
 	private class Jobs extends JPanel {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8349011048303447414L;
+
 		private class Job extends JLabel {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3825708919735076714L;
+
 			private class MouseClickListener extends MouseAdapter {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -189,6 +205,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		}
 
 		public class RefreshAction extends AbstractAction {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -4718304414344585132L;
+
 			public RefreshAction() {
 				putValue(SMALL_ICON, TavernaIcons.refreshIcon);
 				putValue(NAME, "Refresh");
@@ -296,6 +317,10 @@ public class ExecuteRemotelyPanel extends JPanel implements
 
 	public class RunWorkflowAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -621606487976284994L;
 		private Component parentComponent;
 
 		public RunWorkflowAction(Component parentComponent) {
@@ -324,6 +349,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	}
 
 	private class EndpointField extends JTextField {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7139620617907195405L;
+
 		public EndpointField() {
 			addFocusListener(new SetEndpointListener());
 			updateEndpoint();

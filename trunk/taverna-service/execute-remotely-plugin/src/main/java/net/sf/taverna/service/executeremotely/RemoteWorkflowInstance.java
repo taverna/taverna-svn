@@ -34,8 +34,8 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		if (service == null || id == null) {
 			throw new NullPointerException("Taverna service or job id is null");
 		}
-		this.service = service;
-		this.job_id = id;
+		service = service;
+		job_id = id;
 	}
 	
 	public void cancelExecution() {
