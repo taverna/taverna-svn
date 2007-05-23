@@ -174,7 +174,7 @@
 								<!--<echo message="Stopping Apache Derby" />-->
 								<java
 									classname="org.apache.derby.drda.NetworkServerControl"
-									fork="yes" failonerror="yes">
+									fork="yes">
 									<classpath
 										refid="maven.test.classpath" />
 									<arg line="shutdown -p 1337" />
