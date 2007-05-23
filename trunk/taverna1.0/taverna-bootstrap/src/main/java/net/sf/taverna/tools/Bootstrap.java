@@ -59,6 +59,10 @@ public class Bootstrap {
 		
 		findUserDir();
 		properties = findProperties();
+		if (properties==null) {
+			System.out.println("Unable to find raven.properties. This should either be within a conf folder in your startup directory, or within the conf folder of your $taverna.home.");
+			System.exit(-1);
+		}
 		remoteRepositories = findRepositories(properties);
 
 		if (properties.getProperty("raven.remoteprofile") != null) {
@@ -136,9 +140,7 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Returns a copy of the raven.properties, which are either found remotely,
-	 * or locally if the remote locations are unaccessible Makes a local copy if
-	 * found from a remote source.
+	 * Returns a copy of the raven.properties
 	 * 
 	 * @return the properties
 	 */
@@ -146,9 +148,8 @@ public class Bootstrap {
 		Properties result = null;
 		File tavernaHome = new File(System.getProperty("taverna.home"));
 		File userdir = new File(tavernaHome, "conf");
-		File localcopy = new File(userdir, LOCAL_PROPERTIES);
 		try {
-			result = new RavenProperties(localcopy);
+			result = new RavenProperties().getProperties();
 		} catch (Exception e) {
 			System.err
 					.println("Unable to find raven.properties, either remotely, or locally.");

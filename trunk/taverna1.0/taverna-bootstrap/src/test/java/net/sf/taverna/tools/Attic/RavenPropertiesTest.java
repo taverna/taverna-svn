@@ -25,23 +25,48 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-22 10:51:32 $
+ * Last modified on   $Date: 2007-05-23 16:17:41 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.tools;
 
+import java.util.Properties;
+
 import junit.framework.TestCase;
 
 public class RavenPropertiesTest extends TestCase{	
+	
+	String realTavHome;
+	
+	@Override
+	protected void setUp() throws Exception {
+		realTavHome=System.getProperty("taverna.home");
+		String resourcePath = RavenPropertiesTest.class.getResource("/conf/raven.properties").toExternalForm();
+		resourcePath=resourcePath.replaceAll("file:","");
+		resourcePath=resourcePath.replaceAll("conf/raven.properties", "");
+		System.out.println("Looking for conf/raven.properties in: "+resourcePath);
+		System.setProperty("taverna.home", resourcePath);
+	}
+	
 
-	public void testFindRemoteProperties() throws Exception{
+	@Override
+	protected void tearDown() throws Exception {
+		if (realTavHome!=null)
+			System.setProperty("taverna.home", realTavHome);
+		else
+			System.clearProperty("taverna.home");
+	}
+
+
+
+	public void testRavenProperties() throws Exception{
 		
 		System.setProperty("raven.splashscreen","a splashscreen");
 		
-		RavenProperties props = new RavenProperties(null);		
+		Properties props = new RavenProperties().getProperties();		
 		
 		assertNotNull("No raven.loader.groupid defined",props.getProperty("raven.loader.groupid"));
 		assertNotNull("No raven.loader.artifactid defined",props.getProperty("raven.loader.artifactid"));
