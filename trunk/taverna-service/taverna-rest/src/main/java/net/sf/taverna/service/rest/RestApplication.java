@@ -5,6 +5,8 @@ import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.rest.resources.CapabilitiesResource;
+import net.sf.taverna.service.rest.resources.CurrentUserResource;
 import net.sf.taverna.service.rest.resources.DataResource;
 import net.sf.taverna.service.rest.resources.DatasResource;
 import net.sf.taverna.service.rest.resources.JobResource;
@@ -24,6 +26,8 @@ import org.restlet.data.Protocol;
 import org.restlet.util.Template;
 
 public class RestApplication {
+
+	public static final String CURRENT = ";current";
 
 	private static Logger logger = Logger.getLogger(RestApplication.class);
 
@@ -97,7 +101,11 @@ public class RestApplication {
 				UsersResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 		
+		// Capabilities at / is also unprotected
+		route = router.attach("/", CapabilitiesResource.class);
+		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 		
+		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
 		userGuard.setNext(authenticated);
 		// /jobs/X
@@ -109,6 +117,10 @@ public class RestApplication {
 		// /data/X
 		authenticated.attach(uriFactory.getMapping(DataDoc.class) + DATA,
 			DataResource.class);
+		
+		// /users;current
+		authenticated.attach(uriFactory.getMapping(User.class) + CURRENT,
+			CurrentUserResource.class);
 		// /users/X
 		authenticated.attach(uriFactory.getMapping(User.class) + USER,
 			UserResource.class);
