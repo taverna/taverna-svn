@@ -2,6 +2,7 @@ package net.sf.taverna.service.rest.client;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.restlet.data.Reference;
 
 public class AbstractREST<DocumentClass extends XmlObject> {
 
@@ -9,36 +10,37 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 
 	RESTContext context;
 
-	private String uri;
+	private Reference uriReference;
 
 	private DocumentClass document;
 
 	private Class<? extends DocumentClass> documentClass;
 
-	public AbstractREST(RESTContext context, String uri,
+	public AbstractREST(RESTContext context, Reference uri,
 		Class<DocumentClass> documentClass) {
 		this(context, uri, null, documentClass);
 	}
 
-	public AbstractREST(RESTContext context, String uri, DocumentClass document) {
+	public AbstractREST(RESTContext context, Reference uri,
+		DocumentClass document) {
 		this(context, uri, document, null);
 	}
 
-	private AbstractREST(RESTContext context, String uri,
+	private AbstractREST(RESTContext context, Reference uri,
 		DocumentClass document, Class<DocumentClass> documentClass) {
-		this.context = context;
-		this.document = document;
-		this.uri = uri;
 		if (context == null) {
 			throw new NullPointerException("RESTContext can't be null");
 		}
 		if (uri == null) {
-			throw new NullPointerException("uri can't be null");
+			throw new NullPointerException("uriReference can't be null");
 		}
 		if (document == null && documentClass == null) {
 			throw new NullPointerException(
 				"At least one of DocumentClass or String can't be null");
 		}
+		this.context = context;
+		this.document = document;
+		this.uriReference = uri.getTargetRef();
 		this.documentClass = documentClass;
 	}
 
@@ -53,8 +55,12 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 		this.document = document;
 	}
 
+	public void refresh() {
+		loadDocument();
+	}
+
 	public void loadDocument() {
-		setDocument(context.loadDocument(uri, getDocumentClass()));
+		setDocument(context.loadDocument(uriReference, getDocumentClass()));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,7 +72,11 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 	}
 
 	public String getURI() {
-		return uri;
+		return getURIReference().toString();
+	}
+
+	public Reference getURIReference() {
+		return uriReference;
 	}
 
 	@Override
@@ -90,10 +100,10 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 		}
 		return getURI().hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
-		return getDocumentClass() + " " + getURI();
+		return getClass().getSimpleName() + " " + getURI();
 	}
 
 }

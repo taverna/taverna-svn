@@ -1,14 +1,8 @@
 package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.taverna.service.interfaces.TavernaService;
-import net.sf.taverna.service.xml.User;
-import net.sf.taverna.service.xml.UserDocument;
-import net.sf.taverna.service.xml.Workflow;
-import net.sf.taverna.service.xml.WorkflowsDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.QNameSet;
@@ -27,12 +21,17 @@ import org.restlet.data.Response;
 
 public class RESTContext {
 
-	public static final MediaType restType = new MediaType(TavernaService.restType);
+	public static final MediaType restType =
+		new MediaType(TavernaService.restType);
 
-	public static final MediaType scuflType = new MediaType(TavernaService.scuflType);
+	public static final MediaType scuflType =
+		new MediaType(TavernaService.scuflType);
 
-	public static final MediaType baclavaType = new MediaType(TavernaService.baclavaType);
-	
+	public static final MediaType baclavaType =
+		new MediaType(TavernaService.baclavaType);
+
+	private static Client client = new Client(Protocol.HTTP);
+
 	private static Logger logger = Logger.getLogger(RESTContext.class);
 
 	private Reference baseURI;
@@ -42,24 +41,25 @@ public class RESTContext {
 	private String password;
 
 	private UserREST user;
-	
-	/** 
+
+	/**
 	 * Register a dummy user
 	 * 
 	 * @param baseURI
 	 * @return
-	 * @throws NotSuccessException 
+	 * @throws NotSuccessException
 	 */
-	public static RESTContext register(String baseURI) throws NotSuccessException {
+	public static RESTContext register(String baseURI)
+		throws NotSuccessException {
 		Request request = new Request();
-		Client client = new Client(Protocol.HTTP);
+
 		// FIXME: Use capabilities listing to get URI
 		request.setResourceRef(baseURI + "users");
 		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
-				"</user>", restType);
+		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
+			+ "</user>", restType);
 		Response response = client.handle(request);
-		if (! response.getStatus().isSuccess()) {
+		if (!response.getStatus().isSuccess()) {
 			throw new NotSuccessException(response.getStatus());
 		}
 		Reference justCreated = response.getRedirectRef();
@@ -71,97 +71,149 @@ public class RESTContext {
 			logger.debug("Password: " + password);
 		} catch (IOException e) {
 			logger.warn("Could not read password", e);
-			throw new RuntimeException("Could not read password of generated user");
-		}	
+			throw new RuntimeException(
+				"Could not read password of generated user");
+		}
 		return new RESTContext(baseURI, username, password);
 	}
-	
+
 	public RESTContext(String baseURI, String username, String password) {
 		this.baseURI = new Reference(baseURI);
-//		this.challengeResponse = 
-//			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-//				username, password);
+		// this.challengeResponse =
+		// new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
+		// username, password);
 		this.username = username;
 		this.password = password;
-		//findCapabilities();
+		// findCapabilities();
 
 	}
 
-	
 	public <DocumentClass extends XmlObject> DocumentClass loadDocument(
 		String uri, Class<DocumentClass> documentClass) {
 		return loadDocument(new Reference(uri), documentClass);
 	}
-	
+
 	public <DocumentClass extends XmlObject> DocumentClass loadDocument(
 		Reference uri, Class<DocumentClass> documentClass) {
 		Response response;
 		try {
 			response = get(uri);
-		} catch (NotSuccessException e) {
-			logger.error("Could not get user from " + uri, e);
-			throw new RuntimeException("Could not get user from " + uri, e);
+		} catch (RESTException e) {
+			logger.error("Could not get document from " + uri, e);
+			throw new RuntimeException("Could not get document from " + uri, e);
 		}
 		try {
-			XmlObject document = XmlObject.Factory.parse(response.getEntity().getStream());
+			XmlObject document =
+				XmlObject.Factory.parse(response.getEntity().getStream());
 			logger.info("Retrieved " + document);
-			if (! 
-				documentClass.isInstance(document) && 
-				document.schemaType().isDocumentType()) {
+			if (!documentClass.isInstance(document)
+				&& document.schemaType().isDocumentType()) {
 				// Extract the "inner" root element instead of the document
 				// ie. can be cast to User instead of UserDocument
 				XmlObject[] children = document.selectChildren(QNameSet.ALL);
 				document = children[0];
 			}
-			if (! documentClass.isInstance(document)) {
-				logger.error("Not a valid " + documentClass.getCanonicalName() + ": " + uri);
-				throw new RuntimeException("Could not parse as " + documentClass.getCanonicalName());
+			if (!documentClass.isInstance(document)) {
+				logger.error("Not a valid " + documentClass.getCanonicalName()
+					+ ": " + uri);
+				throw new RuntimeException("Could not parse as "
+					+ documentClass.getCanonicalName());
 			}
 			return documentClass.cast(document);
 		} catch (XmlException ex) {
 			logger.warn("Could not parse user XML from " + uri, ex);
-			throw new RuntimeException("Could not parse user XML from " + uri, ex);
+			throw new RuntimeException("Could not parse document XML from "
+				+ uri, ex);
 		} catch (IOException ex) {
 			logger.warn("Could not read user XML from " + uri, ex);
-			throw new RuntimeException("Could not read user XML from " + uri, ex);
+			throw new RuntimeException("Could not read document XML from "
+				+ uri, ex);
 		}
 	}
-	
-	public Response get(Reference uri) throws NotSuccessException {
+
+	public UserREST getUser() {
+		if (user == null) {
+			// FIXME: Hard-coded URI-schema "users"
+			Reference userURL = new Reference(baseURI, "users/" + username);
+			user = new UserREST(this, userURL);
+		}
+		return user;
+	}
+
+	private Request makeRequest(Reference uri, MediaType accepts) {
 		Request request = new Request();
-		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(uri);
-		logger.debug("GET " + uri);
-		request.setMethod(Method.GET);
-		request.getClientInfo().getAcceptedMediaTypes().add(
-			new Preference<MediaType>(restType));
-		Response response;
+		if (accepts != null) {
+			request.getClientInfo().getAcceptedMediaTypes().add(
+				new Preference<MediaType>(accepts));
+		}
 		if (baseURI.isParent(uri)) {
 			logger.debug("Authenticating as " + username);
-			ChallengeResponse challengeResponse = 
-				new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-					username, password);
+			ChallengeResponse challengeResponse =
+				new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username,
+					password);
 			request.setChallengeResponse(challengeResponse);
 		} else {
 			logger.warn("Not supplying credentials for out-of-site URI " + uri);
 		}
-		
-		response = client.handle(request);
-		if (! response.getStatus().isSuccess()) {
+		return request;
+	}
+
+	private Response request(Method method, Reference uri, String data,
+		MediaType mediaType, MediaType accepts) throws NotSuccessException {
+		Request request = makeRequest(uri, accepts);
+		request.setMethod(method);
+		if (data != null) {
+			request.setEntity(data, mediaType);
+		}
+		Response response = client.handle(request);
+		if (!response.getStatus().isSuccess()) {
 			logger.warn("Not success: " + response.getStatus());
 			throw new NotSuccessException(response.getStatus());
 		}
 		return response;
 	}
 
-	public UserREST getUser() {
-		if (user == null) {
-			Reference userURL = new Reference(baseURI, "users/" + username).getTargetRef();
-			logger.debug("Checking from " + userURL);
-			user = new UserREST(this, userURL.toString());
-		}
-		return user;
+	public Response get(Reference uri) throws NotSuccessException, MediaTypeException {
+		return get(uri, restType);
 	}
 
-	
+	public Response get(Reference uri, MediaType accepts)
+		throws NotSuccessException, MediaTypeException {
+		Response response = request(Method.GET, uri, null, null, accepts);
+		MediaType mediaType = response.getEntity().getMediaType();
+		if (! accepts.includes(mediaType)) {
+			throw new MediaTypeException(accepts, mediaType);
+		}
+		return response;
+	}
+
+	public Response post(Reference uri, String data, MediaType mediaType)
+		throws NotSuccessException {
+		return request(Method.POST, uri, data, mediaType, null);
+	}
+
+	public Response put(Reference uri, String data, MediaType mediaType)
+		throws NotSuccessException {
+		return request(Method.PUT, uri, data, mediaType, null);
+	}
+
+	public Response delete(Reference uri) throws NotSuccessException {
+		return request(Method.DELETE, uri, null, null, null);
+	}
+
+	public Reference getBaseURI() {
+		return baseURI;
+	}
+
+	public Reference makeReference(String uri) {
+		return new Reference(getBaseURI(), uri);
+	}
+
+	public Response post(Reference uri, XmlObject document)
+		throws NotSuccessException {
+		// FIXME: Should stream the XML and use document.save()
+		return post(uri, document.xmlText(), restType);
+	}
+
 }
