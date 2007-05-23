@@ -25,7 +25,7 @@ public class Job extends OwnedResource {
 	
 	// Different from Freefluo:
 	// QUEUED, DEQUEUED
-	public enum State {
+	public enum Status {
 		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED
 	}
 	
@@ -35,7 +35,7 @@ public class Job extends OwnedResource {
 
 	@NotNull
 	@Enumerated(value=EnumType.STRING)
-	private State state = State.NEW;
+	private Status status = Status.NEW;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private DataDoc inputDoc;
@@ -59,12 +59,12 @@ public class Job extends OwnedResource {
 		setLastModified();
 	}
 
-	public State getState() {
-		return state;
+	public Status getStatus() {
+		return status;
 	}
 
-	public void setState(State state) {
-		this.state = state;
+	public void setStatus(Status status) {
+		this.status = status;
 		setLastModified();
 	}
 
@@ -87,15 +87,15 @@ public class Job extends OwnedResource {
 	}
 
 	public boolean isFinished() {
-		return getState().compareTo(State.RUNNING) > 1;
+		return getStatus().compareTo(Status.RUNNING) > 1;
 	}
 
-	public DataDoc getResultDoc() {
+	public DataDoc getOutputDoc() {
 		return outputDoc;
 	}
 
-	public void setResultDoc(DataDoc resultDoc) {
-		this.outputDoc = resultDoc;
+	public void setOutputDoc(DataDoc resultDoc) {
+		outputDoc = resultDoc;
 		setLastModified();
 	}
 	

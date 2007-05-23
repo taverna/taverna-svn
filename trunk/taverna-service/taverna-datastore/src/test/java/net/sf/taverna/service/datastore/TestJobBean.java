@@ -10,7 +10,7 @@ import java.util.Date;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Workflow;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.datastore.dao.WorkflowDAO;
@@ -42,7 +42,7 @@ public class TestJobBean extends TestDAO  {
     	Job job = new Job();
     	job.setWorkflow(w);
     	job.setOwner(user);
-    	job.setState(State.RUNNING);    	
+    	job.setStatus(Status.RUNNING);    	
     	job.setProgressReport("The progress report");
         jobDao.create(job);
         lastJob = job.getId();
@@ -60,7 +60,7 @@ public class TestJobBean extends TestDAO  {
     	Job fetchedJob = jobDao.read(lastJob);
         assertEquals("The progress report", fetchedJob.getProgressReport());
         assertEquals(workflow, fetchedJob.getWorkflow().getScufl());
-        assertEquals(State.RUNNING, fetchedJob.getState());
+        assertEquals(Status.RUNNING, fetchedJob.getStatus());
         assertEquals(lastJob, fetchedJob.getId());
         assertFalse(fetchedJob.getCreated().before(fetchedJob.getLastModified()));
 	}

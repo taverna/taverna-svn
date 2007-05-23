@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.interfaces.ParseException;
@@ -29,7 +29,7 @@ public class TavernaTest extends EngineTest {
 	
 	@Before
 	public void findEngine() throws IOException {
-		this.engine = Engine.getInstance();
+		engine = Engine.getInstance();
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class TavernaTest extends EngineTest {
 		assertEquals(4, uuid.version());
 		String status = engine.jobStatus(job_id);
 		// Must be a valid state
-		State.valueOf(status);
+		Status.valueOf(status);
 		Job job = jobDao.read(job_id);
 		try {
 			Thread.sleep(2000);

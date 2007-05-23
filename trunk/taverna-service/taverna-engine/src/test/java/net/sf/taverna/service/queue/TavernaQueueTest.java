@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.interfaces.ParseException;
@@ -52,7 +52,7 @@ public class TavernaQueueTest extends EngineTest {
 		ScuflModel workflow = XMLUtils.parseXScufl(job.getWorkflow().getScufl());
 		assertEquals(8, workflow.getProcessors().length);
 		assertEquals(1, workflow.getWorkflowSinkPorts().length);
-		assertEquals(State.QUEUED, job.getState());
+		assertEquals(Status.QUEUED, job.getStatus());
 	}
 	
 	@Test
@@ -82,7 +82,7 @@ public class TavernaQueueTest extends EngineTest {
 		TavernaQueue queue = new TavernaQueue();
 		queue.add(workflow, "");
 		Job job = queue.poll();
-		assertEquals(State.DEQUEUED, job.getState());
+		assertEquals(Status.DEQUEUED, job.getStatus());
 	}
 	
 	@Test
@@ -124,9 +124,9 @@ public class TavernaQueueTest extends EngineTest {
 			// ignore
 		}
 		// And it should not fail
-		assertNotSame(State.FAILED, job.getState());
-		assertNotSame(State.CANCELLED, job.getState());
-		if (job.getState().equals(State.COMPLETE)) {
+		assertNotSame(Status.FAILED, job.getStatus());
+		assertNotSame(Status.CANCELLED, job.getStatus());
+		if (job.getStatus().equals(Status.COMPLETE)) {
 			assertEquals("Executed.", progress.toString());
 		}		
 	}
@@ -143,8 +143,8 @@ public class TavernaQueueTest extends EngineTest {
 		} catch (InterruptedException e) {
 		}
 		jobDao.refresh(job);
-		assertEquals(State.COMPLETE, job.getState());
-		Map<String, DataThing> result = job.getResultDoc().getDataMap();
+		assertEquals(Status.COMPLETE, job.getStatus());
+		Map<String, DataThing> result = job.getOutputDoc().getDataMap();
 		DataThing thing = result.get("Output");
 		assertEquals("[[square red cat, square greenrabbit], [circular red cat, circular greenrabbit], [triangularred cat, triangulargreenrabbit]]",
 			thing.getDataObject().toString());
