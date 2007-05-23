@@ -9,6 +9,7 @@ import net.sf.taverna.service.datastore.bean.OwnedResource;
 import net.sf.taverna.service.datastore.bean.UUIDResource;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.rest.RestApplication;
 
 import org.jdom.Attribute;
 import org.jdom.Namespace;
@@ -46,11 +47,10 @@ public class URIFactory {
 	public String getRoot() {
 		return root;
 	}
-	
+
 	public String getMapping(Class<? extends UUIDResource> resourceClass) {
 		return resourceMap.get(resourceClass);
 	}
-	
 
 	/**
 	 * Get URI for a resource class.
@@ -59,9 +59,9 @@ public class URIFactory {
 	 * @return
 	 */
 	public String getURI(Class<? extends UUIDResource> resourceClass) {
-		if (! resourceMap.containsKey(resourceClass)) {
+		if (!resourceMap.containsKey(resourceClass)) {
 			throw new IllegalArgumentException("Unknown resource class: "
-				+ resourceClass);			
+				+ resourceClass);
 		}
 		return getRoot() + getMapping(resourceClass);
 	}
@@ -74,33 +74,49 @@ public class URIFactory {
 		}
 		return resourcePrefix + "/" + resource.getId();
 	}
-	
+
 	/**
 	 * Get the URI for a collection of owned resources
 	 * 
-	 * @param user The owner of the collection
-	 * @param ownedClass The class of the collection
+	 * @param user
+	 *            The owner of the collection
+	 * @param ownedClass
+	 *            The class of the collection
 	 * @return An URI such as http://blah/user/tom/workflows
 	 */
 	public String getURI(User owner, Class<? extends OwnedResource> ownedClass) {
 		String uri = getURI(owner);
 		return uri + getMapping(ownedClass);
 	}
-	
-	
+
 	public Attribute getXLink(UUIDResource resource) {
 		Attribute xlink = new Attribute("href", getURI(resource), NS_XLINK);
 		return xlink;
 	}
-	
-	public Attribute getXLink(User user, Class<? extends OwnedResource> ownedClass) {
-		Attribute xlink = new Attribute("href", getURI(user, ownedClass), NS_XLINK);
+
+	public Attribute getXLink(User user,
+		Class<? extends OwnedResource> ownedClass) {
+		Attribute xlink =
+			new Attribute("href", getURI(user, ownedClass), NS_XLINK);
 		return xlink;
 	}
-	
+
 	public Attribute getXLink(Class<? extends UUIDResource> resourceClass) {
-		Attribute xlink = new Attribute("href", getURI(resourceClass), NS_XLINK);
+		Attribute xlink =
+			new Attribute("href", getURI(resourceClass), NS_XLINK);
 		return xlink;
+	}
+
+	public String getURIStatus(Job job) {
+		return getURI(job) + "/status";
+	}
+
+	public String getURIReport(Job job) {
+		return getURI(job) + "/report";
+	}
+
+	public String getURICurrentUser() {
+		return User.class + RestApplication.CURRENT;
 	}
 
 }
