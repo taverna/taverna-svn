@@ -1,8 +1,7 @@
 package net.sf.taverna.service.rest.resources;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
 
 import net.sf.taverna.service.datastore.bean.OwnedResource;
 import net.sf.taverna.service.datastore.bean.UUIDResource;
@@ -11,11 +10,9 @@ import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.utils.URIFactory;
-import net.sf.taverna.service.util.XMLUtils;
+import net.sf.taverna.service.rest.utils.URItoDAO;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlOptions;
-import org.jdom.Element;
 import org.jdom.Namespace;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -24,15 +21,11 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
-public abstract class AbstractResource extends Resource {
+public abstract class AbstractResource extends RepresentationalResource {
 
-	URIFactory uriFactory = URIFactory.getInstance();
-
-	public XmlOptions xmlOptions = makeXMLOptions();
+	private static Logger logger = Logger.getLogger(AbstractResource.class);
 
 	public static final Namespace ns =
 		Namespace.getNamespace(TavernaService.NS);
@@ -42,97 +35,43 @@ public abstract class AbstractResource extends Resource {
 
 	public static final Namespace nsDCterms =
 		Namespace.getNamespace("dcterms", "http://purl.org/dc/terms/");
-	
-	private static Logger logger = Logger.getLogger(AbstractResource.class);
-	
-	public static final MediaType restType = new MediaType(TavernaService.restType);
 
-	public static final MediaType scuflType = new MediaType(TavernaService.scuflType);
+	public static final MediaType restType =
+		new MediaType(TavernaService.restType);
 
-	public static final MediaType baclavaType = new MediaType(TavernaService.baclavaType);
-	
-	
+	public static final MediaType scuflType =
+		new MediaType(TavernaService.scuflType);
+
+	public static final MediaType baclavaType =
+		new MediaType(TavernaService.baclavaType);
+
 	static DAOFactory daoFactory = DAOFactory.getFactory();
+
+	static URIFactory uriFactory = URIFactory.getInstance();
+
+	static URItoDAO uriToDAO = URItoDAO.getInstance();
 
 	public AbstractResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-		getVariants().add(new Variant(restType));
 	}
 
-	private static XmlOptions makeXMLOptions() {
-		XmlOptions xmlOptions = new XmlOptions();
-		xmlOptions.setLoadStripWhitespace();
-		xmlOptions.setSavePrettyPrint();
-		xmlOptions.setSavePrettyPrintIndent(4);
-		xmlOptions.setSaveOuter();
-		xmlOptions.setUseDefaultNamespace();
-		xmlOptions.setSaveAggressiveNamespaces();
-		Map<String, String> ns = new HashMap<String, String>();
-		ns.put("http://www.w3.org/1999/xlink", "xlink");
-		xmlOptions.setSaveSuggestedPrefixes(ns);
-		return xmlOptions;
-	}
-
+	/**
+	 * The last modification date of the resource, if known
+	 * 
+	 * @return
+	 */
 	public Date getModificationDate() {
-		return null;
-	}
-
-	/**
-	 * Return a plain text representation. There is no real restrictions on the
-	 * plain text except that it should be both human-readable and easily
-	 * parsable. A RFC-822 style is often convenient, for example:
-	 * 
-	 * <pre>
-	 *  Name: Stian Soiland
-	 *  Address: Manchester
-	 *           United Kingdom
-	 *  Homepage: http://soiland.no/
-	 * </pre>
-	 * 
-	 * @return A plain text representation of the resource
-	 */
-	public abstract String representPlainText();
-
-	/**
-	 * Return XML representation as String. By default this method will call
-	 * {@link #representXMLElement()} and return the serialised element.
-	 * <p>
-	 * The motivation for this design is that if you have the XML representation
-	 * already as pure XML in a file or database, this method can return it
-	 * directly. However, if you are building your own XML {@link Element} from
-	 * scratch, then {@link #representXMLElement()} would be more convenient.
-	 * 
-	 * @return An XML representation of the resource.
-	 */
-	public String representXML() {
-		Element element = representXMLElement();
-		return XMLUtils.makeXML(element);
-	}
-
-	/**
-	 * Return XML representation as an Element. This method is called by
-	 * {@link #representXML()} by default.
-	 * 
-	 * @see #representXML()
-	 * @return A root element for the XML representation of the resource
-	 */
-	public Element representXMLElement() {
 		return null;
 	}
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		Representation result = null;
-		if (restType.includes(variant.getMediaType())) {
-			result = new StringRepresentation(representXML(), restType);
-		} else { // Fall-back to text/plain
-			if (!MediaType.TEXT_PLAIN.includes(variant.getMediaType())) {
-				logger.warn("Unknown media type " + variant.getMediaType());
-			}
-			result = new StringRepresentation(representPlainText());
+		Representation result = super.getRepresentation(variant);
+		if (result == null) {
+			return null;
 		}
-		if (getModificationDate() != null) {
+		if (result.getModificationDate() == null
+			&& getModificationDate() != null) {
 			result.setModificationDate(getModificationDate());
 		}
 		return result;
@@ -175,8 +114,7 @@ public abstract class AbstractResource extends Resource {
 	}
 
 	/**
-	 * Set the response status to  {@value Status#CLIENT_ERROR_NOT_FOUND}
-	 *
+	 * Set the response status to {@value Status#CLIENT_ERROR_NOT_FOUND}
 	 */
 	public void notFound() {
 		logger.info("Not found for " + this);
@@ -185,8 +123,7 @@ public abstract class AbstractResource extends Resource {
 
 	/**
 	 * Set the response status to {@value Status#CLIENT_ERROR_UNAUTHORIZED} with
-	 * the appropriate challenge to request new authentication. 
-	 * 
+	 * the appropriate challenge to request new authentication.
 	 */
 	public void challenge() {
 		logger.info("Challenging for " + this);
@@ -209,6 +146,7 @@ public abstract class AbstractResource extends Resource {
 	 * @return True if entity exist and is accessible.
 	 */
 	public boolean checkEntity(UUIDResource entity) {
+		logger.debug("Checking entity " + entity);
 		if (entity == null) {
 			notFound();
 			return false;
@@ -244,19 +182,56 @@ public abstract class AbstractResource extends Resource {
 		}
 		// Owned resources only readable by owner
 		OwnedResource owned = (OwnedResource) entity;
-		if (owned.getOwner() == null) { 
-			logger.info("Not ownned resource, access granted");
+		if (owned.getOwner() == null) {
+			logger.info("Not owned resource, access granted");
 			// No owner, also readable by all
 			return true;
 		}
 		logger.info("Comparing owner " + owned.getOwner() + " with " + authUser);
 		return (owned.getOwner().equals(authUser));
-		// TODO: Workers should be able to access things that are on their queues, 
+		// TODO: Workers should be able to access things that are on their
+		// queues,
 		// in particular worker w should be able to access:
-		//    /queue/Q if Q has worker w
-		//    /job/J if J is in queue/Q
-		//    /workflow/WF if WF is used by J
-		//    /data/D if J has i/o to D
+		// /queue/Q if Q has worker w
+		// /job/J if J is in queue/Q
+		// /workflow/WF if WF is used by J
+		// /data/D if J has i/o to D
 	}
-	
+
+	/**
+	 * A Taverna-service XMLBeans representation. The mime type is set to
+	 * {@link AbstractResource#restType}.
+	 */
+	abstract class AbstractREST extends AbstractXML {
+		@Override
+		public MediaType getMediaType() {
+			return restType;
+
+		}
+	}
+
+	/**
+	 * An <code>text/uri-list</code> over UUIDResource's. The URIs will be
+	 * generated using {@link URIFactory}.
+	 */
+	abstract class AbstractURIList<ResourceType extends UUIDResource> extends
+		AbstractText implements Iterable<ResourceType> {
+
+		abstract public Iterator<ResourceType> iterator();
+
+		@Override
+		public String getText() {
+			StringBuilder message = new StringBuilder();
+			for (ResourceType resource : this) {
+				message.append(uriFactory.getURI(resource)).append("\r\n");
+			}
+			return message.toString();
+		}
+
+		@Override
+		public MediaType getMediaType() {
+			return MediaType.TEXT_URI_LIST;
+		}
+	}
+
 }

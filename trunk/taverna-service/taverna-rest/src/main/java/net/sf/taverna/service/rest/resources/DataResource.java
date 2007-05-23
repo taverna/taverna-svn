@@ -1,17 +1,13 @@
 package net.sf.taverna.service.rest.resources;
 
-import java.util.Map.Entry;
-
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.dao.DataDocDAO;
-import net.sf.taverna.service.interfaces.ParseException;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.baclava.DataThing;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 
 public class DataResource extends AbstractResource {
 
@@ -26,30 +22,19 @@ public class DataResource extends AbstractResource {
 		String data_id = (String) request.getAttributes().get("data");
 		dataDoc = dataDocDao.read(data_id);
 		checkEntity(dataDoc);
+		addRepresentation(new Baclava());
 	}
 
-	@Override
-	public String representPlainText() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("Data document ");
-		sb.append(dataDoc.getId());
-		sb.append("\n");
-		try {
-			for (Entry<String, DataThing> entry : dataDoc.getDataMap().entrySet()) {
-				sb.append(entry.getKey()).append(":\n");
-				sb.append(entry.getValue());
-				sb.append("\n\n");
-			}
-		} catch (ParseException e) {
-			logger.warn("Can't parse data document " + dataDoc, e);
-			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "Invalid data document");
+	class Baclava extends AbstractText {
+		@Override
+		public String getText() {
+			return dataDoc.getBaclava();
 		}
-		return sb.toString();
+
+		@Override
+		public MediaType getMediaType() {
+			return baclavaType;
+		}
 	}
-	
-	@Override
-	public String representXML() {
-		return dataDoc.getBaclava();
-	}
-	
+
 }

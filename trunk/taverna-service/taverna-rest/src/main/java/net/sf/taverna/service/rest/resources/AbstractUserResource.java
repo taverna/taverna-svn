@@ -10,17 +10,14 @@ import org.restlet.data.Response;
 public abstract class AbstractUserResource extends AbstractResource {
 
 	User user;
-	
-	public AbstractUserResource(Context context, Request request, Response response) {
+
+	public AbstractUserResource(Context context, Request request,
+		Response response) {
 		super(context, request, response);
 		UserDAO dao = daoFactory.getUserDAO();
 		String userName = (String) request.getAttributes().get("user");
 		user = dao.readByUsername(userName);
 		checkEntity(user);
 	}
-
-
-
-
 
 }

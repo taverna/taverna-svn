@@ -10,10 +10,4 @@ public class QueueResource extends AbstractResource {
 		super(context, request, response);
 	}
 
-	@Override
-	public String representPlainText() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
