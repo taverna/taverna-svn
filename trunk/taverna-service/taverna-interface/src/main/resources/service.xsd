@@ -11,34 +11,27 @@
 	<import namespace="http://www.w3.org/1999/xlink"
 		schemaLocation="xlink.xsd" />
 
-
 	<complexType name="Linked">
 		<attribute ref="xlink:href" use="optional" />
 	</complexType>
-	<complexType name="Identified">
-		<complexContent>
-			<extension base="tav:Linked">
-				<attribute name="id" type="string"></attribute>
 
-			</extension>
-		</complexContent>
-	</complexType>
 	<complexType name="Owned">
 		<complexContent>
-			<extension base="tav:Identified">
+			<extension base="tav:Linked">
 				<sequence>
-					<element name="owner" type="tav:User"></element>
+					<element minOccurs="0" name="owner"
+						type="tav:User">
+					</element>
 				</sequence>
-
 			</extension>
 		</complexContent>
 	</complexType>
-
 
 
 	<complexType name="Capabilities">
 		<sequence>
 			<element name="users" type="tav:Users"></element>
+			<element name="currentUser" type="tav:User"></element>
 			<element name="workers" type="tav:Workers"></element>
 			<element name="queues" type="tav:Queues"></element>
 		</sequence>
@@ -59,12 +52,26 @@
 
 	<complexType name="User">
 		<complexContent>
-			<extension base="tav:Identified">
+			<extension base="tav:Linked">
 				<sequence>
-					<element name="username" type="string"></element>
-					<element name="jobs" type="tav:Jobs"></element>
-					<element name="workflows" type="tav:Workflows"></element>
-					<element name="datas" type="tav:Datas"></element>
+					<element minOccurs="0" name="username"
+						type="normalizedString">
+					</element>
+					<element minOccurs="0" name="jobs"
+						type="tav:Jobs" maxOccurs="1">
+					</element>
+					<element minOccurs="0" name="workflows"
+						type="tav:Workflows">
+					</element>
+					<element minOccurs="0" name="datas"
+						type="tav:Datas">
+					</element>
+					<element name="email"
+						type="normalizedString" minOccurs="0">
+					</element>
+					<element name="password"
+						type="normalizedString" minOccurs="0">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -75,7 +82,9 @@
 		<complexContent>
 			<extension base="tav:Linked">
 				<sequence>
-					<element name="job" type="tav:Job"></element>
+					<element name="job" type="tav:Job"
+						maxOccurs="unbounded" minOccurs="0">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -85,16 +94,31 @@
 		<complexContent>
 			<extension base="tav:Owned">
 				<sequence>
-					<element name="workflow" type="tav:Workflow"></element>
-					<element name="inputs" type="tav:Data"></element>
-					<element name="outputs" type="tav:Data"></element>
-					<element name="status" type="tav:StatusType"></element>
-					<element name="report" type="tav:Report"></element>
+					<element minOccurs="0" name="workflow"
+						type="tav:Workflow">
+					</element>
+					<element minOccurs="0" name="inputs"
+						type="tav:Data">
+					</element>
+					<element minOccurs="0" name="status"
+						type="tav:LinkedStatusType">
+					</element>
+					<element name="report"
+						type="tav:Report" minOccurs="0">
+					</element>
+					<element name="queue" type="tav:Queue"
+						minOccurs="0">
+					</element>
+					<element name="worker"
+						type="tav:Worker" minOccurs="0">
+					</element>
+					<element name="outputs"
+						type="tav:Data" minOccurs="0">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
 	</complexType>
-
 
 
 	<simpleType name="StatusType">
@@ -120,11 +144,20 @@
 		</restriction>
 	</simpleType>
 
+
+	<complexType name="LinkedStatusType">
+		<simpleContent>
+			<extension base="tav:StatusType">
+				<attribute ref="xlink:href" use="optional" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
 	<complexType name="Report">
 		<complexContent>
 			<extension base="tav:Linked">
 				<sequence>
-					<any minOccurs="1" maxOccurs="1" namespace="##any"
+					<any minOccurs="1" namespace="##any"
 						processContents="skip">
 					</any>
 				</sequence>
@@ -150,8 +183,9 @@
 		<complexContent>
 			<extension base="tav:Owned">
 				<sequence>
-					<element name="scufl" type="tav:Scufl"></element>
-
+					<element minOccurs="0" name="scufl"
+						type="tav:Scufl">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -173,7 +207,9 @@
 		<complexContent>
 			<extension base="tav:Owned">
 				<sequence>
-					<element name="baclava" type="tav:Baclava"></element>
+					<element minOccurs="0" name="baclava"
+						type="tav:Baclava">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -200,12 +236,12 @@
 		<complexContent>
 			<extension base="tav:Linked">
 				<sequence>
-					<element name="uri" type="anyURI"></element>
-					<element name="jobs" type="tav:Jobs"
-						maxOccurs="unbounded" minOccurs="0">
+					<element minOccurs="0" name="uri" type="anyURI"></element>
+					<element minOccurs="0" name="jobs"
+						type="tav:Jobs">
 					</element>
-					<element name="queues" type="tav:Queues"
-						maxOccurs="unbounded" minOccurs="0">
+					<element minOccurs="0" name="queues"
+						type="tav:Queues">
 					</element>
 				</sequence>
 			</extension>
@@ -228,11 +264,9 @@
 
 	<complexType name="Queue">
 		<complexContent>
-			<extension base="tav:Identified">
+			<extension base="tav:Linked">
 				<sequence>
-					<element name="jobs" type="tav:Jobs" maxOccurs="1"
-						minOccurs="1">
-					</element>
+					<element name="jobs" type="tav:Jobs"></element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -259,7 +293,7 @@
 
 	<complexType name="Scufl">
 		<sequence>
-			<any minOccurs="1" maxOccurs="1"
+			<any minOccurs="1"
 				namespace="http://org.embl.ebi.escience/xscufl/0.1alpha"
 				processContents="skip">
 			</any>
@@ -267,11 +301,13 @@
 	</complexType>
 	<complexType name="Baclava">
 		<sequence>
-			<any minOccurs="1" maxOccurs="1"
+			<any minOccurs="1"
 				namespace="http://org.embl.ebi.escience/baclava/0.1alpha"
 				processContents="skip">
 			</any>
 		</sequence>
 	</complexType>
 
+
+	<element name="datas" type="tav:Datas"></element>
 </schema>
