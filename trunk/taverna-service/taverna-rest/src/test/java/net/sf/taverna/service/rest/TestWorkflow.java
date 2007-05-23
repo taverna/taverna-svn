@@ -14,7 +14,6 @@ import net.sf.taverna.service.xml.Workflow;
 import net.sf.taverna.service.xml.WorkflowDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -116,6 +115,7 @@ public class TestWorkflow extends ClientTest {
 		assertTrue(result.contains(workflow));
 	}
 
+	
 	@Test
 	public void readJustCreatedXML() throws IOException, XmlException {
 		if (justCreated == null) {
@@ -132,10 +132,19 @@ public class TestWorkflow extends ClientTest {
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertTrue(restType.includes(response.getEntity().getMediaType()));
 
-		
 		Workflow wf = WorkflowDocument.Factory.parse(response.getEntity().getStream()).getWorkflow();
 		assertEquals("User URI didn't match owner", useruri, wf.getOwner().getHref());
-		System.out.println("Compared *** " + wf.getScufl().equals(XmlObject.Factory.parse(workflow)));
+		// Disabled because the regenerated Scufl includes extra namespaces which fails the test
+/*		XmlOptions options = new XmlOptions();
+		options.setLoadStripWhitespace();
+		options.setLoadStripComments();
+		options.setLoadStripProcinsts();
+		options.setSaveAggressiveNamespaces();
+		options.setSaveInner();
+		options.setLoadMessageDigest();
+		options.setSaveNoXmlDecl();
+		assertEquals("Returned Scufl didn't matched uploaded Scufl", XmlObject.Factory.parse(workflow, options).xmlText(options),
+			 XmlObject.Factory.parse(wf.getScufl().xmlText(options), options).xmlText(options));*/
 	}
 
 	@Test
@@ -153,8 +162,6 @@ public class TestWorkflow extends ClientTest {
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertTrue(scuflType.includes(response.getEntity().getMediaType()));
-		System.out.println("scufl is");
-		System.out.println(response.getEntity().getText());
 		assertTrue(response.getEntity().getText().equals(workflow));
 	}
 	

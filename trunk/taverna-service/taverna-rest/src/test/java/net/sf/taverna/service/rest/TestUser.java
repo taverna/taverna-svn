@@ -35,22 +35,23 @@ public class TestUser extends ClientTest {
 	@BeforeClass
 	public static void resetJustCreated() {
 		justCreated = null;
+		justUsername = null;
 	}
-	private static String userName;
-	private static final String password = "blih1337blapp";
+	private static String justUsername;
+	private static final String justPassword = "blih1337blapp";
 
 
 	@Test
 	public synchronized void create() throws IOException {
 		Request request = new Request();
-		userName = "test-" + UUID.randomUUID();
+		justUsername = "test-" + UUID.randomUUID();
 		Client client = new Client(Protocol.HTTP);
 		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
 		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
-				"  <username>" + userName + "</username>" +
-				"  <password>" + password + "</password>" +
+				"  <username>" + justUsername + "</username>" +
+				"  <password>" + justPassword + "</password>" +
 				"</user>", restType);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
@@ -58,8 +59,8 @@ public class TestUser extends ClientTest {
 		assertNotNull(justCreated);
 		System.out.println("Created user " + justCreated);
 		assertTrue(justCreated.toString().startsWith(url));
-		assertTrue(justCreated.toString().endsWith(userName));
-		assertEquals(url + "/" + userName, justCreated.toString());
+		assertTrue(justCreated.toString().endsWith(justUsername));
+		assertEquals(url + "/" + justUsername, justCreated.toString());
 		// No password returned
 		assertEquals("", response.getEntity().getText());
 	}
@@ -103,17 +104,17 @@ public class TestUser extends ClientTest {
 
 		ChallengeResponse challengeResponse =
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-				userName, password);
+				justUsername, justPassword);
 		request.setChallengeResponse(challengeResponse);
 		response = client.handle(request);
 		assertEquals("Request did not succeed", Status.SUCCESS_OK, response.getStatus());
 
 		String result = response.getEntity().getText();
 		// Should do text/plain as fallback
-		System.out.println(result);
 		assertTrue(MediaType.TEXT_PLAIN.includes(response.getEntity().getMediaType()));
-		
-		readJustCreatedXML();
+		System.out.println(result);
+		assertTrue(result.startsWith("User " + justUsername));
+		assertFalse(result.contains("\nEmail:"));
 	}
 
 	
@@ -135,7 +136,7 @@ public class TestUser extends ClientTest {
 
 		ChallengeResponse challengeResponse =
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-				userName, password);
+				justUsername, justPassword);
 		request.setChallengeResponse(challengeResponse);
 		response = client.handle(request);
 		assertEquals("Request did not succeed", Status.SUCCESS_OK, response.getStatus());
@@ -145,6 +146,39 @@ public class TestUser extends ClientTest {
 		Element userElement = userDoc.getRootElement();
 		assertEquals("user", userElement.getName());
 		assertEquals(TavernaService.NS, userElement.getNamespace().getURI());
+	}
+	
+	@Test
+	public void setEmail() throws IOException {
+		if (justCreated == null) {
+			create();
+		}
+		assertNotNull("create() must be run first", justCreated);
+		Request request = new Request();
+		Client client = new Client(Protocol.HTTP);
+		request.setResourceRef(justCreated);
+		request.setMethod(Method.POST);
+		ChallengeResponse challengeResponse =
+			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
+				justUsername, justPassword);
+		request.setChallengeResponse(challengeResponse);
+		String email = "nobody@nowhere.org";
+		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
+			"  <email>" + email + "</email>" +
+			"</user>", restType);
+		Response response = client.handle(request);
+		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+
+		// Check that it was stored
+		request =  new Request();
+		request.setResourceRef(justCreated);
+		request.setMethod(Method.GET);
+		request.setChallengeResponse(challengeResponse);
+		response = client.handle(request);
+		String result = response.getEntity().getText();
+		assertTrue(MediaType.TEXT_PLAIN.includes(response.getEntity().getMediaType()));
+		System.out.println(result);
+		assertTrue(result.contains("Email: " + email));
 	}
 	
 }
