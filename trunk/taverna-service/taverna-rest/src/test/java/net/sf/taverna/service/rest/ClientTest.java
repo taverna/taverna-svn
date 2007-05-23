@@ -7,11 +7,9 @@ import net.sf.taverna.service.test.TestCommon;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 
 /**
@@ -32,7 +30,7 @@ public abstract class ClientTest extends TestCommon {
 
 	public static final MediaType baclavaType = new MediaType(TavernaService.baclavaType);
 
-	private static RestApplication server = new RestApplication();
+	private static RestApplication server;
 
 	public static String username;
 
@@ -49,7 +47,9 @@ public abstract class ClientTest extends TestCommon {
 
 	@AfterClass
 	public synchronized static void stopServer() throws Exception {
-		server.stopServer();
+		if (server != null) {
+			server.stopServer();
+		}
 	}
 	
 	@BeforeClass
