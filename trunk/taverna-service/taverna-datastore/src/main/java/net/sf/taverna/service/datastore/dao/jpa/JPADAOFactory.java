@@ -8,6 +8,12 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.service.datastore.Util;
+import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.bean.User;
+import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.DataDocDAO;
 import net.sf.taverna.service.datastore.dao.JobDAO;
@@ -106,41 +112,45 @@ public class JPADAOFactory extends DAOFactory {
 		}
 	}
 
+	@DAO(Job.class)
 	@Override
 	public JobDAO getJobDAO() {
 		return new JobDAOImpl(getEntityManager());
 	}
 
+	@DAO(Workflow.class)
 	@Override
 	public WorkflowDAO getWorkflowDAO() {
 		return new WorkflowDAOImpl(getEntityManager());
 	}
 
+	@DAO(DataDoc.class)
 	@Override
 	public DataDocDAO getDataDocDAO() {
 		return new DataDocDAOImpl(getEntityManager());
 	}
 
-
+	@DAO(User.class)
 	@Override
 	public UserDAO getUserDAO() {
 		return new UserDAOImpl(getEntityManager());
 	}
 
+	@DAO(Queue.class)
 	@Override
 	public QueueDAO getQueueDAO() {
 		return new QueueDAOImpl(getEntityManager());
 	}
 
+	@DAO(Worker.class)
 	@Override
 	public WorkerDAO getWorkerDAO() {
 		return new WorkerDAOImpl(getEntityManager());
 	}
 
+	@DAO(Queue.class)
 	@Override
 	public QueueEntryDAO getQueueEntryDAO() {
 		return new QueueEntryDAOImpl(getEntityManager());
-	}
-	
-	
+	}	
 }

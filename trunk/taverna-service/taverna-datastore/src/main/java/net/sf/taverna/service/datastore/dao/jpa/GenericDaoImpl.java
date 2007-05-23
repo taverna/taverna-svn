@@ -9,7 +9,6 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.service.datastore.Util;
 import net.sf.taverna.service.datastore.dao.GenericDao;
 
 public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> implements
