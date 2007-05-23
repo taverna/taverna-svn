@@ -50,8 +50,6 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 		}
 	}
 	
-	
-
 	@Override
 	/**
 	 * Overridden to catch when a scavenger is removed from the tree (newParent = null).
@@ -63,8 +61,6 @@ public class WSDLBasedScavenger extends URLBasedScavenger {
 			WSDLParser.flushCache(wsdlLocation);
 		}
 	}
-
-
 
 	public WSDLBasedScavenger() {
 		super("Blank");

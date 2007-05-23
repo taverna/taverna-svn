@@ -68,6 +68,10 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	private ScavengerTreePanel parentPanel = null;
 
 	private boolean populating = false;
+	
+	// keeps count of each time scavengerStarting has been called, and decreases when scavengingDone is called.
+	// it is used to keep track of when the progress bar should stop.
+	private int scavengingInProgressCount = 0; 
 
 	/* (non-Javadoc)
 	 * @see org.embl.ebi.escience.scuflui.workbench.ScavengerTreeX#getParentPanel()
@@ -127,7 +131,10 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	 */
 	public void scavengingStarting(String message) {
 		if (parentPanel != null) {
-			parentPanel.startProgressBar(message);
+			if (scavengingInProgressCount==0) { //don't overright the previous message if its already running
+				parentPanel.startProgressBar(message);
+			}
+			scavengingInProgressCount++;
 		}
 	}
 
@@ -136,7 +143,10 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	 */
 	public void scavengingDone() {
 		if (parentPanel != null) {
-			parentPanel.stopProgressBar();
+			scavengingInProgressCount--;
+			if (scavengingInProgressCount==0) {
+				parentPanel.stopProgressBar();
+			}
 		}
 	}
 
@@ -199,6 +209,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	
 	protected void addFromScavengerHelpers() {
 		List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
+		ScavengerHelperThreadPool threadPool = new ScavengerHelperThreadPool();
 		for (ScavengerHelper helper : helpers) {
 //				web scavenger is a special case and requires ScavengerTree to construct the Scavengers
 			if (helper instanceof WebScavengerHelper) 
@@ -207,16 +218,36 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 					addScavenger(scavenger);
 				}
 			}
-			for (Scavenger scavenger : helper.getDefaults()) {
-				addScavenger(scavenger);
+			else {
+				if (logger.isDebugEnabled()) logger.debug("Adding helper to thread pool...."+helper.getClass().getSimpleName());
+				threadPool.addScavengerHelper(helper);
+				
+				//FIXME: this sleep sadly seems to be necessary to prevent linkage errors in Raven
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					logger.error(e);
+				}
 			}
 		}
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException ie) {
-			//
+		
+		while (!threadPool.isEmpty()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(threadPool.remaining() +" threads still waiting to complete.");
+				logger.debug(threadPool.waiting() +" threads still waiting in the queue.");
+			}
+			Set<Scavenger> completed = threadPool.getCompleted();
+			logger.debug(completed.size() +" completed scavenger threads found");
+			for (Scavenger scavenger : completed) {
+				addScavenger(scavenger);
+			}
+			try {
+				if (!threadPool.isEmpty()) Thread.sleep(2500);
+			} catch (InterruptedException e1) {
+				logger.error("Interruption while waiting sleeping",e1);
+			}
 		}
+		logger.info("Scavenger thread pool completed");
 	}
 
 	public void drop(DropTargetDropEvent e) {
@@ -264,12 +295,9 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	 */
 	public DefaultScavengerTree(boolean populate, ScavengerTreePanel parentPanel) {
 		super();
-		synchronized (this.getModel()) {
 			this.parentPanel = parentPanel;
 			setRowHeight(18);
 			setLargeModel(true);
-
-			
 
 			DragSource dragSource = DragSource.getDefaultDragSource();
 			dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
@@ -314,8 +342,11 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				setPopulating(false);
 				setExpansion(true);
 			}
-		}
 	}	
+	
+	
+	
+	
 
 	class DefaultScavengerLoaderThread extends Thread {
 
@@ -327,9 +358,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 		}
 
 		public void run() {
-			synchronized (this.scavengerTree.getModel()) {
-				if (getParentPanel() != null)
-					getParentPanel().startProgressBar("Populating service list");											
+				scavengingStarting("Populating service list");											
 
 				addFromScavengerHelpers();
 				// I want to disable the reload() as it collapse the tree, even
@@ -342,10 +371,8 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 				// FIXME: Make this a user setable property. By default now we
 				// don't expand the full scavenger tree, as it is too massive
 				// scavengerTree.setExpansion(true);
-				if (getParentPanel() != null)
-					getParentPanel().stopProgressBar();
+				scavengingDone();
 				scavengerTree.setPopulating(false);
-			}
 		}
 
 		
@@ -356,11 +383,9 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	 */
 	public void addScavengersFromModel() throws ScavengerCreationException {
 		getParentPanel().startProgressBar("Adding scavengers from model.");
-		synchronized (this.getModel()) {
 			if (this.model != null) {
 				addScavengersFromModel(this.model);
 			}
-		}
 		getParentPanel().stopProgressBar();
 	}
 
@@ -427,7 +452,6 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	}
 
 	public void onDisplay() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -436,3 +460,5 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 	}
 
 }
+
+	

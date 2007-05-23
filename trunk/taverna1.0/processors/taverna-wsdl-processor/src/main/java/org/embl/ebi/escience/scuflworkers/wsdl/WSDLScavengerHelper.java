@@ -75,18 +75,35 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 	 * returns the default Scavenger set
 	 */
 	public Set<Scavenger> getDefaults() {
+		int MAX_THREADS=5;
 		Set<Scavenger> result = new HashSet<Scavenger>();
+		List<WSDLScavengerThread> threads = new ArrayList<WSDLScavengerThread>();
 		String urlList = System.getProperty("taverna.defaultwsdl");
 		if (urlList != null) {
 			String[] urls = urlList.split("\\s*,\\s*");
 			for (String url : urls) {
 				try {
-					result.add(new WSDLBasedScavenger(url));
+					if (threads.size()<MAX_THREADS) { //limit the number of concurrent threads, incase there are many defined in mygrid.properties
+						WSDLScavengerThread thread = new WSDLScavengerThread(url);
+						thread.start();
+						threads.add(thread);
+					}
+					else {
+						result.add(new WSDLBasedScavenger(url));
+					}
 				} catch (ScavengerCreationException e) {
 					logger.error(
 							"Error creating default WSDLBasedScavenger for " + url + ": "+e.getMessage());
 				}
 			}
+		}
+		for (WSDLScavengerThread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				logger.error("Interuption error joining scavenger thread:",e);
+			}
+			if (thread.getScavenger()!=null) result.add(thread.getScavenger());
 		}
 		return result;
 	}
@@ -94,7 +111,6 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 	public Set<Scavenger> getFromModel(ScuflModel model) {
 		Set<Scavenger> result = new HashSet<Scavenger>();
 		List<String> existingLocations = new ArrayList<String>();
-
 		Processor[] processors = model
 				.getProcessorsOfType(WSDLBasedProcessor.class);
 		for (Processor processor : processors) {
@@ -108,6 +124,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 				}
 			}
 		}
+		
 		return result;
 	}
 
@@ -116,6 +133,32 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 	 */
 	public ImageIcon getIcon() {
 		return new WSDLProcessorInfoBean().icon();
+	}
+	
+	class WSDLScavengerThread extends Thread
+	{
+
+		WSDLBasedScavenger scavenger;
+		String location;
+		
+		WSDLScavengerThread(String location) {
+			super("WSDLScavenger thread");
+			this.location=location;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				scavenger=new WSDLBasedScavenger(location);
+			} catch (ScavengerCreationException e) {
+				logger.error("Error creating WSDLBasedScavenger",e);
+			}
+		}
+		
+		public WSDLBasedScavenger getScavenger() {
+			return scavenger;
+		}
+		
 	}
 
 }

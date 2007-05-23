@@ -38,7 +38,7 @@ public interface ScavengerHelper {
 	/**
 	 * Defines the default scavengers in the service panel
 	 * 
-	 * @return
+	 * @return a Set of default Scavengers
 	 */
 	public Set<Scavenger> getDefaults();
 
