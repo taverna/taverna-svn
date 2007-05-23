@@ -59,7 +59,7 @@ public class User extends DatedResource {
 	 */
 	public User() {
 		super();
-		this.username = getId();
+		username = getId();
 	}
 	
 	/**
@@ -85,8 +85,8 @@ public class User extends DatedResource {
 	 * @param password
 	 */
 	public void setPassword(String password) {
-		this.salt = generateSalt(); // always fresh salt on the table
-		this.passwordHash = hash(password);
+		salt = generateSalt(); // always fresh salt on the table
+		passwordHash = hash(password);
 		setLastModified();
 	}
 	
