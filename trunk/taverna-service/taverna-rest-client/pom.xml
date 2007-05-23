@@ -45,7 +45,20 @@
 			<groupId>uk.org.mygrid.tavernaservice</groupId>
 			<artifactId>taverna-rest</artifactId>
 			<version>1.0.0</version>
-			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<artifactId>taverna-rest</artifactId>
+			<version>1.0.0</version>
+            <type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<artifactId>taverna-datastore</artifactId>
+			<version>1.0.0</version>
+            <type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
