@@ -56,7 +56,7 @@ public class LocalRepositoryTest {
 		LocalRepository.loaderMap.clear();
 		LocalRepository.repositoryCache.clear();
 		r = new LocalRepository(dir);
-		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.0.0-profile.xml");
+		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
 	}
 
 	@After

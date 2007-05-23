@@ -27,6 +27,7 @@ public class ArtifactImplTest extends TestCase {
 		dir = LocalRepositoryTest.createTempDirectory();
 		r = new LocalRepository(dir);
 		testRepos = this.getClass().getResource("/net/sf/taverna/raven/repository/");
+		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
 	}
 
 	public void tearDown() {
@@ -48,7 +49,7 @@ public class ArtifactImplTest extends TestCase {
 	
 	@SuppressWarnings("null")
 	public void testExclusionDependencies() throws MalformedURLException, InterruptedException, ArtifactStateException {
-		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
+		r.addRemoteRepository(new URL("http://www.mygrid.org.uk/maven/proxy/"));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest","1.5.1");
