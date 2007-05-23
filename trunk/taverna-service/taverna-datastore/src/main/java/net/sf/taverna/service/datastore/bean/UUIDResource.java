@@ -15,6 +15,7 @@ public abstract class UUIDResource implements Comparable<UUIDResource> {
 		return id;
 	}
 
+	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + " " + getId();
 	}
