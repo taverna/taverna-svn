@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Workflow;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
@@ -42,9 +42,9 @@ public class TavernaQueue {
 			if (! queue.offer(job)) {
 				throw new QueueException("Can't add to queue");
 			}
-			job.setState(State.QUEUED);
+			job.setStatus(Status.QUEUED);
 			daoFactory.getJobDAO().update(job);
-			this.notifyAll();
+			notifyAll();
 			return job;	
 		}
 	}	
@@ -56,9 +56,9 @@ public class TavernaQueue {
 	public synchronized Job poll() {	
 		Job job = queue.poll();
 		if (job != null) {
-			job.setState(State.DEQUEUED);
+			job.setStatus(Status.DEQUEUED);
 			daoFactory.getJobDAO().update(job);
-			this.notifyAll();
+			notifyAll();
 		}
 		return job;
 	}

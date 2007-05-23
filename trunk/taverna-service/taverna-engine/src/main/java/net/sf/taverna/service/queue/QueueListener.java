@@ -1,7 +1,7 @@
 package net.sf.taverna.service.queue;
 
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 
@@ -23,12 +23,12 @@ public abstract class QueueListener implements Runnable {
 	TavernaQueue queue;
 
 	public QueueListener(TavernaQueue queue) {
-		this.running = true;
+		running = true;
 		this.queue = queue;
 	}
 
 	public void stop() {
-		this.running = false;
+		running = false;
 	}
 	
 	public void run() {
@@ -50,7 +50,7 @@ public abstract class QueueListener implements Runnable {
 	}
 
 	void process(Job job) {		
-		job.setState(State.RUNNING);
+		job.setStatus(Status.RUNNING);
 		//jobDao.update(job);
 		daoFactory.commit();
 		try {
@@ -58,11 +58,11 @@ public abstract class QueueListener implements Runnable {
 			execute(job);			
 			logger.debug("Completed job " + job);
 			if (! job.isFinished()) {
-				logger.warn("Timed out for unfinished " + job + ", in state: " + job.getState());
+				logger.warn("Timed out for unfinished " + job + ", in state: " + job.getStatus());
 			}
 		} catch (Throwable t) {
 			logger.warn("Job " + job + " processing failed", t);
-			job.setState(State.FAILED);
+			job.setStatus(Status.FAILED);
 			jobDao.update(job);
 			daoFactory.commit(); // again?
 			if (t instanceof Error) {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.Job.State;
+import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.DataDocDAO;
 import net.sf.taverna.service.datastore.dao.JobDAO;
@@ -159,8 +159,8 @@ public class TavernaQueueListener extends QueueListener {
 				Map<String, DataThing> outputs = event.getWorkflowInstance().getOutput();
 				DataDoc outputDoc = new DataDoc();
 				outputDoc.setDataMap(outputs);
-				job.setResultDoc(outputDoc);
-				job.setState(State.COMPLETE);
+				job.setOutputDoc(outputDoc);
+				job.setStatus(Status.COMPLETE);
 				dataDocDao.create(outputDoc);
 				jobDao.update(job);
 				daoFactory.commit();
@@ -183,7 +183,7 @@ public class TavernaQueueListener extends QueueListener {
 			try {
 				updateProgressReport(event);
 				Job job = jobFromEvent(event);
-				job.setState(State.FAILED);
+				job.setStatus(Status.FAILED);
 				jobDao.update(job);
 				daoFactory.commit();
 			} finally {
@@ -201,7 +201,7 @@ public class TavernaQueueListener extends QueueListener {
 			Job job = jobFromEvent(event);
 			// Don't set as DESTROYED, since we keep the results outside it is
 			// "complete" for the queue's concern
-			// job.setState(State.DESTROYED);
+			// job.setState(Status.DESTROYED);
 			wfInstances.remove(job);
 			WorkflowInstance wfInstance = event.getWorkflowInstance();
 			jobs.remove(wfInstance);
