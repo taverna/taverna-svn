@@ -20,6 +20,7 @@ public class ProfileSelectorTest extends TestCase {
 	private Properties properties;
 	@Override
 	protected void setUp() throws Exception {
+		
 		properties = new Properties();
 		dir = createTempDirectory().getAbsoluteFile();
 		confdir=new File(dir,"conf");

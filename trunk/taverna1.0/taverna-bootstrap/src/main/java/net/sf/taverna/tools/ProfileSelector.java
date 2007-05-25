@@ -62,8 +62,7 @@ public class ProfileSelector {
 				break;
 			}
 			catch(Exception e) {
-				System.out.println("There is a problem with the url:"+urlStr);
-				e.printStackTrace();
+				System.out.println("There is a problem connecting to the url:"+urlStr);
 			}
 		}
 		return result;
