@@ -53,18 +53,25 @@ public class ProfileSelector {
 	private String selectURLFromList(String urlList) {
 		String [] urls = urlList.split(" ");
 		String result = urls[0]; //default to the first
+		boolean found=false;
 		for (String urlStr : urls) {
 			try {
 				URL url = new URL(urlStr);
 				InputStream stream = url.openStream();
 				stream.close();
 				result = urlStr;
+				found = true;
 				break;
 			}
 			catch(Exception e) {
 				System.out.println("There is a problem connecting to the url:"+urlStr);
 			}
 		}
+		if (!found) {
+			System.out.println("Unable to connect to any of the mirror sites for to check for updated profiles.");
+			System.out.println("THIS STRONGLY INDICATES YOU HAVE NO NETWORK ACCESS.");
+		}
+		
 		return result;
 	}
 	
