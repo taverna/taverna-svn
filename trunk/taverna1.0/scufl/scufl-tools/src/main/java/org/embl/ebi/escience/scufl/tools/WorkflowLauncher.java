@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.12 $
+ * Revision           $Revision: 1.13 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-21 10:44:34 $
+ * Last modified on   $Date: 2007-05-25 16:00:11 $
  *               by   $Author: sowen70 $
  * Created on 16-Mar-2006
  *****************************************************************/
@@ -665,7 +665,6 @@ public class WorkflowLauncher {
 	 */
 	@SuppressWarnings( { "deprecation", "static-access" })
 	public static void main(String args[]) throws MalformedURLException {
-		System.out.println("IN MAIN");
 		new WorkflowLauncher(args);
 	}
 
