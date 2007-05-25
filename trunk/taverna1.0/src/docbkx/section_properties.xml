@@ -70,26 +70,23 @@
         </row>
 
         <row>
-          <entry>raven.properties</entry>
-
-          <entry>URL, e.g. file:... http://...</entry>
-
-          <entry>The location of a file containing a list of the properties
-          described here.Default value is
-          http://www.mygrid.org.uk/taverna/updates/1.5/raven.properties</entry>
-        </row>
-
-        <row>
-          <entry>raven.remoteprofile</entry>
+          <entry>raven.profile</entry>
 
           <entry>URL</entry>
 
-          <entry>The remote location of the profile used. This is an xml
-          document that describes the artifacts and their versions that are
-          used by the Taverna core. This profile is not used until the user
-          selects to do an update through the Taverna GUI, which is only
-          available if the version of the profile is greater than the current
-          running version of Taverna.</entry>
+          <entry>If defined this forces this particular profile to be used immediately. Using a single profile
+          means that no update options are available. Setting this property overrides raven.profilelist.</entry>
+        </row>
+        
+        <row>
+          <entry>raven.profilelist</entry>
+
+          <entry>URL</entry>
+
+          <entry>This defines the location of the XML that defines a list of profiles available. On first run, a local copy
+          of the lowest version of the profile available in the list is used, and continues to be used until an update becomes available and is selected.
+          An update becomes available when a higher version than the current version becomes defined in the list. Updating the version is not automatic, but requires a request from the user.
+          This property is overridden if a raven.profile property is explicity defined.</entry>
         </row>
 
         <row>

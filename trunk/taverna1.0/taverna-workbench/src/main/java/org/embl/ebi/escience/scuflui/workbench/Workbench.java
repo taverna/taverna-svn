@@ -53,6 +53,7 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.tools.RavenProperties;
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
@@ -60,6 +61,7 @@ import net.sf.taverna.update.plugin.event.PluginManagerListener;
 import net.sf.taverna.update.plugin.ui.PluginManagerFrame;
 import net.sf.taverna.update.plugin.ui.UpdatesAvailableIcon;
 import net.sf.taverna.update.profile.ProfileHandler;
+import net.sf.taverna.update.profile.ProfileUpdateHandler;
 import net.sf.taverna.update.profile.ui.ProfileVersionListFrame;
 import net.sf.taverna.utils.MyGridConfiguration;
 import net.sf.taverna.zaria.ZBasePane;
@@ -398,10 +400,11 @@ public class Workbench extends JFrame {
 	}
 
 	private void checkForProfileUpdate() {
-		String remoteProfileURL = System.getProperty("raven.remoteprofile");
-		ProfileHandler handler;
+		String currentProfile = RavenProperties.getInstance().getRavenProfileLocation();
+		String profileList = RavenProperties.getInstance().getRavenProfileListLocation();
+		ProfileUpdateHandler handler;
 		try {
-			handler = new ProfileHandler(remoteProfileURL);
+			handler = new ProfileUpdateHandler(new URL(profileList),new URL(currentProfile));
 		} catch (Exception e) {
 			logger.error("Error checking for new profile", e);
 			JOptionPane.showMessageDialog(this,
@@ -422,7 +425,8 @@ public class Workbench extends JFrame {
 			return;
 		}
 		try {
-			handler.updateLocalProfile();
+			File currentProfileFile = new File(new URL(currentProfile).toURI());
+			handler.updateLocalProfile(currentProfileFile);
 			JOptionPane.showMessageDialog(this,
 					"Your updates will be applied when you restart Taverna",
 					"Restart required", JOptionPane.INFORMATION_MESSAGE);
@@ -782,7 +786,7 @@ public class Workbench extends JFrame {
 				
 			}));
 			
-			if (System.getProperty("raven.remoteprofile") != null) {
+			if (RavenProperties.getInstance().configuredForUpdates()) {
 				JMenuItem checkUpdates = new JMenuItem(
 						"Check for core Taverna updates");
 				menu.add(checkUpdates);
@@ -813,7 +817,9 @@ public class Workbench extends JFrame {
 		private JMenu makeAdvanced() {
 			JMenu advancedMenu = new JMenu("Advanced");
 			advancedMenu.add(perspectives.getEditPerspectivesMenu());
-			advancedMenu.add(makeSwitchProfileMenu());
+			if (RavenProperties.getInstance().configuredForUpdates()) {
+				advancedMenu.add(makeSwitchProfileMenu());
+			}
 			return advancedMenu;
 		}
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-23 16:17:40 $
+ * Last modified on   $Date: 2007-05-25 11:36:35 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -45,7 +45,20 @@ package net.sf.taverna.tools;
 
 @SuppressWarnings("serial")
 public class RavenProperties extends AbstractConfiguration {
-
+	
+	private static RavenProperties instance = null;
+	
+	public static RavenProperties getInstance() {
+		if (instance==null) {
+			instance=new RavenProperties();
+		}
+		return instance;
+	}
+	
+	private RavenProperties() {
+		super();
+	}
+	
 	@Override
 	protected String getConfigurationFilename() {
 		return "raven.properties";
@@ -55,4 +68,33 @@ public class RavenProperties extends AbstractConfiguration {
 	protected boolean isSystemOverrided() {
 		return true;
 	}
+
+	/**
+	 * Initialises the properties normally, but then processes them through
+	 * the ProfileSelector to setup the correct $raven.profile
+	 * 
+	 * @see ProfileSelector
+	 */
+	@Override
+	protected void initialiseProperties() {
+		super.initialiseProperties();
+		new ProfileSelector(getProperties());
+	}
+	
+	/**
+	 * Indicates whether the system is configured to allow updates (using a profilelist) or not (using a forced profile).
+	 * @return
+	 */
+	public boolean configuredForUpdates() {
+		return getRavenProfileListLocation()!=null;
+	}
+	
+	public String getRavenProfileLocation() {
+		return getProperties().getProperty("raven.profile");
+	}
+	
+	public String getRavenProfileListLocation() {
+		return getProperties().getProperty("raven.profilelist");
+	}
+	
 }

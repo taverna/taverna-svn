@@ -122,7 +122,7 @@ public class MyGridConfiguration extends AbstractConfiguration {
 	 * 
 	 */
 	public static void flushProperties() {
-		getInstance().properties=null;
+		getInstance().flush();
 	}
 //
 	/**

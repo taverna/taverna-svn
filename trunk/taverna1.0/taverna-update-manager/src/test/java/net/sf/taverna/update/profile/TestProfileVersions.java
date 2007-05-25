@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TestProfileVersions.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-05-25 11:36:35 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -46,8 +46,17 @@ public class TestProfileVersions extends TestCase {
 	
 		assertEquals("There should be 3 records",3,result.size());
 		assertEquals("The version should be version 1","1",result.get(0).getVersion());
-//		assertEquals("The name should be version name2","name2",result.get(1).getName());
-//		assertEquals("The url should be http://a url3","http://a url3",result.get(2).getProfileLocation());
-//		assertEquals("The description should be 'blah blah blah","blah blah blah",result.get(2).getDescription());
+		assertEquals("The name should be version name2","name2",result.get(1).getName());
+		assertEquals("The url should be http://a url3","http://a url3",result.get(2).getProfileLocation());
+		assertEquals("The description should be 'blah blah blah","blah blah blah",result.get(2).getDescription());
+	}
+	
+	public void testOrderedAscending() throws Exception {
+		String xml="<profileversions><profile><version>1.5.2.3</version><name>name1</name><location>http://a url1</location></profile><profile><version>1.5.2.1</version><name>name2</name><location>http://a url2</location></profile><profile><version>1.5.2.2</version><name>name3</name><location>http://a url3</location><description>blah blah blah</description></profile></profileversions>";		
+		List<ProfileVersion> result = ProfileVersions.getProfileVersions(new ByteArrayInputStream(xml.getBytes()),null);
+		
+		assertEquals("1.5.2.1",result.get(0).version);
+		assertEquals("1.5.2.2",result.get(1).version);
+		assertEquals("1.5.2.3",result.get(2).version);
 	}
 }

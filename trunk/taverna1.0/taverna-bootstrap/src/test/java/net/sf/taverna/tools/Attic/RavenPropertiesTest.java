@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-23 16:17:41 $
+ * Last modified on   $Date: 2007-05-25 11:36:35 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -37,7 +37,7 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-public class RavenPropertiesTest extends TestCase{	
+public class RavenPropertiesTest extends TestCase {	
 	
 	String realTavHome;
 	
@@ -51,22 +51,20 @@ public class RavenPropertiesTest extends TestCase{
 		System.setProperty("taverna.home", resourcePath);
 	}
 	
-
 	@Override
 	protected void tearDown() throws Exception {
 		if (realTavHome!=null)
 			System.setProperty("taverna.home", realTavHome);
 		else
 			System.clearProperty("taverna.home");
+		RavenProperties.getInstance().flush();
 	}
 
-
-
-	public void testRavenProperties() throws Exception{
+	public void testRavenProperties() throws Exception {
 		
 		System.setProperty("raven.splashscreen","a splashscreen");
 		
-		Properties props = new RavenProperties().getProperties();		
+		Properties props = RavenProperties.getInstance().getProperties();		
 		
 		assertNotNull("No raven.loader.groupid defined",props.getProperty("raven.loader.groupid"));
 		assertNotNull("No raven.loader.artifactid defined",props.getProperty("raven.loader.artifactid"));
@@ -81,9 +79,18 @@ public class RavenPropertiesTest extends TestCase{
 		assertNotNull("No raven.target.version defined",props.getProperty("raven.target.version"));
 		assertNotNull("No raven.target.class defined",props.getProperty("raven.target.class"));
 		assertNotNull("No raven.target.method defined",props.getProperty("raven.target.method"));
-		assertNotNull("No raven.remoteprofile defined",props.getProperty("raven.remoteprofile"));
 		
 		//test System overide
 		assertEquals("overidden value should be 'a splashscreen'","a splashscreen",props.getProperty("raven.splashscreen"));		
+	}
+	
+	public void testAvailableForUpdatesTrue() {
+		System.setProperty("raven.profilelist",ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
+		assertTrue("updates should be allowed",RavenProperties.getInstance().configuredForUpdates());
+	}
+	
+	public void testAvailableForUpdatesFalse() {
+		RavenProperties.getInstance().getProperties().remove("raven.profilelist");
+		assertFalse("updates should not be be available", RavenProperties.getInstance().configuredForUpdates());
 	}
 }

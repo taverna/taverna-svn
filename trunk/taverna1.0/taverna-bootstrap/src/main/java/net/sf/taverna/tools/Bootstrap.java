@@ -34,13 +34,7 @@ import org.xml.sax.SAXException;
 public class Bootstrap {
 
 	public static Properties properties;
-
-	// a list of locations that host the raven.properties
-	public final static String REMOTE_PROPERTIES = "http://www.mygrid.org.uk/taverna/updates/1.5/raven.properties";
-
-	// the name of the file the local properties get stored to and read from
-	private final static String LOCAL_PROPERTIES = "raven-1.5.properties";
-
+	
 	// Where Raven will store its repository, discovered by main()
 	public static String TAVERNA_CACHE = "";
 
@@ -63,11 +57,10 @@ public class Bootstrap {
 			System.out.println("Unable to find raven.properties. This should either be within a conf folder in your startup directory, or within the conf folder of your $taverna.home.");
 			System.exit(-1);
 		}
-		remoteRepositories = findRepositories(properties);
-
-		if (properties.getProperty("raven.remoteprofile") != null) {
-			initialiseProfile(properties.getProperty("raven.remoteprofile"));
+		else {
+			System.getProperties().putAll(properties);
 		}
+		remoteRepositories = findRepositories(properties);
 
 		List<URL> localLoaderUrls = new ArrayList<URL>();
 		List<URL> remoteLoaderUrls = new ArrayList<URL>();
@@ -104,7 +97,7 @@ public class Bootstrap {
 			URL cacheURL = findCache().toURI().toURL();
 
 			try {
-				String localProfile = System.getProperty("raven.profile");
+				String localProfile = RavenProperties.getInstance().getRavenProfileLocation();
 				if (localProfile != null) {
 					URL url = new URL(localProfile);
 					DocumentBuilder builder = DocumentBuilderFactory
@@ -140,16 +133,14 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Returns a copy of the raven.properties
+	 * Returns a copy of the raven.properties, which are overridden by any System.properties.
 	 * 
 	 * @return the properties
 	 */
 	public static Properties findProperties() {
 		Properties result = null;
-		File tavernaHome = new File(System.getProperty("taverna.home"));
-		File userdir = new File(tavernaHome, "conf");
 		try {
-			result = new RavenProperties().getProperties();
+			result = RavenProperties.getInstance().getProperties();
 		} catch (Exception e) {
 			System.err
 					.println("Unable to find raven.properties, either remotely, or locally.");
@@ -243,7 +234,7 @@ public class Bootstrap {
 		String version = properties.getProperty("raven.target.version");
 		String targetClassName = properties.getProperty("raven.target.class");
 
-		if (properties.getProperty("raven.remoteprofile") != null) {
+		if (properties.getProperty("raven.profile") != null) {
 			String targetVersion = getProfileArtifactVersion(groupID,
 					artifactID);
 			if (targetVersion != null) {
@@ -295,7 +286,7 @@ public class Bootstrap {
 		String loaderArtifactId = properties
 				.getProperty("raven.loader.artifactid");
 		loaderVersion = properties.getProperty("raven.loader.version");
-		if (properties.getProperty("raven.remoteprofile") != null) {
+		if (properties.getProperty("raven.profile") != null) {
 			String version = getProfileArtifactVersion(loaderGroupId,
 					loaderArtifactId);
 			if (version != null) {
@@ -485,70 +476,11 @@ public class Bootstrap {
 		return cacheDir;
 	}
 
-	/**
-	 * Checks for local profile, whos name is dervied from raven.remoteprofile
-	 * and the user dir. If not exists then copies the bundled default profile.
-	 * The property raven.profile is set to the locally stored profile If
-	 * default profile cannot be accessed then raven.profile and
-	 * raven.remoteprofile property is cleared, disabling the profile
-	 * 
-	 * @param profileURL
-	 */
-	public static void initialiseProfile(String profileUrlStr) {
-		System.setProperty("raven.remoteprofile", profileUrlStr);
-		File localProfile = getLocalProfileFile(profileUrlStr);
-		try {
-			System.setProperty("raven.profile", localProfile.toURI().toURL()
-					.toString());
-			if (!localProfile.exists()) {
-				storeDefaultProfile(localProfile);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			// disable profile. May be better to just bail out completely here.
-			System.clearProperty("raven.profile");
-			System.clearProperty("raven.remoteprofile");
-		}
-
-	}
-
-	private static File getLocalProfileFile(String profileUrlStr) {
-		File tavernaHome = new File(System.getProperty("taverna.home"));
-		File userdir = new File(tavernaHome, "conf");
-		String fileStr = profileUrlStr;
-		if (fileStr.contains("/")) {
-			int i = fileStr.lastIndexOf("/");
-			fileStr = fileStr.substring(i + 1);
-		}
-		File profileFile = new File(userdir, fileStr);
-		return profileFile;
-	}
-
-	private static void storeDefaultProfile(File localProfile)
-			throws Exception, IOException, URISyntaxException {
-		InputStream defaultStream = Bootstrap.class
-				.getResourceAsStream("/default-profile.xml");
-		if (defaultStream == null)
-			throw new Exception("Unable to find default profile");
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				defaultStream));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(localProfile));
-		String line = reader.readLine();
-		while (line != null) {
-			writer.write(line + "\n");
-			line = reader.readLine();
-		}
-		writer.flush();
-		writer.close();
-
-		reader.close();
-	}
-
 	private static String getProfileArtifactVersion(String groupId,
 			String artifactId) {
 		String result = null;
 		try {
-			String localProfile = System.getProperty("raven.profile");
+			String localProfile = properties.getProperty("raven.profile");
 			if (localProfile != null) {
 				URL url = new URL(localProfile);
 				DocumentBuilder builder = DocumentBuilderFactory.newInstance()
@@ -578,7 +510,6 @@ public class Bootstrap {
 						}
 					}
 				}
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

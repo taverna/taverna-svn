@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersions.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-05-25 11:36:35 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -37,6 +37,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -79,6 +81,9 @@ public class ProfileVersions {
 	 * Provides a list of available profiles read from a stream, provided by an external xml source (usually http hosted).
 	 * If the sourceURL is not null then this can be used to resolve the partial URL's of profile locations based on the assumption that they are hosted
 	 * at the same place.  
+	 * 
+	 * The list is ordered according to the version number, ascending
+	 * 
 	 * @param profileListStream the stream to the profile versions XML document
 	 * @param sourceURL if not null, then this URL is used to resolve partial URL's within the profile version XML document to their full path
 	 * @return
@@ -104,8 +109,17 @@ public class ProfileVersions {
 			logger.error("Error reading xml for the list of available profile versions from "+profileListStream.toString(),e);
 		}
 		
+		sortList(result);
 		
 		return result;
+	}
+	
+	private static void sortList(List<ProfileVersion> list) {
+		Collections.sort(list,new Comparator<ProfileVersion>() {
+			public int compare(ProfileVersion v1, ProfileVersion v2) {
+				return v1.version.compareTo(v2.version);
+			}
+		});
 	}
 	
 }

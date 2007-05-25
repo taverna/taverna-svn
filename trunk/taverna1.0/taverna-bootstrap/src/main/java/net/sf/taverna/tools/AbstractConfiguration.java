@@ -118,5 +118,13 @@ public abstract class AbstractConfiguration {
 		
 	}
 	
+	/**
+	 * Clears the properties causing them to reinitialise when next accessed.
+	 *
+	 */
+	public void flush() {
+		properties=null;
+	}
+	
 	protected abstract String getConfigurationFilename();
 }

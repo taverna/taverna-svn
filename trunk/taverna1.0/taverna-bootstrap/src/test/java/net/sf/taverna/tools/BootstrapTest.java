@@ -3,9 +3,6 @@ package net.sf.taverna.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
-
-import net.sf.taverna.tools.Bootstrap;
 
 import junit.framework.TestCase;
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 15:37:16 $
+ * Last modified on   $Date: 2007-05-25 11:36:34 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -36,16 +36,18 @@ package net.sf.taverna.update.plugin.ui;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.net.URL;
 import java.util.Arrays;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
+import net.sf.taverna.tools.RavenProperties;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
 import net.sf.taverna.update.plugin.event.PluginManagerListener;
-import net.sf.taverna.update.profile.ProfileHandler;
+import net.sf.taverna.update.profile.ProfileUpdateHandler;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
@@ -73,13 +75,12 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 	
 	public UpdatesAvailableIcon() {
 		super();		
-		setVisible(false);		
+		setVisible(false);	
+		
 		startCheckThread();
 		PluginManager.addPluginManagerListener(this);
 	}
 	
-	
-
 	public void pluginAdded(PluginManagerEvent event) {
 		logger.info("Plugin Added");
 		if (!isVisible()) checkForUpdates();		
@@ -93,8 +94,6 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		logger.info("Plugin Removed ");
 		if (isVisible()) checkForUpdates();
 	}
-	
-	
 	
 	public void pluginIncompatible(PluginManagerEvent event) {		
 		logger.warn("Plugin found to be incompatible with the current version of Taverna: "+event.getPlugin());
@@ -152,20 +151,25 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		return PluginManager.getInstance().checkForUpdates();						
 	}
 	
-	private String getRemoteProfile() {
-		return System.getProperty("raven.remoteprofile");
+	private String getProfileListLocation() {
+		 return RavenProperties.getInstance().getRavenProfileListLocation();
+	}
+	
+	private String getCurrentProfile() {
+		return RavenProperties.getInstance().getRavenProfileLocation();
 	}
 	
 	private boolean profileUpdatesAvailable() {
 		if (profileUpdated) return false; //return false if a profile has been updated but Taverna has not been restarted
-		boolean result=false;
+		if (!RavenProperties.getInstance().configuredForUpdates()) return false; //don't check for updates if configuration doesn't support it.
 		
-		try {
-			result = new ProfileHandler(getRemoteProfile()).isNewVersionAvailable();
-		} catch (FileNotFoundException e) {
-			logger.warn("Could not find profile " + getRemoteProfile());
-		} catch (Exception e) {
-			logger.error("Error checking for profile updates", e);
+		boolean result=false;
+		if (getProfileListLocation()!=null) {
+			try {
+				result = new ProfileUpdateHandler(new URL(getProfileListLocation()), new URL(getCurrentProfile())).isNewVersionAvailable();
+			}  catch (Exception e) {
+				logger.error("Error checking for profile updates", e);
+			}
 		}
 		return result;
 	}
@@ -182,7 +186,8 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 			if (confirmation == JOptionPane.YES_OPTION) {
 										
 				try {
-					new ProfileHandler(getRemoteProfile()).updateLocalProfile();
+					File currentProfileFile = new File(new URL(getCurrentProfile()).toURI());
+					new ProfileUpdateHandler(new URL(getProfileListLocation()), new URL(getCurrentProfile())).updateLocalProfile(currentProfileFile);
 					JOptionPane.showMessageDialog(parent,
 							"Your updates will be applied when you restart Taverna",
 							"Restart required", JOptionPane.INFORMATION_MESSAGE);

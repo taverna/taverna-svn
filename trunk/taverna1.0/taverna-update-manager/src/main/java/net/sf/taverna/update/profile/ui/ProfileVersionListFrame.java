@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersionListFrame.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 16:41:24 $
+ * Last modified on   $Date: 2007-05-25 11:36:35 $
  *               by   $Author: sowen70 $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -39,6 +39,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -52,9 +54,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.sf.taverna.raven.spi.ProfileFactory;
+import net.sf.taverna.tools.RavenProperties;
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.profile.ProfileHandler;
+import net.sf.taverna.update.profile.ProfileUpdateHandler;
 import net.sf.taverna.update.profile.ProfileVersion;
 
 import org.apache.log4j.Logger;
@@ -202,9 +206,12 @@ public class ProfileVersionListFrame extends JDialog {
 				return;
 			}			
 		}
-		try {			
-			ProfileHandler handler=new ProfileHandler(newVersion.getProfileLocation(),getLocalProfileName());
-			handler.updateLocalProfile();			
+		try {		
+			URL localProfile = new URL(RavenProperties.getInstance().getRavenProfileLocation());
+			URL profileList = new URL(RavenProperties.getInstance().getRavenProfileListLocation());
+			
+			ProfileUpdateHandler handler=new ProfileUpdateHandler(profileList,localProfile);
+			handler.updateLocalProfile(newVersion,new File(localProfile.toURI()));			
 			
 			//disable plugins after everything else has been acheived
 			for (Plugin plugin : incompatiblePlugins) {
@@ -218,18 +225,6 @@ public class ProfileVersionListFrame extends JDialog {
 		}				
 	}
 	
-	/**
-	 * derive the local profile name from the raven.remoteprofile
-	 * @return the local profile name
-	 */
-	private String getLocalProfileName() {		
-		String result=System.getProperty("raven.remoteprofile");
-		if (result.contains("/")) {
-			int i=result.lastIndexOf("/");
-			result=result.substring(i+1);
-		}
-		return result;
-	}
 	
 	protected void initialise() {
 		try {
