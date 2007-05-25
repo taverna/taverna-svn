@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenPropertiesTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-25 11:36:35 $
+ * Last modified on   $Date: 2007-05-25 13:51:40 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -58,6 +58,8 @@ public class RavenPropertiesTest extends TestCase {
 		else
 			System.clearProperty("taverna.home");
 		RavenProperties.getInstance().flush();
+		System.clearProperty("raven.profilelist");
+		System.clearProperty("raven.profile");
 	}
 
 	public void testRavenProperties() throws Exception {
@@ -92,5 +94,19 @@ public class RavenPropertiesTest extends TestCase {
 	public void testAvailableForUpdatesFalse() {
 		RavenProperties.getInstance().getProperties().remove("raven.profilelist");
 		assertFalse("updates should not be be available", RavenProperties.getInstance().configuredForUpdates());
+	}
+	
+	public void testProfileMirrorList() {
+		System.setProperty("raven.profile", "http://somedodgyurl.com/profile.xml "+ProfileSelectorTest.PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml");
+		String profile = RavenProperties.getInstance().getRavenProfileLocation();
+		
+		assertEquals("List should have been resolved down to 1 that works",profile,ProfileSelectorTest.PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml");
+	}
+	
+	public void testProfileListMirrorList() {
+		System.setProperty("raven.profilelist", "http://somedodgyurl.com/profilelist.xml "+ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
+		String profileList = RavenProperties.getInstance().getRavenProfileListLocation();
+		
+		assertEquals("list should have been resolved down to 1 that works",profileList,ProfileSelectorTest.PROFILE_BASE_URL+"test-profilelist.xml");
 	}
 }

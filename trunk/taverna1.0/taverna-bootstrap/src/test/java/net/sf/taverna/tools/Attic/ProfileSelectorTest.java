@@ -163,4 +163,18 @@ public class ProfileSelectorTest extends TestCase {
 		assertNotNull("raven.profilelist has disappeared",properties.getProperty("raven.profilelist"));
 	}
 	
+	//test for space seperated list of URLs
+	public void testProfileMirrorList() {
+		properties.setProperty("raven.profile", "http://somedodgyurl.com/profile.xml "+PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml");
+		ProfileSelector selector = new ProfileSelector(properties);
+		assertEquals("list should have been resolved down to 1 url",PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml",selector.getProfileLocation());
+		assertEquals("list should have been resolved down to 1 url",PROFILE_BASE_URL+"taverna-1.5.0.0-profile.xml",properties.getProperty("raven.profile"));
+	}
+	
+	public void testProfileListMirrorList() {
+		properties.setProperty("raven.profilelist", "http://somedodgyurl.com/profile.xml "+PROFILE_BASE_URL+"test-profilelist.xml");
+		ProfileSelector selector = new ProfileSelector(properties);
+		assertEquals("list should have been resolved down to 1 url",PROFILE_BASE_URL+"test-profilelist.xml",properties.getProperty("raven.profilelist"));
+	}
+	
 }

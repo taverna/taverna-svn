@@ -1,6 +1,7 @@
 package net.sf.taverna.tools;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
@@ -25,7 +26,7 @@ import java.util.Properties;
  *
  */
 public class ProfileSelector {
-
+	
 	private Properties properties;
 	public static final String CURRENT_PROFILE="current-profile-1.5.2.xml";
 	private final String DEFAULT_RAVEN_PROFILE="profile.xml";
@@ -36,7 +37,36 @@ public class ProfileSelector {
 		String ravenProfile = properties.getProperty("raven.profile");
 		String ravenProfileList = properties.getProperty("raven.profilelist");
 		
+		//if the profile or profilelist is defined as a space seperated list, then use the first URL that can be opened, and update the property to use this.
+		if (ravenProfile!=null && ravenProfile.contains(" ")) {
+			ravenProfile=selectURLFromList(ravenProfile);
+			properties.setProperty("raven.profile", ravenProfile);
+		}
+		if (ravenProfileList!=null && ravenProfileList.contains(" ")) {
+			ravenProfileList=selectURLFromList(ravenProfileList);
+			properties.setProperty("raven.profilelist", ravenProfileList);
+		}
+		
 		resolve(ravenProfile,ravenProfileList);
+	}
+	
+	private String selectURLFromList(String urlList) {
+		String [] urls = urlList.split(" ");
+		String result = urls[0]; //default to the first
+		for (String urlStr : urls) {
+			try {
+				URL url = new URL(urlStr);
+				InputStream stream = url.openStream();
+				stream.close();
+				result = urlStr;
+				break;
+			}
+			catch(Exception e) {
+				System.out.println("There is a problem with the url:"+urlStr);
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 	
 	private void resolve(String ravenProfile, String ravenProfileList) {
@@ -66,8 +96,6 @@ public class ProfileSelector {
 			properties.setProperty("raven.profile", url);
 			result=true;
 		}
-		
-		
 		return result;
 	}
 	

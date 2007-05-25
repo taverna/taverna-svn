@@ -72,10 +72,10 @@
         <row>
           <entry>raven.profile</entry>
 
-          <entry>URL</entry>
+          <entry>URL, or a space seperated list of URLs</entry>
 
           <entry>If defined this forces this particular profile to be used immediately. Using a single profile
-          means that no update options are available. Setting this property overrides raven.profilelist.</entry>
+          means that no update options are available. Setting this property overrides raven.profilelist. If a list is provided, the first successful URL is used.</entry>
         </row>
         
         <row>
@@ -86,7 +86,7 @@
           <entry>This defines the location of the XML that defines a list of profiles available. On first run, a local copy
           of the lowest version of the profile available in the list is used, and continues to be used until an update becomes available and is selected.
           An update becomes available when a higher version than the current version becomes defined in the list. Updating the version is not automatic, but requires a request from the user.
-          This property is overridden if a raven.profile property is explicity defined.</entry>
+          This property is overridden if a raven.profile property is explicity defined. If a list is provided, the first successful URL is used.</entry>
         </row>
 
         <row>
