@@ -46,16 +46,8 @@ public class SOAPResponsePrimitiveLiteralParser extends
 				.newDocumentBuilder();
 				Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 			
-				NodeList list = doc.getElementsByTagName(getOutputName());
-				DataThing newThing=null;
-				if (list.getLength()==0) {
-					logger.warn("No elements in xml match outputname, outputname:"+getOutputName()+", xml:"+xml);
-					newThing=thing;
-				}
-				else {
-					Node node = list.item(0);
-					newThing=DataThingFactory.bake(node.getFirstChild().getNodeValue());
-				}
+				Node node = doc.getFirstChild();
+				DataThing newThing=DataThingFactory.bake(node.getFirstChild().getNodeValue());
 				result.put(getOutputName(), newThing);
 			}
 			catch(Exception e) {
