@@ -44,6 +44,17 @@
           files are stored in $taverna.home/log; details about installed
           plugins and plugin sites are stored in $taverna.home/plugins</entry>
         </row>
+        
+        <row>
+          <entry>taverna.startup</entry>
+
+          <entry>String, e.g. C:/taverna-home/</entry>
+
+          <entry>If not already defined, this defaults to the location of the bootstrap jar file used to
+          startup Taverna. This property is used to allow default properties and plugins to be defined. By default properties in
+          $taverna.startup/conf, and plugins defined in $taverna.startup/plugins, are used. Similar files in $taverna.home will override these default settings
+          so that users can customise their settings in a multi-user environment.</entry>
+        </row>
 
         <row>
           <entry>taverna.repository</entry>
