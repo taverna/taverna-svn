@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-17 16:43:41 $
+ * Last modified on   $Date: 2007-05-29 13:11:11 $
  *               by   $Author: sowen70 $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -408,6 +408,9 @@ public class PluginManagerFrame extends JDialog {
 			} else {
 				getUpdateButton().setEnabled(false);
 			}
+			
+			//disable the uninstall button if this is a built in plugin
+			getUninstallButton().setEnabled(!plugin.isBuiltIn());
 		}
 	}
 

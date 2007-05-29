@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-12 12:23:09 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-05-29 13:11:11 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -106,5 +106,19 @@ public class PluginSite {
 		pluginSiteElement.addContent(new Element("url").addContent(getUrl().toString()));
 		return pluginSiteElement;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof PluginSite)) return false;
+		PluginSite site = (PluginSite)obj;
+		return (site.getUrl().equals(this.getUrl()) && site.getName().equals(this.getName()));
+	}
+
+	@Override
+	public int hashCode() {
+		return (this.getUrl().toExternalForm()+this.getName()).hashCode();
+	}
+	
+	
 	
 }

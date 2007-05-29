@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-16 13:55:11 $
+ * Last modified on   $Date: 2007-05-29 13:11:11 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -67,9 +67,23 @@ public class Plugin implements Comparable<Plugin> {
 
 	private List<String> repositories = new ArrayList<String>();
 
-	private Profile profile = new Profile(true);	
+	private Profile profile = new Profile(true);
 	
-	public boolean compatible = true;		
+	private boolean builtIn = false;
+	
+	public boolean compatible = true;
+	
+	/**
+	 * Indicates whether a plugin is a default plugin, and if so cannot be uninstalled, but can be disabled.
+	 * @return
+	 */
+	public boolean isBuiltIn() {
+		return builtIn;
+	}
+	
+	public void setBuiltIn(boolean val) {
+		this.builtIn=val;
+	}
 
 	public boolean isCompatible() {
 		return compatible;

@@ -157,7 +157,7 @@ public class MyGridConfiguration extends AbstractConfiguration {
 	 *         not be found or created.
 	 */
 	public static File getUserDir() {
-		String tavernaHome = instance.getTavernaHome();
+		String tavernaHome = getInstance().getTavernaHome();
 		if (tavernaHome == null) {
 			Bootstrap.findUserDir();
 			tavernaHome = System.getProperty("taverna.home");
@@ -173,6 +173,41 @@ public class MyGridConfiguration extends AbstractConfiguration {
 			return null;
 		}
 		return dir;
+	}
+	
+	/**
+	 * Returns a File representing the Taverna startup directory. This is the directory
+	 * containing the startup script plus default configuration directories.
+	 * 
+	 * This directory is determined by $taverna.startup. Returns null if this is not defined.
+	 * @return
+	 */
+	public static File getStartupDir() {
+		File result = null;
+		String startup=getProperty("taverna.startup");
+		if (startup!=null) {
+			result=new File(startup);
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns a File representing a subfolder within the Taverna startup directory. 
+	 * If no startup directory is defined, then null is returned.
+	 * 
+	 * There is no attempt to create the directory if it doesn't exist, since the location is likely
+	 * to be read-only. The client calling this method is responsible for handling the possibility that the
+	 * directory may not exist.
+	 * 
+	 * @param subfolder
+	 * @return
+	 */
+	public static File getStartupDir(String subfolder) {
+		File result= getStartupDir();
+		if (result!=null) {
+			result = new File(result,subfolder);
+		}
+		return result;
 	}
 
 	/**

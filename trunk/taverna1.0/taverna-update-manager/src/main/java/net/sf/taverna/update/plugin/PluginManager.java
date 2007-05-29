@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.23 $
+ * Revision           $Revision: 1.24 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-25 11:30:34 $
+ * Last modified on   $Date: 2007-05-29 13:11:11 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -89,6 +89,7 @@ public class PluginManager implements PluginListener {
 	private static List<PluginManagerListener> pluginManagerListeners = new ArrayList<PluginManagerListener>();
 
 	private File pluginsDir;
+	private File defaultPluginsDir; //defaults are read from $taverna.startup/plugins
 
 	private List<PluginSite> pluginSites = new ArrayList<PluginSite>();
 
@@ -104,6 +105,7 @@ public class PluginManager implements PluginListener {
 	 */
 	private PluginManager() {		
 		pluginsDir = MyGridConfiguration.getUserDir("plugins");
+		defaultPluginsDir=MyGridConfiguration.getStartupDir("plugins");
 		if (pluginsDir != null) {
 			initializePluginSites();
 			initializePlugins();
@@ -215,7 +217,7 @@ public class PluginManager implements PluginListener {
 	}
 	
 	private void firePluginIncompatibleEvent(PluginManagerEvent event) {
-		for (PluginManagerListener listener : this.pluginManagerListeners) {
+		for (PluginManagerListener listener : pluginManagerListeners) {
 			listener.pluginIncompatible(event);
 		}
 	}
@@ -573,6 +575,26 @@ public class PluginManager implements PluginListener {
 	@SuppressWarnings("unchecked")
 	private void initializePlugins() {
 		File pluginsFile = new File(pluginsDir, "plugins.xml");
+		List<Plugin> extractedPlugins = extractPluginsFromFile(pluginsFile);
+		
+		pluginsFile = new File(defaultPluginsDir,"plugins.xml");
+		List<Plugin> builtInPlugins = extractPluginsFromFile(pluginsFile);
+		
+		for (Plugin plugin : extractedPlugins) {
+			plugin.setBuiltIn(false); //user provided plugins are not concidered built in, and can be uninstalled
+			if (builtInPlugins.contains(plugin)) plugin.setBuiltIn(true);
+			addPlugin(plugin);
+		}
+		
+		for (Plugin plugin : builtInPlugins) {
+			plugin.setBuiltIn(true); // default plugins are concidered built in and cannot be uninstalled.
+			addPlugin(plugin);
+		}
+		savePlugins();
+	}
+
+	private List<Plugin> extractPluginsFromFile(File pluginsFile) {
+		List<Plugin> result = new ArrayList<Plugin>();
 		if (pluginsFile.exists()) {
 			try {
 				Document document = new SAXBuilder().build(pluginsFile);
@@ -580,15 +602,15 @@ public class PluginManager implements PluginListener {
 				List<Element> pluginList = root.getChildren("plugin");
 				for (Element pluginElement : pluginList) {
 					Plugin plugin = Plugin.fromXml(pluginElement);
-					addPlugin(plugin);
+					result.add(plugin);
 				}
-				savePlugins();
 			} catch (JDOMException e) {
 				logger.error("Error parsing plugins.xml",e);
 			} catch (IOException e) {
 				logger.error("Error reading plugins.xml",e);
 			}
 		}
+		return result;
 	}
 
 	public List<TavernaPluginSite> getTavernaPluginSites() {
@@ -662,20 +684,29 @@ public class PluginManager implements PluginListener {
 		pluginSites.addAll(getTavernaPluginSites());
 		
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
+		extractPluginSitesFromFile(pluginSitesFile);
+		
+		pluginSitesFile = new File(defaultPluginsDir,"plugin-sites.xml");
+		extractPluginSitesFromFile(pluginSitesFile);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void extractPluginSitesFromFile(File pluginSitesFile) {
 		if (pluginSitesFile.exists()) {
 			try {
 				Document document = new SAXBuilder().build(pluginSitesFile);
 				Element root = document.getRootElement();
 				List<Element> siteList = root.getChildren("pluginSite");
 				for (Element site : siteList) {
-					pluginSites.add(PluginSite.fromXml(site));
+					PluginSite pluginSite=PluginSite.fromXml(site);
+					if (!pluginSites.contains(pluginSite)) pluginSites.add(pluginSite);
 				}
 			} catch (JDOMException e) {
 				logger.error("Error parsing plugin-sites.xml",e);
 			} catch (IOException e) {
 				logger.error("Error reading plugin-sites.xml",e);
 			}
-		}					
+		}
 	}
 
 	private void sortPlugins() {
