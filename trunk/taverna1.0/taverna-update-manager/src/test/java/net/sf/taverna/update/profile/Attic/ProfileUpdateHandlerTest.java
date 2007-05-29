@@ -65,7 +65,7 @@ public class ProfileUpdateHandlerTest extends TestCase {
 	}
 	
 	public void testUpdateAvailable() throws Exception {
-		URL local = copyToCurrent(new URL(PROFILE_BASE_URL+"taverna-1.5.2-SNAPSHOT-profile.xml"));
+		URL local = copyToCurrent(new URL(PROFILE_BASE_URL+"taverna-1.5.2.0-SNAPSHOT-profile.xml"));
 		ProfileUpdateHandler handler = new ProfileUpdateHandler(new URL(PROFILE_LIST),local);
 		assertTrue("There should be an update available",handler.isNewVersionAvailable());
 	}

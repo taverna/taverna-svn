@@ -8,4 +8,4 @@ set ARGS=%ARGS% -Draven.target.artifactid=scufl-tools
 set ARGS=%ARGS% -Draven.target.class=org.embl.ebi.escience.scufl.tools.WorkflowLauncher 
 set ARGS=%ARGS% -Draven.target.method=main
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*
+java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.2-SNAPSHOT.jar" %*

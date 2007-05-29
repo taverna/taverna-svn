@@ -3,14 +3,14 @@
   <parent>
     <artifactId>scufl</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.scufl</groupId>
   <artifactId>scufl-ui-components</artifactId>
   <packaging>pom</packaging>
   <name>Scufl UI Components</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <version>1.5.2-SNAPSHOT</version>
   <modules>
     <module>advanced-model-explorer</module>
     <module>dot-text-area</module>

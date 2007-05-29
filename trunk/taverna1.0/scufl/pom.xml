@@ -3,14 +3,14 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>scufl</artifactId>
   <packaging>pom</packaging>
   <name>Scufl</name>
-  <version>1.5.1-SNAPSHOT</version>
+  <version>1.5.2-SNAPSHOT</version>
   <modules>
     <module>scufl-model</module>
     <module>scufl-workflow</module>
