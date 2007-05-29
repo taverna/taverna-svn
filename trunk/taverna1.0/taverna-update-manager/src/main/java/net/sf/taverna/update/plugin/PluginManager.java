@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.24 $
+ * Revision           $Revision: 1.25 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-29 13:11:11 $
+ * Last modified on   $Date: 2007-05-29 13:21:19 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -582,7 +582,14 @@ public class PluginManager implements PluginListener {
 		
 		for (Plugin plugin : extractedPlugins) {
 			plugin.setBuiltIn(false); //user provided plugins are not concidered built in, and can be uninstalled
-			if (builtInPlugins.contains(plugin)) plugin.setBuiltIn(true);
+			if (builtInPlugins.contains(plugin)) {
+				int i=builtInPlugins.indexOf(plugin);
+				//allow it to be uninstalled if it is the same plugin but different version.
+				//the built in plugin will then reappear as the original version when Taverna restarts
+				if (builtInPlugins.get(i).getVersion().equals(plugin.getVersion())) {
+					plugin.setBuiltIn(true);
+				}
+			}
 			addPlugin(plugin);
 		}
 		
