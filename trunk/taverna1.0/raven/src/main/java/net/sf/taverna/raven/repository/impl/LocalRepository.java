@@ -74,11 +74,43 @@ public class LocalRepository implements Repository {
 		Artifact ravenArtifact = new BasicArtifact(
 				"uk.org.mygrid.taverna.raven", "raven", "1.5.1-SNAPSHOT");
 		synchronized (loaderMap) {
-			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(
-					this, this.getClass().getClassLoader(), ravenArtifact));
+			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
+					this.getClass().getClassLoader(), ravenArtifact));
 		}
 		initialize();
 	}
+
+	/**
+	 * Create a new Repository object with the specified base location. In
+	 * addition declare that if an artifact matches one in the specified
+	 * systemArtifact set it should use the provided ClassLoader instance as a
+	 * parent when creating new LocalArtifactClassLoader instances. This implies
+	 * that any artifact in this set must be visible in some other way to the
+	 * class calling the static getRepository method as must all dependencies of
+	 * artifacts within that set. If not you'll get all manner of linkage errors
+	 * at runtime.
+	 */
+	protected LocalRepository(File base, ClassLoader loader, Set<Artifact> systemArtifacts) {
+		this.systemArtifacts = systemArtifacts;
+		this.parentLoader = loader;
+		try {
+			this.base = base.getCanonicalFile();
+		} catch (IOException e) {
+			logger.error("Could not make canonical file " + base, e);
+			this.base = base;
+		}
+		// Fake in our own classloader
+		Artifact ravenArtifact = new BasicArtifact(
+				"uk.org.mygrid.taverna.raven", "raven", "1.5.1-SNAPSHOT");
+		synchronized (loaderMap) {
+			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
+					this.getClass().getClassLoader(), ravenArtifact));
+		}
+		initialize();
+	}
+	
+	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
+	private ClassLoader parentLoader = null;
 
 	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
 
@@ -100,6 +132,26 @@ public class LocalRepository implements Repository {
 			}
 		}
 		return repositoryCache.get(base);
+	}
+
+	/**
+	 * Get a new or cached instance of LocalRepository. If the instance is
+	 * created then use the supplied ClassLoader for the specified set of
+	 * Artifacts should they be required.
+	 */
+	public static synchronized Repository getRepository(File base,
+			ClassLoader loader, Set<Artifact> systemArtifacts) {
+		if (!repositoryCache.containsKey(base)) {
+			if (System.getProperty("raven.eclipse") == null) {
+				LocalRepository lr = new LocalRepository(base, loader,
+						systemArtifacts);
+				repositoryCache.put(base, lr);
+			} else {
+				repositoryCache.put(base, new EclipseRepository());
+			}
+		}
+		return repositoryCache.get(base);
+
 	}
 
 	/*
@@ -153,6 +205,9 @@ public class LocalRepository implements Repository {
 		}
 		try {
 			// Even if parent is null
+			if (this.systemArtifacts.contains(a)) {
+				parent = this.parentLoader;
+			}
 			return new LocalArtifactClassLoader(this, a, parent);
 		} catch (MalformedURLException e) {
 			logger.error("Malformed URL for artifact " + a, e);
@@ -591,9 +646,11 @@ public class LocalRepository implements Repository {
 					logger.warn("Connection timed out while looking for" + a
 							+ " in " + repository);
 				} catch (UnknownHostException e) {
-					logger.error("Unable to determine host for:"+pomLocation.toExternalForm()+", maybe there is no network access?");
+					logger.error("Unable to determine host for:"
+							+ pomLocation.toExternalForm()
+							+ ", maybe there is no network access?");
 				}
-				
+
 				if (is != null) {
 					// Where to write it?
 					File toFile = artifactFile(a, "." + suffix, true);
@@ -611,20 +668,20 @@ public class LocalRepository implements Repository {
 						logger.warn("Already existed, overwriting " + toFile);
 						toFile.delete();
 					}
-					
-					//download to tmp file first
-					File tmpFile = new File(toFile.getAbsolutePath()+".tmp");
+
+					// download to tmp file first
+					File tmpFile = new File(toFile.getAbsolutePath() + ".tmp");
 					tmpFile.createNewFile();
-					
+
 					FileOutputStream fos = new FileOutputStream(tmpFile);
 					setStatus(a,
 							"pom".equals(suffix) ? ArtifactStatus.PomFetching
 									: ArtifactStatus.JarFetching);
 					copyStream(is, fos, a);
-					
-					//rename tmp file to real artifact file
+
+					// rename tmp file to real artifact file
 					tmpFile.renameTo(toFile);
-					
+
 					dlstatus.remove(a);
 					setStatus(a, "pom".equals(suffix) ? ArtifactStatus.Pom
 							: ArtifactStatus.Jar);
