@@ -1,25 +1,18 @@
 package net.sf.taverna.tools;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -138,6 +131,10 @@ public class Bootstrap {
 	 * @return the properties
 	 */
 	public static Properties findProperties() {
+		if (System.getProperty("taverna.startup")==null) {
+			determineStartup();
+			System.out.println("Startup location found to be:"+System.getProperty("taverna.startup"));
+		}
 		Properties result = null;
 		try {
 			result = RavenProperties.getInstance().getProperties();
@@ -152,6 +149,25 @@ public class Bootstrap {
 			result.putAll(System.getProperties());
 		}
 		return result;
+	}
+	
+	/**
+	 * Determines the location that Taverna was started from, used for finding the default configurations and
+	 * plugin files which determine the default behaviour for Taverna.
+	 * 
+	 * If determined succesfully the system property $taverna.startup is set to this value.
+	 *
+	 */
+	private static void determineStartup() {
+		try {
+			File startupDir = TavernaBootstrapLocation.getBootstrapDir();
+			if (startupDir!=null) {
+				String startup=startupDir.getAbsolutePath();
+				System.setProperty("taverna.startup", startup);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 
