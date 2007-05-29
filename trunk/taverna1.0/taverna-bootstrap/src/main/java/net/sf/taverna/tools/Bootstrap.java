@@ -133,7 +133,6 @@ public class Bootstrap {
 	public static Properties findProperties() {
 		if (System.getProperty("taverna.startup")==null) {
 			determineStartup();
-			System.out.println("Startup location found to be:"+System.getProperty("taverna.startup"));
 		}
 		Properties result = null;
 		try {
