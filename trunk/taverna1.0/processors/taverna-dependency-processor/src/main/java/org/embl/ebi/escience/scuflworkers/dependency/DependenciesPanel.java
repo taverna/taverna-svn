@@ -39,8 +39,14 @@ public class DependenciesPanel extends JPanel {
 
 	private static Logger logger = Logger.getLogger(DependenciesPanel.class);
 
-	private DependencyProcessor processor;
+	DependencyProcessor processor;
 
+	ClassloaderOptions classLoaderOptions;
+	
+	JarFiles jarFilesPanel;
+	
+	Artifacts artifactsPanel;
+	
 	public DependenciesPanel(DependencyProcessor processor) {
 		super(new GridBagLayout());
 		this.processor = processor;
@@ -49,9 +55,13 @@ public class DependenciesPanel extends JPanel {
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.weighty = 0.3;
-		add(new ClassloaderOptions(), c);
-		add(new JarFiles(), c);
-		add(new Artifacts(), c);
+		artifactsPanel = new Artifacts();
+		jarFilesPanel = new JarFiles();
+		
+		classLoaderOptions = new ClassloaderOptions();
+		add(classLoaderOptions, c);
+		add(jarFilesPanel, c);
+		add(artifactsPanel, c);
 	}
 	
 
@@ -62,6 +72,8 @@ public class DependenciesPanel extends JPanel {
 		private static final String ITERATION = "Shared over iteration";
 
 		private static final String WORKFLOW = "Shared for whole workflow";
+		
+		private static final String SYSTEM = "System classloader";
 
 		private JLabel description = new JLabel();;
 
@@ -75,7 +87,7 @@ public class DependenciesPanel extends JPanel {
 			add(new JLabel("Classloader persistence"), c);
 			c.insets = new Insets(0,0,0,0);
 			JComboBox classLoaderPersistence =
-				new JComboBox(new String[] { FRESH, ITERATION, WORKFLOW });
+				new JComboBox(new String[] { FRESH, ITERATION, WORKFLOW, SYSTEM });
 			classLoaderPersistence.addActionListener(this);
 			ClassLoaderSharing sharing = processor.getClassLoaderSharing();
 			if (sharing == ClassLoaderSharing.fresh) {
@@ -84,6 +96,8 @@ public class DependenciesPanel extends JPanel {
 				classLoaderPersistence.setSelectedItem(ITERATION);
 			} else if (sharing == ClassLoaderSharing.workflow) {
 				classLoaderPersistence.setSelectedItem(WORKFLOW);
+			} else if (sharing == ClassLoaderSharing.system) {
+				classLoaderPersistence.setSelectedItem(SYSTEM);
 			} else {
 				logger.error("Unknown classloader sharing: " + sharing);
 			}
@@ -95,12 +109,12 @@ public class DependenciesPanel extends JPanel {
 		// For classLoaderPersistence changes
 		public void actionPerformed(ActionEvent e) {
 			JComboBox cb = (JComboBox) e.getSource();
-			String classLoaderStyle = (String) cb.getSelectedItem();
+			String classLoaderStyle = (String) cb.getSelectedItem();			
 			if (classLoaderStyle.equals(FRESH)) {
 				description.setText("<html><small>"
-					+ "Classes will be reloaded for each processor and each invocation; state<br>"
-					+ "will not even be shared across iterations. This can be slow, but<br>"
-					+ "ensures each iteration starts from freshly initialised classes."
+					+ "Classes will be reloaded for each processor and each invocation; <br>"
+					+ "state will not even be shared across iterations. This can be slow, <br>"
+					+ "but ensures each iteration starts from freshly initialised classes."
 					+ "</small></html>");
 				processor.setClassLoaderSharing(ClassLoaderSharing.fresh);
 			} else if (classLoaderStyle.equals(ITERATION)) {
@@ -112,12 +126,22 @@ public class DependenciesPanel extends JPanel {
 				processor.setClassLoaderSharing(ClassLoaderSharing.iteration);
 			} else if (classLoaderStyle.equals(WORKFLOW)) {
 				description.setText("<html><small>"
-					+ "Classes are shared across the whole workflow (with any processor also<br>"
-					+ "selecting this option), but are reinitialised for each workflow run.<br>"
+					+ "Classes are shared across the whole workflow (with any processor<br>"
+					+ "also selecting this option), but are reinitialised for each workflow run.<br>"
 					+ "This might be needed if a processor passes objects to another, or <br>"
 					+ "state is shared within static members of loaded classes."
 					+ "</small></html>");
 				processor.setClassLoaderSharing(ClassLoaderSharing.workflow);
+			} else if (classLoaderStyle.equals(SYSTEM)) {
+				description.setText("<html><small>"
+					+ "The (global) system classloader is used, dependencies defined here are<br>"
+					+ "made available globally on first run."
+					+ "<p>"
+					+ "This is mainly useful if you are using JNI-based libraries. <br>"
+					+ "Note that for JNI you also have to specify <code>-Djava.library.path</code><br>"
+					+ "and probably your operating system's dynamic library search path<br>"
+					+ "<code>LD_LIBRARY_PATH</code> / <code>DYLD_LIBRARY_PATH</code> / <code>PATH</code> </small></html>");
+				processor.setClassLoaderSharing(ClassLoaderSharing.system);
 			} else {
 				logger.error("Selected unknown classloader style: "
 					+ classLoaderStyle);

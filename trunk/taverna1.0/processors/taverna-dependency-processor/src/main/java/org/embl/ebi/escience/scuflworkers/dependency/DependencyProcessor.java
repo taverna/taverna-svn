@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.tools.BootstrapClassLoader;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.log4j.Logger;
@@ -36,7 +38,6 @@ public abstract class DependencyProcessor extends Processor {
 	public DependencyProcessor(ScuflModel model, String name)
 		throws ProcessorCreationException, DuplicateProcessorNameException {
 		super(model, name);
-
 	}
 
 	/**
@@ -48,12 +49,14 @@ public abstract class DependencyProcessor extends Processor {
 	 * <dd>Same classloader within iteration of a processor</dd>
 	 * <dt>workflow</dt>
 	 * <dd>Same classloader for all processors defining <code>workflow</code></dd>
+	 * <dt>system</dt>
+	 * <dd>System classloader</dd>
 	 * </dl>
 	 * 
 	 * @see DependencyProcessor#setClassLoaderSharing(org.embl.ebi.escience.scuflworkers.dependency.DependencyProcessor.ClassLoaderSharing)}
 	 */
 	public enum ClassLoaderSharing {
-		fresh, iteration, workflow
+		fresh, iteration, workflow, system
 	}
 	
 	/**
@@ -130,12 +133,20 @@ public abstract class DependencyProcessor extends Processor {
 	 * with the same policy. The dependencies will be constructed as the union
 	 * of all {@link #localDependencies} sets at the point of the first call to
 	 * findClassLoader().
-	 * <p>
+ 	 * <p>
 	 * All of these classloaders will have as a parent the loader of this
 	 * instance (ie. the loader of the deepest subclass of
 	 * {@link DependencyProcessor}).
+	 * <p>
+	 * However, if the classloader sharing is {@link ClassLoaderSharing#system}, the
+	 * system classloader will be used. Note that dependencies are ignored and
+	 * must be specified by <code>-classpath</code> when starting the Java.
+	 * This is useful in combination with JNI based libraries, which would also
+	 * require <code>-Djava.library.path</code> and possibly the operating
+	 * system's PATH / LD_LIBRARY_PATH / DYLD_LIBRARY_PATH environment variable.
 	 * 
-	 * @return A new or existing {@link ClassLoader} according to the classloader sharing policy
+	 * @return A new or existing {@link ClassLoader} according to the
+	 *         classloader sharing policy
 	 */
 	public ClassLoader findClassLoader() {
 		if (classLoaderSharing == ClassLoaderSharing.fresh) {
@@ -161,8 +172,36 @@ public abstract class DependencyProcessor extends Processor {
 				return cl;
 			}
 		}
+		if (classLoaderSharing == ClassLoaderSharing.system) {
+			ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
+			if (sysClassLoader instanceof BootstrapClassLoader) {
+				updateBootstrapClassLoader((BootstrapClassLoader) sysClassLoader);				
+			} else {
+				logger.warn("System classloader is not a BootstrapClassLoader, dependencies must be defined with -classpath");
+			}
+			return sysClassLoader;
+		}
 		logger.error("Unknown classLoaderSharing: " + classLoaderSharing);
 		throw new RuntimeException("Unknown classLoaderSharing");
+	}
+
+	/**
+	 * Add any new dependencies identified by {@link #findDependencies()} to the
+	 * {@link BootstrapClassLoader} system classloader.
+	 * 
+	 * @param loader The current system ClassLoader
+	 */
+	private void updateBootstrapClassLoader(BootstrapClassLoader loader) {
+		List<URL> deps = findDependencies();
+		Set<URL> exists = new HashSet<URL>(Arrays.asList(loader.getURLs()));
+		for (URL dep : deps) {
+			if (exists.contains(dep)) {
+				continue;
+			}
+			logger.info("Registering with system classloader:" + dep);
+			loader.addURL(dep);
+			exists.add(dep);
+		}
 	}
 
 	/**
@@ -185,8 +224,24 @@ public abstract class DependencyProcessor extends Processor {
 	ClassLoader makeClassLoader() {
 		ClassLoader parent = this.getClass().getClassLoader();
 		// All sharing policies include at least our own dependencies
+		List<URL> urls = findDependencies();
+		return new URLClassLoader(urls.toArray(new URL[0]), parent) {
+			@Override
+			protected String findLibrary(String libname) {
+				String filename = System.mapLibraryName(libname);
+				File libraryFile = new File(libDir, filename);
+				if (libraryFile.isFile()) {
+					logger.info("Found library " + libname + ": " + libraryFile.getAbsolutePath());
+					return libraryFile.getAbsolutePath();
+				}
+				return super.findLibrary(libname);
+			}
+		};
+	}
+
+	private List<URL> findDependencies() {
 		Set<String> locals = new HashSet<String>(localDependencies);
-		if (classLoaderSharing == ClassLoaderSharing.workflow) {
+		if (classLoaderSharing == ClassLoaderSharing.workflow || classLoaderSharing == ClassLoaderSharing.system) {
 			// We'll merge inn all dependencies from all processors claiming to
 			// be workflow-sharing.
 			
@@ -214,7 +269,7 @@ public abstract class DependencyProcessor extends Processor {
 				continue;
 			}
 		}
-		return new URLClassLoader(urls.toArray(new URL[0]), parent);
+		return urls;
 	}
 
 	/**
