@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.25 $
+ * Revision           $Revision: 1.26 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-29 13:21:19 $
+ * Last modified on   $Date: 2007-05-30 13:34:49 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -637,7 +637,7 @@ public class PluginManager implements PluginListener {
 			}
 		}
 		
-		//create a list of URL objects from the comma seperated list of alternatives for each site		
+		//create a list of URL objects from the space seperated list of alternatives for each site		
 		for (Integer siteIndex : pluginSiteMap.keySet()) {
 			String siteList = pluginSiteMap.get(siteIndex);
 			String nameKey=prefix+siteIndex+".name";
@@ -646,7 +646,7 @@ public class PluginManager implements PluginListener {
 			
 			List<URL> urls = new ArrayList<URL>();
 			logger.info("Adding plugin sitelist: "+siteList);
-			String [] siteUrls = siteList.split(",");
+			String [] siteUrls = siteList.split(" ");
 			for (String siteUrl : siteUrls) {
 				siteUrl=siteUrl.trim();
 				if (!siteUrl.endsWith("/")) siteUrl+="/";
