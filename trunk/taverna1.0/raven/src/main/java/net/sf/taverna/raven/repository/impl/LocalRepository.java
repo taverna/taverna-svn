@@ -51,6 +51,9 @@ import org.xml.sax.SAXException;
  * @author Tom Oinn
  */
 public class LocalRepository implements Repository {
+	
+	//the version of raven to used as the artifact for the faked classloader used during initialisation.
+	private final String RAVEN_VERSION="1.5.2-SNAPSHOT";
 
 	private static Log logger = Log.getLogger(LocalRepository.class);
 
@@ -72,7 +75,7 @@ public class LocalRepository implements Repository {
 		}
 		// Fake in our own classloader
 		Artifact ravenArtifact = new BasicArtifact(
-				"uk.org.mygrid.taverna.raven", "raven", "1.5.2-SNAPSHOT");
+				"uk.org.mygrid.taverna.raven", "raven", RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
@@ -101,7 +104,7 @@ public class LocalRepository implements Repository {
 		}
 		// Fake in our own classloader
 		Artifact ravenArtifact = new BasicArtifact(
-				"uk.org.mygrid.taverna.raven", "raven", "1.5.2-SNAPSHOT");
+				"uk.org.mygrid.taverna.raven", "raven", RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
