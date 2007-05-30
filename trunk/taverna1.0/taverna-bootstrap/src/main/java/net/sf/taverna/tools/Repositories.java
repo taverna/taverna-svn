@@ -1,5 +1,6 @@
 package net.sf.taverna.tools;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -8,8 +9,8 @@ import java.util.Map.Entry;
 
 /**
  * Class responsible for determining the raven repositories during the Bootsrap process
- * @author sowen
- *
+ * 
+ * @author Stuart Owen
  */
 public class Repositories {
 	
@@ -19,6 +20,11 @@ public class Repositories {
 		// We'll add these in order as stated (not as in property file)
 		String prefix = "raven.repository.";
 		ArrayList<URL> urls = new ArrayList<URL>();
+		
+		//adds $taverna.startup/repository to start of the list if it exists.
+		URL startupURL = findStartupURL(properties);
+		if (startupURL!=null) urls.add(startupURL);
+		
 		for (Entry property : properties.entrySet()) {
 			String propName = (String) property.getKey();
 			if (!propName.startsWith(prefix)) {
@@ -54,6 +60,28 @@ public class Repositories {
 			// nothing
 		}
 		return urls.toArray(new URL[0]);
+	}
+	
+	/**
+	 * Returns the url for the startup repsitory ($taverna.startup/repository) if it is defined and exists.
+	 * Otherwise returns null
+	 * @param properties
+	 * @return
+	 */
+	private URL findStartupURL(Properties properties) {
+		URL result = null;
+		String startup=properties.getProperty("taverna.startup");
+		if (startup!=null) {
+			File repository = new File(startup,"repository");
+			if (repository.exists())
+				try {
+					result = repository.toURL();
+				} catch (MalformedURLException e) {
+					System.out.println("Malformed URL exception whilst determining startup repository ($taverna.startup/repository/");
+					e.printStackTrace();
+				}
+		}
+		return result;
 	}
 	
 }
