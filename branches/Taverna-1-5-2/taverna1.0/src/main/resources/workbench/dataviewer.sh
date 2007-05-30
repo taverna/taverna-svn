@@ -33,5 +33,5 @@ if [ -f "$TAVERNA_HOME/custom.sh" ] ; then
     source "$TAVERNA_HOME/custom.sh"
 fi
 
-java $ARGS -jar "$TAVERNA_HOME/taverna-bootstrap-1.5.2-SNAPSHOT.jar" $@
+java $ARGS -jar "$TAVERNA_HOME/taverna-bootstrap-1.5.2.0.jar" $@
 
