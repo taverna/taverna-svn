@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ4" author="Tom Oinn" title="Do basic arithmetic using .NET based web services">Performs some relatively trivial numerical manipulation using a service we found lying around on xmethods.net. Shows that we can interact with at least some types of document oriented soap services.</s:workflowdescription>
+  <s:processor name="one">
+    <s:stringconstant>1.0</s:stringconstant>
+  </s:processor>
+  <s:processor name="sixandahalf">
+    <s:stringconstant>6.5</s:stringconstant>
+  </s:processor>
+  <s:processor name="four">
+    <s:stringconstant>4</s:stringconstant>
+  </s:processor>
+  <s:processor name="two">
+    <s:stringconstant>2.0</s:stringconstant>
+  </s:processor>
+  <s:processor name="multiply">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://samples.gotdotnet.com/quickstart/aspplus/samples/services/MathService/VB/MathService.asmx?WSDL</s:wsdl>
+      <s:operation>Multiply</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="divide">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://samples.gotdotnet.com/quickstart/aspplus/samples/services/MathService/VB/MathService.asmx?WSDL</s:wsdl>
+      <s:operation>Divide</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="add">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://samples.gotdotnet.com/quickstart/aspplus/samples/services/MathService/VB/MathService.asmx?WSDL</s:wsdl>
+      <s:operation>Add</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="subtract">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://samples.gotdotnet.com/quickstart/aspplus/samples/services/MathService/VB/MathService.asmx?WSDL</s:wsdl>
+      <s:operation>Subtract</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:link source="one:value" sink="add:A" />
+  <s:link source="two:value" sink="add:B" />
+  <s:link source="two:value" sink="subtract:A" />
+  <s:link source="four:value" sink="subtract:B" />
+  <s:link source="add:AddResult" sink="multiply:A" />
+  <s:link source="subtract:SubtractResult" sink="multiply:B" />
+  <s:link source="sixandahalf:value" sink="divide:B" />
+  <s:link source="multiply:MultiplyResult" sink="divide:A" />
+  <s:link source="divide:DivideResult" sink="mathsOutput" />
+  <s:sink name="mathsOutput" />
+</s:scufl>
+
+
