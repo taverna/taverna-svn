@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.4.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-16 15:29:03 $
+ * Last modified on   $Date: 2007-05-30 19:30:18 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -144,6 +144,22 @@ public class SOAPResponseLiteralTest extends WSDLBasedTestCase {
 		DataThing stringReturn = (DataThing) outputMap.get("getStringReturn");
 		
 		assertEquals("value of data returned is wrong","a string",stringReturn.getDataObject().toString());
+	}
+	
+	public void testEmptyResponse() throws Exception {
+		List response = new ArrayList();
+		
+		List outputNames = new ArrayList();
+		outputNames.add("attachmentList");
+		outputNames.add("getStringReturn");
+		
+		SOAPResponseLiteralParser parser = new SOAPResponseLiteralParser(
+				outputNames);
+
+		Map outputMap = parser.parse(response);
+
+		assertNotNull("no output map returned", outputMap);
+		assertEquals("map should contain 1 element", 0, outputMap.size());
 	}
 
 }
