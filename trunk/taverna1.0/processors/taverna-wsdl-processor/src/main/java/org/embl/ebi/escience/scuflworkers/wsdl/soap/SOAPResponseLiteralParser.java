@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralParser.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-16 15:29:02 $
+ * Last modified on   $Date: 2007-05-30 19:17:19 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -78,14 +78,19 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 					.warn("Document style response unexpectedly contained more than one RPCElement, number of elements="
 							+ response.size());
 
-		SOAPBodyElement rpcElement = (SOAPBodyElement) response.get(0);
-
-		Element dom = rpcElement.getAsDOM();
-
-		String outputName = getOutputName();
-		String xml = XMLUtils.ElementToString(dom);
-
-		result.put(outputName, new DataThing(xml));
+		if (response.size()>0) {
+			SOAPBodyElement rpcElement = (SOAPBodyElement) response.get(0);
+	
+			Element dom = rpcElement.getAsDOM();
+	
+			String outputName = getOutputName();
+			String xml = XMLUtils.ElementToString(dom);
+	
+			result.put(outputName, new DataThing(xml));
+		}
+		else {
+			logger.warn("The response recieved was empty");
+		}
 
 		return result;
 	}
