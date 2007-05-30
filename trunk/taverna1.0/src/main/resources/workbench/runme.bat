@@ -8,8 +8,6 @@ set ARGS=%ARGS% "-Dtaverna.dotlocation=%~dp0\bin\win32i386\dot.exe"
 REM uncomment the next line and complete to change the directory taverna downloads jars to
 REM set ARGS=%ARGS% -Dtaverna.repository=<directory>
 
-REM uncomment and complete the next line to set http proxy settings, and the 2nd line if authentication is required
-REM set ARGS=%ARGS% -Dhttp.proxyHost=<hostname or ip address> -Dhttp.proxyPort=<port>
-REM set ARGS=%ARGS% -Dhttp.proxyUser=<username> -Dhttp.proxyPassword=<password>
+REM NB: Proxy configuration settings have now been reverted to being in conf/mygrid.properties
 
 java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.2-SNAPSHOT.jar" %*
