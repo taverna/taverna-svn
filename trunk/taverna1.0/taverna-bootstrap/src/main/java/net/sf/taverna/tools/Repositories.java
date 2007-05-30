@@ -25,6 +25,11 @@ public class Repositories {
 		URL startupURL = findStartupURL(properties);
 		if (startupURL!=null) urls.add(startupURL);
 		
+		//detect if an old repository from 1.5.1 exists, and if so add it to the list of available repositories.
+		//this reduces duplication between the 2 repositories.
+		URL oldRespository = findOldRepository();
+		if (oldRespository!=null) urls.add(oldRespository);
+		
 		for (Entry property : properties.entrySet()) {
 			String propName = (String) property.getKey();
 			if (!propName.startsWith(prefix)) {
@@ -81,6 +86,54 @@ public class Repositories {
 					e.printStackTrace();
 				}
 		}
+		return result;
+	}
+	
+	/**
+	 * Checks for the old default taverna.home location, and if it exists and contains a 'repository' directory
+	 * then returns a URL to this for use an artifact repository.
+	 * @return
+	 */
+	private URL findOldRepository() {
+		File appHome=null;
+		URL result = null;
+		String application = "Taverna";
+		
+		File home = new File(System.getProperty("user.home"));
+		if (home.isDirectory()) {
+			String os = System.getProperty("os.name");
+			if (os.equals("Mac OS X")) {
+				File libDir = new File(home, "Library/Application Support");
+				appHome = new File(libDir, application);
+			} else if (os.startsWith("Windows")) {
+				String APPDATA = System.getenv("APPDATA");
+				File appData = null;
+				if (APPDATA != null) {
+					appData = new File(APPDATA);
+				}
+				if (appData != null && appData.isDirectory()) {
+					appHome = new File(appData, application);
+				} else {
+					appHome = new File(home, application);
+				}
+			} else {
+				// We'll assume UNIX style is OK
+				appHome = new File(home, "." + application.toLowerCase());
+			}
+		}
+	
+		if (appHome!=null && appHome.exists()) {
+			File repository = new File(appHome, "repository");
+			if (repository.exists()) {
+				try {
+					result=repository.toURL();
+				} catch (MalformedURLException e) {
+					System.out.println("There was an error finding repositories of previous Taverna installations");
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		return result;
 	}
 	
