@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-25 11:36:34 $
+ * Last modified on   $Date: 2007-05-30 13:34:07 $
  *               by   $Author: sowen70 $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -77,7 +77,7 @@ public class UpdatesAvailableIcon extends JLabel implements PluginManagerListene
 		super();		
 		setVisible(false);	
 		
-		startCheckThread();
+		checkForUpdates();
 		PluginManager.addPluginManagerListener(this);
 	}
 	
