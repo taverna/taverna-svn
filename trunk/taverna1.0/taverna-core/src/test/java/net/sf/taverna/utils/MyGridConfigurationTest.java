@@ -3,6 +3,8 @@ package net.sf.taverna.utils;
 import java.io.File;
 import java.io.IOException;
 
+import net.sf.taverna.utils.MyGridConfiguration;
+
 import junit.framework.TestCase;
 
 public class MyGridConfigurationTest extends TestCase {

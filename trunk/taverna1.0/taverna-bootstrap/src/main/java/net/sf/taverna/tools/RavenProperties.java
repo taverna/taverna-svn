@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: RavenProperties.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-25 11:36:35 $
+ * Last modified on   $Date: 2007-05-30 12:08:27 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -78,7 +78,9 @@ public class RavenProperties extends AbstractConfiguration {
 	@Override
 	protected void initialiseProperties() {
 		super.initialiseProperties();
-		new ProfileSelector(getProperties());
+		if (properties!=null) {
+			new ProfileSelector(getProperties());
+		}
 	}
 	
 	/**

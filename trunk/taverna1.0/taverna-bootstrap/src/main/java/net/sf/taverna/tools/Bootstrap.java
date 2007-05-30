@@ -42,10 +42,10 @@ public class Bootstrap {
 			IllegalArgumentException, IllegalAccessException,
 			InvocationTargetException {
 
-		setUpProxyAuthenticator();
-		
 		findUserDir();
+		
 		properties = findProperties();
+		
 		if (properties==null) {
 			System.out.println("Unable to find raven.properties. This should either be within a conf folder in your startup directory, or within the conf folder of your $taverna.home.");
 			System.exit(-1);
@@ -53,6 +53,9 @@ public class Bootstrap {
 		else {
 			System.getProperties().putAll(properties);
 		}
+		
+		new ProxyConfiguration().initialiseProxySettings();
+		
 		remoteRepositories = new Repositories().find();
 
 		List<URL> localLoaderUrls = new ArrayList<URL>();
@@ -66,21 +69,6 @@ public class Bootstrap {
 		addSystemLoaderArtifacts();
 
 		invokeWorkbench(args, workbenchClass);
-	}
-
-	private static void setUpProxyAuthenticator() {
-		if (System.getProperty("http.proxyUser")!=null && System.getProperty("http.proxyPassword")!=null) {
-			Authenticator.setDefault(new Authenticator() {
-
-				@Override
-				protected PasswordAuthentication getPasswordAuthentication() {
-					String password=System.getProperty("http.proxyPassword");
-					String username=System.getProperty("http.proxyUser");
-					return new PasswordAuthentication(username,password.toCharArray());
-				}
-				
-			});
-		}
 	}
 	
 	public static void addSystemLoaderArtifacts() throws MalformedURLException {
@@ -532,7 +520,7 @@ public class Bootstrap {
 	 */
 	public static void findUserDir() {
 		File appHome;
-		String application = "Taverna";
+		String application = "Taverna-1.5.2";
 		String tavHome = System.getProperty("taverna.home");
 		if (tavHome != null) {
 			appHome = new File(tavHome);
