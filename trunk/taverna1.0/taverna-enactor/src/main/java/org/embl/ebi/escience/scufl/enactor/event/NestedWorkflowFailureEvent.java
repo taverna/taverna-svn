@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowFailureEvent.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-13 15:51:24 $
+ * Last modified on   $Date: 2007-05-30 14:08:31 $
  *               by   $Author: sowen70 $
  * Created on 22-Mar-2006
  *****************************************************************/
@@ -40,7 +40,8 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
 /**
  * An event to indicates a failure within a Nested Workflow
- * @author sowen
+ * 
+ * @author Stuart Owen
  *
  */
 

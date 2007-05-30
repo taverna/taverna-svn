@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: NestedWorkflowCompletionEvent.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-09-14 14:06:47 $
- *               by   $Author: dturi $
+ * Last modified on   $Date: 2007-05-30 14:08:31 $
+ *               by   $Author: sowen70 $
  * Created on 22-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.enactor.event;
@@ -40,6 +40,14 @@ import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
+/**
+ * An event fired when a WorkflowTask has finished its execution.
+ * 
+ * IMPORTANT: If a listener is using this event to inspect the contained nested workflow instance, its imperitive this gets used within the same thread, since it is soon destroyed once the event is consumed.
+ * 
+ * @author Stuart Owen
+ *
+ */
 public class NestedWorkflowCompletionEvent extends WorkflowInstanceEvent {
 	private WorkflowInstance nestedWorkflowInstance = null;
 	

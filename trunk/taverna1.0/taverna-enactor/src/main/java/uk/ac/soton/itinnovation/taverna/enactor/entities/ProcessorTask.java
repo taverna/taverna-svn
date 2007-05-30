@@ -23,9 +23,9 @@
 //Created for Project :   MYGRID
 //Dependencies        :
 
-//Last commit info    :   $Author: stain $
-//$Date: 2006-11-06 17:01:02 $
-//$Revision: 1.7 $
+//Last commit info    :   $Author: sowen70 $
+//$Date: 2007-05-30 14:08:31 $
+//$Revision: 1.8 $
 
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -280,6 +280,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 						.fireEvent(new NestedWorkflowFailureEvent(
 								workflowInstance, activeProcessor, ex,
 								inputMap, nestedWorkflow));
+				if (nestedWorkflow!=null) nestedWorkflow.destroy();
 			}
 			DISPATCHER.fireEvent(new ProcessFailureEvent(
 					workflowInstance, activeProcessor, ex, inputMap));
@@ -317,6 +318,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 						false, inputMap, outputMap, activeProcessor,
 						workflowInstance, nestedWorkflow);
 				DISPATCHER.fireEvent(event);
+				if (nestedWorkflow!=null) nestedWorkflow.destroy();
 			} else {
 				DISPATCHER.fireEvent(new ProcessCompletionEvent(
 						false, inputMap, outputMap, activeProcessor,
@@ -909,7 +911,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 					true, inputSet, outputMap, activeProcessor,
 					workflowInstance, nestedWorkflow);
 			DISPATCHER.fireEvent(completionEvent);
-
+			if (nestedWorkflow!=null) nestedWorkflow.destroy();
 		}
 		ProcessCompletionEvent completionEvent = new ProcessCompletionEvent(
 				true, inputSet, singleResultMap, activeProcessor,
