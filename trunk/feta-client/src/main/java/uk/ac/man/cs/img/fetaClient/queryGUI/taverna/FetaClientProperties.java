@@ -24,37 +24,92 @@
  ***/
 package uk.ac.man.cs.img.fetaClient.queryGUI.taverna;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
+import net.sf.taverna.tools.AbstractConfiguration;
 import net.sf.taverna.utils.MyGridConfiguration;
 
-public class FetaClientProperties {
+import org.apache.log4j.Logger;
 
-	private final static String FETACLIENT_PROPERTIES = "fetaClient.properties";
+public class FetaClientProperties extends AbstractConfiguration {
 	
-	private static Properties fetaProperties;
+	private static Logger logger = Logger.getLogger(FetaClientProperties.class);
 
-	public static synchronized Properties getProperties() throws IOException {
-		if (fetaProperties == null) {
-			fetaProperties =
-				MyGridConfiguration.getProperties(FETACLIENT_PROPERTIES, 
-					FetaClientProperties.class.getClassLoader());
-		}
-		return fetaProperties;
+	private static FetaClientProperties instance = null;
+	
+	private FetaClientProperties() {
+		super();
 	}
+	
+	public static FetaClientProperties getInstance() {
+		if (instance==null) instance=new FetaClientProperties();
+		return instance;
+	}
+	
+	private final static String FETACLIENT_PROPERTIES = "fetaClient.properties";
 
+	private InputStream getResourceInputStream() {
+		InputStream stream = FetaClientProperties.class.getResourceAsStream("/"+FETACLIENT_PROPERTIES);
+		return stream;
+	}
+	/**
+	 * Copies the bundled properties from the jar file to the users $taverna.home/conf/fetaClient.properties.
+	 */
+	private void writeFromResource() throws IOException {
+		InputStream inStream = getResourceInputStream();
+		
+		File userConf = MyGridConfiguration.getUserDir("conf");
+		File propertiesOutput = new File(userConf,FETACLIENT_PROPERTIES);
+		OutputStream outStream = new FileOutputStream(propertiesOutput);
+		int len = 0;
+		byte [] buffer = new byte[255];
+		
+		while ((len = inStream.read(buffer))!=-1) {
+			outStream.write(buffer,0,len);
+		}
+		
+		outStream.close();
+		inStream.close();
+	}
+	
 	public static boolean isAnnotator() throws IOException {
-		return getProperties().getProperty("annotator") != null;
+		return getInstance().getProperties().getProperty("annotator") != null;
 	}
 
 	public static String getPropertyValue(String propertyName,
 			String defaultValue) throws IOException {
-		return getProperties().getProperty(propertyName, defaultValue);
+		return getInstance().getProperties().getProperty(propertyName, defaultValue);
 	}
 
 	public static String getPropertyValue(String propertyName)
 			throws IOException {
-		return getProperties().getProperty(propertyName);
+		return getInstance().getProperties().getProperty(propertyName);
+	}
+
+	@Override
+	protected String getConfigurationFilename() {
+		return FETACLIENT_PROPERTIES;
+	}
+
+	@Override
+	protected InputStream getInputStream() {
+		InputStream result = super.getInputStream();
+		if (result==null) {
+			try {
+				writeFromResource();
+				result=super.getInputStream();
+			}
+			catch(IOException e) {
+				logger.error("There was an error writing out the bundled properties to the users home. Will use the bundled properties but they are not user editable.");
+			}
+		}
+		if (result==null) result = getResourceInputStream();
+		
+		return result;
 	}
 } 

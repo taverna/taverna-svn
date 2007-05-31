@@ -105,6 +105,6 @@ public class OntologyAnchors {
 	}
 
 	public Properties getProperties() throws java.io.IOException {
-		return FetaClientProperties.getProperties();
+		return FetaClientProperties.getInstance().getProperties();
 	}
 }
