@@ -10,7 +10,7 @@ package uk.ac.man.cs.img.fetaEngine;
  * 
  * @author penpecip
  */
-public class TestUtil {
+public abstract class TestUtil {
 
 	/** Creates a new instance of TestUtil */
 	public TestUtil() {
