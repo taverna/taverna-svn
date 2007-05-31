@@ -101,6 +101,7 @@ public class FetaClientProperties extends AbstractConfiguration {
 		InputStream result = super.getInputStream();
 		if (result==null) {
 			try {
+				logger.warn("Extracting bundled properties. If this is the fist time Feta has been used this is normal.");
 				writeFromResource();
 				result=super.getInputStream();
 			}
@@ -111,5 +112,15 @@ public class FetaClientProperties extends AbstractConfiguration {
 		if (result==null) result = getResourceInputStream();
 		
 		return result;
+	}
+
+	@Override
+	protected void errorLog(String msg, Throwable e) {
+		if (e!=null) {
+			logger.error(msg,e);
+		}
+		else {
+			logger.error(msg);
+		}
 	}
 } 
