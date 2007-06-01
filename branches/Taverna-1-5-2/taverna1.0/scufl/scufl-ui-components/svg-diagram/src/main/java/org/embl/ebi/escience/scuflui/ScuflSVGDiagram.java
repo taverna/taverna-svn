@@ -227,7 +227,7 @@ public class ScuflSVGDiagram extends JComponent implements
 			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
 					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
 		} catch (Exception other) {
-			logger.warn("Could not update graphics");
+			logger.warn("Could not update graphics", other);
 		}
 		updateTimer = new Timer();
 		updateTimer.schedule(new UpdateTimer(), 0, 1000);
