@@ -596,7 +596,10 @@ public class ScuflModel implements Serializable {
 					return;
 				}
 				notifyThread.loop = false;
-				notifyThread.notifyAll();
+				// FIXME: Might be better to synchronize and do notifyAll(); as this
+				// could interrupt inside receiveModelEvent() - for instance in
+				// Jena as in TAV-151
+				notifyThread.interrupt();					
 				notifyThread = null;
 				return;
 			} else {
