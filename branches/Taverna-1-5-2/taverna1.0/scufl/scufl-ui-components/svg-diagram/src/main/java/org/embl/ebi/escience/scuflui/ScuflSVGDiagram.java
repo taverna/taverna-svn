@@ -79,6 +79,8 @@ public class ScuflSVGDiagram extends JComponent implements
 	JSVGScrollPane pane;
 
 	Timer updateTimer = null;
+	
+	private boolean updating = false;
 
 	ComponentListener resizeListener = new ComponentListener() {
 		public void componentHidden(ComponentEvent e) {}
@@ -92,10 +94,10 @@ public class ScuflSVGDiagram extends JComponent implements
 	};
 
 	public String getDot() {
-		return dot.getDot();
+		return getDotView().getDot();
 	}
 
-	public DotView getDotView() {
+	public synchronized DotView getDotView() {
 		return dot;
 	}
 
@@ -218,19 +220,32 @@ public class ScuflSVGDiagram extends JComponent implements
 		graphicValid = false;
 	}
 
-	public synchronized void updateGraphic() {
-		updateTimer.cancel();
-		try {
-			svgCanvas.setSVGDocument(getSVG(getDot()));
-			pane.revalidate();
-		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(ScuflSVGDiagram.this, ioe
-					.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
-		} catch (Exception other) {
-			logger.warn("Could not update graphics", other);
+	public void updateGraphic() {
+		synchronized (this) {
+			if (updating) {
+				return;
+			}
+			updating = true;
 		}
-		updateTimer = new Timer();
-		updateTimer.schedule(new UpdateTimer(), 0, 1000);
+		try {
+			updateTimer.cancel();
+			try {
+				svgCanvas.setSVGDocument(getSVG(getDot()));
+				pane.revalidate();
+			} catch (IOException ioe) {
+				JOptionPane.showMessageDialog(ScuflSVGDiagram.this,
+					ioe.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE);
+			} catch (Exception other) {
+				logger.warn("Could not update graphics", other);
+			}
+			// FIXME: Need to synchronized updateTimer modifications with attach/detachFromModel()
+			updateTimer = new Timer();
+			updateTimer.schedule(new UpdateTimer(), 0, 1000);
+		} finally {
+			synchronized (this) {
+				updating = false;
+			}
+		}
 	}
 
 	public static SVGDocument getSVG(String dotText) throws IOException {
