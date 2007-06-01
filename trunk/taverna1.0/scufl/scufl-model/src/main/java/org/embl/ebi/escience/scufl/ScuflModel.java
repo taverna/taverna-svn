@@ -80,18 +80,23 @@ public class ScuflModel implements Serializable {
 	boolean offline = false;
 
 	/**
-	 * The active model listeners for this model
+	 * The active model listeners for this model. Always synchronize(listeners).
 	 */
 	List<ScuflModelEventListener> listeners;
 
 	/**
-	 * Events pending to be processed by the notify thread
-	 * 
+	 * Events pending to be processed by the notify thread. Always synchronize(pendingEvents).
 	 */
 	List<ScuflModelEvent> pendingEvents;
 
 	/**
-	 * Thread that processes events and pass them on to the listeners
+	 * Thread that processes events and pass them on to the listeners. Started
+	 * by {@link #addListener(ScuflModelEventListener)} and stopped by
+	 * {@link #removeListener(ScuflModelEventListener)} and
+	 * {@link #removeListeners()} if there are no more listeners.
+	 * <p>
+	 * notifyThread will be <code>null</code> if it is not running. Access to
+	 * modify this variable must be synchronized on {@link #listeners}
 	 */
 	NotifyThread notifyThread;
 
@@ -101,20 +106,19 @@ public class ScuflModel implements Serializable {
 	public boolean isFiringEvents = true;
 
 	public ScuflModel() {
-		// The event processing system (listeners/pendingEvents/notifyThread) 
-		// lives throughout the lifetime of the ScuflModel. 		
-		listeners = Collections
-				.synchronizedList(new ArrayList<ScuflModelEventListener>());
+		// The event processing system (listeners/pendingEvents/notifyThread)
+		// lives throughout the lifetime of the ScuflModel.
+		listeners = new ArrayList<ScuflModelEventListener>();
 		pendingEvents = new ArrayList<ScuflModelEvent>();
 		initialize();
 	}
-	
+
 	protected void finalize() throws Throwable {
 		removeListeners();
 	}
 
-	public ScuflModel clone() throws CloneNotSupportedException {		
-		Document xscufl = XScuflView.getDocument(this);		
+	public ScuflModel clone() throws CloneNotSupportedException {
+		Document xscufl = XScuflView.getDocument(this);
 		ScuflModel newModel = new ScuflModel();
 		try {
 			XScuflParser.populate(xscufl, newModel, null);
@@ -125,11 +129,8 @@ public class ScuflModel implements Serializable {
 		return newModel;
 	}
 
-
-	
 	/**
 	 * Initialize all members, used by constructor and clear()
-	 * 
 	 */
 	void initialize() {
 		setLogLevel(0);
@@ -142,7 +143,7 @@ public class ScuflModel implements Serializable {
 		}
 		dataconstraints = new ArrayList<DataConstraint>();
 		constraints = new ArrayList<ConcurrencyConstraint>();
-		description = new WorkflowDescription();		
+		description = new WorkflowDescription();
 	}
 
 	@Override
@@ -154,15 +155,15 @@ public class ScuflModel implements Serializable {
 			return super.toString();
 		}
 	}
-	
+
 	/**
 	 * Clear the model, retaining any existing listeners but removing all model
 	 * data. Restarts the notify thread.
 	 */
 	public void clear() {
-		initialize();		
+		initialize();
 		fireModelEvent(new ScuflModelEvent(this,
-				"Reset model to initial state."));		
+			"Reset model to initial state."));
 	}
 
 	/**
@@ -178,19 +179,20 @@ public class ScuflModel implements Serializable {
 	 * network. Use offline mode to load a workflow with network problems.
 	 */
 	public synchronized void setOffline(boolean goOffline)
-	throws SetOnlineException {
+		throws SetOnlineException {
 		if (goOffline == this.offline) {
 			return;
-		}				
+		}
 		boolean originalEventStatus = this.isFiringEvents;
 		try {
 			this.offline = goOffline;
 			if (!this.offline) {
-				// We'll disable event statuses while we do lots of resets and stuff
-				setEventStatus(false);			
+				// We'll disable event statuses while we do lots of resets and
+				// stuff
+				setEventStatus(false);
 				// Interesting case where the workflow was loaded offline
-				// but is now in online mode again...							
-				Document xscufl = XScuflView.getDocument(this);				
+				// but is now in online mode again...
+				Document xscufl = XScuflView.getDocument(this);
 				// Now have the XML form which should be identical whether
 				// loaded online or not. Can now reinstate the model
 				// with the XML form, processor loaders will be aware of
@@ -208,14 +210,14 @@ public class ScuflModel implements Serializable {
 					} catch (Exception e) {
 						logger.fatal(e);
 					}
-					SetOnlineException soe = new SetOnlineException(
-					"Unable to go online.");
+					SetOnlineException soe =
+						new SetOnlineException("Unable to go online.");
 					soe.initCause(ex);
 					logger.error("Unable to go online");
-					
+
 					throw soe;
 				}
-				
+
 			}
 			// Iterate over all the processors and kick the appropriate method
 			for (Processor processor : getProcessors()) {
@@ -225,14 +227,14 @@ public class ScuflModel implements Serializable {
 					processor.setOnline();
 				}
 			}
-		} finally {			
+		} finally {
 			setEventStatus(originalEventStatus);
-		}		
+		}
 		// Throw a minor model event to give a hint to the UI that
 		// the model online status has been changed.
 		fireModelEvent(new ScuflModelEvent(this, "Offline status change"));
 	}
-
+	
 	public int getLogLevel() {
 		return logLevel;
 	}
@@ -251,25 +253,9 @@ public class ScuflModel implements Serializable {
 		}
 		this.description = description;
 	}
-	
-	/**
-	 * Removes all listeners, and in effect terminates the NotifyThread
-	 *
-	 */
-	public void removeListeners() {
-		synchronized(listeners) {
-			listeners.clear();
-			terminateNotifyThread();
-		}
-	}
 
-	private void terminateNotifyThread() {
-		if (notifyThread!=null) {
-			this.notifyThread.loop=false;
-			this.notifyThread.interrupt();
-			this.notifyThread=null;
-		}
-	}
+
+
 
 	/**
 	 * Get the next valid name based on the specified arbitrary string that
@@ -303,44 +289,6 @@ public class ScuflModel implements Serializable {
 			} catch (UnknownProcessorException upe) {
 				return name;
 			}
-		}
-	}
-
-	/**
-	 * Set the event reporting state, useful if you know you're going to be
-	 * generating a large number of model events that actually reflect only a
-	 * single change. Setting the event status to true will also fire a new
-	 * model event, as this is normally only used where there have been events
-	 * that were previously masked.
-	 */
-	public void setEventStatus(boolean reportEvents) {
-		if (reportEvents == this.isFiringEvents) {
-			return;
-		}
-		this.isFiringEvents = reportEvents;
-		if (this.isFiringEvents) {
-			fireModelEvent(new ScuflModelEvent(this,
-					"Event reporting re-enabled, forcing update",
-					ScuflModelEvent.LOAD));
-		}
-	}
-
-	/**
-	 * Handle a ScuflModelEvent from one of our children or self, only send an
-	 * event notification if the isFiringEvents is set to true.
-	 */
-	public void fireModelEvent(ScuflModelEvent event) {		
-		if (!isFiringEvents) {
-			return;
-		}		
-		if (!listeners.isEmpty()) {
-			synchronized (pendingEvents) {
-				pendingEvents.add(event);
-			}
-			// Poke the thread so it can process some
-	        synchronized (notifyThread) {            
-	            notifyThread.notify();
-	        }
 		}
 	}
 
@@ -457,13 +405,13 @@ public class ScuflModel implements Serializable {
 				return;
 			}
 		}
-		
-		//if processor is ScuflWorkflowProcessor (Nested workflows) then tell
-		//the interal model to remove all listeners to it.
+
+		// if processor is ScuflWorkflowProcessor (Nested workflows) then tell
+		// the interal model to remove all listeners to it.
 		if (processor instanceof ScuflWorkflowProcessor) {
-			((ScuflWorkflowProcessor)processor).removeInternalModelEventListener();
+			((ScuflWorkflowProcessor) processor).removeInternalModelEventListener();
 		}
-		
+
 		// Iterate over all the data constraints, remove any that
 		// refer to this processor.
 		HashSet<Object> removed = new HashSet<Object>();
@@ -477,13 +425,14 @@ public class ScuflModel implements Serializable {
 		}
 		for (ConcurrencyConstraint cc : getConcurrencyConstraints()) {
 			if (processor == cc.getTargetProcessor()
-					|| processor == cc.getControllingProcessor()) {
+				|| processor == cc.getControllingProcessor()) {
 				removed.add(cc);
 				constraints.remove(cc);
 			}
 		}
-		String message = "Removed " + ScuflModelEvent.getClassName(processor)
-				+ " " + processor.getName() + ", and edges " + removed;
+		String message =
+			"Removed " + ScuflModelEvent.getClassName(processor) + " "
+				+ processor.getName() + ", and edges " + removed;
 		removed.add(processor);
 
 		fireModelEvent(new ScuflModelRemoveEvent(this, removed, message));
@@ -518,7 +467,7 @@ public class ScuflModel implements Serializable {
 	 * Remove a concurrency constraint from the model
 	 */
 	public void destroyConcurrencyConstraint(
-			ConcurrencyConstraint the_constraint) {
+		ConcurrencyConstraint the_constraint) {
 		if (constraints.remove(the_constraint)) {
 			fireModelEvent(new ScuflModelRemoveEvent(this, the_constraint));
 		}
@@ -536,43 +485,138 @@ public class ScuflModel implements Serializable {
 	 * Return an array of data constraints defined within this workflow model
 	 */
 	public DataConstraint[] getDataConstraints() {
-		DataConstraint[] result = dataconstraints
-				.toArray(new DataConstraint[0]);
+		DataConstraint[] result =
+			dataconstraints.toArray(new DataConstraint[0]);
 		Arrays.sort(result);
 		return result;
 	}
 
 	/**
-	 * Add a new ScuflModelEventListener to the listener list.
+	 * Set the event reporting state, useful if you know you're going to be
+	 * generating a large number of model events that actually reflect only a
+	 * single change. Setting the event status to true will also fire a new
+	 * model event, as this is normally only used where there have been events
+	 * that were previously masked.
 	 */
-	public synchronized void addListener(ScuflModelEventListener listener) {
-        if (listener == null) {
-            throw new NullPointerException("Attempt to add null listener");
-        }
-        if (!listeners.contains(listener)) {
-	        listeners.add(listener);
-	        if (notifyThread==null) {
-	        	notifyThread = new NotifyThread(pendingEvents, listeners);
-	        }		
-        }
+	public void setEventStatus(boolean reportEvents) {
+		synchronized (this) {
+			if (reportEvents == this.isFiringEvents) {
+				return;
+			}
+			this.isFiringEvents = reportEvents;
+			if (!this.isFiringEvents) {
+				return;
+			}
+		}
+		fireModelEvent(new ScuflModelEvent(this,
+			"Event reporting re-enabled, forcing update", ScuflModelEvent.LOAD));
+	}
+	
+	/**
+	 * Handle a ScuflModelEvent from one of our children or self, only send an
+	 * event notification if the isFiringEvents is set to true.
+	 */
+	public void fireModelEvent(ScuflModelEvent event) {
+		synchronized (this) {
+			if (!isFiringEvents) {
+				return;
+			}
+		}
+		synchronized (listeners) {
+			if (listeners.isEmpty()) {
+				return;
+			}
+		}
+		synchronized (pendingEvents) {
+			pendingEvents.add(event);
+		}
+		// Poke the thread so it can process some
+		synchronized (listeners) {
+			if (notifyThread == null) {
+				return;
+			}
+			synchronized (notifyThread) {
+				notifyThread.notify();
+			}
+		}
+	}
+
+
+
+	/**
+	 * Add a new ScuflModelEventListener to the listener list. Start the
+	 * NotifyThread if needed.
+	 */
+	public void addListener(ScuflModelEventListener listener) {
+		if (listener == null) {
+			throw new NullPointerException("Attempt to add null listener");
+		}
+		synchronized (listeners) {
+			if (!listeners.contains(listener)) {
+				listeners.add(listener);
+			}
+		}
+		checkNotifyThread();
 	}
 
 	/**
-	 * Remove a ScuflModelEventListener from the listener list.
+	 * Remove a ScuflModelEventListener from the listener list. Stop the
+	 * NotifyThread if needed.
 	 */
 	public void removeListener(ScuflModelEventListener listener) {
-		listeners.remove(listener);		
-		if (listeners.isEmpty()) {
-			terminateNotifyThread();
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
+		checkNotifyThread();
+	}
+	
+	/**
+	 * Remove all listeners, and in effect terminate the NotifyThread
+	 */
+	public void removeListeners() {
+		synchronized (listeners) {
+			listeners.clear();
+		}
+		checkNotifyThread();
+	}
+	
+	/**
+	 * Start or stop the notify thread if needed. If there are no registered
+	 * listeners, but the notifyThread is running, then it is stopped. If there
+	 * are registered listeners, but the notifyThread is stopped, then it is
+	 * started.
+	 * <p>
+	 * The method fully synchronizes on #listeners and on <code>this</code>.
+	 */
+	private void checkNotifyThread() {
+		synchronized (listeners) {
+			if (listeners.isEmpty()) {
+				// Make sure thread is stopped
+				if (notifyThread == null) {
+					return;
+				}
+				notifyThread.loop = false;
+				notifyThread.notifyAll();
+				notifyThread = null;
+				return;
+			} else {
+				// Make sure thread is started
+				if (notifyThread != null) {
+					return;
+				}
+				notifyThread = new NotifyThread(pendingEvents, listeners);
+			}
 		}
 	}
 
 	/**
-	 * Get an array of ScuflMovelEventListener implementors registered with this
-	 * ScuflModel.
+	 * Get an array copy of ScuflMovelEventListener implementors registered with
+	 * this ScuflModel.
 	 */
 	public ScuflModelEventListener[] getListeners() {
-		return listeners.toArray(new ScuflModelEventListener[0]);
+		synchronized (listeners) {
+			return listeners.toArray(new ScuflModelEventListener[0]);
+		}
 	}
 
 	/**
@@ -582,12 +626,12 @@ public class ScuflModel implements Serializable {
 	 * name in either the internal sink or internal source processor.
 	 */
 	public Port locatePort(String port_specifier)
-			throws UnknownProcessorException, UnknownPortException,
-			MalformedNameException {
+		throws UnknownProcessorException, UnknownPortException,
+		MalformedNameException {
 		String[] parts = port_specifier.split(":");
 		if (parts.length < 1 || parts.length > 2) {
 			throw new MalformedNameException(
-					"You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
+				"You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
 		} else if (parts.length == 2) {
 			// Should be a reference to an externally visible processor
 			// port combination.
@@ -609,16 +653,16 @@ public class ScuflModel implements Serializable {
 			}
 		}
 		throw new MalformedNameException("Couldn't resolve port name '"
-				+ port_specifier + "'.");
+			+ port_specifier + "'.");
 	}
 
 	Port locatePortOrCreate(String port_specifier, boolean isInputPort)
-			throws UnknownProcessorException, UnknownPortException,
-			MalformedNameException {
+		throws UnknownProcessorException, UnknownPortException,
+		MalformedNameException {
 		String[] parts = port_specifier.split(":");
 		if (parts.length < 1 || parts.length > 2) {
 			throw new MalformedNameException(
-					"You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
+				"You must supply a name of the form [PROCESSOR]:[PORT] to the locate operation");
 		} else if (parts.length == 2) {
 			// Should be a reference to an externally visible processor
 			// port combination.
@@ -638,21 +682,21 @@ public class ScuflModel implements Serializable {
 			return sources.locatePort(port_name);
 		}
 		throw new MalformedNameException("Couldn't resolve port name '"
-				+ port_specifier + "'.");
+			+ port_specifier + "'.");
 	}
 
 	/**
 	 * Locate a named processor
 	 */
 	public Processor locateProcessor(String processor_name)
-			throws UnknownProcessorException {
+		throws UnknownProcessorException {
 		for (Processor p : getProcessors()) {
 			if (p.getName().equalsIgnoreCase(processor_name)) {
 				return p;
 			}
 		}
 		throw new UnknownProcessorException(
-				"Unable to locate processor with name '" + processor_name + "'");
+			"Unable to locate processor with name '" + processor_name + "'");
 	}
 
 	/**
@@ -670,7 +714,7 @@ public class ScuflModel implements Serializable {
  */
 class InternalSourcePortHolder extends Processor {
 	protected InternalSourcePortHolder(ScuflModel model)
-			throws DuplicateProcessorNameException, ProcessorCreationException {
+		throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SOURCEPORTS");
 	}
 
@@ -683,10 +727,10 @@ class InternalSourcePortHolder extends Processor {
  * A Processor subclass to hold ports for the overall workflow outputs, these
  * ports are therefore held as input ports, acting as they do as data sinks.
  */
-class InternalSinkPortHolder extends Processor {	
+class InternalSinkPortHolder extends Processor {
 
 	protected InternalSinkPortHolder(ScuflModel model)
-			throws DuplicateProcessorNameException, ProcessorCreationException {
+		throws DuplicateProcessorNameException, ProcessorCreationException {
 		super(model, "SCUFL_INTERNAL_SINKPORTS");
 	}
 
@@ -702,7 +746,7 @@ class InternalSinkPortHolder extends Processor {
 class NotifyThread extends Thread {
 	private static Logger logger = Logger.getLogger(NotifyThread.class);
 
-	// Set to false when the thread is to stop. Call .interrupt()
+	// Set to false when the thread is to stop. Call .notify()
 	// or wait max_sleep miliseconds
 	public boolean loop;
 
@@ -715,7 +759,7 @@ class NotifyThread extends Thread {
 	List<ScuflModelEventListener> listeners;
 
 	protected NotifyThread(List<ScuflModelEvent> pendingEvents,
-			List<ScuflModelEventListener> listeners) {
+		List<ScuflModelEventListener> listeners) {
 		super("ScuflModelNotifyThread");
 		// We'll keep references to the events and listeners, but not the
 		// ScuflModel. That way, its destructor has a chance to stop us.
@@ -726,16 +770,20 @@ class NotifyThread extends Thread {
 		this.start();
 	}
 
-	public void run() {			
+	public void run() {
 		while (loop) {
 			// Are there any pending events?
-			if (pendingEvents.isEmpty()) {
+			boolean noEvents;
+			synchronized (pendingEvents) {
+				noEvents = pendingEvents.isEmpty();
+			}
+			if (noEvents) {
 				try {
-                    synchronized (this) {                        
-                        this.wait(max_sleep);
-                    }
+					synchronized (this) {
+						this.wait(max_sleep);
+					}
 				} catch (InterruptedException e) {
-					// Awake again!
+					logger.warn("", e);
 				}
 				// Re-loop, might be loop==false
 				continue;
@@ -749,13 +797,17 @@ class NotifyThread extends Thread {
 			for (ScuflModelEvent event : events) {
 				logger.debug("Processing event " + event);
 				// Copy the listeners as well to avoid iterator failing
-				for (ScuflModelEventListener l : new ArrayList<ScuflModelEventListener>(
-						listeners)) {
+				ScuflModelEventListener[] listenersCopy;
+				synchronized (listeners) {
+					listenersCopy =
+						listeners.toArray(new ScuflModelEventListener[0]);
+				}
+				for (ScuflModelEventListener l : listenersCopy) {
 					try {
 						l.receiveModelEvent(event);
 					} catch (Throwable ex) {
 						logger.error("Could not notify " + l + " of event "
-								+ event, ex);
+							+ event, ex);
 					}
 				}
 			}
