@@ -589,17 +589,23 @@ public class ScuflModel implements Serializable {
 	 * The method fully synchronizes on #listeners and on <code>this</code>.
 	 */
 	private void checkNotifyThread() {
+		// FIXME: Should wait 5 seconds before doing this as it often happens:
+		//DEBUG 2007-06-01 14:49:58,941 org.embl.ebi.escience.scufl.ScuflModel (ScuflModel:614) Started notify thread Thread[ScuflModelNotifyThread,6,main]
+		//DEBUG 2007-06-01 14:49:59,352 org.embl.ebi.escience.scufl.ScuflModel (ScuflModel:598) Stopping notify thread Thread[ScuflModelNotifyThread,6,main]
 		synchronized (listeners) {
 			if (listeners.isEmpty()) {
 				// Make sure thread is stopped
 				if (notifyThread == null) {
 					return;
 				}
+				logger.debug("Stopping notify thread " + notifyThread);
 				notifyThread.loop = false;
-				// FIXME: Might be better to synchronize and do notifyAll(); as this
-				// could interrupt inside receiveModelEvent() - for instance in
-				// Jena as in TAV-151
-				notifyThread.interrupt();					
+				synchronized(notifyThread) {
+					notifyThread.notifyAll();
+					// FIXME: instead of .interrupt(), which could interrupt
+					// inside receiveModelEvent() - for instance in Jena as in
+					// TAV-151
+				}
 				notifyThread = null;
 				return;
 			} else {
@@ -608,6 +614,7 @@ public class ScuflModel implements Serializable {
 					return;
 				}
 				notifyThread = new NotifyThread(pendingEvents, listeners);
+				logger.debug("Started notify thread " + notifyThread);
 			}
 		}
 	}
@@ -786,7 +793,7 @@ class NotifyThread extends Thread {
 						this.wait(max_sleep);
 					}
 				} catch (InterruptedException e) {
-					logger.warn("", e);
+					logger.warn("Interrupted in-flight", e);
 				}
 				// Re-loop, might be loop==false
 				continue;
