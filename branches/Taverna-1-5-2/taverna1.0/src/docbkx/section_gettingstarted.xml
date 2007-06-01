@@ -92,50 +92,38 @@ java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
       <title>Proxy configuration</title>
 
       <para>If you are behind an HTTP proxy, and there's a reasonable chance
-      that you are, you'll need to modify the start-up script that starts
-      Taverna – either runme.bat or runme.sh depending upon your platform.
-      (Previously this was done by modifying mygrid.properties but because of
-      the way Taverna now starts up, this information is necessary before the
-      mygrid.properties is available). The properties http.proxyHost and
-      http.proxyPort need to be set to the hostname, or IP address, and port.
-      These are then added to the list of ARGS. There is also the additional
-      property http.nonProxyHosts which if set lists hosts for which the proxy
-      is not used, separated by a ‘|’. This should follow the existing setting
-      up of ARGS and precede the final java call to invoke the
-      taverna-bootstrap, so that your settings do not get overwritten. For
-      Windows the end of the runme.bat would now look something like:</para>
+      that you are, you'll need to modify the <link
+      linkend="mygrid.properties">mygrid.properties</link>. The properties
+      http.proxyHost and http.proxyPort need to be set to the hostname, or IP
+      address, and port. These are then added to the list of ARGS. There is
+      also the additional property http.nonProxyHosts which if set lists hosts
+      for which the proxy is not used, separated by a ‘|’. This should follow
+      the existing setting up of ARGS and precede the final java call to
+      invoke the taverna-bootstrap, so that your settings do not get
+      overwritten. By default these properties are commented out, to make them
+      active uncomment them and assign them to an appropriate value, for
+      example:</para>
 
-      <screen>set ARGS=%ARGS% -Dhttp.proxyHost=myproxy.com
-set ARGS=%ARGS% -Dhttp.proxyPort=1234
-set ARGS=%ARGS% "-Dhttp.nonProxyHosts=localhost|127.0.0.1|*.mydomain.com"
+      <screen>http.proxyHost=myproxy.com
+http.proxyPort=1234
+http.nonProxyHosts=localhost|127.0.0.1|*.mydomain.com
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
-
-      <para>and for Linux, the runme.sh would end with:</para>
-
-      <screen>ARGS="$ARGS –Dhttp.proxyHost=myproxy.com"
-ARGS="$ARGS –Dhttp.proxyPort=1234"
-ARGS="$ARGS –Dhttp.nonProxyHosts= localhost|127.0.0.1|*.mydomain.com"
-
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
+http.proxyUser = elvis
+http.proxyPassword = theking</screen>
     </section>
 
-    <section>
+    <section id="mygrid.properties">
       <title>The mygrid.properties file</title>
 
-      <para>Most other configurations can be accomplished by modifying the
-      mygrid.properties file which is generated when Taverna first runs. This
-      file exists in the Taverna configuration directory, which is located at
-      C:\Documents and Settings\&lt;You&gt;\Application Data\Taverna\conf on
-      windows and $HOME/.taverna/repository on Linux. Default values are shown
-      as double-commented out. To change a value, remove these comments and
-      modify the value. To comment out a value, precede it with a single
-      comment. For example a default value, and overridden default value, and
-      a removed property in that order are declared as:</para>
-
-      <screen>## taverna.property=value   
-taverna.property=value  
-# taverna.property=value (removed property)</screen>
+      <para>Many setttings can be modifed by editing the mygrid.properties
+      file. Generally this file is found in the conf directory of the unpacked
+      Taverna download. Optionally, you can override this file with the
+      presence of a user specific mygrid.properties. In windows this would be
+      Documents and Setttings\&lt;user&gt;\Application Data\Taverna-1.5.2\, in
+      Linux $HOME/.taverna-1.5.2/, and on the Mac $HOME/Library/Application
+      Support/Taverna-1.5.2/. This is useful when Taverna is deployed within a
+      multi-user environment, allowing each user to customise their individual
+      settings.</para>
     </section>
 
     <section>
