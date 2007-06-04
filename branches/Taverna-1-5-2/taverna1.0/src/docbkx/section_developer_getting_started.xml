@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<section id="getting_started">
+<section id="developer_getting_started">
   <title>Getting started.</title>
 
   <section id="mailing_lists">
@@ -56,8 +56,8 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
     online.</ulink></para>
   </section>
 
-  <section>
-    <title id="building_taverna">Building Taverna with Maven.</title>
+  <section id="building_taverna">
+    <title>Building Taverna with Maven.</title>
 
     <para><ulink url="http://maven.apache.org">Maven</ulink>, version 2.0.4,
     is a pre-requisite to building Taverna, as of course is Java, but

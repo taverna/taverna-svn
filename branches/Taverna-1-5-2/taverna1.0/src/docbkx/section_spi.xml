@@ -9,7 +9,7 @@
   url="http://jakarta.apache.org/commons/discovery/">Apache Commons
   Discovery</ulink> libraries to discover SPI's.</para>
 
-  <section>
+  <section id="available_spi">
     <title>Available SPI's.</title>
 
     <para>Below is a list of the interfaces that can be used to add extensions
@@ -169,7 +169,7 @@
     </tip>
   </section>
 
-  <section>
+  <section id="declaring_spi">
     <title>Declaring your SPI.</title>
 
     <para>Writing your code to extend an SPI is not all that is required for
