@@ -2,7 +2,7 @@
 <chapter>
   <title>Administrator's Guide</title>
 
-  <section>
+  <section id="admin_overview">
     <title>Overview</title>
 
     <para>This chapter describes how Taverna can be configured in a multi-user
@@ -15,7 +15,7 @@
     update manager settings etc this chapter is not required.</para>
   </section>
 
-  <section>
+  <section id="admin_taverna_loads">
     <title>What happens when Taverna loads?</title>
 
     <para>Taverna from version 1.5 onwards uses a plugin and code manager
@@ -235,7 +235,7 @@ raven.splashscreen.timeout = 10</literallayout></para>
     </orderedlist>
   </section>
 
-  <section>
+  <section id="raven_config">
     <title>Runtime configuration of Raven within the Workbench</title>
 
     <para>The <property>raven.properties</property> file also contains
@@ -258,7 +258,7 @@ raven.pluginsite.1=http://www.mygrid.org.uk/taverna/updates/1.5/plugins/,
 raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
   </section>
 
-  <section>
+  <section id="admin_mygrid_properties">
     <title>Copying of mygrid.properties to user profile</title>
 
     <para>Previous versions of Taverna (prior to 1.5) shipped with a
@@ -285,7 +285,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
     definitely not!</para>
   </section>
 
-  <section>
+  <section id="admin_svg_test">
     <title>Test for SVG support...</title>
 
     <para><mediaobject>
