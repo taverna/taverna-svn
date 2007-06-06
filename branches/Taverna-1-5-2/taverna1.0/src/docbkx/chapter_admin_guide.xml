@@ -58,16 +58,17 @@
       </listitem>
 
       <listitem>
-        <para>Intialise the <property>raven.properties</property>. If this
-        file exist in the <property>taverna.home/conf</property> then this is
-        used, otherwise it is used from
-        <property>taverna.startup/conf</property>. These properties are used
-        for various Raven specific settings.</para>
+        <para>Intialise the <filename>raven.properties</filename>. If this
+        file exist in the
+        <property>taverna.home</property><filename>/conf</filename> then this
+        is used, otherwise it is used from
+        <property>taverna.startup</property><filename>/conf</filename>. These
+        properties are used for various Raven specific settings.</para>
       </listitem>
 
       <listitem>
         <para>Configure the proxy settings. These are defined in
-        <property>mygrid.properties</property> as
+        <filename>mygrid.properties</filename> as
         <property>http.proxyHost</property>,
         <property>http.proxyPort</property>,
         <property>http.proxyUser</property>, and
@@ -76,8 +77,9 @@
         authentication mechism is set up.</para>
 
         <para>As with the raven.properties these are read from
-        <filename>taverna.home/conf</filename> if they exist, other
-        <filename>taverna.startup/conf.</filename></para>
+        <property>taverna.home</property><filename>/conf</filename> if they
+        exist, other
+        <property>taverna.startup</property><filename>/conf.</filename></para>
       </listitem>
 
       <listitem>
@@ -111,7 +113,7 @@ raven.repository.18 = http://www.mygrid.org.uk/maven/snapshot-repository/</liter
         <para>If a repository is identified by a <literal>file://</literal>
         URI the repository is treated as local and Raven is able to access
         artifacts in place rather than copy them to
-        <filename><replaceable>taverna.home</replaceable>/repository</filename></para>
+        <property>taverna.home</property><filename>/repository</filename></para>
 
         <para>If it exists the location
         <property>taverna.startup</property><filename>/repository</filename>
@@ -119,18 +121,19 @@ raven.repository.18 = http://www.mygrid.org.uk/maven/snapshot-repository/</liter
         with a repository as a complete package.</para>
 
         <para>In addition to this, a check is made if an old Taverna 1.5.1, or
-        Taverna 1.5.0 <filename>taverna.home/repository</filename> exists and
-        if so adds it, as a local repository, to the start of the list of
-        repositories. The reason for this is that many 3rd party artifacts are
-        common between the two versions, and sharing an existing repository
-        avoids duplication.</para>
+        Taverna 1.5.0
+        <property>taverna.home</property><filename>/repository</filename>
+        exists and if so adds it, as a local repository, to the start of the
+        list of repositories. The reason for this is that many 3rd party
+        artifacts are common between the two versions, and sharing an existing
+        repository avoids duplication.</para>
       </listitem>
 
       <listitem>
         <para>Raven determines where to cache jar files and metadata through a
         property <property>taverna.repository</property>. If this is undefined
         it uses
-        <filename><replaceable>taverna.home</replaceable>/repository</filename>.
+        <property>taverna.home</property><filename>/repository</filename>.
         Note that in the default configuration this results in jar files being
         downloaded to the user profile - this can easily swamp a large shared
         installation as there will be at least 30-40mb of files in a typical
@@ -143,7 +146,7 @@ raven.repository.18 = http://www.mygrid.org.uk/maven/snapshot-repository/</liter
 
       <listitem>
         <para>The bootstrap uses properties from the file located by
-        <property>raven.properties</property> to determine an artifact and
+        <filename>raven.properties</filename> to determine an artifact and
         classname specification for the version of Raven. In the default
         implementation this is as follows :</para>
 
@@ -190,7 +193,7 @@ raven.target.method = getInstance</literallayout></para>
         should define a URI to an absolute profile to use. This profile will
         be used immediately, and there will be no ability to update or switch
         between versions. In the presence of
-        <property><filename>taverna.startup</filename></property><filename>/conf/profile.xml</filename>
+        <property>taverna.startup</property><filename>/conf/profile.xml</filename>
         then <property>raven.profile</property> is set to this profile
         automatically.</para>
 
@@ -200,13 +203,13 @@ raven.target.method = getInstance</literallayout></para>
         which can change over time (prompting an update). Using the list of
         profiles also provides the ability to switch between versions. On
         first run, the lowest version profile is used, and stored in the file
-        <filename>taverna.home/conf/current-profile-1.5.2.xml</filename>. From
-        then on, this is the profile used when Taverna starts up. This current
-        profile is changed either by selecting to do an update, or by
+        <filename><property>taverna.home</property>/conf/current-profile-1.5.2.xml</filename>.
+        From then on, this is the profile used when Taverna starts up. This
+        current profile is changed either by selecting to do an update, or by
         switching to a specific versions.</para>
 
         <para>These properties are usually defined in
-        <property>raven.properties</property>.</para>
+        <filename>raven.properties</filename>.</para>
       </listitem>
 
       <listitem>
@@ -260,7 +263,7 @@ raven.splashscreen.timeout = 10</literallayout></para>
   <section id="raven_config">
     <title>Runtime configuration of Raven within the Workbench</title>
 
-    <para>The <property>raven.properties</property> file also contains
+    <para>The <filename>raven.properties</filename> file also contains
     configuration for the workbench plugin manager. Specifically it declares a
     location to go to for a list of available profiles (used by the
     <guimenu>select workbench version</guimenu> menu) as follows :</para>
@@ -334,13 +337,23 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
 
       <listitem>
         <para>Artifact repository locations are defined in
-        <filename>raven.properties</filename>, and in addition
+        <filename>raven.properties</filename> as
+        raven.repository.<replaceable>NUMBER</replaceable> and are checked in
+        numeric order. In addition
         <property>taverna.startup</property><filename>/repository</filename>
-        is used if it exists. Downloaded artifacts are stored in
-        <property>taverna.home</property><filename>/repository</filename> -
-        those found in <uri>file:/</uri> based repositories are not copied to
-        taverna.home/repository. An old 1.5.1 or 1.5.0 repository is shared if
-        it exists to avoid duplication.</para>
+        is added to the start of the list if it exists. An old 1.5.1 or 1.5.0
+        repository is also used if it exists to avoid duplication of common
+        artifacts.</para>
+      </listitem>
+
+      <listitem>
+        <para>When Taverna is first run, or after an update, artifacts the
+        require downloading are storing in
+        <property>taverna.home</property><filename>/repository</filename>.
+        This location can be modified by setting the property
+        <property>taverna.repository</property>. Artifacts found in a
+        <uri>file:/</uri> based repository are not copied but are used from
+        that location.</para>
       </listitem>
 
       <listitem>
@@ -367,5 +380,9 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
         linkend="installing_plugins">Installing Plugins</link>.</para>
       </listitem>
     </itemizedlist>
+
+    <para>More information about these and other properties can be found by
+    reading about <link linkend="useful_properties">Useful
+    properties</link>.</para>
   </section>
 </chapter>
