@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="user_gettings_started">
   <title>Getting started with Taverna</title>
 
   <para>This section will walk through the process of installing and
@@ -13,7 +13,7 @@
   2000, Windows XP), there may be some minor differences with other systems
   such as linux and Solaris although the basics should be identical.</para>
 
-  <section>
+  <section id="taverna_installation">
     <title>Installation</title>
 
     <para>Both Windows and Linux installations require a modern (version 1.5)
@@ -22,7 +22,7 @@
     more likely to already have this but should check - the procedure for Java
     installation on Linux is out of the bounds of this document.</para>
 
-    <section>
+    <section id="taverna_on_windows">
       <title>Windows</title>
 
       <para>On Windows machines installation should be extremely simple - open
@@ -36,7 +36,7 @@
       fail.</para>
     </section>
 
-    <section>
+    <section id="taverna_on_linux">
       <title>Linux</title>
 
       <para>Linux installation is very slightly more complex as you will have
@@ -57,22 +57,26 @@
     </section>
   </section>
 
-  <section>
-    <title id="configuration">Configuration</title>
+  <section id="taverna_configuration">
+    <title>Configuration</title>
 
-    <section>
+    <section id="taverna_artifact_repository">
       <title>Artefact repository location</title>
 
-      <para>As from version 1.5.0, when Taverna starts up it downloads all the
+      <para>When Taverna starts up it downloads all the
       dependencies it needs in order to run, together with any updates if
       requested, and optional plugins. By default, this location is on Windows
       &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository, on Linux $HOME/.taverna/repository and on the
-      Mac $HOME/Library/Application Support/Taverna/repository. This location
+      Data/Taverna/repository, on Linux $HOME/.taverna-1.5.2/repository and on the
+      Mac $HOME/Library/Application Support/Taverna-1.5.2/repository. This location
       can be changed by setting the property taverna.repository in the startup
       script. Be careful not to overwrite the existing other settings for ARGS
       by making sure you are appending your new setting. For windows this is
       the runme.bat and would be changed to end with:</para>
+      
+      <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
+      Data/Taverna/repository,$HOME/.taverna, or $HOME/Library/Application Support/Taverna-1.5.2/repository. If this repository exists when running Taverna 1.5.2 then
+      this repository is shared to prevent duplication of artifacts eating up disk space. Artifacts unique to Tavarna 1.5.2 are still stored in the new repsitory described previously.</para>
 
       <screen>set ARGS=%ARGS% -Dtaverna.repository=§j&lt;new location&gt; 
 
@@ -88,7 +92,7 @@ java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
 java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
     </section>
 
-    <section>
+    <section id="taverna_proxy_config">
       <title>Proxy configuration</title>
 
       <para>If you are behind an HTTP proxy, and there's a reasonable chance
@@ -126,7 +130,7 @@ http.proxyPassword = theking</screen>
       settings.</para>
     </section>
 
-    <section>
+    <section id="default_services">
       <title>Default services</title>
 
       <para>Taverna can be configured to automatically load libraries of
@@ -170,7 +174,7 @@ http.proxyPassword = theking</screen>
 </screen>
     </section>
 
-    <section>
+    <section id="image_types_and_error_4">
       <title>Image types and the mysterious 'Error 4'</title>
 
       <para>There are reports of some linux installations showing a mysterious
@@ -199,7 +203,7 @@ http.proxyPassword = theking</screen>
 #--------------------------------------------------------------------</screen>
     </section>
 
-    <section>
+    <section id="alternative_dot_location">
       <title>Setting an alternative location for the 'dot' tool</title>
 
       <para>If you are running Taverna without administrative privileges on a

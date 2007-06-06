@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="api_consumer">
   <title>API Consumer</title>
 
   <para>The API Consumer allows the selection of subsets of Java APIs which
@@ -11,7 +11,7 @@
   which Taverna imports - it is this file that you can distribute alongside or
   within your API to 'Taverna enable' it.</para>
 
-  <section>
+  <section id="apic_prerequisites">
     <title>Prerequisites</title>
 
     <para>The API Consumer is a Java Doclet and uses Ant to launch, you must
@@ -22,7 +22,7 @@
     with no unpleasant side effects.</para>
   </section>
 
-  <section>
+  <section id="apic_setup">
     <title>Setup</title>
 
     <para>Before running the API Consumer you need to place any target source
@@ -41,7 +41,7 @@
     javadoc warning messages in the console.</para>
   </section>
 
-  <section>
+  <section id="apic_usage">
     <title>Usage</title>
 
     <para>Once your source and any supporting files are present as described
@@ -85,7 +85,7 @@
     this box and hit return.</para>
   </section>
 
-  <section>
+  <section id="apic_adding_methods">
     <title>Adding methods to API definition</title>
 
     <para>The next step is to select methods to add to the API definition -
@@ -120,7 +120,7 @@
     selected.</para>
   </section>
 
-  <section>
+  <section id="apic_metadata">
     <title>API level metadata.</title>
 
     <para>To aid use of your exported API you can select the '<emphasis
@@ -138,7 +138,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="apic_api_definitions">
     <title>Saving the API definition file.</title>
 
     <para>To save the API definition select the '<emphasis

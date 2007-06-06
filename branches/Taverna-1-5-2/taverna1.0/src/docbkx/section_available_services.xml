@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="available_services">
   <title>Available services</title>
 
   <para>This component provides facilities to manage the various services
@@ -9,7 +9,7 @@
   libraries, create instances of a service in the form of a processor within
   the workflow, search services and other such functionality.</para>
 
-  <section>
+  <section id="service_panel_organisation">
     <title>Service panel organisation</title>
 
     <para>Services are shown in a hierarchical view. The exact semantics of
@@ -65,7 +65,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="services_adding_to_workflow">
     <title>Adding instances of a service to the workflow</title>
 
     <para>The primary function of the service panel is to allow users to
@@ -73,7 +73,7 @@
     accomplished either through drag and drop or through the context menus
     available by right clicking on the nodes in the service panel.</para>
 
-    <section>
+    <section id="services_drag_and_drop">
       <title>Creation using drag and drop</title>
 
       <para>Any node representing a service may be dragged from the service
@@ -96,7 +96,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="services_menu_options">
       <title>Creation using menu options</title>
 
       <para>As an alternative, new processors may be created by right clicking
@@ -126,7 +126,7 @@
       alternate to the selected pre-existing processor in the workflow.</para>
     </section>
 
-    <section>
+    <section id="services_discovering_for_processor">
       <title>Discovering the service for a given processor</title>
 
       <para>As processor names often do not correspond to the names of items
@@ -141,7 +141,7 @@
       services panel but for the majority of cases this approach works.</para>
     </section>
 
-    <section>
+    <section id="services_importing_workflow">
       <title>Importing a workflow from the service panel</title>
 
       <para>An additional option appears in the context menu when right-clicking on a workflow
@@ -168,7 +168,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="services_searching">
       <title>Searching over the service panel</title>
 
       <para>The service panel may be searched by regular expression. For
@@ -192,7 +192,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="services_descriptions">
       <title>Fetching service descriptions</title>
 
       <para>Some types of service support a level of self description.
@@ -218,13 +218,13 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="services_populating">
       <title>Populating the services panel</title>
 
       <para>The service panel may be populated with available services in
       several distinct ways:</para>
 
-      <section>
+      <section id="context_menu">
         <title>Context menu</title>
 
         <para>The context menu for the root node in the service panel labelled
@@ -341,7 +341,7 @@
         </itemizedlist>
       </section>
 
-      <section>
+      <section id="services_watch_loads">
         <title>'Watch Loads' option</title>
 
         <para>If the '<emphasis role="bold">Watch loads</emphasis>' checkbox
@@ -353,7 +353,7 @@
         then resetting it.</para>
       </section>
 
-      <section>
+      <section id="services_direct_invocation">
         <title>Direct service invocation</title>
 
         <para>Although most services are only useful when composed into
@@ -387,7 +387,7 @@
         main workflow from the workbench. </para>
       </section>
 
-      <section>
+      <section id="services_drag_and_drop2">
         <title>Drag and drop</title>
 
         <para>XScufl definitions or directories may be dragged onto the
@@ -410,12 +410,12 @@
         </screenshot>
       </section>
 
-      <section>
+      <section id="services_initial_services">
         <title>Default initial services</title>
 
         <para>The service panel can be preloaded with services by specifying
-        various defaults in the mygrid.properties file (see <link
-        linkend="configuration">configuration</link> section). Specifically,
+        various defaults in the mygrid.properties file (see the <link
+        linkend="default_services">default services</link> section). Specifically,
         the following service types can be preloaded into the service
         panel:</para>
 

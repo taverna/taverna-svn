@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="biomart_processor">
     <title>Biomart query integration</title>
 
     <para>The Biomart system (<ulink
@@ -18,7 +18,7 @@
     configured query over a single data set (although some dataset
     configurations allow links to a second dataset). </para>
 
-    <section>
+    <section id="describing_biomart_service">
       <title>Describing a Biomart service</title>
 
       <para>A new Biomart service is added to the services panel from the
@@ -54,7 +54,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="creating_biomart_query">
       <title>Creating a new Biomart query</title>
 
       <para>The query is created by dragging a dataset (shown in the panel
@@ -88,7 +88,7 @@
       attributes are outputs. </para>
     </section>
 
-    <section>
+    <section id="conf_biomart_filters">
       <title>Configuring filters</title>
 
       <para>Filters are critical to almost all queries. If no filter is
@@ -173,7 +173,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="biomart_param_filters">
       <title>Parameterised filters</title>
 
       <para>Some types of filters may manifest as inputs to the query
@@ -204,7 +204,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="biomart_dataset_filters">
       <title>Second dataset filters</title>
 
       <para>Some dataset configurations allow filters (but not attributes) to
@@ -238,7 +238,7 @@
       <para></para>
     </section>
 
-    <section>
+    <section id="conf_biomart_attributes">
       <title>Configuring attributes</title>
 
       <para>Attributes are configured by selecting the ' Attributes ' button
@@ -249,7 +249,7 @@
       selected from one page. Any attributes selected from an attribute page
       will be removed from the query when another page is selected. </para>
 
-      <section>
+      <section id="biomart_basic_attributes">
         <title>Basic attributes</title>
 
         <para>Selecting an attribute in one of the subpages states that the

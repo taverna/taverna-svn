@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter>
+<chapter id="admin_guide_chapter">
   <title>Administrator's Guide</title>
 
   <section id="admin_overview">
@@ -26,18 +26,17 @@
     the installation and configuration of Taverna is considerably more
     complex.</para>
 
-    <para>When a fresh Taverna installation is run for the first time after
-    being downloaded from one of our download mirrors the following things
-    happen, performed by the Bootstrap class in the taverna-launcher jar file
-    :</para>
+    <para>When a fresh Taverna 1.5.2 installation is run for the first time
+    after being downloaded from one of our download mirrors the following
+    things happen, performed by the Bootstrap class in the taverna-bootstrap
+    jar file :</para>
 
     <orderedlist>
       <listitem>
-        <para>Configure an authentication mechanism. This uses the system
-        properties<property>http.ProxyUser</property> and
-        <property>http.proxyPassword</property> to create a new Authenticator
-        to attempt to use password authentication on any HTTP proxy. If either
-        property is undefined this stage is skipped.</para>
+        <para>Determine the startup location, unless the system property
+        <property>taverna.startup</property> is already defined. This is the
+        location of the taverna-bootstrap jar file. Once determined it is
+        assigned to the <property>taverna.startup</property>.</para>
       </listitem>
 
       <listitem>
@@ -47,41 +46,38 @@
         system specific suffix added. In effect this means that the default on
         Windows platforms will be the <filename>Documents and
         Settings/<replaceable>USER</replaceable>/Application
-        Data/Taverna</filename>, on OSX
+        Data/Taverna-1.5.2</filename>, on OSX
         <filename><replaceable>USER</replaceable>/Library/Application
-        Support/.taverna</filename> and on linux or other UNIX-like platforms
-        <filename>~<replaceable>USER</replaceable>/.taverna</filename>.</para>
+        Support/.taverna-1.5.2</filename> and on linux or other UNIX-like
+        platforms
+        <filename>~<replaceable>USER</replaceable>/.taverna-1.5.2</filename>.</para>
 
         <para>If the application home directory defined above does not exist
-        then create it along with a <filename>conf</filename> subdirectory. If
-        the <property>taverna.home</property> property wasn't set then set it
-        to the absolute path of the <filename>.taverna</filename>
-        directory.</para>
+        then create it along with a <filename>conf</filename>
+        subdirectory.</para>
       </listitem>
 
       <listitem>
-        <para>Taverna checks for a property
-        <property>raven.properties</property>. If defined this is used as the
-        URL to fetch a properties file containing Raven configuration,
-        otherwise the default
-        <uri>http://www.mygrid.org.uk/taverna/updates/1.5/raven.properties</uri>
-        is used instead. A Properties object is initialized from the
-        properties file.</para>
+        <para>Intialise the <property>raven.properties</property>. If this
+        file exist in the <property>taverna.home/conf</property> then this is
+        used, otherwise it is used from
+        <property>taverna.startup/conf</property>. These properties are used
+        for various Raven specific settings.</para>
+      </listitem>
 
-        <para>A local copy of the properties file is saved as
-        <filename><replaceable>taverna.home</replaceable>/conf/raven-1.5.properties</filename>.
-        This file is written every time as far as I can see.</para>
+      <listitem>
+        <para>Configure the proxy settings. These are defined in
+        <property>mygrid.properties</property> as
+        <property>http.proxyHost</property>,
+        <property>http.proxyPort</property>,
+        <property>http.proxyUser</property>, and
+        <property>http.proxyPassword</property> and are transferred to being
+        System properties. If the user and password are defined then the
+        authentication mechism is set up.</para>
 
-        <para>If the fetch process fails for some reason the fallback
-        behaviour is to read this file if it exists. If the local copy hasn't
-        been written and the remote fetch fails the application will not start
-        and you should see an exception message "<literal>Unable to find raven
-        properties</literal>" in your console.</para>
-
-        <para>After the remote fetch or local load any system properties are
-        pushed onto the Properties object. This means that anything you set
-        with <literal>-Dproperty=value</literal> in the batch or shell scripts
-        will be visible from this stage onwards.</para>
+        <para>As with the raven.properties these are read from
+        <filename>taverna.home/conf</filename> if they exist, other
+        <filename>taverna.startup/conf.</filename></para>
       </listitem>
 
       <listitem>
@@ -90,17 +86,19 @@
         can download code artifacts. It searches for properties with names of
         the form
         <property>raven.repository.<replaceable>NUMBER</replaceable></property>
-        and interprets the value as a URL to the root of the repository. At
-        the time of writing the repositories in the default properties file
-        are :</para>
+        and interprets the value as a URI to the root of the repository. These
+        are defined in <filename>raven.properties</filename>, and at the time
+        of writing the repositories in the default properties file are
+        :</para>
 
-        <para><literallayout>raven.repository.11 = http://www.mygrid.org.uk/maven/repository/ 
-raven.repository.12 = http://www.mygrid.org.uk/maven/proxy/repository/ 
-raven.repository.13 = http://mirrors.sunsite.dk/maven2/ 
-raven.repository.14 = http://www.ibiblio.org/maven2/ 
-raven.repository.15 = http://mobycentral.icapture.ubc.ca/maven/ 
-raven.repository.16 = http://bioinf.ncl.ac.uk/mirror/maven/repository/ 
-raven.repository.17 = http://mirror.omii.ac.uk/maven/repository/</literallayout></para>
+        <para><literallayout>raven.repository.11 = http://www.mygrid.org.uk/maven/repository/
+raven.repository.12 = http://www.mygrid.org.uk/maven/proxy/repository/
+raven.repository.13 = http://mobycentral.icapture.ubc.ca/maven/
+raven.repository.14 = http://mirrors.sunsite.dk/maven2/
+raven.repository.15 = http://www.ibiblio.org/maven2/
+raven.repository.16 = http://bioinf.ncl.ac.uk/mirror/maven/repository/
+raven.repository.17 = http://mirror.omii.ac.uk/maven/repository/
+raven.repository.18 = http://www.mygrid.org.uk/maven/snapshot-repository/</literallayout></para>
 
         <para>The first sites contain the primary Taverna code, the
         ibiblio.org site contains almost everything else (and is the default
@@ -114,36 +112,18 @@ raven.repository.17 = http://mirror.omii.ac.uk/maven/repository/</literallayout>
         URI the repository is treated as local and Raven is able to access
         artifacts in place rather than copy them to
         <filename><replaceable>taverna.home</replaceable>/repository</filename></para>
-      </listitem>
 
-      <listitem>
-        <para>Raven attempts to initialize a profile. The profile is in some
-        ways the 'version' of Taverna in that it defines the set of code
-        artifacts to download, some of these are core components (such as the
-        workflow model) and some are optional (such as the processor types
-        e.g. BioMoby support).</para>
+        <para>If it exists the location
+        <property>taverna.startup</property><filename>/repository</filename>
+        is added as a repository. This is useful for bundling Taverna together
+        with a repository as a complete package.</para>
 
-        <para>The profile is located by the property
-        <property>raven.remoteprofile</property> interpreted as a URL to a
-        profile definition. In the default properties file this points to
-        <uri>http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5-profile.xml</uri>.</para>
-
-        <para>A local profile filename is constructed from the value of
-        <property>raven.remoteprofile</property> by appending the file part of
-        the URL to
-        <filename><replaceable>taverna.home</replaceable>/conf/</filename> so
-        in the default case this would be
-        <filename><replaceable>taverna.home</replaceable>/conf/taverna-1.5-profile.xml</filename>.
-        The system property <property>taverna.profile</property> is set to the
-        URL form of this filename.</para>
-
-        <para>If the local profile file doesn't already exist it is created by
-        copying the <filename>default-profile.xml</filename> file from the
-        bootstrap jar archive! One might expect it to be copied instead from
-        the profile location you've just given it. In fact what happens is the
-        default is used and the first time Taverna is run a 'profile update
-        available' appears which will then use the remote profile. This is
-        broken IMHO.</para>
+        <para>In addition to this, a check is made if an old Taverna 1.5.1, or
+        Taverna 1.5.0 <filename>taverna.home/repository</filename> exists and
+        if so adds it, as a local repository, to the start of the list of
+        repositories. The reason for this is that many 3rd party artifacts are
+        common between the two versions, and sharing an existing repository
+        avoids duplication.</para>
       </listitem>
 
       <listitem>
@@ -170,7 +150,7 @@ raven.repository.17 = http://mirror.omii.ac.uk/maven/repository/</literallayout>
         <para><literallayout># Repository artifact containing Raven loader (should not have any dependencies) 
 raven.loader.groupid = uk.org.mygrid.taverna.raven 
 raven.loader.artifactid = raven 
-raven.loader.version = 1.5.0 
+raven.loader.version = 1.5.2.0 
 # This static method will be called with lots of parameters 
 raven.loader.class = net.sf.taverna.raven.Loader 
 raven.loader.method = doRavenMagic</literallayout></para>
@@ -185,7 +165,7 @@ raven.loader.method = doRavenMagic</literallayout></para>
         <para><literallayout># Which target artifact to load and run (can have dependencies) 
 raven.target.groupid = uk.org.mygrid.taverna 
 raven.target.artifactid = taverna-workbench 
-raven.target.version = 1.5.0 
+raven.target.version = 1.5.2.0 
 # This static method will be called with no parameters, or 
 # if it accepts String[], commandline args will be passed 
 raven.target.class = org.embl.ebi.escience.scuflui.workbench.Workbench 
@@ -197,6 +177,36 @@ raven.target.method = getInstance</literallayout></para>
         and use the <literal>getInstance</literal> method on it to create a
         new workbench object. I'm not sure why we do this here rather than
         calling a <literal>main(String[...])</literal> method but hey.</para>
+      </listitem>
+
+      <listitem>
+        <para>The profile to use is determined. The profile is in some ways
+        the 'version' of Taverna in that it defines the set of code artifacts
+        to download, some of these are core components (such as the workflow
+        model) and some are optional (such as the processor types e.g. BioMoby
+        support).</para>
+
+        <para>If the property <property>raven.profile</property> is set, it
+        should define a URI to an absolute profile to use. This profile will
+        be used immediately, and there will be no ability to update or switch
+        between versions. In the presence of
+        <property><filename>taverna.startup</filename></property><filename>/conf/profile.xml</filename>
+        then <property>raven.profile</property> is set to this profile
+        automatically.</para>
+
+        <para>If no <property>raven.profile</property> is defined, then the
+        property <property>raven.profilelist</property> is used. This defines
+        a URI pointing to an xml document that describes a list of profiles,
+        which can change over time (prompting an update). Using the list of
+        profiles also provides the ability to switch between versions. On
+        first run, the lowest version profile is used, and stored in the file
+        <filename>taverna.home/conf/current-profile-1.5.2.xml</filename>. From
+        then on, this is the profile used when Taverna starts up. This current
+        profile is changed either by selecting to do an update, or by
+        switching to a specific versions.</para>
+
+        <para>These properties are usually defined in
+        <property>raven.properties</property>.</para>
       </listitem>
 
       <listitem>
@@ -232,6 +242,18 @@ raven.target.method = getInstance</literallayout></para>
 raven.splashscreen = true 
 raven.splashscreen.timeout = 10</literallayout></para>
       </listitem>
+
+      <listitem>
+        <para>Early in the workbench startup process, plugins are initialised.
+        Default plugins are defined in
+        <property>taverna.startup</property><filename>/plugins/plugins.xml</filename>.
+        User installed plugins are defined in
+        <property>taverna.home</property><filename>/plugins/plugins.xml</filename>.
+        If the same plugin exists in both location, the settings in
+        <property>taverna.home</property><filename>/plugins/plugins.xml</filename>
+        take precedence. A user can disable a default plugin, but cannot
+        uninstall it.</para>
+      </listitem>
     </orderedlist>
   </section>
 
@@ -243,8 +265,11 @@ raven.splashscreen.timeout = 10</literallayout></para>
     location to go to for a list of available profiles (used by the
     <guimenu>select workbench version</guimenu> menu) as follows :</para>
 
-    <para><literallayout>#raven.remoteprofiles points to an XML document describing all the available taverna profiles 
-raven.remoteprofiles=http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5-profiles.xml</literallayout></para>
+    <para><literallayout>#raven.profilelist points to an XML document describing all the available taverna profiles
+#a space seperated list of URLs can be provided, and the first one that can be connected to will be used - this facilitates the use of mirrors
+raven.profilelist=http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml /
+                  http://bioinf.ncl.ac.uk/mirror/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml /
+                  http://mirror.omii.ac.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml</literallayout></para>
 
     <para>...and a list of plugin sites used by the plugin manager (the value
     for the <property>raven.pluginsite.1</property> is all one line, split
@@ -252,47 +277,95 @@ raven.remoteprofiles=http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5-pr
 
     <para><literallayout># The default plugin update sites, with mirror sites seperated by commas 
 # the .name is optional and provides a name for the site 
-raven.pluginsite.1=http://www.mygrid.org.uk/taverna/updates/1.5/plugins/, 
-                   http://bioinf.ncl.ac.uk/mirror/taverna/updates/1.5/plugins/, 
-                   http://mirror.omii.ac.uk/taverna/updates/1.5/plugins/ 
+raven.pluginsite.1=http://www.mygrid.org.uk/taverna/updates/1.5.2/plugins/, 
+                   http://bioinf.ncl.ac.uk/mirror/taverna/updates/1.5.2/plugins/, 
+                   http://mirror.omii.ac.uk/taverna/updates/1.5.2/plugins/ 
 raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
+
+    <para>Also, as mentioned in <link linkend="admin_taverna_loads">What
+    happends when Taverna loads</link> , default plugins can be defined in
+    <property>taverna.startup</property><filename>/plugins/plugins.xml</filename>.</para>
+
+    <para>If you wish to use your own specific Raven profile rather than those
+    published by myGrid, you can do this by defining the
+    <property>raven.profile</property> property as a URI that points to your
+    profile XML document. The presence of this property forces this profile to
+    be used immediately.</para>
   </section>
 
   <section id="admin_mygrid_properties">
-    <title>Copying of mygrid.properties to user profile</title>
+    <title>Customising mygrid.properties (and raven.properties,
+    log4j.properties).</title>
 
-    <para>Previous versions of Taverna (prior to 1.5) shipped with a
-    <filename>conf/mygrid.properties</filename> file containing all
-    configuration data for the workbench. Subsequent to 1.5 this file has been
-    bundled inside the
-    <filename>taverna-core-<replaceable>version</replaceable>.jar</filename>
-    file and is copied into
-    <filename><replaceable>taverna.home</replaceable>/conf/mygrid.properties</filename>
-    when the workbench is first run.</para>
+    <para>By default the <filename>mygrid.properties</filename> shipped within
+    the Taverna download are used (i.e.
+    <property>taverna.startup</property><filename>/conf/mygrid.properties</filename>).
+    For most users this is sufficient. However, if Taverna is deployed in a
+    multi-user environment individual users may want to customise their own
+    <filename>mygrid.properties</filename> without affecting the settings of
+    other users.</para>
 
-    <para>The above behaviour is not that great, we really should have a
-    default system-wide conf directory from which such things are copied, I
-    know the logic is that we can distribute new default configurations with
-    new versions of the core classes but I think it's highly broken as it
-    stands.</para>
+    <para>The presence of a <filename>mygrid.properties</filename> in
+    <property>taverna.home</property><filename>/conf</filename> overrides the
+    <property>taverna.startup</property><filename>/conf/mygrid.properties</filename>.
+    So users can copy over the default mygrid.properties to this location and
+    customise them to their own individual needs.</para>
 
-    <para>There are also some 'properties.dist' files, are these to be used as
-    backups? When are they created?</para>
-
-    <para>The mygrid.properties file contains some internal logic (which could
-    sensibly be within the jar file) but also a lot of user-editable stuff
-    such as default services and diagram configuration. These should
-    definitely not!</para>
+    <para>This is also true for <filename>raven.properties</filename> and the
+    <filename>log4.properties</filename>.</para>
   </section>
 
-  <section id="admin_svg_test">
-    <title>Test for SVG support...</title>
+  <section id="admin_summary">
+    <title>Summary</title>
 
-    <para><mediaobject>
-        <imageobject>
-          <imagedata align="center" fileref="ConvertedEMBOSSTutorial.svg"
-                     format="SVG" scalefit="1" />
-        </imageobject>
-      </mediaobject></para>
+    <para>So to summarise, the key points to bear in mind if configuring a
+    custom installation are:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>The properties files, <filename>mygrid.properties</filename>,
+        <filename>raven.properties</filename> and
+        <filename>log4j.properties</filename> are read from
+        <property>taverna.startup</property><filename>/conf/</filename> unless
+        they exist in
+        <property>taverna.home</property><filename>/conf/</filename> in which
+        case these are used.</para>
+      </listitem>
+
+      <listitem>
+        <para>Artifact repository locations are defined in
+        <filename>raven.properties</filename>, and in addition
+        <property>taverna.startup</property><filename>/repository</filename>
+        is used if it exists. Downloaded artifacts are stored in
+        <property>taverna.home</property><filename>/repository</filename> -
+        those found in <uri>file:/</uri> based repositories are not copied to
+        taverna.home/repository. An old 1.5.1 or 1.5.0 repository is shared if
+        it exists to avoid duplication.</para>
+      </listitem>
+
+      <listitem>
+        <para>A specific profile can be forced by setting the property
+        <property>raven.profile</property>. An example profile can be found at
+        <ulink
+        url="???">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml</ulink>.
+        This profile will be used without prompting for an update.</para>
+      </listitem>
+
+      <listitem>
+        <para>A list of profiles can be customised and used by modifying the
+        <property>raven.profilelist</property> property. This points to an XMl
+        document that defines a list of profiles. Initially the lowest version
+        profile is used, and if a higher version exists then an update is
+        offered. An example of such an XML document can be found at <ulink
+        url="http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>Default plugins can be declared by the presence of
+        <property>taverna.startup</property><filename>/plugins/plugins.xml</filename>.
+        To find out more about this XMl document read the section about <link
+        linkend="installing_plugins">Installing Plugins</link>.</para>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>

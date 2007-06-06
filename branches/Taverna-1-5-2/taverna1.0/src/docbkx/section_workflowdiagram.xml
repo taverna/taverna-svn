@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="workflow_diagram">
   <title>Workflow diagram</title>
 
   <para>This component provides a read only configurable view of the workflow
@@ -16,7 +16,7 @@
   Graphic (SVG) representation along with the ability to display nested
   workflows inline in the main diagram.</para>
 
-  <section>
+  <section id="diagram_toolbar">
     <title>Toolbar</title>
 
     <para>The toolbar consists of two sets of items.</para>
@@ -57,7 +57,7 @@
       </listitem>
     </itemizedlist>
 
-    <section>
+    <section id="diagram_save">
       <title>Diagram Save Options</title>
 
       <para>All saved files will have the same layout, port display, alignment
@@ -77,7 +77,7 @@
     </section>
   </section>
 
-  <section>
+  <section id="diagram_config">
     <title>Diagram configuration</title>
 
     <para>The appearance of the diagram is controlled from the 'Configure
@@ -94,7 +94,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="diagram_show_types">
     <title>Show types</title>
 
     <para>This checkbox determines whether the diagram should include
@@ -138,7 +138,7 @@
     </para>
   </section>
 
-  <section>
+  <section id="diagram_expanding_nested">
     <title>Expanding nested workflows</title>
 
     <para>A nested workflow processor represents a workflow as a component
@@ -159,7 +159,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="diagram_boring">
     <title>Hide boring processors</title>
 
     <para>With large workflows the diagram displays can become unwieldy. One
@@ -184,7 +184,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="diagram_ports">
     <title>Port display section</title>
 
     <para>Diagram views can have one of five settings for port display. The
@@ -253,7 +253,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="diagram_alignment">
     <title>Alignment control</title>
 
     <para>The default alignment shows workflow inputs at the top of the
@@ -264,7 +264,7 @@
     menu.</para>
   </section>
 
-  <section>
+  <section id="diagram_navigation">
     <title>Image navigation, where the '<emphasis>Fit to window
     checkbox</emphasis>' gone?</title>
 
@@ -281,7 +281,7 @@
     used for the SVG result renderer. </para>
   </section>
 
-  <section>
+  <section id="diagram_processor_colours">
     <title>Processor colours</title>
 
     <para>Colour is used both in the diagram and explorer views to denote the

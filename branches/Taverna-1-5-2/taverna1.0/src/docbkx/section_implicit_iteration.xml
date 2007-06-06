@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="implicit_iteration">
   <title>Implicit iteration</title>
 
   <para>Iteration in this context is the repeated application of a process to
@@ -40,7 +40,7 @@
   single sequence the single sequence will be wrapped up in a single item
   list.</para>
 
-  <section>
+  <section id="implicit_iteration_multiple_inputs">
     <title>Implicit iteration over multiple inputs</title>
 
     <para>The behaviour in the above case should be self explanatory, however,

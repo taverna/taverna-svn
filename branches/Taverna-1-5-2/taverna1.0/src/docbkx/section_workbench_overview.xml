@@ -12,7 +12,7 @@
   personalised libraries of components previously discovered to be useful to a
   particular application.</para>
 
-  <section>
+  <section id="workbench_definitions">
     <title>Definitions</title>
 
     <para>Throughout this document various specialized terms will be used,
@@ -71,7 +71,7 @@
     </itemizedlist>
   </section>
 
-  <section>
+  <section id="workflow_benefits">
     <title>Benefits of workflow technology</title>
 
     <para>Taverna, as with all new technologies, has a certain 'activation

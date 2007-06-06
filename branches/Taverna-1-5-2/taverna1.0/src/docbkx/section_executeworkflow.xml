@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="executeworkflow">
   <title>Executing a workflow without the GUI</title>
 
   <para>There is a utility script called executeworkflow.sh or
@@ -42,7 +42,7 @@
   viewed using the dataviewer utility. This is used using the dataviewer
   script that can be found in the same location as executeworkflow.</para>
 
-  <example>
+  <example id="executeworkflow_example">
     <title>Executeworkflow examples</title>
 
     <para>executeworkflow myworkflow.xml</para>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="beanshell_processor">
     <title>Beanshell scripting</title>
 
     <para>There are often cases in workflow construction where the output of
@@ -32,7 +32,7 @@
     simplicity's sake assume that the titles are all fixed (although we could
     easily have the titles as parameters to the script).</para>
 
-    <section>
+    <section id="beanshell_instance">
       <title>Creating a new beanshell instance</title>
 
       <para>Create a new Beanshell processor by dragging the '<emphasis
@@ -51,7 +51,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="beanshell_inputs_outputs">
       <title>Defining inputs and outputs</title>
 
       <para>The first things to configure, after changing the name from the
@@ -98,7 +98,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="conf_beanshell">
       <title>Configuring the script</title>
 
       <para>Now the processor has the correct inputs and outputs the remaining
@@ -162,7 +162,7 @@
       changes to the script text back into the processor definition. </para>
     </section>
 
-    <section>
+    <section id="sharing_beanshell_scripts">
       <title>Sharing and reuse of scripts</title>
 
       <para>Because the Beanshell processor only exists as part of a workflow

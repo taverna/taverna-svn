@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-  <section>
+  <section id="breakpoints">
     <title>Breakpoints - debugging and steering workflow invocation</title>
 
     <para>It is often useful to be able to steer the execution of workflows.
@@ -13,7 +13,7 @@
     breakpoints at which execution will automatically pause or by manually
     pausing the entire workflow.</para>
 
-    <section>
+    <section id="breakpoints_summary">
       <title>Breakpoints</title>
 
       <para>Breakpoint is a term borrowed from debugging tools of software
@@ -105,7 +105,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="breakpoints_pause">
       <title>Global pause function</title>
 
       <para>An alternative way of pausing execution of workflow is by using
@@ -120,7 +120,7 @@
       of its execution (some may not).</para>
     </section>
 
-    <section>
+    <section id="breakpoints_intermediate_data">
       <title>Editing intermediate data</title>
 
       <para>As already mentioned at the description of breakpoints, it is
@@ -150,7 +150,7 @@
         </mediaobject>
       </screenshot>
 
-      <section>
+      <section id="breakpoints_lsids">
         <title>Effect on LSIDs</title>
 
         <para>As previously described in this documents about LSIDs, once they
@@ -165,7 +165,7 @@
       </section>
     </section>
 
-    <section>
+    <section id="breakpoints_cancelling">
       <title>Cancelling the workflow</title>
 
       <para>Workflow execution can also be cancelled. This can be done by

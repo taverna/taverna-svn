@@ -25,3 +25,19 @@ pre.programlisting {
     font-size: 10pt;
     white-space: pre;
 }
+
+pre.screen { 
+    background: #F0F0F0; 
+    border: 1px solid gray; 
+    padding: 2px; 
+    font-size: 10pt;
+    white-space: pre;
+}
+
+div.literallayout { 
+    background: #F0F0F0; 
+    border: 1px solid gray; 
+    padding: 2px; 
+    font-size: 11pt;
+
+}
