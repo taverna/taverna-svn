@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="enactor_panel">
   <title>Enactor launch panel</title>
 
   <para>The Enactor Launch Panel (ELP) allows the user to enter input data for
@@ -103,7 +103,7 @@
   clicking the '<emphasis role="bold">Run Workflow</emphasis>' button at the
   bottom right of the window.</para>
 
-  <section>
+  <section id="enactment_panel_status">
     <title>Enactment status panel</title>
 
     <para>The Enactment Status Panel (ESP) in the results view shows the
@@ -125,7 +125,7 @@
       </mediaobject>
     </screenshot>
 
-    <section>
+    <section id="enactment_status">
       <title>Enactment status</title>
 
       <para>This tab, which is active all the time during and after a workflow
@@ -146,7 +146,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="enactor_processor_states">
       <title>Processor states</title>
 
       <para>The Last event field shows the most recent state change of the
@@ -171,7 +171,7 @@
       of iterations that are expected and the index of the current one.</para>
     </section>
 
-    <section>
+    <section id="enactor_intermediate_results">
       <title>Inspecting intermediate results</title>
 
       <para>The second role of the status display is to allow the user to
@@ -189,7 +189,7 @@
       result browser in functionality.</para>
     </section>
 
-    <section>
+    <section id="enactor_results_browser">
       <title>Results browser</title>
 
       <para>The Results tab is activated once the workflow has completed. It
@@ -216,7 +216,7 @@
       may not be present, only outputs which contain results are displayed
       here.</para>
 
-      <section>
+      <section id="enactor_result_items">
         <title>Visualising individual result items</title>
 
         <para>To show an individual result the user selects it from the panel
@@ -225,7 +225,7 @@
         sequence alignment is shown in the example above.</para>
       </section>
 
-      <section>
+      <section id="enactor_result_collections">
         <title>Visualising result collections</title>
 
         <para>Some outputs will contain more than one result. In the example
@@ -248,7 +248,7 @@
         </screenshot>
       </section>
 
-      <section>
+      <section id="enactor_non_textual_outputs">
         <title>Non textual outputs</title>
 
         <para>Workflows may output binary data in various forms. Provided the
@@ -287,7 +287,7 @@
         </screenshot>
       </section>
 
-      <section>
+      <section id="enactor_selecting_renderer">
         <title>Selecting a renderer</title>
 
         <para>In some cases there may be multiple available renderers for the
@@ -308,7 +308,7 @@
           </mediaobject>
         </screenshot>
 
-        <section>
+        <section id="seqvista_sequence_renderer">
           <title>SeqVISTA sequence renderer</title>
 
           <para>By selecting the SeqVista renderer the user is then presented
@@ -333,7 +333,7 @@
           <emphasis>chemical/x-ppd</emphasis> MIME types.</para>
         </section>
 
-        <section>
+        <section id="jmol_renderer">
           <title>Jmol 3d structure renderer</title>
 
           <para>Another custom renderer, new from version 1.0 onwards, is one
@@ -381,13 +381,13 @@ wireframe on; colour cpk;
         </section>
       </section>
 
-      <section>
+      <section id="saving_results_to_disk">
         <title>Saving results to disk</title>
 
         <para>Results may be saved to disk either as single items or as entire
         result sets.</para>
 
-        <section>
+        <section id="saving_single_item">
           <title>Saving single items</title>
 
           <para>Single result items may be saved by right clicking on the item
@@ -404,7 +404,7 @@ wireframe on; colour cpk;
           </screenshot>
         </section>
 
-        <section>
+        <section id="saving_entire_results_xml">
           <title>Saving the entire result set as XML</title>
 
           <para>The '<emphasis role="bold">Save as XML</emphasis>' button
@@ -418,7 +418,7 @@ wireframe on; colour cpk;
           intended to be human readable!</para>
         </section>
 
-        <section>
+        <section id="saving_entire_results_file">
           <title>Saving the entire result set as a set of files</title>
 
           <para>The '<emphasis role="bold">Save to disk</emphasis>' button
@@ -474,7 +474,7 @@ wireframe on; colour cpk;
           their installation.</para>
         </section>
 
-        <section>
+        <section id="saving_results_excel">
           <title>Exporing results to Excel</title>
 
           <para>The 'Excel' button allows the export of all textual results up
@@ -505,7 +505,7 @@ wireframe on; colour cpk;
       </section>
     </section>
 
-    <section>
+    <section id="process_report">
       <title>Process report</title>
 
       <para>The 'Process report' tab provides a view on the process log for

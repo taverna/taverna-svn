@@ -4,7 +4,7 @@
 
   <toc></toc>
 
-  <section>
+  <section id="writing_plugins">
     <title>Writing the Plugin.</title>
 
     <para>We assume at this point you are know what your plugin is going to
@@ -88,8 +88,8 @@
       <para>Its important that when you define your Taverna dependencies you
       use artifact versions that are consistent with the version of Taverna
       you are wish to install your plugin into. If the version of Taverna is
-      1.5.1.x then you will want your artifact versions to be 1.5.1.x. In
-      general when moving between 3rd order versions most plugins will simply
+      1.5.2.x then you will want your artifact versions to be 1.5.2.x, though x itself doesn't need to match.
+      In general when moving between 3rd order versions most plugins will simply
       need their dependencies changing and the plugin rebuilding with minimal,
       if any, code changes. You should read the <link
       linkend="versioning">Taverna versioning section</link> for more detailed
@@ -97,10 +97,10 @@
     </important>
   </section>
 
-  <section>
+  <section id="publishing_plugins">
     <title>Publishing the Plugin.</title>
 
-    <section id="plugin_deploy">
+    <section id="deploying_plugins">
       <title>Deploying the Plugin artifact.</title>
 
       <para>To be able to install the plugin to Taverna, Taverna needs to be
@@ -218,7 +218,7 @@
 &lt;/plugin&gt;</screen>Although many are self explanatory, here is a
       description of all the elements:</para>
 
-      <table>
+      <table id="plugin_description_elements">
         <title>Plugin description elements.</title>
 
         <tgroup cols="2">
@@ -346,7 +346,7 @@
       </tip>
     </section>
 
-    <section>
+    <section id="installing_plugins">
       <title>Installing the Plugin.</title>
 
       <para>Now all thats required is to install your plugin into Taverna.
@@ -439,7 +439,7 @@
     <para>Once your changes have been made you will need to increment the
     version of your plugin artifact in the pom.xml for your artifact. Once
     this is done, you can deploy your artifact to your repository just as
-    decscribed previously in <link linkend="plugin_deploy">Deploying the
+    decscribed previously in <link linkend="deploying_plugins">Deploying the
     Plugin Artifact</link>. Once this is complete you then need to create a
     new copy of the xml description of your plugin, as explained in <link
     linkend="plugin_describing">Describing your plugin.</link>You should

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="running_taverna">
   <title>Running Taverna</title>
 
   <para>You should be able to run an installed Taverna system by invoking the
@@ -11,7 +11,7 @@
   section on configuration. If you have done this and the system still doesn't
   work please let us know via the mailing lists.</para>
 
-  <section>
+  <section id="enacting_a_workflow">
     <title>Enacting a predefined workflow</title>
 
     <para>As a first quick demonstration of Taverna you can load one of the
@@ -19,7 +19,7 @@
     presented with a file chooser dialog box, the exact appearance of which
     will be determined by your operating system. </para>
 
-    <section>
+    <section id="loading_a_workflow">
       <title>Loading a workflow</title>
 
       <para>Workflow examples are stored in the 'examples' subdirectory of
@@ -34,7 +34,7 @@
       details.</para>
     </section>
 
-    <section>
+    <section id="enacting_current_workflow">
       <title>Enacting the current workflow</title>
 
       <para>Aside from creating and editing, the most useful thing to be able
@@ -68,7 +68,7 @@
       you will jump into the results view.</para>
     </section>
 
-    <section>
+    <section id="browsing_results">
       <title>Browsing results</title>
 
       <para>This particular workflow has a single output called 'graphical',
@@ -96,12 +96,12 @@
     </section>
   </section>
 
-  <section>
+  <section id="very_simple_workflow">
     <title>Creating a (very) simple workflow</title>
 
     <para></para>
 
-    <section>
+    <section id="workflow_inputs_and_outputs">
       <title>Workflow inputs and outputs</title>
 
       <para>First things first - the workflow needs to have an input, in this
@@ -119,7 +119,7 @@
       output appear in the two windows.</para>
     </section>
 
-    <section>
+    <section id="single_sequence_fetch">
       <title>A single sequence fetch component</title>
 
       <para>Now that the workflow has an input and output it needs something
@@ -143,7 +143,7 @@
       the newly created process.</para>
     </section>
 
-    <section>
+    <section id="connecting_workflow_elements">
       <title>Connecting everything together</title>
 
       <para>You should see the workflow input, processor and workflow output
@@ -170,7 +170,7 @@
       completed workflow in the 'Workflow Diagram' window.</para>
     </section>
 
-    <section>
+    <section id="describing_the_input">
       <title>Describing the input</title>
 
       <para>You can add descriptive information to the workflow inputs - this
@@ -190,7 +190,7 @@
       default view of the workflow.</para>
     </section>
 
-    <section>
+    <section id="enacting_a_workflow2">
       <title>Enacting the workflow</title>
 
       <para>You should now be able to run the workflow just as in the previous

@@ -16,7 +16,7 @@
     them!</para>
   </caution>
 
-  <table>
+  <table id="useful_properties_table">
     <title>Useful Properties</title>
 
     <tgroup cols="3">

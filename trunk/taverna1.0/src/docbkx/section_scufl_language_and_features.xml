@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="scufl_language_wb_features">
   <title>Scufl language and Workbench features</title>
 
   <para><emphasis role="bold">SCUFL</emphasis> is an acronym standing for
@@ -18,5 +18,6 @@
   <xi:include href="section_soaplab.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_wsdl.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_breakpoints.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+  <xi:include href="section_executeworkflow.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
 
 </section>

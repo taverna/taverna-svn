@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="wsdl_processor">
   <title>WSDL processor</title>
 
   <para>Taverna's support for SOAP based web services has been enhanced. This
@@ -10,7 +10,7 @@
   XML format. This support covers Document/literal based services, and to a
   fair extent RPC/encoded based services.</para>
 
-  <section>
+  <section id="wsdl_scavenger">
     <title>WSDL scavenger</title>
 
     <para>As in previous versions of Taverna, web services are added to the
@@ -32,7 +32,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="wsdl_xml_splitters">
     <title>XML Splitters</title>
 
     <para>Once the WSDL has been added to the list of services, processors can
@@ -155,7 +155,7 @@
     </screenshot>
   </section>
 
-  <section>
+  <section id="wsdl_optional_elements">
     <title>Optional elements in return data</title>
 
     <para>Often, inner elements of complex type are optional and there is no
@@ -169,7 +169,7 @@
     the workflow from failing.</para>
   </section>
 
-  <section>
+  <section id="wsdl_cyclic_references">
     <title>Cyclic references</title>
 
     <para>A cyclic reference is a child element that contains elements that

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="ame">
   <title>Advanced Model Explorer</title>
 
   <para></para>
 
-  <section>
+  <section id="ame_entity_table">
     <title>Entity table</title>
 
     <para>The main section of the AME shows a tabular view of the entities
@@ -27,7 +27,7 @@
       </mediaobject>
     </screenshot>
 
-    <section>
+    <section id="ame_metadata">
       <title>Workflow metadata</title>
 
       <para>By selecting the name of the workflow at the top of the AME, a new
@@ -68,7 +68,7 @@
       selecting the <emphasis role="bold">'Workflow'</emphasis> tab.</para>
     </section>
 
-    <section>
+    <section id="ame_inputs_and_outputs">
       <title>Worfklow inputs and outputs</title>
 
       <para>The <emphasis role="bold">'Workflow inputs'</emphasis> and
@@ -136,7 +136,7 @@
       the return key, it then appears in the type list.</para>
     </section>
 
-    <section>
+    <section id="ame_mime_types">
       <title><emphasis>(Slight digression)</emphasis> - Interesting MIME types
       for Taverna</title>
 
@@ -178,7 +178,7 @@ chemical/x-mdl-molfile</screen>
       other understanding of zip files</para>
     </section>
 
-    <section>
+    <section id="ame_connecting_inputs">
       <title>Connecting workflow inputs to processors</title>
 
       <para>Workflow inputs may be linked to the inputs of processors within
@@ -205,7 +205,7 @@ chemical/x-mdl-molfile</screen>
       </screenshot>
     </section>
 
-    <section>
+    <section id="ame_processors">
       <title>Processors (Top level node)</title>
 
       <para>The processors in Taverna are the primary components of the
@@ -234,7 +234,7 @@ chemical/x-mdl-molfile</screen>
       description you'd need for a paper or poster is auto generated.</para>
     </section>
 
-    <section>
+    <section id="ame_processor_nodes">
       <title>Individual processor nodes</title>
 
       <para>Each processor in the workflow is represented by a processor node
@@ -277,7 +277,7 @@ chemical/x-mdl-molfile</screen>
       the standard AME view by selecting the <emphasis
       role="bold">'Workflow'</emphasis> tab.</para>
 
-      <section>
+      <section id="ame_new_processors">
         <title>Creating new processors</title>
 
         <para>Processors are instances of components available in the
@@ -285,7 +285,7 @@ chemical/x-mdl-molfile</screen>
         Available Services section for more information.</para>
       </section>
 
-      <section>
+      <section id="ame_connecting_processors">
         <title>Connecting processors</title>
 
         <para>The port nodes under each processor node are used to connect the
@@ -306,7 +306,7 @@ chemical/x-mdl-molfile</screen>
         </screenshot>
       </section>
 
-      <section>
+      <section id="ame_customising_processors">
         <title>Customising processors (where available)</title>
 
         <para>Some processor types may expose additional editors. For example,
@@ -330,7 +330,7 @@ chemical/x-mdl-molfile</screen>
         </screenshot>
       </section>
 
-      <section>
+      <section id="ame_temporal_constraints">
         <title>Defining Temporal Constraints</title>
 
         <para>It is sometimes required to prevent a processor running until
@@ -361,7 +361,7 @@ chemical/x-mdl-molfile</screen>
         </screenshot>
       </section>
 
-      <section>
+      <section id="ame_basic_fault_tolerance">
         <title>Basic fault tolerance</title>
 
         <para>Each processor in the workflow has its own settings for fault
@@ -453,7 +453,7 @@ chemical/x-mdl-molfile</screen>
         </screenshot>
       </section>
 
-      <section>
+      <section id="ame_alternate_processors">
         <title>Configuring alternate processors</title>
 
         <para>Once all retries have been used up without any successful
@@ -530,7 +530,7 @@ chemical/x-mdl-molfile</screen>
         </screenshot>
       </section>
 
-      <section>
+      <section id="ame_multithreading">
         <title>Configuring multithreading</title>
 
         <para>The 'Threads' property determines how many concurrent instances
@@ -583,7 +583,7 @@ chemical/x-mdl-molfile</screen>
       </section>
     </section>
 
-    <section>
+    <section id="ame_data_links">
       <title>Data link nodes</title>
 
       <para>Each data link (between workflow inputs, processors and workflow
@@ -610,7 +610,7 @@ chemical/x-mdl-molfile</screen>
       name of the output or input.</para>
     </section>
 
-    <section>
+    <section id="ame_control_links">
       <title>Control link nodes</title>
 
       <para>As with the data links these are primarily for information but

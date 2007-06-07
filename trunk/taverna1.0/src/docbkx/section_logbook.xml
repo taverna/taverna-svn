@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
-  <title>Taverna Log Book</title>
+<section id="logbook">
+  <title>Taverna LogBook</title>
 
   <para>The Taverna Log Book (formerly known as the Taverna Provenance Plugin)
   is a plugin for Taverna that allows users to automatically log their
@@ -143,4 +143,12 @@
   to add the process to the workflow or export the metadata to a file (as
   RDF). Selecting more than one process run allows to add all the selected
   processes to the workflow while maintaining the links.</para>
+
+  <section id="logbook_wiki">
+    <title>LogBook Wiki</title>
+
+    <para>Further information about LogBook can be found within the LogBook
+    Wiki page: <ulink
+    url="http://www.mygrid.org.uk/wiki/Mygrid/LogBook">http://www.mygrid.org.uk/wiki/Mygrid/LogBook</ulink></para>
+  </section>
 </section>

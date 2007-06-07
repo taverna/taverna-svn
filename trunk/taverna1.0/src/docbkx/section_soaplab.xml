@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="soaplab_processor">
     <title>Soaplab configuration</title>
 
     <para>Soaplab operations provide additional metadata and configuration
@@ -9,7 +9,7 @@
     version 1.1 of Taverna onwards and are accessed from the context menu on
     any Soaplab operation.</para>
 
-    <section>
+    <section id="soaplab_metadata">
       <title>Metadata display</title>
 
       <para>Soaplab services provide metadata describing the service and each
@@ -42,7 +42,7 @@
       </screenshot>
     </section>
 
-    <section>
+    <section id="soaplab_polling">
       <title>Polling</title>
 
       <para>Soaplab has the capability to run long running tasks in polling
