@@ -338,8 +338,8 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
       <listitem>
         <para>Artifact repository locations are defined in
         <filename>raven.properties</filename> as
-        raven.repository.<replaceable>NUMBER</replaceable> and are checked in
-        numeric order. In addition
+        <property>raven.repository.</property><replaceable>NUMBER</replaceable>
+        and are checked in numeric order. In addition
         <property>taverna.startup</property><filename>/repository</filename>
         is added to the start of the list if it exists. An old 1.5.1 or 1.5.0
         repository is also used if it exists to avoid duplication of common
@@ -347,8 +347,8 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
       </listitem>
 
       <listitem>
-        <para>When Taverna is first run, or after an update, artifacts the
-        require downloading are storing in
+        <para>When Taverna is first run, or after an update, artifacts that
+        require downloading are stored in
         <property>taverna.home</property><filename>/repository</filename>.
         This location can be modified by setting the property
         <property>taverna.repository</property>. Artifacts found in a
