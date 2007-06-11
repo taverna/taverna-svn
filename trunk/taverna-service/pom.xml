@@ -220,7 +220,7 @@
 		<module>taverna-interface</module>
 		<module>taverna-datastore</module>
 		<module>taverna-engine</module>
-		<module>taverna-wsdl</module>
+        <!--<module>taverna-wsdl</module>-->
 		<module>taverna-rest</module>
 		<module>taverna-rest-xmlbeans</module>
 		<module>taverna-rest-client</module>
