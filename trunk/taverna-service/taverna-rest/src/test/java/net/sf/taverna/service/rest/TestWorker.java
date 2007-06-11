@@ -4,11 +4,10 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Test;
 
 public class TestWorker extends ClientTest {
-	private static Logger logger = Logger.getLogger(TestWorker.class);
 	
 	@Before
 	public void makeWorker() {
@@ -20,6 +19,11 @@ public class TestWorker extends ClientTest {
 		username = worker.getUsername();
 		useruri = BASE_URL + "users/" + username;
 		daoFactory.commit();
+	}
+	
+	@Test
+	public void fish() {
+		// no-op
 	}
 	
 }
