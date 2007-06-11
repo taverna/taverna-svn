@@ -23,6 +23,7 @@
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest-xmlbeans/target/generated-sources/xmlbeans"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest-client/src/test/resources"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest-xmlbeans/target/classes"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest/src/main/resources"/>
 <property name="context-root" value="taverna-service"/>
 <property name="java-output-path" value="build/classes"/>
 </wb-module>
