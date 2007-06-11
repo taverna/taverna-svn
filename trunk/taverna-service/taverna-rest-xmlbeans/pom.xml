@@ -44,16 +44,24 @@
 				</executions>
 				<inherited>true</inherited>
 				<configuration>
+                    <!--
                     <outputJar>${basedir}/target/rest-xmlbeans-0.4.jar</outputJar>
+                    <debug>true</debug>
+                    <verbose>true</verbose>
+                    -->
+                    <xmlConfigs>
+                        <xmlConfig
+                            implementation="java.io.File">src/main/xsd/xsdconfig.xml</xmlConfig>
+                    </xmlConfigs>
+
+                    <!-- For some reason this doesn't work anymore, and
+                    we have to use schemaDirectory instead.. -->
 					<xsdJars>
 						<xsdJar implementation="java.lang.String">
 							uk.org.mygrid.tavernaservice:taverna-interface
 						</xsdJar>
 					</xsdJars>
-                    <xmlConfigs>
-                        <xmlConfig
-                            implementation="java.io.File">src/main/xsd/xsdconfig.xml</xmlConfig>
-                    </xmlConfigs>
+                    <schemaDirectory>../taverna-interface/src/main/resources</schemaDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
