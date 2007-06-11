@@ -20,8 +20,10 @@ import net.sf.taverna.service.test.TestDAO;
 import org.junit.Test;
 
 
-public class TestJobBean extends TestDAO  {
+public class TestJob extends TestDAO  {
 
+	public static final Status status = Status.RUNNING;
+	
 	public static String lastJob;
 	
 	@Test
@@ -42,7 +44,7 @@ public class TestJobBean extends TestDAO  {
     	Job job = new Job();
     	job.setWorkflow(w);
     	job.setOwner(user);
-    	job.setStatus(Status.RUNNING);    	
+    	job.setStatus(status);    	
     	job.setProgressReport("The progress report");
         jobDao.create(job);
         lastJob = job.getId();
@@ -60,7 +62,7 @@ public class TestJobBean extends TestDAO  {
     	Job fetchedJob = jobDao.read(lastJob);
         assertEquals("The progress report", fetchedJob.getProgressReport());
         assertEquals(workflow, fetchedJob.getWorkflow().getScufl());
-        assertEquals(Status.RUNNING, fetchedJob.getStatus());
+        assertEquals(status, fetchedJob.getStatus());
         assertEquals(lastJob, fetchedJob.getId());
         assertFalse(fetchedJob.getCreated().before(fetchedJob.getLastModified()));
 	}

@@ -31,6 +31,8 @@ public class UserResource extends AbstractUserResource {
 		super(context, request, response);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
+
+		System.out.println("Here comes " + request.getResourceRef());
 	}
 
 	class XML extends AbstractREST {

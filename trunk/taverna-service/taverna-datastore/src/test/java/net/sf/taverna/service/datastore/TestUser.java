@@ -14,7 +14,7 @@ import net.sf.taverna.service.test.TestDAO;
 
 import org.junit.Test;
 
-public class TestUserBean extends TestDAO {
+public class TestUser extends TestDAO {
 	private static String lastUser;
 	
 	

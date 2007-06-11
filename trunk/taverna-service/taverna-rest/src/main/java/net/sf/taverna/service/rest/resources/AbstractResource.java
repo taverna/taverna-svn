@@ -3,14 +3,19 @@ package net.sf.taverna.service.rest.resources;
 import java.util.Date;
 import java.util.Iterator;
 
+import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.OwnedResource;
+import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.UUIDResource;
 import net.sf.taverna.service.datastore.bean.User;
+import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.URItoDAO;
+import net.sf.taverna.service.xml.Data;
 
 import org.apache.log4j.Logger;
 import org.jdom.Namespace;
@@ -169,6 +174,9 @@ public abstract class AbstractResource extends RepresentationalResource {
 		User authUser =
 			(User) getContext().getAttributes().get(
 				UserGuard.AUTHENTICATED_USER);
+		if (authUser.isAdmin()) {
+			return true;
+		}
 		if (entity instanceof User) {
 			logger.info("Comparing " + entity + " with " + authUser);
 			// Users can access their own user
@@ -188,14 +196,47 @@ public abstract class AbstractResource extends RepresentationalResource {
 			return true;
 		}
 		logger.info("Comparing owner " + owned.getOwner() + " with " + authUser);
-		return (owned.getOwner().equals(authUser));
-		// TODO: Workers should be able to access things that are on their
-		// queues,
-		// in particular worker w should be able to access:
-		// /queue/Q if Q has worker w
-		// /job/J if J is in queue/Q
-		// /workflow/WF if WF is used by J
-		// /data/D if J has i/o to D
+		if (owned.getOwner().equals(authUser)) {
+			return true;
+		}
+		if (authUser instanceof Worker
+			&& isWorkerAuthorized((Worker) authUser, entity)) {
+			return true;
+		}
+		return false;
+
+	}
+
+	private boolean isWorkerAuthorized(Worker worker, UUIDResource entity) {
+		if (entity instanceof Queue) {
+			Queue queue = (Queue) entity;
+			return queue.getWorkers().contains(worker);
+		}
+		if (entity instanceof Job) {
+			Job job = (Job) entity;
+			if (worker.equals(job.getWorker())) {
+				return true;
+			}
+			// TODO: What about asking to become the worker of the job?
+		}
+		if (entity instanceof Workflow) {
+			for (Job job : worker.getJobs()) {
+				if (entity.equals(job.getWorkflow())) {
+					return true;
+				}
+			}
+		}
+		if (entity instanceof Data) {
+			for (Job job : worker.getJobs()) {
+				if (entity.equals(job.getInputs())) {
+					return true;
+				}
+				if (entity.equals(job.getOutputs())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

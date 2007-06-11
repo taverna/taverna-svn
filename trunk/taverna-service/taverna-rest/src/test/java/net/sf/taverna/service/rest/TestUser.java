@@ -37,9 +37,10 @@ public class TestUser extends ClientTest {
 		justCreated = null;
 		justUsername = null;
 	}
-	private static String justUsername;
-	private static final String justPassword = "blih1337blapp";
 
+	private static String justUsername;
+
+	private static final String justPassword = "blih1337blapp";
 
 	@Test
 	public synchronized void create() throws IOException {
@@ -49,10 +50,9 @@ public class TestUser extends ClientTest {
 		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
-				"  <username>" + justUsername + "</username>" +
-				"  <password>" + justPassword + "</password>" +
-				"</user>", restType);
+		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
+			+ "  <username>" + justUsername + "</username>" + "  <password>"
+			+ justPassword + "</password>" + "</user>", restType);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
 		justCreated = response.getRedirectRef();
@@ -72,8 +72,8 @@ public class TestUser extends ClientTest {
 		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
-				"</user>", restType);
+		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
+			+ "</user>", restType);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
 		Reference created = response.getRedirectRef();
@@ -83,10 +83,6 @@ public class TestUser extends ClientTest {
 		// And that we got a password back
 		assertTrue(response.getEntity().getText().length() > 8);
 	}
-	
-
-	
-	
 
 	@Test
 	public void readJustCreated() throws IOException, ParseException {
@@ -103,11 +99,12 @@ public class TestUser extends ClientTest {
 		assertFalse(response.getStatus().isSuccess());
 
 		ChallengeResponse challengeResponse =
-			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-				justUsername, justPassword);
+			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
+				justPassword);
 		request.setChallengeResponse(challengeResponse);
 		response = client.handle(request);
-		assertEquals("Request did not succeed", Status.SUCCESS_OK, response.getStatus());
+		assertEquals("Request did not succeed", Status.SUCCESS_OK,
+			response.getStatus());
 
 		String result = response.getEntity().getText();
 		// Should do text/plain as fallback
@@ -117,7 +114,6 @@ public class TestUser extends ClientTest {
 		assertFalse(result.contains("\nEmail:"));
 	}
 
-	
 	@Test
 	public void readJustCreatedXML() throws IOException, ParseException {
 		if (justCreated == null) {
@@ -135,11 +131,12 @@ public class TestUser extends ClientTest {
 		assertFalse(response.getStatus().isSuccess());
 
 		ChallengeResponse challengeResponse =
-			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-				justUsername, justPassword);
+			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
+				justPassword);
 		request.setChallengeResponse(challengeResponse);
 		response = client.handle(request);
-		assertEquals("Request did not succeed", Status.SUCCESS_OK, response.getStatus());
+		assertEquals("Request did not succeed", Status.SUCCESS_OK,
+			response.getStatus());
 
 		assertTrue(restType.includes(response.getEntity().getMediaType()));
 		Document userDoc = XMLUtils.parseXML(response.getEntity().getStream());
@@ -147,7 +144,7 @@ public class TestUser extends ClientTest {
 		assertEquals("user", userElement.getName());
 		assertEquals(TavernaService.NS, userElement.getNamespace().getURI());
 	}
-	
+
 	@Test
 	public void setEmail() throws IOException {
 		if (justCreated == null) {
@@ -159,18 +156,17 @@ public class TestUser extends ClientTest {
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.POST);
 		ChallengeResponse challengeResponse =
-			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
-				justUsername, justPassword);
+			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
+				justPassword);
 		request.setChallengeResponse(challengeResponse);
 		String email = "nobody@nowhere.org";
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>" +
-			"  <email>" + email + "</email>" +
-			"</user>", restType);
+		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
+			+ "  <email>" + email + "</email>" + "</user>", restType);
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
 		// Check that it was stored
-		request =  new Request();
+		request = new Request();
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
 		request.setChallengeResponse(challengeResponse);
@@ -180,5 +176,5 @@ public class TestUser extends ClientTest {
 		System.out.println(result);
 		assertTrue(result.contains("Email: " + email));
 	}
-	
+
 }

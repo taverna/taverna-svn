@@ -159,7 +159,7 @@ public class TavernaQueueListener extends QueueListener {
 				Map<String, DataThing> outputs = event.getWorkflowInstance().getOutput();
 				DataDoc outputDoc = new DataDoc();
 				outputDoc.setDataMap(outputs);
-				job.setOutputDoc(outputDoc);
+				job.setOutputs(outputDoc);
 				job.setStatus(Status.COMPLETE);
 				dataDocDao.create(outputDoc);
 				jobDao.update(job);

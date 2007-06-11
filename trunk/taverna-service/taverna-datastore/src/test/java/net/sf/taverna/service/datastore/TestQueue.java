@@ -22,9 +22,9 @@ public class TestQueue extends TestDAO {
 	final int JOBS=100;
 	
 	public Job makeJob() throws ParseException {
-		TestJobBean jobTest = new TestJobBean();
+		TestJob jobTest = new TestJob();
 		jobTest.createAndStore();
-		return daoFactory.getJobDAO().read(TestJobBean.lastJob);
+		return daoFactory.getJobDAO().read(TestJob.lastJob);
 	}
 
 	@Test

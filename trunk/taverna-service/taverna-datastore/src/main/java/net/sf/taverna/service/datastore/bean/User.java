@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,19 +16,19 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.hibernate.validator.NotNull;
 
 @Entity
-@Table(name="Users")
-@NamedQueries(value = { 
-	@NamedQuery(name = User.NAMED_QUERY_ALL, query = "SELECT u FROM User u ORDER BY u.created DESC"),
-	@NamedQuery(name = User.NAMED_QUERY_USER, query = "SELECT u FROM User u WHERE u.username=:username") }
-)
+@Table(name = "Users")
+@NamedQueries(value = {
+		@NamedQuery(name = User.NAMED_QUERY_ALL, query = "SELECT u FROM User u ORDER BY u.created DESC"),
+		@NamedQuery(name = User.NAMED_QUERY_USER, query = "SELECT u FROM User u WHERE u.username=:username") })
 public class User extends DatedResource {
-	
+
 	private static final int SALT_SIZE = 16;
 
 	private static final String UTF_8 = "UTF-8";
@@ -35,24 +36,29 @@ public class User extends DatedResource {
 	private static final String HASH = "SHA-1";
 
 	public static final String NAMED_QUERY_ALL = "allUsers";
-	
+
 	public static final String NAMED_QUERY_USER = "userByName";
-	
+
 	@NotNull
-	@Column(unique=true, nullable=false)
+	@Column(unique = true, nullable = false)
 	private String username;
 
 	private String email;
-	
+
 	@NotNull
 	private byte[] salt;
-	
+
 	@NotNull
 	private byte[] passwordHash;
 	
-	@OneToMany(mappedBy="owner")
-	private List<Job> jobs = new ArrayList<Job>();
+	private Date lastSeen = new Date();
 	
+
+
+	@OneToMany(mappedBy = "owner")
+	private List<Job> jobs = new ArrayList<Job>();
+
+
 	/**
 	 * Construct a user with a system generated (ie. UUID-based) username.
 	 *
@@ -61,7 +67,7 @@ public class User extends DatedResource {
 		super();
 		username = getId();
 	}
-	
+
 	/**
 	 * Construct a user with the given username.
 	 * 
@@ -71,8 +77,7 @@ public class User extends DatedResource {
 		super();
 		this.username = username;
 	}
-	
-	
+
 	public String getUsername() {
 		return username;
 	}
@@ -89,7 +94,7 @@ public class User extends DatedResource {
 		passwordHash = hash(password);
 		setLastModified();
 	}
-	
+
 	/**
 	 * Check if the given string is this users's password. The user's password
 	 * must have been set with {@link #setPassword(String)} first.
@@ -102,15 +107,16 @@ public class User extends DatedResource {
 		byte[] suggestedHash = hash(password);
 		return Arrays.equals(passwordHash, suggestedHash);
 	}
-	
+
 	@OneToMany()
 	@OrderBy("lastModified")
 	private Collection<Workflow> workflows = new ArrayList<Workflow>();
-	
+
+	private boolean admin = false;
+
 	public Collection<Workflow> getWorkflows() {
 		return workflows;
 	}
-	
 
 	/**
 	 * Generate a random salt. Each user normally has a unique salt, that is
@@ -124,16 +130,16 @@ public class User extends DatedResource {
 		random.nextBytes(salt);
 		return salt;
 	}
-	
+
 	/**
 	 * Generate a new, random password.
 	 * 
 	 * @return A semi-random string that can be used with {@link #setPassword(String)}
 	 */
-	public static String generatePassword() {	
+	public static String generatePassword() {
 		return UUID.randomUUID().toString();
 	}
-	
+
 	/**
 	 * Generate a hash based on this user's salt and the given password.
 	 * Uses the hashing algorithm {@value #HASH}.
@@ -150,7 +156,7 @@ public class User extends DatedResource {
 		}
 		if (salt != null) {
 			digest.update(salt);
-		}	
+		}
 		try {
 			digest.update(password.getBytes(UTF_8));
 		} catch (UnsupportedEncodingException e) {
@@ -169,9 +175,31 @@ public class User extends DatedResource {
 	}
 
 	public void setEmail(String email) {
-		if (! email.contains("@")) {
+		if (!email.contains("@")) {
 			throw new IllegalArgumentException("Invalid email address");
 		}
 		this.email = email;
-	}	
+	}
+
+	
+	public Date getLastSeen() {
+		return lastSeen;
+	}
+
+	public void setLastSeen() {
+		setLastSeen(new Date());
+	}
+	
+	public void setLastSeen(Date lastSeen) {
+		this.lastSeen = lastSeen;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;		
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+	
 }

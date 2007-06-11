@@ -1,14 +1,12 @@
 package net.sf.taverna.service.rest.client;
 
+import static org.junit.Assert.assertEquals;
 import net.sf.taverna.service.xml.StatusType;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestJobs extends ContextTest {
-	private static Logger logger = Logger.getLogger(TestJobs.class);
 	
 	WorkflowREST wf;
 

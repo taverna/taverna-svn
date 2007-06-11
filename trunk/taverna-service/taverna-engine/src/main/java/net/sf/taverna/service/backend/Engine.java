@@ -234,7 +234,7 @@ public class Engine implements TavernaService {
 
 	public String getResultDocument(String job_id) throws UnknownJobException {
     	Job job = getJob(job_id);
-    	String baclava = job.getOutputDoc().getBaclava();
+    	String baclava = job.getOutputs().getBaclava();
     	daoFactory.close();
 		return baclava;
 	}

@@ -20,6 +20,7 @@ public class TestWorkflows extends ContextTest {
 		// has different indentions and name spaces..
 		assertTrue(wf.getScufl().contains("ShapeAnimals"));
 		workflows = context.getUser().getWorkflows();
+		workflows.refresh();
 		WorkflowREST wf2 = workflows.getWorkflows().get(0);
 		assertEquals(wf, wf2);
 	}

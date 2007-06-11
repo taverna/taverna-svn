@@ -144,7 +144,7 @@ public class TavernaQueueTest extends EngineTest {
 		}
 		jobDao.refresh(job);
 		assertEquals(Status.COMPLETE, job.getStatus());
-		Map<String, DataThing> result = job.getOutputDoc().getDataMap();
+		Map<String, DataThing> result = job.getOutputs().getDataMap();
 		DataThing thing = result.get("Output");
 		assertEquals("[[square red cat, square greenrabbit], [circular red cat, circular greenrabbit], [triangularred cat, triangulargreenrabbit]]",
 			thing.getDataObject().toString());

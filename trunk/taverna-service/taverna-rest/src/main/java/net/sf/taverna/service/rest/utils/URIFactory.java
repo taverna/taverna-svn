@@ -6,8 +6,10 @@ import java.util.Map;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.OwnedResource;
+import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.UUIDResource;
 import net.sf.taverna.service.datastore.bean.User;
+import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.rest.RestApplication;
 
@@ -30,14 +32,18 @@ public class URIFactory {
 
 	private String root = "";
 
-	Map<Class<? extends UUIDResource>, String> resourceMap =
-		new HashMap<Class<? extends UUIDResource>, String>();
+	Map<Class<?>, String> resourceMap =
+		new HashMap<Class<?>, String>();
+
+	private String htmlRoot;
 
 	private URIFactory() {
 		resourceMap.put(Job.class, "/jobs");
 		resourceMap.put(Workflow.class, "/workflows");
 		resourceMap.put(DataDoc.class, "/data");
 		resourceMap.put(User.class, "/users");
+		resourceMap.put(Queue.class, "/queues");
+		resourceMap.put(Worker.class, "/workers");
 	}
 
 	public void setRoot(String root) {
@@ -48,8 +54,12 @@ public class URIFactory {
 		return root;
 	}
 
-	public String getMapping(Class<? extends UUIDResource> resourceClass) {
-		return resourceMap.get(resourceClass);
+	public String getMapping(Class<?> resourceClass) {
+		String mapping = resourceMap.get(resourceClass);
+		if (mapping == null && resourceClass.getSuperclass() != null) {
+			return getMapping(resourceClass.getSuperclass());
+		} 
+		return mapping;
 	}
 
 	/**
@@ -59,11 +69,12 @@ public class URIFactory {
 	 * @return
 	 */
 	public String getURI(Class<? extends UUIDResource> resourceClass) {
-		if (!resourceMap.containsKey(resourceClass)) {
+		String mapping = getMapping(resourceClass);
+		if (mapping == null) {
 			throw new IllegalArgumentException("Unknown resource class: "
 				+ resourceClass);
 		}
-		return getRoot() + getMapping(resourceClass);
+		return getRoot() + mapping;
 	}
 
 	public String getURI(UUIDResource resource) {
@@ -108,15 +119,35 @@ public class URIFactory {
 	}
 
 	public String getURIStatus(Job job) {
-		return getURI(job) + "/status";
+		return getURI(job) + getMappingStatus();
 	}
 
 	public String getURIReport(Job job) {
-		return getURI(job) + "/report";
+		return getURI(job) + getMappingReport();
 	}
 
 	public String getURICurrentUser() {
-		return User.class + RestApplication.CURRENT;
+		return getURI(User.class) + getMappingCurrentUser();
+	}
+	
+	public String getMappingCurrentUser() {
+		return ";current";
+	}
+
+	public String getMappingStatus() {	
+		return "/status";
+	}
+	
+	public String getMappingReport() {
+		return "/report";
+	}
+
+	public void setHTMLRoot(String uri) {
+		htmlRoot = uri;		
+	}
+	
+	public String getHTMLRoot() {
+		return htmlRoot;
 	}
 
 }

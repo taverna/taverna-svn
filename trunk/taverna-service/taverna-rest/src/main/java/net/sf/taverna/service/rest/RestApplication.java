@@ -1,5 +1,7 @@
 package net.sf.taverna.service.rest;
 
+import java.net.URL;
+
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
@@ -10,6 +12,7 @@ import net.sf.taverna.service.rest.resources.CurrentUserResource;
 import net.sf.taverna.service.rest.resources.DataResource;
 import net.sf.taverna.service.rest.resources.DatasResource;
 import net.sf.taverna.service.rest.resources.JobResource;
+import net.sf.taverna.service.rest.resources.JobStatusResource;
 import net.sf.taverna.service.rest.resources.JobsResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
@@ -19,15 +22,18 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 import org.restlet.Component;
+import org.restlet.Directory;
 import org.restlet.Guard;
+import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
 import org.restlet.util.Template;
 
 public class RestApplication {
-
-	public static final String CURRENT = ";current";
 
 	private static Logger logger = Logger.getLogger(RestApplication.class);
 
@@ -39,15 +45,6 @@ public class RestApplication {
 
 	private static final String DATA = "/{data}";
 
-	private static final int DEFAULT_PORT = 8976;
-
-	public static void main(String[] args) {
-		int port = DEFAULT_PORT;
-		if (args.length > 0) {
-			port = Integer.parseInt(args[0]);
-		}
-		new RestApplication().startServer(port);
-	}
 
 	private URIFactory uriFactory = URIFactory.getInstance();
 
@@ -60,7 +57,9 @@ public class RestApplication {
 		if (component == null) {
 			component = createComponent();
 		}
-		uriFactory.setRoot("http://localhost:" + port + "/v1");
+		String base = "http://localhost:" + port;
+		uriFactory.setRoot(base + "/v1");
+		uriFactory.setHTMLRoot(base + "/html");
 		// Create a new Restlet component and add a HTTP server connector to it
 		component.getServers().add(Protocol.HTTP, port);
 
@@ -87,7 +86,14 @@ public class RestApplication {
 
 	private Component createComponent() {
 		Component component = new Component();
+		component.getClients().add(Protocol.FILE);
 		Router router = new Router(component.getContext());
+		
+		URL htmlSource = this.getClass().getResource("/html");
+		System.out.println(htmlSource);
+		
+		Directory htmlDir = new Directory(component.getContext(), htmlSource.toString());
+		component.getDefaultHost().attach("/html", htmlDir);
 		component.getDefaultHost().attach("/v1", router);
 
 		Guard userGuard = new UserGuard(router.getContext());
@@ -111,6 +117,9 @@ public class RestApplication {
 		// /jobs/X
 		authenticated.attach(uriFactory.getMapping(Job.class) + JOB,
 			JobResource.class);
+		// /jobs/X/status
+		authenticated.attach(uriFactory.getMapping(Job.class) + JOB +
+			uriFactory.getMappingStatus(), JobStatusResource.class);
 		// /workflows/X
 		authenticated.attach(uriFactory.getMapping(Workflow.class) + WORKFLOW,
 			WorkflowResource.class);
@@ -118,9 +127,12 @@ public class RestApplication {
 		authenticated.attach(uriFactory.getMapping(DataDoc.class) + DATA,
 			DataResource.class);
 		
+		
 		// /users;current
-		authenticated.attach(uriFactory.getMapping(User.class) + CURRENT,
-			CurrentUserResource.class);
+		authenticated.attach(uriFactory.getMapping(User.class)
+			+ uriFactory.getMappingCurrentUser(), CurrentUserResource.class);
+		
+		
 		// /users/X
 		authenticated.attach(uriFactory.getMapping(User.class) + USER,
 			UserResource.class);

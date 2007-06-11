@@ -1,11 +1,6 @@
 package net.sf.taverna.service.rest.resources;
 
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
-
-import java.util.Date;
-
-import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
 
@@ -14,18 +9,12 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class JobResource extends AbstractResource {
+public class JobResource extends AbstractJobResource {
 
 	private static Logger logger = Logger.getLogger(JobResource.class);
 
-	private Job job;
-
 	public JobResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		JobDAO dao = daoFactory.getJobDAO();
-		String job_id = (String) request.getAttributes().get("job");
-		job = dao.read(job_id);
-		checkEntity(job);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
 	}
@@ -46,9 +35,9 @@ public class JobResource extends AbstractResource {
 				sb.append("Inputs: ").append(uriFactory.getURI(job.getInputs())).append(
 					'\n');
 			}
-			if (job.getOutputDoc() != null) {
+			if (job.getOutputs() != null) {
 				sb.append("Outputs: ").append(
-					uriFactory.getURI(job.getOutputDoc())).append('\n');
+					uriFactory.getURI(job.getOutputs())).append('\n');
 			}
 			if (job.getProgressReport() != null) {
 				sb.append("Progress: ").append(uriFactory.getURI(job)).append(
@@ -70,25 +59,24 @@ public class JobResource extends AbstractResource {
 
 			jobElement.addNewWorkflow().setHref(
 				uriFactory.getURI(job.getWorkflow()));
-
+			if (job.getOwner() != null) {
+				jobElement.addNewOwner().setHref(
+					uriFactory.getURI(job.getOwner()));
+				jobElement.getOwner().setUsername(job.getOwner().getUsername());
+			}
 			if (job.getInputs() != null) {
 				jobElement.addNewInputs().setHref(
 					uriFactory.getURI(job.getInputs()));
 			}
-			if (job.getOutputDoc() != null) {
+			if (job.getOutputs() != null) {
 				jobElement.addNewOutputs().setHref(
-					uriFactory.getURI(job.getOutputDoc()));
+					uriFactory.getURI(job.getOutputs()));
 			}
 			if (job.getProgressReport() != null) {
 				jobElement.addNewReport().setHref(uriFactory.getURIReport(job));
 			}
 			return jobDoc;
 		}
-	}
-
-	@Override
-	public Date getModificationDate() {
-		return job.getLastModified();
 	}
 
 }

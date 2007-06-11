@@ -5,13 +5,21 @@ import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
+import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 public class CurrentUserResource extends Resource {
+	public CurrentUserResource(Context context, Request req, Response response) {
+		super(context, req, response);
+		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+	}
+
 	private static Logger logger = Logger.getLogger(CurrentUserResource.class);
 
 	private static URIFactory uriFactory = URIFactory.getInstance();

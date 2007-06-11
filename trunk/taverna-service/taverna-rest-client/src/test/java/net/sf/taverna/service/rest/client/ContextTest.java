@@ -5,9 +5,8 @@ import net.sf.taverna.service.rest.ClientTest;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 
-public class ContextTest extends ClientTest {
-	private static Logger logger = Logger.getLogger(ContextTest.class);
-
+public abstract class ContextTest extends ClientTest {
+	
 	RESTContext context;
 
 	UserREST user;

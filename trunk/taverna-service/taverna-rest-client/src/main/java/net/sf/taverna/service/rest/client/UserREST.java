@@ -34,4 +34,16 @@ public class UserREST extends LinkedREST<User> {
 		return new JobsREST(context, getDocument().getJobs());
 	}
 
+	/**
+	 * Get the worker resource if this user is a worker, otherwise return null.
+	 * 
+	 * @return A {@link WorkerREST} instance, or <code>null</code> if this is a normal user
+	 */
+	public WorkerREST getWorker() {
+		if (getDocument().getWorker() == null) {
+			return null;
+		}
+		return new WorkerREST(context, getDocument().getWorker());
+	}
+
 }

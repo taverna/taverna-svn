@@ -46,6 +46,9 @@ public class Job extends OwnedResource {
 	@Lob
 	@Column(length=65535)
 	private String progressReport;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Worker worker;
 
 	public Job() {
 	}
@@ -90,13 +93,24 @@ public class Job extends OwnedResource {
 		return getStatus().compareTo(Status.RUNNING) > 1;
 	}
 
-	public DataDoc getOutputDoc() {
+	public DataDoc getOutputs() {
 		return outputDoc;
 	}
 
-	public void setOutputDoc(DataDoc resultDoc) {
+	public void setOutputs(DataDoc resultDoc) {
 		outputDoc = resultDoc;
 		setLastModified();
 	}
+
+	public Worker getWorker() {
+		return worker;
+	}
+
+	public void setWorker(Worker worker) {
+		this.worker = worker;
+		setLastModified();
+	}
+
+
 	
 }

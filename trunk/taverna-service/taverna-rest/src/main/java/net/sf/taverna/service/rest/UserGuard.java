@@ -65,6 +65,8 @@ public class UserGuard extends Guard {
 		if (user.checkPassword(password)) {
 			getContext().getAttributes().put(AUTHENTICATED_USER, user);
 			logger.debug("Authenticated " + userName);
+			user.setLastSeen();
+			daoFactory.commit();
 			return 1;
 		}
 		logger.warn("Wrong password supplied for " + userName);
