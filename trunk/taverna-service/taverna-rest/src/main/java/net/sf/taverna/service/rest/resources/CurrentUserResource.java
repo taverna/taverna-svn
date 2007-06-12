@@ -4,34 +4,40 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
-import org.apache.log4j.Logger;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
+import org.restlet.data.Dimension;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
+
+import com.noelios.restlet.http.HttpConstants;
 
 public class CurrentUserResource extends Resource {
 	public CurrentUserResource(Context context, Request req, Response response) {
 		super(context, req, response);
-		getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 	}
-
-	private static Logger logger = Logger.getLogger(CurrentUserResource.class);
 
 	private static URIFactory uriFactory = URIFactory.getInstance();
 
 	@Override
-	public Representation getRepresentation(Variant variant) {
+	public void handleGet() {
+		// Set headers to indicate that this redirection is only valid with
+		// current Authorization
+
+		Form additionalHeaders = new Form();
+		additionalHeaders.add("Cache-Control", "private");
+
+		// FIXME: Should be able to do Vary: Authorization instead of *
+		//additionalHeaders.add("Vary", "Authorization");
+		getResponse().getDimensions().add(Dimension.UNSPECIFIED);
+
+		getResponse().getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
+			additionalHeaders);
+
 		User user =
 			(User) getContext().getAttributes().get(
 				UserGuard.AUTHENTICATED_USER);
 		getResponse().redirectTemporary(uriFactory.getURI(user));
-		return new StringRepresentation(user.getUsername(),
-			MediaType.TEXT_PLAIN);
 	}
-
 }

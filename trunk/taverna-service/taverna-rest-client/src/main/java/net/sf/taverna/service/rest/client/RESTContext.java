@@ -100,7 +100,7 @@ public class RESTContext {
 	}
 
 	public Response head(Reference uri) throws NotSuccessException {
-		return request(Method.GET, uri, null, null, restType);
+		return request(Method.HEAD, uri, null, null, false);
 	}
 
 	public Response get(Reference uri) throws NotSuccessException,
@@ -125,7 +125,7 @@ public class RESTContext {
 
 	public Response post(Reference uri, ReferenceList urls)
 		throws NotSuccessException {
-		return request(Method.POST, uri, urls.getTextRepresentation(), null);
+		return request(Method.POST, uri, urls.getTextRepresentation(), null, true);
 	}
 
 	public Response put(Reference uri, String data, MediaType mediaType)
@@ -135,7 +135,7 @@ public class RESTContext {
 
 	public Response put(Reference uri, ReferenceList urls)
 		throws NotSuccessException {
-		return request(Method.PUT, uri, urls.getTextRepresentation(), null);
+		return request(Method.PUT, uri, urls.getTextRepresentation(), null, true);
 	}
 
 	public Response delete(Reference uri) throws NotSuccessException {
@@ -226,7 +226,7 @@ public class RESTContext {
 	}
 
 	private Response request(Method method, Reference uri,
-		Representation representation, MediaType accepts)
+		Representation representation, MediaType accepts, boolean checkSuccess)
 		throws NotSuccessException {
 		Request request = makeRequest(uri, accepts);
 		request.setMethod(method);
@@ -235,7 +235,7 @@ public class RESTContext {
 		}
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
-		if (!response.getStatus().isSuccess()) {
+		if (checkSuccess && !response.getStatus().isSuccess()) {
 			logger.warn("Not success: " + response.getStatus());
 			throw new NotSuccessException(response.getStatus());
 		}
@@ -245,7 +245,7 @@ public class RESTContext {
 	private Response request(Method method, Reference uri, String data,
 		MediaType mediaType, MediaType accepts) throws NotSuccessException {
 		return request(method, uri, new StringRepresentation(data, mediaType),
-			accepts);
+			accepts, true);
 	}
 
 	private Request makeRequest(Reference uri, MediaType accepts) {
