@@ -21,6 +21,8 @@ import net.sf.taverna.service.queue.TavernaQueue;
 import net.sf.taverna.service.queue.TavernaQueueListener;
 import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.tools.RavenProperties;
+import net.sf.taverna.tools.Repositories;
 import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.commons.io.FileUtils;
@@ -173,11 +175,8 @@ public class Engine implements TavernaService {
 	public static synchronized void bootstrap() throws MalformedURLException,
 		ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
 		Bootstrap.findUserDir();
-		Bootstrap.properties = Bootstrap.findProperties();
-		Bootstrap.remoteRepositories = Bootstrap.findRepositories(Bootstrap.properties);
-		if (Bootstrap.properties.getProperty("raven.remoteprofile") != null) {
-			Bootstrap.initialiseProfile(Bootstrap.properties.getProperty("raven.remoteprofile"));
-		}
+		Bootstrap.properties = RavenProperties.getInstance().getProperties();
+		Bootstrap.remoteRepositories = new Repositories().find();
 		List<URL> localLoaderUrls = new ArrayList<URL>();
 		List<URL> remoteLoaderUrls = new ArrayList<URL>();
 		Bootstrap.getLoaderUrls(localLoaderUrls, remoteLoaderUrls);
