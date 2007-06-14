@@ -7,10 +7,15 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.util.XMLUtils;
+import net.sf.taverna.service.xml.Data;
+import net.sf.taverna.service.xml.DataDocument;
+import net.sf.taverna.service.xml.DatasDocument;
 
+import org.apache.xmlbeans.XmlException;
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -57,7 +62,7 @@ public class TestDataDoc extends ClientTest {
 
 	@Ignore
 	@Test
-	public void getAllXML() throws IOException, ParseException {
+	public void getAllXML() throws IOException, ParseException, XmlException {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(BASE_URL + "data");
@@ -66,20 +71,10 @@ public class TestDataDoc extends ClientTest {
 			new Preference<MediaType>(restType));
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
-		Document doc = XMLUtils.parseXML(response.getEntity().getStream());
-		Element root = doc.getRootElement();
-		assertEquals(TavernaService.NS, root.getNamespaceURI());
-		assertEquals("data", root.getName());
-		List<Element> children = root.getChildren();
-		for (Element child : children) {
-			assertEquals(TavernaService.NS, child.getNamespaceURI());
-			assertEquals("datadoc", child.getName());
-			Attribute xlink = child.getAttribute("href", 
-				Namespace.getNamespace("http://www.w3.org/1999/xlink"));
-			assertNotNull("Didn't have xlink:href", xlink);
-			assertTrue(xlink.getValue().startsWith("/data"));
+		DatasDocument doc = DatasDocument.Factory.parse(response.getEntity().getStream());
+		for (Data data : doc.getDatas().getDataArray()) {
+			assertTrue(data.getHref().startsWith(BASE_URL + "users"));
 		}
-		
 	}
 
 	@Ignore

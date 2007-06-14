@@ -11,7 +11,9 @@ import java.util.UUID;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.util.XMLUtils;
+import net.sf.taverna.service.xml.UserDocument;
 
+import org.apache.xmlbeans.XmlException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.junit.BeforeClass;
@@ -50,9 +52,10 @@ public class TestUser extends ClientTest {
 		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
-			+ "  <username>" + justUsername + "</username>" + "  <password>"
-			+ justPassword + "</password>" + "</user>", restType);
+		UserDocument userDoc = UserDocument.Factory.newInstance();
+		userDoc.addNewUser().setUsername(justUsername);
+		userDoc.getUser().setPassword(justPassword);
+		request.setEntity(userDoc.xmlText(), restType);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
 		justCreated = response.getRedirectRef();
@@ -72,8 +75,9 @@ public class TestUser extends ClientTest {
 		String url = BASE_URL + "users";
 		request.setResourceRef(url);
 		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
-			+ "</user>", restType);
+		UserDocument userDoc = UserDocument.Factory.newInstance();
+		userDoc.addNewUser();
+		request.setEntity(userDoc.xmlText(), restType);
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
 		Reference created = response.getRedirectRef();
@@ -115,7 +119,7 @@ public class TestUser extends ClientTest {
 	}
 
 	@Test
-	public void readJustCreatedXML() throws IOException, ParseException {
+	public void readJustCreatedXML() throws IOException, ParseException, XmlException {
 		if (justCreated == null) {
 			create();
 		}
@@ -137,12 +141,9 @@ public class TestUser extends ClientTest {
 		response = client.handle(request);
 		assertEquals("Request did not succeed", Status.SUCCESS_OK,
 			response.getStatus());
-
 		assertTrue(restType.includes(response.getEntity().getMediaType()));
-		Document userDoc = XMLUtils.parseXML(response.getEntity().getStream());
-		Element userElement = userDoc.getRootElement();
-		assertEquals("user", userElement.getName());
-		assertEquals(TavernaService.NS, userElement.getNamespace().getURI());
+		UserDocument userDoc = UserDocument.Factory.parse(response.getEntity().getStream());
+		assertEquals(justUsername, userDoc.getUser().getUsername());
 	}
 
 	@Test
@@ -160,8 +161,9 @@ public class TestUser extends ClientTest {
 				justPassword);
 		request.setChallengeResponse(challengeResponse);
 		String email = "nobody@nowhere.org";
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
-			+ "  <email>" + email + "</email>" + "</user>", restType);
+		UserDocument userDocument = UserDocument.Factory.newInstance();
+		userDocument.addNewUser().setEmail(email);
+		request.setEntity(userDocument.xmlText(), restType);
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 

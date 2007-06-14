@@ -12,6 +12,7 @@ import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.Workflow;
 import net.sf.taverna.service.xml.WorkflowDocument;
+import net.sf.taverna.service.xml.WorkflowsDocument;
 
 import org.apache.xmlbeans.XmlException;
 import org.jdom.Attribute;
@@ -59,7 +60,7 @@ public class TestWorkflow extends ClientTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void getAllXML() throws IOException, ParseException {
+	public void getAllXML() throws IOException, ParseException, XmlException {
 		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(useruri + "/workflows");
@@ -68,18 +69,10 @@ public class TestWorkflow extends ClientTest {
 			new Preference<MediaType>(restType));
 		Response response = client.handle(request);
 		assertTrue(response.getStatus().isSuccess());
-		Document doc = XMLUtils.parseXML(response.getEntity().getStream());
-		Element root = doc.getRootElement();
-		assertEquals(TavernaService.NS, root.getNamespaceURI());
-		assertEquals("workflows", root.getName());
-		List<Element> children = root.getChildren();
-		for (Element child : children) {
-			assertEquals(TavernaService.NS, child.getNamespaceURI());
-			assertEquals("workflow", child.getName());
-			Attribute xlink = child.getAttribute("href", 
-				Namespace.getNamespace("http://www.w3.org/1999/xlink"));
-			assertNotNull("Didn't have xlink:href", xlink);
-			assertTrue(xlink.getValue().startsWith("/workflow"));
+		WorkflowsDocument doc = WorkflowsDocument.Factory.parse(response.getEntity().getStream());
+		// FIXME: Must insert some workflows first
+		for (Workflow wf : doc.getWorkflows().getWorkflowArray()) {
+			assertTrue(wf.getHref().startsWith(BASE_URL + "workflow"));
 		}
 	}
 
@@ -134,17 +127,6 @@ public class TestWorkflow extends ClientTest {
 
 		Workflow wf = WorkflowDocument.Factory.parse(response.getEntity().getStream()).getWorkflow();
 		assertEquals("User URI didn't match owner", useruri, wf.getOwner().getHref());
-		// Disabled because the regenerated Scufl includes extra namespaces which fails the test
-/*		XmlOptions options = new XmlOptions();
-		options.setLoadStripWhitespace();
-		options.setLoadStripComments();
-		options.setLoadStripProcinsts();
-		options.setSaveAggressiveNamespaces();
-		options.setSaveInner();
-		options.setLoadMessageDigest();
-		options.setSaveNoXmlDecl();
-		assertEquals("Returned Scufl didn't matched uploaded Scufl", XmlObject.Factory.parse(workflow, options).xmlText(options),
-			 XmlObject.Factory.parse(wf.getScufl().xmlText(options), options).xmlText(options));*/
 	}
 
 	@Test
