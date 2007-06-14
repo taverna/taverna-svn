@@ -18,7 +18,6 @@ import net.sf.taverna.service.rest.utils.URItoDAO;
 import net.sf.taverna.service.xml.Data;
 
 import org.apache.log4j.Logger;
-import org.jdom.Namespace;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.MediaType;
@@ -31,15 +30,6 @@ import org.restlet.resource.Variant;
 public abstract class AbstractResource extends RepresentationalResource {
 
 	private static Logger logger = Logger.getLogger(AbstractResource.class);
-
-	public static final Namespace ns =
-		Namespace.getNamespace(TavernaService.NS);
-
-	public static final Namespace nsDC =
-		Namespace.getNamespace("dc", "http://purl.org/dc/elements/1.1/");
-
-	public static final Namespace nsDCterms =
-		Namespace.getNamespace("dcterms", "http://purl.org/dc/terms/");
 
 	public static final MediaType restType =
 		new MediaType(TavernaService.restType);
@@ -214,10 +204,14 @@ public abstract class AbstractResource extends RepresentationalResource {
 		}
 		if (entity instanceof Job) {
 			Job job = (Job) entity;
+			if (job.getWorker() == null) {
+				if (worker.getQueue().hasJob(job)) {
+					return true;
+				}
+			}
 			if (worker.equals(job.getWorker())) {
 				return true;
 			}
-			// TODO: What about asking to become the worker of the job?
 		}
 		if (entity instanceof Workflow) {
 			for (Job job : worker.getJobs()) {
