@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 
-public class JobsREST extends LinkedREST<Jobs> {
+public class JobsREST extends LinkedREST<Jobs> implements Iterable<JobREST> {
 
 	private static Logger logger = Logger.getLogger(JobsREST.class);
 
@@ -42,10 +42,15 @@ public class JobsREST extends LinkedREST<Jobs> {
 	}
 
 	public JobREST add(WorkflowREST wf) throws NotSuccessException {
-		// TODO: Support DataREST as inputdoc
+		return add(wf, null);
+	}
+
+	public JobREST add(WorkflowREST wf, DataREST inputs) throws NotSuccessException {
 		JobDocument jobDoc = JobDocument.Factory.newInstance();
 		jobDoc.addNewJob().addNewWorkflow().setHref(wf.getURI());
-		
+		if (inputs != null) {
+			jobDoc.getJob().addNewInputs().setHref(inputs.getURI());
+		}
 		Response response = context.post(getURIReference(), jobDoc);
 		if (response.getRedirectRef() == null) {
 			logger.error("Did not get redirect reference for job for wf " + wf);
@@ -53,4 +58,5 @@ public class JobsREST extends LinkedREST<Jobs> {
 		}
 		return new JobREST(context, response.getRedirectRef());
 	}
+
 }

@@ -10,6 +10,7 @@ import net.sf.taverna.service.xml.Workflows;
 import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 public class WorkflowsREST extends LinkedREST<Workflows> implements
 	Iterable<WorkflowREST> {
@@ -44,6 +45,10 @@ public class WorkflowsREST extends LinkedREST<Workflows> implements
 
 	public WorkflowREST add(String workflow) throws NotSuccessException {
 		Response response = context.post(getURIReference(), workflow, RESTContext.scuflType);
+		if (! response.getStatus().equals(Status.SUCCESS_CREATED)) {
+			logger.warn("Did not create workflow: " + workflow);
+			return null;
+		}
 		if (response.getRedirectRef() == null) {
 			logger.error("Did not get redirect reference for workflow " + workflow);
 			return null;

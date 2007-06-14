@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.QNameSet;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.jdom.Element;
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -37,6 +38,8 @@ public class RESTContext {
 
 	private static Logger logger = Logger.getLogger(RESTContext.class);
 
+	private String name;
+
 	private Reference baseURI;
 
 	private String username;
@@ -47,13 +50,15 @@ public class RESTContext {
 
 	private WorkersREST workers;
 
-	public Reference usersURI;
+	private Reference usersURI;
 
-	public Reference workersURI;
+	private Reference workersURI;
 
-	public Reference currentUserURI;
+	private Reference currentUserURI;
 
-	public Reference queuesURI;
+	private Reference queuesURI;
+
+	private Capabilities capabilities;
 
 	/**
 	 * Register a dummy user
@@ -92,11 +97,53 @@ public class RESTContext {
 	}
 
 	public RESTContext(String baseURI, String username, String password) {
+		if (baseURI == null || username == null || password == null) {
+			throw new NullPointerException(
+				"uri/username/password can't be null");
+		}
 		this.baseURI = new Reference(baseURI);
 		this.username = username;
 		this.password = password;
-		findCapabilities();
+	}
 
+	/**
+	 * Construct a {@link RESTContext} from a serialised XML element containing
+	 * the URI, username and password.
+	 * 
+	 * @see #toXML()
+	 * @param restContext
+	 *            An element containing the children elements "uri", "username"
+	 *            and "password"
+	 * @return An initialised {@link RESTContext}
+	 */
+	public static RESTContext fromXML(Element restContext) {
+		String uri = restContext.getChildText("uri");
+		String username = restContext.getChildText("username");
+		String password = restContext.getChildText("password");
+		RESTContext context = new RESTContext(uri, username, password);
+		String name = restContext.getChildText("name");
+		if (name != null) {
+			context.setName(name);
+		}
+		return context;
+	}
+
+	/**
+	 * Serialise the RESTContext as a simple XML element "restContext"
+	 * containing three children, "uri", "username" and "password.
+	 * 
+	 * @see #fromXML(Element)
+	 * @return An XML serialised {@link Element} of the {@link RESTContext}.
+	 */
+	public Element toXML() {
+		Element e = new Element("restContext");
+		if (name != null) {
+			e.addContent(new Element("name").addContent(name));
+		}
+		e.addContent(new Element("uri").addContent(baseURI.toString()));
+		e.addContent(new Element("username").addContent(username));
+		e.addContent(new Element("password").addContent(password));
+		return e;
 	}
 
 	public Response head(Reference uri) throws NotSuccessException {
@@ -125,7 +172,8 @@ public class RESTContext {
 
 	public Response post(Reference uri, ReferenceList urls)
 		throws NotSuccessException {
-		return request(Method.POST, uri, urls.getTextRepresentation(), null, true);
+		return request(Method.POST, uri, urls.getTextRepresentation(), null,
+			true);
 	}
 
 	public Response put(Reference uri, String data, MediaType mediaType)
@@ -135,7 +183,8 @@ public class RESTContext {
 
 	public Response put(Reference uri, ReferenceList urls)
 		throws NotSuccessException {
-		return request(Method.PUT, uri, urls.getTextRepresentation(), null, true);
+		return request(Method.PUT, uri, urls.getTextRepresentation(), null,
+			true);
 	}
 
 	public Response delete(Reference uri) throws NotSuccessException {
@@ -151,12 +200,18 @@ public class RESTContext {
 		// FIXME: Should stream the XML and use document.save()
 		return post(uri, document.xmlText(), restType);
 	}
+	
+	public Response put(Reference uri, XmlObject document)
+		throws NotSuccessException {
+		// FIXME: Should stream the XML and use document.save()
+		return put(uri, document.xmlText(), restType);
+	}
 
 	public UserREST getUser() throws NotSuccessException {
 		if (user == null) {
 			// Find current user through redirect
 			// TODO: Support data directly at currentUserURI?
-			Response response = head(currentUserURI);
+			Response response = head(getCurrentUserURI());
 			user = new UserREST(this, response.getRedirectRef().getTargetRef());
 		}
 		return user;
@@ -164,7 +219,7 @@ public class RESTContext {
 
 	public WorkersREST getWorkers() {
 		if (workers == null) {
-			workers = new WorkersREST(this, workersURI);
+			workers = new WorkersREST(this, getWorkersURI());
 		}
 		return workers;
 	}
@@ -216,8 +271,11 @@ public class RESTContext {
 		}
 	}
 
-	private void findCapabilities() {
-		Capabilities capabilities =
+	private synchronized void checkCapabilities() {
+		if (capabilities != null) {
+			return;
+		}
+		capabilities =
 			loadDocument(getBaseURI(), CapabilitiesDocument.class).getCapabilities();
 		usersURI = makeReference(capabilities.getUsers().getHref());
 		currentUserURI = makeReference(capabilities.getCurrentUser().getHref());
@@ -266,5 +324,92 @@ public class RESTContext {
 		}
 		return request;
 	}
+
+	public Reference getCurrentUserURI() {
+		checkCapabilities();
+		return currentUserURI;
+	}
+
+	public Reference getQueuesURI() {
+		checkCapabilities();
+		return queuesURI;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public Reference getUsersURI() {
+		checkCapabilities();
+		return usersURI;
+	}
+
+	public Reference getWorkersURI() {
+		checkCapabilities();
+		return workersURI;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	/**
+	 * Get a displayable name
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Set the displayable name. This name is typically shown in UI components,
+	 * and used by {@link #toString()}. If the name is null (the default),
+	 * {@link #toString()} will return the {@link #baseURI} instead.
+	 * 
+	 * @see #getName()
+	 * @see #toString()
+	 * @param name
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * A string representation of the context, if a name has been set with
+	 * {@link #setName(String)}, that name will be returned, otherwise 
+	 * {@link #getBaseURI()} will be used.
+	 */
+	@Override
+	public String toString() {
+		if (getName() != null) {
+			return getName();
+		}
+		return getBaseURI().toString();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (! (obj instanceof RESTContext)) {
+			return false;
+		}
+		RESTContext other = (RESTContext) obj;
+		if (! other.getBaseURI().equals(getBaseURI())) {
+			return false;
+		}
+		if (! other.getUsername().equals(getUsername())) {
+			return false;
+		}
+		// NOTE: Does not care about password or name
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (getBaseURI().toString() + getUsername()).hashCode();
+	}
+	
+
+	
 
 }

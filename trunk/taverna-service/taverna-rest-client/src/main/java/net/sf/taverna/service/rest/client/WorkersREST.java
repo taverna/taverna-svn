@@ -21,7 +21,7 @@ public class WorkersREST extends AbstractREST<Workers> {
 	public void add(WorkerREST worker) throws NotSuccessException {
 		ReferenceList urls = new ReferenceList();
 		urls.add(worker.getURIReference());
-		context.post(context.workersURI, urls);
+		context.post(context.getWorkersURI(), urls);
 	}
 	
 }

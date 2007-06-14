@@ -45,5 +45,9 @@ public class UserREST extends LinkedREST<User> {
 		}
 		return new WorkerREST(context, getDocument().getWorker());
 	}
+	
+	public DatasREST getDatas() {
+		return new DatasREST(context, getDocument().getDatas());
+	}
 
 }

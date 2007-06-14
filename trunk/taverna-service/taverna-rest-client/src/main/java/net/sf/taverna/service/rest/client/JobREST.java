@@ -3,11 +3,15 @@ package net.sf.taverna.service.rest.client;
 import java.io.IOException;
 
 import net.sf.taverna.service.xml.Job;
+import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 public class JobREST extends OwnedREST<Job> {
 	
@@ -55,18 +59,65 @@ public class JobREST extends OwnedREST<Job> {
 		return StatusType.Enum.forString(status);
 	}
 
-	public void setStatus(StatusType.Enum queued) throws NotSuccessException {
+	public void setStatus(StatusType.Enum status) throws NotSuccessException {
 		Reference statusURI = getStatusURI();
 		if (statusURI != null) {
-			Response response =
-				context.put(statusURI, queued.toString(), MediaType.TEXT_PLAIN);
+			context.put(statusURI, status.toString(), MediaType.TEXT_PLAIN);
 		} else {
-			Job job = Job.Factory.newInstance();
-			job.addNewStatus().set(queued);
-			
+			JobDocument job = JobDocument.Factory.newInstance();
+			job.addNewJob().addNewStatus().set(status);
+			context.put(getURIReference(), job);
+		}
+	}
+	
+	public DataREST getInputs() {
+		return new DataREST(context, getDocument().getInputs());
+	}
+	
+	public DataREST getOutputs() {
+		return new DataREST(context, getDocument().getOutputs());
+	}
+	
+	public void setOutputs(DataREST rest) throws NotSuccessException {
+		Job job = Job.Factory.newInstance();
+		job.addNewOutputs().setHref(rest.getURI());
+		context.put(getURIReference(), job);
+	}
+	
+	private Reference getReportURI() {
+		String reportURI = getDocument().getReport().getHref();
+		if (reportURI == null) { 
+			return null;
+		}
+		return new Reference(getURIReference(), reportURI);
+	}
+	
+	public String getReport() throws RESTException {
+		Reference reportURI = getReportURI();
+		if (reportURI == null) {
+			return getDocument().getReport().xmlText();
 		}
 		
-		
+		// Return the freshest report with a new get()
+		Response response = context.get(reportURI, MediaType.TEXT_PLAIN);
+		try {
+			return response.getEntity().getText();
+		} catch (IOException e) {
+			throw new RESTException("Could not receive report " + reportURI, e);
+		}
 	}
+
+	public void setReport(String report) throws NotSuccessException, XmlException {
+		Reference reportURI = getStatusURI();
+		if (reportURI != null) {
+			context.put(reportURI, report, MediaType.TEXT_XML);
+		} else {
+			JobDocument job = JobDocument.Factory.newInstance();
+			XmlObject reportXML = XmlObject.Factory.parse(report);
+			job.addNewJob().addNewReport().set(reportXML);
+			context.put(getURIReference(), job);
+		}
+	}
+	
 
 }
