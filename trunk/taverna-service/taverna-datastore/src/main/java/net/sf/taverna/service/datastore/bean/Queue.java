@@ -33,6 +33,15 @@ public class Queue extends DatedResource {
 		}
 		return jobs;
 	}
+	
+	public boolean hasJob(Job job) {
+		for (QueueEntry entry : entries) {
+			if (entry.getJob().equals(job)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void addJob(Job job) {
 		QueueEntry entry = new QueueEntry();
