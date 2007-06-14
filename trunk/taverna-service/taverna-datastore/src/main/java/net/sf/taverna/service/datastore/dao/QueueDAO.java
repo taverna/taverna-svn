@@ -4,4 +4,5 @@ import net.sf.taverna.service.datastore.bean.Queue;
 
 public interface QueueDAO extends GenericDao<Queue, String> {
 
+	public Queue defaultQueue();
 }

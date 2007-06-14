@@ -41,7 +41,6 @@ public class JobsREST extends LinkedREST<Jobs> {
 		return getJobs().iterator();
 	}
 
-
 	public JobREST add(WorkflowREST wf) throws NotSuccessException {
 		// TODO: Support DataREST as inputdoc
 		JobDocument jobDoc = JobDocument.Factory.newInstance();
@@ -54,5 +53,4 @@ public class JobsREST extends LinkedREST<Jobs> {
 		}
 		return new JobREST(context, response.getRedirectRef());
 	}
-
 }

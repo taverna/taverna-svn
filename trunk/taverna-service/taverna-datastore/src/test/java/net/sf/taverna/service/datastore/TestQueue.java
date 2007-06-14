@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.test.TestDAO;
 
@@ -45,6 +46,27 @@ public class TestQueue extends TestDAO {
 		assertEquals(1, q2.getJobs().size());
 		// Requires Job.equals() to work
 		assertTrue(q2.getJobs().contains(job));
+	}
+	
+	@Test
+	public void testDefaultQueueIsCreated() {
+		deleteQueues(); //delete existing queues
+		QueueDAO queueDao = daoFactory.getQueueDAO();
+		
+		assertEquals("There should be 0 queues",0,queueDao.all().size());
+		
+		Queue q = queueDao.defaultQueue();
+		assertNotNull("The default queue should not be null",q);
+		
+		assertEquals("There should now be 1 queue",1,queueDao.all().size());
+		daoFactory.rollback();
+	}
+	
+	private void deleteQueues() {
+		QueueDAO queueDao = daoFactory.getQueueDAO();
+		for (Queue queue : queueDao.all()) {
+			queueDao.delete(queue);
+		}
 	}
 	
 	public Queue makeBigQueue() throws ParseException {
@@ -83,6 +105,18 @@ public class TestQueue extends TestDAO {
 		}
 	}
 	
+	@Test
+	public void testDeleteQueue() throws ParseException {
+		QueueDAO queueDao = daoFactory.getQueueDAO();
+		int size = queueDao.all().size();
+		Queue q = new Queue();
+		queueDao.create(q);
+		assertEquals("Size should have increased by 1",size+1,queueDao.all().size());
+		
+		queueDao.delete(q);
+		assertEquals("Size should be back to the original size",size,queueDao.all().size());
+		daoFactory.rollback();
+	}
 	
 	@Test
 	public void removeJob() throws ParseException {

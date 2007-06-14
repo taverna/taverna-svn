@@ -1,5 +1,8 @@
 package net.sf.taverna.service.datastore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.UUID;
 
 import javax.persistence.PersistenceException;
@@ -7,14 +10,12 @@ import javax.persistence.PersistenceException;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
-import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.datastore.dao.WorkerDAO;
 import net.sf.taverna.service.test.TestDAO;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class TestWorker extends TestDAO {
 

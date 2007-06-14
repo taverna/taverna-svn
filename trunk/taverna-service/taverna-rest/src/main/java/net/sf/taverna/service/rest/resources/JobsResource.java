@@ -119,5 +119,4 @@ public class JobsResource extends AbstractUserResource {
 		getResponse().setRedirectRef(uriFactory.getURI(job));
 		logger.info("Created new " + job);
 	}
-
 }
