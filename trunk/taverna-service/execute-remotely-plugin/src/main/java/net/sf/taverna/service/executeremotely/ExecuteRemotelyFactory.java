@@ -22,7 +22,6 @@ public class ExecuteRemotelyFactory implements UIComponentFactorySPI {
 	}
 
 	public String getName() {
-		logger.info("Found mr. name");
 		return "Execute remotely";
 	}
 
