@@ -38,6 +38,8 @@ public abstract class ClientTest extends TestCommon {
 
 	public static String useruri;
 	
+	public static User user;
+	
 	@BeforeClass
 	public synchronized static void startServer() throws Exception {
 		stopServer();
@@ -57,7 +59,7 @@ public abstract class ClientTest extends TestCommon {
 		username = null;
 		useruri = null;
 		DAOFactory daoFactory = DAOFactory.getFactory();
-		User user = new User();
+		user = new User();
 		password = User.generatePassword();
 		user.setPassword(password);
 		daoFactory.getUserDAO().create(user);

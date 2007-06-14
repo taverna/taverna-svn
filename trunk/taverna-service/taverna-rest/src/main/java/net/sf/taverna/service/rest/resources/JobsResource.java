@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.xml.Data;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.Jobs;
@@ -77,6 +79,10 @@ public class JobsResource extends AbstractUserResource {
 			return;
 		}
 
+		createNewJob(jobDoc);
+	}
+
+	private void createNewJob(JobDocument jobDoc) {
 		Job job = new Job();
 		// Force owner by URI, ignore 'owner' in XML
 		job.setOwner(user);
@@ -114,9 +120,16 @@ public class JobsResource extends AbstractUserResource {
 			job.setInputs(uriToDAO.getResource(inputs.getHref(), DataDoc.class));
 		}
 		daoFactory.getJobDAO().create(job);
+		addJobToDefaultQueue(job);
 		daoFactory.commit();
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 		getResponse().setRedirectRef(uriFactory.getURI(job));
 		logger.info("Created new " + job);
+	}
+	
+	private void addJobToDefaultQueue(Job job) {
+		QueueDAO queueDao = daoFactory.getQueueDAO();
+		Queue queue = queueDao.defaultQueue();
+		queue.addJob(job);
 	}
 }
