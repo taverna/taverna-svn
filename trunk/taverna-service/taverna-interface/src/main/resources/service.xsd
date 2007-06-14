@@ -391,13 +391,13 @@
                         	</documentation>
                         </annotation>
 					</element>
-					<element minOccurs="0" name="queues"
-						type="tav:Queues">
+					<element minOccurs="0" maxOccurs="1" name="queue"
+						type="tav:Queue">
                         <annotation>
                         	<documentation>
-                        		The queues this worker is listening too.
+                        		The queue this worker is listening too.
                         		A worker will only be allowed to pick up
-                        		jobs from a queue he's listening too.
+                        		jobs from the queue he's listening too.
                         	</documentation>
                         </annotation>
 					</element>

@@ -25,8 +25,8 @@ public class WorkerREST extends LinkedREST<Worker> {
 		return new JobsREST(context, getDocument().getJobs());
 	}
 	
-	public QueuesREST getQueues() {
-		return new QueuesREST(context, getDocument().getQueues());
+	public QueueREST getQueue() {
+		return new QueueREST(context, getDocument().getQueue());
 	}
 
 }

@@ -1,12 +1,10 @@
 package net.sf.taverna.service.datastore.bean;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -14,8 +12,9 @@ public class Worker extends User {
 	
 	private String apiURI;
 	
-	@ManyToMany(mappedBy="workers")
-	private Set<Queue> queues;
+	@ManyToOne
+	@JoinColumn(name="queue_fk")
+	private Queue queue;
 
 	@OneToMany(mappedBy="worker")
 	private List<Job> jobs;
@@ -27,13 +26,13 @@ public class Worker extends User {
 	public void setJobs(List<Job> jobs) {
 		this.jobs = jobs;
 	}
-
-	public Set<Queue> getQueues() {
-		return queues;
+	
+	public void setQueue(Queue queue) {
+		this.queue=queue;
 	}
-
-	public void setQueues(Set<Queue> queues) {
-		this.queues = queues;
+	
+	public Queue getQueue() {
+		return queue;
 	}
 
 	public String getApiURI() {

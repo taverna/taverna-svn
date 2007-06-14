@@ -19,7 +19,7 @@ public class Queue extends DatedResource {
 	@OrderBy("id")
 	private List<QueueEntry> entries = new ArrayList<QueueEntry>();
 
-	@ManyToMany
+	@OneToMany(mappedBy="queue")
 	private Set<Worker> workers = new HashSet<Worker>();
 	
 	public Set<Worker> getWorkers() {
