@@ -1,10 +1,12 @@
 package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.TavernaService;
 import net.sf.taverna.service.xml.Capabilities;
 import net.sf.taverna.service.xml.CapabilitiesDocument;
+import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.QNameSet;
@@ -60,29 +62,31 @@ public class RESTContext {
 
 	private Capabilities capabilities;
 
+	public static RESTContext register(String baseURI) {
+		return register(UUID.randomUUID().toString());
+	}
+	
 	/**
-	 * Register a dummy user
+	 * Register a user and return a {@link RESTContext} for that user.
 	 * 
-	 * @param baseURI
-	 * @return
+	 * @param baseURI Base URI of service
+	 * @param username Desired username
+	 * @return An initialized {@link RESTContext}
 	 * @throws NotSuccessException
 	 */
-	public static RESTContext register(String baseURI)
+	public static RESTContext register(String baseURI, String username)
 		throws NotSuccessException {
-		Request request = new Request();
+		
+		RESTContext anonContext = new RESTContext(baseURI);
+		Reference uri = anonContext.getUsersURI();
+		
+		UserDocument userDoc = UserDocument.Factory.newInstance();
+		userDoc.addNewUser().setUsername(username);
 
-		// FIXME: Use capabilities listing to get URI
-		request.setResourceRef(baseURI + "users");
-		request.setMethod(Method.POST);
-		request.setEntity("<user xmlns='" + TavernaService.NS + "'>"
-			+ "</user>", restType);
-		Client client = new Client(Protocol.HTTP);
-		Response response = client.handle(request);
+		Response response = anonContext.post(uri, userDoc);
 		if (!response.getStatus().isSuccess()) {
 			throw new NotSuccessException(response.getStatus());
 		}
-		Reference justCreated = response.getRedirectRef();
-		String username = justCreated.getLastSegment();
 		logger.info("Registered " + username + " at " + baseURI);
 		String password;
 		try {
@@ -95,13 +99,23 @@ public class RESTContext {
 		}
 		return new RESTContext(baseURI, username, password);
 	}
+	
+	/**
+	 * (Private) constructor for an anonymous connection
+	 * 
+	 * @param baseURI
+	 */
+	private RESTContext(String baseURI) {
+		this.baseURI = new Reference(baseURI);
+	}
 
 	public RESTContext(String baseURI, String username, String password) {
+		this(baseURI);
 		if (baseURI == null || username == null || password == null) {
 			throw new NullPointerException(
 				"uri/username/password can't be null");
 		}
-		this.baseURI = new Reference(baseURI);
+
 		this.username = username;
 		this.password = password;
 	}
