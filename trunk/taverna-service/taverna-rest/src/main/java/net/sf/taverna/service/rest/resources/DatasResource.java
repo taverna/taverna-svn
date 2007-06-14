@@ -61,9 +61,9 @@ public class DatasResource extends AbstractUserResource {
 
 	@Override
 	public void post(Representation entity) {
-		if (!restType.includes(entity.getMediaType())) {
+		if (!baclavaType.includes(entity.getMediaType())) {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
-				"Content type must be " + restType);
+				"Content type must be " + baclavaType);
 			return;
 		}
 		DataDoc dataDoc = new DataDoc();
@@ -78,7 +78,7 @@ public class DatasResource extends AbstractUserResource {
 		}
 		dao.create(dataDoc);
 		daoFactory.commit();
-		getResponse().setRedirectRef("/data/" + dataDoc.getId());
+		getResponse().setRedirectRef(uriFactory.getURI(dataDoc));
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 
 	}
