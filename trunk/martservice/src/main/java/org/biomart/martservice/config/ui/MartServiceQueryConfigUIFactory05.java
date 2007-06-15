@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory05.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-23 17:06:39 $
+ * Last modified on   $Date: 2007-06-15 09:12:34 $
  *               by   $Author: davidwithers $
  * Created on 04-Apr-2006
  *****************************************************************/
@@ -1718,15 +1718,17 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 		public void setOptions(Option[] options) {
 			clearOptions();
 			for (int i = 0; i < options.length; i++) {
-				optionMap.put(options[i].getValue(), options[i]);
-				optionList.add(options[i]);
-				String displayName = options[i].getDisplayName();
-				if (displayName != null) {
-					comboBoxModel.addElement(QueryConfigUtils
-							.truncateName(displayName));
+				if (options[i].getHidden() == null || !options[i].getHidden().equals("true")) {
+					optionMap.put(options[i].getValue(), options[i]);
+					optionList.add(options[i]);
+					String displayName = options[i].getDisplayName();
+					if(displayName != null) {
+						comboBoxModel.addElement(QueryConfigUtils
+								.truncateName(displayName));
+					}
 				}
 			}
-			if (options.length > 0) {
+			if (optionList.size() > 0) {
 				if ("text".equals(type)) {
 					removeAll();
 					add(comboBox, BorderLayout.WEST);
@@ -1734,7 +1736,7 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 					revalidate();
 					repaint();
 				}
-				setValue(options[0].getValue());
+				setValue(((Option) optionList.get(0)).getValue());
 			} else {
 				if ("list".equals(type)) {
 					removeAll();
@@ -1767,11 +1769,11 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 							optionDeselected(option);
 						}
 					}
-					Option option = (Option) optionMap.get(getValue());
+					Option option = (Option) optionMap.get(value);
 					if (option != null) {
-						optionSelected((Option) optionMap.get(value));
+						optionSelected(option);
 					}
-					int index = optionList.indexOf(optionMap.get(value));
+					int index = optionList.indexOf(option);
 					comboBox.setSelectedIndex(index);
 				}
 			} else if ("text".equals(type)) {
@@ -1957,6 +1959,7 @@ public class MartServiceQueryConfigUIFactory05 implements QueryConfigUIFactory {
 
 			final JFileChooser chooser = new JFileChooser();
 			JButton chooserButton = new JButton("Browse...");
+			chooserButton.setBackground(componentBackgroundColor);
 			chooserButton.setFont(chooserButton.getFont()
 					.deriveFont(Font.PLAIN));
 			chooserButton.addActionListener(new ActionListener() {
@@ -3271,7 +3274,7 @@ class ExpandableBox extends JPanel {
 		expandButton = new JButton(MartServiceIcons.getIcon("contract"));
 		expandButton.setActionCommand("contract");
 		expandButton.setBackground(backgroundColor);
-		expandButton.setBorder(null);
+		expandButton.setBorder(new EmptyBorder(0,0,0,0));
 		expandButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

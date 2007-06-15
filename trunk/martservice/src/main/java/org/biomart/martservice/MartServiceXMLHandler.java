@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceXMLHandler.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:06 $
+ * Last modified on   $Date: 2007-06-15 09:12:34 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -55,6 +55,10 @@ public class MartServiceXMLHandler {
 
 	public static final String MART_QUERY_ELEMENT = "MartQuery";
 
+	public static final String LINKED_DATASETS_ELEMENT = "LinkedDatasets";
+
+	public static final String LINKED_DATASET_ELEMENT = "LinkedDataset";
+
 	public static final String VIRTUAL_SCHEMA_ELEMENT = "virtualSchema";
 
 	public static final String LOCATION_ATTRIBUTE = "location";
@@ -70,6 +74,8 @@ public class MartServiceXMLHandler {
 	public static final String HOST_ATTRIBUTE = "host";
 
 	public static final String INCLUDE_DATASETS_ATTRIBUTE = "includeDatasets";
+
+	public static final String LINK_ATTRIBUTE = "LINK";
 
 	public static final String MART_USER_ATTRIBUTE = "martUser";
 
@@ -325,14 +331,14 @@ public class MartServiceXMLHandler {
 				MART_DATASET_ELEMENT, namespace), namespace));
 		martQuery.setQuery(QueryXMLHandler.elementToQuery(element.getChild(
 				QueryXMLHandler.QUERY_ELEMENT, namespace), namespace));
-		Element linksElement = element.getChild("LinkedDatasets", namespace);
+		Element linksElement = element.getChild(LINKED_DATASETS_ELEMENT, namespace);
 		if (linksElement != null) {
-			List linkedDatasets = linksElement.getChildren("LinkedDataset",
+			List linkedDatasets = linksElement.getChildren(LINKED_DATASETS_ELEMENT,
 					namespace);
 			for (Iterator iter = linkedDatasets.iterator(); iter.hasNext();) {
 				Element datasetElement = (Element) iter.next();
-				String datasetName = datasetElement.getAttributeValue("name");
-				String linkId = datasetElement.getAttributeValue("link");
+				String datasetName = datasetElement.getAttributeValue(NAME_ATTRIBUTE);
+				String linkId = datasetElement.getAttributeValue(LINK_ATTRIBUTE);
 				martQuery.addLinkedDataset(datasetName, linkId);
 			}
 		}
@@ -360,12 +366,12 @@ public class MartServiceXMLHandler {
 				namespace));
 		Set linkedDatasets = martQuery.getLinkedDatasets();
 		if (linkedDatasets.size() > 0) {
-			Element linksElement = new Element("LinkedDatasets", namespace);
+			Element linksElement = new Element(LINKED_DATASETS_ELEMENT, namespace);
 			for (Iterator iter = linkedDatasets.iterator(); iter.hasNext();) {
 				String datasetName = (String) iter.next();
-				Element datasetElement = new Element("LinkedDataset", namespace);
-				datasetElement.setAttribute("name", datasetName);
-				datasetElement.setAttribute("link", martQuery
+				Element datasetElement = new Element(LINKED_DATASETS_ELEMENT, namespace);
+				datasetElement.setAttribute(NAME_ATTRIBUTE, datasetName);
+				datasetElement.setAttribute(LINK_ATTRIBUTE, martQuery
 						.getLink(datasetName));
 				linksElement.addContent(datasetElement);
 			}

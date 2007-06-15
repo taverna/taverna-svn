@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryConfigController.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:15 $
+ * Last modified on   $Date: 2007-06-15 09:12:34 $
  *               by   $Author: davidwithers $
  * Created on 27-Mar-2006
  *****************************************************************/
@@ -235,12 +235,12 @@ public class QueryConfigController {
 						&& !QueryConfigUtils.isNestedList(filterDescription)) {
 					// if there is no default value but there are options then
 					// choose the first option as the filter value
-					Option[] options = filterDescription.getOptions();
-					if (options != null && options.length > 0) {
-						defaultValue = options[0].getValue();
-					} else {
+//					Option[] options = filterDescription.getOptions();
+//					if (options != null && options.length > 0) {
+//						defaultValue = options[0].getValue();
+//					} else {
 						defaultValue = queryComponent.getValue();
-					}
+//					}
 				}
 				filter = new Filter(queryComponent.getName(), defaultValue);
 				if ("id_list".equals(filterDescription.getType())) {
