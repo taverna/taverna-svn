@@ -62,8 +62,8 @@ public class RESTContext {
 
 	private Capabilities capabilities;
 
-	public static RESTContext register(String baseURI) {
-		return register(UUID.randomUUID().toString());
+	public static RESTContext register(String baseURI) throws NotSuccessException {
+		return register(baseURI, UUID.randomUUID().toString());
 	}
 	
 	/**
@@ -386,6 +386,9 @@ public class RESTContext {
 	 * @param name
 	 */
 	public void setName(String name) {
+		if (name != null && name.equals("")) {
+			name = null;
+		}
 		this.name = name;
 	}
 
