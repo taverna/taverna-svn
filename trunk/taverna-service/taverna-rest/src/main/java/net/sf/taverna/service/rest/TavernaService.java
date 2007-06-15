@@ -1,8 +1,5 @@
 package net.sf.taverna.service.rest;
 
-import net.sf.taverna.service.datastore.bean.User;
-import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.rest.utils.UserUtils;
 
 import org.apache.commons.cli.CommandLine;

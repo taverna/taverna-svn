@@ -1,9 +1,17 @@
 package net.sf.taverna.service.rest;
 
-import javax.print.attribute.standard.JobName;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.datastore.dao.WorkflowDAO;
+import net.sf.taverna.service.rest.utils.URIFactory;
+import net.sf.taverna.service.xml.Job;
+import net.sf.taverna.service.xml.JobDocument;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -13,14 +21,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-
-import net.sf.taverna.service.datastore.bean.Queue;
-import net.sf.taverna.service.datastore.bean.Workflow;
-import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.datastore.dao.WorkflowDAO;
-import net.sf.taverna.service.rest.utils.URIFactory;
-import net.sf.taverna.service.xml.Job;
-import net.sf.taverna.service.xml.JobDocument;
 
 public class TestJob extends ClientTest {
 

@@ -1,7 +1,7 @@
 package net.sf.taverna.service.interfaces;
 
 
-public interface TavernaService {
+public interface TavernaConstants {
 	
 	// Mime types
 		

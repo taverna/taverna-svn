@@ -10,7 +10,7 @@ import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.interfaces.QueueException;
-
+@Deprecated //left here for reference, but otherwise this class is dead
 public class TavernaQueue {
 	
 	//private static Logger logger = Logger.getLogger(TavernaQueue.class);

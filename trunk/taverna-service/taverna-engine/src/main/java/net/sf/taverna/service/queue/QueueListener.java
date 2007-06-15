@@ -8,7 +8,7 @@ import net.sf.taverna.service.datastore.dao.JobDAO;
 import org.apache.log4j.Logger;
 
 
-
+@Deprecated //left here for reference, but otherwise this class is dead
 public abstract class QueueListener implements Runnable {
 
 	DAOFactory daoFactory = DAOFactory.getFactory();

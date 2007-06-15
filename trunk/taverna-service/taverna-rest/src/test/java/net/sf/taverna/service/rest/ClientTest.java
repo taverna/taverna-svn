@@ -2,7 +2,7 @@ package net.sf.taverna.service.rest;
 
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.interfaces.TavernaService;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.test.TestCommon;
 
 import org.junit.AfterClass;
@@ -24,11 +24,11 @@ public abstract class ClientTest extends TestCommon {
 
 	public static final String BASE_URL = "http://localhost:" + PORT + "/v1/";
 	
-	public static final MediaType restType = new MediaType(TavernaService.restType);
+	public static final MediaType restType = new MediaType(TavernaConstants.restType);
 
-	public static final MediaType scuflType = new MediaType(TavernaService.scuflType);
+	public static final MediaType scuflType = new MediaType(TavernaConstants.scuflType);
 
-	public static final MediaType baclavaType = new MediaType(TavernaService.baclavaType);
+	public static final MediaType baclavaType = new MediaType(TavernaConstants.baclavaType);
 
 	private static RestApplication server;
 

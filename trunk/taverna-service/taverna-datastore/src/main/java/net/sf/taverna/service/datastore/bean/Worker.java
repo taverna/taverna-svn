@@ -1,11 +1,15 @@
 package net.sf.taverna.service.datastore.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+
+import net.sf.taverna.service.datastore.bean.Job.Status;
 
 @Entity
 public class Worker extends User {
@@ -18,6 +22,13 @@ public class Worker extends User {
 
 	@OneToMany(mappedBy="worker")
 	private List<Job> jobs;
+	
+	public boolean isBusy() {
+		for (Job j : getJobs()) {
+			if (j.getStatus().equals(Status.RUNNING) || j.getStatus().equals(Status.DEQUEUED)) return true;
+		}
+		return false;
+	}
 	
 	public List<Job> getJobs() {
 		return jobs;
@@ -50,4 +61,9 @@ public class Worker extends User {
 		setLastModified();
 	}
 
+	public void assignJob(Job job) {
+		job.setStatus(Status.DEQUEUED);
+		if (getJobs()==null) setJobs(new ArrayList<Job>());
+		getJobs().add(job);
+	}
 }

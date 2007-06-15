@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.interfaces.TavernaService;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.UserDocument;
 

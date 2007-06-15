@@ -3,7 +3,7 @@ package net.sf.taverna.service.rest.client;
 import java.io.IOException;
 import java.util.UUID;
 
-import net.sf.taverna.service.interfaces.TavernaService;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.xml.Capabilities;
 import net.sf.taverna.service.xml.CapabilitiesDocument;
 import net.sf.taverna.service.xml.UserDocument;
@@ -30,13 +30,13 @@ import org.restlet.resource.StringRepresentation;
 public class RESTContext {
 
 	public static final MediaType restType =
-		new MediaType(TavernaService.restType);
+		new MediaType(TavernaConstants.restType);
 
 	public static final MediaType scuflType =
-		new MediaType(TavernaService.scuflType);
+		new MediaType(TavernaConstants.scuflType);
 
 	public static final MediaType baclavaType =
-		new MediaType(TavernaService.baclavaType);
+		new MediaType(TavernaConstants.baclavaType);
 
 	private static Logger logger = Logger.getLogger(RESTContext.class);
 

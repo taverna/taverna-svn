@@ -36,7 +36,7 @@ import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
-
+@Deprecated //left here for reference, but otherwise this class is dead
 public class TavernaQueueListener extends QueueListener {
 
 	// 60 seconds is "long running" while developing

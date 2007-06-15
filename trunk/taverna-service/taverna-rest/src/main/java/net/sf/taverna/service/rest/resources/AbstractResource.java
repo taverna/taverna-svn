@@ -11,7 +11,7 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.interfaces.TavernaService;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.URItoDAO;
@@ -32,13 +32,13 @@ public abstract class AbstractResource extends RepresentationalResource {
 	private static Logger logger = Logger.getLogger(AbstractResource.class);
 
 	public static final MediaType restType =
-		new MediaType(TavernaService.restType);
+		new MediaType(TavernaConstants.restType);
 
 	public static final MediaType scuflType =
-		new MediaType(TavernaService.scuflType);
+		new MediaType(TavernaConstants.scuflType);
 
 	public static final MediaType baclavaType =
-		new MediaType(TavernaService.baclavaType);
+		new MediaType(TavernaConstants.baclavaType);
 
 	static DAOFactory daoFactory = DAOFactory.getFactory();
 

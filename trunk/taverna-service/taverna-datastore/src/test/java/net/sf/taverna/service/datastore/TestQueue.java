@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.bean.QueueEntry;
 import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.test.TestDAO;
@@ -65,6 +66,10 @@ public class TestQueue extends TestDAO {
 	private void deleteQueues() {
 		QueueDAO queueDao = daoFactory.getQueueDAO();
 		for (Queue queue : queueDao.all()) {
+			for (Job job : queue.getJobs()) {
+				QueueEntry entry = queue.removeJob(job);
+				daoFactory.getQueueEntryDAO().delete(entry);
+			}
 			queueDao.delete(queue);
 		}
 	}

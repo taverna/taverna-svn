@@ -1,15 +1,18 @@
 package net.sf.taverna.service.datastore;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
 import javax.persistence.PersistenceException;
 
+import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.datastore.bean.Job.Status;
+import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.datastore.dao.WorkerDAO;
@@ -69,5 +72,34 @@ public class TestWorker extends TestDAO {
 		assertEquals("There queue should match",queue.getId(),readWorker.getQueue().getId());
 	}
 	
+	@Test
+	public void testAssignJobToWorker() throws Exception {
+		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
+		JobDAO jobDAO = daoFactory.getJobDAO();
+		
+		Worker worker = new Worker();
+		worker.setPassword(User.generatePassword());
+		workerDAO.create(worker);
+		
+		new TestJob().createAndStore();
+		Job job = jobDAO.read(TestJob.lastJob);
+		job.setStatus(Status.QUEUED);
+		jobDAO.create(job);
+		
+		worker.assignJob(job);
+		workerDAO.update(worker);
+		jobDAO.update(job);
+		
+		Job job2 = jobDAO.read(job.getId());
+		
+		assertNotNull(job2);
+		assertEquals("Status should now be DEQUEUED",job.getStatus(),Status.DEQUEUED);
+		
+		Worker worker2 = workerDAO.read(worker.getId());
+		assertNotNull(worker2);
+		assertEquals("There should be 1 job assigned to the worker",1,worker.getJobs().size());
+		
+		
+	}
 
 }

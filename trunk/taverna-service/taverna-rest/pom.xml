@@ -73,8 +73,9 @@
 		</dependency>
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>
-			<artifactId>com.noelios.restlet.ext.net</artifactId>
+			<artifactId>com.noelios.restlet.ext.httpclient</artifactId>
 			<version>1.0.1</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>

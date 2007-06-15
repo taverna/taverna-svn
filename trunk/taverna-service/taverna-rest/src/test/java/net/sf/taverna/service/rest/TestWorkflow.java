@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.interfaces.TavernaService;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.Workflow;
 import net.sf.taverna.service.xml.WorkflowDocument;
