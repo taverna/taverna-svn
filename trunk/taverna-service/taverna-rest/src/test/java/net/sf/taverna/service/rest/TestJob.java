@@ -3,6 +3,9 @@ package net.sf.taverna.service.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import javax.print.attribute.standard.JobName;
+
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
@@ -59,5 +62,7 @@ public class TestJob extends ClientTest {
 		
 		Queue q = daoFactory.getQueueDAO().defaultQueue();
 		assertTrue(q.getJobs().contains(jobBean));
+		
+		assertEquals("job should be queued status",net.sf.taverna.service.datastore.bean.Job.Status.QUEUED,jobBean.getStatus());
 	}
 }

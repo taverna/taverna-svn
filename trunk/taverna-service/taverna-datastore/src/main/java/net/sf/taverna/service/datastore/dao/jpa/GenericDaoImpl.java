@@ -61,8 +61,7 @@ public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> impl
 		if (namedQueryAll() != null) {
 			query = em.createNamedQuery(namedQueryAll());
 		} else {
-			logger.warn("Generating all-query for " + beanType.getSimpleName());
-			// Should we warn about this?
+			if (logger.isDebugEnabled()) logger.debug("Generating all-query for " + beanType.getSimpleName());
 			query = em.createQuery("SELECT o FROM " + 
 				beanType.getSimpleName() + " o");
 		}

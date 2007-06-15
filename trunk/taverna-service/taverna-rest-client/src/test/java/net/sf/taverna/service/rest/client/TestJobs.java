@@ -41,7 +41,7 @@ public class TestJobs extends ContextTest {
 		job = jobs.add(wf, data);
 		assertEquals(wf, job.getWorkflow());
 		assertEquals(user, job.getOwner());
-		assertEquals(StatusType.NEW, job.getStatus());
+		assertEquals(StatusType.QUEUED, job.getStatus());
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class TestJobs extends ContextTest {
 		if (job == null) {
 			uploadJob();
 		}
-		job.setStatus(StatusType.QUEUED);
+		job.setStatus(StatusType.DEQUEUED);
 	}
 	
 	@Test

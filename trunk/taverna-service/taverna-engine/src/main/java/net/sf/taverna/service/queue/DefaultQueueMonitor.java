@@ -3,6 +3,8 @@ package net.sf.taverna.service.queue;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.service.backend.JobExecutor;
+import net.sf.taverna.service.backend.JobExecutorFactory;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.Worker;
@@ -53,6 +55,9 @@ public class DefaultQueueMonitor extends Thread {
 			finally {
 				if (daoFactory != null) daoFactory.close();
 			}
+			
+			kickstartWorkers();
+			
 			try {
 				if (!terminate) Thread.sleep(CHECK_PERIOD * 1000);
 			} catch (InterruptedException e) {
@@ -99,13 +104,30 @@ public class DefaultQueueMonitor extends Thread {
 		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
 		JobDAO jobDAO = daoFactory.getJobDAO();
 		for (Worker worker : workers) {
+			if (jobIndex>=jobs.size()) break;
 			Job job = jobs.get(jobIndex);
 			worker.assignJob(job);
 			jobDAO.update(job);
 			workerDAO.update(worker);
 			jobIndex++;
-			if (jobIndex>jobs.size()) break;
 		}
 		daoFactory.commit();
 	}	
+	
+	private void kickstartWorkers() {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		
+		for (Worker worker : daoFactory.getQueueDAO().defaultQueue().getWorkers()) {
+			if (!worker.isRunning()) {
+				Job job = worker.getNextDequeuedJob();
+				if (job!=null) {
+					logger.info("Starting job execution:"+job.getId());
+					JobExecutor executor = JobExecutorFactory.getInstance().createExecutor();
+					executor.executeJob(job, worker);
+				}
+			}
+		}
+		daoFactory.commit();
+		daoFactory.close();
+	}
 }

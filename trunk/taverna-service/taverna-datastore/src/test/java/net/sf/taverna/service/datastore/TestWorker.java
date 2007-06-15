@@ -97,9 +97,77 @@ public class TestWorker extends TestDAO {
 		
 		Worker worker2 = workerDAO.read(worker.getId());
 		assertNotNull(worker2);
-		assertEquals("There should be 1 job assigned to the worker",1,worker.getJobs().size());
-		
-		
+		assertEquals("There should be 1 job assigned to the worker",1,worker.getWorkerJobs().size());	
 	}
+	
+	@Test
+	public void testIsBusy() throws Exception {
+		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
+		JobDAO jobDAO = daoFactory.getJobDAO();
+		
+		Worker worker = new Worker();
+		worker.setPassword(User.generatePassword());
+		workerDAO.create(worker);
+		
+		new TestJob().createAndStore();
+		Job job = jobDAO.read(TestJob.lastJob);
+		job.setStatus(Status.QUEUED);
+		jobDAO.create(job);
+		
+		assertFalse("Worker hasn't started yet so shouldn't be busy",worker.isBusy());
+		worker.assignJob(job);
+		workerDAO.update(worker);
+		jobDAO.update(job);
+		
+		assertTrue("Worker should be busy now on the assigned job",worker.isBusy());
+		assertTrue("Looked up worker should be busy now on the assigned job",workerDAO.read(worker.getId()).isBusy());
+		
+		job.setStatus(Status.RUNNING);
+		jobDAO.update(job);
+		
+		assertTrue("Worker should be busy now on the running job",worker.isBusy());
+		assertTrue("Looked up worker should be busy now on the running job",workerDAO.read(worker.getId()).isBusy());
+		
+		job.setStatus(Status.COMPLETE);
+		jobDAO.update(job);
+		
+		assertFalse("Worker should no longer be busy now the job has finished",worker.isBusy());	
+	}
+	
+	@Test
+	public void testIsRunning() throws Exception {
+		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
+		JobDAO jobDAO = daoFactory.getJobDAO();
+		
+		Worker worker = new Worker();
+		worker.setPassword(User.generatePassword());
+		workerDAO.create(worker);
+		
+		new TestJob().createAndStore();
+		Job job = jobDAO.read(TestJob.lastJob);
+		job.setStatus(Status.QUEUED);
+		jobDAO.create(job);
+		
+		assertFalse("Worker hasn't started yet so shouldn't be running",worker.isRunning());
+		worker.assignJob(job);
+		workerDAO.update(worker);
+		jobDAO.update(job);
+		
+		assertFalse("Worker should be not be running the assigned job",worker.isRunning());
+		assertFalse("Looked up worker should be not be running the assigned job",workerDAO.read(worker.getId()).isRunning());
+		
+		job.setStatus(Status.RUNNING);
+		jobDAO.update(job);
+		
+		assertTrue("Worker should be busy now on the running job",worker.isRunning());
+		assertTrue("Looked up worker should be busy now on the running job",workerDAO.read(worker.getId()).isRunning());
+		
+		job.setStatus(Status.COMPLETE);
+		jobDAO.update(job);
+		
+		assertFalse("Worker should no longer be busy now the job has finished",worker.isRunning());	
+	}
+	
+	
 
 }

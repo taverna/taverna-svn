@@ -11,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
+import net.sf.taverna.service.datastore.bean.Job.Status;
+
 @Entity
 public class Queue extends DatedResource {
 	
@@ -47,6 +49,7 @@ public class Queue extends DatedResource {
 		QueueEntry entry = new QueueEntry();
 		entry.setQueue(this);
 		entry.setJob(job);
+		job.setStatus(Status.QUEUED);
 		entries.add(entry);
 		setLastModified();
 	}
