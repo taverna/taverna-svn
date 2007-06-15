@@ -77,7 +77,7 @@ public class RESTContext {
 	public static RESTContext register(String baseURI, String username)
 		throws NotSuccessException {
 		
-		RESTContext anonContext = new RESTContext(baseURI, "", "");
+		RESTContext anonContext = new RESTContext(baseURI);
 		Reference uri = anonContext.getUsersURI();
 		
 		UserDocument userDoc = UserDocument.Factory.newInstance();
@@ -100,12 +100,20 @@ public class RESTContext {
 		return new RESTContext(baseURI, username, password);
 	}
 
-	public RESTContext(String baseURI, String username, String password) {
-		if (baseURI == null || username == null || password == null) {
+	private RESTContext(String baseURI) {
+		if (baseURI == null) {
 			throw new NullPointerException(
-				"uri/username/password can't be null");
+				"uri can't be null");
 		}
 		this.baseURI = new Reference(baseURI);
+	}
+	
+	public RESTContext(String baseURI, String username, String password) {
+		this(baseURI);
+		if (username == null || password == null) {
+			throw new NullPointerException(
+				"username/password can't be null, use register() for registration");
+		}
 		this.username = username;
 		this.password = password;
 	}
@@ -317,7 +325,7 @@ public class RESTContext {
 			request.getClientInfo().getAcceptedMediaTypes().add(
 				new Preference<MediaType>(accepts));
 		}
-		if (baseURI.isParent(uri)) {
+		if (baseURI.isParent(uri) && username != null) {
 			logger.debug("Authenticating as " + username);
 			ChallengeResponse challengeResponse =
 				new ChallengeResponse(ChallengeScheme.HTTP_BASIC, username,
