@@ -19,30 +19,42 @@ import org.apache.log4j.Logger;
  * 
  * @author Stuart Owen
  */
-public class DefaultQueueMonitor implements Runnable {
+public class DefaultQueueMonitor extends Thread {
 	private static Logger logger = Logger.getLogger(DefaultQueueMonitor.class);
 
 	//FIXME: this should be increased after testing, or better still read from config
 	private final int CHECK_PERIOD = 5; //checks every 5 seconds.
 	private boolean terminate = false;
+	Object o = new Object();
 	
 	public void run() {
 		while(!terminate) {
 			logger.debug("Checking queue for new jobs");
-			DAOFactory daoFactory = DAOFactory.getFactory();
-			
-			List<Job> waitingJobs = determineWaitingJobs(daoFactory);
-			if (waitingJobs.size()>0) {
-				logger.info(waitingJobs.size()+" waiting jobs found");
-				List<Worker> availableWorkers = determineAvaliableWorkers(daoFactory);
-				if (availableWorkers.size()>0) {
-					logger.info(availableWorkers.size()+" available workers found.");
-					assignJobsToWorkers(daoFactory,availableWorkers,waitingJobs);
+			DAOFactory daoFactory = null;
+			try {
+				daoFactory = DAOFactory.getFactory();
+				
+				List<Job> waitingJobs = determineWaitingJobs(daoFactory);
+				if (waitingJobs.size()>0) {
+					logger.info(waitingJobs.size()+" waiting jobs found");
+					List<Worker> availableWorkers = determineAvaliableWorkers(daoFactory);
+					if (availableWorkers.size()>0) {
+						logger.info(availableWorkers.size()+" available workers found.");
+						assignJobsToWorkers(daoFactory,availableWorkers,waitingJobs);
+					}
+					else {
+						logger.info("No workers available");
+					}
 				}
 			}
-			daoFactory.close();
+			catch(Exception e) {
+				logger.error("Error monitoring queue",e);
+			}
+			finally {
+				if (daoFactory != null) daoFactory.close();
+			}
 			try {
-				if (!terminate) Thread.currentThread().wait(CHECK_PERIOD * 1000);
+				if (!terminate) Thread.sleep(CHECK_PERIOD * 1000);
 			} catch (InterruptedException e) {
 				
 			}
@@ -51,11 +63,11 @@ public class DefaultQueueMonitor implements Runnable {
 	}
 	
 	/**
-	 * Notifies the thread and terminates the poll loop
+	 * Causes the thread to exit the poll loop.
+	 *
 	 */
 	public void terminate() {
 		terminate=true;
-		Thread.currentThread().notify();
 	}
 
 	/**

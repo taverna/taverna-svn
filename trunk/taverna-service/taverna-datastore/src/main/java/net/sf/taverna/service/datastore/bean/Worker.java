@@ -19,23 +19,12 @@ public class Worker extends User {
 	@ManyToOne
 	@JoinColumn(name="queue_fk")
 	private Queue queue;
-
-	@OneToMany(mappedBy="worker")
-	private List<Job> jobs;
 	
 	public boolean isBusy() {
 		for (Job j : getJobs()) {
 			if (j.getStatus().equals(Status.RUNNING) || j.getStatus().equals(Status.DEQUEUED)) return true;
 		}
 		return false;
-	}
-	
-	public List<Job> getJobs() {
-		return jobs;
-	}
-
-	public void setJobs(List<Job> jobs) {
-		this.jobs = jobs;
 	}
 	
 	public void setQueue(Queue queue) {
@@ -48,6 +37,10 @@ public class Worker extends User {
 
 	public String getApiURI() {
 		return apiURI;
+	}
+	
+	public void setJobs(List<Job> jobs) {
+		this.jobs=jobs;
 	}
 
 	/**
@@ -63,6 +56,7 @@ public class Worker extends User {
 
 	public void assignJob(Job job) {
 		job.setStatus(Status.DEQUEUED);
+		job.setWorker(this);
 		if (getJobs()==null) setJobs(new ArrayList<Job>());
 		getJobs().add(job);
 	}

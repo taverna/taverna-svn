@@ -3,8 +3,6 @@
 <wb-module deploy-name="taverna-service">
 <wb-resource deploy-path="/" source-path="/taverna-wsdl/src/main/webapp"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest/src/test/resources"/>
-<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/main/java"/>
-<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/test/java"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-interface/src/main/java"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest/src/main/java"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest/src/test/java"/>
@@ -19,6 +17,7 @@
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest-client/src/test/resources"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest-xmlbeans/target/classes"/>
 <wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-rest/src/main/resources"/>
+<wb-resource deploy-path="/WEB-INF/classes" source-path="/taverna-engine/src/main/java"/>
 <property name="context-root" value="taverna-service"/>
 <property name="java-output-path" value="build/classes"/>
 </wb-module>

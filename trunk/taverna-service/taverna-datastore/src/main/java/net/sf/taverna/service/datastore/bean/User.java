@@ -16,7 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -52,11 +51,9 @@ public class User extends DatedResource {
 	private byte[] passwordHash;
 	
 	private Date lastSeen = new Date();
-	
-
 
 	@OneToMany(mappedBy = "owner")
-	private List<Job> jobs = new ArrayList<Job>();
+	protected List<Job> jobs = new ArrayList<Job>();
 
 
 	/**

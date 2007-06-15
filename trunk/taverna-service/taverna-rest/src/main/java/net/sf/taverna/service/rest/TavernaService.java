@@ -1,5 +1,6 @@
 package net.sf.taverna.service.rest;
 
+import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.utils.UserUtils;
 
 import org.apache.commons.cli.CommandLine;
@@ -58,6 +59,8 @@ public class TavernaService {
 		if (line.hasOption(PORT)) {
 			port = (Integer) line.getOptionObject(PORT);
 		}
+		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor();
+		queueMonitor.start();
 		new RestApplication().startServer(port);
 	}
 
