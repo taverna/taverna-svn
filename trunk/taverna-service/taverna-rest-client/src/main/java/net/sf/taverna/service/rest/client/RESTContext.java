@@ -77,7 +77,7 @@ public class RESTContext {
 	public static RESTContext register(String baseURI, String username)
 		throws NotSuccessException {
 		
-		RESTContext anonContext = new RESTContext(baseURI);
+		RESTContext anonContext = new RESTContext(baseURI, "", "");
 		Reference uri = anonContext.getUsersURI();
 		
 		UserDocument userDoc = UserDocument.Factory.newInstance();
@@ -99,23 +99,13 @@ public class RESTContext {
 		}
 		return new RESTContext(baseURI, username, password);
 	}
-	
-	/**
-	 * (Private) constructor for an anonymous connection
-	 * 
-	 * @param baseURI
-	 */
-	private RESTContext(String baseURI) {
-		this.baseURI = new Reference(baseURI);
-	}
 
 	public RESTContext(String baseURI, String username, String password) {
-		this(baseURI);
 		if (baseURI == null || username == null || password == null) {
 			throw new NullPointerException(
 				"uri/username/password can't be null");
 		}
-
+		this.baseURI = new Reference(baseURI);
 		this.username = username;
 		this.password = password;
 	}
