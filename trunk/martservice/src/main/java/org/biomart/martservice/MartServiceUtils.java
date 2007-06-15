@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-26 15:05:08 $
+ * Last modified on   $Date: 2007-06-15 09:17:37 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -149,6 +149,8 @@ public class MartServiceUtils {
 
 	public static String getVersion(String martServiceLocation,
 			String requestId, MartURLLocation mart) throws MartServiceException {
+		String errorMessage = "Error getting version from " + martServiceLocation;
+
 		List data = new ArrayList();
 		data.add(new NameValuePair(TYPE_ATTRIBUTE, VERSION_VALUE));
 		if (mart.getVirtualSchema() != null) {
@@ -169,16 +171,22 @@ public class MartServiceUtils {
 			InputStream in = executeMethod(method, martServiceLocation);
 			BufferedReader bufferedReader = new BufferedReader(
 					new InputStreamReader(in));
-			String version = bufferedReader.readLine().trim();
+			String version = bufferedReader.readLine();
+			if (version == null) {
+				throw new MartServiceException(errorMessage + ": No version returned");
+			}
+			version = version.trim();
 			// fix for biomart's 'let's add a blank line' thing
 			if ("".equals(version)) {
-				version = bufferedReader.readLine().trim();
+				version = bufferedReader.readLine();
+				if (version == null) {
+					throw new MartServiceException(errorMessage + ": No version returned");
+				}
+				version = version.trim();
 			}
 			bufferedReader.close();
 			return version;
 		} catch (IOException e) {
-			String errorMessage = "Error getting version from "
-					+ martServiceLocation;
 			throw new MartServiceException(errorMessage, e);
 		} finally {
 			method.releaseConnection();
@@ -510,6 +518,7 @@ public class MartServiceUtils {
 
 		method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 				new DefaultHttpMethodRetryHandler(3, false));
+//		method.getParams().setSoTimeout(60000);
 		try {
 			int statusCode = client.executeMethod(method);
 			if (statusCode != HttpStatus.SC_OK) {
