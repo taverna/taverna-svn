@@ -61,21 +61,19 @@
             <type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+        <!--
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+        -->
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>
 			<artifactId>com.noelios.restlet.ext.httpclient</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>com.noelios.restlet</groupId>
-			<artifactId>com.noelios.restlet.ext.net</artifactId>
-			<version>1.0.0</version>
-			</dependency>-->
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -107,16 +105,14 @@
 						<id>stop derby test db</id>
 						<phase>test</phase>
 						<goals>
-                            <!--
 							<goal>run</goal>
-                            -->
 						</goals>
 						<configuration>
 							<tasks>
 								<!--<echo message="Stopping Apache Derby" />-->
 								<java
 									classname="org.apache.derby.drda.NetworkServerControl"
-									fork="yes" failonerror="yes">
+									fork="yes">
 									<classpath
 										refid="maven.test.classpath" />
 									<arg line="shutdown -p 1337" />
