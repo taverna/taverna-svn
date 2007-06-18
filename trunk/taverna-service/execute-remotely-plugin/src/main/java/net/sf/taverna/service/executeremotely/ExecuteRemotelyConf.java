@@ -24,14 +24,15 @@ public class ExecuteRemotelyConf {
 
 	private static final String CONFDIR = "conf";
 
-	private static final String CONFFILE = "net.sf.taverna.service.executeremotely.xml";
+	private static final String CONFFILE =
+		"net.sf.taverna.service.executeremotely.xml";
 
 	private File confFile = findConfFile();
 
 	private List<RESTContext> services = new ArrayList<RESTContext>();
 
 	private static ExecuteRemotelyConf instance;
-	
+
 	/**
 	 * Retrieve the singleton
 	 * 
@@ -43,14 +44,13 @@ public class ExecuteRemotelyConf {
 		}
 		return instance;
 	}
-	
+
 	/**
-	 * Use singleton method {@link #getInstance()} instead. 
-	 *
+	 * Use singleton method {@link #getInstance()} instead.
 	 */
 	private ExecuteRemotelyConf() {
 		load(confFile);
-		// TODO: Also load from taverna.home ? 
+		// TODO: Also load from taverna.home ?
 	}
 
 	private File findConfFile() {
@@ -60,8 +60,8 @@ public class ExecuteRemotelyConf {
 
 	/**
 	 * Load the list of services from an XML file.
-	 *
 	 */
+	@SuppressWarnings("unchecked")
 	private void load(File file) {
 		if (!file.isFile()) {
 			logger.info("Ignoring non-existing " + file);
@@ -94,7 +94,6 @@ public class ExecuteRemotelyConf {
 
 	/**
 	 * Save the list of services to an XML file.
-	 *
 	 */
 	private void save() {
 		Element execElem = new Element("executeremotely");
@@ -116,8 +115,7 @@ public class ExecuteRemotelyConf {
 	}
 
 	/**
-	 * Add or replace service. A service is identified by it's URI and username. 
-	 * 
+	 * Add or replace service. A service is identified by it's URI and username.
 	 */
 	public void addService(RESTContext service) {
 		if (services.contains(service)) {
@@ -126,18 +124,21 @@ public class ExecuteRemotelyConf {
 		}
 		services.add(service);
 		save();
+		logger.info("Added service " + service);
 	}
 
 	/**
 	 * Remove a service.
 	 * 
-	 * @param service Service to remove
+	 * @param service
+	 *            Service to remove
 	 */
 	public void removeService(RESTContext service) {
 		services.remove(service);
 		save();
+		logger.info("Removed service " + service);
 	}
-	
+
 	public RESTContext[] getServices() {
 		return services.toArray(new RESTContext[0]);
 	}

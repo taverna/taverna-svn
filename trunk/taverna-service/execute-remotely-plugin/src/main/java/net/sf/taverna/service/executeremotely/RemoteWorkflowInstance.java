@@ -59,14 +59,12 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		} catch (RESTException e) {
 			logger.warn("Could not get output document for " + job, e);
 			delay();
-			throw new IllegalStateException("Could not get output document",
-				e);
+			throw new IllegalStateException("Could not get output document", e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.warn("Could not read output document for " + job, e);
 			delay();
-			throw new IllegalStateException("Could not read output document",
-				e);
+			throw new IllegalStateException("Could not read output document", e);
 		}
 		try {
 			return parseDataDoc(outputDoc);
@@ -167,10 +165,8 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 	}
 
 	/**
-	 * Avoid hammering web service if something went wrong, by
-	 * sleeping for 250 milliseconds. This method could be called
-	 * whenever a fault occured.
-	 *
+	 * Avoid hammering web service if something went wrong, by sleeping for 250
+	 * milliseconds. This method could be called whenever a fault occured.
 	 */
 	private static void delay() {
 		try {

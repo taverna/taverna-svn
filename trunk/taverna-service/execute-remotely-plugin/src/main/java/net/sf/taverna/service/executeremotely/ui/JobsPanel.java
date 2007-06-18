@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.sf.taverna.service.executeremotely;
+package net.sf.taverna.service.executeremotely.ui;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -16,7 +16,10 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
+import net.sf.taverna.service.executeremotely.RemoteWorkflowInstance;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.JobsREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
@@ -26,6 +29,7 @@ import net.sf.taverna.service.rest.client.RESTException;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -62,6 +66,7 @@ class JobsPanel extends JPanel {
 			} catch (RESTException e) {
 				logger.warn("Can't get status for " + job, e);
 				state = "(unknown)";
+				log("Can't get status for " + job);
 			}
 			setBackground(Color.WHITE);
 			setText(job.getURI() + ": " + state);
@@ -86,6 +91,8 @@ class JobsPanel extends JPanel {
 
 	private RESTContext context;
 
+	private JPanel logPane;
+
 	JobsPanel() {
 		super(new GridBagLayout());
 		refresh();
@@ -97,11 +104,18 @@ class JobsPanel extends JPanel {
 	}
 
 	public void refresh() {
-		removeAll();
-		addHeader();
-		addJobs();
-		addRefreshButton();
-		revalidate();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				removeAll();
+				addHeader();
+				addJobs();
+				addRefreshButton();
+				addLogs();
+				revalidate();
+				repaint();
+			}
+
+		});
 	}
 
 	private void addHeader() {
@@ -111,18 +125,13 @@ class JobsPanel extends JPanel {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
 		c.gridy = 0;
-		// if (taverna == null) {
-		// add(new ShadedLabel("Not connected",
-		// ShadedLabel.TAVERNA_ORANGE), c);
-		// } else {
-		// add(new ShadedLabel("Jobs at " + getEndpoint(),
-		// ShadedLabel.TAVERNA_BLUE), c);
-		// }
+		add(new ShadedLabel("Jobs at " + context, ShadedLabel.TAVERNA_BLUE), c);
+
 	}
 
 	private void addRefreshButton() {
 		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.FIRST_LINE_START;
+		c.anchor = GridBagConstraints.FIRST_LINE_END;
 		c.fill = GridBagConstraints.NONE;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
@@ -141,16 +150,44 @@ class JobsPanel extends JPanel {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
+		c.weightx = 0.2;
+		c.weighty = 0.2;
 		JobsREST jobs;
 		try {
 			jobs = context.getUser().getJobs();
+		} catch (RuntimeException e) {
+			logger.warn("Could not load jobs", e);
+			return;
 		} catch (NotSuccessException e) {
-			ExecuteRemotelyPanel.logger.warn("Could not load jobs", e);
+			logger.warn("Could not load jobs", e);
 			return;
 		}
 		for (JobREST job : jobs) {
 			add(new Job(job), c);
 		}
+	}
+
+	private void addLogs() {
+		logPane = new JPanel();
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.CENTER;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.1;
+		c.weighty = 0.1;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.gridx = 0;
+		c.gridy = GridBagConstraints.RELATIVE;
+		add(new JScrollPane(logPane), c);
+	}
+
+	public void log(Exception ex) {
+		log(ex.toString());
+	}
+
+	public void log(String msg) {
+		JLabel logLabel = new JLabel("<html><small>" + msg + "</small></html");
+		logPane.add(logLabel, 0);
+		logPane.revalidate();
 	}
 
 	public Element parseXML(String xm) throws JDOMException {
@@ -160,8 +197,7 @@ class JobsPanel extends JPanel {
 			document = builder.build(new StringReader(xm));
 		} catch (IOException ex) {
 			// Not expected
-			ExecuteRemotelyPanel.logger.error(
-				"Could not read XML from StringReader", ex);
+			logger.error("Could not read XML from StringReader", ex);
 			throw new RuntimeException("Could not read XML from StringReader",
 				ex);
 		}

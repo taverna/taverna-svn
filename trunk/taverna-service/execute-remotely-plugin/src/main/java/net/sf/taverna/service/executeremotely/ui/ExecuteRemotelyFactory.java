@@ -1,4 +1,4 @@
-package net.sf.taverna.service.executeremotely;
+package net.sf.taverna.service.executeremotely.ui;
 
 import javax.swing.ImageIcon;
 
@@ -9,8 +9,9 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class ExecuteRemotelyFactory implements UIComponentFactorySPI {
 
-	private static Logger logger = Logger.getLogger(ExecuteRemotelyFactory.class);
-	
+	private static Logger logger =
+		Logger.getLogger(ExecuteRemotelyFactory.class);
+
 	public UIComponentSPI getComponent() {
 		logger.info("Making new component " + this);
 		return new ExecuteRemotelyPanel();
