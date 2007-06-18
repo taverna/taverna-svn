@@ -361,6 +361,10 @@ public class RESTContext {
 		return workersURI;
 	}
 
+	public String getPassword() {
+		return password;
+	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -423,6 +427,8 @@ public class RESTContext {
 	public int hashCode() {
 		return (getBaseURI().toString() + getUsername()).hashCode();
 	}
+
+
 	
 
 	
