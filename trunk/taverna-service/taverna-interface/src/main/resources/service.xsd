@@ -259,7 +259,7 @@
 		<complexContent>
 			<extension base="tav:Linked">
 				<sequence>
-					<any minOccurs="1" namespace="##any"
+					<any minOccurs="0" namespace="##any"
 						processContents="skip">
 					</any>
 				</sequence>
