@@ -130,6 +130,6 @@ public class JobsResource extends AbstractUserResource {
 	private void addJobToDefaultQueue(Job job) {
 		QueueDAO queueDao = daoFactory.getQueueDAO();
 		Queue queue = queueDao.defaultQueue();
-		queue.addJob(job);
+		daoFactory.getQueueEntryDAO().create(queue.addJob(job));
 	}
 }
