@@ -9,6 +9,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.validator.NotNull;
 
@@ -20,35 +22,40 @@ import org.hibernate.validator.NotNull;
 	}
 )
 public class Job extends OwnedResource {
-	
+
+	public static final int MAX_REPORT_SIZE=65535;
+
 	public static final String NAMED_QUERY_ALL = "allJobs";
-	
+
 	// Different from Freefluo:
 	// QUEUED, DEQUEUED
 	public enum Status {
 		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED
 	}
-	
+
 	@NotNull
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Workflow workflow;
 
 	@NotNull
-	@Enumerated(value=EnumType.STRING)
+	@Enumerated(value = EnumType.STRING)
 	private Status status = Status.NEW;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private DataDoc inputDoc;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private DataDoc outputDoc;
-	
+
 	@Lob
-	@Column(length=65535)
+	@Column(length = MAX_REPORT_SIZE)
 	private String progressReport;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Worker worker;
+
+	@OneToOne
+	private QueueEntry queueEntry;
 
 	public Job() {
 	}
@@ -111,6 +118,26 @@ public class Job extends OwnedResource {
 		setLastModified();
 	}
 
+	public QueueEntry getQueueEntry() {
+		return queueEntry;
+	}
 
-	
+	public void setQueueEntry(QueueEntry queueEntry) {
+		this.queueEntry = queueEntry;
+		if (queueEntry != null) {
+			setStatus(Status.QUEUED);
+		} else if (getStatus().equals(Status.QUEUED)) {
+			setStatus(Status.NEW);
+		}
+		setLastModified();
+	}
+
+	@Transient
+	public synchronized Queue getQueue() {
+		if (getQueueEntry() == null) {
+			return null;
+		}
+		return getQueueEntry().getQueue();
+	}
+
 }

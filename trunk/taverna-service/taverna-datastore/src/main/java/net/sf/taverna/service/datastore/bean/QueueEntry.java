@@ -26,8 +26,7 @@ public class QueueEntry {
 	private Queue queue;
 	
 	@NotNull
-	@OneToOne
-	@ManyToOne
+	@OneToOne(mappedBy="queueEntry")
 	private Job job;
 
 	public Job getJob() {

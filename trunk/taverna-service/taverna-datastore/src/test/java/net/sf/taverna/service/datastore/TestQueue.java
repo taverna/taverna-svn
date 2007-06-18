@@ -33,9 +33,10 @@ public class TestQueue extends TestDAO {
 	public void createQueue() throws InterruptedException, ParseException {
 		Job job = makeJob();
 		Queue q = new Queue();
+		daoFactory.getQueueDAO().create(q);
 		assertEquals(0, q.getJobs().size());
 		// not getJobs().add()
-		q.addJob(job);
+		daoFactory.getQueueEntryDAO().create(q.addJob(job));
 		assertEquals(1, q.getJobs().size());
 		daoFactory.getQueueDAO().create(q);
 		Queue q2 = altFactory.getQueueDAO().read(q.getId());
@@ -82,7 +83,7 @@ public class TestQueue extends TestDAO {
 		Queue q = new Queue();
 		daoFactory.getQueueDAO().create(q);
 		for (Job j: jobs) {
-			q.addJob(j);
+			daoFactory.getQueueEntryDAO().create(q.addJob(j));
 		}
 		daoFactory.getQueueDAO().update(q);
 		return q;
@@ -128,8 +129,8 @@ public class TestQueue extends TestDAO {
 		Queue q = makeBigQueue();
 		List<Job> jobs = q.getJobs();
 		// Let's remove the first and last job
-		q.removeJob(jobs.get(0));
-		q.removeJob(jobs.get(JOBS-1));
+		daoFactory.getQueueEntryDAO().delete(q.removeJob(jobs.get(0)));
+		daoFactory.getQueueEntryDAO().delete(q.removeJob(jobs.get(JOBS-1)));
 		daoFactory.getQueueDAO().update(q);
 		daoFactory.commit();
 		q = daoFactory.getQueueDAO().read(q.getId());
@@ -156,8 +157,8 @@ public class TestQueue extends TestDAO {
 		List<Job> jobs = q.getJobs();
 		Job firstJob = jobs.get(0);
 		// More difficult, let's remove the first and last job
-		q.removeJob(firstJob);
-		q.addJob(firstJob);
+		daoFactory.getQueueEntryDAO().delete(q.removeJob(firstJob));
+		daoFactory.getQueueEntryDAO().create(q.addJob(firstJob));
 		
 		daoFactory.getQueueDAO().update(q);
 		daoFactory.commit();

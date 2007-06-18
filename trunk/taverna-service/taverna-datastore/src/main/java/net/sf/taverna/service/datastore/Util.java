@@ -27,6 +27,4 @@ public class Util {
 		factory = null;
 	}
 	
-	
-	
 }

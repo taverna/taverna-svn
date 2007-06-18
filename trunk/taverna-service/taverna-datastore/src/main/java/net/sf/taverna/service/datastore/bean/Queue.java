@@ -11,12 +11,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
-import net.sf.taverna.service.datastore.bean.Job.Status;
+import net.sf.taverna.service.datastore.dao.QueueEntryDAO;
 
 @Entity
 public class Queue extends DatedResource {
 	
-	@OneToMany(cascade=CascadeType.ALL)
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="queue")
 	@OrderBy("id")
 	private List<QueueEntry> entries = new ArrayList<QueueEntry>();
 
@@ -37,34 +37,51 @@ public class Queue extends DatedResource {
 	}
 	
 	public boolean hasJob(Job job) {
-		for (QueueEntry entry : entries) {
-			if (entry.getJob().equals(job)) {
-				return true;
-			}
-		}
-		return false;
+		return this.equals(job.getQueue());
 	}
 
-	public void addJob(Job job) {
+	/**
+	 * Add a job to the queue by creating the new {@link QueueEntry}. The job must not
+	 * already be on this or any other queues.
+	 * <p>
+	 * <strong>Note:</strong> The caller must call
+	 * {@link QueueEntryDAO#create(QueueEntry)} on the returned
+	 * {@link QueueEntry}.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if the {@link Job} already had a queue entry set
+	 * @param job {@link Job} to add to queue.
+	 * @return The created {@link QueueEntry} that must be created with the {@link QueueEntryDAO}
+	 */
+	public QueueEntry addJob(Job job) throws IllegalArgumentException {
+		if (job.getQueueEntry() != null) {
+			throw new IllegalArgumentException("Job already has a queue: " + job);
+		}
 		QueueEntry entry = new QueueEntry();
 		entry.setQueue(this);
 		entry.setJob(job);
-		job.setStatus(Status.QUEUED);
+		job.setQueueEntry(entry);
 		entries.add(entry);
 		setLastModified();
+		return entry;
 	}
 	
+	/**
+	 * Remove a job from queue by deleting it's {@link QueueEntry}
+	 * <p>
+	 * <strong>Note:</strong> The caller must call
+	 * {@link QueueEntryDAO#delete(QueueEntry)} on the returned
+	 * {@link QueueEntry}.
+	 * 
+	 * @param job {@link Job} to remove from queue.
+	 * @return The {@link QueueEntry} that must be deleted with the {@link QueueEntryDAO}
+	 */
 	public QueueEntry removeJob(Job job) {
-		QueueEntry removeEntry = null;
-		for (QueueEntry entry : entries) {
-			if (entry.getJob().equals(job)) {
-				removeEntry = entry;
-				break;
-			}
-		}
+		QueueEntry removeEntry = job.getQueueEntry();
 		if (removeEntry == null) {
 			throw new IllegalArgumentException("Unknown job " + job);
 		}
+		job.setQueueEntry(null);
 		entries.remove(removeEntry);
 		setLastModified();
 		return removeEntry;
