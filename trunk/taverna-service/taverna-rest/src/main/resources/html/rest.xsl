@@ -44,6 +44,39 @@
           </dl>
       </div>
   </xsl:template>
+  
+  <xsl:template match="tav:job">
+  	<div class="job">
+  		<h2>Job</h2>
+  		<dl>
+  			<xsl:apply-templates />
+  		</dl>
+  	</div>
+  </xsl:template>
+
+  <xsl:template match="tav:status">
+  	<dt>Status: </dt>
+  	<dd>
+  		<xsl:apply-templates />
+  	</dd>
+  </xsl:template>
+  
+  <xsl:template match="tav:owner">
+  	<dt>Owner : </dt>
+  	<dd>
+  		<xsl:apply-templates />
+  	</dd>
+  </xsl:template>
+  
+    <xsl:template match="tav:workflow">
+  	<div class="workflow">
+  		<h2>Workflow</h2>
+  		<dl>
+  			<xsl:apply-templates />
+  		</dl>
+  	</div>
+  </xsl:template>
+  
 
   <xsl:template match="tav:username">
       <dt>Username</dt>
