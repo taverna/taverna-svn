@@ -72,9 +72,7 @@ public class JobResource extends AbstractJobResource {
 				jobElement.addNewOutputs().setHref(
 					uriFactory.getURI(job.getOutputs()));
 			}
-			if (job.getProgressReport() != null) {
-				jobElement.addNewReport().setHref(uriFactory.getURIReport(job));
-			}
+			jobElement.addNewReport().setHref(uriFactory.getURIReport(job));
 			return jobDoc;
 		}
 	}
