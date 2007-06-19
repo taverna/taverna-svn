@@ -1,6 +1,5 @@
 package net.sf.taverna.service;
 
-
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.RestApplication;
 import net.sf.taverna.service.rest.utils.UserUtils;
@@ -13,13 +12,18 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.derby.drda.NetworkServerControl;
 import org.apache.log4j.Logger;
 
 public class TavernaService {
 
 	private static final int DEFAULT_PORT = 8976;
 
-	private static final String ADMIN = "makeadmin";
+	private static final String MAKE_ADMIN = "makeadmin";
+
+	private static final String START_DB = "startdb";
+
+	private static final String STOP_DB = "stopdb";
 
 	private static final String PORT = "port";
 
@@ -50,23 +54,41 @@ public class TavernaService {
 					+ "using a RESTful HTTP API.", options);
 			System.exit(0);
 		}
-		if (line.hasOption(ADMIN)) {
+
+		if (line.hasOption(MAKE_ADMIN)) {
 			String adminUsername = "admin";
-			String password = UserUtils.resetPassword(adminUsername);
+			String password = line.getOptionValue(MAKE_ADMIN);
+			if (password == null || password.equals("")) {
+				password = UserUtils.resetPassword(adminUsername);
+				System.out.println("Set password " + password + " for " + adminUsername);
+			} else {
+				UserUtils.resetPassword(adminUsername, password);
+				System.out.println("Set password for " + adminUsername);
+			}
+			
 			UserUtils.makeAdmin(adminUsername);
-			System.out.println("Admin user '" + adminUsername + "' with password: " + password);
 			System.exit(0);
 		}
+
+		if (line.hasOption(START_DB)) {
+			NetworkServerControl.main(new String[] { "start", "-p", "1337" });
+			System.exit(0);
+		}
+
+		if (line.hasOption(STOP_DB)) {
+			NetworkServerControl.main(new String[] { "shutdown", "-p", "1337" });
+			System.exit(0);
+		}
+
 		int port = DEFAULT_PORT;
 		if (line.hasOption(PORT)) {
 			port = (Integer) line.getOptionObject(PORT);
 		}
 		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor();
 		queueMonitor.start();
+		
 		new RestApplication().startServer(port);
 	}
-
-
 
 	@SuppressWarnings("static-access")
 	private static Options makeOptions() {
@@ -83,9 +105,24 @@ public class TavernaService {
 
 		Option adminOption =
 			OptionBuilder.withDescription(
-				"Create/recreate an admin account 'admin'. The new admin password "
-					+ "is returned, the server is not started.").create(ADMIN);
+				"Create/recreate an admin account 'admin'. If password is not "
+					+ "specified, a random password is created and returned. "
+					+ "The server is not started.").hasOptionalArg().withArgName(
+				"password").create(MAKE_ADMIN);
 		options.addOption(adminOption);
+
+		Option startDb =
+			OptionBuilder.withDescription(
+				"Start the Apache Derby server. The Taverna server is not started").create(
+				START_DB);
+		options.addOption(startDb);
+
+		Option stopDb =
+			OptionBuilder.withDescription(
+				"Stop the Apache Derby server. The Taverna server is not started").create(
+				STOP_DB);
+		options.addOption(stopDb);
+
 		return options;
 	}
 }
