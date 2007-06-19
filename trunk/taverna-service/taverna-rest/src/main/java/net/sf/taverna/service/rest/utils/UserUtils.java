@@ -10,29 +10,30 @@ public class UserUtils {
 	private static Logger logger = Logger.getLogger(UserUtils.class);
 	
 	public static String resetPassword(String username) {
-		UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
-		User admin = userDAO.readByUsername(username);
 		String password = User.generatePassword();
+		resetPassword(username, password);
+		return password;
+	}
+	
+	public static void resetPassword(String username, String password) {
+		UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
+		User user = userDAO.readByUsername(username);
+		
 		boolean createUser = false;
-		if (admin == null) {
-			admin = new User(username);
+		if (user == null) {
+			user = new User(username);
 			createUser = true;
 		}
-		admin.setPassword(password);
+		user.setPassword(password);
 		if (createUser) {
-			userDAO.create(admin);
+			userDAO.create(user);
 		}
 		DAOFactory.getFactory().commit();
-		return password;
 	}
 	
 	public static void makeAdmin(String username) {
 		UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
 		User admin = userDAO.readByUsername(username);
-		boolean createUser = false;
-		if (createUser) {
-			userDAO.create(admin);
-		}
 		admin.setAdmin(true);
 		DAOFactory.getFactory().commit();
 	}
