@@ -22,11 +22,16 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Directory;
+import org.restlet.Filter;
 import org.restlet.Guard;
+import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.util.Template;
 
 public class RestApplication {
@@ -40,7 +45,6 @@ public class RestApplication {
 	private static final String USER = "/{user}";
 
 	private static final String DATA = "/{data}";
-
 
 	private URIFactory uriFactory = URIFactory.getInstance();
 
@@ -80,20 +84,38 @@ public class RestApplication {
 		component = null;
 	}
 
+	public class DaoCloseFilter extends Filter {
+		public DaoCloseFilter(Context context, Restlet next) {
+			super(context, next);
+		}
+
+		@Override
+		protected void afterHandle(Request req, Response response) {
+			super.afterHandle(req, response);
+			try {
+				daoFactory.rollback();
+			} catch (IllegalStateException ex) { // Expected
+			} finally {
+				daoFactory.close();
+			}
+		}
+	}
+
 	private Component createComponent() {
 		Component component = new Component();
 		component.getClients().add(Protocol.FILE);
-		Router router = new Router(component.getContext());
-		
+
 		URL htmlSource = this.getClass().getResource("/html");
-		System.out.println(htmlSource);
-		
-		Directory htmlDir = new Directory(component.getContext(), htmlSource.toString());
+		Directory htmlDir =
+			new Directory(component.getContext(), htmlSource.toString());
 		component.getDefaultHost().attach("/html", htmlDir);
-		component.getDefaultHost().attach("/v1", router);
+
+		Router router = new Router(component.getContext());
+		DaoCloseFilter daoCloser =
+			new DaoCloseFilter(component.getContext(), router);
+		component.getDefaultHost().attach("/v1", daoCloser);
 
 		Guard userGuard = new UserGuard(router.getContext());
-
 
 		// Authenticate access to mostly anything
 		router.attach(userGuard);
@@ -102,11 +124,11 @@ public class RestApplication {
 			router.attach(uriFactory.getMapping(User.class),
 				UsersResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
-		
+
 		// Capabilities at / is also unprotected
 		route = router.attach("/", CapabilitiesResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
-		
+
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
 		userGuard.setNext(authenticated);
@@ -114,27 +136,25 @@ public class RestApplication {
 		authenticated.attach(uriFactory.getMapping(Job.class) + JOB,
 			JobResource.class);
 		// /jobs/X/status
-		authenticated.attach(uriFactory.getMapping(Job.class) + JOB +
-			uriFactory.getMappingStatus(), JobStatusResource.class);
+		authenticated.attach(uriFactory.getMapping(Job.class) + JOB
+			+ uriFactory.getMappingStatus(), JobStatusResource.class);
 		// /workflows/X
 		authenticated.attach(uriFactory.getMapping(Workflow.class) + WORKFLOW,
 			WorkflowResource.class);
 		// /data/X
 		authenticated.attach(uriFactory.getMapping(DataDoc.class) + DATA,
 			DataResource.class);
-		
-		
+
 		// /users;current
 		authenticated.attach(uriFactory.getMapping(User.class)
 			+ uriFactory.getMappingCurrentUser(), CurrentUserResource.class);
-		
-		
+
 		// /users/X
 		authenticated.attach(uriFactory.getMapping(User.class) + USER,
 			UserResource.class);
 
 		// Collections - below user
-		
+
 		// /users/X/workflows
 		authenticated.attach(uriFactory.getMapping(User.class) + USER
 			+ uriFactory.getMapping(Workflow.class), WorkflowsResource.class);
@@ -145,9 +165,8 @@ public class RestApplication {
 		authenticated.attach(uriFactory.getMapping(User.class) + USER
 			+ uriFactory.getMapping(Job.class), JobsResource.class);
 
-		
 		// TODO: Queues and workers
-		
+
 		// /queues
 		// /queues/X
 		// /workers
