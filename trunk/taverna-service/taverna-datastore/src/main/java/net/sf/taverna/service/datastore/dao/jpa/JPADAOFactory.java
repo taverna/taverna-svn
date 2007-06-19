@@ -106,6 +106,7 @@ public class JPADAOFactory extends DAOFactory {
 				return;
 			}
 			synchronized (em) {
+				em.clear();
 				em.close();
 			}
 			managers.remove(Thread.currentThread());
