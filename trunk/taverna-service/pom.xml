@@ -224,6 +224,6 @@
 		<module>taverna-rest-xmlbeans</module>
 		<module>taverna-rest-client</module>
 		<module>taverna-service</module>
-		<!--module>execute-remotely-plugin</module-->
+		<module>execute-remotely-plugin</module>
 	</modules>
 </project>
