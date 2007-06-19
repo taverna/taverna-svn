@@ -31,13 +31,13 @@
       </thead>
 
       <tbody>
-        <row>
+        <row id="taverna_home">
           <entry>taverna.home</entry>
 
           <entry>String, e.g. C:/taverna-home/</entry>
 
           <entry>The location that Taverna settings, logging and libraries are
-          stored. By defaut when using Windows this is "Documents and
+          stored. By default when using Windows this is "Documents and
           Settings\Application Data\Taverna", using Linux "$HOME/.taverna",
           and using the Mac "$HOME/Library/Application Support/Taverna".
           General configuration files are stored in $taverna.home/conf ; log
