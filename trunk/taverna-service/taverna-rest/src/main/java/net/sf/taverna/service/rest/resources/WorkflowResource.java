@@ -21,7 +21,7 @@ public class WorkflowResource extends AbstractResource {
 
 	private Workflow workflow;
 
-	private static WorkflowDAO dao = daoFactory.getWorkflowDAO();
+	private WorkflowDAO dao = daoFactory.getWorkflowDAO();
 
 	public WorkflowResource(Context context, Request request, Response response) {
 		super(context, request, response);
