@@ -198,6 +198,9 @@ public abstract class AbstractResource extends RepresentationalResource {
 	}
 
 	private boolean isWorkerAuthorized(Worker worker, UUIDResource entity) {
+		//refresh the worker to ensure the list of worker jobs is up to date.
+		daoFactory.getWorkerDAO().refresh(worker);
+		
 		if (entity instanceof Queue) {
 			Queue queue = (Queue) entity;
 			return queue.getWorkers().contains(worker);
@@ -214,14 +217,14 @@ public abstract class AbstractResource extends RepresentationalResource {
 			}
 		}
 		if (entity instanceof Workflow) {
-			for (Job job : worker.getJobs()) {
+			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getWorkflow())) {
 					return true;
 				}
 			}
 		}
 		if (entity instanceof Data) {
-			for (Job job : worker.getJobs()) {
+			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getInputs())) {
 					return true;
 				}
@@ -230,6 +233,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 				}
 			}
 		}
+		logger.info("Worker authorization failed; worker="+worker+", entity="+entity);
 		return false;
 	}
 

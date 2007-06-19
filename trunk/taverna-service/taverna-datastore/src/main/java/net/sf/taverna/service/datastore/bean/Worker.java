@@ -20,7 +20,7 @@ public class Worker extends User {
 	@JoinColumn(name="queue_fk")
 	private Queue queue;
 	
-	@OneToMany(mappedBy = "worker",fetch=FetchType.LAZY)
+	@OneToMany(mappedBy = "worker", fetch=FetchType.EAGER)
 	private List<Job> workerJobs = new ArrayList<Job>();
 	
 	public boolean isBusy() {

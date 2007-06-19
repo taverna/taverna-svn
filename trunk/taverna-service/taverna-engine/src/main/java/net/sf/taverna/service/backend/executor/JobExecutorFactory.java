@@ -1,4 +1,4 @@
-package net.sf.taverna.service.backend;
+package net.sf.taverna.service.backend.executor;
 
 public class JobExecutorFactory {
 	private static JobExecutorFactory instance = new JobExecutorFactory();
@@ -12,7 +12,7 @@ public class JobExecutorFactory {
 	
 	public JobExecutor createExecutor() {
 		//the only executor that presently exists.
-		return new RavenJobExecutor();
+		return new RestfulJobExecutor();
 	}
 	
 }

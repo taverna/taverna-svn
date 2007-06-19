@@ -3,8 +3,8 @@ package net.sf.taverna.service.queue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.service.backend.JobExecutor;
-import net.sf.taverna.service.backend.JobExecutorFactory;
+import net.sf.taverna.service.backend.executor.JobExecutor;
+import net.sf.taverna.service.backend.executor.JobExecutorFactory;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.Worker;
@@ -53,7 +53,10 @@ public class DefaultQueueMonitor extends Thread {
 				logger.error("Error monitoring queue",e);
 			}
 			finally {
-				if (daoFactory != null) daoFactory.close();
+				if (daoFactory != null) {
+					daoFactory.commit();
+					daoFactory.close();
+				}
 			}
 			
 			kickstartWorkers();
@@ -111,7 +114,6 @@ public class DefaultQueueMonitor extends Thread {
 			workerDAO.update(worker);
 			jobIndex++;
 		}
-		daoFactory.commit();
 	}	
 	
 	private void kickstartWorkers() {

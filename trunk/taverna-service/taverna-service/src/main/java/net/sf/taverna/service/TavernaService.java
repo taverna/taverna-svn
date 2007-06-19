@@ -1,6 +1,8 @@
-package net.sf.taverna.service.rest;
+package net.sf.taverna.service;
+
 
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
+import net.sf.taverna.service.rest.RestApplication;
 import net.sf.taverna.service.rest.utils.UserUtils;
 
 import org.apache.commons.cli.CommandLine;

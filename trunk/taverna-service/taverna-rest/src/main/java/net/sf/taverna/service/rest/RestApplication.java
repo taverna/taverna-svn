@@ -24,13 +24,9 @@ import org.apache.log4j.Logger;
 import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Guard;
-import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.util.Template;
 
 public class RestApplication {

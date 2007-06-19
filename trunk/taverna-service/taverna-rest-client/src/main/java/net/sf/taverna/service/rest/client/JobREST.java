@@ -108,7 +108,7 @@ public class JobREST extends OwnedREST<Job> {
 	}
 
 	public void setReport(String report) throws NotSuccessException, XmlException {
-		Reference reportURI = getStatusURI();
+		Reference reportURI = getReportURI();
 		if (reportURI != null) {
 			context.put(reportURI, report, MediaType.TEXT_XML);
 		} else {

@@ -1,4 +1,4 @@
-package net.sf.taverna.service.backend;
+package net.sf.taverna.service.backend.executor;
 
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Worker;
