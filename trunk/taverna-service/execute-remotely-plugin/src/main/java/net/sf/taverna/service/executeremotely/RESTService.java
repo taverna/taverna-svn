@@ -16,10 +16,26 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.restlet.util.Engine;
+
+import com.noelios.restlet.ext.httpclient.HttpClientHelper;
 
 public class RESTService {
+	
 	private static Logger logger = Logger.getLogger(RESTService.class);
 
+	static {		
+		ClassLoader cl = RESTContext.class.getClassLoader();
+		if (cl == null) {
+			cl = Thread.currentThread().getContextClassLoader();
+		}
+		Engine.setClassLoader(cl);
+		com.noelios.restlet.Engine e = new com.noelios.restlet.Engine(false);
+		Engine.setInstance(e);
+		e.getRegisteredClients().add(new HttpClientHelper(null));		
+	}
+
+	
 	private static XMLOutputter xmlOutputter =
 		new XMLOutputter(Format.getCompactFormat());
 

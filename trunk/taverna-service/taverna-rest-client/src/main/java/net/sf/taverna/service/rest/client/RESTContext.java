@@ -1,6 +1,8 @@
 package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.TavernaConstants;
@@ -10,8 +12,11 @@ import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.QNameSet;
+import org.apache.xmlbeans.SchemaTypeLoader;
+import org.apache.xmlbeans.XmlBeans;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.jdom.Element;
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
@@ -62,10 +67,11 @@ public class RESTContext {
 
 	private Capabilities capabilities;
 
-	public static RESTContext register(String baseURI) throws NotSuccessException {
+	public static RESTContext register(String baseURI)
+		throws NotSuccessException {
 		return register(baseURI, UUID.randomUUID().toString());
 	}
-	
+
 	/**
 	 * Register a user and return a {@link RESTContext} for that user.
 	 * 
@@ -76,10 +82,10 @@ public class RESTContext {
 	 */
 	public static RESTContext register(String baseURI, String username)
 		throws NotSuccessException {
-		
+
 		RESTContext anonContext = new RESTContext(baseURI);
 		Reference uri = anonContext.getUsersURI();
-		
+
 		UserDocument userDoc = UserDocument.Factory.newInstance();
 		userDoc.addNewUser().setUsername(username);
 
@@ -102,12 +108,11 @@ public class RESTContext {
 
 	private RESTContext(String baseURI) {
 		if (baseURI == null) {
-			throw new NullPointerException(
-				"uri can't be null");
+			throw new NullPointerException("uri can't be null");
 		}
 		this.baseURI = new Reference(baseURI);
 	}
-	
+
 	public RESTContext(String baseURI, String username, String password) {
 		this(baseURI);
 		if (username == null || password == null) {
@@ -212,7 +217,7 @@ public class RESTContext {
 		// FIXME: Should stream the XML and use document.save()
 		return post(uri, document.xmlText(), restType);
 	}
-	
+
 	public Response put(Reference uri, XmlObject document)
 		throws NotSuccessException {
 		// FIXME: Should stream the XML and use document.save()
@@ -254,24 +259,27 @@ public class RESTContext {
 			logger.error("Could not get document from " + uri, e);
 			throw new RuntimeException("Could not get document from " + uri, e);
 		}
+		logger.debug("Loading document from " + uri);
+
+		InputStream documentStream;
 		try {
-			XmlObject document =
-				XmlObject.Factory.parse(response.getEntity().getStream());
-			logger.info("Retrieved " + document);
-			if (!documentClass.isInstance(document)
-				&& document.schemaType().isDocumentType()) {
-				// Extract the "inner" root element instead of the document
-				// ie. can be cast to User instead of UserDocument
-				XmlObject[] children = document.selectChildren(QNameSet.ALL);
-				document = children[0];
-			}
-			if (!documentClass.isInstance(document)) {
-				logger.error("Not a valid " + documentClass.getCanonicalName()
-					+ ": " + uri);
-				throw new RuntimeException("Could not parse as "
-					+ documentClass.getCanonicalName());
-			}
-			return documentClass.cast(document);
+			documentStream = response.getEntity().getStream();
+		} catch (IOException e) {
+			logger.warn("Could not read user XML from " + uri, e);
+			throw new RuntimeException("Could not read document XML from "
+				+ uri, e);
+		}
+		
+		ClassLoader cl = getClass().getClassLoader();
+		if (cl == null) {
+			cl = Thread.currentThread().getContextClassLoader();
+		}
+		SchemaTypeLoader stl = XmlBeans.typeLoaderForClassLoader(cl);
+		XmlObject document;
+		try {
+			// Workaround for XmlObject.Factory.parse to be able to find our
+			// xmlbeans classes within Raven
+			document = stl.parse(documentStream, null, new XmlOptions());
 		} catch (XmlException ex) {
 			logger.warn("Could not parse user XML from " + uri, ex);
 			throw new RuntimeException("Could not parse document XML from "
@@ -281,6 +289,68 @@ public class RESTContext {
 			throw new RuntimeException("Could not read document XML from "
 				+ uri, ex);
 		}
+		logger.info("Loaded a " + document.getClass());
+		logger.debug(document);
+
+		if (!documentClass.isInstance(document)
+			&& document.schemaType().isDocumentType()) {
+			// Extract the "inner" root element instead of the document
+			// ie. can be cast to User instead of UserDocument
+			XmlObject[] children = document.selectChildren(QNameSet.ALL);
+			document = children[0];
+		}
+		if (!documentClass.isInstance(document)) {
+			logger.error("Not a valid " + documentClass.getCanonicalName()
+				+ ": " + uri);
+			logger.debug("Instead it was "
+				+ document.getClass().getCanonicalName());
+			throw new RuntimeException("Could not parse as "
+				+ documentClass.getCanonicalName());
+		}
+		return documentClass.cast(document);
+
+	}
+
+	private <DocumentClass> DocumentClass parseAtFactory(
+		Class<DocumentClass> documentClass, InputStream documentStream)
+		throws XmlException, IOException {
+		for (Class c : documentClass.getDeclaredClasses()) {
+			if (!c.getSimpleName().equals("Factory")) {
+				continue;
+			}
+			java.lang.reflect.Method m;
+			try {
+				m = c.getMethod("parse", InputStream.class);
+			} catch (SecurityException e) {
+				logger.warn("No access to method parse(InputStream) in " + c, e);
+				continue;
+			} catch (NoSuchMethodException e) {
+				logger.warn("Method parse(InputStream) not found in " + c, e);
+				continue;
+			}
+
+			try {
+				DocumentClass doc =
+					documentClass.cast(m.invoke(null, documentStream));
+				logger.info("Successfully loaded " + doc + " as "
+					+ doc.getClass());
+				return doc;
+			} catch (IllegalArgumentException e) {
+				logger.warn("Invalid arguments for parse(InputStream) in " + c,
+					e);
+			} catch (IllegalAccessException e) {
+				logger.warn("No access to method parse(InputStream) in " + c, e);
+			} catch (InvocationTargetException e) {
+				if (e.getCause() instanceof XmlException) {
+					throw (XmlException) e.getCause();
+				}
+				if (e.getCause() instanceof IOException) {
+					throw (IOException) e.getCause();
+				}
+				logger.warn("Could not parse document", e.getCause());
+			}
+		}
+		return null;
 	}
 
 	private synchronized void checkCapabilities() {
@@ -364,7 +434,7 @@ public class RESTContext {
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -406,31 +476,26 @@ public class RESTContext {
 		}
 		return getBaseURI().toString();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if (! (obj instanceof RESTContext)) {
+		if (!(obj instanceof RESTContext)) {
 			return false;
 		}
 		RESTContext other = (RESTContext) obj;
-		if (! other.getBaseURI().equals(getBaseURI())) {
+		if (!other.getBaseURI().equals(getBaseURI())) {
 			return false;
 		}
-		if (! other.getUsername().equals(getUsername())) {
+		if (!other.getUsername().equals(getUsername())) {
 			return false;
 		}
 		// NOTE: Does not care about password or name
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (getBaseURI().toString() + getUsername()).hashCode();
 	}
-
-
-	
-
-	
 
 }
