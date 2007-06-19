@@ -24,6 +24,8 @@ public class TestJob extends TestDAO  {
 
 	public static final Status status = Status.RUNNING;
 	
+	public static final String progressReport = "<progress>report</progress>";
+	
 	public static String lastJob;
 	
 	@Test
@@ -45,7 +47,7 @@ public class TestJob extends TestDAO  {
     	job.setWorkflow(w);
     	job.setOwner(user);
     	job.setStatus(status);    	
-    	job.setProgressReport("The progress report");
+    	job.setProgressReport(progressReport);
         jobDao.create(job);
         lastJob = job.getId();
         assertNotNull(lastJob);
@@ -60,7 +62,7 @@ public class TestJob extends TestDAO  {
 		assertNotNull("retrieveLast() depends on createAndStore() being run first", lastJob);
 		JobDAO jobDao = altFactory.getJobDAO();
     	Job fetchedJob = jobDao.read(lastJob);
-        assertEquals("The progress report", fetchedJob.getProgressReport());
+        assertEquals(TestJob.progressReport, fetchedJob.getProgressReport());
         assertEquals(workflow, fetchedJob.getWorkflow().getScufl());
         assertEquals(status, fetchedJob.getStatus());
         assertEquals(lastJob, fetchedJob.getId());

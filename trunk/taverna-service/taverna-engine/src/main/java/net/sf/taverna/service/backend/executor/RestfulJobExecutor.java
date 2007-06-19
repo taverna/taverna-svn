@@ -6,7 +6,7 @@ import net.sf.taverna.service.datastore.bean.Worker;
 public class RestfulJobExecutor implements JobExecutor {
 
 	public void executeJob(Job job, Worker worker) {
-		RavenExecutionThread thread = new RavenExecutionThread(job.getId(),worker.getUsername());
+		RestfulExecutionThread thread = new RestfulExecutionThread(job.getId(),worker.getUsername());
 		thread.setDaemon(true);
 		thread.start();
 	}

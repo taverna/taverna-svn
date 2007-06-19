@@ -19,6 +19,7 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.service.rest.client.DataREST;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.RESTContext;
@@ -26,21 +27,22 @@ import net.sf.taverna.service.xml.StatusType;
 import net.sf.taverna.tools.Bootstrap;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.restlet.data.Reference;
 
-public class RavenExecutionThread extends Thread {
+public class RestfulExecutionThread extends Thread {
 	
 	private final String WORKER_PASSWORD="Bob";
 	private final String BASE_URL="http://localhost:8976/v1/";
 	
-	private static Logger logger = Logger.getLogger(RavenExecutionThread.class);
+	private static Logger logger = Logger.getLogger(RestfulExecutionThread.class);
 	private String jobId;
 	private String workerUsername;
 
-	public RavenExecutionThread(String jobId, String workerUsername) {
+	public RestfulExecutionThread(String jobId, String workerUsername) {
 		this.jobId=jobId;
 		this.workerUsername = workerUsername;
 	}
@@ -72,13 +74,13 @@ public class RavenExecutionThread extends Thread {
 		}
 		finally {
 			if (launcher!=null) {
-//				try {
-//					job.setReport(launcher.getProgressReportXML());
-//				} catch (NotSuccessException e) {
-//					logger.error(e);
-//				} catch (XmlException e) {
-//					logger.error(e);
-//				}
+				try {
+					job.setReport(launcher.getProgressReportXML());
+				} catch (NotSuccessException e) {
+					logger.error(e);
+				} catch (XmlException e) {
+					logger.error(e);
+				}
 			}
 		}
 	}

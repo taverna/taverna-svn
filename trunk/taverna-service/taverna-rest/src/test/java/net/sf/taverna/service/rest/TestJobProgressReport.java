@@ -1,5 +1,8 @@
 package net.sf.taverna.service.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.IOException;
 
 import net.sf.taverna.service.datastore.TestJob;
@@ -10,8 +13,6 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -22,15 +23,14 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 
 
-public class TestJobStatus extends ClientTest {
-	
+public class TestJobProgressReport extends ClientTest {
 	static URIFactory uriFactory = URIFactory.getInstance();
 
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
 	String jobURI;
 
-	String statusURI;
+	String progressReportURI;
 
 	Job job;
 	
@@ -42,30 +42,43 @@ public class TestJobStatus extends ClientTest {
 		job.setOwner(daoFactory.getUserDAO().readByUsername(username));
 		daoFactory.commit();
 		jobURI = uriFactory.getURI(job);
-		statusURI = uriFactory.getURIStatus(job);
+		progressReportURI=uriFactory.getURIReport(job);
+		
 	}
 	
 	@Test
-	public void getStatus() throws IOException {
+	public void getReport() throws IOException {
 		Request request = makeAuthRequest();
 		request.setMethod(Method.GET);
-		request.setResourceRef(statusURI);
+		request.setResourceRef(progressReportURI);
+		request.getClientInfo().getAcceptedMediaTypes().add(
+			new Preference<MediaType>(MediaType.TEXT_XML));
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
+		assertEquals(TestJob.progressReport, response.getEntity().getText().trim());
+	}
+	
+	@Test
+	public void getPlainTextNotAcceptable() throws IOException {
+		Request request = makeAuthRequest();
+		request.setMethod(Method.GET);
+		request.setResourceRef(progressReportURI);
 		request.getClientInfo().getAcceptedMediaTypes().add(
 			new Preference<MediaType>(MediaType.TEXT_PLAIN));
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
-		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		assertEquals(TestJob.status.name(), response.getEntity().getText().trim());
+		assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
 	}
 	
 	@Test
-	public void setStatus() throws IOException {
+	public void setReport() throws IOException {
 		Request request = makeAuthRequest();
 		request.setMethod(Method.PUT);
-		request.setResourceRef(statusURI);
-		request.setEntity("COMPLETE", MediaType.TEXT_PLAIN);
+		request.setResourceRef(progressReportURI);
+		request.setEntity("<progres>updated</progress>", MediaType.TEXT_XML);
 		// Just to be sure we will be changing it since makeJob()
-		assertFalse(Job.Status.COMPLETE.equals(job.getStatus()));
+		assertFalse("<progres>updated</progress>".equals(job.getProgressReport()));
 
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
@@ -73,18 +86,30 @@ public class TestJobStatus extends ClientTest {
 		
 		// Confirm in database
 		daoFactory.getJobDAO().refresh(job);
-		assertEquals(Job.Status.COMPLETE, job.getStatus());
+		assertEquals("<progres>updated</progress>", job.getProgressReport());
 		
 		// GET it to confirm
 		request = makeAuthRequest();
 		request.setMethod(Method.GET);
-		request.setResourceRef(statusURI);
+		request.setResourceRef(progressReportURI);
 		request.getClientInfo().getAcceptedMediaTypes().add(
-			new Preference<MediaType>(MediaType.TEXT_PLAIN));
+			new Preference<MediaType>(MediaType.TEXT_XML));
 		response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
-		assertEquals("COMPLETE", response.getEntity().getText().trim());
+		assertEquals("<progres>updated</progress>", response.getEntity().getText().trim());
 	}
 	
-	
+	@Test
+	public void putPlainTextUnsupported() throws IOException {
+		Request request = makeAuthRequest();
+		request.setMethod(Method.PUT);
+		request.setResourceRef(progressReportURI);
+		request.setEntity("some plain text", MediaType.TEXT_PLAIN);
+		// Just to be sure we will be changing it since makeJob()
+		assertFalse("some plain text".equals(job.getProgressReport()));
+
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
+		assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+	}
 }

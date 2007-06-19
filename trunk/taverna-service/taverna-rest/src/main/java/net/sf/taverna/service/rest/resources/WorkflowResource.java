@@ -3,7 +3,6 @@ package net.sf.taverna.service.rest.resources;
 import java.util.Date;
 
 import net.sf.taverna.service.datastore.bean.Workflow;
-import net.sf.taverna.service.datastore.dao.WorkflowDAO;
 import net.sf.taverna.service.xml.WorkflowDocument;
 
 import org.apache.log4j.Logger;
@@ -19,14 +18,12 @@ public class WorkflowResource extends AbstractResource {
 
 	private static Logger logger = Logger.getLogger(WorkflowResource.class);
 
-	private Workflow workflow;
-
-	private WorkflowDAO dao = daoFactory.getWorkflowDAO();
+	private Workflow workflow;		
 
 	public WorkflowResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		String wf_id = (String) request.getAttributes().get("workflow");
-		workflow = dao.read(wf_id);
+		workflow = daoFactory.getWorkflowDAO().read(wf_id);
 		checkEntity(workflow);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
@@ -45,7 +42,6 @@ public class WorkflowResource extends AbstractResource {
 			sb.append(workflow.getScufl());
 			return sb.toString();
 		}
-
 	}
 
 	class XML extends AbstractREST {

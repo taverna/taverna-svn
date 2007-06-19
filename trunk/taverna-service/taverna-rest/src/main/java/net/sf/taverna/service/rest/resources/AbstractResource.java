@@ -40,7 +40,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	public static final MediaType baclavaType =
 		new MediaType(TavernaConstants.baclavaType);
 
-	static DAOFactory daoFactory = DAOFactory.getFactory();
+	protected DAOFactory daoFactory = DAOFactory.getFactory();
 
 	static URIFactory uriFactory = URIFactory.getInstance();
 
