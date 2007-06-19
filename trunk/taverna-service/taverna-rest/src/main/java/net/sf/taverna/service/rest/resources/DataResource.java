@@ -46,7 +46,10 @@ public class DataResource extends AbstractResource {
 		@Override
 		public XmlObject getXML() {
 			DataDocument doc = DataDocument.Factory.newInstance();
-			doc.addNewData().addNewOwner().setHref(uriFactory.getURI(dataDoc.getOwner()));
+			doc.addNewData();
+			if (dataDoc.getOwner() != null) {
+				doc.getData().addNewOwner().setHref(uriFactory.getURI(dataDoc.getOwner()));
+			}
 			XmlObject xml;
 			try {
 				xml = XmlObject.Factory.parse(dataDoc.getBaclava());
