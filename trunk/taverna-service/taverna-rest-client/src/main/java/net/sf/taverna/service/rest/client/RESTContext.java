@@ -192,6 +192,10 @@ public class RESTContext {
 		return request(Method.POST, uri, urls.getTextRepresentation(), null,
 			true);
 	}
+	
+	public Response post(Reference uri, Representation representation) throws NotSuccessException {
+		return request(Method.POST, uri, representation, null, true);
+	}
 
 	public Response put(Reference uri, String data, MediaType mediaType)
 		throws NotSuccessException {
@@ -202,6 +206,10 @@ public class RESTContext {
 		throws NotSuccessException {
 		return request(Method.PUT, uri, urls.getTextRepresentation(), null,
 			true);
+	}
+	
+	public Response put(Reference uri, Representation representation) throws NotSuccessException {
+		return request(Method.PUT, uri, representation, null, true);
 	}
 
 	public Response delete(Reference uri) throws NotSuccessException {
