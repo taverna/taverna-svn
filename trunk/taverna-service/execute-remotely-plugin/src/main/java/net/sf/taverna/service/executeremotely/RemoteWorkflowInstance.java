@@ -77,13 +77,19 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 	}
 
 	public String getProgressReportXMLString() {
+		String report;
 		try {
-			return job.getReport();
+			report = job.getReport();
 		} catch (RESTException e) {
 			logger.warn("Could not get progress report", e);
 			delay();
 			throw new IllegalStateException("Could not get progress report", e);
 		}
+		if (report.length() == 0) {
+			delay();
+			throw new IllegalStateException("Empty progress report");
+		}
+		return report;
 	}
 
 	public String getStatus() {
