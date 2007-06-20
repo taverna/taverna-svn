@@ -3,15 +3,14 @@ package net.sf.taverna.service.rest.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.service.datastore.bean.AbstractOwned;
+import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.Queue;
-import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
-import net.sf.taverna.service.rest.RestApplication;
 
 import org.jdom.Attribute;
 import org.jdom.Namespace;

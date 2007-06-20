@@ -4,10 +4,8 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 
-import org.apache.log4j.Logger;
-
 public class UserUtils {
-	private static Logger logger = Logger.getLogger(UserUtils.class);
+	//private static Logger logger = Logger.getLogger(UserUtils.class);
 	
 	public static String resetPassword(String username) {
 		String password = User.generatePassword();

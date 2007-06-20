@@ -9,9 +9,6 @@ import org.restlet.Guard;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 
-import com.noelios.restlet.http.HttpConstants;
-import com.noelios.restlet.http.HttpRequest;
-
 /**
  * Ensure current user is authenticated. Note that this guard does not do
  * authorization.
@@ -55,13 +52,7 @@ public class UserGuard extends Guard {
 		// FIXME: Should not keep passwords as Strings (use char[] that are
 		// deleted afterwards, as returned from getSecret)
 		String password = new String(req.getChallengeResponse().getSecret());
-
-		HttpRequest httpReq = (HttpRequest) req;
-
-		String authorization =
-			httpReq.getHttpCall().getRequestHeaders().getValues(
-				HttpConstants.HEADER_AUTHORIZATION);
-
+		
 		if (user.checkPassword(password)) {
 			getContext().getAttributes().put(AUTHENTICATED_USER, user);
 			logger.debug("Authenticated " + userName);

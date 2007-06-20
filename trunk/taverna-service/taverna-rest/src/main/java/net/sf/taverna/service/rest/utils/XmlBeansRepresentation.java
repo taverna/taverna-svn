@@ -5,7 +5,6 @@ import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.data.CharacterSet;
@@ -14,8 +13,8 @@ import org.restlet.resource.OutputRepresentation;
 
 public class XmlBeansRepresentation extends OutputRepresentation {
 	
-	private static Logger logger =
-		Logger.getLogger(XmlBeansRepresentation.class);
+	//private static Logger logger =
+	//	Logger.getLogger(XmlBeansRepresentation.class);
 
 	private static URIFactory uriFactory = URIFactory.getInstance();
 	

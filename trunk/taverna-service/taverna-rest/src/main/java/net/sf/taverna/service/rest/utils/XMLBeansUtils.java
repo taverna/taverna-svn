@@ -1,14 +1,11 @@
 package net.sf.taverna.service.rest.utils;
 
-import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 
