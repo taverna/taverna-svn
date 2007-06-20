@@ -16,6 +16,8 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 
 	private Class<? extends DocumentClass> documentClass;
 
+	private boolean invalid;
+
 	public AbstractREST(RESTContext context, Reference uri,
 		Class<DocumentClass> documentClass) {
 		this(context, uri, null, documentClass);
@@ -45,7 +47,7 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 	}
 
 	public synchronized DocumentClass getDocument() {
-		if (document == null) {
+		if (document == null || invalid) {
 			loadDocument();
 		}
 		return document;
@@ -54,6 +56,14 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 	public void setDocument(DocumentClass document) {
 		this.document = document;
 	}
+	
+	/**
+	 * Force the next {@link #getDocument()} to do a full load.
+	 *
+	 */
+	public void invalidate() {
+		invalid = true;
+	}
 
 	public void refresh() {
 		loadDocument();
@@ -61,6 +71,7 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 
 	public void loadDocument() {
 		setDocument(context.loadDocument(uriReference, getDocumentClass()));
+		invalid = false;
 	}
 
 	@SuppressWarnings("unchecked")

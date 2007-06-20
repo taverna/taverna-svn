@@ -62,6 +62,7 @@ public class DatasREST extends LinkedREST<Datas> implements Iterable<DataREST> {
 			logger.error("Did not get redirect reference for data document");
 			return null;
 		}
+		invalidate();
 		return new DataREST(context, response.getRedirectRef());
 	}
 	

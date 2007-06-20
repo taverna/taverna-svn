@@ -56,6 +56,7 @@ public class JobsREST extends LinkedREST<Jobs> implements Iterable<JobREST> {
 			logger.error("Did not get redirect reference for job for wf " + wf);
 			return null;
 		}
+		invalidate();
 		return new JobREST(context, response.getRedirectRef());
 	}
 

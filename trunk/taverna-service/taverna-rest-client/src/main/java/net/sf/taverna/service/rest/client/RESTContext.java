@@ -194,6 +194,18 @@ public class RESTContext {
 	
 	public Response post(Reference uri, Representation representation) throws NotSuccessException {
 		return request(Method.POST, uri, representation, null, true);
+	}	
+	
+	public Response post(Reference uri, XmlObject document)
+		throws NotSuccessException {
+		// FIXME: Should stream the XML and use document.save()
+		return post(uri, document.xmlText(), restType);
+	}
+
+	public Response put(Reference uri, XmlObject document)
+		throws NotSuccessException {
+		// FIXME: Should stream the XML and use document.save()
+		return put(uri, document.xmlText(), restType);
 	}
 
 	public Response put(Reference uri, String data, MediaType mediaType)
@@ -219,17 +231,7 @@ public class RESTContext {
 		return baseURI;
 	}
 
-	public Response post(Reference uri, XmlObject document)
-		throws NotSuccessException {
-		// FIXME: Should stream the XML and use document.save()
-		return post(uri, document.xmlText(), restType);
-	}
 
-	public Response put(Reference uri, XmlObject document)
-		throws NotSuccessException {
-		// FIXME: Should stream the XML and use document.save()
-		return put(uri, document.xmlText(), restType);
-	}
 
 	public UserREST getUser() throws NotSuccessException {
 		if (user == null) {

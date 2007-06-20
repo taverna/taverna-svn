@@ -21,6 +21,7 @@ public class WorkersREST extends AbstractREST<Workers> {
 		ReferenceList urls = new ReferenceList();
 		urls.add(worker.getURIReference());
 		context.post(context.getWorkersURI(), urls);
+		invalidate();
 	}
 	
 }

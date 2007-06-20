@@ -67,6 +67,7 @@ public class JobREST extends OwnedREST<Job> {
 			JobDocument job = JobDocument.Factory.newInstance();
 			job.addNewJob().addNewStatus().set(status);
 			context.put(getURIReference(), job);
+			invalidate();
 		}
 	}
 	
@@ -82,6 +83,7 @@ public class JobREST extends OwnedREST<Job> {
 		Job job = Job.Factory.newInstance();
 		job.addNewOutputs().setHref(rest.getURI());
 		context.put(getURIReference(), job);
+		invalidate();
 	}
 	
 	private Reference getReportURI() {
@@ -120,6 +122,7 @@ public class JobREST extends OwnedREST<Job> {
 			job.addNewJob().addNewReport().set(reportXML);
 			context.put(getURIReference(), job);
 		}
+		invalidate();
 	}
 	
 

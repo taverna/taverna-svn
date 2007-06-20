@@ -53,6 +53,7 @@ public class WorkflowsREST extends LinkedREST<Workflows> implements
 			logger.error("Did not get redirect reference for workflow " + workflow);
 			return null;
 		}
+		invalidate();
 		return new WorkflowREST(context, response.getRedirectRef());
 	}
 	

@@ -20,6 +20,6 @@ public class WorkflowREST extends OwnedREST<Workflow> {
 	}
 	
 	public String getScufl() {
-		return getDocument().getScufl().toString();
+		return getDocument().getScufl().xmlText();
 	}
 }
