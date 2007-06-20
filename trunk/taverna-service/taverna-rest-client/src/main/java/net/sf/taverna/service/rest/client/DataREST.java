@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import net.sf.taverna.service.xml.Data;
+import net.sf.taverna.service.xml.DataDocument;
+import net.sf.taverna.service.xml.User;
 
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -35,5 +37,23 @@ public class DataREST extends OwnedREST<Data> {
 		public InputStream getBaclavaStream() throws NotSuccessException, MediaTypeException, IOException {
 			Response response = getBaclavaResponse();
 			return response.getEntity().getStream();
+		}
+		
+		
+		/**
+		 * Set the owner of the resource, or set to <code>null</code> if the
+		 * resource is to have no owner.
+		 * 
+		 * @param owner The {@link UserREST} which is to be the owner
+		 * @throws NotSuccessException
+		 */
+		public void setOwner(UserREST owner) throws NotSuccessException {
+			DataDocument dataDoc = DataDocument.Factory.newInstance();
+			User ownerElem = dataDoc.addNewData().addNewOwner();
+			if (owner != null) {
+				ownerElem.setHref(owner.getURI());
+			}
+			context.put(getURIReference(), dataDoc);
+			invalidate();
 		}
 }
