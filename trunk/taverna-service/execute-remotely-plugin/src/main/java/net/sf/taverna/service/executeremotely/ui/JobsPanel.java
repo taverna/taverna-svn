@@ -151,7 +151,6 @@ class JobsPanel extends JPanel {
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
 		c.weightx = 0.2;
-		c.weighty = 0.2;
 		JobsREST jobs;
 		try {
 			jobs = context.getUser().getJobs();
@@ -165,6 +164,9 @@ class JobsPanel extends JPanel {
 		for (JobREST job : jobs) {
 			add(new Job(job), c);
 		}
+		// eat blank space
+		c.weighty = 0.1;
+		add(new JPanel(), c);
 	}
 
 	private void addLogs() {
