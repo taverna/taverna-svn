@@ -6,7 +6,6 @@ import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.xml.Capabilities;
 import net.sf.taverna.service.xml.CapabilitiesDocument;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -20,7 +19,7 @@ public class CapabilitiesResource extends AbstractResource {
 		addRepresentation(new XML());
 	}
 
-	private static Logger logger = Logger.getLogger(CapabilitiesResource.class);
+	//private static Logger logger = Logger.getLogger(CapabilitiesResource.class);
 
 	public class XML extends AbstractREST {
 

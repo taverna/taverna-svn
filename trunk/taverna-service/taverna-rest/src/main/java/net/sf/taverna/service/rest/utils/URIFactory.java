@@ -5,9 +5,9 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.OwnedResource;
+import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.Queue;
-import net.sf.taverna.service.datastore.bean.UUIDResource;
+import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
@@ -68,7 +68,7 @@ public class URIFactory {
 	 * @param resourceClass
 	 * @return
 	 */
-	public String getURI(Class<? extends UUIDResource> resourceClass) {
+	public String getURI(Class<? extends AbstractUUID> resourceClass) {
 		String mapping = getMapping(resourceClass);
 		if (mapping == null) {
 			throw new IllegalArgumentException("Unknown resource class: "
@@ -77,7 +77,7 @@ public class URIFactory {
 		return getRoot() + mapping;
 	}
 
-	public String getURI(UUIDResource resource) {
+	public String getURI(AbstractUUID resource) {
 		String resourcePrefix = getURI(resource.getClass());
 		if (resource instanceof User) {
 			User user = (User) resource;
@@ -95,24 +95,24 @@ public class URIFactory {
 	 *            The class of the collection
 	 * @return An URI such as http://blah/user/tom/workflows
 	 */
-	public String getURI(User owner, Class<? extends OwnedResource> ownedClass) {
+	public String getURI(User owner, Class<? extends AbstractOwned> ownedClass) {
 		String uri = getURI(owner);
 		return uri + getMapping(ownedClass);
 	}
 
-	public Attribute getXLink(UUIDResource resource) {
+	public Attribute getXLink(AbstractUUID resource) {
 		Attribute xlink = new Attribute("href", getURI(resource), NS_XLINK);
 		return xlink;
 	}
 
 	public Attribute getXLink(User user,
-		Class<? extends OwnedResource> ownedClass) {
+		Class<? extends AbstractOwned> ownedClass) {
 		Attribute xlink =
 			new Attribute("href", getURI(user, ownedClass), NS_XLINK);
 		return xlink;
 	}
 
-	public Attribute getXLink(Class<? extends UUIDResource> resourceClass) {
+	public Attribute getXLink(Class<? extends AbstractUUID> resourceClass) {
 		Attribute xlink =
 			new Attribute("href", getURI(resourceClass), NS_XLINK);
 		return xlink;

@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class UUIDResource implements Comparable<UUIDResource> {
+public abstract class AbstractUUID implements Comparable<AbstractUUID> {
 
 	@Id
 	private String id = UUID.randomUUID().toString();
@@ -20,16 +20,16 @@ public abstract class UUIDResource implements Comparable<UUIDResource> {
 		return this.getClass().getSimpleName() + " " + getId();
 	}
 
-	public int compareTo(UUIDResource o) {
+	public int compareTo(AbstractUUID o) {
 		return getId().compareTo(o.getId());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof UUIDResource)) {
+		if (!(obj instanceof AbstractUUID)) {
 			return false;
 		}
-		UUIDResource resource = (UUIDResource) obj;
+		AbstractUUID resource = (AbstractUUID) obj;
 		return getId().equals(resource.getId());
 	}
 

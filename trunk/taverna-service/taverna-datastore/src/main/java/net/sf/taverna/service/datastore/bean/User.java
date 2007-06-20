@@ -26,7 +26,7 @@ import org.hibernate.validator.NotNull;
 @NamedQueries(value = {
 		@NamedQuery(name = User.NAMED_QUERY_ALL, query = "SELECT u FROM User u ORDER BY u.created DESC"),
 		@NamedQuery(name = User.NAMED_QUERY_USER, query = "SELECT u FROM User u WHERE u.username=:username") })
-public class User extends DatedResource {
+public class User extends AbstractDated {
 
 	private static final int SALT_SIZE = 16;
 

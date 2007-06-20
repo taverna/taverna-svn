@@ -21,7 +21,7 @@ import org.hibernate.validator.NotNull;
 			query="SELECT j FROM Job j ORDER BY j.created DESC")
 	}
 )
-public class Job extends OwnedResource {
+public class Job extends AbstractOwned {
 
 	public static final int MAX_REPORT_SIZE=65535;
 

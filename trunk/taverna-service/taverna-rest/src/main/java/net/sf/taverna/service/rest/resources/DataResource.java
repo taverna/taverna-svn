@@ -75,6 +75,11 @@ public class DataResource extends AbstractResource {
 	}
 
 	@Override
+	public boolean allowPut() {
+		return true;
+	}
+	
+	@Override
 	public void put(Representation entity) {
 		if (!restType.includes(entity.getMediaType())) {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
@@ -102,10 +107,8 @@ public class DataResource extends AbstractResource {
 		Data data = dataDocument.getData();
 		if (data.getOwner() != null) {
 			String ownerURI = data.getOwner().getHref();
-			User owner;
-			if (ownerURI == null) {
-				owner = null;
-			} else {
+			User owner = null;
+			if (ownerURI != null) {
 				owner = uriToDAO.getResource(ownerURI, User.class);
 			}
 			dataDoc.setOwner(owner);

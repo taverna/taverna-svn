@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.Iterator;
 
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.OwnedResource;
+import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.Queue;
-import net.sf.taverna.service.datastore.bean.UUIDResource;
+import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
@@ -136,11 +136,11 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * 
 	 * @see #notFound()
 	 * @see #challenge()
-	 * @see #isEntityAuthorized(UUIDResource)
+	 * @see #isEntityAuthorized(AbstractUUID)
 	 * @param entity
 	 * @return True if entity exist and is accessible.
 	 */
-	public boolean checkEntity(UUIDResource entity) {
+	public boolean checkEntity(AbstractUUID entity) {
 		logger.debug("Checking entity " + entity);
 		if (entity == null) {
 			notFound();
@@ -160,7 +160,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * @param entity
 	 * @return True if entity access is authorized.
 	 */
-	public boolean isEntityAuthorized(UUIDResource entity) {
+	public boolean isEntityAuthorized(AbstractUUID entity) {
 		User authUser =
 			(User) getContext().getAttributes().get(
 				UserGuard.AUTHENTICATED_USER);
@@ -173,14 +173,14 @@ public abstract class AbstractResource extends RepresentationalResource {
 			// Users can access their own user
 			if (entity.equals(authUser)) return true;
 		}
-		if (!(entity instanceof OwnedResource)) {
+		if (!(entity instanceof AbstractOwned)) {
 			logger.info("Not ownable resource, access granted");
 			// All non-owned resources are free to access
 			// (Unless an overloaded version of this method says otherwise)
 			return true;
 		}
 		// Owned resources only readable by owner
-		OwnedResource owned = (OwnedResource) entity;
+		AbstractOwned owned = (AbstractOwned) entity;
 		if (owned.getOwner() == null) {
 			logger.info("Not owned resource, access granted");
 			// No owner, also readable by all
@@ -198,7 +198,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 	}
 
-	private boolean isWorkerAuthorized(Worker worker, UUIDResource entity) {
+	private boolean isWorkerAuthorized(Worker worker, AbstractUUID entity) {
 		//refresh the worker to ensure the list of worker jobs is up to date.
 		daoFactory.getWorkerDAO().refresh(worker);
 		
@@ -225,7 +225,13 @@ public abstract class AbstractResource extends RepresentationalResource {
 			}
 		}
 		
-		if (entity instanceof User) return true;
+		if (entity instanceof User) {
+			for (Job job : worker.getWorkerJobs()) {
+				if (entity.equals(job.getOwner())) {
+					return true;
+				}
+			}
+		}
 		
 		if (entity instanceof Data) {
 			for (Job job : worker.getWorkerJobs()) {
@@ -257,7 +263,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * An <code>text/uri-list</code> over UUIDResource's. The URIs will be
 	 * generated using {@link URIFactory}.
 	 */
-	abstract class AbstractURIList<ResourceType extends UUIDResource> extends
+	abstract class AbstractURIList<ResourceType extends AbstractUUID> extends
 		AbstractText implements Iterable<ResourceType> {
 
 		abstract public Iterator<ResourceType> iterator();

@@ -8,7 +8,7 @@ import org.hibernate.validator.NotNull;
 
 
 @MappedSuperclass
-public abstract class DatedResource extends UUIDResource {
+public abstract class AbstractDated extends AbstractUUID {
 	@NotNull
 	private Date created = new Date();
 	

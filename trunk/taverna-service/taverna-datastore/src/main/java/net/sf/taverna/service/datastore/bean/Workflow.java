@@ -14,7 +14,7 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @NamedQueries(value = { @NamedQuery(name = Workflow.NAMED_QUERY_ALL, query = "SELECT w FROM Workflow w ORDER BY w.created DESC") })
-public class Workflow extends OwnedResource {
+public class Workflow extends AbstractOwned {
 
 	public static final String NAMED_QUERY_ALL = "allWorkflows";
 

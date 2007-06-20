@@ -24,7 +24,7 @@ import org.hibernate.validator.NotNull;
  */
 @Entity
 @NamedQueries(value = { @NamedQuery(name = DataDoc.NAMED_QUERY_ALL, query = "SELECT d FROM DataDoc d ORDER BY d.created DESC") })
-public class DataDoc extends OwnedResource {
+public class DataDoc extends AbstractOwned {
 	public static final String NAMED_QUERY_ALL = "allDatadocs";
 
 	/**

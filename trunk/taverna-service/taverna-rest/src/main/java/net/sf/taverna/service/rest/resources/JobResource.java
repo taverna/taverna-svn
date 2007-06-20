@@ -5,17 +5,12 @@ import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 import java.io.IOException;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
-import net.sf.taverna.service.rest.UserGuard;
-import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
-import net.sf.taverna.service.xml.User;
-import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
