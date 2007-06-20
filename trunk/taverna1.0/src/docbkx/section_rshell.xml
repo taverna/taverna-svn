@@ -13,7 +13,7 @@
     url="http://www.bioconductor.org/">BioConductor</ulink> module, suitable
     for biological data analysis. Taverna comes with support executing
     R-scripts as part of a workflow. The functionality is very similar to how
-    to use the <link linkend="???">Beanshell processor</link>, so this section
+    to use the <link linkend="beanshell_processor">Beanshell processor</link>, so this section
     will only cover what is special about the <firstterm>RShell
     processor</firstterm>. </para>
 
@@ -168,7 +168,7 @@ Rserv started in daemon mode.
       </mediaobject>
     </screenshot>
 
-    <para>Just like the <link linkend="???">beanshell inputs and
+    <para>Just like the <link linkend="beanshell_inputs_outputs">beanshell inputs and
     outputs</link> are accessed through variable names, the RShell processor
     makes input ports available as variables named after the port, and output
     ports read their named variable after executing the script. That is, the
@@ -309,7 +309,7 @@ Rserv started in daemon mode.
 
         <listitem>
           <para>an image created by the plotting device (for outputs), see
-          section <link linkend="beanshell_graph">Graph output</link>
+          section <link linkend="rshell_graph">Graph output</link>
           below</para>
         </listitem>
       </varlistentry>
