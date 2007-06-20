@@ -50,6 +50,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		addRunButton();
 		addJobs();
 		addFiller();
+		updateServiceList();
 		logger.info("showing ourselves");
 	}
 
