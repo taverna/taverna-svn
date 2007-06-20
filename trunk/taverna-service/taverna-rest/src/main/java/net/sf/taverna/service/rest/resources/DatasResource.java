@@ -77,6 +77,7 @@ public class DatasResource extends AbstractUserResource {
 			logger.warn("Could not receive baclava document", e);
 			return;
 		}
+		dataDoc.setOwner(user);
 		dao.create(dataDoc);
 		daoFactory.commit();
 		getResponse().setRedirectRef(uriFactory.getURI(dataDoc));
