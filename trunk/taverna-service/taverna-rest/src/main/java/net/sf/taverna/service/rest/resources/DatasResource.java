@@ -75,6 +75,7 @@ public class DatasResource extends AbstractUserResource {
 			dataDoc.setBaclava(entity.getText());
 		} catch (IOException e) {
 			logger.warn("Could not receive baclava document", e);
+			return;
 		}
 		dao.create(dataDoc);
 		daoFactory.commit();
