@@ -2,12 +2,11 @@ package net.sf.taverna.service.rest.client;
 
 import net.sf.taverna.service.xml.Worker;
 
-import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 
 public class WorkerREST extends LinkedREST<Worker> {
 
-	private static Logger logger = Logger.getLogger(WorkerREST.class);
+	//private static Logger logger = Logger.getLogger(WorkerREST.class);
 	
 	public WorkerREST(RESTContext context, Reference uri) {
 		super(context, uri, Worker.class);

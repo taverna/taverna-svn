@@ -2,7 +2,6 @@ package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.TavernaConstants;
@@ -317,48 +316,6 @@ public class RESTContext {
 		}
 		return documentClass.cast(document);
 
-	}
-
-	private <DocumentClass> DocumentClass parseAtFactory(
-		Class<DocumentClass> documentClass, InputStream documentStream)
-		throws XmlException, IOException {
-		for (Class c : documentClass.getDeclaredClasses()) {
-			if (!c.getSimpleName().equals("Factory")) {
-				continue;
-			}
-			java.lang.reflect.Method m;
-			try {
-				m = c.getMethod("parse", InputStream.class);
-			} catch (SecurityException e) {
-				logger.warn("No access to method parse(InputStream) in " + c, e);
-				continue;
-			} catch (NoSuchMethodException e) {
-				logger.warn("Method parse(InputStream) not found in " + c, e);
-				continue;
-			}
-
-			try {
-				DocumentClass doc =
-					documentClass.cast(m.invoke(null, documentStream));
-				logger.info("Successfully loaded " + doc + " as "
-					+ doc.getClass());
-				return doc;
-			} catch (IllegalArgumentException e) {
-				logger.warn("Invalid arguments for parse(InputStream) in " + c,
-					e);
-			} catch (IllegalAccessException e) {
-				logger.warn("No access to method parse(InputStream) in " + c, e);
-			} catch (InvocationTargetException e) {
-				if (e.getCause() instanceof XmlException) {
-					throw (XmlException) e.getCause();
-				}
-				if (e.getCause() instanceof IOException) {
-					throw (IOException) e.getCause();
-				}
-				logger.warn("Could not parse document", e.getCause());
-			}
-		}
-		return null;
 	}
 
 	private synchronized void checkCapabilities() {

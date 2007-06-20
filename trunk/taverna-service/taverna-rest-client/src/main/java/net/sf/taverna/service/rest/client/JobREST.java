@@ -5,13 +5,13 @@ import java.io.IOException;
 import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 
 public class JobREST extends OwnedREST<Job> {
 	
@@ -99,12 +99,15 @@ public class JobREST extends OwnedREST<Job> {
 		}
 		
 		// Return the freshest report with a new get()
-		Response response = context.get(reportURI, MediaType.TEXT_PLAIN);
+		Response response = context.get(reportURI, MediaType.TEXT_XML);
+		String report;
 		try {
-			return response.getEntity().getText();
+			report = response.getEntity().getText();
 		} catch (IOException e) {
 			throw new RESTException("Could not receive report " + reportURI, e);
 		}
+		System.out.println("Report is: " + report);
+		return report;
 	}
 
 	public void setReport(String report) throws NotSuccessException, XmlException {

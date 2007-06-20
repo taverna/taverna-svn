@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.Queue;
 import net.sf.taverna.service.xml.Queues;
 
-import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 
 public class QueuesREST extends LinkedREST<Queues> {
 
-	private static Logger logger = Logger.getLogger(QueuesREST.class);
+	//private static Logger logger = Logger.getLogger(QueuesREST.class);
 
 	public QueuesREST(RESTContext context, Reference uri) {
 		super(context, uri, Queues.class);

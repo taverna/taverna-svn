@@ -1,8 +1,8 @@
 package net.sf.taverna.service.rest.client;
 
-import org.restlet.data.Reference;
-
 import net.sf.taverna.service.xml.Workflow;
+
+import org.restlet.data.Reference;
 
 
 public class WorkflowREST extends OwnedREST<Workflow> {

@@ -2,12 +2,11 @@ package net.sf.taverna.service.rest.client;
 
 import net.sf.taverna.service.xml.Linked;
 
-import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 
 public class LinkedREST<LinkedClass extends Linked> extends AbstractREST<LinkedClass> {
 	
-	private static Logger logger = Logger.getLogger(LinkedREST.class);
+	//private static Logger logger = Logger.getLogger(LinkedREST.class);
 	
 	public LinkedREST(RESTContext context, LinkedClass document) {
 		super(context, context.makeReference(document.getHref()), document);

@@ -13,7 +13,6 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.StreamRepresentation;
 
 public class DatasREST extends LinkedREST<Datas> implements Iterable<DataREST> {
 
@@ -53,7 +52,6 @@ public class DatasREST extends LinkedREST<Datas> implements Iterable<DataREST> {
 		Response response = context.post(getURIReference(), dataStream);
 		return handleAddResponse(response);
 	}
-
 
 	private DataREST handleAddResponse(Response response) {
 		if (! response.getStatus().equals(Status.SUCCESS_CREATED)) {
