@@ -6,8 +6,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.UUIDResource;
+import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.GenericDao;
 import net.sf.taverna.service.datastore.dao.DAOFactory.DAO;
@@ -39,12 +40,12 @@ public class URItoDAO {
 	private URItoDAO() {
 	}
 
-	public <ResourceClass extends UUIDResource> ResourceClass getResource(
+	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
 		Reference uri, Class<ResourceClass> resourceClass) {
 		return getResource(uri.getTargetRef().toString(), resourceClass);
 	}
-	
-	public <ResourceClass extends UUIDResource> String getId(String uri,Class<ResourceClass> resourceClass) {
+ 	
+	public <ResourceClass extends AbstractUUID> String getId(String uri, Class<ResourceClass> resourceClass) {
 		String prefix = uriFactory.getURI(resourceClass) + "/";
 		logger.debug("Prefix for " + resourceClass + ": " + prefix);
 		if (!uri.startsWith(prefix)) {
@@ -55,7 +56,7 @@ public class URItoDAO {
 		return id;
 	}
 
-	public <ResourceClass extends UUIDResource> ResourceClass getResource(
+	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
 		String uri, Class<ResourceClass> resourceClass) {
 		String id = getId(uri,resourceClass);
 		return daoRead(resourceClass, id);
@@ -80,6 +81,12 @@ public class URItoDAO {
 	@SuppressWarnings("unchecked")
 	private <ResourceClass, PrimaryKey extends Serializable> ResourceClass daoRead(
 		Class<ResourceClass> resourceClass, PrimaryKey id) {
+		
+		// Special case as their URIs contain the username
+		if (User.class.isAssignableFrom(resourceClass)) {
+			return (ResourceClass) daoFactory.getUserDAO().readByUsername((String) id);
+		}
+		
 		Method daoMethod = daoMethods.get(resourceClass);
 		if (daoMethod == null) {
 			logger.error("Unknown resource class " + resourceClass);
