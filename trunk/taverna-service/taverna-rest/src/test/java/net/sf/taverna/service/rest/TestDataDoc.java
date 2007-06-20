@@ -1,25 +1,15 @@
 package net.sf.taverna.service.rest;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
-import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.interfaces.TavernaConstants;
-import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.Data;
-import net.sf.taverna.service.xml.DataDocument;
 import net.sf.taverna.service.xml.DatasDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;

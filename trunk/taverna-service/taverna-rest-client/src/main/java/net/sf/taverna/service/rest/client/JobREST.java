@@ -80,8 +80,8 @@ public class JobREST extends OwnedREST<Job> {
 	}
 	
 	public void setOutputs(DataREST rest) throws NotSuccessException {
-		Job job = Job.Factory.newInstance();
-		job.addNewOutputs().setHref(rest.getURI());
+		JobDocument job = JobDocument.Factory.newInstance();
+		job.addNewJob().addNewOutputs().setHref(rest.getURI());
 		context.put(getURIReference(), job);
 		invalidate();
 	}

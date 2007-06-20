@@ -164,13 +164,14 @@ public abstract class AbstractResource extends RepresentationalResource {
 		User authUser =
 			(User) getContext().getAttributes().get(
 				UserGuard.AUTHENTICATED_USER);
+		
 		if (authUser.isAdmin()) {
 			return true;
 		}
 		if (entity instanceof User) {
 			logger.info("Comparing " + entity + " with " + authUser);
 			// Users can access their own user
-			return entity.equals(authUser);
+			if (entity.equals(authUser)) return true;
 		}
 		if (!(entity instanceof OwnedResource)) {
 			logger.info("Not ownable resource, access granted");
@@ -223,6 +224,9 @@ public abstract class AbstractResource extends RepresentationalResource {
 				}
 			}
 		}
+		
+		if (entity instanceof User) return true;
+		
 		if (entity instanceof Data) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getInputs())) {

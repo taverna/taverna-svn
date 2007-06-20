@@ -20,6 +20,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.service.rest.client.DataREST;
+import net.sf.taverna.service.rest.client.DatasREST;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.RESTContext;
@@ -29,9 +30,16 @@ import net.sf.taverna.tools.Bootstrap;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
+import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
+import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.restlet.data.Reference;
+
+import com.sun.tools.javac.util.Context;
 
 public class RestfulExecutionThread extends Thread {
 	
@@ -58,11 +66,19 @@ public class RestfulExecutionThread extends Thread {
 			launcher = constructWorkflowLauncher(scufl);
 			Map<String,DataThing> inputs = new HashMap<String, DataThing>();
 //			if (job.getInputs()!=null) {
-//				inputs=job.getInputs().getDataMap();
+//				inputs=job.getInputs().
 //			}
 			Map outputs = launcher.execute(inputs);
+			
+			//FIXME: uploads as a stream. Fairly pointless at the moment, since the outputs
+			//are held in memory before creating the stream (and are held in memory again on the server side)
+			//, but at least the transport is correct!
+			Document doc = DataThingXMLFactory.getDataDocument(outputs);
+			String baclavaString = new XMLOutputter(Format.getCompactFormat()).outputString(doc);
+			ByteArrayInputStream inStream = new ByteArrayInputStream(baclavaString.getBytes());
+			DataREST data=job.getOwner().getDatas().add(inStream);
 			job.setStatus(StatusType.COMPLETE);
-			System.out.println("outputs = "+outputs);
+			job.setOutputs(data);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -113,8 +129,13 @@ public class RestfulExecutionThread extends Thread {
 	}
 	
 	private JobREST getJobREST() {
-		RESTContext context = new RESTContext(BASE_URL,workerUsername,WORKER_PASSWORD);
+		RESTContext context = getRESTContext();
 		Reference refUri = new Reference(BASE_URL+"jobs/"+jobId);
 		return new JobREST(context,refUri);	
+	}
+
+	private RESTContext getRESTContext() {
+		RESTContext context = new RESTContext(BASE_URL,workerUsername,WORKER_PASSWORD);
+		return context;
 	}
 }

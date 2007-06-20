@@ -1,13 +1,25 @@
 package net.sf.taverna.service.rest.resources;
 
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
+
+import java.io.IOException;
+
+import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.rest.UserGuard;
+import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
+import net.sf.taverna.service.xml.User;
+import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlException;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 
 public class JobResource extends AbstractJobResource {
 
@@ -17,6 +29,48 @@ public class JobResource extends AbstractJobResource {
 		super(context, request, response);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
+	}
+	
+	@Override
+	public boolean allowPut() {
+		return true;
+	}
+	
+	@Override
+	public void put(Representation entity) {
+		if (!restType.includes(entity.getMediaType())) {
+			System.out.println("Wrong type: " + entity.getMediaType());
+			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+				"Content type must be " + restType);
+			return;
+		}
+		JobDocument jobDoc;
+		try {
+			jobDoc = JobDocument.Factory.parse(entity.getStream());
+		} catch (XmlException ex) {
+			logger.warn("Could not parse job document", ex);
+			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+				"Could not parse as XML");
+			return;
+		} catch (IOException ex) {
+			logger.warn("Could not read XML", ex);
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+				"Could not read XML");
+			return;
+		}
+		updateJob(jobDoc);
+		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+	}
+	
+	public void updateJob(JobDocument jobDoc) {
+		if (jobDoc.getJob().getInputs()!=null) {
+			job.setInputs(uriToDAO.getResource(jobDoc.getJob().getInputs().getHref(), DataDoc.class));
+		}
+		if (jobDoc.getJob().getOutputs()!=null) {
+			job.setOutputs(uriToDAO.getResource(jobDoc.getJob().getOutputs().getHref(), DataDoc.class));
+		}
+		daoFactory.getJobDAO().update(job);
+		daoFactory.commit();
 	}
 
 	class Text extends AbstractText {

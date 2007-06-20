@@ -66,7 +66,6 @@ public class RESTService {
 		// Upload data
 		String baclava = xmlOutputter.outputString(doc);
 		return context.getUser().getDatas().add(baclava);
-
 	}
 
 	public JobREST addJob(WorkflowREST wf, DataREST inputDoc)

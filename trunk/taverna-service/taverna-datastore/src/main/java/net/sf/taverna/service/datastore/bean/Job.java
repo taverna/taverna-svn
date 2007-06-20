@@ -97,7 +97,7 @@ public class Job extends OwnedResource {
 	}
 
 	public boolean isFinished() {
-		return getStatus().compareTo(Status.RUNNING) > 1;
+		return getStatus().compareTo(Status.CANCELLING) > 0;
 	}
 
 	public DataDoc getOutputs() {

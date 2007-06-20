@@ -88,6 +88,27 @@ public class TestJob extends TestDAO  {
         assertTrue("No results found", foundResults);
 	}
 	
-	
+	@Test
+	public void isFinished() throws Exception {
+		if (lastJob==null) createAndStore();
+		Job job = daoFactory.getJobDAO().read(lastJob);
+		job.setStatus(Status.RUNNING);
+		assertFalse(job.isFinished());
+		job.setStatus(Status.PAUSED);
+		assertFalse(job.isFinished());
+		job.setStatus(Status.FAILING);
+		assertFalse(job.isFinished());
+		job.setStatus(Status.CANCELLING);
+		assertFalse(job.isFinished());
+		
+		job.setStatus(Status.CANCELLED);
+		assertTrue(job.isFinished());
+		job.setStatus(Status.FAILED);
+		assertTrue(job.isFinished());
+		job.setStatus(Status.COMPLETE);
+		assertTrue(job.isFinished());
+		job.setStatus(Status.DESTROYED);
+		assertTrue(job.isFinished());
+	}
 	
 }

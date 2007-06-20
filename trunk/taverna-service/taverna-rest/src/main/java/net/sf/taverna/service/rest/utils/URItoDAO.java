@@ -43,9 +43,8 @@ public class URItoDAO {
 		Reference uri, Class<ResourceClass> resourceClass) {
 		return getResource(uri.getTargetRef().toString(), resourceClass);
 	}
-
-	public <ResourceClass extends UUIDResource> ResourceClass getResource(
-		String uri, Class<ResourceClass> resourceClass) {
+	
+	public <ResourceClass extends UUIDResource> String getId(String uri,Class<ResourceClass> resourceClass) {
 		String prefix = uriFactory.getURI(resourceClass) + "/";
 		logger.debug("Prefix for " + resourceClass + ": " + prefix);
 		if (!uri.startsWith(prefix)) {
@@ -53,6 +52,12 @@ public class URItoDAO {
 			throw new IllegalArgumentException("Invalid resource URI " + uri);
 		}
 		String id = uri.substring(prefix.length());
+		return id;
+	}
+
+	public <ResourceClass extends UUIDResource> ResourceClass getResource(
+		String uri, Class<ResourceClass> resourceClass) {
+		String id = getId(uri,resourceClass);
 		return daoRead(resourceClass, id);
 	}
 

@@ -5,6 +5,7 @@ import java.net.URL;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
+import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.CapabilitiesResource;
@@ -148,7 +149,7 @@ public class RestApplication {
 		// /data/X
 		authenticated.attach(uriFactory.getMapping(DataDoc.class) + DATA,
 			DataResource.class);
-
+		
 		// /users;current
 		authenticated.attach(uriFactory.getMapping(User.class)
 			+ uriFactory.getMappingCurrentUser(), CurrentUserResource.class);
@@ -156,6 +157,8 @@ public class RestApplication {
 		// /users/X
 		authenticated.attach(uriFactory.getMapping(User.class) + USER,
 			UserResource.class);
+		
+		authenticated.attach(uriFactory.getMapping(Worker.class) + USER,UserResource.class);
 
 		// Collections - below user
 
