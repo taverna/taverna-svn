@@ -212,12 +212,13 @@
     <title>Depending on third party libraries</title>
 
     <section id="beanshell_dependencies_using">
-      <title>Using dependencies</title>
+      <title id="beanshell_using_deps">Using dependencies</title>
 
       <para>Just like in Java, in Beanshell you are allowed to reference
       existing classes using <literal>import</literal> statements. By default
-      you should have access to the full <ulink url="http://java.sun.com/j2se/1.5.0/docs/api/">Java Platform
-      API</ulink> so you should have no problems using say a
+      you should have access to the full <ulink
+      url="http://java.sun.com/j2se/1.5.0/docs/api/">Java Platform API</ulink>
+      so you should have no problems using say a
       <literal>java.util.HashSet</literal>. However, it is often the case that
       you already have some library provided by you or some third party that
       does what you want. If these libraries are available as
@@ -241,8 +242,9 @@
       not yet represented in the GUI dialogues).</para>
 
       <remark>The library folder is the subdirectory <literal>lib</literal>
-      within <literal><link linkend="taverna_home">taverna.home</link></literal>, which
-      default location depends on your operating system.</remark>
+      within <literal><link
+      linkend="taverna_home">taverna.home</link></literal>, which default
+      location depends on your operating system.</remark>
 
       <para>After copying, close and open the
       <guimenuitem>Configure</guimenuitem> dialogue again, and the
@@ -394,14 +396,13 @@
       <para>First of all you need to make a decission as to where to install
       the libraries. We generally recommend installing the
       <literal>.jnilib</literal> files in the same location as the
-      <literal>.jar</literal> files (ie. in your home directory's Taverna
-      folder), as described in the section <link
-          linkend="beanshell_dependencies">Using
-      dependencies</link>, but since supporting JNI will require you to modify
-      the Taverna startup scripts <filename>runme.*</filename>, you might want
-      to install them to the folder <filename>lib</filename> in the Taverna
-      installation directory instead. Here we will assume the home directory
-      solution.</para>
+      <literal>.jar</literal> files (ie. in <literal>lib</literal> in your
+      home directory's Taverna folder), as described in the section <link
+      linkend="beanshell_dependencies">Using dependencies</link>, but since
+      supporting JNI will require you to modify the Taverna startup scripts,
+      you might want to install them to the folder <filename>lib</filename> in
+      the Taverna installation directory instead. Here we will assume the home
+      directory solution.</para>
 
       <para>In the Taverna installation directory, locate
       <filename>runme.bat</filename> or <filename>runme.sh</filename>,
@@ -426,7 +427,7 @@
       <para><emphasis role="bold">Windows</emphasis></para>
 
       <para>In the Taverna installation folder, find and edit
-      <filename>runme.bat</filename> with your favourite editor (in emergency
+      <filename>runme.bat</filename> with your favourite editor (in worst case
       Notepad), and add/modify the lines in <emphasis
       role="bold">bold</emphasis>.</para>
 
@@ -463,17 +464,104 @@ ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader
       <para><emphasis role="bold">Mac OS X</emphasis></para>
 
       <para>On Mac OS a startup script is not used, Taverna is wrapped in an
-      <firstterm>application bundle</firstterm>. In particular if dependency
-      on dynamic libraries are needed, we recommend you install the JNI
-      libraries for shared access, that is inside the bundle. Use the
-      Terminal change directory to inside the Taverna bundle:</para>
-      <programlisting>
-: stain@mira ~;cd /Applications/Taverna.app/
-: stain@mira /Applications/Taverna.app;
-      </programlisting>
-      <para>
-      or simply right-click on the Taverna icon in Applications and select Show Package Contents.
-      </para>
+      <firstterm>application bundle</firstterm>, which is a kind of directory.
+      In particular if dependency on dynamic libraries are needed, we
+      recommend you install the JNI libraries inside the bundle. However the
+      JAR files, must be installed as explained in <link
+      linkend="beanshell_dependencies_using">Using dependencies</link>.</para>
+
+      <remark>Technically you can instead use almost the same solution as in
+      Linux, but you would have to start Taverna using the command line
+      <literal>DY_LD_LIBRARY_PATH=$HOME/Library/Application\
+      Support/Taverna-1.5.2/lib/
+      /Applications/Taverna.app/Contents/MacOS/JavaApplicationStub</literal></remark>
+
+      <para>Use the <guilabel>Terminal</guilabel> and change directory to
+      inside the <literal>Taverna.app</literal> bundle (commands are shown in
+      <emphasis role="bold"><literal>bold</literal></emphasis>):</para>
+
+      <screen>: stain@mira ~;<emphasis role="bold"> cd /Applications/Taverna.app/</emphasis>
+: stain@mira /Applications/Taverna.app; <emphasis role="bold">ls</emphasis>
+Contents
+: stain@mira /Applications/Taverna.app; <emphasis role="bold">cd Contents/MacOS/</emphasis>
+: stain@mira /Applications/Taverna.app/Contents/MacOS; <emphasis role="bold">ls</emphasis>
+JavaApplicationStub  dataviewer.sh  dot  executeworkflow.sh</screen>
+
+      <para>or in the <guilabel>Finder</guilabel>, right-click (or
+      control-click) on the <guilabel>Taverna</guilabel> icon in
+      <guilabel>Applications</guilabel> and select <guimenuitem>Show Package
+      Contents</guimenuitem>.</para>
+
+      <screenshot>
+        <screeninfo>Show package content of Taverna application bundle in Mac
+        OS X</screeninfo>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/osx_show_package_contents.png" />
+          </imageobject>
+        </mediaobject>
+      </screenshot>
+
+      <para>Navigate down to <literal>Contents/MacOS</literal>. This is where
+      we will copy in our <literal>jni</literal> and <literal>dylib</literal>
+      files, in this example <literal>libhello.jnilib</literal> and
+      <literal>libfish.dylib</literal>.</para>
+
+      <screenshot>
+        <screeninfo>Copying the libraries to
+        <literal>Taverna.app/Contents/MacOS</literal></screeninfo>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/beanshell_osx_jnilib.png" />
+          </imageobject>
+        </mediaobject>
+      </screenshot>
+
+      <screen>: stain@mira /Applications/Taverna.app/Contents/MacOS;<emphasis
+          role="bold"> cp ~/src/jnitest/lib* .</emphasis>
+: stain@mira /Applications/Taverna.app/Contents/MacOS;<emphasis role="bold"> ls</emphasis>
+JavaApplicationStub  dataviewer.sh  dot  executeworkflow.sh  libfish.dylib  libhello.jnilib</screen>
+
+      <para>However, in order for <literal>libhello.jnilib</literal> to find
+      the dependency to libfish.dylib we will have to use the
+      <guilabel>Terminal</guilabel> and modify the library path using
+      <literal>install_name_tool</literal>. We'll use <literal>otool</literal>
+      to inspect the paths.</para>
+
+      <screen>: stain@mira /Applications/Taverna.app/Contents/MacOS; <emphasis
+          role="bold">otool -L libhello.jnilib</emphasis> 
+libhello.jnilib:
+        libhello.jnilib (compatibility version 0.0.0, current version 0.0.0)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 88.5.1)
+        libfish.dylib (compatibility version 0.0.0, current version 0.0.0)
+
+: stain@mira /Applications/Taverna.app/Contents/MacOS; <emphasis role="bold">install_name_tool -change libfish.dylib @executable_path/libfish.dylib libhello.jnilib</emphasis>
+
+: stain@mira /Applications/Taverna.app/Contents/MacOS; <emphasis role="bold">otool -L libhello.jnilib </emphasis>
+libhello.jnilib:
+        libhello.jnilib (compatibility version 0.0.0, current version 0.0.0)
+        /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 88.5.1)
+        @executable_path/libfish.dylib (compatibility version 0.0.0, current version 0.0.0)</screen>
+
+      <remark>Why does this work? <literal>@executable_path</literal> is
+      resolved to <literal>Contents/MacOS</literal> because Taverna's Java
+      runtime is started by
+      <literal>Contents/MacOS/JavaApplicationStub</literal></remark>
+
+      <para>If you experience errors, and want to check console for debug
+      messages from your library, instead of double-clicking the Taverna icon,
+      you can start it from the terminal. The example below shows the typical
+      message of when <literal>libhello.jnilib</literal> is located, but some
+      of it's dependencies again (<literal>libfish.dylib</literal>) can't be
+      located, for instance because we didn't run the
+      <literal>install_name_tool</literal> command:</para>
+
+      <screen>: stain@mira ~; <emphasis role="bold">/Applications/Taverna.app/Contents/MacOS/JavaApplicationStub</emphasis> 
+Warning: Incorrect memory size qualifier: mm Treating it as m
+Exception in thread "Thread-29" java.lang.UnsatisfiedLinkError: /Applications/Taverna.app/Contents/MacOS/libhello.jnilib: 
+   (..)</screen>
     </section>
   </section>
 </section>
