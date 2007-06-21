@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 /**
  * A single Maven2 artifact with group, artifact and version
  * @author Tom
+ * @author dturi
  */
 public class ArtifactImpl extends BasicArtifact {
 	private static Log logger = Log.getLogger(ArtifactImpl.class);
@@ -100,7 +101,7 @@ public class ArtifactImpl extends BasicArtifact {
 		checkParent(pomFile);
 		InputStream is;
 		try {
-			is = pomFile.toURL().openStream();
+			is = pomFile.toURI().toURL().openStream();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.parse(is);
@@ -212,7 +213,7 @@ public class ArtifactImpl extends BasicArtifact {
 		if (pomFile.exists()) {
 			InputStream is;
 			try {
-				is = pomFile.toURL().openStream();
+				is = pomFile.toURI().toURL().openStream();
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder builder = factory.newDocumentBuilder();
 				Document document = builder.parse(is);
@@ -267,7 +268,7 @@ public class ArtifactImpl extends BasicArtifact {
 		InputStream is;
 		Document document;
 		try {
-			is = pomFile.toURL().openStream();
+			is = pomFile.toURI().toURL().openStream();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder;
 			try {
@@ -329,7 +330,7 @@ public class ArtifactImpl extends BasicArtifact {
 			for (ArtifactImpl a : parents) {
 				File pomFile = repository.pomFile(a);
 				try {
-					InputStream is = pomFile.toURL().openStream();
+					InputStream is = pomFile.toURI().toURL().openStream();
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = factory.newDocumentBuilder();
 					Document document = builder.parse(is);
