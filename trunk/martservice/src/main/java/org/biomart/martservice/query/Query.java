@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Query.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:09 $
+ * Last modified on   $Date: 2007-06-21 22:49:58 $
  *               by   $Author: davidwithers $
  * Created on 03-Apr-2006
  *****************************************************************/
@@ -52,6 +52,8 @@ public class Query {
 	private String virtualSchemaName;
 
 	private int count;
+
+	private int uniqueRows;
 
 	private String softwareVersion;
 
@@ -145,6 +147,7 @@ public class Query {
 	public Query(Query query) {
 		setVirtualSchemaName(query.virtualSchemaName);
 		setCount(query.count);
+		setUniqueRows(query.uniqueRows);
 		setSoftwareVersion(query.softwareVersion);
 		setRequestId(query.requestId);
 		List datasets = query.getDatasets();
@@ -195,6 +198,26 @@ public class Query {
 	 */
 	public void setCount(int count) {
 		this.count = count;
+	}
+
+	/**
+	 * Returns the uniqueRows query attribute
+	 * 
+	 * @return the uniqueRows query attribute
+	 */
+	public int getUniqueRows() {
+		return uniqueRows;
+	}
+
+	/**
+	 * Sets the uniqueRows query attribute.
+	 * 
+	 * Valid values are 0 or 1.
+	 * 
+	 * @param uniqueRows value for the uniqueRows query attribute
+	 */
+	public void setUniqueRows(int uniqueRows) {
+		this.uniqueRows = uniqueRows;
 	}
 
 	/**

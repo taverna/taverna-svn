@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryXMLHandler.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-22 18:36:13 $
+ * Last modified on   $Date: 2007-06-21 22:49:58 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -62,6 +62,8 @@ public class QueryXMLHandler {
 
 	public static final String COUNT_ATTRIBUTE = "count";
 
+	public static final String UNIQUE_ROWS_ATTRIBUTE = "uniqueRows";
+
 	public static final String VERSION_ATTRIBUTE = "softwareVersion";
 	
 	public static final String REQUEST_ID_ATTRIBUTE = "requestId";
@@ -87,6 +89,7 @@ public class QueryXMLHandler {
 			queryElement.setAttribute(SCHEMA_ATTRIBUTE, virtualSchemaName);
 		}
 		queryElement.setAttribute(COUNT_ATTRIBUTE, String.valueOf(query.getCount()));
+		queryElement.setAttribute(UNIQUE_ROWS_ATTRIBUTE, String.valueOf(query.getUniqueRows()));
 		String softwareVersion = query.getSoftwareVersion();
 		if (softwareVersion != null) {
 			queryElement.setAttribute(VERSION_ATTRIBUTE, softwareVersion);			
@@ -227,6 +230,10 @@ public class QueryXMLHandler {
 		String version = element.getAttributeValue(VERSION_ATTRIBUTE);
 		String requestId = element.getAttributeValue(REQUEST_ID_ATTRIBUTE);
 		Query query = new Query(virtualSchema, count, version, requestId);
+		String uniqueRows = element.getAttributeValue(UNIQUE_ROWS_ATTRIBUTE);
+		if (uniqueRows != null) {
+			query.setUniqueRows(Integer.parseInt(uniqueRows));
+		}
 		List datasets = element.getChildren(DATASET_ELEMENT, namespace);
 		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
 			Element datasetElement = (Element) iter.next();

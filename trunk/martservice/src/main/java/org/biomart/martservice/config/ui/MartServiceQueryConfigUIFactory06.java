@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory06.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 16:35:09 $
+ * Last modified on   $Date: 2007-06-21 22:49:57 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -248,10 +248,26 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		});
 
-		JPanel buttonPanel = new JPanel(new MinimalLayout05());
+		final JCheckBox uniqueCheckBox = new JCheckBox("Unique results only");
+		uniqueCheckBox.setBackground(Color.BLACK);
+		uniqueCheckBox.setForeground(Color.WHITE);
+		uniqueCheckBox.setSelected(controller.getMartQuery().getQuery().getUniqueRows() == 1);
+		
+		uniqueCheckBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					controller.getMartQuery().getQuery().setUniqueRows(1);
+				} else if (e.getStateChange() == ItemEvent.DESELECTED){
+					controller.getMartQuery().getQuery().setUniqueRows(0);
+				}
+			}
+		});
+		
+		JPanel buttonPanel = new JPanel(new BorderLayout());
 		buttonPanel.setBackground(Color.BLACK);
 		buttonPanel.setBorder(new EmptyBorder(5, 25, 5, 5));
-		buttonPanel.add(countButton);
+		buttonPanel.add(countButton, BorderLayout.WEST);
+		buttonPanel.add(uniqueCheckBox, BorderLayout.EAST);
 		panel.add(buttonPanel, BorderLayout.NORTH);
 
 		JLabel label = new JLabel("biomart version 0.6");

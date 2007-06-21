@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:10 $
+ * Last modified on   $Date: 2007-06-21 22:49:58 $
  *               by   $Author: davidwithers $
  * Created on 03-May-2006
  *****************************************************************/
@@ -110,11 +110,15 @@ public class QueryTest extends TestCase {
 	public final void testQueryQuery() {
 		query.addDataset(dataset);
 		query.addLink(link);
+		query.setCount(1);
+		query.setUniqueRows(1);
 		Query copy = new Query(query);
 		assertEquals(copy.getDatasets().size(), 1);
 		assertEquals(copy.getAttributes().size(), 1);
 		assertEquals(copy.getFilters().size(), 1);
 		assertEquals(copy.getLinks().size(), 1);
+		assertEquals(copy.getCount(), 1);
+		assertEquals(copy.getUniqueRows(), 1);
 	}
 
 	/*
@@ -150,6 +154,21 @@ public class QueryTest extends TestCase {
 	public final void testSetCount() {
 		query.setCount(1);
 		assertEquals("count should be '1'", query.getCount(), 1);
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.getUniqueRows()'
+	 */
+	public final void testGetUniqueRows() {
+		assertEquals("uniqueRows should be '0'", query.getUniqueRows(), 0);
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.setUniqueRows(int)'
+	 */
+	public final void testSetUniqueRows() {
+		query.setUniqueRows(1);
+		assertEquals("uniqueRows should be '1'", query.getUniqueRows(), 1);
 	}
 
 	/*
