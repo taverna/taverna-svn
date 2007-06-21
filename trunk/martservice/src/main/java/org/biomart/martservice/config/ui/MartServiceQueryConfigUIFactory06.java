@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory06.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 11:45:14 $
+ * Last modified on   $Date: 2007-06-21 16:35:09 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -168,7 +168,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		this.martService = martService;
 		this.controller = controller;
 		this.martDataset = martDataset;
-		version = "0.6";
+		version = "0.5";
 	}
 
 	/**
@@ -205,13 +205,12 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		final SummaryPanel summaryPanel = new SummaryPanel();
 
 		final JButton countButton = new JButton("Count");
-		countButton.setBackground(Color.WHITE);
-		countButton.setForeground(Color.BLACK);
+		countButton.setBackground(Color.BLACK);
+		countButton.setForeground(Color.WHITE);
 		countButton.setFont(countButton.getFont().deriveFont(Font.BOLD));
-		countButton.setBorder(null);
+		countButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 1), new EmptyBorder(5, 5, 5, 5)));
 		// countButton.setOpaque(false);
 		// countButton.setRolloverEnabled(true);
-		countButton.setBorder(new EmptyBorder(5, 5, 5, 5));
 		countButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -255,7 +254,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		buttonPanel.add(countButton);
 		panel.add(buttonPanel, BorderLayout.NORTH);
 
-		JLabel label = new JLabel("biomart version 0.5");
+		JLabel label = new JLabel("biomart version 0.6");
 		label.setBackground(Color.BLACK);
 		label.setForeground(Color.WHITE);
 		label.setOpaque(true);
@@ -277,7 +276,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		splitPanel.setLeftComponent(scrollPane1);
 
 		final JComponent inputPanel = createVerticalBox(backgroundColor);
-		inputPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		inputPanel.setBorder(new EmptyBorder(10, 5, 10, 5));
 
 		JScrollPane scrollPane = new JScrollPane(inputPanel);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
@@ -293,10 +292,10 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		componentRegister.add(linkComponent);
 
 		final JComponent attributePanel = createVerticalBox(backgroundColor);
-		attributePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		attributePanel.setBorder(new EmptyBorder(10, 5, 10, 5));
 
 		final JComponent filterPanel = createVerticalBox(backgroundColor);
-		filterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		filterPanel.setBorder(new EmptyBorder(10, 5, 10, 5));
 
 		summaryPanel.getDataset1Button().addActionListener(
 				new ActionListener() {
@@ -554,7 +553,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			title.setToolTipText(description);
 		}
 		ExpandableBox box = new ExpandableBox(title, componentBackgroundColor,
-				borderColor);
+				borderColor, new Insets(10, 10, 10, 10));
 
 		AttributeCollection[] attributeCollections = attributeGroup
 				.getAttributeCollections();
@@ -1035,7 +1034,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			title.setToolTipText(description);
 		}
 		ExpandableBox box = new ExpandableBox(title, componentBackgroundColor,
-				borderColor);
+				borderColor, new Insets(10, 10, 10, 10));
 
 		FilterCollection[] filterCollections = filterGroup
 				.getFilterCollections();
@@ -2346,10 +2345,10 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 				final SummaryPanel sumaryPanel) {
 
 			final JComponent attributePanel = createVerticalBox(backgroundColor);
-			attributePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+			attributePanel.setBorder(new EmptyBorder(10, 5, 10, 5));
 
 			final JComponent filterPanel = createVerticalBox(backgroundColor);
-			filterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+			filterPanel.setBorder(new EmptyBorder(10, 5, 10, 5));
 
 			setBackground(backgroundColor);
 			setLayout(new GridBagLayout());
@@ -2484,7 +2483,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 							GridBagConstraints constraints = new GridBagConstraints();
 							constraints.anchor = GridBagConstraints.WEST;
 
-							JLabel linkedLabel = new JLabel("Linked:");
+							JLabel linkedLabel = new JLabel("Linked");
 							linkedLabel.setFont(getFont()
 									.deriveFont(Font.PLAIN));
 
@@ -2499,8 +2498,8 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 							add(datasetComboBox, constraints);
 
 							Component line = new JPanel();
-							line.setPreferredSize(new Dimension(0, 4));
-							line.setBackground(borderColor);
+							line.setPreferredSize(new Dimension(0, 1));
+							line.setBackground(Color.BLACK);
 
 							constraints.gridx = 0;
 							constraints.gridy = 1;
@@ -2564,7 +2563,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.anchor = GridBagConstraints.WEST;
 
-			JLabel databaseLabel = new JLabel("Database:");
+			JLabel databaseLabel = new JLabel("Database");
 			databaseLabel.setFont(getFont().deriveFont(Font.PLAIN));
 
 			constraints.gridx = 0;
@@ -2582,28 +2581,12 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			constraints.gridy = 0;
 			add(databaseField, constraints);
 
-			Component line = new JPanel();
-			line.setPreferredSize(new Dimension(0, 4));
-			line.setBackground(borderColor);
-
-			constraints.gridx = 0;
-			constraints.gridy = 1;
-			constraints.weightx = 1.0;
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			constraints.gridwidth = 2;
-			constraints.insets = new Insets(20, 0, 20, 0);
-			add(line, constraints);
-
-			constraints.weightx = 0.0;
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.gridwidth = 1;
-			constraints.insets = new Insets(0, 0, 0, 0);
-
-			JLabel datasetLabel = new JLabel("Dataset:");
+			JLabel datasetLabel = new JLabel("Dataset");
 			datasetLabel.setFont(getFont().deriveFont(Font.PLAIN));
 
 			constraints.gridx = 0;
-			constraints.gridy = 2;
+			constraints.gridy = 1;
+			constraints.insets = new Insets(15, 0, 0, 0);
 			add(datasetLabel, constraints);
 
 			JTextField datasetField = new JTextField(martDataset
@@ -2612,29 +2595,49 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			datasetField.setEditable(false);
 
 			constraints.gridx = 1;
-			constraints.gridy = 2;
+			constraints.gridy = 1;
 			add(datasetField, constraints);
 
-			Component line2 = new JPanel();
-			line2.setPreferredSize(new Dimension(0, 4));
-			line2.setBackground(borderColor);
+			Component line = new JPanel();
+			line.setPreferredSize(new Dimension(0, 1));
+			line.setBackground(Color.BLACK);
 
 			constraints.gridx = 0;
-			constraints.gridy = 3;
+			constraints.gridy = 2;
 			constraints.weightx = 1.0;
 			constraints.weighty = 1.0;
 			constraints.fill = GridBagConstraints.HORIZONTAL;
-			constraints.anchor = GridBagConstraints.NORTHWEST;
 			constraints.gridwidth = 2;
-			constraints.insets = new Insets(20, 0, 20, 0);
-			add(line2, constraints);
+//			constraints.insets = new Insets(20, 0, 20, 0);
+			constraints.anchor = GridBagConstraints.NORTH;
+			add(line, constraints);
+
+//			constraints.weightx = 0.0;
+//			constraints.fill = GridBagConstraints.NONE;
+//			constraints.gridwidth = 1;
+//			constraints.insets = new Insets(0, 0, 0, 0);
+//
+//			Component line2 = new JPanel();
+//			line2.setPreferredSize(new Dimension(0, 4));
+//			line2.setBackground(borderColor);
+//
+//			constraints.gridx = 0;
+//			constraints.gridy = 3;
+//			constraints.weightx = 1.0;
+//			constraints.weighty = 1.0;
+//			constraints.fill = GridBagConstraints.HORIZONTAL;
+//			constraints.anchor = GridBagConstraints.NORTHWEST;
+//			constraints.gridwidth = 2;
+//			constraints.insets = new Insets(20, 0, 20, 0);
+//			add(line2, constraints);
 
 		}
 
 	}
 
 	class SummaryPanel extends JPanel {
-		private Color color = new Color(255, 248, 231);
+		//private Color color = new Color(255, 248, 231);
+		private Color color = new Color(229, 229, 229);
 
 		private JLabel dataset1Label;
 
@@ -2675,7 +2678,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		public SummaryPanel() {
 			setBackground(color);
 			setLayout(new GridBagLayout());
-			setBorder(new EmptyBorder(15, 15, 15, 15));
+			setBorder(new EmptyBorder(15, 5, 15, 10));
 
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.anchor = GridBagConstraints.NORTHWEST;
@@ -2695,21 +2698,21 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			constraints.gridwidth = 2;
 			add(getDataset1Label(), constraints);
 			constraints.insets = new Insets(5, 15, 0, 5);
-			add(getAttributes1Button(), constraints);
-			constraints.insets = new Insets(0, 15, 0, 5);
-			add(getAttributes1List(), constraints);
-			constraints.insets = new Insets(5, 15, 0, 5);
 			add(getFilters1Button(), constraints);
 			constraints.insets = new Insets(0, 15, 0, 5);
 			add(getFilters1List(), constraints);
-			constraints.insets = new Insets(5, 5, 0, 5);
+			constraints.insets = new Insets(5, 15, 0, 5);
+			add(getAttributes1Button(), constraints);
+			constraints.insets = new Insets(0, 15, 0, 5);
+			add(getAttributes1List(), constraints);
+//			constraints.insets = new Insets(5, 15, 0, 5);
 
 			Component line = new JPanel();
-			line.setPreferredSize(new Dimension(0, 4));
-			line.setBackground(borderColor);
+			line.setPreferredSize(new Dimension(0, 1));
+			line.setBackground(Color.BLACK);
 
 			constraints.fill = GridBagConstraints.HORIZONTAL;
-			constraints.insets = new Insets(20, 0, 15, 0);
+			constraints.insets = new Insets(20, 15, 15, 0);
 			add(line, constraints);
 			constraints.fill = GridBagConstraints.NONE;
 
@@ -2765,22 +2768,22 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 					constraints.gridx = 0;
 					constraints.gridwidth = 2;
 					constraints.insets = new Insets(5, 15, 0, 5);
-					add(getAttributes2Button(), constraints);
+					add(getFilters2Button(), constraints);
 					constraints.insets = new Insets(0, 15, 0, 5);
 					getAttributes2List().setModel(
 							new QueryListModel(controller.getMartQuery()
 									.getQuery(), linkedDataset.getName(),
 									QueryListModel.ATTRIBUTE));
-					add(getAttributes2List(), constraints);
+					add(getFilters2List(), constraints);
 
 					constraints.insets = new Insets(5, 15, 0, 5);
-					add(getFilters2Button(), constraints);
+					add(getAttributes2Button(), constraints);
 					constraints.insets = new Insets(0, 15, 0, 5);
 					getFilters2List().setModel(
 							new QueryListModel(controller.getMartQuery()
 									.getQuery(), linkedDataset.getName(),
 									QueryListModel.FILTER));
-					add(getFilters2List(), constraints);
+					add(getAttributes2List(), constraints);
 
 					constraints.fill = GridBagConstraints.VERTICAL;
 					constraints.weighty = 1.0;
@@ -2848,7 +2851,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		private JButton getDataset1Button() {
 			if (dataset1Button == null) {
-				dataset1Button = new JButton("Dataset:");
+				dataset1Button = new JButton("Dataset");
 				dataset1Button.setFont(getFont().deriveFont(Font.BOLD));
 				dataset1Button.setBackground(color);
 				dataset1Button.setBorder(null);
@@ -2859,7 +2862,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		private JButton getDataset2Button() {
 			if (dataset2Button == null) {
-				dataset2Button = new JButton("Dataset:");
+				dataset2Button = new JButton("Dataset");
 				dataset2Button.setFont(getFont().deriveFont(Font.BOLD));
 				dataset2Button.setBackground(color);
 				dataset2Button.setBorder(null);

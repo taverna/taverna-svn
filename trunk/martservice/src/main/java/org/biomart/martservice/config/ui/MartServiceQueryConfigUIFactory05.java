@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory05.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-15 09:12:34 $
+ * Last modified on   $Date: 2007-06-21 16:35:09 $
  *               by   $Author: davidwithers $
  * Created on 04-Apr-2006
  *****************************************************************/
@@ -3256,16 +3256,26 @@ class ExpandableBox extends JPanel {
 	
 	public ExpandableBox(Component titleComponent, Color backgroundColor,
 			Color borderColor) {
-		this(titleComponent, backgroundColor, borderColor, false);
+		this(titleComponent, backgroundColor, borderColor, new Insets(10, 10, 10, 10), false);
+	}
+	
+	public ExpandableBox(Component titleComponent, Color backgroundColor,
+			Color borderColor, Insets borderInsets) {
+		this(titleComponent, backgroundColor, borderColor, borderInsets, false);
 	}
 	
 	public ExpandableBox(Component titleComponent, Color backgroundColor,
 			Color borderColor, boolean animated) {
+		this(titleComponent, backgroundColor, borderColor, new Insets(10, 10, 10, 10), animated);
+	}
+	
+	public ExpandableBox(Component titleComponent, Color backgroundColor,
+			Color borderColor, Insets borderInsets, boolean animated) {
 		this.animated = animated;
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(backgroundColor);
 		setBorder(new CompoundBorder(new LineBorder(borderColor, 1),
-				new EmptyBorder(10, 10, 10, 10)));
+				new EmptyBorder(borderInsets)));
 
 		labelBox = new JPanel();
 		labelBox.setLayout(new BoxLayout(labelBox, BoxLayout.X_AXIS));

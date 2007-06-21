@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-15 09:17:37 $
+ * Last modified on   $Date: 2007-06-21 16:35:08 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -266,10 +266,10 @@ public class MartServiceUtils {
 					.getVirtualSchema()));
 		}
 		data.add(new NameValuePair(DATASET_VALUE, dataset.getName()));
-		if (dataset.getInterface() != null) {
-			data.add(new NameValuePair(INTERFACE_ATTRIBUTE, dataset
-					.getInterface()));
-		}
+//		if (dataset.getInterface() != null) {
+//			data.add(new NameValuePair(INTERFACE_ATTRIBUTE, dataset
+//					.getInterface()));
+//		}
 		if (mart != null && mart.getMartUser() != null) {
 			data
 					.add(new NameValuePair(MART_USER_ATTRIBUTE, mart
