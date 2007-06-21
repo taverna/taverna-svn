@@ -49,7 +49,7 @@ public class ArtifactImplTest extends TestCase {
 	
 	@SuppressWarnings("null")
 	public void testExclusionDependencies() throws MalformedURLException, InterruptedException, ArtifactStateException {
-		r.addRemoteRepository(new URL("http://www.mygrid.org.uk/maven/proxy/"));
+		r.addRemoteRepository(new URL("http://maven.sateh.com/repository/"));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest","1.5.1");
