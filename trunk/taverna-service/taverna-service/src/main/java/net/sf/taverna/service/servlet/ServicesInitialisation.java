@@ -1,15 +1,13 @@
 package net.sf.taverna.service.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.log4j.Logger;
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.utils.URIFactory;
+
+import org.apache.log4j.Logger;
 
 public class ServicesInitialisation implements ServletContextListener {
 
@@ -19,7 +17,6 @@ public class ServicesInitialisation implements ServletContextListener {
 	
 	public void contextDestroyed(ServletContextEvent event) {
 		stopQueueMonitor();
-		//stopDatabase();
 	}
 
 	private void stopQueueMonitor() {
@@ -31,7 +28,6 @@ public class ServicesInitialisation implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent event) {
 		initialiseUriFactory(event.getServletContext());
-		//startDatabase();
 		startQueueMonitor();
 	}
 
@@ -43,19 +39,10 @@ public class ServicesInitialisation implements ServletContextListener {
 		queueMonitor.start();
 	}
 	
-	private void startDatabase() {
-		logger.info("About to start database");
-		//NetworkServerControl.main(new String[] { "start", "-p", "1337" });
-		logger.info("Database started");
-	}
-	
-	private void stopDatabase() {
-		//NetworkServerControl.main(new String[] { "stop", "-p", "1337" });
-	}
-	
 	private void initialiseUriFactory(ServletContext context) {
 		URIFactory uriFactory = URIFactory.getInstance();
-		String base = "http://localhost:9090/taverna-service-1.0.0";
+		String base = context.getInitParameter("baseuri");
+		logger.info("Using baseURI of "+base);
 		uriFactory.setRoot(base+"/v1");
 		uriFactory.setHTMLRoot(base+"/html");
 	}

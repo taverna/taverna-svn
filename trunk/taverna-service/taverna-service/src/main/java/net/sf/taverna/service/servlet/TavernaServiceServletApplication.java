@@ -1,7 +1,6 @@
 package net.sf.taverna.service.servlet;
 
 import net.sf.taverna.service.rest.RestApplication;
-import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 import org.restlet.Component;
@@ -55,6 +54,4 @@ public class TavernaServiceServletApplication extends RestApplication {
 	protected void attachHTMLSource(Component component) {
 		//nothing needs to be done, this is handled by tomcat
 	}
-	
-	
 }

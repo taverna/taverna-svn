@@ -39,6 +39,7 @@ import org.restlet.data.Reference;
 
 public class RestfulExecutionThread extends Thread {
 	
+	//FIXME: clearly, having the password hard-coded is not ideal!
 	private final String WORKER_PASSWORD="Bob";
 	
 	private static Logger logger = Logger.getLogger(RestfulExecutionThread.class);
