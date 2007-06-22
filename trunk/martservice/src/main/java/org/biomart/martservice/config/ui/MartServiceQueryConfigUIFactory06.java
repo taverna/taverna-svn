@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory06.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 22:49:57 $
+ * Last modified on   $Date: 2007-06-22 09:41:12 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -206,9 +206,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		final JButton countButton = new JButton("Count");
 		countButton.setBackground(Color.BLACK);
-		countButton.setForeground(Color.WHITE);
+//		countButton.setForeground(Color.WHITE);
 		countButton.setFont(countButton.getFont().deriveFont(Font.BOLD));
-		countButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 1), new EmptyBorder(5, 5, 5, 5)));
+//		countButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 1), new EmptyBorder(5, 5, 5, 5)));
 		// countButton.setOpaque(false);
 		// countButton.setRolloverEnabled(true);
 		countButton.addActionListener(new ActionListener() {
@@ -265,7 +265,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		
 		JPanel buttonPanel = new JPanel(new BorderLayout());
 		buttonPanel.setBackground(Color.BLACK);
-		buttonPanel.setBorder(new EmptyBorder(5, 25, 5, 5));
+		buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		buttonPanel.add(countButton, BorderLayout.WEST);
 		buttonPanel.add(uniqueCheckBox, BorderLayout.EAST);
 		panel.add(buttonPanel, BorderLayout.NORTH);
@@ -274,7 +274,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		label.setBackground(Color.BLACK);
 		label.setForeground(Color.WHITE);
 		label.setOpaque(true);
-		label.setBorder(new EmptyBorder(5, 25, 5, 5));
+		label.setBorder(new EmptyBorder(5, 5, 5, 5));
 		panel.add(label, BorderLayout.SOUTH);
 
 		JSplitPane splitPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -287,7 +287,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		JScrollPane scrollPane1 = new JScrollPane(summaryPanel);
 		scrollPane1.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane1.setBorder(new LineBorder(borderColor, 3));
+		scrollPane1.setBorder(new LineBorder(Color.BLACK, 1));
 
 		splitPanel.setLeftComponent(scrollPane1);
 
@@ -296,7 +296,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 
 		JScrollPane scrollPane = new JScrollPane(inputPanel);
 		scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-		scrollPane.setBorder(new LineBorder(borderColor, 3));
+		scrollPane.setBorder(new LineBorder(Color.BLACK, 1));
 
 		splitPanel.setRightComponent(scrollPane);
 
@@ -2704,7 +2704,10 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			constraints.gridy = 0;
 			constraints.insets = new Insets(5, 5, 0, 5);
 			constraints.weightx = 0.0;
-			add(getDataset1Button(), constraints);
+			JPanel d1b = new JPanel();
+			d1b.setBackground(Color.GRAY);
+			d1b.add(getDataset1Button());
+			add(d1b, constraints);
 			constraints.gridx = 1;
 			constraints.gridy = 0;
 			constraints.weightx = 1.0;
@@ -3216,7 +3219,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 }
 
 /**
- * A border drawn only at the top of a component.
+ * A border drawn only on one side of a component.
  * 
  * @author David Withers
  */
