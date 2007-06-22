@@ -20,7 +20,6 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.service.rest.client.DataREST;
-import net.sf.taverna.service.rest.client.DatasREST;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.RESTContext;
@@ -30,7 +29,6 @@ import net.sf.taverna.tools.Bootstrap;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
@@ -39,19 +37,20 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.restlet.data.Reference;
 
-import com.sun.tools.javac.util.Context;
-
 public class RestfulExecutionThread extends Thread {
 	
 	private final String WORKER_PASSWORD="Bob";
-	private final String BASE_URL="http://localhost:8976/v1/";
 	
 	private static Logger logger = Logger.getLogger(RestfulExecutionThread.class);
-	private String jobId;
 	private String workerUsername;
+	private String jobUri;
+	private String baseUri;
 
-	public RestfulExecutionThread(String jobId, String workerUsername) {
-		this.jobId=jobId;
+	public RestfulExecutionThread(String jobUri, String baseUri,String workerUsername) {
+		super("Restful Executor Thread");
+		logger.info("Starting job execution. JobURI="+jobUri);
+		this.jobUri=jobUri;
+		this.baseUri=baseUri;
 		this.workerUsername = workerUsername;
 	}
 	
@@ -130,12 +129,12 @@ public class RestfulExecutionThread extends Thread {
 	
 	private JobREST getJobREST() {
 		RESTContext context = getRESTContext();
-		Reference refUri = new Reference(BASE_URL+"jobs/"+jobId);
+		Reference refUri = new Reference(jobUri);
 		return new JobREST(context,refUri);	
 	}
 
 	private RESTContext getRESTContext() {
-		RESTContext context = new RESTContext(BASE_URL,workerUsername,WORKER_PASSWORD);
+		RESTContext context = new RESTContext(baseUri,workerUsername,WORKER_PASSWORD);
 		return context;
 	}
 }

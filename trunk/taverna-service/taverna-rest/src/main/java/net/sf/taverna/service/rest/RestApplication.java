@@ -23,6 +23,7 @@ import net.sf.taverna.service.rest.resources.WorkflowsResource;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
+import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
@@ -36,7 +37,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.util.Template;
 
-public class RestApplication {
+public class RestApplication extends Application {
 
 	private static Logger logger = Logger.getLogger(RestApplication.class);
 
@@ -48,21 +49,35 @@ public class RestApplication {
 
 	private static final String DATA = "/{data}";
 
-	private URIFactory uriFactory = URIFactory.getInstance();
+	protected DAOFactory daoFactory = DAOFactory.getFactory();
+	
+	private Component component = null;
+	
+	public RestApplication(Context context) {
+		super(context);
+	}
+	
+	public RestApplication() {
+		super();
+	}
 
-	DAOFactory daoFactory = DAOFactory.getFactory();
-
-	private Component component;
+	@Override
+	public Restlet createRoot() {
+		return createComponent();
+	}
 
 	public void startServer(int port) {
 		stopServer();
+		
+		String base = "http://localhost:" + port;
+		URIFactory uriFactory=URIFactory.getInstance();
+		uriFactory.setRoot(base + "/v1");
+		uriFactory.setHTMLRoot(base + "/html");
+		
+		
 		if (component == null) {
 			component = createComponent();
 		}
-		String base = "http://localhost:" + port;
-		uriFactory.setRoot(base + "/v1");
-		uriFactory.setHTMLRoot(base + "/html");
-		// Create a new Restlet component and add a HTTP server connector to it
 		component.getServers().add(Protocol.HTTP, port);
 
 		// Now, let's start the component!
@@ -70,8 +85,7 @@ public class RestApplication {
 		try {
 			component.start();
 		} catch (Exception ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
+			logger.error("Error starting the server",ex);
 		}
 	}
 
@@ -102,21 +116,30 @@ public class RestApplication {
 			}
 		}
 	}
-
-	private Component createComponent() {
-		Component component = new Component();
-		component.getClients().add(Protocol.FILE);
-
+	
+	protected void attachHTMLSource(Component component) {
 		URL htmlSource = this.getClass().getResource("/html");
 		Directory htmlDir =
 			new Directory(component.getContext(), htmlSource.toString());
 		component.getDefaultHost().attach("/html", htmlDir);
-
-		Router router = new Router(component.getContext());
+	}
+	
+	protected void attachFilters(Component component, Router router) {
 		DaoCloseFilter daoCloser =
 			new DaoCloseFilter(component.getContext(), router);
 		component.getDefaultHost().attach("/v1", daoCloser);
+	}
 
+	public Component createComponent() {
+		URIFactory uriFactory = URIFactory.getInstance();
+		
+		Component component = new Component();
+		component.getClients().add(Protocol.FILE);
+		
+		Router router = new Router(component.getContext());
+		
+		attachFilters(component, router);
+		
 		Guard userGuard = new UserGuard(router.getContext());
 
 		// Authenticate access to mostly anything

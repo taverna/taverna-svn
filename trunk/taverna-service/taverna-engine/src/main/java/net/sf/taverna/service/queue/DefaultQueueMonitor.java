@@ -27,7 +27,10 @@ public class DefaultQueueMonitor extends Thread {
 	//FIXME: this should be increased after testing, or better still read from config
 	private final int CHECK_PERIOD = 5; //checks every 5 seconds.
 	private boolean terminate = false;
-	Object o = new Object();
+	
+	public DefaultQueueMonitor() {
+		super("Queue Monitor Thread");
+	}
 	
 	public void run() {
 		while(!terminate) {
@@ -66,7 +69,6 @@ public class DefaultQueueMonitor extends Thread {
 			} catch (InterruptedException e) {
 				
 			}
-			
 		}
 	}
 	
