@@ -13,9 +13,9 @@
     url="http://www.bioconductor.org/">BioConductor</ulink> module, suitable
     for biological data analysis. Taverna comes with support executing
     R-scripts as part of a workflow. The functionality is very similar to how
-    to use the <link linkend="beanshell_processor">Beanshell processor</link>, so this section
-    will only cover what is special about the <firstterm>RShell
-    processor</firstterm>. </para>
+    to use the <link linkend="beanshell_processor">Beanshell processor</link>,
+    so this section will only cover what is special about the
+    <firstterm>RShell processor</firstterm>.</para>
 
     <para>First of all, R and required R packages, such as the BioConductor,
     must be installed locally on the machines that will be executing the
@@ -128,7 +128,7 @@ Rserv started in daemon mode.
     <guilabel>RShell</guilabel> under <guilabel>Local Services</guilabel> in
     the service scavenger panel. Either drag the processor to the
     <guilabel>Advanced model explorer</guilabel>, or right click and select
-    <guimenuitem>Add to model</guimenuitem>. </para>
+    <guimenuitem>Add to model</guimenuitem>.</para>
 
     <screenshot>
       <screeninfo>Adding an RShell processor</screeninfo>
@@ -141,7 +141,7 @@ Rserv started in daemon mode.
     </screenshot>
 
     <para>Right click on the processor and select <guimenuitem>Configure
-    RShell</guimenuitem> to bring up the RShell configure dialogue. </para>
+    RShell</guimenuitem> to bring up the RShell configure dialogue.</para>
 
     <screenshot>
       <screeninfo>Right-click to configure RShell</screeninfo>
@@ -168,20 +168,20 @@ Rserv started in daemon mode.
       </mediaobject>
     </screenshot>
 
-    <para>Just like the <link linkend="beanshell_inputs_outputs">beanshell inputs and
-    outputs</link> are accessed through variable names, the RShell processor
-    makes input ports available as variables named after the port, and output
-    ports read their named variable after executing the script. That is, the
-    last assigned value to the variable will be the one returned from the
-    processor. So for this script to make sense we have to make an input port
-    <literal>x</literal> and an output port <literal>y</literal>. Flip to the
-    tab <guibutton>Input ports</guibutton> and click <guibutton>Create input
-    port</guibutton>, specify the port name <literal>x</literal>. Next, we'll
-    have to specify the type this variable will have within the R-script.
-    Although Taverna normally operates by passing around text strings, R is a
-    typed language and you need to specify that in this case
-    <literal>x</literal> is to be parsed a <literal>double</literal>, for
-    example <literal>0.45</literal>. </para>
+    <para>Just like the <link linkend="beanshell_inputs_outputs">beanshell
+    inputs and outputs</link> are accessed through variable names, the RShell
+    processor makes input ports available as variables named after the port,
+    and output ports read their named variable after executing the script.
+    That is, the last assigned value to the variable will be the one returned
+    from the processor. So for this script to make sense we have to make an
+    input port <literal>x</literal> and an output port <literal>y</literal>.
+    Flip to the tab <guibutton>Input ports</guibutton> and click
+    <guibutton>Create input port</guibutton>, specify the port name
+    <literal>x</literal>. Next, we'll have to specify the type this variable
+    will have within the R-script. Although Taverna normally operates by
+    passing around text strings, R is a typed language and you need to specify
+    that in this case <literal>x</literal> is to be parsed a
+    <literal>double</literal>, for example <literal>0.45</literal>.</para>
 
     <screenshot>
       <screeninfo>Adding and configuring input ports</screeninfo>
