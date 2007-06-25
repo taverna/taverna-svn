@@ -11,12 +11,23 @@ import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.xml.Capabilities;
 
 import org.apache.log4j.Logger;
-import org.jdom.Namespace;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 
+/**
+ * Generate URIs for resources.
+ * <p>
+ * The factory needs to be created using {@link #getInstance(Request)} or
+ * {@link #getInstance(String)} to specify the application root for generated
+ * URIs.
+ * <p>
+ * To resolve DAO objects from an URI, see {@link URItoDAO}.
+ * 
+ * @author Stian Soiland
+ */
 public class URIFactory {
 	
 	private static Logger logger = Logger.getLogger(URIFactory.class);
@@ -26,9 +37,6 @@ public class URIFactory {
 	public static final String V1 = "v1";
 	
 	public static final String DEFAULT_HTML_PATH = "../" + HTML;
-
-	public static final Namespace NS_XLINK =
-		Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");
 
 	public static URIFactory getInstance(String root) {
 		return new URIFactory(root);
@@ -42,10 +50,18 @@ public class URIFactory {
 
 	private Reference applicationRoot;
 	
+	/**
+	 * For future use, like generating relative URIs.
+	 * 
+	 */
 	private Request request;
 
 	private String htmlRoot;
 
+	/**
+	 * Mapping from resource collection to path
+	 * 
+	 */
 	static Map<Class<?>, String> resourceMap = new HashMap<Class<?>, String>();
 
 	static {
@@ -57,16 +73,39 @@ public class URIFactory {
 		resourceMap.put(Worker.class, "workers");
 	}
 
+	/**
+	 * Use {@link #getInstance(String)} instead
+	 * 
+	 * @param applicationRoot
+	 */
 	private URIFactory(String applicationRoot) {
 		setApplicationRoot(applicationRoot);
 	}
 
+	/**
+	 * Use {@link #getInstance(Request)} instead
+	 * 
+	 * @param request
+	 */
 	public URIFactory(Request request) {
 		this.request = request;
 		setApplicationRoot(request.getRootRef());
 	}
 
 
+	/**
+	 * Get the mapping for a collection resource class. The mapping is generally
+	 * appended to {@link #getApplicationRoot()} by {@link #getURI(Class)} or
+	 * {@link #getURI(AbstractUUID)}, but also used by {@link #getURI(User, Class)}.
+	 * <p>
+	 * If a direct mapping in {@link #resourceMap} can't be found, the
+	 * mapping of the superclass will be searched instead, recursively.
+	 * 
+	 * @see #getURI(Class)
+	 * @param resourceClass
+	 *            The class of the collection resource
+	 * @return The mapping path to add to {@link #getApplicationRoot()}
+	 */
 	public static String getMapping(Class<?> resourceClass) {
 		String mapping = resourceMap.get(resourceClass);
 		if (mapping == null && resourceClass.getSuperclass() != null) {
@@ -76,10 +115,12 @@ public class URIFactory {
 	}
 
 	/**
-	 * Get URI for a resource class.
+	 * Get URI for a resource collection. For owned collections (subclasses of
+	 * {@link AbstractOwned}, see {@link #getURI(User, Class)}
 	 * 
 	 * @param resourceClass
-	 * @return
+	 *            Class of the resource, for example {@link User}
+	 * @return The full URI to the collection of resources of the given class
 	 */
 	public String getURI(Class<? extends AbstractUUID> resourceClass) {
 		String mapping = getMapping(resourceClass);
@@ -90,6 +131,12 @@ public class URIFactory {
 		return new Reference(getApplicationRoot(), mapping).getTargetRef().toString();
 	}
 
+	/**
+	 * Get URI for a resource.
+	 * 
+	 * @param resource The {@link AbstractUUID} bean of the resource
+	 * @return The full URI for the resource
+	 */
 	public String getURI(AbstractUUID resource) {
 		String resourcePrefix = getURI(resource.getClass());
 		if (resource instanceof User) {
@@ -113,26 +160,68 @@ public class URIFactory {
 		return uri + "/" + getMapping(ownedClass);
 	}
 
+	/**
+	 * Get the URI for the status of a job
+	 * 
+	 * @param job The {@link Job} bean
+	 * @return The full URI for the job's status
+	 */
 	public String getURIStatus(Job job) {
 		return getURI(job) + getMappingStatus();
 	}
 
+	/**
+	 * Get the URI for the progress report of a job
+	 * 
+	 * @param job The {@link Job} bean
+	 * @return The full URI for the job's progress report
+	 */
 	public String getURIReport(Job job) {
 		return getURI(job) + getMappingReport();
 	}
 
+	/**
+	 * The URI for getting the currently authenticated user. This URI will
+	 * normally redirect to the actual URI of the current user, and is normally
+	 * included in the {@link Capabilities} document.
+	 * 
+	 * @see Capabilities#getCurrentUser()
+	 * @return The full URI for the meta-resource that redirects to the current user
+	 */
 	public String getURICurrentUser() {
 		return getURI(User.class) + getMappingCurrentUser();
 	}
 
+	/**
+	 * The mapping added to the URI of the {@link User} collection to form the
+	 * URL for the current user.
+	 * 
+	 * @see #getURI(Class)
+	 * @see #getURICurrentUser()
+	 * @return The suffix to be attached to the User collection URI.
+	 */
 	public static String getMappingCurrentUser() {
 		return ";current";
 	}
 
+	/**
+	 * The mapping added to the URI of the {@link Job} to get the status.
+	 * 
+	 * @see #getURIStatus(Job)
+	 * @see #getURI(AbstractUUID)
+	 * @return The suffix to be attached to the Job resource URI
+	 */
 	public static String getMappingStatus() {
 		return "/status";
 	}
 
+	/**
+	 * The mapping added to the URI of the {@link Job} to get the progress report.
+	 * 
+	 * @see #getURIReport(Job)
+	 * @see #getURI(AbstractUUID)
+	 * @return The suffix to be attached to the Job resource URI
+	 */
 	public static String getMappingReport() {
 		return "/report";
 	}
@@ -141,6 +230,9 @@ public class URIFactory {
 	 * Set the HTML path to add to the root URI for static HTML files, relative
 	 * to the application root, typically "../html". The default is
 	 * <code>{@value #DEFAULT_HTML}</code>
+	 * <p>
+	 * The path can also be absolute if it is not expressible relative to the
+	 * application root.
 	 * 
 	 * @param path
 	 */
@@ -148,10 +240,24 @@ public class URIFactory {
 		html = path;
 	}
 
+	/**
+	 * Get the path relative to {@link #getApplicationRoot()} for static HTML files.
+	 * 
+	 * @return
+	 */
 	public static String getHTMLpath() {
 		return html;
 	}
 
+	/**
+	 * Set the application root to the given URI, typically
+	 * <code>http://localhost:1238/v1</code>. The root is where the
+	 * {@link Capabilities} document is served, and also the base of the URIs to
+	 * collections such as <code>users</code> defined by {@link #resourceMap}
+	 * 
+	 * @param root
+	 *            The URI of the application root
+	 */
 	public void setApplicationRoot(Reference root) {
 		logger.debug(root + " " + root.getBaseRef());
 		applicationRoot = root.getTargetRef();
@@ -160,16 +266,40 @@ public class URIFactory {
 		}
 		logger.debug("Set application root to " + applicationRoot);
 	}
-	
+
+	/**
+	 * Set the application root to the given URI, typically
+	 * <code>http://localhost:1238/v1</code>. The root is where the
+	 * {@link Capabilities} document is served, and also the base of the URIs to
+	 * collections such as <code>users</code> defined by {@link #resourceMap}
+	 * 
+	 * @param root
+	 *            The URI of the application root
+	 */
 	public void setApplicationRoot(String root) {
 		setApplicationRoot(new Reference(root));
 	}
 	
-
+	/**
+	 * Get the application root. The root is where the
+	 * {@link Capabilities} document is served, and also the base of the URIs to
+	 * collections such as <code>users</code> defined by {@link #resourceMap}
+	 * 
+	 * @return The application root as a {@link Reference}
+	 */
 	public Reference getApplicationRoot() {
 		return applicationRoot;
 	}
+	
 
+	/**
+	 * Get the calculated root of static HTML files. This is normally calculated
+	 * from the relative address of {@link #getHTMLpath()} from
+	 * {@link #getApplicationRoot()}. If the {@link #getHTMLpath()} address is
+	 * absolute, that address will be used instead.
+	 * 
+	 * @return The root URI of static HTML files
+	 */
 	public String getHTMLRoot() {
 		if (htmlRoot == null) {
 			htmlRoot =

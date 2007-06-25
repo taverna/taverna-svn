@@ -16,46 +16,105 @@ import net.sf.taverna.service.datastore.dao.DAOFactory.DAO;
 import org.apache.log4j.Logger;
 import org.restlet.data.Reference;
 
+/**
+ * Resolve URIs to retrieve DAO beans.
+ * <p>
+ * Generally this class does the opposite of {@link URIFactory}. Given an URI,
+ * retrieve the DAO object. For example, from
+ * <code>http://localhost:8976/v1/jobs/1928319238</code>, load the {@link Job} with
+ * id "1928319238".
+ * 
+ * @author Stian Soiland
+ */
 public class URItoDAO {
 	private static Logger logger = Logger.getLogger(URItoDAO.class);
 
-	private URIFactory uriFactory;
-
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
+	private URIFactory uriFactory;
+	
+	/**
+	 * The get*DAO() methods from the {@link DAOFactory} as identified by {@link #findDAOs()}.
+	 * 
+	 */
 	private Map<Class<?>, Method> daoMethods = findDAOs();
 
+	/**
+	 * Get an {@link URItoDAO} instance based on the given {@link URIFactory}.
+	 * 
+	 * @param uriFactory
+	 *            The {@link URIFactory} to be used for resolving URIs
+	 * @return An {@link URItoDAO} instance
+	 */
 	public synchronized static URItoDAO getInstance(URIFactory uriFactory) {
 		return new URItoDAO(uriFactory);
 	}
 
 	/**
-	 * Use singleton access {@link #getInstance()}
+	 * Use {@link #getInstance()} instead
 	 */
 	private URItoDAO(URIFactory uriFactory) {
 		this.uriFactory = uriFactory;
 	}
 
+	/**
+	 * Retrieve a resource of the given class from the URI given.
+	 * 
+	 * @see #getResource(String, Class)
+	 * @param <ResourceClass>
+	 *            The class of the resource bean
+	 * @param uri
+	 *            The full URI to the resource
+	 * @param resourceClass
+	 *            The class of the resource bean
+	 * @return A {@link ResourceClass} loaded from its {@link GenericDao}
+	 */
 	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
 		Reference uri, Class<ResourceClass> resourceClass) {
 		return getResource(uri.getTargetRef().toString(), resourceClass);
 	}
- 	
-	public <ResourceClass extends AbstractUUID> String getId(String uri, Class<ResourceClass> resourceClass) {
+
+	/**
+	 * Retrieve a resource of the given class from the URI given.
+	 * 
+	 * @param <ResourceClass>
+	 *            The class of the resource bean
+	 * @param uri
+	 *            The full URI to the resource
+	 * @param resourceClass
+	 *            The class of the resource bean
+	 * @return A {@link ResourceClass} loaded from the {@link DAOFactory}
+	 */
+	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
+		String uri, Class<ResourceClass> resourceClass) {
+		String id = getId(uri, resourceClass);
+		return daoRead(resourceClass, id);
+	}
+
+	/**
+	 * Get the identifier part of the URI to a resource of the given class.
+	 * Normally this is the primary key for use with
+	 * {@link GenericDao#read(Serializable)}
+	 * 
+	 * @param <ResourceClass>
+	 *            The class of the resource bean
+	 * @param uri
+	 *            The full URI to the resource
+	 * @param resourceClass
+	 *            The class of the resource bean
+	 * @return The identifier of the resource
+	 */
+	public <ResourceClass extends AbstractUUID> String getId(String uri,
+		Class<ResourceClass> resourceClass) {
 		String prefix = uriFactory.getURI(resourceClass) + "/";
 		logger.debug("Prefix for " + resourceClass + ": " + prefix);
 		if (!uri.startsWith(prefix)) {
-			logger.warn("Invalid resource URI " + uri + " - did not start with " + prefix);
+			logger.warn("Invalid resource URI " + uri
+				+ " - did not start with " + prefix);
 			throw new IllegalArgumentException("Invalid resource URI " + uri);
 		}
 		String id = uri.substring(prefix.length());
 		return id;
-	}
-
-	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
-		String uri, Class<ResourceClass> resourceClass) {
-		String id = getId(uri,resourceClass);
-		return daoRead(resourceClass, id);
 	}
 
 	/**
@@ -77,12 +136,13 @@ public class URItoDAO {
 	@SuppressWarnings("unchecked")
 	private <ResourceClass, PrimaryKey extends Serializable> ResourceClass daoRead(
 		Class<ResourceClass> resourceClass, PrimaryKey id) {
-		
+
 		// Special case as their URIs contain the username
 		if (User.class.isAssignableFrom(resourceClass)) {
-			return (ResourceClass) daoFactory.getUserDAO().readByUsername((String) id);
+			return (ResourceClass) daoFactory.getUserDAO().readByUsername(
+				(String) id);
 		}
-		
+
 		Method daoMethod = daoMethods.get(resourceClass);
 		if (daoMethod == null) {
 			logger.error("Unknown resource class " + resourceClass);
@@ -112,6 +172,8 @@ public class URItoDAO {
 
 	/**
 	 * Identify all the get**DAO() methods in the current factory.
+	 * <p>
+	 * The {@link DAOFactory} methods must be annotated using {@link DAO}.
 	 * 
 	 * @return A Map from DAO class (such as {@link Job}) to a {@link Method}
 	 *         on the daoFactory class.
