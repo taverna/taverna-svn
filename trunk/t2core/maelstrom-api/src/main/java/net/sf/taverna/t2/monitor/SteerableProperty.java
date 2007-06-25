@@ -9,6 +9,12 @@ package net.sf.taverna.t2.monitor;
  */
 public interface SteerableProperty<T> extends MonitorableProperty<T> {
 
+	/**
+	 * Set the property value
+	 * 
+	 * @param newValue
+	 * @throws NoSuchPropertyException
+	 */
 	public void setProperty(T newValue) throws NoSuchPropertyException;
-	
+
 }

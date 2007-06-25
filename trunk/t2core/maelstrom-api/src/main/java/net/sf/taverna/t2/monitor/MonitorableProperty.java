@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.monitor;
 
+import java.util.Date;
+
 /**
  * A single readable property contained by a Monitorable. This is used to
  * express properties that are dynamic with respect to workflow invocation as
@@ -25,5 +27,12 @@ public interface MonitorableProperty<T> {
 	 * layers to expose a set of related properties under the same root name.
 	 */
 	public String[] getName();
+
+	/**
+	 * Get the last update date for this property, if the property is immutable
+	 * then this should be set to the date at which the implementation is
+	 * created.
+	 */
+	public Date getLastModified();
 
 }

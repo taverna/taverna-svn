@@ -32,7 +32,7 @@ public interface Merge extends NamedWorkflowEntity {
 	 * 
 	 * @return Ordered list of InputPort objects
 	 */
-	public List<? extends MergeInputPort> getInputPorts();
+	List<? extends MergeInputPort> getInputPorts();
 
 	/**
 	 * The Merge object has a single output port through which modified events
@@ -40,6 +40,6 @@ public interface Merge extends NamedWorkflowEntity {
 	 * 
 	 * @return OutputPort for this Merge object
 	 */
-	public OutputPort getOutputPort();
+	OutputPort getOutputPort();
 
 }

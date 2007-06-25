@@ -14,9 +14,9 @@ import java.util.List;
  */
 public class CompoundEdit implements Edit<Object> {
 
-	private List<Edit> childEdits;
+	private final transient List<Edit> childEdits;
 
-	private boolean applied = false;
+	private transient boolean applied = false;
 
 	/**
 	 * Create a new compound edit with no existing Edit objects.
