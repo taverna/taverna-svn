@@ -2,6 +2,7 @@ package net.sf.taverna.service;
 
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.RestApplication;
+import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.UserUtils;
 
 import org.apache.commons.cli.CommandLine;
@@ -84,8 +85,13 @@ public class TavernaService {
 		if (line.hasOption(PORT)) {
 			port = (Integer) line.getOptionObject(PORT);
 		}
-		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor();
+		
+		// FIXME: Workers should be started from separate main with the URI in a
+		// configuration file
+		URIFactory uriFactory = URIFactory.getInstance("http://localhost:" + PORT + "/v1/");
+		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor(uriFactory);
 		queueMonitor.start();
+		
 		
 		new RestApplication().startServer(port);
 	}

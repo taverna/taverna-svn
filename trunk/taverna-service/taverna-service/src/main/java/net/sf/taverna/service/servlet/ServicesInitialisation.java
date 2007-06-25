@@ -27,23 +27,16 @@ public class ServicesInitialisation implements ServletContextListener {
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
-		initialiseUriFactory(event.getServletContext());
-		startQueueMonitor();
+		startQueueMonitor(event.getServletContext());
 	}
 
-	private void startQueueMonitor() {
+	private void startQueueMonitor(ServletContext context) {
 		logger.info("Starting the Job Queue Monitor");
-		logger.info("Base URI set to:"+URIFactory.getInstance().getRoot());
-		queueMonitor=new DefaultQueueMonitor();
+		URIFactory uriFactory = URIFactory.getInstance(context.getInitParameter("baseuri") + "v1/");
+		
+		queueMonitor=new DefaultQueueMonitor(uriFactory);
 		queueMonitor.setDaemon(true);
 		queueMonitor.start();
 	}
 	
-	private void initialiseUriFactory(ServletContext context) {
-		URIFactory uriFactory = URIFactory.getInstance();
-		String base = context.getInitParameter("baseuri");
-		logger.info("Using baseURI of "+base);
-		uriFactory.setRoot(base+"/v1");
-		uriFactory.setHTMLRoot(base+"/html");
-	}
 }
