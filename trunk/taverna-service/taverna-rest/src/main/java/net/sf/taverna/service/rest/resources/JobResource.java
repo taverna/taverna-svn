@@ -66,6 +66,7 @@ public class JobResource extends AbstractJobResource {
 		}
 		daoFactory.getJobDAO().update(job);
 		daoFactory.commit();
+		logger.info("Updated " + job);
 	}
 
 	class Text extends AbstractText {

@@ -12,17 +12,19 @@ import org.restlet.data.MediaType;
 import org.restlet.resource.OutputRepresentation;
 
 public class XmlBeansRepresentation extends OutputRepresentation {
-	
-	//private static Logger logger =
-	//	Logger.getLogger(XmlBeansRepresentation.class);
 
-	private static URIFactory uriFactory = URIFactory.getInstance();
-	
+	// private static Logger logger =
+	// Logger.getLogger(XmlBeansRepresentation.class);
+
+	private URIFactory uriFactory;
+
 	private XmlObject xmlObject;
 
-	public XmlBeansRepresentation(XmlObject xmlObject, MediaType mediaType) throws IllegalArgumentException {
+	public XmlBeansRepresentation(XmlObject xmlObject, MediaType mediaType, URIFactory uriFactory)
+		throws IllegalArgumentException {
 		super(mediaType);
 		this.xmlObject = xmlObject;
+		this.uriFactory = uriFactory;
 		// Strict in what we send..
 		XMLBeansUtils.validate(xmlObject);
 		// Since we serialize on write we don't know the size yet :-(
@@ -33,13 +35,12 @@ public class XmlBeansRepresentation extends OutputRepresentation {
 		}
 	}
 
-
 	public void insertStylesheet() {
 		XmlCursor cursor = xmlObject.newCursor();
 		cursor.toFirstChild();
-		cursor.insertProcInst("xml-stylesheet", "type='text/xsl' href='" + uriFactory.getHTMLRoot() + "/rest.xsl'");
+		cursor.insertProcInst("xml-stylesheet", "type='text/xsl' href='"
+			+ uriFactory.getHTMLRoot() + "/rest.xsl'");
 	}
-
 
 	@Override
 	public void write(OutputStream outputStream) throws IOException {

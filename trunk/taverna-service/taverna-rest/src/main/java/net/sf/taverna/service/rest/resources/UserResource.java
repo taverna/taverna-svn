@@ -89,12 +89,12 @@ public class UserResource extends AbstractUserResource {
 	}
 
 	@Override
-	public boolean allowPost() {
+	public boolean allowPut() {
 		return true;
 	}
 
 	@Override
-	public void post(Representation entity) {
+	public void put(Representation entity) {
 		if (overMaxSize(entity)) {
 			return;
 		}
@@ -140,6 +140,7 @@ public class UserResource extends AbstractUserResource {
 		}
 		daoFactory.commit();
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		logger.info("Updated " + user);
 	}
 
 }

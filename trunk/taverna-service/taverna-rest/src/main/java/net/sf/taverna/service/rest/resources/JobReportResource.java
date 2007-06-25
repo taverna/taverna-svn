@@ -70,5 +70,6 @@ public class JobReportResource extends AbstractJobResource {
 		}
 		daoFactory.commit();
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		logger.info("Updated report " + job);
 	}
 }

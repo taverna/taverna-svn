@@ -68,5 +68,6 @@ public class JobStatusResource extends AbstractJobResource {
 		}
 		daoFactory.commit();
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		logger.info("Updated status " + job);
 	}
 }

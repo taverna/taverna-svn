@@ -1,5 +1,7 @@
 package net.sf.taverna.service.backend.executor;
 
+import net.sf.taverna.service.rest.utils.URIFactory;
+
 public class JobExecutorFactory {
 	private static JobExecutorFactory instance = new JobExecutorFactory();
 	private JobExecutorFactory() {
@@ -10,9 +12,9 @@ public class JobExecutorFactory {
 		return instance;
 	}
 	
-	public JobExecutor createExecutor() {
+	public JobExecutor createExecutor(URIFactory uriFactory) {
 		//the only executor that presently exists.
-		return new RestfulJobExecutor();
+		return new RestfulJobExecutor(uriFactory);
 	}
 	
 }

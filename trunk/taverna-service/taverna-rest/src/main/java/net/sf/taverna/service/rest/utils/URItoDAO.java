@@ -19,25 +19,21 @@ import org.restlet.data.Reference;
 public class URItoDAO {
 	private static Logger logger = Logger.getLogger(URItoDAO.class);
 
-	private static URItoDAO instance;
-
-	private URIFactory uriFactory = URIFactory.getInstance();
+	private URIFactory uriFactory;
 
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
 	private Map<Class<?>, Method> daoMethods = findDAOs();
 
-	public static synchronized URItoDAO getInstance() {
-		if (instance == null) {
-			instance = new URItoDAO();
-		}
-		return instance;
+	public synchronized static URItoDAO getInstance(URIFactory uriFactory) {
+		return new URItoDAO(uriFactory);
 	}
 
 	/**
 	 * Use singleton access {@link #getInstance()}
 	 */
-	private URItoDAO() {
+	private URItoDAO(URIFactory uriFactory) {
+		this.uriFactory = uriFactory;
 	}
 
 	public <ResourceClass extends AbstractUUID> ResourceClass getResource(
@@ -49,7 +45,7 @@ public class URItoDAO {
 		String prefix = uriFactory.getURI(resourceClass) + "/";
 		logger.debug("Prefix for " + resourceClass + ": " + prefix);
 		if (!uri.startsWith(prefix)) {
-			logger.warn("Invalid resource URI " + uri);
+			logger.warn("Invalid resource URI " + uri + " - did not start with " + prefix);
 			throw new IllegalArgumentException("Invalid resource URI " + uri);
 		}
 		String id = uri.substring(prefix.length());

@@ -42,12 +42,14 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 	protected DAOFactory daoFactory = DAOFactory.getFactory();
 
-	static URIFactory uriFactory = URIFactory.getInstance();
+	URIFactory uriFactory;
 
-	static URItoDAO uriToDAO = URItoDAO.getInstance();
+	URItoDAO uriToDAO;
 
 	public AbstractResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		uriFactory = URIFactory.getInstance(request);
+		uriToDAO = URItoDAO.getInstance(uriFactory);
 	}
 
 	/**
@@ -153,6 +155,19 @@ public abstract class AbstractResource extends RepresentationalResource {
 		return true;
 	}
 
+	public boolean checkIsAdmin() {
+		if (getAuthUser().isAdmin()) {
+			return true;
+		}
+		challenge();
+		return false;
+	}
+
+	public User getAuthUser() {
+		return (User) getContext().getAttributes().get(
+			UserGuard.AUTHENTICATED_USER);
+	}
+
 	/**
 	 * Check if the currently authenticated used, as injected by
 	 * {@link UserGuard}, is authorized to access the entity.
@@ -161,20 +176,18 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * @return True if entity access is authorized.
 	 */
 	public boolean isEntityAuthorized(AbstractUUID entity) {
-		User authUser =
-			(User) getContext().getAttributes().get(
-				UserGuard.AUTHENTICATED_USER);
-		
+		User authUser = getAuthUser();
 		if (authUser.isAdmin()) {
 			return true;
 		}
 		if (entity instanceof User) {
-			logger.info("Comparing " + entity + " with " + authUser);
+			logger.debug("Comparing " + entity + " with " + authUser);
 			// Users can access their own user
-			if (entity.equals(authUser)) return true;
+			if (entity.equals(authUser))
+				return true;
 		}
 		if (!(entity instanceof AbstractOwned)) {
-			logger.info("Not ownable resource, access granted");
+			logger.debug("Not ownable resource, access granted");
 			// All non-owned resources are free to access
 			// (Unless an overloaded version of this method says otherwise)
 			return true;
@@ -182,11 +195,11 @@ public abstract class AbstractResource extends RepresentationalResource {
 		// Owned resources only readable by owner
 		AbstractOwned owned = (AbstractOwned) entity;
 		if (owned.getOwner() == null) {
-			logger.info("Not owned resource, access granted");
+			logger.debug("Not owned resource, access granted");
 			// No owner, also readable by all
 			return true;
 		}
-		logger.info("Comparing owner " + owned.getOwner() + " with " + authUser);
+		logger.debug("Comparing owner " + owned.getOwner() + " with " + authUser);
 		if (owned.getOwner().equals(authUser)) {
 			return true;
 		}
@@ -201,7 +214,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	private boolean isWorkerAuthorized(Worker worker, AbstractUUID entity) {
 		//refresh the worker to ensure the list of worker jobs is up to date.
 		daoFactory.getWorkerDAO().refresh(worker);
-		
+
 		if (entity instanceof Queue) {
 			Queue queue = (Queue) entity;
 			return queue.getWorkers().contains(worker);
@@ -224,7 +237,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 				}
 			}
 		}
-		
+
 		if (entity instanceof User) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getOwner())) {
@@ -232,7 +245,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 				}
 			}
 		}
-		
+
 		if (entity instanceof Data) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getInputs())) {
@@ -243,8 +256,59 @@ public abstract class AbstractResource extends RepresentationalResource {
 				}
 			}
 		}
-		logger.info("Worker authorization failed; worker="+worker+", entity="+entity);
+		logger.info("Worker authorization failed; worker=" + worker
+			+ ", entity=" + entity);
 		return false;
+	}
+
+	/**
+	 * Check if an entity submitted for {@link #post(Representation)} and
+	 * {@link #put(Representation)} is of the right size of the content type
+	 * {@value #restType}.
+	 * <p>
+	 * This method is basically the same as
+	 * {@link #isEntityValid(Representation, MediaType)} with media type
+	 * {@link #restType}.
+	 * 
+	 * @see #isEntityValid(Representation, MediaType)
+	 * @param entity
+	 *            The incoming entity to verify
+	 * @return <code>true</code> if the entity is valid.
+	 */
+	public boolean isEntityValid(Representation entity) {
+		return isEntityValid(entity, restType);
+	}
+
+	/**
+	 * Check if an entity submitted for {@link #post(Representation)} and
+	 * {@link #put(Representation)} is of the right size and content type.
+	 * <p>
+	 * The maximum size is determined by {@link #overMaxSize(Representation)}.
+	 * <p>
+	 * If the entity is not valid, the correct status code is set on the
+	 * response and <code>false</code> is returned.
+	 * 
+	 * @param entity
+	 *            The incoming entity to verify
+	 * @return <code>true</code> if the entity is valid.
+	 */
+	public boolean isEntityValid(Representation entity, MediaType mediaType) {
+		if (!mediaType.includes(entity.getMediaType())) {
+			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
+				"Content type must be " + mediaType);
+			return false;
+		}
+		if (overMaxSize(entity)) {
+			logger.warn("Uploaded queue document was too large: "
+				+ entity.getSize());
+			return false;
+		}
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " " + getRequest().getResourceRef();
 	}
 
 	/**

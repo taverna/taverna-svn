@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.TavernaConstants;
+import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.test.TestCommon;
 
 import org.junit.AfterClass;
@@ -22,7 +23,9 @@ public abstract class ClientTest extends TestCommon {
 
 	public static final int PORT = 8977;
 
-	public static final String BASE_URL = "http://localhost:" + PORT + "/v1/";
+	public static final String ROOT_URL = "http://localhost:" + PORT  + "/";
+	
+	public static final String BASE_URL = ROOT_URL + "v1/";
 	
 	public static final MediaType restType = new MediaType(TavernaConstants.restType);
 
@@ -40,6 +43,8 @@ public abstract class ClientTest extends TestCommon {
 	
 	public static User user;
 	
+	public URIFactory uriFactory = URIFactory.getInstance(BASE_URL);
+		
 	@BeforeClass
 	public synchronized static void startServer() throws Exception {
 		stopServer();

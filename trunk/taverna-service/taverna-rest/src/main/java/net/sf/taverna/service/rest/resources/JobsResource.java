@@ -124,7 +124,7 @@ public class JobsResource extends AbstractUserResource {
 		daoFactory.commit();
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 		getResponse().setRedirectRef(uriFactory.getURI(job));
-		logger.info("Created new " + job);
+		logger.info("Created " + job);
 	}
 	
 	private void addJobToDefaultQueue(Job job) {

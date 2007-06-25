@@ -12,52 +12,66 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 
-import org.jdom.Attribute;
+import org.apache.log4j.Logger;
 import org.jdom.Namespace;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
 
 public class URIFactory {
+	
+	private static Logger logger = Logger.getLogger(URIFactory.class);
+
+	public static final String HTML = "html" ;
+	
+	public static final String V1 = "v1";
+	
+	public static final String DEFAULT_HTML_PATH = "../" + HTML;
 
 	public static final Namespace NS_XLINK =
 		Namespace.getNamespace("xlink", "http://www.w3.org/1999/xlink");
 
-	private static URIFactory instance;
-
-	public static synchronized URIFactory getInstance() {
-		if (instance == null) {
-			instance = new URIFactory();
-		}
-		return instance;
+	public static URIFactory getInstance(String root) {
+		return new URIFactory(root);
 	}
 
-	private String root = "";
+	public static URIFactory getInstance(Request request) {
+		return new URIFactory(request);
+	}
 
-	Map<Class<?>, String> resourceMap =
-		new HashMap<Class<?>, String>();
+	private static String html = DEFAULT_HTML_PATH;
+
+	private Reference applicationRoot;
+	
+	private Request request;
 
 	private String htmlRoot;
 
-	private URIFactory() {
-		resourceMap.put(Job.class, "/jobs");
-		resourceMap.put(Workflow.class, "/workflows");
-		resourceMap.put(DataDoc.class, "/data");
-		resourceMap.put(User.class, "/users");
-		resourceMap.put(Queue.class, "/queues");
-		resourceMap.put(Worker.class, "/workers");
+	static Map<Class<?>, String> resourceMap = new HashMap<Class<?>, String>();
+
+	static {
+		resourceMap.put(Job.class, "jobs");
+		resourceMap.put(Workflow.class, "workflows");
+		resourceMap.put(DataDoc.class, "data");
+		resourceMap.put(User.class, "users");
+		resourceMap.put(Queue.class, "queues");
+		resourceMap.put(Worker.class, "workers");
 	}
 
-	public void setRoot(String root) {
-		this.root = root;
+	private URIFactory(String applicationRoot) {
+		setApplicationRoot(applicationRoot);
 	}
 
-	public String getRoot() {
-		return root;
+	public URIFactory(Request request) {
+		this.request = request;
+		setApplicationRoot(request.getRootRef());
 	}
 
-	public String getMapping(Class<?> resourceClass) {
+
+	public static String getMapping(Class<?> resourceClass) {
 		String mapping = resourceMap.get(resourceClass);
 		if (mapping == null && resourceClass.getSuperclass() != null) {
 			return getMapping(resourceClass.getSuperclass());
-		} 
+		}
 		return mapping;
 	}
 
@@ -73,7 +87,7 @@ public class URIFactory {
 			throw new IllegalArgumentException("Unknown resource class: "
 				+ resourceClass);
 		}
-		return getRoot() + mapping;
+		return new Reference(getApplicationRoot(), mapping).getTargetRef().toString();
 	}
 
 	public String getURI(AbstractUUID resource) {
@@ -96,25 +110,7 @@ public class URIFactory {
 	 */
 	public String getURI(User owner, Class<? extends AbstractOwned> ownedClass) {
 		String uri = getURI(owner);
-		return uri + getMapping(ownedClass);
-	}
-
-	public Attribute getXLink(AbstractUUID resource) {
-		Attribute xlink = new Attribute("href", getURI(resource), NS_XLINK);
-		return xlink;
-	}
-
-	public Attribute getXLink(User user,
-		Class<? extends AbstractOwned> ownedClass) {
-		Attribute xlink =
-			new Attribute("href", getURI(user, ownedClass), NS_XLINK);
-		return xlink;
-	}
-
-	public Attribute getXLink(Class<? extends AbstractUUID> resourceClass) {
-		Attribute xlink =
-			new Attribute("href", getURI(resourceClass), NS_XLINK);
-		return xlink;
+		return uri + "/" + getMapping(ownedClass);
 	}
 
 	public String getURIStatus(Job job) {
@@ -128,25 +124,63 @@ public class URIFactory {
 	public String getURICurrentUser() {
 		return getURI(User.class) + getMappingCurrentUser();
 	}
-	
-	public String getMappingCurrentUser() {
+
+	public static String getMappingCurrentUser() {
 		return ";current";
 	}
 
-	public String getMappingStatus() {	
+	public static String getMappingStatus() {
 		return "/status";
 	}
-	
-	public String getMappingReport() {
+
+	public static String getMappingReport() {
 		return "/report";
 	}
 
-	public void setHTMLRoot(String uri) {
-		htmlRoot = uri;		
+	/**
+	 * Set the HTML path to add to the root URI for static HTML files, relative
+	 * to the application root, typically "../html". The default is
+	 * <code>{@value #DEFAULT_HTML}</code>
+	 * 
+	 * @param path
+	 */
+	public static void setHTMLpath(String path) {
+		html = path;
+	}
+
+	public static String getHTMLpath() {
+		return html;
+	}
+
+	public void setApplicationRoot(Reference root) {
+		logger.debug(root + " " + root.getBaseRef());
+		applicationRoot = root.getTargetRef();
+		if (! applicationRoot.getPath().endsWith("/")) {
+			applicationRoot.setPath(applicationRoot.getPath() + "/");
+		}
+		logger.debug("Set application root to " + applicationRoot);
 	}
 	
+	public void setApplicationRoot(String root) {
+		setApplicationRoot(new Reference(root));
+	}
+	
+
+	public Reference getApplicationRoot() {
+		return applicationRoot;
+	}
+
 	public String getHTMLRoot() {
+		if (htmlRoot == null) {
+			htmlRoot =
+				new Reference(getApplicationRoot(), getHTMLpath()).getTargetRef().toString();
+		} 
 		return htmlRoot;
 	}
 
+	@Override
+	public String toString() {
+		return super.toString() + ": " + getApplicationRoot();
+	}
+	
 }

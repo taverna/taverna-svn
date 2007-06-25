@@ -12,6 +12,7 @@ import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 import net.sf.taverna.service.datastore.dao.WorkerDAO;
+import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 
@@ -27,9 +28,12 @@ public class DefaultQueueMonitor extends Thread {
 	//FIXME: this should be increased after testing, or better still read from config
 	private final int CHECK_PERIOD = 5; //checks every 5 seconds.
 	private boolean terminate = false;
+
+	private URIFactory uriFactory;
 	
-	public DefaultQueueMonitor() {
+	public DefaultQueueMonitor(URIFactory uriFactory) {
 		super("Queue Monitor Thread");
+		this.uriFactory = uriFactory;
 	}
 	
 	public void run() {
@@ -126,7 +130,7 @@ public class DefaultQueueMonitor extends Thread {
 				Job job = worker.getNextDequeuedJob();
 				if (job!=null) {
 					logger.info("Starting job execution:"+job.getId());
-					JobExecutor executor = JobExecutorFactory.getInstance().createExecutor();
+					JobExecutor executor = JobExecutorFactory.getInstance().createExecutor(uriFactory);
 					executor.executeJob(job, worker);
 				}
 			}

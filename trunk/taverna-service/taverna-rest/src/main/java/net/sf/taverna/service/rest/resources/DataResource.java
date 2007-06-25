@@ -117,6 +117,8 @@ public class DataResource extends AbstractResource {
 			dataDoc.setBaclava(data.getBaclava().xmlText());
 		}
 		daoFactory.commit();
+		logger.info("Updated " + dataDoc);
+		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 	}
 
 }

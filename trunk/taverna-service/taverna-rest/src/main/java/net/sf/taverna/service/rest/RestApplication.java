@@ -4,6 +4,7 @@ import java.net.URL;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
@@ -16,6 +17,7 @@ import net.sf.taverna.service.rest.resources.JobReportResource;
 import net.sf.taverna.service.rest.resources.JobResource;
 import net.sf.taverna.service.rest.resources.JobStatusResource;
 import net.sf.taverna.service.rest.resources.JobsResource;
+import net.sf.taverna.service.rest.resources.QueueResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
 import net.sf.taverna.service.rest.resources.WorkflowResource;
@@ -49,14 +51,16 @@ public class RestApplication extends Application {
 
 	private static final String DATA = "/{data}";
 
+	private static final String QUEUE = "/{queue}";
+
 	protected DAOFactory daoFactory = DAOFactory.getFactory();
-	
+
 	private Component component = null;
-	
+
 	public RestApplication(Context context) {
 		super(context);
 	}
-	
+
 	public RestApplication() {
 		super();
 	}
@@ -68,13 +72,6 @@ public class RestApplication extends Application {
 
 	public void startServer(int port) {
 		stopServer();
-		
-		String base = "http://localhost:" + port;
-		URIFactory uriFactory=URIFactory.getInstance();
-		uriFactory.setRoot(base + "/v1");
-		uriFactory.setHTMLRoot(base + "/html");
-		
-		
 		if (component == null) {
 			component = createComponent();
 		}
@@ -85,7 +82,7 @@ public class RestApplication extends Application {
 		try {
 			component.start();
 		} catch (Exception ex) {
-			logger.error("Error starting the server",ex);
+			logger.error("Error starting the server", ex);
 		}
 	}
 
@@ -116,37 +113,37 @@ public class RestApplication extends Application {
 			}
 		}
 	}
-	
+
 	protected void attachHTMLSource(Component component) {
 		URL htmlSource = this.getClass().getResource("/html");
 		Directory htmlDir =
 			new Directory(component.getContext(), htmlSource.toString());
-		component.getDefaultHost().attach("/html", htmlDir);
+		// Map /html
+		component.getDefaultHost().attach("/" + URIFactory.HTML, htmlDir);
 	}
-	
+
 	protected void attachFilters(Component component, Router router) {
 		DaoCloseFilter daoCloser =
 			new DaoCloseFilter(component.getContext(), router);
-		component.getDefaultHost().attach("/v1", daoCloser);
+		// Map /v1
+		component.getDefaultHost().attach("/" + URIFactory.V1, daoCloser);
 	}
 
 	public Component createComponent() {
-		URIFactory uriFactory = URIFactory.getInstance();
-		
 		Component component = new Component();
 		component.getClients().add(Protocol.FILE);
-		
+
 		Router router = new Router(component.getContext());
-		
+
 		attachFilters(component, router);
-		
+
 		Guard userGuard = new UserGuard(router.getContext());
 
 		// Authenticate access to mostly anything
 		router.attach(userGuard);
 		// /user (exact match) is not authenticated (for registering with POST)
 		Route route =
-			router.attach(uriFactory.getMapping(User.class),
+			router.attach("/" + URIFactory.getMapping(User.class),
 				UsersResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 
@@ -158,47 +155,52 @@ public class RestApplication extends Application {
 		Router authenticated = new Router(userGuard.getContext());
 		userGuard.setNext(authenticated);
 		// /jobs/X
-		authenticated.attach(uriFactory.getMapping(Job.class) + JOB,
+		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB,
 			JobResource.class);
 		// /jobs/X/status
-		authenticated.attach(uriFactory.getMapping(Job.class) + JOB +
-			uriFactory.getMappingStatus(), JobStatusResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
+			+ URIFactory.getMappingStatus(), JobStatusResource.class);
 		// /jobs/X/report
-		authenticated.attach(uriFactory.getMapping(Job.class) + JOB +
-				uriFactory.getMappingReport(), JobReportResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
+			+ URIFactory.getMappingReport(), JobReportResource.class);
 		// /workflows/X
-		authenticated.attach(uriFactory.getMapping(Workflow.class) + WORKFLOW,
-			WorkflowResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(Workflow.class)
+			+ WORKFLOW, WorkflowResource.class);
 		// /data/X
-		authenticated.attach(uriFactory.getMapping(DataDoc.class) + DATA,
+		authenticated.attach("/" + URIFactory.getMapping(DataDoc.class) + DATA,
 			DataResource.class);
-		
+
 		// /users;current
-		authenticated.attach(uriFactory.getMapping(User.class)
-			+ uriFactory.getMappingCurrentUser(), CurrentUserResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(User.class)
+			+ URIFactory.getMappingCurrentUser(), CurrentUserResource.class);
 
 		// /users/X
-		authenticated.attach(uriFactory.getMapping(User.class) + USER,
+		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER,
 			UserResource.class);
-		
-		authenticated.attach(uriFactory.getMapping(Worker.class) + USER,UserResource.class);
+
+		authenticated.attach("/" + URIFactory.getMapping(Worker.class) + USER,
+			UserResource.class);
 
 		// Collections - below user
 
 		// /users/X/workflows
-		authenticated.attach(uriFactory.getMapping(User.class) + USER
-			+ uriFactory.getMapping(Workflow.class), WorkflowsResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
+			+ "/" + URIFactory.getMapping(Workflow.class),
+			WorkflowsResource.class);
 		// /users/X/data
-		authenticated.attach(uriFactory.getMapping(User.class) + USER
-			+ uriFactory.getMapping(DataDoc.class), DatasResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
+			+ "/" + URIFactory.getMapping(DataDoc.class), DatasResource.class);
 		// /users/X/jobs
-		authenticated.attach(uriFactory.getMapping(User.class) + USER
-			+ uriFactory.getMapping(Job.class), JobsResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
+			+ "/" + URIFactory.getMapping(Job.class), JobsResource.class);
 
 		// TODO: Queues and workers
 
 		// /queues
 		// /queues/X
+		authenticated.attach(URIFactory.getMapping(Queue.class) + QUEUE,
+			QueueResource.class);
+
 		// /workers
 		// /workers/X
 

@@ -87,6 +87,7 @@ public class WorkflowsResource extends AbstractUserResource {
 		user.getWorkflows().add(wf);
 		wfDao.create(wf);
 		daoFactory.commit();
+		logger.info("Created " + wf);
 		getResponse().setRedirectRef(uriFactory.getURI(wf));
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 	}

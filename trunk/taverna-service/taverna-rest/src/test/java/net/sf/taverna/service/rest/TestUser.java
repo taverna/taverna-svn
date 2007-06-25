@@ -9,13 +9,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.interfaces.TavernaConstants;
-import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.jdom.Document;
-import org.jdom.Element;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restlet.Client;
@@ -155,7 +151,7 @@ public class TestUser extends ClientTest {
 		Request request = new Request();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
-		request.setMethod(Method.POST);
+		request.setMethod(Method.PUT);
 		ChallengeResponse challengeResponse =
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
 				justPassword);

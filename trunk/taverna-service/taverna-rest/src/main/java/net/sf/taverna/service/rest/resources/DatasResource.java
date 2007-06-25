@@ -80,7 +80,9 @@ public class DatasResource extends AbstractUserResource {
 		dataDoc.setOwner(user);
 		dao.create(dataDoc);
 		daoFactory.commit();
-		getResponse().setRedirectRef(uriFactory.getURI(dataDoc));
+		String uri = uriFactory.getURI(dataDoc);
+		logger.info("Created " + dataDoc);
+		getResponse().setRedirectRef(uri);
 		getResponse().setStatus(Status.SUCCESS_CREATED);
 
 	}

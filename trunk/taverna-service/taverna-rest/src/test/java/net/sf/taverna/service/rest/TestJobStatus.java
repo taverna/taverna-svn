@@ -23,8 +23,6 @@ import org.restlet.data.Status;
 
 
 public class TestJobStatus extends ClientTest {
-	
-	static URIFactory uriFactory = URIFactory.getInstance();
 
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 

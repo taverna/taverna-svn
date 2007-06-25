@@ -13,12 +13,13 @@ import org.restlet.resource.Resource;
 
 import com.noelios.restlet.http.HttpConstants;
 
-public class CurrentUserResource extends Resource {
+public class CurrentUserResource extends Resource {	
+	private URIFactory uriFactory;
+
 	public CurrentUserResource(Context context, Request req, Response response) {
 		super(context, req, response);
+		uriFactory = URIFactory.getInstance(req);
 	}
-
-	private static URIFactory uriFactory = URIFactory.getInstance();
 
 	@Override
 	public void handleGet() {

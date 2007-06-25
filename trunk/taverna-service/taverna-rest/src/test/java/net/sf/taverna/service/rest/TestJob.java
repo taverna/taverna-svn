@@ -3,9 +3,6 @@ package net.sf.taverna.service.rest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
-import javax.print.attribute.standard.JobName;
-
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
@@ -38,7 +35,7 @@ public class TestJob extends ClientTest {
     	workflowDao.create(w);
     	daoFactory.commit();
     	
-    	String workflowURI=URIFactory.getInstance().getURI(w);
+    	String workflowURI=uriFactory.getURI(w);
     	JobDocument jobDocument = JobDocument.Factory.newInstance();
     	Job job=jobDocument.addNewJob();
     	job.addNewWorkflow().setHref(workflowURI);
@@ -52,7 +49,7 @@ public class TestJob extends ClientTest {
 		request.setEntity(jobDocument.xmlText(), restType);
 		Response response = client.handle(request);
 		
-		assertEquals(Status.SUCCESS_CREATED,response.getStatus());
+		assertEquals("Job was not created", Status.SUCCESS_CREATED,response.getStatus());
 		Reference ref=response.getRedirectRef();
 		assertTrue(ref.toString().startsWith(BASE_URL+"jobs"));
 		String id = ref.toString().replaceAll(BASE_URL+"jobs/", "");

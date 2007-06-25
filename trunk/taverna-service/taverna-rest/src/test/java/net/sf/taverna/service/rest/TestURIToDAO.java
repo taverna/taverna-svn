@@ -1,11 +1,7 @@
 package net.sf.taverna.service.rest;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.restlet.data.Reference;
-
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
@@ -15,20 +11,18 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.URItoDAO;
 import net.sf.taverna.service.test.TestCommon;
 
+import org.junit.Test;
+import org.restlet.data.Reference;
+
 public class TestURIToDAO extends TestCommon {
 
-	private static final String ROOT = "http://example.com";
+	private static final String ROOT = "http://example.com/";
 
 	DAOFactory daoFactory = DAOFactory.getFactory();
 
-	URIFactory uriFactory = URIFactory.getInstance();
+	URIFactory uriFactory = URIFactory.getInstance(ROOT);
 
-	URItoDAO uriToDao = URItoDAO.getInstance();
-
-	@Before
-	public void setRoot() {
-		uriFactory.setRoot(ROOT);
-	}
+	URItoDAO uriToDao = URItoDAO.getInstance(uriFactory);
 
 	@Test
 	public void resolveWorkflow() {

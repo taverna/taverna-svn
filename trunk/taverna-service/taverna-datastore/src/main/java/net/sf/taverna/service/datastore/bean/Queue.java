@@ -86,5 +86,9 @@ public class Queue extends AbstractDated {
 		setLastModified();
 		return removeEntry;
 	}
+
+	public List<QueueEntry> getEntries() {
+		return entries;
+	}
 	
 }

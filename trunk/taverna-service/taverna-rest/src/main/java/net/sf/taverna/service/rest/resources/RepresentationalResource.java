@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.XmlBeansRepresentation;
 
 import org.apache.log4j.Logger;
@@ -40,6 +41,8 @@ public class RepresentationalResource extends Resource {
 	private static Logger logger =
 		Logger.getLogger(RepresentationalResource.class);
 
+	private URIFactory uriFactory;
+	
 	/**
 	 * Map from {@link MediaType} to {@link AbstractRepresentation}, as
 	 * registered with
@@ -51,6 +54,7 @@ public class RepresentationalResource extends Resource {
 	public RepresentationalResource(Context context, Request request,
 		Response response) {
 		super(context, request, response);
+		uriFactory = URIFactory.getInstance(request);
 	}
 
 	/**
@@ -211,7 +215,7 @@ public class RepresentationalResource extends Resource {
 
 		@Override
 		public Representation getRepresentation() {
-			return new XmlBeansRepresentation(getXML(), getMediaType());
+			return new XmlBeansRepresentation(getXML(), getMediaType(), uriFactory);
 		}
 	}
 

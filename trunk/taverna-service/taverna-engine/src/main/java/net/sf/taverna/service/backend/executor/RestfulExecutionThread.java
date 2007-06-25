@@ -47,7 +47,7 @@ public class RestfulExecutionThread extends Thread {
 	private String jobUri;
 	private String baseUri;
 
-	public RestfulExecutionThread(String jobUri, String baseUri,String workerUsername) {
+	public RestfulExecutionThread(String jobUri, String baseUri, String workerUsername) {
 		super("Restful Executor Thread");
 		logger.info("Starting job execution. JobURI="+jobUri);
 		this.jobUri=jobUri;

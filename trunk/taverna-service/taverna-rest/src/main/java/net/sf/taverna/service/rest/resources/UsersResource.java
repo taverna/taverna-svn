@@ -94,8 +94,8 @@ public class UsersResource extends AbstractResource {
 		
 		daoFactory.getUserDAO().create(user);
 		daoFactory.commit();
+		logger.info("Created " + user);
 		getResponse().setStatus(Status.SUCCESS_CREATED);
-		logger.info("Created " + uriFactory.getURI(user));
 		getResponse().setRedirectRef(uriFactory.getURI(user));
 		if (generatedPassword != null) {
 			logger.debug("Password: " + generatedPassword);

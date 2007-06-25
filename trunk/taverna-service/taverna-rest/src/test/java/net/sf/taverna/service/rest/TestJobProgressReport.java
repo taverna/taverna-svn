@@ -9,7 +9,6 @@ import net.sf.taverna.service.datastore.TestJob;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,6 @@ import org.restlet.data.Status;
 
 
 public class TestJobProgressReport extends ClientTest {
-	static URIFactory uriFactory = URIFactory.getInstance();
 
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
