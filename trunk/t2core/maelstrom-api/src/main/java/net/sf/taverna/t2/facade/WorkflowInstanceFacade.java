@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.facade;
 
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 
@@ -38,13 +39,51 @@ public interface WorkflowInstanceFacade {
 	 *            Index of the token
 	 * @param portName
 	 *            Port name to use
+	 * @throws TokenOrderException
+	 *             if ordering constraints on the token stream to each input
+	 *             port are violated
 	 */
-	public void pushData(EntityIdentifier token, int[] index, String portName);
+	public void pushData(EntityIdentifier token, int[] index, String portName)
+			throws TokenOrderException;
 
+	/**
+	 * Where a workflow has no inputs this method will cause it to start
+	 * processing. Any processors within the workflow with no inputs are fired.
+	 * 
+	 * @throws IllegalStateException
+	 *             if the workflow has already been fired or has had data pushed
+	 *             to it.
+	 */
+	public void fire() throws IllegalStateException;
+
+	/**
+	 * The result listener is used to handle data tokens produced by the
+	 * workflow.
+	 * 
+	 * @param listener
+	 */
 	public void addResultListener(ResultListener listener);
 
+	/**
+	 * Remove a previously registered result listener
+	 * 
+	 * @param listener
+	 */
 	public void removeResultListener(ResultListener listener);
 
+	/**
+	 * Workflow state is available through a sub-tree of the monitor tree. For
+	 * security reasons the full monitor tree is never accessible through this
+	 * interface but the sub-tree rooted at the node representing this workflow
+	 * instance is and can be used for both monitoring and steering functions.
+	 * <p>
+	 * Uses the standard TreeModel-like mechanisms for registering change events
+	 * and can be plugged into a JTree for display purposes through the
+	 * TreeModelAdapter class.
+	 * 
+	 * @return Typed version of TreeModel representing the state of this
+	 *         workflow. Nodes in the tree are instances of MonitorNode
+	 */
 	public TypedTreeModel<MonitorNode> getStateModel();
 
 }
