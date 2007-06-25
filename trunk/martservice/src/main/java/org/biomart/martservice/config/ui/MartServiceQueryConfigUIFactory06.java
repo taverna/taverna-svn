@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory06.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-22 09:41:12 $
+ * Last modified on   $Date: 2007-06-25 17:49:14 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -205,11 +205,11 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 		final SummaryPanel summaryPanel = new SummaryPanel();
 
 		final JButton countButton = new JButton("Count");
-		countButton.setBackground(Color.BLACK);
+//		countButton.setBackground(Color.BLACK);
 //		countButton.setForeground(Color.WHITE);
 		countButton.setFont(countButton.getFont().deriveFont(Font.BOLD));
 //		countButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 1), new EmptyBorder(5, 5, 5, 5)));
-		// countButton.setOpaque(false);
+		countButton.setOpaque(false);
 		// countButton.setRolloverEnabled(true);
 		countButton.addActionListener(new ActionListener() {
 
@@ -2704,10 +2704,7 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			constraints.gridy = 0;
 			constraints.insets = new Insets(5, 5, 0, 5);
 			constraints.weightx = 0.0;
-			JPanel d1b = new JPanel();
-			d1b.setBackground(Color.GRAY);
-			d1b.add(getDataset1Button());
-			add(d1b, constraints);
+			add(getDataset1Button(), constraints);
 			constraints.gridx = 1;
 			constraints.gridy = 0;
 			constraints.weightx = 1.0;
@@ -2872,8 +2869,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (dataset1Button == null) {
 				dataset1Button = new JButton("Dataset");
 				dataset1Button.setFont(getFont().deriveFont(Font.BOLD));
-				dataset1Button.setBackground(color);
-				dataset1Button.setBorder(null);
+//				dataset1Button.setBackground(color);
+//				dataset1Button.setBorder(null);
+				dataset1Button.setOpaque(false);
 			}
 
 			return dataset1Button;
@@ -2883,8 +2881,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (dataset2Button == null) {
 				dataset2Button = new JButton("Dataset");
 				dataset2Button.setFont(getFont().deriveFont(Font.BOLD));
-				dataset2Button.setBackground(color);
-				dataset2Button.setBorder(null);
+//				dataset2Button.setBackground(color);
+//				dataset2Button.setBorder(null);
+				dataset2Button.setOpaque(false);
 			}
 
 			return dataset2Button;
@@ -2894,8 +2893,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (attributes1Button == null) {
 				attributes1Button = new JButton("Attributes");
 				attributes1Button.setFont(getFont().deriveFont(Font.BOLD));
-				attributes1Button.setBackground(color);
-				attributes1Button.setBorder(null);
+//				attributes1Button.setBackground(color);
+//				attributes1Button.setBorder(null);
+				attributes1Button.setOpaque(false);
 			}
 			return attributes1Button;
 		}
@@ -2904,8 +2904,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (attributes2Button == null) {
 				attributes2Button = new JButton("Attributes");
 				attributes2Button.setFont(getFont().deriveFont(Font.BOLD));
-				attributes2Button.setBackground(color);
-				attributes2Button.setBorder(null);
+//				attributes2Button.setBackground(color);
+//				attributes2Button.setBorder(null);
+				attributes2Button.setOpaque(false);
 			}
 			return attributes2Button;
 		}
@@ -2914,8 +2915,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (filters1Button == null) {
 				filters1Button = new JButton("Filters");
 				filters1Button.setFont(getFont().deriveFont(Font.BOLD));
-				filters1Button.setBackground(color);
-				filters1Button.setBorder(null);
+//				filters1Button.setBackground(color);
+//				filters1Button.setBorder(null);
+				filters1Button.setOpaque(false);
 			}
 			return filters1Button;
 		}
@@ -2924,8 +2926,9 @@ public class MartServiceQueryConfigUIFactory06 implements QueryConfigUIFactory {
 			if (filters2Button == null) {
 				filters2Button = new JButton("Filters");
 				filters2Button.setFont(getFont().deriveFont(Font.BOLD));
-				filters2Button.setBackground(color);
-				filters2Button.setBorder(null);
+//				filters2Button.setBackground(color);
+//				filters2Button.setBorder(null);
+				filters2Button.setOpaque(false);
 			}
 			return filters2Button;
 		}
