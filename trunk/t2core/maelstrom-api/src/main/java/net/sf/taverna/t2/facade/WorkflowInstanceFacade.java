@@ -72,6 +72,21 @@ public interface WorkflowInstanceFacade {
 	public void removeResultListener(ResultListener listener);
 
 	/**
+	 * A failure listener reports on overall workflow failure. It is not
+	 * triggered by the failure of individual processors unless that processor
+	 * is marked as critical. In fact in T2 all processors are marked as
+	 * critical by default as there are ways of handling errors within the data
+	 * stream, if the processor actually fails something really bad has
+	 * happened.
+	 */
+	public void addFailureListener(FailureListener listener);
+	
+	/**
+	 * Remove a previously registered failure listener
+	 */
+	public void removeFailureListener(FailureListener listener);
+
+	/**
 	 * Workflow state is available through a sub-tree of the monitor tree. For
 	 * security reasons the full monitor tree is never accessible through this
 	 * interface but the sub-tree rooted at the node representing this workflow
