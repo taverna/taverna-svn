@@ -59,6 +59,14 @@ public interface WorkflowInstanceFacade {
 	/**
 	 * The result listener is used to handle data tokens produced by the
 	 * workflow.
+	 * <p>
+	 * If the listener is registered after the workflow has already produced
+	 * results it will be immediately called with any results previously
+	 * produced. Where the workflow has completed a stream of results it may
+	 * only message the listener with the highest level one, so for a case where
+	 * a list of results is emited one at a time the listener may either get the
+	 * individual items followed by the list token or if registered after the
+	 * list token has been emited only receive the list token.
 	 * 
 	 * @param listener
 	 */
@@ -78,9 +86,13 @@ public interface WorkflowInstanceFacade {
 	 * critical by default as there are ways of handling errors within the data
 	 * stream, if the processor actually fails something really bad has
 	 * happened.
+	 * <p>
+	 * As with the result listener a failure listener registered after the
+	 * workflow has already failed will be immediately called with the failure
+	 * data.
 	 */
 	public void addFailureListener(FailureListener listener);
-	
+
 	/**
 	 * Remove a previously registered failure listener
 	 */
