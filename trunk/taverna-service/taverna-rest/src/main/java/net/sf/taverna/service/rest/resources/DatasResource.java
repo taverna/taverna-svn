@@ -72,9 +72,16 @@ public class DatasResource extends AbstractUserResource {
 			return;
 		}
 		try {
-			dataDoc.setBaclava(entity.getText());
+			String baclava = entity.getText();
+			if (baclava == null || baclava.equals("")) {
+				logger.warn("Missing or empty baclava document");
+				getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Baclava document missing or empty");
+				return;
+			}
+			dataDoc.setBaclava(baclava);
 		} catch (IOException e) {
 			logger.warn("Could not receive baclava document", e);
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
 			return;
 		}
 		dataDoc.setOwner(user);
