@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 16:35:08 $
+ * Last modified on   $Date: 2007-06-27 12:16:21 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -297,16 +297,19 @@ public class MartServiceUtils {
 					doc);
 			return datasetConfig;
 		} catch (ConfigurationException e) {
-			String errorMessage = "Error getting configuration from "
+			String errorMessage = "Error parsing configuration from "
 					+ martServiceLocation;
+			logger.debug(errorMessage, e);
 			throw new MartServiceException(errorMessage, e);
 		} catch (JDOMException e) {
-			String errorMessage = "Error getting configuration from "
+			String errorMessage = "Error parsing configuration from "
 					+ martServiceLocation;
+			logger.debug(errorMessage, e);
 			throw new MartServiceException(errorMessage, e);
 		} catch (IOException e) {
 			String errorMessage = "Error getting configuration from "
 					+ martServiceLocation;
+			logger.debug(errorMessage, e);
 			throw new MartServiceException(errorMessage, e);
 		} finally {
 			method.releaseConnection();

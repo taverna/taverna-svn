@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartService.java,v $errors/failure.html
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 16:35:08 $
+ * Last modified on   $Date: 2007-06-27 12:16:21 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -36,6 +36,7 @@ package org.biomart.martservice;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.log4j.Logger;
 import org.biomart.martservice.query.Query;
@@ -339,19 +342,19 @@ public class MartService {
 		String path = mart.getHost()+fs+mart.getName()+fs+mart.getVirtualSchema();
 		File martCacheDir = new File(cacheDirectory, path);
 		martCacheDir.mkdirs();
-		File cache = new File (martCacheDir, dataset.getName());
+		File cache = new File(martCacheDir, dataset.getName() + ".cfg");
 		DatasetConfigXMLUtils datasetConfigXMLUtils = new DatasetConfigXMLUtils(true);
 		if (cache.exists()) {
 			try {
 				SAXBuilder builder = new SAXBuilder();
-				Document doc = builder.build(new InputSource(new FileInputStream(cache)));
+				Document doc = builder.build(new InputSource(new GZIPInputStream(new FileInputStream(cache))));
 
 //			    Document doc = datasetConfigXMLUtils.getDocumentForXMLStream(new FileInputStream(cache));
 
 				datasetConfig = datasetConfigXMLUtils.getDatasetConfigForDocument(doc);
 				datasetConfigXMLUtils.loadDatasetConfigWithDocument(datasetConfig,
 						doc);
-				if (!datasetConfig.getModified().equals(dataset.getModified())) {
+				if (!datasetConfig.getModified().trim().equals(dataset.getModified().trim())) {
 					datasetConfig = null;
 				}
 			} catch (IOException e) {
@@ -368,7 +371,12 @@ public class MartService {
 		if (datasetConfig == null) {
 			datasetConfig = MartServiceUtils.getDatasetConfig(location, requestId, dataset);	
 			try {
-				datasetConfigXMLUtils.writeDatasetConfigToFile(datasetConfig, cache);
+				GZIPOutputStream zipOutputStream = new GZIPOutputStream(new FileOutputStream(cache));
+				datasetConfigXMLUtils.writeDatasetConfigToOutputStream(datasetConfig, zipOutputStream);
+				zipOutputStream.flush();
+				zipOutputStream.close();
+			} catch (IOException e) {
+				logger.debug("error writing cache to " + cache.getPath(), e);
 			} catch (ConfigurationException e) {
 				logger.debug("error writing cache to " + cache.getPath(), e);
 			}
@@ -388,8 +396,12 @@ public class MartService {
 			throws MartServiceException {
 		String qualifiedName = dataset.getQualifiedName();
 		if (!importablesMap.containsKey(qualifiedName)) {
-			importablesMap.put(qualifiedName, getDatasetConfig(dataset)
-					.getImportables());
+			try {
+				importablesMap.put(qualifiedName, getDatasetConfig(dataset)
+						.getImportables());
+			} catch (MartServiceException e) {
+				return new Importable[0];
+			}
 		}
 		return (Importable[]) importablesMap.get(qualifiedName);
 	}
@@ -406,8 +418,12 @@ public class MartService {
 			throws MartServiceException {
 		String qualifiedName = dataset.getQualifiedName();
 		if (!exportablesMap.containsKey(qualifiedName)) {
-			exportablesMap.put(qualifiedName, getDatasetConfig(dataset)
-					.getExportables());
+			try {
+				exportablesMap.put(qualifiedName, getDatasetConfig(dataset)
+						.getExportables());
+			} catch (MartServiceException e) {
+				return new Exportable[0];
+			}
 		}
 		return (Exportable[]) exportablesMap.get(qualifiedName);
 	}
@@ -426,8 +442,7 @@ public class MartService {
 	 *             if the MartService returns an error or is unavailable
 	 */
 	public List[] executeQuery(Query query) throws MartServiceException {
-		System.out.println(MartServiceUtils.queryToXML(query));
-//		System.out.println(MartServiceUtils.queryToXML(MartServiceUtils.splitAttributeLists(query)));
+//		System.out.println(MartServiceUtils.queryToXML(query));
 		return MartServiceUtils.getResults(location, requestId, query);
 	}
 
