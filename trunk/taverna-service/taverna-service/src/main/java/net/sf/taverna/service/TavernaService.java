@@ -88,7 +88,7 @@ public class TavernaService {
 		
 		// FIXME: Workers should be started from separate main with the URI in a
 		// configuration file
-		URIFactory uriFactory = URIFactory.getInstance("http://localhost:" + PORT + "/v1/");
+		URIFactory uriFactory = URIFactory.getInstance("http://localhost:" + port + "/v1/");
 		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor(uriFactory);
 		queueMonitor.start();
 		
