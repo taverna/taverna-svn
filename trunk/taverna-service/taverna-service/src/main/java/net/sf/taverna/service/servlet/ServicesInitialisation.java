@@ -32,8 +32,10 @@ public class ServicesInitialisation implements ServletContextListener {
 
 	private void startQueueMonitor(ServletContext context) {
 		logger.info("Starting the Job Queue Monitor");
-		URIFactory uriFactory = URIFactory.getInstance(context.getInitParameter("baseuri") + "v1/");
-		
+		String base=context.getInitParameter("baseuri");
+		if (!base.endsWith("/")) base+="/";
+		URIFactory uriFactory = URIFactory.getInstance(base + "rest/v1/");
+		URIFactory.setHTMLpath(base+"html/");
 		queueMonitor=new DefaultQueueMonitor(uriFactory);
 		queueMonitor.setDaemon(true);
 		queueMonitor.start();

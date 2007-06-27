@@ -177,7 +177,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 */
 	public boolean isEntityAuthorized(AbstractUUID entity) {
 		User authUser = getAuthUser();
-		if (authUser.isAdmin()) {
+		if (authUser!=null && authUser.isAdmin()) {
 			return true;
 		}
 		if (entity instanceof User) {

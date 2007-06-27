@@ -117,7 +117,7 @@ public class RestfulExecutionThread extends Thread {
 			}
 		
 			Document doc = DataThingXMLFactory.getDataDocument(outputs);
-			DataREST data=job.getOwner().getDatas().add(xmlAsInputStream(doc));
+			DataREST data=job.getOwner().getDatas().add(new ByteArrayInputStream(new XMLOutputter().outputString(doc).getBytes()));
 			job.setStatus(StatusType.COMPLETE);
 			job.setOutputs(data);
 		}
