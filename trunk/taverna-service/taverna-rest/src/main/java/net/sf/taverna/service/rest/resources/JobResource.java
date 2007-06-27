@@ -3,12 +3,15 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.GDuration;
+import org.apache.xmlbeans.GDurationBuilder;
 import org.apache.xmlbeans.XmlException;
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -58,11 +61,17 @@ public class JobResource extends AbstractJobResource {
 	}
 	
 	public void updateJob(JobDocument jobDoc) {
-		if (jobDoc.getJob().getInputs()!=null) {
-			job.setInputs(uriToDAO.getResource(jobDoc.getJob().getInputs().getHref(), DataDoc.class));
+		if (jobDoc.getJob().getInputs() != null) {
+			job.setInputs(uriToDAO.getResource(
+				jobDoc.getJob().getInputs().getHref(), DataDoc.class));
 		}
-		if (jobDoc.getJob().getOutputs()!=null) {
-			job.setOutputs(uriToDAO.getResource(jobDoc.getJob().getOutputs().getHref(), DataDoc.class));
+		if (jobDoc.getJob().getOutputs() != null) {
+			job.setOutputs(uriToDAO.getResource(
+				jobDoc.getJob().getOutputs().getHref(), DataDoc.class));
+		}
+		if (jobDoc.getJob().getUpdateInterval() != null) {
+			GDuration interval = jobDoc.getJob().getUpdateInterval();
+			job.setUpdateInterval(interval.toString());
 		}
 		daoFactory.getJobDAO().update(job);
 		daoFactory.commit();
@@ -84,6 +93,9 @@ public class JobResource extends AbstractJobResource {
 			if (job.getInputs() != null) {
 				sb.append("Inputs: ").append(uriFactory.getURI(job.getInputs())).append(
 					'\n');
+			}
+			if (job.getUpdateInterval() != null) {
+				sb.append("Update-Interval: ").append(job.getUpdateInterval()).append('\n');
 			}
 			if (job.getOutputs() != null) {
 				sb.append("Outputs: ").append(
@@ -121,6 +133,9 @@ public class JobResource extends AbstractJobResource {
 			if (job.getOutputs() != null) {
 				jobElement.addNewOutputs().setHref(
 					uriFactory.getURI(job.getOutputs()));
+			}
+			if (job.getUpdateInterval() != null) {
+				jobElement.setUpdateInterval(new GDuration(job.getUpdateInterval()));
 			}
 			jobElement.addNewReport().setHref(uriFactory.getURIReport(job));
 			return jobDoc;

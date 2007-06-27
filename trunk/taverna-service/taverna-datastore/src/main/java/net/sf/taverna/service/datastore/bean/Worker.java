@@ -71,8 +71,8 @@ public class Worker extends User {
 	}
 
 	public void assignJob(Job job) {
-		job.setStatus(Status.DEQUEUED);
 		job.setWorker(this);
+		job.setStatus(Status.DEQUEUED);
 		getWorkerJobs().add(job);
 	}
 	

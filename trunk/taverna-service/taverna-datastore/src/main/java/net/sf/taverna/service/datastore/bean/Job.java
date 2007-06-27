@@ -15,20 +15,26 @@ import javax.persistence.Transient;
 import org.hibernate.validator.NotNull;
 
 @Entity
-@NamedQueries(
-	value={
-		@NamedQuery(name=Job.NAMED_QUERY_ALL,
-			query="SELECT j FROM Job j ORDER BY j.created DESC")
-	}
-)
+@NamedQueries(value = { @NamedQuery(name = Job.NAMED_QUERY_ALL, query = "SELECT j FROM Job j ORDER BY j.created DESC") })
 public class Job extends AbstractOwned {
 
-	public static final int MAX_REPORT_SIZE=65535;
+	public static final int MAX_REPORT_SIZE = 65535;
+
+	// 5 minutes in xsd:duration format
+	public static final String DEFAULT_UPDATE_INTERVAL = "PT5M";
 
 	public static final String NAMED_QUERY_ALL = "allJobs";
 
-	// Different from Freefluo:
-	// QUEUED, DEQUEUED
+	/**
+	 * In addition to the statuses of Freefluo:
+	 * <p>
+	 * QUEUED: Placed on a queue <br>
+	 * DEQUEUED: Worker has taken job and is downloading the data for the job
+	 * <p>
+	 * In addition, NEW means that the job is not yet on a queue, and DESTROYED
+	 * means that some or all of the data of this job is no longer available in
+	 * the data store.
+	 */
 	public enum Status {
 		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED
 	}
@@ -37,12 +43,17 @@ public class Job extends AbstractOwned {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Workflow workflow;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	private DataDoc inputDoc;
+
 	@NotNull
 	@Enumerated(value = EnumType.STRING)
 	private Status status = Status.NEW;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private DataDoc inputDoc;
+	/**
+	 *  In milliseconds, how long to wait between posting back updates
+	 */
+	private String updateInterval = DEFAULT_UPDATE_INTERVAL;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private DataDoc outputDoc;
@@ -58,24 +69,6 @@ public class Job extends AbstractOwned {
 	private QueueEntry queueEntry;
 
 	public Job() {
-	}
-
-	public String getProgressReport() {
-		return progressReport;
-	}
-
-	public void setProgressReport(String progressReport) {
-		this.progressReport = progressReport;
-		setLastModified();
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-		setLastModified();
 	}
 
 	public Workflow getWorkflow() {
@@ -96,8 +89,34 @@ public class Job extends AbstractOwned {
 		setLastModified();
 	}
 
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+		setLastModified();
+	}
+
 	public boolean isFinished() {
 		return getStatus().compareTo(Status.CANCELLING) > 0;
+	}
+
+	public String getUpdateInterval() {
+		return updateInterval;
+	}
+
+	public void setUpdateInterval(String updateInterval) {
+		this.updateInterval = updateInterval;
+	}
+
+	public String getProgressReport() {
+		return progressReport;
+	}
+
+	public void setProgressReport(String progressReport) {
+		this.progressReport = progressReport;
+		setLastModified();
 	}
 
 	public DataDoc getOutputs() {

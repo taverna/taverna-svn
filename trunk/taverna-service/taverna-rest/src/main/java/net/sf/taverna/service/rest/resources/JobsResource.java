@@ -14,6 +14,7 @@ import net.sf.taverna.service.xml.JobsDocument;
 import net.sf.taverna.service.xml.Workflow;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
@@ -119,6 +120,11 @@ public class JobsResource extends AbstractUserResource {
 			// TODO: Support external (public) DataDocs
 			job.setInputs(uriToDAO.getResource(inputs.getHref(), DataDoc.class));
 		}
+		GDuration updateInterval = jobDoc.getJob().getUpdateInterval();
+		if (updateInterval != null) {
+			job.setUpdateInterval(updateInterval.toString());
+		}
+		
 		daoFactory.getJobDAO().create(job);
 		addJobToDefaultQueue(job);
 		daoFactory.commit();

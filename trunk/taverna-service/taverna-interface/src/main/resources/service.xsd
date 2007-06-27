@@ -205,18 +205,36 @@
 					<element minOccurs="0" name="status"
 						type="tav:LinkedStatusType">
 					</element>
-					<element name="report"
-						type="tav:Report" minOccurs="0">
+					<element name="updateInterval" maxOccurs="1"
+						minOccurs="0" type="duration">
+						<annotation>
+							<documentation>
+								The update frequency of the worker while
+								processing this job. The worker will
+								report back it's status and progress
+								report at the given interval, for
+								example PT5M" for every 5th minute.
+
+								Note when changing this value that the
+								worker might wait a full interval of the
+								previous value before detecting the new
+								interval duration.
+							</documentation>
+						</annotation>
+					</element>
+					<element name="report" type="tav:Report"
+						minOccurs="0">
 					</element>
 					<element name="queue" type="tav:Queue"
 						minOccurs="0">
 					</element>
-					<element name="worker"
-						type="tav:Worker" minOccurs="0">
+					<element name="worker" type="tav:Worker"
+						minOccurs="0">
 					</element>
-					<element name="outputs"
-						type="tav:Data" minOccurs="0">
+					<element name="outputs" type="tav:Data"
+						minOccurs="0">
 					</element>
+					
 				</sequence>
 			</extension>
 		</complexContent>
