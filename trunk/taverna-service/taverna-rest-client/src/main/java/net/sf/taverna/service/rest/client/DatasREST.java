@@ -66,5 +66,8 @@ public class DatasREST extends LinkedREST<Datas> implements Iterable<DataREST> {
 		return new DataREST(context, response.getRedirectRef());
 	}
 	
+	public DatasREST clone() {
+		return new DatasREST(context, getURIReference());
+	}
 
 }

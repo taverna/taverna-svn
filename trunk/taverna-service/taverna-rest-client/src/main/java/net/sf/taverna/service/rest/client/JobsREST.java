@@ -60,4 +60,8 @@ public class JobsREST extends LinkedREST<Jobs> implements Iterable<JobREST> {
 		return new JobREST(context, response.getRedirectRef());
 	}
 
+	public JobsREST clone() {
+		return new JobsREST(context, getURIReference());
+	}
+	
 }

@@ -27,5 +27,10 @@ public class WorkerREST extends LinkedREST<Worker> {
 	public QueueREST getQueue() {
 		return new QueueREST(context, getDocument().getQueue());
 	}
+	
+	public WorkerREST clone() {
+		return new WorkerREST(context, getURIReference());
+	}
+	
 
 }

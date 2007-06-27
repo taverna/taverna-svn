@@ -49,4 +49,7 @@ public class UserREST extends LinkedREST<User> {
 		return new DatasREST(context, getDocument().getDatas());
 	}
 
+	public UserREST clone() {
+		return new UserREST(context, getURIReference());
+	}
 }

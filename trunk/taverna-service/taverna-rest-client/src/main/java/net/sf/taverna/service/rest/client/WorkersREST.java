@@ -23,5 +23,11 @@ public class WorkersREST extends AbstractREST<Workers> {
 		context.post(context.getWorkersURI(), urls);
 		invalidate();
 	}
+
+	public WorkersREST clone() {
+		return new WorkersREST(context, getURIReference());
+	}
+	
+	
 	
 }

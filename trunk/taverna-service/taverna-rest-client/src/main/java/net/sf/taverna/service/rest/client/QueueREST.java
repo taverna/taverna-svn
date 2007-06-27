@@ -19,5 +19,7 @@ public class QueueREST extends LinkedREST<Queue> {
 		return new JobsREST(context, getDocument().getJobs());
 	}
 	
-	
+	public QueueREST clone() {
+		return new QueueREST(context, getURIReference());
+	}
 }

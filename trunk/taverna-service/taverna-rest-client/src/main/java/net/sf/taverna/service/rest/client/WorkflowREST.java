@@ -22,4 +22,8 @@ public class WorkflowREST extends OwnedREST<Workflow> {
 	public String getScufl() {
 		return getDocument().getScufl().xmlText();
 	}
+	
+	public WorkflowREST clone() {
+		return new WorkflowREST(context, getURIReference());
+	}
 }

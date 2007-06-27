@@ -56,4 +56,8 @@ public class DataREST extends OwnedREST<Data> {
 			context.put(getURIReference(), dataDoc);
 			invalidate();
 		}
+		
+		public DataREST clone() {
+			return new DataREST(context, getURIReference());
+		}
 }

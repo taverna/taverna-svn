@@ -7,6 +7,7 @@ import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.data.MediaType;
@@ -14,9 +15,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 
 public class JobREST extends OwnedREST<Job> {
-	
+
 	private static Logger logger = Logger.getLogger(JobREST.class);
-	
+
 	public JobREST(RESTContext context, Job job) {
 		super(context, job);
 	}
@@ -32,15 +33,15 @@ public class JobREST extends OwnedREST<Job> {
 	public WorkflowREST getWorkflow() {
 		return new WorkflowREST(context, getDocument().getWorkflow());
 	}
-	
+
 	private Reference getStatusURI() {
 		String statusURI = getDocument().getStatus().getHref();
-		if (statusURI == null) { 
+		if (statusURI == null) {
 			return null;
 		}
 		return new Reference(getURIReference(), statusURI);
 	}
-	
+
 	public StatusType.Enum getStatus() throws RESTException {
 		Reference statusURI = getStatusURI();
 		if (statusURI == null) {
@@ -70,36 +71,36 @@ public class JobREST extends OwnedREST<Job> {
 			invalidate();
 		}
 	}
-	
+
 	public DataREST getInputs() {
 		return new DataREST(context, getDocument().getInputs());
 	}
-	
+
 	public DataREST getOutputs() {
 		return new DataREST(context, getDocument().getOutputs());
 	}
-	
+
 	public void setOutputs(DataREST rest) throws NotSuccessException {
 		JobDocument job = JobDocument.Factory.newInstance();
 		job.addNewJob().addNewOutputs().setHref(rest.getURI());
 		context.put(getURIReference(), job);
 		invalidate();
 	}
-	
+
 	private Reference getReportURI() {
 		String reportURI = getDocument().getReport().getHref();
-		if (reportURI == null) { 
+		if (reportURI == null) {
 			return null;
 		}
 		return new Reference(getURIReference(), reportURI);
 	}
-	
+
 	public String getReport() throws RESTException {
 		Reference reportURI = getReportURI();
 		if (reportURI == null) {
 			return getDocument().getReport().xmlText();
 		}
-		
+
 		// Return the freshest report with a new get()
 		Response response = context.get(reportURI, MediaType.TEXT_XML);
 		String report;
@@ -112,7 +113,8 @@ public class JobREST extends OwnedREST<Job> {
 		return report;
 	}
 
-	public void setReport(String report) throws NotSuccessException, XmlException {
+	public void setReport(String report) throws NotSuccessException,
+		XmlException {
 		Reference reportURI = getReportURI();
 		if (reportURI != null) {
 			context.put(reportURI, report, MediaType.TEXT_XML);
@@ -124,6 +126,21 @@ public class JobREST extends OwnedREST<Job> {
 		}
 		invalidate();
 	}
+
+	public GDuration getUpdateInterval() {
+		return getDocument().getUpdateInterval();
+	}
+
+	public void setUpdateInterval(GDuration interval)
+		throws NotSuccessException {
+		JobDocument job = JobDocument.Factory.newInstance();
+		job.addNewJob().setUpdateInterval(interval);
+		context.put(getURIReference(), job);
+		invalidate();
+	}
 	
+	public JobREST clone() {
+		return new JobREST(context, getURIReference());
+	}
 
 }

@@ -34,5 +34,8 @@ public class QueuesREST extends LinkedREST<Queues> {
 		return getQueues().iterator();
 	}
 
+	public QueuesREST clone() {
+		return new QueuesREST(context, getURIReference());
+	}
 
 }

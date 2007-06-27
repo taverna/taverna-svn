@@ -1,5 +1,7 @@
 package net.sf.taverna.service.rest.client;
 
+import java.lang.reflect.Constructor;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.data.Reference;
@@ -116,5 +118,5 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 	public String toString() {
 		return getClass().getSimpleName() + " " + getURI();
 	}
-
+	
 }

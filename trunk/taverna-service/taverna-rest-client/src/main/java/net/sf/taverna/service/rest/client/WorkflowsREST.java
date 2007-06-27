@@ -25,9 +25,8 @@ public class WorkflowsREST extends LinkedREST<Workflows> implements
 		super(context, document);
 	}
 
-	public WorkflowsREST(RESTContext context, Reference uri,
-		Class<Workflows> documentClass) {
-		super(context, uri, documentClass);
+	public WorkflowsREST(RESTContext context, Reference uri) {
+		super(context, uri, Workflows.class);
 	}
 
 	public List<WorkflowREST> getWorkflows() {
@@ -57,4 +56,7 @@ public class WorkflowsREST extends LinkedREST<Workflows> implements
 		return new WorkflowREST(context, response.getRedirectRef());
 	}
 	
+	public WorkflowsREST clone() {
+		return new WorkflowsREST(context, getURIReference());
+	}
 }
