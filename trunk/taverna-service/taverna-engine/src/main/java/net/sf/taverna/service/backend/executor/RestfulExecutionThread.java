@@ -2,7 +2,10 @@ package net.sf.taverna.service.backend.executor;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -27,6 +30,7 @@ import net.sf.taverna.service.xml.StatusType;
 import net.sf.taverna.tools.Bootstrap;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
@@ -43,59 +47,107 @@ public class RestfulExecutionThread extends Thread {
 	private final String WORKER_PASSWORD="Bob";
 	
 	private static Logger logger = Logger.getLogger(RestfulExecutionThread.class);
+	
 	private String workerUsername;
 	private String jobUri;
 	private String baseUri;
 
 	public RestfulExecutionThread(String jobUri, String baseUri, String workerUsername) {
 		super("Restful Executor Thread");
-		logger.info("Starting job execution. JobURI="+jobUri);
+		logger.info("Starting job execution. Job " + jobUri);
 		this.jobUri=jobUri;
 		this.baseUri=baseUri;
 		this.workerUsername = workerUsername;
+	}
+	
+	/**
+	 * Serialise XML document to an InputStream.
+	 * <p>
+	 * This method will start a thread with a {@link PipedOutputStream} so that the serialised XML
+	 * can be read from the PipedInputStream.
+	 * 
+	 * @param doc
+	 * @return A PipedInputStream
+	 * @throws IOException
+	 */
+	public static PipedInputStream xmlAsInputStream(final Document doc)
+		throws IOException {
+		PipedInputStream inputStream = new PipedInputStream();
+		final PipedOutputStream outputStream =
+			new PipedOutputStream(inputStream);
+		Thread t = new Thread("XMLOutputter input stream pipe") {
+			@Override
+			public void run() {
+				XMLOutputter xmlOutputter =
+					new XMLOutputter(Format.getCompactFormat());
+				try {
+					xmlOutputter.output(doc, outputStream);
+				} catch (IOException e) {
+					logger.warn("Could not output XML document", e);
+				}
+			}
+		};
+		t.setDaemon(true);
+		t.start();
+		return inputStream;
 	}
 	
 	@Override
 	public void run() {
 		JobREST job = getJobREST();
 		WorkflowLauncher launcher = null;
+		ProgressUpdaterThread updater = null;
 		try {
 			String scufl = job.getWorkflow().getScufl();
-			job.setStatus(StatusType.RUNNING);
-			
 			launcher = constructWorkflowLauncher(scufl);
 			Map<String,DataThing> inputs = new HashMap<String, DataThing>();
 //			if (job.getInputs()!=null) {
 //				inputs=job.getInputs().
 //			}
-			Map outputs = launcher.execute(inputs);
+			job.setStatus(StatusType.RUNNING);
 			
-			//FIXME: uploads as a stream. Fairly pointless at the moment, since the outputs
-			//are held in memory before creating the stream (and are held in memory again on the server side)
-			//, but at least the transport is correct!
+			GDuration updateInterval = job.getUpdateInterval();
+			if (updateInterval != null) {
+				updater = new ProgressUpdaterThread(launcher, job);
+				updater.start();
+			}
+			Map outputs = launcher.execute(inputs);
+			if (updater != null) {
+				updater.loop = false;
+			}
+		
 			Document doc = DataThingXMLFactory.getDataDocument(outputs);
-			String baclavaString = new XMLOutputter(Format.getCompactFormat()).outputString(doc);
-			ByteArrayInputStream inStream = new ByteArrayInputStream(baclavaString.getBytes());
-			DataREST data=job.getOwner().getDatas().add(inStream);
+			DataREST data=job.getOwner().getDatas().add(xmlAsInputStream(doc));
 			job.setStatus(StatusType.COMPLETE);
 			job.setOutputs(data);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			logger.warn("Workflow execution failed", e);
 			try {
 				job.setStatus(StatusType.FAILED);
 			} catch (NotSuccessException e1) {
 				logger.error("Error updating job status to failed",e1);
 			}
 		}
-		finally {
+		finally {		
 			if (launcher!=null) {
+				
+				if (updater != null) {
+					updater.loop = false;
+					try {
+						updater.join(); // So we're not sending two progress reports at once
+					} catch (InterruptedException e) {
+						logger.warn("Interrupted while joining " + this, e);
+						updater.interrupt(); // take it down!
+					}
+				}
 				try {
 					job.setReport(launcher.getProgressReportXML());
 				} catch (NotSuccessException e) {
-					logger.error(e);
+					logger.warn("Could not set progress report for " + job, e);
 				} catch (XmlException e) {
-					logger.error(e);
+					logger.error("Could not serialize progress report for "
+						+ job, e);
 				}
 			}
 		}
@@ -103,6 +155,7 @@ public class RestfulExecutionThread extends Thread {
 
 	private WorkflowLauncher constructWorkflowLauncher(String scufl) throws MalformedURLException, ArtifactNotFoundException, ArtifactStateException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 		System.setProperty("raven.eclipse", "1");
+		// FIXME: Should have a real  home
 		File base = new File("/tmp/");
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl","scufl-tools","1.5.2.0"));
