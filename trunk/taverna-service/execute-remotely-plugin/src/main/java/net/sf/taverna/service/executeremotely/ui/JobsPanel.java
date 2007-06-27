@@ -9,17 +9,15 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.StringReader;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.service.executeremotely.RemoteWorkflowInstance;
+import net.sf.taverna.service.executeremotely.UILogger;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.JobsREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
@@ -30,10 +28,6 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 
 class JobsPanel extends JPanel {
 
@@ -47,10 +41,12 @@ class JobsPanel extends JPanel {
 		private class MouseClickListener extends MouseAdapter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// Create and add a Workflow instance
-				RemoteWorkflowInstance instance =
-					new RemoteWorkflowInstance(job);
-				ModelMap.getInstance().setModel(job.getURI(), instance);
+				if (!ModelMap.getInstance().getModels().contains(job.getURI())) {
+					// Create and add a Workflow instance
+					RemoteWorkflowInstance instance =
+						new RemoteWorkflowInstance(job, uiLog);
+					ModelMap.getInstance().setModel(job.getURI(), instance);
+				}
 			}
 		}
 
@@ -66,7 +62,7 @@ class JobsPanel extends JPanel {
 			} catch (RESTException e) {
 				logger.warn("Can't get status for " + job, e);
 				state = "(unknown)";
-				log("Can't get status for " + job);
+				uiLog.log("Can't get status for " + job);
 			}
 			setBackground(Color.WHITE);
 			setText(job.getURI() + ": " + state);
@@ -91,10 +87,11 @@ class JobsPanel extends JPanel {
 
 	private RESTContext context;
 
-	private JPanel logPane;
+	private UILogger uiLog;
 
-	JobsPanel() {
+	JobsPanel(UILogger uiLog) {
 		super(new GridBagLayout());
+		this.uiLog = uiLog;
 		refresh();
 	}
 
@@ -110,7 +107,6 @@ class JobsPanel extends JPanel {
 				addHeader();
 				addJobs();
 				addRefreshButton();
-				addLogs();
 				revalidate();
 				repaint();
 			}
@@ -155,55 +151,21 @@ class JobsPanel extends JPanel {
 		try {
 			jobs = context.getUser().getJobs();
 		} catch (RuntimeException e) {
+			uiLog.log("Could not load jobs from " + context);
 			logger.warn("Could not load jobs", e);
 			return;
 		} catch (NotSuccessException e) {
+			uiLog.log("Could not load jobs + context");
 			logger.warn("Could not load jobs", e);
 			return;
 		}
 		for (JobREST job : jobs) {
 			add(new Job(job), c);
 		}
+		uiLog.log("Loaded jobs from " + context);
 		// eat blank space
 		c.weighty = 0.1;
 		add(new JPanel(), c);
 	}
 
-	private void addLogs() {
-		logPane = new JPanel();
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.CENTER;
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.1;
-		c.weighty = 0.1;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
-		add(new JScrollPane(logPane), c);
-	}
-
-	public void log(Exception ex) {
-		log(ex.toString());
-	}
-
-	public void log(String msg) {
-		JLabel logLabel = new JLabel("<html><small>" + msg + "</small></html");
-		logPane.add(logLabel, 0);
-		logPane.revalidate();
-	}
-
-	public Element parseXML(String xm) throws JDOMException {
-		SAXBuilder builder = new SAXBuilder(false);
-		Document document;
-		try {
-			document = builder.build(new StringReader(xm));
-		} catch (IOException ex) {
-			// Not expected
-			logger.error("Could not read XML from StringReader", ex);
-			throw new RuntimeException("Could not read XML from StringReader",
-				ex);
-		}
-		Element element = document.getRootElement();
-		return element;
-	}
 }

@@ -1,21 +1,28 @@
 package net.sf.taverna.service.executeremotely.ui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import net.sf.taverna.service.executeremotely.ExecuteRemotelyConf;
 import net.sf.taverna.service.executeremotely.RESTService;
+import net.sf.taverna.service.executeremotely.UILogger;
 import net.sf.taverna.service.rest.client.RESTContext;
 
 import org.apache.log4j.Logger;
@@ -36,8 +43,10 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	public ScuflModel model;
 
 	public RESTContext context;
+	
+	private LogPanel uiLog = new LogPanel();
 
-	public JobsPanel jobs = new JobsPanel();
+	public JobsPanel jobs = new JobsPanel(uiLog);
 
 	public JComboBox services;
 
@@ -50,11 +59,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		addRunButton();
 		addJobs();
 		addFiller();
+		addLogs();
 		updateServiceList();
 		logger.info("showing ourselves");
 	}
 
-	// FIXME: Replace with a "Run remotely" icon
 	public ImageIcon getIcon() {
 		return TavernaIcons.runIcon;
 	}
@@ -192,6 +201,21 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		add(new JPanel(), c);
 	}
+	
+	protected void addLogs() {		
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstraints.CENTER;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 0.1;
+		c.weighty = 0.0;
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		c.gridx = 0;
+		c.gridy = GridBagConstraints.RELATIVE;
+		JScrollPane scrollPane = new JScrollPane(uiLog);
+		scrollPane.setPreferredSize(new Dimension(0, 100));
+		add(scrollPane, c);
+	}
+
 
 	protected void setContext(RESTContext context) {
 		this.service = new RESTService(context);
@@ -253,8 +277,31 @@ public class ExecuteRemotelyPanel extends JPanel implements
 				logger.info("Can't run workflow without connection or current workflow");
 				return;
 			}
-			RemoteWorkflowInputPanel.run(model, service);
+			RemoteWorkflowInputPanel.run(model, service, uiLog);
 			jobs.refresh();
 		}
+	}
+
+	public class LogPanel extends JPanel implements UILogger {
+		
+		public LogPanel() {
+			super();
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		}
+		
+		public void log(Exception ex) {
+			log(ex.toString());
+		}
+
+		public synchronized void log(String msg) {
+			
+			DateFormat dateformat = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.UK);
+			String time = dateformat.format(new Date());
+			
+			JLabel logLabel = new JLabel("<html><small> " + time + ": " + msg + "</small></html");
+			add(logLabel, 0);
+			revalidate();
+		}		
+		
 	}
 }

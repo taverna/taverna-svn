@@ -5,7 +5,9 @@ import java.util.Map;
 import javax.swing.Action;
 
 import net.sf.taverna.service.executeremotely.RESTService;
+import net.sf.taverna.service.executeremotely.UILogger;
 import net.sf.taverna.service.rest.client.DataREST;
+import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.WorkflowREST;
 
@@ -21,9 +23,12 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 
 	private RESTService service;
 
-	public RemoteWorkflowInputPanel(ScuflModel model, RESTService service) {
+	private UILogger uiLog;
+
+	public RemoteWorkflowInputPanel(ScuflModel model, RESTService service, UILogger uiLog) {
 		super(model);
 		this.service = service;
+		this.uiLog = uiLog;
 	}
 
 	public void init() {
@@ -38,6 +43,7 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 		try {
 			wf = service.uploadWorkflow(model);
 		} catch (NotSuccessException e) {
+			uiLog.log("Could not upload workflow " + model);
 			logger.warn("Could not upload workflow " + model, e);
 			return;
 		}
@@ -45,21 +51,25 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 		try {
 			baclava = service.uploadData(inputs);
 		} catch (NotSuccessException e) {
+			uiLog.log("Could not upload data for workflow " + model);
 			logger.warn("Could not upload data for workflow", e);
 			return;
 		}
+		JobREST job;
 		try {
-			service.addJob(wf, baclava);
+			job = service.addJob(wf, baclava);
 		} catch (NotSuccessException e) {
+			uiLog.log("Could not add job for " + wf);
 			logger.warn("Could not add job for workflow " + wf, e);
 			return;
 		}
+		uiLog.log("Added " + job);
 	}
 
-	public static void run(ScuflModel model, RESTService service) {
+	public static void run(ScuflModel model, RESTService service, UILogger uiLog) {
 		if (model.getWorkflowSourcePorts().length > 0) {
 			RemoteWorkflowInputPanel panel =
-				new RemoteWorkflowInputPanel(model, service);
+				new RemoteWorkflowInputPanel(model, service, uiLog);
 			UIUtils.createFrame(panel, 50, 50, 600, 600);
 		} else {
 			// Add the job right away as we don't need any inputs
@@ -67,15 +77,19 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 			try {
 				wf = service.uploadWorkflow(model);
 			} catch (NotSuccessException e) {
+				uiLog.log("Could not upload workflow " + model);
 				logger.warn("Could not upload workflow " + model, e);
 				return;
 			}
+			JobREST job;
 			try {
-				service.addJob(wf);
+				job = service.addJob(wf);
 			} catch (NotSuccessException e) {
-				logger.warn("Could not add job for workflow " + wf, e);
+				uiLog.log("Could not add job for " + wf);
+				logger.warn("Could not add job for " + wf, e);
 				return;
 			}
+			uiLog.log("Added " + job);
 		}
 	}
 

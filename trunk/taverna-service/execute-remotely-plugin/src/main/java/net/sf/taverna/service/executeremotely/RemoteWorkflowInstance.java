@@ -29,8 +29,15 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 
 	private JobREST job;
 
+	private UILogger uiLog;
+
 	public RemoteWorkflowInstance(JobREST job) {
+		this(job, new UILogger.DummyUILogger());
+	}
+
+	public RemoteWorkflowInstance(JobREST job, UILogger uiLog) {
 		this.job = job;
+		this.uiLog = uiLog;
 	}
 
 	public boolean changeOutputPortTaskData(String processorId,
@@ -58,18 +65,20 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 			outputDoc = job.getOutputs().getBaclava();
 		} catch (RESTException e) {
 			logger.warn("Could not get output document for " + job, e);
+			uiLog.log("Could not get output document for " + job);
 			delay();
 			throw new IllegalStateException("Could not get output document", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			logger.warn("Could not read output document for " + job, e);
+			uiLog.log("Could not read output document for " + job);
 			delay();
 			throw new IllegalStateException("Could not read output document", e);
 		}
 		try {
 			return parseDataDoc(outputDoc);
 		} catch (JDOMException e) {
-			logger.error("Could not parse output document", e);
+			logger.error("Could not parse output document for " + job, e);
+			uiLog.log("Could not parse output document for " + job);
 			delay();
 			throw new IllegalStateException("Could not parse output document",
 				e);
@@ -81,12 +90,14 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		try {
 			report = job.getReport();
 		} catch (RESTException e) {
-			logger.warn("Could not get progress report", e);
+			logger.warn("Could not get progress report for " + job, e);
+			uiLog.log("Could not get progress report for " + job);
 			delay();
 			throw new IllegalStateException("Could not get progress report", e);
 		}
 		if (report.length() == 0) {
 			delay();
+			uiLog.log("Empty progress report for " + job);
 			throw new IllegalStateException("Empty progress report");
 		}
 		return report;
@@ -96,7 +107,8 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		try {
 			return job.getStatus().toString();
 		} catch (RESTException e) {
-			logger.warn("Could not get status", e);
+			logger.warn("Could not get status for " + job, e);
+			uiLog.log("Could not get status for " + job);
 			delay();
 			throw new IllegalStateException("Could not get status", e);
 		}
@@ -115,7 +127,9 @@ public class RemoteWorkflowInstance implements WorkflowInstance {
 		try {
 			XScuflParser.populate(scufl, model, null);
 		} catch (ScuflException ex) {
+			
 			logger.error("Could not load workflow:\n" + scufl, ex);
+			uiLog.log("Could not load workflow for " + job);
 			delay();
 			throw new IllegalStateException("Could not load workflow", ex);
 		}
