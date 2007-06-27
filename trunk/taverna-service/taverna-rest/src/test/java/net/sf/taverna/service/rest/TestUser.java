@@ -12,7 +12,7 @@ import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.xml.UserDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
@@ -30,8 +30,8 @@ public class TestUser extends ClientTest {
 
 	private static Reference justCreated;
 
-	@BeforeClass
-	public static void resetJustCreated() {
+	@Before
+	public void resetJustCreated() {
 		justCreated = null;
 		justUsername = null;
 	}
