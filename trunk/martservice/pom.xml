@@ -3,7 +3,7 @@
   <groupId>org.biomart</groupId>
   <artifactId>martservice</artifactId>
   <name>MartService</name>
-  <version>0.5.3-SNAPSHOT</version>
+  <version>0.6.0</version>
   <description>Biomart webservice API</description>
   <build>
     <plugins>
@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.biomart</groupId>
       <artifactId>martj</artifactId>
-      <version>0.5-20072201.143226</version>
+      <version>0.6</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
