@@ -132,9 +132,10 @@ public class RestApplication extends Application {
 	public Component createComponent() {
 		Component component = new Component();
 		component.getClients().add(Protocol.FILE);
-
+		attachHTMLSource(component);
+		
+		
 		Router router = new Router(component.getContext());
-
 		attachFilters(component, router);
 
 		Guard userGuard = new UserGuard(router.getContext());
