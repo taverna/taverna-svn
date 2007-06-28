@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
@@ -175,5 +177,54 @@ public interface Edits {
 	 */
 	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(
 			Processor control, Processor target);
+
+	/**
+	 * Add new workflow object metadata to the specified workflow object
+	 * 
+	 * @param <TargetType>
+	 *            the type of the object being annotated
+	 * @param newAnnotation
+	 *            metadata object to add to the annotated object
+	 * @param objectToAnnotate
+	 *            object to describe with the specified metadata
+	 * @return edit object to perform and undo the metadata assignment
+	 */
+	public <TargetType extends Annotated> Edit<TargetType> getAddAnnotationEdit(
+			WorkflowAnnotation newAnnotation, TargetType objectToAnnotate);
+
+	/**
+	 * Remove an annotation object from the specified Annotated workflow object
+	 * 
+	 * @param <TargetType>
+	 *            type of the workflow object from which the annotation is
+	 *            removed
+	 * @param annotationToRemove
+	 *            metadata object to remove
+	 * @param objectToAnnotate
+	 *            object from which the metadata is removed
+	 * @return edit object to perform and undo the metadata removal
+	 */
+	public <TargetType extends Annotated> Edit<TargetType> getRemoveAnnotationEdit(
+			WorkflowAnnotation annotationToRemove, TargetType objectToAnnotate);
+
+	/**
+	 * Replace an annotation on the specified object with a new annotation
+	 * object. In all probability this is implemented as a compound edit using
+	 * the remove and add annotation edits but from a user's point of view we
+	 * want to have this as a single editing operation within the UI.
+	 * 
+	 * @param <TargetType>
+	 *            type of the workflow object under modification
+	 * @param oldAnnotation
+	 *            annotation to replace
+	 * @param newAnnotation
+	 *            new version of the annotation
+	 * @param objectToAnnotate
+	 *            workflow object being annotated
+	 * @return edit object to perform and undo the metadata modification
+	 */
+	public <TargetType extends Annotated> Edit<TargetType> getReplaceAnnotationEdit(
+			WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation,
+			TargetType objectToAnnotate);
 
 }
