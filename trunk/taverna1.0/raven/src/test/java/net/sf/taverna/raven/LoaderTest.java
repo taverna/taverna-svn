@@ -1,10 +1,7 @@
 package net.sf.taverna.raven;
 
-import junit.framework.TestCase;
-import net.sf.taverna.raven.repository.*;
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -13,15 +10,27 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import junit.framework.TestCase;
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.ArtifactStatus;
+import net.sf.taverna.raven.repository.RepositoryListener;
+
 public class LoaderTest extends TestCase {
 
-	public static final String mavenRepository = "http://maven.sateh.com/repository/";
-
+	public static final String MAVEN_SATEH_REPOSITORY = "http://maven.sateh.com/repository/";
+	public static final String MAVEN_TOM_REPOSITORY = "http://www.ebi.ac.uk/~tmo/repository/";
+	public static final String MAVEN_MYGRID_REPOSITORY = "http://www.mygrid.org.uk/maven/repository/";
+	public static final String MAVEN_MYGRID_SNAPSHOT_REPOSITORY = "http://www.mygrid.org.uk/maven/snapshot-repository/";
+	public static final String MAVEN_MYGRID_PROXY_REPOSITORY = "http://www.mygrid.org.uk/maven/proxy/repository/";
+	public static final String MAVEN_UNIONTRANSIT_REPOSITORY = "http://www.uniontransit.com/apache/maven-repository/";
+	
 	public static final String repositoryLocation = 
-		// "http://www.ebi.ac.uk/~tmo/repository/";  // Tom's
-		// "http://www.mygrid.org.uk/maven/repository/"
-		// "http://www.mygrid.org.uk/maven/snapshot-repository/"
-		"http://www.mygrid.org.uk/maven/repository/"; // Stian's
+		MAVEN_MYGRID_REPOSITORY;
 	
 	File dir;
 	
@@ -102,7 +111,7 @@ public class LoaderTest extends TestCase {
 		String ravenVersion = "1.5.1";
 		URL[] remoteRepositories = new URL[]{
 				new URL(repositoryLocation), 
-				new URL(mavenRepository)};
+				new URL(MAVEN_SATEH_REPOSITORY)};
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
 		String version = "1.5.1";
@@ -158,7 +167,7 @@ public class LoaderTest extends TestCase {
     // Parameters for the Raven loader call
     URL[] remoteRepositories = new URL[]{
             new URL(repositoryLocation),
-            new URL(mavenRepository) };
+            new URL(MAVEN_SATEH_REPOSITORY) };
     String groupID = "uk.org.mygrid.taverna";
     String artifactID = "taverna-workbench";
     String version = "1.5.1";
@@ -222,7 +231,7 @@ public class LoaderTest extends TestCase {
 				"1.5.1",
 				dir,
 				new URL[]{new URL(repositoryLocation), 
-				          new URL(mavenRepository)},
+				          new URL(MAVEN_SATEH_REPOSITORY)},
         "uk.org.mygrid.taverna", "taverna-workbench", "1.5.1",
         "org.embl.ebi.escience.scuflui.workbench.Workbench",
         null, 10000
