@@ -43,7 +43,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	public ScuflModel model;
 
 	public RESTContext context;
-	
+
 	private LogPanel uiLog = new LogPanel();
 
 	public JobsPanel jobs = new JobsPanel(uiLog);
@@ -201,8 +201,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		add(new JPanel(), c);
 	}
-	
-	protected void addLogs() {		
+
+	protected void addLogs() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.anchor = GridBagConstraints.CENTER;
 		c.fill = GridBagConstraints.BOTH;
@@ -215,7 +215,6 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		scrollPane.setPreferredSize(new Dimension(0, 100));
 		add(scrollPane, c);
 	}
-
 
 	protected void setContext(RESTContext context) {
 		this.service = new RESTService(context);
@@ -283,25 +282,27 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	}
 
 	public class LogPanel extends JPanel implements UILogger {
-		
+
 		public LogPanel() {
 			super();
 			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		}
-		
+
 		public void log(Exception ex) {
 			log(ex.toString());
 		}
 
 		public synchronized void log(String msg) {
-			
-			DateFormat dateformat = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.UK);
+			DateFormat dateformat =
+				DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.UK);
 			String time = dateformat.format(new Date());
-			
-			JLabel logLabel = new JLabel("<html><small> " + time + ": " + msg + "</small></html");
+
+			JLabel logLabel =
+				new JLabel("<html><small> " + time + ": " + msg
+					+ "</small></html");
 			add(logLabel, 0);
 			revalidate();
-		}		
-		
+		}
+
 	}
 }
