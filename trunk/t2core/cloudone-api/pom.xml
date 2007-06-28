@@ -15,4 +15,11 @@
 		the data management layer used by the Tempest workflow engine
 		but can also be used in other applications.
 	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>tsunami-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>

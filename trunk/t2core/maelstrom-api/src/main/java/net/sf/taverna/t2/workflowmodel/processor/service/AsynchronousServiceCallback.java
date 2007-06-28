@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.service;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 
 /**
@@ -24,6 +25,16 @@ public interface AsynchronousServiceCallback {
 	 * @return
 	 */
 	public DataManager getLocalDataManager();
+
+	/**
+	 * Services access a SecurityAgentManager to handle authentication with the
+	 * external resource. The SecurityManager provides access to a set of
+	 * security agents, or will when it's actually implemented! In the meantime
+	 * this is just a placeholder and you can't actually do anything with it,
+	 * it's just here to prevent API churn when we implement the security layer
+	 * in the near future.
+	 */
+	public SecurityAgentManager getLocalSecurityManager();
 
 	/**
 	 * Push a map of named identifiers out to the invocation layer which is then

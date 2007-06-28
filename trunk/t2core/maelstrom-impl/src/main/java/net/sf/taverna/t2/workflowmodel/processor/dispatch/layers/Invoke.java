@@ -8,6 +8,7 @@ import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.ContextManager;
+import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
@@ -219,6 +220,11 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						getAbove().receiveResult(resultJob);
 
 						sentJob = true;
+					}
+
+					public SecurityAgentManager getLocalSecurityManager() {
+						// TODO Auto-generated method stub
+						return null;
 					}
 
 				};

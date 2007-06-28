@@ -10,6 +10,7 @@
 		<module>cloudone-impl</module>
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
+		<module>tsunami-api</module>
 	</modules>
 	<licenses>
 		<license>
