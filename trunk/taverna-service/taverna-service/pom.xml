@@ -47,5 +47,15 @@
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
     </dependency>
+    <dependency>
+      <groupId>velocity-tools</groupId>
+      <artifactId>velocity-tools</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>struts</groupId>
+      <artifactId>struts</artifactId>
+      <version>1.2.9</version>
+    </dependency>
   </dependencies>
 </project>
