@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.sf.taverna.raven.LoaderTest;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -37,7 +38,7 @@ public class LocalRepositoryTest {
 	
 	public LocalRepositoryTest() throws MalformedURLException {
 		super();
-		mavenMirror = new URL("http://maven.sateh.com/repository/");
+		mavenMirror = new URL(LoaderTest.MAVEN_SATEH_REPOSITORY);
 	}
 	
 	/*
@@ -124,7 +125,7 @@ public class LocalRepositoryTest {
 		ClassLoader loader = r.getLoader(junit, null);
 		assertNotNull("ClassLoader was null ", loader);
 		URL junitResource = loader.getResource("junit");
-		String shouldStartWith = "jar:" + junitJar.toURL();
+		String shouldStartWith = "jar:" + junitJar.toURI().toURL();
 		assertTrue("Did not start with " + shouldStartWith + ": "
 			+ junitResource, junitResource.toString().startsWith(
 			shouldStartWith));
@@ -156,7 +157,7 @@ public class LocalRepositoryTest {
 			return;
 		}
 
-		r.addRemoteRepository(m2Repo.toURL());
+		r.addRemoteRepository(m2Repo.toURI().toURL());
 		BasicArtifact junit = new BasicArtifact("junit", "junit", "4.0");
 		File junitJar = new File(dir, junitPath);
 		assertFalse("Already existed " + junitJar, junitJar.isFile());
@@ -169,7 +170,7 @@ public class LocalRepositoryTest {
 		ClassLoader loader = r.getLoader(junit, null);
 		assertNotNull("ClassLoader was null ", loader);
 		URL junitResource = loader.getResource("junit");
-		String shouldStartWith = "jar:" + junitRepo.toURL();
+		String shouldStartWith = "jar:" + junitRepo.toURI().toURL();
 		assertTrue("Did not start with " + shouldStartWith + ": "
 			+ junitResource, junitResource.toString().startsWith(
 			shouldStartWith));
