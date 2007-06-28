@@ -53,7 +53,7 @@ public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, Prim
 	}
 
 	public void refresh(Bean bean) {
-		em.refresh(bean);
+		em.merge(bean); //uses merge instead of refresh. Using refersh directly on the entity manager can lead to "Entity not managed" errors.
 	}
 
 	@SuppressWarnings("unchecked")
