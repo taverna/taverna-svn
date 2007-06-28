@@ -2,6 +2,8 @@ package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import net.sf.taverna.service.interfaces.TavernaConstants;
@@ -28,11 +30,34 @@ import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 public class RESTContext {
+	
+	// Encoding for outgoing messages
+	public static final String ENCODING = "utf-8";
 
+	private static XmlOptions makeXMLOptions() {
+		XmlOptions xmlOptions = new XmlOptions();
+		xmlOptions.setLoadStripWhitespace();
+		xmlOptions.setSavePrettyPrint();
+		xmlOptions.setSavePrettyPrintIndent(4);
+		xmlOptions.setSaveOuter();
+		xmlOptions.setUseDefaultNamespace();
+		xmlOptions.setSaveAggressiveNamespaces();
+		xmlOptions.setCharacterEncoding(ENCODING);
+		Map<String, String> ns = new HashMap<String, String>();
+		ns.put("http://www.w3.org/1999/xlink", "xlink");
+		ns.put("http://purl.org/dc/terms/", "dcterms");
+		ns.put("http://purl.org/dc/elements/1.1/", "dc");
+		xmlOptions.setSaveSuggestedPrefixes(ns);
+		return xmlOptions;
+	}
+	
+	public static final XmlOptions xmlOptions = makeXMLOptions();
+	
 	public static final MediaType restType =
 		new MediaType(TavernaConstants.restType);
 
@@ -65,7 +90,8 @@ public class RESTContext {
 	private Reference queuesURI;
 
 	private Capabilities capabilities;
-
+	
+	
 	public static RESTContext register(String baseURI)
 		throws NotSuccessException {
 		return register(baseURI, UUID.randomUUID().toString());
@@ -198,14 +224,14 @@ public class RESTContext {
 	
 	public Response post(Reference uri, XmlObject document)
 		throws NotSuccessException {
-		// FIXME: Should stream the XML and use document.save()
-		return post(uri, document.xmlText(), restType);
+		return post(uri, new InputRepresentation(
+			document.newInputStream(xmlOptions), restType));
 	}
 
 	public Response put(Reference uri, XmlObject document)
 		throws NotSuccessException {
-		// FIXME: Should stream the XML and use document.save()
-		return put(uri, document.xmlText(), restType);
+		return put(uri, new InputRepresentation(
+			document.newInputStream(xmlOptions), restType));
 	}
 
 	public Response put(Reference uri, String data, MediaType mediaType)
@@ -288,7 +314,7 @@ public class RESTContext {
 		try {
 			// Workaround for XmlObject.Factory.parse to be able to find our
 			// xmlbeans classes within Raven
-			document = stl.parse(documentStream, null, new XmlOptions());
+			document = stl.parse(documentStream, null, xmlOptions);
 		} catch (XmlException ex) {
 			logger.warn("Could not parse user XML from " + uri, ex);
 			throw new RuntimeException("Could not parse document XML from "
