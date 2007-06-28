@@ -291,6 +291,7 @@ public class LocalRepository implements Repository {
 			synchronized (listeners) {
 				for (RepositoryListener l : listeners) {
 					ArtifactStatus old = status.get(a);
+					// FIXME: why put the status inside loop?
 					status.put(a, newStatus);
 					l.statusChanged(a, old, newStatus);
 				}
@@ -377,9 +378,10 @@ public class LocalRepository implements Repository {
 						if (!status.containsKey(dep)) {
 							addArtifact(dep);
 						}
-						// if (! status.get(dep).equals(ArtifactStatus.Ready)) {
-						// fullyResolved = false;
-						// }
+//						if (! status.get(dep).equals(ArtifactStatus.Ready)) {
+//							fullyResolved = false;
+//							break;
+//						}
 						if (!fullyResolved(dep, seenArtifacts)) {
 							fullyResolved = false;
 						}
@@ -417,10 +419,11 @@ public class LocalRepository implements Repository {
 	 */
 	private boolean fullyResolved(ArtifactImpl artifact,
 			Set<Artifact> seenArtifacts) {
-		if (status.get(artifact).equals(ArtifactStatus.Ready)) {
+		ArtifactStatus artifactStatus = getStatus(artifact);
+		if (artifactStatus.equals(ArtifactStatus.Ready)) {
 			return true;
 		}
-		if (status.get(artifact).equals(ArtifactStatus.Jar)) {
+		if (artifactStatus.equals(ArtifactStatus.Jar)) {
 			if (seenArtifacts.contains(artifact)) {
 				return true;
 			}
