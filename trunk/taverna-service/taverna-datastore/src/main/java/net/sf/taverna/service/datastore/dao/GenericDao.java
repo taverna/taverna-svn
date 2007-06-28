@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
-public interface GenericDao<Bean, PrimaryKey extends Serializable> extends Iterable<Bean>  {
+import net.sf.taverna.service.datastore.bean.AbstractBean;
+
+public interface GenericDao<Bean extends AbstractBean<PrimaryKey>, PrimaryKey extends Serializable> extends Iterable<Bean>  {
 
 	public void create(Bean bean);
 

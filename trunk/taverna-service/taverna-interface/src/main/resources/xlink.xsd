@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- METS XLink Schema, v. 2, Nov. 15, 2004 -->
-<!--  Downloaded from http://www.loc.gov/standards/mets/xlink.xsd at 2008-04-19 -->
+<!--  Downloaded from http://www.loc.gov/standards/mets/xlink.xsd at 2007-04-19 -->
 <schema targetNamespace="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified">
   <!--  global attributes  --> 
   <attribute name="href"  type="anyURI"/>

@@ -7,7 +7,7 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public abstract class AbstractUserResource extends AbstractResource {
+public abstract class AbstractUserResource extends AbstractDatedResource<User> {
 
 	User user;
 

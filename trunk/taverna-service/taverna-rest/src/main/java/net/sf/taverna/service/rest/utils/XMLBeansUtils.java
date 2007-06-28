@@ -25,6 +25,8 @@ public class XMLBeansUtils {
 		xmlOptions.setCharacterEncoding(ENCODING);
 		Map<String, String> ns = new HashMap<String, String>();
 		ns.put("http://www.w3.org/1999/xlink", "xlink");
+		ns.put("http://purl.org/dc/terms/", "dcterms");
+		ns.put("http://purl.org/dc/elements/1.1/", "dc");
 		xmlOptions.setSaveSuggestedPrefixes(ns);
 		return xmlOptions;
 	}

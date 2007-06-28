@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractUUID implements Comparable<AbstractUUID> {
+public abstract class AbstractUUID extends AbstractBean<String> implements Comparable<AbstractUUID> {
 
 	@Id
 	private String id = UUID.randomUUID().toString();

@@ -18,7 +18,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
-public class DataResource extends AbstractResource {
+public class DataResource extends AbstractOwnedResource<DataDoc> {
 
 	private static Logger logger = Logger.getLogger(DataResource.class);
 
@@ -31,6 +31,7 @@ public class DataResource extends AbstractResource {
 		String data_id = (String) request.getAttributes().get("data");
 		dataDoc = dataDocDao.read(data_id);
 		checkEntity(dataDoc);
+		setResource(dataDoc);
 		addRepresentation(new Baclava());
 		addRepresentation(new XML());
 	}
@@ -47,27 +48,31 @@ public class DataResource extends AbstractResource {
 		}
 	}
 
-	class XML extends AbstractXML {
-
+	class XML extends AbstractOwnedXML<Data> {
+		
 		@Override
-		public XmlObject getXML() {
+		public DataDocument createDocument() {
 			DataDocument doc = DataDocument.Factory.newInstance();
-			doc.addNewData();
-			if (dataDoc.getOwner() != null) {
-				doc.getData().addNewOwner().setHref(
-					uriFactory.getURI(dataDoc.getOwner()));
-			}
+			element = doc.addNewData();
+			return doc;
+		}
+		
+		@Override
+		public void addElements(Data dataElem) {
+			super.addElements(dataElem);
+			
 			XmlObject xml;
 			try {
 				xml = XmlObject.Factory.parse(dataDoc.getBaclava());
-				doc.getData().addNewBaclava().set(xml);
+				dataElem.addNewBaclava().set(xml);
 			} catch (XmlException e) {
 				logger.warn("Could not parse baclava for " + dataDoc, e);
 			}
-			return doc;
 		}
+
+
+		
 	}
-	
 
 	@Override
 	public long maxSize() {
@@ -78,7 +83,7 @@ public class DataResource extends AbstractResource {
 	public boolean allowPut() {
 		return true;
 	}
-	
+
 	@Override
 	public void put(Representation entity) {
 		if (!restType.includes(entity.getMediaType())) {

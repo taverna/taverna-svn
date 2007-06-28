@@ -37,16 +37,20 @@ public class WorkflowsResource extends AbstractUserResource {
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractREST<Workflows> {
 		@Override
-		public XmlObject getXML() {
+		public XmlObject createDocument() {
 			WorkflowsDocument doc =
 				WorkflowsDocument.Factory.newInstance(xmlOptions);
-			Workflows workflows = doc.addNewWorkflows();
+			element = doc.addNewWorkflows();
+			return doc;
+		}
+
+		@Override
+		public void addElements(Workflows workflows) {
 			for (Workflow wf : user.getWorkflows()) {
 				workflows.addNewWorkflow().setHref(uriFactory.getURI(wf));
 			}
-			return doc;
 		}
 	}
 

@@ -10,14 +10,14 @@ import javax.persistence.OneToOne;
 import org.hibernate.validator.NotNull;
 
 @Entity
-public class QueueEntry {
+public class QueueEntry extends AbstractBean<Long> implements Comparable<QueueEntry> {
 	
 	// Note: ID is used to order the entries and must be sequentially
 	// rising
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	
@@ -45,5 +45,22 @@ public class QueueEntry {
 		this.queue = queue;
 	}
 
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (! (obj instanceof QueueEntry)) {
+			return false;
+		}
+		QueueEntry other = (QueueEntry) obj;
+		return getId().equals(other.getId());
+	}
+
+	public int compareTo(QueueEntry other) {
+		return getId().compareTo(other.getId());
+	}
 	
 }

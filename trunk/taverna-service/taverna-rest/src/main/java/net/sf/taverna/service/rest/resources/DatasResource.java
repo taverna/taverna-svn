@@ -11,6 +11,7 @@ import net.sf.taverna.service.xml.Datas;
 import net.sf.taverna.service.xml.DatasDocument;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -36,17 +37,20 @@ public class DatasResource extends AbstractUserResource {
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractREST<Datas> {
 		@Override
-		public DatasDocument getXML() {
+		public XmlObject createDocument() {
 			DatasDocument doc = DatasDocument.Factory.newInstance(xmlOptions);
-			Datas datas = doc.addNewDatas();
-			for (DataDoc dataDoc : dao) {
-				datas.addNewData().setHref(uriFactory.getURI(dataDoc));
-			}
+			element = doc.addNewDatas();
 			return doc;
 		}
 
+		@Override
+		public void addElements(Datas datas) {
+			for (DataDoc dataDoc : dao) {
+				datas.addNewData().setHref(uriFactory.getURI(dataDoc));
+			}
+		}
 	}
 
 	@Override

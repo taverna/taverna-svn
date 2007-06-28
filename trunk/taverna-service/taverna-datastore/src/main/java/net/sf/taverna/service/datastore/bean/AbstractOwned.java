@@ -5,7 +5,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractOwned extends AbstractDated {
+public abstract class AbstractOwned extends AbstractNamed {
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	private User owner;

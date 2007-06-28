@@ -102,12 +102,16 @@ public class TestJobProgressReport extends ClientTest {
 		Request request = makeAuthRequest();
 		request.setMethod(Method.PUT);
 		request.setResourceRef(progressReportURI);
-		request.setEntity("some plain text", MediaType.TEXT_PLAIN);
+		String PLAIN = "some plain text";
+		request.setEntity(PLAIN, MediaType.TEXT_PLAIN);
 		// Just to be sure we will be changing it since makeJob()
-		assertFalse("some plain text".equals(job.getProgressReport()));
+		daoFactory.getJobDAO().refresh(job);
+		assertFalse(PLAIN.equals(job.getProgressReport()));
 
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 		assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+		daoFactory.getJobDAO().refresh(job);
+		assertFalse(PLAIN.equals(job.getProgressReport()));
 	}
 }

@@ -11,6 +11,8 @@ import org.junit.BeforeClass;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Preference;
 import org.restlet.data.Request;
 
 /**
@@ -73,13 +75,19 @@ public abstract class ClientTest extends TestCommon {
 		useruri = BASE_URL + "users/" + username;
 		System.out.println("Registered " + username + " " + password);
 	}
-	
+
+	/**
+	 * Make an authenticated GET request.
+	 * 
+	 * @return
+	 */
 	public Request makeAuthRequest() {
 		Request request = new Request();
 		ChallengeResponse challengeResponse = 
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, 
 				username, password);
 		request.setChallengeResponse(challengeResponse);
+		request.setMethod(Method.GET);
 		return request;
 	}
 	

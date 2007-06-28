@@ -8,18 +8,17 @@ import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.Jobs;
-import net.sf.taverna.service.xml.JobsDocument;
+import net.sf.taverna.service.xml.QueueDocument;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 
-public class QueueResource extends AbstractResource {
+public class QueueResource extends AbstractNamedResource<Queue> {
 
 	private static final int MAX_SIZE = 16 * 1024;
 
@@ -43,14 +42,21 @@ public class QueueResource extends AbstractResource {
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractNamedREST<net.sf.taverna.service.xml.Queue> {
+		
 		@Override
-		public XmlObject getXML() {
-			JobsDocument doc = JobsDocument.Factory.newInstance();
-			Jobs jobs = doc.addNewJobs();
+		public void addElements(net.sf.taverna.service.xml.Queue element) {
+			super.addElements(element);
+			Jobs jobs = element.addNewJobs();
 			for (Job job : queue.getJobs()) {
 				jobs.addNewJob().setHref(uriFactory.getURI(job));
-			}
+			}			
+		}
+
+		@Override
+		public QueueDocument createDocument() {
+			QueueDocument doc = QueueDocument.Factory.newInstance();
+			element = doc.addNewQueue();
 			return doc;
 		}
 	}

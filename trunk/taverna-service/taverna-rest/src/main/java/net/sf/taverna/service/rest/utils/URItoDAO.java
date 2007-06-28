@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.User;
@@ -134,13 +135,15 @@ public class URItoDAO {
 	 * @return The loaded {@link ResourceClass}
 	 */
 	@SuppressWarnings("unchecked")
-	private <ResourceClass, PrimaryKey extends Serializable> ResourceClass daoRead(
+	private <ResourceClass extends AbstractBean<PrimaryKey>, PrimaryKey extends Serializable> ResourceClass daoRead(
 		Class<ResourceClass> resourceClass, PrimaryKey id) {
 
 		// Special case as their URIs contain the username
+		// (We do the assignable-test the other way so that this should work
+		// also for Workers)
 		if (User.class.isAssignableFrom(resourceClass)) {
-			return (ResourceClass) daoFactory.getUserDAO().readByUsername(
-				(String) id);
+			return resourceClass.cast(daoFactory.getUserDAO().readByUsername(
+				(String) id));
 		}
 
 		Method daoMethod = daoMethods.get(resourceClass);

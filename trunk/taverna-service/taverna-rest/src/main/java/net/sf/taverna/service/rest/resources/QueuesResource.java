@@ -31,15 +31,19 @@ public class QueuesResource extends AbstractResource {
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractREST<Queues> {
 		@Override
-		public XmlObject getXML() {
+		public XmlObject createDocument() {
 			QueuesDocument doc = QueuesDocument.Factory.newInstance();
-			Queues queues = doc.addNewQueues();
-			for (Queue q : daoFactory.getQueueDAO()) {
-				queues.addNewQueue().setHref(uriFactory.getURI(q));
-			}
+			element = doc.addNewQueues();
 			return doc;
+		}
+
+		@Override
+		public void addElements(Queues element) {
+			for (Queue q : daoFactory.getQueueDAO()) {
+				element.addNewQueue().setHref(uriFactory.getURI(q));
+			}
 		}
 	}
 	

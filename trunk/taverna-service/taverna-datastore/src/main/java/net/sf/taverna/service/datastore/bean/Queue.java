@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 import net.sf.taverna.service.datastore.dao.QueueEntryDAO;
 
 @Entity
-public class Queue extends AbstractDated {
+public class Queue extends AbstractNamed {
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="queue")
 	@OrderBy("id")

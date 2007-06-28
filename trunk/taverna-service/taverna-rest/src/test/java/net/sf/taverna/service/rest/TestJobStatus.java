@@ -1,17 +1,17 @@
 package net.sf.taverna.service.rest;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import java.io.IOException;
 
 import net.sf.taverna.service.datastore.TestJob;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;

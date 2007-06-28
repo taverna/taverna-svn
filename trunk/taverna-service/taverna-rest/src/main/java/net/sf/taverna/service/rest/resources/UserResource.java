@@ -31,15 +31,20 @@ public class UserResource extends AbstractUserResource {
 		super(context, request, response);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
-
-		System.out.println("Here comes " + request.getResourceRef());
+		setResource(user);
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractDatedREST<User> {
 		@Override
-		public XmlObject getXML() {
-			UserDocument userDoc = UserDocument.Factory.newInstance(xmlOptions);
-			User userElem = userDoc.addNewUser();
+		public XmlObject createDocument() {
+			UserDocument doc = UserDocument.Factory.newInstance(xmlOptions);
+			element = doc.addNewUser();
+			return doc;
+		}
+
+		@Override
+		public void addElements(User userElem) {
+			super.addElements(userElem);
 			userElem.setUsername(user.getUsername());
 			if (user.getEmail() != null) {
 				userElem.setEmail(user.getEmail());
@@ -47,8 +52,8 @@ public class UserResource extends AbstractUserResource {
 			userElem.addNewWorkflows().setHref(
 				uriFactory.getURI(user, Workflow.class));
 			userElem.addNewJobs().setHref(uriFactory.getURI(user, Job.class));
-			userElem.addNewDatas().setHref(uriFactory.getURI(user, DataDoc.class));
-			return userDoc;
+			userElem.addNewDatas().setHref(
+				uriFactory.getURI(user, DataDoc.class));
 		}
 	}
 

@@ -88,6 +88,7 @@ public class RepresentationalResource extends Resource {
 			for (Entry<MediaType, AbstractRepresentation> entry : representations.entrySet()) {
 				if (entry.getKey().includes(variant.getMediaType())) {
 					representation = entry.getValue();
+					logger.debug("Selected " + representation + " for " + variant.getMediaType());
 					break;
 				}
 			}
@@ -132,6 +133,11 @@ public class RepresentationalResource extends Resource {
 		 * @return An inialized {@link Representation}
 		 */
 		public abstract Representation getRepresentation();
+		
+		@Override
+		public String toString() {
+			return getClass().getName() + " " + getMediaType().toString();
+		}
 	}
 
 	/**

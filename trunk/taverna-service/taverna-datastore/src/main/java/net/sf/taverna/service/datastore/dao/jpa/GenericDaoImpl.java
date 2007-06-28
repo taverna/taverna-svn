@@ -9,17 +9,18 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 
+import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.dao.GenericDao;
 
-public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> implements
-	GenericDao<Bean, PrimaryKey> {
-	
+public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, PrimaryKey extends Serializable>
+	implements GenericDao<Bean, PrimaryKey> {
+
 	private static Logger logger = Logger.getLogger(GenericDaoImpl.class);
-	
+
 	private Class<Bean> beanType;
 
 	EntityManager em;
-	
+
 	public GenericDaoImpl(Class<Bean> type, EntityManager em) {
 		beanType = type;
 		this.em = em;
@@ -34,7 +35,7 @@ public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> impl
 	public String namedQueryAll() {
 		return null;
 	}
-	
+
 	public void create(Bean bean) {
 		em.persist(bean);
 	}
@@ -50,7 +51,7 @@ public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> impl
 	public void delete(Bean bean) {
 		em.remove(bean);
 	}
-	
+
 	public void refresh(Bean bean) {
 		em.refresh(bean);
 	}
@@ -61,9 +62,12 @@ public abstract class GenericDaoImpl<Bean, PrimaryKey extends Serializable> impl
 		if (namedQueryAll() != null) {
 			query = em.createNamedQuery(namedQueryAll());
 		} else {
-			if (logger.isDebugEnabled()) logger.debug("Generating all-query for " + beanType.getSimpleName());
-			query = em.createQuery("SELECT o FROM " + 
-				beanType.getSimpleName() + " o");
+			if (logger.isDebugEnabled())
+				logger.debug("Generating all-query for "
+					+ beanType.getSimpleName());
+			query =
+				em.createQuery("SELECT o FROM " + beanType.getSimpleName()
+					+ " o");
 		}
 		return query.getResultList();
 	}

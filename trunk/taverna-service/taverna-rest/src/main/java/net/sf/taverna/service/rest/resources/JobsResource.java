@@ -11,6 +11,7 @@ import net.sf.taverna.service.xml.Data;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.Jobs;
 import net.sf.taverna.service.xml.JobsDocument;
+import net.sf.taverna.service.xml.StatusType;
 import net.sf.taverna.service.xml.Workflow;
 
 import org.apache.log4j.Logger;
@@ -34,21 +35,34 @@ public class JobsResource extends AbstractUserResource {
 	}
 
 	class URIList extends AbstractURIList<Job> {
-		@Override
+
 		public Iterator<Job> iterator() {
 			return user.getJobs().iterator();
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractREST<Jobs> {
 		@Override
-		public XmlObject getXML() {
+		public XmlObject createDocument() {
 			JobsDocument doc = JobsDocument.Factory.newInstance();
-			Jobs jobs = doc.addNewJobs();
-			for (Job job : user.getJobs()) {
-				jobs.addNewJob().setHref(uriFactory.getURI(job));
-			}
+			element = doc.addNewJobs();
 			return doc;
+		}
+
+		@Override
+		public void addElements(Jobs jobs) {
+			for (Job job : user.getJobs()) {
+				net.sf.taverna.service.xml.Job jobElem = jobs.addNewJob();
+				jobElem.setHref(uriFactory.getURI(job));
+				jobElem.addNewStatus().set(
+					StatusType.Enum.forString(job.getStatus().name()));
+				jobElem.getStatus().setHref(uriFactory.getURIStatus(job));
+				if (job.getName() != null) {
+					jobElem.setTitle(job.getName());
+				}
+				jobElem.setCreated(AbstractDatedResource.dateToCalendar(job.getCreated()));
+				jobElem.setModified(AbstractDatedResource.dateToCalendar(job.getLastModified()));
+			}
 		}
 	}
 
@@ -124,7 +138,7 @@ public class JobsResource extends AbstractUserResource {
 		if (updateInterval != null) {
 			job.setUpdateInterval(updateInterval.toString());
 		}
-		
+
 		daoFactory.getJobDAO().create(job);
 		addJobToDefaultQueue(job);
 		daoFactory.commit();
@@ -132,7 +146,7 @@ public class JobsResource extends AbstractUserResource {
 		getResponse().setRedirectRef(uriFactory.getURI(job));
 		logger.info("Created " + job);
 	}
-	
+
 	private void addJobToDefaultQueue(Job job) {
 		QueueDAO queueDao = daoFactory.getQueueDAO();
 		Queue queue = queueDao.defaultQueue();

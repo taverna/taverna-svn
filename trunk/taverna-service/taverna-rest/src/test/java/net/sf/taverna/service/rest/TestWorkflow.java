@@ -5,20 +5,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
 import net.sf.taverna.service.interfaces.ParseException;
-import net.sf.taverna.service.interfaces.TavernaConstants;
-import net.sf.taverna.service.util.XMLUtils;
 import net.sf.taverna.service.xml.Workflow;
 import net.sf.taverna.service.xml.WorkflowDocument;
 import net.sf.taverna.service.xml.WorkflowsDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Namespace;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restlet.Client;
@@ -99,10 +92,12 @@ public class TestWorkflow extends ClientTest {
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
+		request.getClientInfo().getAcceptedMediaTypes().add(
+			new Preference<MediaType>(MediaType.TEXT_PLAIN));
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		String result = response.getEntity().getText();
-		// Should do text/plain as fallback
+		
 		assertTrue(MediaType.TEXT_PLAIN.includes(response.getEntity().getMediaType()));
 		assertTrue(result.startsWith("Workflow "));
 		assertTrue(result.contains(workflow));

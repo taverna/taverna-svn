@@ -19,24 +19,24 @@ public class CapabilitiesResource extends AbstractResource {
 		addRepresentation(new XML());
 	}
 
-	//private static Logger logger = Logger.getLogger(CapabilitiesResource.class);
-
-	public class XML extends AbstractREST {
+	public class XML extends AbstractREST<Capabilities> {
+		@Override
+		public XmlObject createDocument() {
+			CapabilitiesDocument doc =
+				CapabilitiesDocument.Factory.newInstance();
+			element = doc.addNewCapabilities();
+			return doc;
+		}
 
 		@Override
-		public XmlObject getXML() {
-			CapabilitiesDocument capDoc =
-				CapabilitiesDocument.Factory.newInstance();
-			Capabilities capabilities = capDoc.addNewCapabilities();
+		public void addElements(Capabilities capabilities) {
 			capabilities.addNewQueues().setHref(uriFactory.getURI(Queue.class));
 			capabilities.addNewUsers().setHref(uriFactory.getURI(User.class));
 			capabilities.addNewCurrentUser().setHref(
 				uriFactory.getURICurrentUser());
 			capabilities.addNewWorkers().setHref(
 				uriFactory.getURI(Worker.class));
-			return capDoc;
 		}
-
 	}
 
 }

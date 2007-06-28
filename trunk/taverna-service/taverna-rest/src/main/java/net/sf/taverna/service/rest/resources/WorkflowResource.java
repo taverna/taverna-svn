@@ -14,7 +14,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class WorkflowResource extends AbstractResource {
+public class WorkflowResource extends AbstractOwnedResource<Workflow> {
 
 	private static Logger logger = Logger.getLogger(WorkflowResource.class);
 
@@ -25,9 +25,11 @@ public class WorkflowResource extends AbstractResource {
 		String wf_id = (String) request.getAttributes().get("workflow");
 		workflow = daoFactory.getWorkflowDAO().read(wf_id);
 		checkEntity(workflow);
+		setResource(workflow);
 		addRepresentation(new Text());
 		addRepresentation(new XML());
 		addRepresentation(new Scufl());
+	
 	}
 
 	class Text extends AbstractText {
@@ -44,24 +46,25 @@ public class WorkflowResource extends AbstractResource {
 		}
 	}
 
-	class XML extends AbstractREST {
+	class XML extends AbstractOwnedXML<net.sf.taverna.service.xml.Workflow> {
+
 		@Override
-		public XmlObject getXML() {
-			WorkflowDocument wfDoc = WorkflowDocument.Factory.newInstance();
-			net.sf.taverna.service.xml.Workflow wfElem = wfDoc.addNewWorkflow();
-			if (workflow.getOwner() != null) {
-				wfElem.addNewOwner().setHref(
-					uriFactory.getURI(workflow.getOwner()));
-				wfElem.getOwner().setUsername(workflow.getOwner().getUsername());
-			}
+		public void addElements(net.sf.taverna.service.xml.Workflow wfElem) {
+			super.addElements(wfElem);
 			try {
-				wfElem.addNewScufl().set(
-					XmlString.Factory.parse(workflow.getScufl()));
+				XmlString scufl = XmlString.Factory.parse(workflow.getScufl());
+				wfElem.addNewScufl().set(scufl);
 			} catch (XmlException e) {
 				logger.warn("Could not include invalid XScufl for " + workflow,
 					e);
 			}
-			return wfDoc;
+		}
+
+		@Override
+		public XmlObject createDocument() {
+			WorkflowDocument doc = WorkflowDocument.Factory.newInstance();
+			element = doc.addNewWorkflow();
+			return doc;
 		}
 	}
 

@@ -4,13 +4,20 @@
 	elementFormDefault="qualified"
 	xml:lang="en"
 	xmlns:tav="http://taverna.sf.net/service"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:xlink="http://www.w3.org/1999/xlink">
 
 	<!-- <import namespace="http://www.w3.org/1999/xlink"
 		schemaLocation="http://www.loc.gov/standards/mets/xlink.xsd" />
 	-->
+    
 	<import namespace="http://www.w3.org/1999/xlink"
 		schemaLocation="xlink.xsd" />
+
+    <import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd" />
+    <import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd" />
+    
 
 	<complexType name="Linked">
         <annotation>
@@ -22,16 +29,16 @@
 	</complexType>
 
 	<complexType name="Owned">
-        <annotation>
-        	<documentation>
-        		A resource that is owned. Generally this means that the
-        		resource will appear in that User's collection, and that
-        		the owner is the only user that have access to the
-        		resource.
-        	</documentation>
-        </annotation>
-        <complexContent>
-			<extension base="tav:Linked">
+		<annotation>
+			<documentation>
+				A resource that is owned. Generally this means that the
+				resource will appear in that User's collection, and that
+				the owner is the only user that have access to the
+				resource.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="tav:Named">
 				<sequence>
 					<element minOccurs="0" name="owner"
 						type="tav:User">
@@ -90,90 +97,92 @@
 	</complexType>
 
 	<complexType name="User">
-        <annotation>
-        	<documentation>
-        		A user on this system. The username is the one used for
-        		authenticating to this service. To create a new user
-        		(registering), POST to the collection of Users as
-        		referenced from Capabilities. To upload a Workflow or a
-        		Data document, POST them to the collections referenced
-        		from the workflows or data element. To register a new
-        		Job, POST it to the resource referenced from jobs.
-        	</documentation>
-        </annotation>
-        <complexContent>
-			<extension base="tav:Linked">
+		<annotation>
+			<documentation>
+				A user on this system. The username is the one used for
+				authenticating to this service. To create a new user
+				(registering), POST to the collection of Users as
+				referenced from Capabilities. To upload a Workflow or a
+				Data document, POST them to the collections referenced
+				from the workflows or data element. To register a new
+				Job, POST it to the resource referenced from jobs.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="tav:Dated">
 				<sequence>
 					<element minOccurs="0" name="username"
 						type="normalizedString">
-                        <annotation>
-                        	<documentation>
-                        		The username used for identification and
-                        		authentication.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								The username used for identification and
+								authentication.
+							</documentation>
+						</annotation>
 					</element>
 					<element minOccurs="0" name="jobs" type="tav:Jobs"
 						maxOccurs="1">
-                        <annotation>
-                        	<documentation>
-                        		List of jobs owned by this user. POST to
-                        		the resource xlink-ed here to create a
-                        		new Job owned by this user.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								List of jobs owned by this user. POST to
+								the resource xlink-ed here to create a
+								new Job owned by this user.
+							</documentation>
+						</annotation>
 					</element>
 					<element minOccurs="0" name="workflows"
 						type="tav:Workflows">
-                        <annotation>
-                        	<documentation>
-                        		List of workflows owned by this user.
-                        		POST to the resource xlink-ed here to
-                        		create a new Workflow owned by this
-                        		user.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								List of workflows owned by this user.
+								POST to the resource xlink-ed here to
+								create a new Workflow owned by this
+								user.
+							</documentation>
+						</annotation>
 					</element>
 					<element minOccurs="0" name="datas"
 						type="tav:Datas">
-                        <annotation>
-                        	<documentation>
-                        		List of data owned by this user. POST to
-                        		the resource xlink-ed here to create a
-                        		new Data document owned by this user.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								List of data owned by this user. POST to
+								the resource xlink-ed here to create a
+								new Data document owned by this user.
+							</documentation>
+						</annotation>
 					</element>
 					<element name="email" type="normalizedString"
 						minOccurs="0">
-                        <annotation>
-                        	<documentation>
-                        		Email address registered for this user.
-                        		PUT as text/plain to the address
-                        		xlink-ed to change the email address.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								Email address registered for this user.
+								PUT as text/plain to the address
+								xlink-ed to change the email address.
+							</documentation>
+						</annotation>
 					</element>
 					<element name="password" type="normalizedString"
 						minOccurs="0">
-                        <annotation>
-                        	<documentation>
-                        		Password for this user. PUT as
-                        		text/plain to the address xlink-ed to
-                        		change the password. Note that this
-                        		element will always be empty (but with
-                        		an xlink) when GET-ing the user.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								Password for this user. PUT as
+								text/plain to the address xlink-ed to
+								change the password. Note that this
+								element will always be empty (but with
+								an xlink) when GET-ing the user.
+							</documentation>
+						</annotation>
 					</element>
-					<element name="worker" type="tav:Worker" maxOccurs="1" minOccurs="0">
+					<element name="worker" type="tav:Worker"
+						maxOccurs="1" minOccurs="0">
 						<annotation>
 							<documentation>
 								If this user is a worker instead of a
 								normal user, this will be the reference
 								to the Worker field
 							</documentation>
-						</annotation></element>
+						</annotation>
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -380,16 +389,17 @@
 
 
 	<complexType name="Worker">
-        <annotation>
-        	<documentation>
-        		A Worker is a special User that executes jobs from it's
-        		registered queues.
-        	</documentation>
-        </annotation>
-        <complexContent>
-			<extension base="tav:Linked">
+		<annotation>
+			<documentation>
+				A Worker is a special User that executes jobs from it's
+				registered queues.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="tav:Dated">
 				<sequence>
-					<element minOccurs="0" name="apiURI" type="anyURI">
+					<element minOccurs="0" name="apiURI"
+						type="anyURI">
 						<annotation>
 							<documentation>
 								The unique URI identifying the worker -
@@ -399,27 +409,29 @@
 								worker. Note the access to the worker
 								interface might be restricted.
 							</documentation>
-						</annotation></element>
+						</annotation>
+					</element>
 					<element minOccurs="0" name="jobs"
 						type="tav:Jobs">
-                        <annotation>
-                        	<documentation>
-                        		The jobs associated with this worker,
-                        		both current and finished.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								The jobs associated with this worker,
+								both current and finished.
+							</documentation>
+						</annotation>
 					</element>
 					<element minOccurs="0" maxOccurs="1" name="queue"
 						type="tav:Queue">
-                        <annotation>
-                        	<documentation>
-                        		The queue this worker is listening too.
-                        		A worker will only be allowed to pick up
-                        		jobs from the queue he's listening too.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								The queue this worker is listening too.
+								A worker will only be allowed to pick up
+								jobs from the queue he's listening too.
+							</documentation>
+						</annotation>
 					</element>
-					<element name="user" type="tav:User" maxOccurs="1" minOccurs="0">
+					<element name="user" type="tav:User" maxOccurs="1"
+						minOccurs="0">
 						<annotation>
 							<documentation>
 								The user this worker is identifying
@@ -428,7 +440,8 @@
 								queue systems, but would preferably have
 								the same uri on all of these)
 							</documentation>
-						</annotation></element>
+						</annotation>
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
@@ -450,7 +463,7 @@
 
 	<complexType name="Queue">
 		<complexContent>
-			<extension base="tav:Linked">
+			<extension base="tav:Named">
 				<sequence>
 					<element name="jobs" type="tav:Jobs"></element>
 				</sequence>
@@ -496,4 +509,32 @@
 
 
 	<element name="datas" type="tav:Datas"></element>
+
+	<complexType name="Dated">
+		<complexContent>
+			<extension base="tav:Linked">
+				<sequence>
+					<element ref="dcterms:created"
+						maxOccurs="1" minOccurs="0">
+					</element>
+					<element ref="dcterms:modified"
+						maxOccurs="1" minOccurs="0">
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="Named">
+		<complexContent>
+			<extension base="tav:Dated">
+				<sequence>
+					<element ref="dc:title" 
+                        maxOccurs="1" minOccurs="0">
+					</element>
+				</sequence>
+
+			</extension>
+		</complexContent>
+	</complexType>
 </schema>

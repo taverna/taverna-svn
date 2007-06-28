@@ -12,5 +12,7 @@ public interface TavernaConstants {
 
 	public static final String baclavaType = "application/vnd.taverna.baclava+xml";
 	
+	public static final String reportType = "application/vnd.taverna.report+xml";
+	
 
 }

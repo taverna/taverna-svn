@@ -3,10 +3,11 @@ package net.sf.taverna.service.rest.resources;
 import java.util.Date;
 import java.util.Iterator;
 
-import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.bean.AbstractOwned;
-import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.AbstractUUID;
+import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
@@ -18,6 +19,7 @@ import net.sf.taverna.service.rest.utils.URItoDAO;
 import net.sf.taverna.service.xml.Data;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.MediaType;
@@ -51,7 +53,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 		uriFactory = URIFactory.getInstance(request);
 		uriToDAO = URItoDAO.getInstance(uriFactory);
 	}
-
+	
 	/**
 	 * The last modification date of the resource, if known
 	 * 
@@ -142,7 +144,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * @param entity
 	 * @return True if entity exist and is accessible.
 	 */
-	public boolean checkEntity(AbstractUUID entity) {
+	public boolean checkEntity(AbstractBean entity) {
 		logger.debug("Checking entity " + entity);
 		if (entity == null) {
 			notFound();
@@ -175,7 +177,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * @param entity
 	 * @return True if entity access is authorized.
 	 */
-	public boolean isEntityAuthorized(AbstractUUID entity) {
+	public boolean isEntityAuthorized(AbstractBean entity) {
 		User authUser = getAuthUser();
 		if (authUser!=null && authUser.isAdmin()) {
 			return true;
@@ -211,7 +213,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 	}
 
-	private boolean isWorkerAuthorized(Worker worker, AbstractUUID entity) {
+	private boolean isWorkerAuthorized(Worker worker, AbstractBean entity) {
 		//refresh the worker to ensure the list of worker jobs is up to date.
 		daoFactory.getWorkerDAO().refresh(worker);
 
@@ -315,7 +317,43 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * A Taverna-service XMLBeans representation. The mime type is set to
 	 * {@link AbstractResource#restType}.
 	 */
-	abstract class AbstractREST extends AbstractXML {
+	public abstract class AbstractREST<ElementType extends XmlObject> extends AbstractXML {
+		
+		public ElementType element;
+		
+		/**
+		 * Create and return the document. The document should also have it's
+		 * root element added and assigned to the member {@link #element}.
+		 * 
+		 * @return
+		 */
+		public abstract XmlObject createDocument();
+		
+		
+		/**
+		 * Add sub-elements to the root element (or any of its children). This
+		 * will normally be the method which adds information to the document,
+		 * so that each class in the hierarchy can add its information, and
+		 * <code>super.addElements()</code> to add the rest.
+		 * 
+		 * @param element
+		 *            The element to which to add information, normally the same
+		 *            as {@link #element}.
+		 */
+		public abstract void addElements(ElementType element);
+		
+		/**
+		 * Generate the XML document by creating the root with
+		 * {@link #createDocument()} and adding elements using
+		 * {@link #addElements(XmlObject)}.
+		 */
+		@Override
+		public XmlObject getXML() {
+			XmlObject doc = createDocument();
+			addElements(element);
+			return doc;
+		}
+		
 		@Override
 		public MediaType getMediaType() {
 			return restType;
@@ -327,7 +365,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * An <code>text/uri-list</code> over UUIDResource's. The URIs will be
 	 * generated using {@link URIFactory}.
 	 */
-	abstract class AbstractURIList<ResourceType extends AbstractUUID> extends
+	public abstract class AbstractURIList<ResourceType extends AbstractUUID> extends
 		AbstractText implements Iterable<ResourceType> {
 
 		abstract public Iterator<ResourceType> iterator();
@@ -346,5 +384,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 			return MediaType.TEXT_URI_LIST;
 		}
 	}
+	
+
 
 }

@@ -13,8 +13,8 @@ public abstract class AbstractDated extends AbstractUUID {
 	private Date created = new Date();
 	
 	@NotNull
-	private Date lastModified = new Date();
-
+	private Date lastModified = created;
+	
 	public Date getCreated() {
 		return created;
 	}

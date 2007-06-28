@@ -1,7 +1,5 @@
 package net.sf.taverna.service.rest.resources;
 
-import java.util.Date;
-
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.dao.JobDAO;
 
@@ -9,7 +7,7 @@ import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
-public class AbstractJobResource extends AbstractResource {
+public class AbstractJobResource extends AbstractOwnedResource<Job> {
 
 	Job job;
 
@@ -20,11 +18,7 @@ public class AbstractJobResource extends AbstractResource {
 		String job_id = (String) request.getAttributes().get("job");
 		job = dao.read(job_id);
 		checkEntity(job);
-	}
-
-	@Override
-	public Date getModificationDate() {
-		return job.getLastModified();
+		setResource(job);
 	}
 
 }
