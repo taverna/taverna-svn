@@ -227,6 +227,12 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						return null;
 					}
 
+					// TODO - this is a naive implementation, we can use this
+					// hook to implement thread limit and reuse policies
+					public void requestRun(Runnable runMe) {
+						new Thread(runMe).start();
+					}
+
 				};
 
 				// Run the job, passing in the callback we've just created along

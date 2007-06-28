@@ -37,6 +37,21 @@ public interface AsynchronousServiceCallback {
 	public SecurityAgentManager getLocalSecurityManager();
 
 	/**
+	 * If a service proxy wants to create a new thread of activity it should use
+	 * this method unless there is a very good reason not to. This allows the
+	 * workflow framework to control its own thread usage, possibly implementing
+	 * per user, per workflow or per processor thread limit policies. Exceptions
+	 * to this principle might include cases where the service proxy is capable
+	 * of managing thread usage across all instances of that service type and
+	 * therefore more efficiently (fewer threads) than if it let the workflow
+	 * manager perform this function.
+	 * 
+	 * @param runMe
+	 *            a Runnable to implement the service proxy logic.
+	 */
+	public void requestRun(Runnable runMe);
+
+	/**
 	 * Push a map of named identifiers out to the invocation layer which is then
 	 * responsible for wrapping them up into an appropriate Job object and
 	 * sending it up the dispatch stack. The keys of the map are names local to
