@@ -24,7 +24,7 @@ public class RegisterAction extends Action {
 		
 		User user = new User(regForm.getName());
 		user.setAdmin(false);
-		user.setPassword(regForm.getName());
+		user.setPassword(regForm.getPassword());
 		user.setEmail(regForm.getEmail());
 		userDao.create(user);
 		DAOFactory.getFactory().commit();
