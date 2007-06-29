@@ -4,11 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -32,7 +36,7 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public final class ProcessorImpl implements Processor {
+public final class ProcessorImpl implements Processor, MutableAnnotated {
 
 	protected List<ConditionImpl> conditions = new ArrayList<ConditionImpl>();
 
@@ -54,6 +58,8 @@ public final class ProcessorImpl implements Processor {
 
 	protected String name;
 
+	private Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
+
 	/**
 	 * Create a new processor implementation with default blank iteration
 	 * strategy and dispatch stack
@@ -70,7 +76,7 @@ public final class ProcessorImpl implements Processor {
 		// events to the dispatch stack.
 		iterationStack = new IterationStrategyStackImpl() {
 			protected void receiveEventFromStrategy(Event e) {
-				//System.out.println("Sending event to dispatch stack "+e);
+				// System.out.println("Sending event to dispatch stack "+e);
 				dispatchStack.receiveEvent(e);
 			}
 		};
@@ -82,16 +88,17 @@ public final class ProcessorImpl implements Processor {
 			protected String getProcessName() {
 				return ProcessorImpl.this.name;
 			}
-			
+
 			/**
 			 * Called when an event bubbles out of the top of the dispatch
 			 * stack. In this case we pass it into the crystalizer.
 			 */
 			@Override
 			protected void pushEvent(Event e) {
-				//System.out.println("Sending event to crystalizer : "+e);
-				
-				crystalizer.baseListDepth = getEmptyListDepth(e.getOwningProcess());
+				// System.out.println("Sending event to crystalizer : "+e);
+
+				crystalizer.baseListDepth = getEmptyListDepth(e
+						.getOwningProcess());
 				crystalizer.receiveEvent(e);
 			}
 
@@ -121,10 +128,12 @@ public final class ProcessorImpl implements Processor {
 			@Override
 			protected void finishedWith(String owningProcess) {
 				if (controlledConditions.isEmpty() == false) {
-					String enclosingProcess = owningProcess.substring(0, owningProcess.lastIndexOf(':'));
+					String enclosingProcess = owningProcess.substring(0,
+							owningProcess.lastIndexOf(':'));
 					for (ConditionImpl ci : controlledConditions) {
 						ci.satisfy(enclosingProcess);
-						ci.getTarget().getDispatchStack().satisfyConditions(enclosingProcess);
+						ci.getTarget().getDispatchStack().satisfyConditions(
+								enclosingProcess);
 					}
 				}
 
@@ -234,7 +243,7 @@ public final class ProcessorImpl implements Processor {
 	/* Implementations of Processor interface */
 
 	public void fire(String enclosingProcess) {
-		Job newJob = new Job(enclosingProcess+":"+this.name, new int[0],
+		Job newJob = new Job(enclosingProcess + ":" + this.name, new int[0],
 				new HashMap<String, EntityIdentifier>());
 		dispatchStack.receiveEvent(newJob);
 	}
@@ -281,7 +290,22 @@ public final class ProcessorImpl implements Processor {
 
 	public void forgetDepthFor(String owningProcess) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	/**
+	 * Return an unmodifiable version of the annotation set
+	 */
+	public Set<WorkflowAnnotation> getAnnotations() {
+		return Collections.unmodifiableSet(this.annotations);
+	}
+
+	public void addAnnotation(WorkflowAnnotation newAnnotation) {
+		this.annotations.add(newAnnotation);		
+	}
+
+	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
+		this.annotations.remove(annotationToRemove);
 	}
 
 }

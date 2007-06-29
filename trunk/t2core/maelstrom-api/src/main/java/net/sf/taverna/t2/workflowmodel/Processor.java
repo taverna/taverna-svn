@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
@@ -13,7 +14,7 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
  * @author Tom Oinn
  * 
  */
-public interface Processor extends NamedWorkflowEntity {
+public interface Processor extends NamedWorkflowEntity, Annotated {
 
 	/**
 	 * The iteration strategy is responsible for combining input data events
