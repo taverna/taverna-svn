@@ -15,7 +15,7 @@ import javax.swing.tree.TreePath;
  * @author Tom Oinn
  * 
  */
-public class TreeModelAdapter {
+public final class TreeModelAdapter {
 
 	private class TypedListenerPair {
 		TypedListenerPair(TypedTreeModelListener typedListener,
@@ -31,7 +31,34 @@ public class TreeModelAdapter {
 
 	private static Set<TypedListenerPair> mapping = new HashSet<TypedListenerPair>();
 
-	public <NodeType extends Object> TreeModel removeType(
+	private static TreeModelAdapter instance = null;
+
+	private TreeModelAdapter() {
+		//
+	}
+
+	private synchronized static TreeModelAdapter getInstance() {
+		if (instance == null) {
+			instance = new TreeModelAdapter();
+		}
+		return instance;
+	}
+
+	/**
+	 * Return an untyped TreeModel wrapper around the specified TypedTreeModel
+	 * 
+	 * @param <NodeType>
+	 *            the node type of the typed model being wrapped
+	 * @param typedModel
+	 *            typed model to wrap
+	 * @return a TreeModel acting as an untyped view of the typed tree model
+	 */
+	public static <NodeType extends Object> TreeModel untypedView(
+			TypedTreeModel<NodeType> typedModel) {
+		return getInstance().removeType(typedModel);
+	}
+
+	private <NodeType extends Object> TreeModel removeType(
 			final TypedTreeModel<NodeType> typedModel) {
 
 		return new TreeModel() {

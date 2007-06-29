@@ -7,7 +7,11 @@ import javax.swing.tree.TreePath;
  * 
  * @author Tom Oinn
  * 
+ * @see javax.swing.tree.TreeModelEvent
+ * 
  * @param <NodeType>
+ *            the node type parameter of the TypedTreeModel to which this event
+ *            applies
  */
 public class TypedTreeModelEvent<NodeType> {
 
