@@ -17,7 +17,12 @@ public interface EventForwardingOutputPort extends OutputPort {
 	 * The set of EventHandlingInputPort objects which act as targets for events
 	 * produced from this OutputPort
 	 * 
-	 */
+	
 	public Set<EventHandlingInputPort> getTargets();
+*/
 
+	/**
+	 * The set of datalinks for which this output port is the source of events
+	 */
+	public Set<DataLink> getOutgoingLinks();
 }

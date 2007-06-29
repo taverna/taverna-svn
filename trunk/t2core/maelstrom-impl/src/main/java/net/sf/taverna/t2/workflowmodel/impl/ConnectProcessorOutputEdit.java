@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import net.sf.taverna.t2.workflowmodel.DataLink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
@@ -22,6 +23,8 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 	private String outputName;
 
 	private ProcessorOutputPortImpl outputPort;
+	
+	private DataLink newLink = null;
 
 	public ConnectProcessorOutputEdit(Processor p, String outputName,
 			EventHandlingInputPort targetPort) {
@@ -34,7 +37,12 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
 		for (ProcessorOutputPortImpl popi : processor.outputPorts) {
 			if (popi.getName().equals(outputName)) {
-				popi.addTarget(target);
+				newLink = new DataLinkImpl(popi, target);
+				popi.addOutgoingLink(newLink);
+				if (target instanceof AbstractEventHandlingInputPort) {
+					((AbstractFilteringInputPort)target).setIncomingLink(newLink);
+				}
+				//popi.addTarget(target);
 				if (target instanceof FilteringInputPort) {
 					FilteringInputPort fip = (FilteringInputPort) target;
 					// Set the filter to filter on the granular depth of this
@@ -62,7 +70,10 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 
 	@Override
 	protected void undoEditAction(ProcessorImpl processor) {
-		outputPort.removeTarget(target);
+		outputPort.removeOutgoingLink(newLink);
+		if (target instanceof AbstractEventHandlingInputPort) {
+			((AbstractEventHandlingInputPort)target).setIncomingLink(null);
+		}
 	}
 
 }

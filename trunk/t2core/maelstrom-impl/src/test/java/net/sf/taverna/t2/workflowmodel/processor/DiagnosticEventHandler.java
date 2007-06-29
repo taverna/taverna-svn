@@ -4,6 +4,7 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.workflowmodel.DataLink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 
 class DiagnosticEventHandler implements EventHandlingInputPort {
@@ -29,6 +30,11 @@ class DiagnosticEventHandler implements EventHandlingInputPort {
 
 	public String getName() {
 		return "Test port";
+	}
+
+	public DataLink getIncomingLink() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

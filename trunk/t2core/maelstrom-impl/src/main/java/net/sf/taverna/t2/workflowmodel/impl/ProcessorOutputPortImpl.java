@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.BasicEventForwardingOutputPort;
-import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.DataLink;
 
 /**
  * Extension of AbstractOutputPort for use as the output port on a
@@ -34,14 +34,14 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort {
 					.getIndex(), token.getData()));
 	}
 	
-	protected void addTarget(EventHandlingInputPort newTarget) {
-		if (targets.contains(newTarget) == false) {
-			targets.add(newTarget);
+	protected void addOutgoingLink(DataLink link) {
+		if (outgoingLinks.contains(link) == false) {
+			outgoingLinks.add(link);
 		}
 	}
 	
-	protected void removeTarget(EventHandlingInputPort target) {
-		targets.remove(target);
+	protected void removeOutgoingLink(DataLink link) {
+		outgoingLinks.remove(link);
 	}
-
+	
 }

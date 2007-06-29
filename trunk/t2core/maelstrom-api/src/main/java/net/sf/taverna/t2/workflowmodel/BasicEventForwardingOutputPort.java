@@ -12,13 +12,10 @@ import net.sf.taverna.t2.invocation.Event;
  * @author Tom Oinn
  * 
  */
-public class BasicEventForwardingOutputPort extends
-		AbstractOutputPort implements EventForwardingOutputPort {
+public class BasicEventForwardingOutputPort extends AbstractOutputPort
+		implements EventForwardingOutputPort {
 
-	/**
-	 * A set of target EventHandlingInputPort instances
-	 */
-	protected Set<EventHandlingInputPort> targets;
+	protected Set<DataLink> outgoingLinks;
 
 	/**
 	 * Construct a new abstract output port with event forwarding capability
@@ -30,14 +27,14 @@ public class BasicEventForwardingOutputPort extends
 	public BasicEventForwardingOutputPort(String portName, int portDepth,
 			int granularDepth) {
 		super(portName, portDepth, granularDepth);
-		this.targets = new HashSet<EventHandlingInputPort>();
+		this.outgoingLinks = new HashSet<DataLink>();
 	}
 
 	/**
 	 * Implements EventForwardingOutputPort
 	 */
-	public final Set<EventHandlingInputPort> getTargets() {
-		return Collections.unmodifiableSet(this.targets);
+	public final Set<DataLink> getOutgoingLinks() {
+		return Collections.unmodifiableSet(this.outgoingLinks);
 	}
 
 	/**
@@ -46,8 +43,8 @@ public class BasicEventForwardingOutputPort extends
 	 * @param e
 	 */
 	public void sendEvent(Event e) {
-		for (EventHandlingInputPort target : targets) {
-			target.receiveEvent(e);
+		for (DataLink link : outgoingLinks) {
+			link.getSink().receiveEvent(e);
 		}
 	}
 

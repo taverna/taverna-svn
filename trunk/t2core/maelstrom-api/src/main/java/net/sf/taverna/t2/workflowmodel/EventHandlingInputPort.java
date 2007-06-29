@@ -11,8 +11,14 @@ import net.sf.taverna.t2.invocation.Event;
 public interface EventHandlingInputPort extends InputPort {
 
 	/**
-	 * Receive an arbitrary workflow event. 
+	 * Receive an arbitrary workflow event.
 	 */
 	public void receiveEvent(Event e);
+
+	/**
+	 * If this port is connected to a DataLink return the link, otherwise return
+	 * null
+	 */
+	public DataLink getIncomingLink();
 
 }

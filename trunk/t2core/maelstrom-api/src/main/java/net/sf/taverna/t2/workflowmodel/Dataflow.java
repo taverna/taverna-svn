@@ -15,8 +15,8 @@ public interface Dataflow {
 
 	public Map<String, Processor> getNamedProcessors();
 	
-	public List<InputPort> getInputPorts();
+	public List<DataflowInputPort> getInputPorts();
 	
-	public List<OutputPort> getOutputPorts();
+	public List<DataflowOutputPort> getOutputPorts();
 	
 }

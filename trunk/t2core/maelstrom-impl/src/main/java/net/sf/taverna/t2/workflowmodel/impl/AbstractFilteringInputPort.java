@@ -8,7 +8,6 @@ import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.ContextManager;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 
@@ -19,8 +18,8 @@ import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
  * @author Tom Oinn
  * 
  */
-public abstract class AbstractFilteringInputPort extends AbstractPort implements
-		FilteringInputPort {
+public abstract class AbstractFilteringInputPort extends
+		AbstractEventHandlingInputPort implements FilteringInputPort {
 
 	protected AbstractFilteringInputPort(String name, int depth) {
 		super(name, depth);
@@ -48,14 +47,15 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 		return this.oid;
 	}
 
-	public void pushToken(WorkflowDataToken dt, String owningProcess, int desiredDepth) {
+	public void pushToken(WorkflowDataToken dt, String owningProcess,
+			int desiredDepth) {
 		if (dt.getData().getDepth() == desiredDepth) {
-			//System.out.println("** Job : "+dt.getData());
+			// System.out.println("** Job : "+dt.getData());
 			pushData(getName(), owningProcess, dt.getIndex(), dt.getData());
 		} else {
 			DataManager dManager = ContextManager.getDataManager(owningProcess);
-			Iterator<ContextualizedIdentifier> children = dManager.traverse(
-					dt.getData(), dt.getData().getDepth()-1);
+			Iterator<ContextualizedIdentifier> children = dManager.traverse(dt
+					.getData(), dt.getData().getDepth() - 1);
 			while (children.hasNext()) {
 				ContextualizedIdentifier ci = children.next();
 				int[] newIndex = new int[dt.getIndex().length
@@ -67,9 +67,10 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 				for (int indx : ci.getIndex()) {
 					newIndex[i++] = indx;
 				}
-				pushToken(new WorkflowDataToken(owningProcess, newIndex, ci.getDataRef()), owningProcess, desiredDepth);
+				pushToken(new WorkflowDataToken(owningProcess, newIndex, ci
+						.getDataRef()), owningProcess, desiredDepth);
 			}
-			//System.out.println("** Completion : "+dt.getData());
+			// System.out.println("** Completion : "+dt.getData());
 			pushCompletion(getName(), owningProcess, dt.getIndex());
 		}
 	}
@@ -91,28 +92,20 @@ public abstract class AbstractFilteringInputPort extends AbstractPort implements
 				} else {
 					pushToken(token, newOwner, getDepth());
 					/**
-					// Shred the input identifier into the appropriate port
-					// depth and send the events through, pushing a
-					// completion event at the end.
-					DataManager dManager = ContextManager
-							.getDataManager(newOwner);
-					Iterator<ContextualizedIdentifier> children = dManager
-							.traverse(token.getData(), getDepth());
-					while (children.hasNext()) {
-						ContextualizedIdentifier ci = children.next();
-						int[] newIndex = new int[token.getIndex().length
-								+ ci.getIndex().length];
-						int i = 0;
-						for (int indx : token.getIndex()) {
-							newIndex[i++] = indx;
-						}
-						for (int indx : ci.getIndex()) {
-							newIndex[i++] = indx;
-						}
-						pushData(getName(), newOwner, newIndex, ci.getDataRef());
-					}
-					pushCompletion(getName(), newOwner, token.getIndex());
-					*/
+					 * // Shred the input identifier into the appropriate port //
+					 * depth and send the events through, pushing a //
+					 * completion event at the end. DataManager dManager =
+					 * ContextManager .getDataManager(newOwner); Iterator<ContextualizedIdentifier>
+					 * children = dManager .traverse(token.getData(),
+					 * getDepth()); while (children.hasNext()) {
+					 * ContextualizedIdentifier ci = children.next(); int[]
+					 * newIndex = new int[token.getIndex().length +
+					 * ci.getIndex().length]; int i = 0; for (int indx :
+					 * token.getIndex()) { newIndex[i++] = indx; } for (int indx :
+					 * ci.getIndex()) { newIndex[i++] = indx; }
+					 * pushData(getName(), newOwner, newIndex, ci.getDataRef()); }
+					 * pushCompletion(getName(), newOwner, token.getIndex());
+					 */
 
 				}
 			} else if (tokenDepth > filterDepth) {
