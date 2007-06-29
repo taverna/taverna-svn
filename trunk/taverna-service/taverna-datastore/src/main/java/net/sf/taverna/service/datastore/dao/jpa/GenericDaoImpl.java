@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.dao.GenericDao;
@@ -53,7 +54,7 @@ public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, Prim
 	}
 
 	public void refresh(Bean bean) {
-		em.merge(bean); //uses merge instead of refresh. Using refersh directly on the entity manager can lead to "Entity not managed" errors.
+		em.refresh(em.merge(bean));
 	}
 
 	@SuppressWarnings("unchecked")
