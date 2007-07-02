@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest.resources;
 import java.util.Date;
 
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.xml.WorkflowDocument;
 
 import org.apache.log4j.Logger;

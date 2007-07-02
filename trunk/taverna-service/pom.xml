@@ -110,21 +110,9 @@
 					<skip>false</skip>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 	<repositories>
-		<repository>
-			<id>mygrid-proxy</id>
-            <name>myGrid proxy repository</name>
-            <url>http://www.mygrid.org.uk/maven/proxy/repository</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
 		<repository>
 			<id>Codehaus Snapshots</id>
 			<url>http://snapshots.repository.codehaus.org/</url>

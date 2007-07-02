@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest.resources;
 import java.io.IOException;
 
 import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;

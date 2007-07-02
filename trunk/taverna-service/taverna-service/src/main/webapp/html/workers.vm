@@ -1,0 +1,34 @@
+<html>
+	<head>
+		<title>
+			Workers
+		</title>
+	</head>
+	<body>
+		<center><h1>The Workers</h1>
+		<table>
+			<tr><th>Worker ID</th><th>Status</th><th>Total Jobs Run</th></tr>
+			#foreach($worker in $workers)
+				<tr>
+				<td>$worker.getId()</td>
+				<td>
+					#if ($worker.isBusy() == true)
+						Busy
+					#else
+						Available
+    				#end
+    			</td>
+    			<td>
+    				$worker.getWorkerJobs().size()
+			    </td>
+				</tr>
+			#end
+		</table>
+		
+		
+		
+		
+		</center>
+		
+	</body>
+</html>

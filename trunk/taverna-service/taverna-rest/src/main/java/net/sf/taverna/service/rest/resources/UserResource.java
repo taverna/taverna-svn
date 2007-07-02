@@ -8,6 +8,7 @@ import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.rest.UserGuard;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.xml.User;
 import net.sf.taverna.service.xml.UserDocument;
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DataDocDAO;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.xml.Data;
 import net.sf.taverna.service.xml.DataDocument;
 

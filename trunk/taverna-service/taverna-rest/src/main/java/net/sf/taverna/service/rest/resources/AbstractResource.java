@@ -14,6 +14,7 @@ import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.rest.UserGuard;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.URItoDAO;
 import net.sf.taverna.service.xml.Data;

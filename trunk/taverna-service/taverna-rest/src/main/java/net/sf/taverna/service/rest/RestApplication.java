@@ -20,6 +20,7 @@ import net.sf.taverna.service.rest.resources.JobsResource;
 import net.sf.taverna.service.rest.resources.QueueResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
+import net.sf.taverna.service.rest.resources.WorkersResource;
 import net.sf.taverna.service.rest.resources.WorkflowResource;
 import net.sf.taverna.service.rest.resources.WorkflowsResource;
 import net.sf.taverna.service.rest.utils.URIFactory;
@@ -52,6 +53,8 @@ public class RestApplication extends Application {
 	private static final String DATA = "/{data}";
 
 	private static final String QUEUE = "/{queue}";
+	
+	private static final String WORKER = "/{worker}";
 
 	protected DAOFactory daoFactory = DAOFactory.getFactory();
 
@@ -203,7 +206,9 @@ public class RestApplication extends Application {
 			QueueResource.class);
 
 		// /workers
+		authenticated.attach("/"+URIFactory.getMapping(Worker.class),WorkersResource.class);
 		// /workers/X
+		
 
 		return component;
 	}

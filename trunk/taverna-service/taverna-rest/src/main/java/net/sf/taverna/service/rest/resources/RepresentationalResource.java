@@ -4,20 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.sf.taverna.service.rest.resources.representation.AbstractRepresentation;
+import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.XmlBeansRepresentation;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 /**
@@ -99,108 +98,7 @@ public class RepresentationalResource extends Resource {
 		}
 		return representation.getRepresentation();
 	}
-
-	/**
-	 * An abstract representation that can be registered with
-	 * {@link AbstractResource#addRepresentation(net.sf.taverna.service.rest.resources.AbstractResource.AbstractRepresentation)}
-	 * <p>
-	 * Implementations must provide the {@link MediaType} and
-	 * {@link Representation}. Since {@link #getRepresentation()} will only be
-	 * called if this particular representation is served, this class provides
-	 * lazy representation, since say building an XML document can be done when
-	 * calling {@link #getRepresentation()}.
-	 * <p>
-	 * Note that an {@link AbstractRepresentation} is not a
-	 * {@link Representation}, but it's {@link #getRepresentation()} return the
-	 * "real" {@link Representation}.
-	 * 
-	 * @see AbstractText
-	 * @see AbstractXML
-	 */
-	abstract class AbstractRepresentation {
-		/**
-		 * Provide the media type, for example {@link MediaType#TEXT_PLAIN}
-		 * 
-		 * @return A {@link MediaType}
-		 */
-		public abstract MediaType getMediaType();
-
-		/**
-		 * Generate if needed, and return this representation. The
-		 * representation's media type should be included in
-		 * {@link #getMediaType()}.
-		 * 
-		 * @return An inialized {@link Representation}
-		 */
-		public abstract Representation getRepresentation();
-		
-		@Override
-		public String toString() {
-			return getClass().getName() + " " + getMediaType().toString();
-		}
-	}
-
-	/**
-	 * A plain text representation. By default, the language is not given, and
-	 * the character set is {@link CharacterSet#ISO_8859_1}.
-	 */
-	abstract class AbstractText extends AbstractRepresentation {
-		@Override
-		public Representation getRepresentation() {
-			return new StringRepresentation(getText(), getMediaType(),
-				getLanguage(), getCharacterSet());
-		}
-
-		/**
-		 * The {@link Language} of {@link #getText()}. By default
-		 * <code>null</code>, which means language is unspecified.
-		 * 
-		 * @return The {@link Language} of the txt or <code>null</code>
-		 */
-		public Language getLanguage() {
-			return null;
-		}
-
-		/**
-		 * The character set to be used for serializing the text. The default
-		 * for <code>text/*</code> media types is
-		 * {@link CharacterSet#ISO_8859_1}, otherwise
-		 * {@link CharacterSet#UTF_8}.
-		 * 
-		 * @return
-		 */
-		public CharacterSet getCharacterSet() {
-			if (MediaType.TEXT_ALL.includes(getMediaType())) {
-				return CharacterSet.ISO_8859_1;
-			}
-			return CharacterSet.UTF_8;
-		}
-
-		/**
-		 * Return a plain text representation. There is no real restrictions on
-		 * the plain text except that it should be both human-readable and
-		 * easily parsable. A RFC-822 style is often convenient, for example:
-		 * 
-		 * <pre>
-		 *  Name: Stian Soiland
-		 *  Address: Manchester
-		 *           United Kingdom
-		 *  Homepage: http://soiland.no/
-		 * </pre>
-		 * 
-		 * @return A plain text representation of the resource
-		 */
-		public abstract String getText();
-
-		/**
-		 * By default, the media type is <code>text/plain</code>
-		 */
-		@Override
-		public MediaType getMediaType() {
-			return MediaType.TEXT_PLAIN;
-		}
-	}
-
+	
 	/**
 	 * An abstract XMLBeans based representation.
 	 */
@@ -224,5 +122,4 @@ public class RepresentationalResource extends Resource {
 			return new XmlBeansRepresentation(getXML(), getMediaType(), uriFactory);
 		}
 	}
-
 }

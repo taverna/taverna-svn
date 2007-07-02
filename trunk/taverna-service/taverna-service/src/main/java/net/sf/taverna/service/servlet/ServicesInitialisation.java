@@ -5,6 +5,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,8 @@ public class ServicesInitialisation implements ServletContextListener {
 		if (!base.endsWith("/")) base+="/";
 		URIFactory uriFactory = URIFactory.getInstance(base + "rest/v1/");
 		URIFactory.setHTMLpath(base+"html/");
+		logger.info("Setting velocity template path to:"+context.getRealPath("/html/"));
+		VelocityRepresentation.setResourcePath(context.getRealPath("/html/"));
 		queueMonitor=new DefaultQueueMonitor(uriFactory);
 		queueMonitor.setDaemon(true);
 		queueMonitor.start();
