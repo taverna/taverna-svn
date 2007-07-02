@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.service;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
@@ -15,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * @author Tom Oinn
  * 
  */
-public interface Service<ConfigurationType> {
+public interface Service<ConfigurationType> extends Annotated {
 
 	/**
 	 * Each Service implementation stores configuration within a bean of type

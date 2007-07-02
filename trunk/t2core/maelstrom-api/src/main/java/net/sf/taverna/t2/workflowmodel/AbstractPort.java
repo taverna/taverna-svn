@@ -6,7 +6,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  *
  */
-public abstract class AbstractPort implements Port {
+public abstract class AbstractPort extends AbstractAnnotatedThing implements Port {
 
 	protected String name;
 	protected int depth;

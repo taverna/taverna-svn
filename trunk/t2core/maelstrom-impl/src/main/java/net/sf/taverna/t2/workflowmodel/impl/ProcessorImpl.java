@@ -4,15 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
+import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -36,7 +33,7 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public final class ProcessorImpl implements Processor, MutableAnnotated {
+public final class ProcessorImpl extends AbstractMutableAnnotatedThing implements Processor {
 
 	protected List<ConditionImpl> conditions = new ArrayList<ConditionImpl>();
 
@@ -57,8 +54,6 @@ public final class ProcessorImpl implements Processor, MutableAnnotated {
 	private static int pNameCounter = 0;
 
 	protected String name;
-
-	private Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
 
 	/**
 	 * Create a new processor implementation with default blank iteration
@@ -291,21 +286,6 @@ public final class ProcessorImpl implements Processor, MutableAnnotated {
 	public void forgetDepthFor(String owningProcess) {
 		// TODO Auto-generated method stub
 
-	}
-
-	/**
-	 * Return an unmodifiable version of the annotation set
-	 */
-	public Set<WorkflowAnnotation> getAnnotations() {
-		return Collections.unmodifiableSet(this.annotations);
-	}
-
-	public void addAnnotation(WorkflowAnnotation newAnnotation) {
-		this.annotations.add(newAnnotation);		
-	}
-
-	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
-		this.annotations.remove(annotationToRemove);
 	}
 
 }

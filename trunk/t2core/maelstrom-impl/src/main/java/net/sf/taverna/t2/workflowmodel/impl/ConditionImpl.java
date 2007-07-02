@@ -3,9 +3,10 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.Condition;
 
-public class ConditionImpl implements Condition {
+public class ConditionImpl extends AbstractAnnotatedThing implements Condition {
 
 	private ProcessorImpl control, target;
 

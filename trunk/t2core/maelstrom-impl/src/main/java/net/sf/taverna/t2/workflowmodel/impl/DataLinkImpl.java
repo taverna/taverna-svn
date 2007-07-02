@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.DataLink;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
@@ -10,7 +11,8 @@ import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
  * @author Tom Oinn
  * 
  */
-public class DataLinkImpl implements DataLink {
+public class DataLinkImpl extends AbstractMutableAnnotatedThing implements
+		DataLink {
 
 	private EventForwardingOutputPort source;
 

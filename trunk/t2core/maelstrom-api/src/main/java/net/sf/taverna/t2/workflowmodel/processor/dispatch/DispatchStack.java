@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.Annotated;
+
 /**
  * The dispatch stack is responsible for consuming a queue of jobs from the
  * iteration strategy and dispatching those jobs through a stack based control
@@ -14,7 +16,7 @@ import java.util.List;
  * @author Tom Oinn
  * 
  */
-public interface DispatchStack {
+public interface DispatchStack extends Annotated {
 
 	/**
 	 * The DispatchStack consists of an ordered list of DispatchLayer instances

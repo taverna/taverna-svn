@@ -11,6 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
@@ -36,7 +37,7 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public abstract class DispatchStackImpl implements DispatchStack {
+public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing implements DispatchStack {
 
 	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
 

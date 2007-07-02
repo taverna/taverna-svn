@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
@@ -29,8 +30,8 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * @param <ConfigType>
  *            type of configuration object to be used to hold config information
  */
-public abstract class AbstractService<ConfigType> implements
-		Service<ConfigType> {
+public abstract class AbstractService<ConfigType> extends
+		AbstractAnnotatedThing implements Service<ConfigType> {
 
 	protected Map<String, String> inputPortMapping = new HashMap<String, String>();
 

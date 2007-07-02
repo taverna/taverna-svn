@@ -6,8 +6,9 @@ package net.sf.taverna.t2.workflowmodel.processor;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.DataLink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 
-class DiagnosticEventHandler implements EventHandlingInputPort {
+class DiagnosticEventHandler extends AbstractAnnotatedThing implements EventHandlingInputPort {
 
 	protected int eventCount = 0;
 

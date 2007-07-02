@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import net.sf.taverna.t2.annotation.Annotated;
+
 /**
  * Defines the base interface for a condition which must be satisfied before a
  * processor can commence invocation. Conditions are expressed in terms of a
@@ -11,7 +13,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface Condition {
+public interface Condition extends Annotated {
 
 	/**
 	 * @return the Processor constrained by this condition
