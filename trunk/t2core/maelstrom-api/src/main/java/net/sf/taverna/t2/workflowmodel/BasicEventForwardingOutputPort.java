@@ -15,7 +15,7 @@ import net.sf.taverna.t2.invocation.Event;
 public class BasicEventForwardingOutputPort extends AbstractOutputPort
 		implements EventForwardingOutputPort {
 
-	protected Set<DataLink> outgoingLinks;
+	protected Set<Datalink> outgoingLinks;
 
 	/**
 	 * Construct a new abstract output port with event forwarding capability
@@ -27,13 +27,13 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 	public BasicEventForwardingOutputPort(String portName, int portDepth,
 			int granularDepth) {
 		super(portName, portDepth, granularDepth);
-		this.outgoingLinks = new HashSet<DataLink>();
+		this.outgoingLinks = new HashSet<Datalink>();
 	}
 
 	/**
 	 * Implements EventForwardingOutputPort
 	 */
-	public final Set<DataLink> getOutgoingLinks() {
+	public final Set<Datalink> getOutgoingLinks() {
 		return Collections.unmodifiableSet(this.outgoingLinks);
 	}
 
@@ -43,7 +43,7 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 	 * @param e
 	 */
 	public void sendEvent(Event e) {
-		for (DataLink link : outgoingLinks) {
+		for (Datalink link : outgoingLinks) {
 			link.getSink().receiveEvent(e);
 		}
 	}

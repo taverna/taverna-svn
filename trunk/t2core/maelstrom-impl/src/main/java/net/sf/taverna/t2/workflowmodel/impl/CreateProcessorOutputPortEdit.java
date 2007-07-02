@@ -31,7 +31,7 @@ public class CreateProcessorOutputPortEdit extends AbstractProcessorEdit {
 			throw new EditException("Duplicate output port name");
 		}
 		ProcessorOutputPortImpl pop = new ProcessorOutputPortImpl(portName,
-				portDepth, portGranularity);
+				portDepth, portGranularity, processor);
 		processor.outputPorts.add(pop);
 	}
 

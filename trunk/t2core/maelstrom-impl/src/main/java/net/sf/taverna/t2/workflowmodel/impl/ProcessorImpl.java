@@ -13,10 +13,11 @@ import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
-import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
@@ -192,7 +193,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 			outputPorts.add(new ProcessorOutputPortImpl(portElement
 					.getAttributeValue("name"), Integer.parseInt(portElement
 					.getAttributeValue("depth")), Integer.parseInt(portElement
-					.getAttributeValue("grain"))));
+					.getAttributeValue("grain")), this));
 		}
 		dispatchStack.configureFromElement(e.getChild("dispatch"));
 		iterationStack.configureFromElement(e.getChild("iteration"));
@@ -259,11 +260,11 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 		return iterationStack;
 	}
 
-	public List<? extends FilteringInputPort> getInputPorts() {
+	public List<? extends ProcessorInputPort> getInputPorts() {
 		return Collections.unmodifiableList(inputPorts);
 	}
 
-	public List<? extends OutputPort> getOutputPorts() {
+	public List<? extends ProcessorOutputPort> getOutputPorts() {
 		return Collections.unmodifiableList(outputPorts);
 	}
 

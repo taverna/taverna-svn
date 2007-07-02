@@ -1,7 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
-import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
+import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
 /**
@@ -17,7 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrateg
  * 
  */
 public class ProcessorInputPortImpl extends AbstractFilteringInputPort implements
-		FilteringInputPort {
+		ProcessorInputPort {
 
 	private ProcessorImpl parent;
 
@@ -55,6 +56,10 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 			isi.setDepth(this.getName(), getObservedDepth());
 			sentDepth = true;
 		}
+	}
+
+	public Processor getProcessor() {
+		return this.parent;
 	}
 
 }

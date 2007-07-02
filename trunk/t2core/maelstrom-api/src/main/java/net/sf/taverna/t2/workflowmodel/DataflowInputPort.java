@@ -32,4 +32,8 @@ public interface DataflowInputPort extends EventHandlingInputPort {
 	 */
 	public int getGranularInputDepth();
 	
+	/**
+	 * Get the parent DataFlow to which this port belongs
+	 */
+	public Dataflow getDataflow();
 }

@@ -7,7 +7,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface DataLink {
+public interface Datalink {
 
 	/**
 	 * Get the sink for events flowing through this link

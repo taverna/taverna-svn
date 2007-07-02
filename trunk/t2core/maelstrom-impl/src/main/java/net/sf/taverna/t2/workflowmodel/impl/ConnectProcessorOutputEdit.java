@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.workflowmodel.DataLink;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
@@ -24,7 +24,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 
 	private ProcessorOutputPortImpl outputPort;
 	
-	private DataLink newLink = null;
+	private Datalink newLink = null;
 
 	public ConnectProcessorOutputEdit(Processor p, String outputName,
 			EventHandlingInputPort targetPort) {
@@ -37,7 +37,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
 		for (ProcessorOutputPortImpl popi : processor.outputPorts) {
 			if (popi.getName().equals(outputName)) {
-				newLink = new DataLinkImpl(popi, target);
+				newLink = new DatalinkImpl(popi, target);
 				popi.addOutgoingLink(newLink);
 				if (target instanceof AbstractEventHandlingInputPort) {
 					((AbstractFilteringInputPort)target).setIncomingLink(newLink);

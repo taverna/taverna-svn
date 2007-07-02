@@ -17,4 +17,9 @@ public interface DataflowOutputPort extends EventForwardingOutputPort {
 	 */
 	public EventHandlingInputPort getInternalInputPort();
 
+	/**
+	 * Get the parent DataFlow to which this port belongs
+	 */
+	public Dataflow getDataflow();
+	
 }

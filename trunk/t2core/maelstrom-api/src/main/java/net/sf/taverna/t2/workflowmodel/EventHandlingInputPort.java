@@ -16,9 +16,9 @@ public interface EventHandlingInputPort extends InputPort {
 	public void receiveEvent(Event e);
 
 	/**
-	 * If this port is connected to a DataLink return the link, otherwise return
+	 * If this port is connected to a Datalink return the link, otherwise return
 	 * null
 	 */
-	public DataLink getIncomingLink();
+	public Datalink getIncomingLink();
 
 }

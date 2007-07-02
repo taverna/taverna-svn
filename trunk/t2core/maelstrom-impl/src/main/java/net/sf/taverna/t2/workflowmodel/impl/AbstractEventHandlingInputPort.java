@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
-import net.sf.taverna.t2.workflowmodel.DataLink;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 
 /**
@@ -14,17 +14,17 @@ import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 public abstract class AbstractEventHandlingInputPort extends AbstractPort
 		implements EventHandlingInputPort {
 
-	private DataLink incomingLink = null;
+	private Datalink incomingLink = null;
 
 	protected AbstractEventHandlingInputPort(String name, int depth) {
 		super(name, depth);
 	}
 
-	public DataLink getIncomingLink() {
+	public Datalink getIncomingLink() {
 		return this.incomingLink;
 	}
 
-	protected void setIncomingLink(DataLink newLink) {
+	protected void setIncomingLink(Datalink newLink) {
 		this.incomingLink = newLink;
 	}
 

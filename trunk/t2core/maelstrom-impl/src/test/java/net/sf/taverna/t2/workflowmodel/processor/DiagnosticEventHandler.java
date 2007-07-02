@@ -4,7 +4,7 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.DataLink;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 
@@ -33,7 +33,7 @@ class DiagnosticEventHandler extends AbstractAnnotatedThing implements EventHand
 		return "Test port";
 	}
 
-	public DataLink getIncomingLink() {
+	public Datalink getIncomingLink() {
 		// TODO Auto-generated method stub
 		return null;
 	}
