@@ -1,8 +1,11 @@
 package net.sf.taverna.service.datastore;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.PersistenceException;
@@ -98,6 +101,34 @@ public class TestWorker extends TestDAO {
 		Worker worker2 = workerDAO.read(worker.getId());
 		assertNotNull(worker2);
 		assertEquals("There should be 1 job assigned to the worker",1,worker.getWorkerJobs().size());	
+	}
+	
+	@Test 
+	public void testUnAssignJobs() throws Exception {
+		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
+		JobDAO jobDAO = daoFactory.getJobDAO();
+		
+		Worker worker = new Worker();
+		worker.setPassword(User.generatePassword());
+		workerDAO.create(worker);
+		
+		new TestJob().createAndStore();
+		Job job = jobDAO.read(TestJob.lastJob);
+		job.setStatus(Status.QUEUED);
+		jobDAO.create(job);
+		
+		worker.assignJob(job);
+		workerDAO.update(worker);
+		job.setStatus(Status.COMPLETE);
+		jobDAO.update(job);
+		
+		List<Job> removed=worker.unassignJobs();
+		for (Job removedJob : removed) jobDAO.update(removedJob);
+		
+		Job job2=jobDAO.read(job.getId());
+		assertTrue(job2.getWorker()==null);
+		assertEquals(0,worker.getWorkerJobs().size());
+		
 	}
 	
 	@Test

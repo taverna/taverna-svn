@@ -76,6 +76,24 @@ public class Worker extends User {
 		getWorkerJobs().add(job);
 	}
 	
+	
+	/**
+	 * Disassociates all finished jobs from this worker.
+	 * Returns the list of unassigned job beans, so that they can be passed to their DAO to update the database.
+	 * @return List<Job> unassigned jobs
+	 */
+	public List<Job> unassignJobs() {
+		List<Job> toRemove = new ArrayList<Job>();
+		for (Job job : getWorkerJobs()) {
+			if (job.isFinished()) {
+				job.setWorker(null);
+				toRemove.add(job);
+			}
+		}
+		getWorkerJobs().removeAll(toRemove);
+		return toRemove;
+	}
+	
 	public Job getNextDequeuedJob() {
 		for (Job job : getWorkerJobs()) {
 			if (job.getStatus().equals(Status.DEQUEUED)) return job;

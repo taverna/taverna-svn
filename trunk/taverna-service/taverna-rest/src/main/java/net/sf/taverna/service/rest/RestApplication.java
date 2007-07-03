@@ -20,6 +20,7 @@ import net.sf.taverna.service.rest.resources.JobsResource;
 import net.sf.taverna.service.rest.resources.QueueResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
+import net.sf.taverna.service.rest.resources.WorkerResource;
 import net.sf.taverna.service.rest.resources.WorkersResource;
 import net.sf.taverna.service.rest.resources.WorkflowResource;
 import net.sf.taverna.service.rest.resources.WorkflowsResource;
@@ -182,8 +183,8 @@ public class RestApplication extends Application {
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER,
 			UserResource.class);
 
-		authenticated.attach("/" + URIFactory.getMapping(Worker.class) + USER,
-			UserResource.class);
+//		authenticated.attach("/" + URIFactory.getMapping(Worker.class) + USER,
+//			UserResource.class);
 
 		// Collections - below user
 
@@ -207,6 +208,7 @@ public class RestApplication extends Application {
 
 		// /workers
 		authenticated.attach("/"+URIFactory.getMapping(Worker.class),WorkersResource.class);
+		authenticated.attach("/"+URIFactory.getMapping(Worker.class) + WORKER,WorkerResource.class);
 		// /workers/X
 		
 

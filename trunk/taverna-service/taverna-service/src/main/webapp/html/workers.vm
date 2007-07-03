@@ -6,29 +6,35 @@
 	</head>
 	<body>
 		<center><h1>The Workers</h1>
-		<table>
-			<tr><th>Worker ID</th><th>Status</th><th>Total Jobs Run</th></tr>
-			#foreach($worker in $workers)
-				<tr>
-				<td>$worker.getId()</td>
-				<td>
-					#if ($worker.isBusy() == true)
-						Busy
-					#else
-						Available
+			<table>
+				<tr><th>Worker ID</th><th>Status</th><th>Jobs Run</th></tr>
+				#foreach($worker in $workers)
+					<tr>
+					<td>$worker.getId()</td>
+					<td>
+						#if ($worker.isBusy() == true)
+							Busy
+						#else
+							Idle
+	    				#end
+	    			</td>
+	    			<td>
+	    				$worker.getWorkerJobs().size()
+				    </td>
+				    #if (!$worker.isBusy())
+				    	<td>
+				    	<form method="POST" action="$worker.getId()?method=delete">
+				    		<input type="Submit" value="Delete"/>
+	    				</form>
+	    				</td>
     				#end
-    			</td>
-    			<td>
-    				$worker.getWorkerJobs().size()
-			    </td>
-				</tr>
-			#end
-		</table>
-		
-		
-		
-		
+					</tr>
+				#end
+			</table>
+			
+			<form method="POST" action="?method=create">
+				<input type="submit" value="Create New"/>
+			</form>
 		</center>
-		
 	</body>
 </html>
