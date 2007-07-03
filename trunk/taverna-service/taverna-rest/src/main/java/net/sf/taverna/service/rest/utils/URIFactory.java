@@ -205,6 +205,13 @@ public class URIFactory {
 	}
 
 	/**
+	 * The mapping to the URI of the {@link Queue} to the form the URL for the default Queue.
+	 * @return
+	 */
+	public static String getMappingDefaultQueue() {
+		return ";default";
+	}
+	/**
 	 * The mapping added to the URI of the {@link Job} to get the status.
 	 * 
 	 * @see #getURIStatus(Job)

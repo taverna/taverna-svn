@@ -1,0 +1,16 @@
+<html>
+	<head>
+		<title>Queue</title>
+	</head>
+	<body>
+		<center>
+			<h1>Queue: $queue.getId()</h1>
+			<table>
+			<tr><th>ID</th><th>Owner</th><th>Status</th></tr>
+			#foreach ($job in $jobs)
+				<tr><td>$job.getId()</td><td>$job.getOwner().getUsername()</td><td>$job.getStatus()</td><tr>
+			#end
+			</table>
+		</center>
+	</body>
+</html>

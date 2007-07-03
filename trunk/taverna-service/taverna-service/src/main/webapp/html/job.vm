@@ -1,0 +1,10 @@
+<html>
+	<head>
+		<title>Job</title>
+	</head>
+	<body>
+		<center>
+			<h1>Job: $job.getId()</h1>
+		</center>
+	</body>
+</html>

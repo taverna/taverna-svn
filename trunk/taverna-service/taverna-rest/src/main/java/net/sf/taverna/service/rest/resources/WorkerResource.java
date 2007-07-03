@@ -24,7 +24,6 @@ public class WorkerResource extends AbstractResource {
 		super(context, request, response);
 		String worker_id = (String)request.getAttributes().get("worker");
 		worker=DAOFactory.getFactory().getWorkerDAO().read(worker_id);
-		logger.info("In Worker Resource, worker id ="+worker_id);
 		checkEntity(worker);
 	}
 

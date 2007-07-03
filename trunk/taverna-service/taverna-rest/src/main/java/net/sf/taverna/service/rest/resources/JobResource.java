@@ -3,9 +3,12 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
 
@@ -24,6 +27,7 @@ public class JobResource extends AbstractJobResource {
 
 	public JobResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		addRepresentation(new JobVelocityRepresentation());
 		addRepresentation(new Text());
 		addRepresentation(new XML());
 	}
@@ -140,8 +144,19 @@ public class JobResource extends AbstractJobResource {
 				jobElement.setUpdateInterval(new GDuration(job.getUpdateInterval()));
 			}
 		}
-
-		
 	}
+	
+	class JobVelocityRepresentation extends VelocityRepresentation
+	{
+		public JobVelocityRepresentation() {
+			super("job.vm");
+		}
 
+		@Override
+		protected Map<String, Object> getDataModel() {
+			Map<String,Object> model = new HashMap<String, Object>();
+			model.put("job",job);
+			return model;
+		}
+	}
 }

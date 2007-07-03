@@ -83,6 +83,7 @@ public class RepresentationalResource extends Resource {
 	public Representation getRepresentation(Variant variant) {
 		AbstractRepresentation representation =
 			representations.get(variant.getMediaType());
+		logger.info("Requested Media Type = "+variant.getMediaType());
 		if (representation == null) {
 			for (Entry<MediaType, AbstractRepresentation> entry : representations.entrySet()) {
 				if (entry.getKey().includes(variant.getMediaType())) {
