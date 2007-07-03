@@ -1,10 +1,13 @@
-package net.sf.taverna.t2.workflowmodel;
+package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
+import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 
 /**
  * Extension of AbstractOutputPort implementing EventForwardingOutputPort
