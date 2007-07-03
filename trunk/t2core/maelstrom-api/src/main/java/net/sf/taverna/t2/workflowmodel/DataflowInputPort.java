@@ -11,7 +11,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface DataflowInputPort extends EventHandlingInputPort {
+public interface DataflowInputPort extends EventHandlingInputPort, DataflowPort {
 
 	/**
 	 * Return the internal output port. Output ports have a granular depth
@@ -32,8 +32,5 @@ public interface DataflowInputPort extends EventHandlingInputPort {
 	 */
 	public int getGranularInputDepth();
 	
-	/**
-	 * Get the parent DataFlow to which this port belongs
-	 */
-	public Dataflow getDataflow();
+	
 }

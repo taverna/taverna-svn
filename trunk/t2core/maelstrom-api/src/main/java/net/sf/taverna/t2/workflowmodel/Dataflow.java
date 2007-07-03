@@ -11,7 +11,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * @author Tom Oinn
  * 
  */
-public interface Dataflow extends Annotated {
+public interface Dataflow extends Annotated, NamedWorkflowEntity {
 
 	/**
 	 * A Dataflow consists of a set of named Processor instances. This method

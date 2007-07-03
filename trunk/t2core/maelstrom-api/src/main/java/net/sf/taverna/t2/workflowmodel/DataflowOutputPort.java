@@ -8,7 +8,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface DataflowOutputPort extends EventForwardingOutputPort {
+public interface DataflowOutputPort extends EventForwardingOutputPort, DataflowPort {
 
 	/**
 	 * Get the internal input port for this workflow output
@@ -17,9 +17,4 @@ public interface DataflowOutputPort extends EventForwardingOutputPort {
 	 */
 	public EventHandlingInputPort getInternalInputPort();
 
-	/**
-	 * Get the parent DataFlow to which this port belongs
-	 */
-	public Dataflow getDataflow();
-	
 }
