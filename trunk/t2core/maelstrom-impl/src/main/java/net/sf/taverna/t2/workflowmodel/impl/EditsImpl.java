@@ -20,8 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
 public class EditsImpl implements Edits {
 
 	public Dataflow createDataflow() {
-		// TODO Auto-generated method stub
-		return null;
+		return new DataflowImpl();
 	}
 
 	public Edit<Processor> createProcessor(Dataflow dataflow) {
