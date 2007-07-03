@@ -40,6 +40,6 @@ public interface Merge extends NamedWorkflowEntity {
 	 * 
 	 * @return OutputPort for this Merge object
 	 */
-	OutputPort getOutputPort();
+	EventForwardingOutputPort getOutputPort();
 
 }
