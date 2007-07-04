@@ -22,16 +22,17 @@ public class WorkersResource extends AbstractResource {
 		addRepresentation(new WorkersVelocityRepresentation());
 	}
 	
-	public boolean allowCreate() {
+	public boolean allowPost() {
 		return true;
 	}
 
-	public void handleCreate() {
+	public void handlePost() {
 		Worker worker = new Worker();
 		worker.setPassword("Bob"); //FIXME: hard-coded password
 		worker.setQueue(daoFactory.getQueueDAO().defaultQueue());
 		DAOFactory.getFactory().getWorkerDAO().create(worker);
 		DAOFactory.getFactory().commit();
+		
 	}
 
 	class WorkersVelocityRepresentation extends VelocityRepresentation {
