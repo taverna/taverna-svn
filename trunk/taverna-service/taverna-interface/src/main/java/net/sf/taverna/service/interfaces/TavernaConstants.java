@@ -5,8 +5,8 @@ public interface TavernaConstants {
 	
 	// Mime types
 		
-	//public static final String restType = "application/vnd.taverna.rest+xml";
-	public static final String restType = "text/xml";
+	public static final String restType = "application/vnd.taverna.rest+xml";
+	//public static final String restType = "text/xml";
 
 	public static final String scuflType = "application/vnd.taverna.scufl+xml";
 
