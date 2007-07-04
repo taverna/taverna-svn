@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.workflowmodel.BasicEventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;

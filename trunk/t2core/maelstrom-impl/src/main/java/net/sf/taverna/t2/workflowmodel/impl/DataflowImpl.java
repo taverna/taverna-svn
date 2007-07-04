@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
@@ -13,6 +14,13 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		Dataflow {
 
 	private List<ProcessorImpl> processors;
+	private String name;
+	private static int nameIndex = 0;
+	
+	protected DataflowImpl() {
+		this.name = "dataflow"+(nameIndex++);
+		this.processors = new ArrayList<ProcessorImpl>();
+	}
 	
 	public List<DataflowInputPort> getInputPorts() {
 		return null;
@@ -30,6 +38,10 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 	public List<DataflowOutputPort> getOutputPorts() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public String getLocalName() {
+		return this.name;
 	}
 
 }
