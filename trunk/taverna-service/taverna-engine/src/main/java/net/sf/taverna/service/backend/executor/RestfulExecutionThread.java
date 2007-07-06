@@ -43,21 +43,20 @@ import org.restlet.data.Reference;
 
 public class RestfulExecutionThread extends Thread {
 	
-	//FIXME: clearly, having the password hard-coded is not ideal!
-	private final String WORKER_PASSWORD="Bob";
-	
 	private static Logger logger = Logger.getLogger(RestfulExecutionThread.class);
 	
-	private String workerUsername;
 	private String jobUri;
 	private String baseUri;
+	private String workerUsername;
+	private String workerPassword;
 
-	public RestfulExecutionThread(String jobUri, String baseUri, String workerUsername) {
+	public RestfulExecutionThread(String jobUri, String baseUri, String workerUsername, String workerPassword) {
 		super("Restful Executor Thread");
 		logger.info("Starting job execution. Job " + jobUri);
 		this.jobUri=jobUri;
 		this.baseUri=baseUri;
 		this.workerUsername = workerUsername;
+		this.workerPassword = workerPassword;
 	}
 	
 	/**
@@ -188,7 +187,7 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private RESTContext getRESTContext() {
-		RESTContext context = new RESTContext(baseUri,workerUsername,WORKER_PASSWORD);
+		RESTContext context = new RESTContext(baseUri,workerUsername,workerPassword);
 		return context;
 	}
 }
