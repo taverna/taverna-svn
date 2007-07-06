@@ -45,6 +45,9 @@ public class WorkersResource extends AbstractResource {
 			List<Worker> workers = DAOFactory.getFactory().getWorkerDAO().all();
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("workers", workers);
+			boolean isAdmin = getAuthUser().isAdmin();
+			isAdmin=true; //FIXME: REMOVE-forced to true just for development.
+			result.put("isAdmin", isAdmin);
 			return result;
 		}
 	}

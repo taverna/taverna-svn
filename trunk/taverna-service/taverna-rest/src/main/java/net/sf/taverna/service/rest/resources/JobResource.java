@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.datastore.bean.QueueEntry;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.JobDocument;
@@ -37,6 +39,32 @@ public class JobResource extends AbstractJobResource {
 		return true;
 	}
 	
+	
+	
+	@Override
+	public boolean allowDelete() {
+		return true;
+	}
+
+	@Override
+	public void delete() {
+		if (job!=null) {
+			try {
+				QueueEntry entry = DAOFactory.getFactory().getQueueDAO().defaultQueue().removeJob(job);
+				DAOFactory.getFactory().getQueueEntryDAO().delete(entry);
+				DAOFactory.getFactory().getJobDAO().delete(job);
+				DAOFactory.getFactory().commit();
+			}
+			catch(Exception e) {
+				logger.error("An error occurred trying to delete the job:"+job.getId());
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+			}
+		}
+		else {
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+	}
+
 	@Override
 	public void put(Representation entity) {
 		if (!restType.includes(entity.getMediaType())) {
@@ -156,6 +184,7 @@ public class JobResource extends AbstractJobResource {
 		protected Map<String, Object> getDataModel() {
 			Map<String,Object> model = new HashMap<String, Object>();
 			model.put("job",job);
+			model.put("currentuser",getAuthUser());
 			return model;
 		}
 	}

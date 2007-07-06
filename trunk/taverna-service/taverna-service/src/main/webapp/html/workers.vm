@@ -21,7 +21,7 @@
 	    			<td>
 	    				$worker.getWorkerJobs().size()
 				    </td>
-				    #if (!$worker.isBusy())
+				    #if ($isAdmin && !$worker.isBusy())
 				    	<td>
 				    	<form method="POST" action="$worker.getId()?method=delete">
 				    		<input type="Submit" value="Delete"/>
@@ -31,10 +31,11 @@
 					</tr>
 				#end
 			</table>
-			
-			<form method="POST">
-				<input type="submit" value="Create New"/>
-			</form>
+			#if ($isAdmin) 
+				<form method="POST">
+					<input type="submit" value="Create New"/>
+				</form>
+			#end
 		</center>
 	</body>
 </html>

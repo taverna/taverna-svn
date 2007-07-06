@@ -98,6 +98,10 @@ public class Job extends AbstractOwned {
 		setLastModified();
 	}
 
+	public boolean hasStarted() {
+		return getStatus().compareTo(Status.QUEUED) > 0;
+	}
+	
 	public boolean isFinished() {
 		return getStatus().compareTo(Status.CANCELLING) > 0;
 	}

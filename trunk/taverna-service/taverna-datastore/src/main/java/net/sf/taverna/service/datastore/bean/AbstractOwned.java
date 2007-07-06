@@ -1,13 +1,12 @@
 package net.sf.taverna.service.datastore.bean;
 
-import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractOwned extends AbstractNamed {
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne
 	private User owner;
 
 	public User getOwner() {

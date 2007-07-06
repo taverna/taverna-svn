@@ -111,4 +111,29 @@ public class TestJob extends TestDAO  {
 		assertTrue(job.isFinished());
 	}
 	
+	@Test
+	public void hasStarted() throws Exception {
+		if (lastJob==null) createAndStore();
+		Job job = daoFactory.getJobDAO().read(lastJob);
+		job.setStatus(Status.QUEUED);
+		assertFalse(job.hasStarted());
+		
+		job.setStatus(Status.RUNNING);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.PAUSED);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.FAILING);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.CANCELLING);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.CANCELLED);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.FAILED);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.COMPLETE);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.DESTROYED);
+		assertTrue(job.hasStarted());
+	}
+	
 }

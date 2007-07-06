@@ -8,7 +8,29 @@
 			<table>
 			<tr><th>ID</th><th>Owner</th><th>Status</th></tr>
 			#foreach ($job in $jobs)
-				<tr><td>$job.getId()</td><td>$job.getOwner().getUsername()</td><td>$job.getStatus()</td><tr>
+				#set($joburi=$uriFactory.getURI($job))
+				#set($myjob=$job.getOwner().equals($currentuser))
+				<tr>
+				<td>
+					#if ($myjob)
+						<a href="$joburi">$job.getId()</a>
+					#else
+						$job.getId()
+					#end
+					</td>
+					<td>$job.getOwner().getUsername()</td><td>$job.getStatus()</td>
+				#if ($myjob)
+					#if (!$job.hasStarted() || $job.isFinished())
+						<td>
+							<form method="POST" action="$joburi?method=delete">
+								<input type="submit" value="Delete"/>
+							</form>
+						</td>
+					#else
+						<td><input type="button" value="Cancel" onClick="javascript:alert('Not yet implemented')"/>
+					#end
+				#end			
+				</tr>
 			#end
 			</table>
 		</center>
