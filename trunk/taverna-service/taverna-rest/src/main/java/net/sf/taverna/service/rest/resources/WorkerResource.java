@@ -63,10 +63,11 @@ public class WorkerResource extends AbstractResource {
 			worker=null;
 			DAOFactory.getFactory().commit();
 			logger.info("Deleted worker:"+worker_id);
-			getResponse().setStatus(Status.SUCCESS_OK);
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
 		}
 		else {
-			getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+			getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED, "The worker currently has active jobs");
 		}
 	}
 	

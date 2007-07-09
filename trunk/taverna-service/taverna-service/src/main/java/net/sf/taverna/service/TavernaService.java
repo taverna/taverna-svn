@@ -2,6 +2,7 @@ package net.sf.taverna.service;
 
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.RestApplication;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.UserUtils;
 
@@ -30,6 +31,7 @@ public class TavernaService {
 
 	private static final String HELP = "help";
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(TavernaService.class);
 
 	public static void main(String[] args) {
@@ -86,14 +88,15 @@ public class TavernaService {
 			port = (Integer) line.getOptionObject(PORT);
 		}
 		
-		// FIXME: Workers should be started from separate main with the URI in a
-		// configuration file
 		URIFactory uriFactory = URIFactory.getInstance("http://localhost:" + port + "/v1/");
 		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor(uriFactory);
 		queueMonitor.start();
 		
+		//FIXME: needs to be hard-coded path until we get the assembled application struture done.
+		//VelocityRepresentation.setResourcePath("/Users/sowen/java/workspace/taverna-service/taverna-service/src/main/webapp/html");
 		
-		new RestApplication().startServer(port);
+		RestApplication application = new RestApplication();
+		application.startServer(port);
 	}
 
 	@SuppressWarnings("static-access")

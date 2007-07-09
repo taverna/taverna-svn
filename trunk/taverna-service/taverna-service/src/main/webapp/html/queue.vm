@@ -22,7 +22,7 @@
 				#if ($myjob)
 					#if (!$job.hasStarted() || $job.isFinished())
 						<td>
-							<form method="POST" action="$joburi?method=delete">
+							<form method="POST" action="$joburi?method=DELETE">
 								<input type="submit" value="Delete"/>
 							</form>
 						</td>

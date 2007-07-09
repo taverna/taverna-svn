@@ -19,6 +19,7 @@ import net.sf.taverna.service.rest.resources.JobResource;
 import net.sf.taverna.service.rest.resources.JobStatusResource;
 import net.sf.taverna.service.rest.resources.JobsResource;
 import net.sf.taverna.service.rest.resources.QueueResource;
+import net.sf.taverna.service.rest.resources.UserRegisterResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
 import net.sf.taverna.service.rest.resources.WorkerResource;
@@ -156,6 +157,9 @@ public class RestApplication extends Application {
 		// Capabilities at / is also unprotected
 		route = router.attach("/", CapabilitiesResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
+		
+		route = router.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingRegisterUser(),UserRegisterResource.class);
+		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
 
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());

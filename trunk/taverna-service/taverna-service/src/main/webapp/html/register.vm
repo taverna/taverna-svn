@@ -6,25 +6,22 @@
 <body>
 	
 	
-<center><h1>User Registration</h1></center>
+<center><h1>User Registration</h1>
 
-#if ($errors.exist())
-        <ul>
-        #foreach ($e in $errors.all )
-            <li class="error">$e</li>
-        #end
-        </ul>
+#if ($errorMsg)
+Error: $errorMsg
 #end
 
-<form method="POST" action="$link.setAction("register_submit")">
+<form method="POST">
 <table>
-<tr><td>Username:</td><td><input type="text" name="name" value="$!form.bean.name"/></td></tr>
-<tr><td>Password:</td><td><input type="password" name="password" value="$!form.bean.password"/></td></tr>
-<tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!form.bean.confirm"/></td></tr>
-<tr><td>Email:</td><td><input type="text" name="email" value="$!form.bean.email"/></td></tr>
-<tr><td><input type="submit" type="submit" value="OK"/></td><td></td></tr>
+<tr><td>Username:</td><td><input type="text" name="name" value="$!name"/></td></tr>
+<tr><td>Password:</td><td><input type="password" name="password" value="$!password"/></td></tr>
+<tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
+<tr><td>Email:</td><td><input type="text" name="email" value="$!email"/></td></tr>
+<tr><td></td><td><input type="submit" type="submit" value="Register"/></td><td></td></tr>
 </table>
 </form>
 
+</center>
 </body>
 <html>
