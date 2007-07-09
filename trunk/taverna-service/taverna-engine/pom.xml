@@ -89,8 +89,8 @@
 			<version>1.5.2.1</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-biomoby-processor</artifactId>
+			<groupId>biomoby.org</groupId>
+			<artifactId>taverna-biomoby</artifactId>
 			<version>1.5.2.0</version>
 		</dependency>
 		<dependency>

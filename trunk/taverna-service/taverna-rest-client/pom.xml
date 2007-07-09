@@ -61,17 +61,11 @@
             <type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-        <!--
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-        -->
+        
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>
 			<artifactId>com.noelios.restlet.ext.httpclient</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 		</dependency>
 
 	</dependencies>
