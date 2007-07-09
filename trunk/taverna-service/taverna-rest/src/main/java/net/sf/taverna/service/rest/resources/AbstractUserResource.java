@@ -1,7 +1,12 @@
 package net.sf.taverna.service.rest.resources;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.UserDAO;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 
 import org.restlet.Context;
 import org.restlet.data.Request;
@@ -20,4 +25,28 @@ public abstract class AbstractUserResource extends AbstractDatedResource<User> {
 		checkEntity(user);
 	}
 
+	class OwnedVelocity extends VelocityRepresentation {
+		private Collection<?> collection;
+		
+		private String ownedType;
+
+		public OwnedVelocity(Collection<?> collection, String ownedType) {
+			super("ownedCollection.vm");
+			this.collection = collection;
+			this.ownedType = ownedType;
+		}
+
+		@Override
+		protected Map<String, Object> getDataModel() {
+			Map<String,Object> model = new HashMap<String, Object>();			
+			model.put("user", user);
+			model.put("uriFactory", uriFactory);
+			model.put("userURI", uriFactory.getURI(user));
+			model.put("ownedType", ownedType);
+			collection.size(); // pre-fetch
+			model.put("collection", collection);
+			return model;
+		}
+	}
+	
 }

@@ -32,6 +32,7 @@ public class JobsResource extends AbstractUserResource {
 		super(context, request, response);
 		addRepresentation(new URIList());
 		addRepresentation(new XML());
+		addRepresentation(new Velocity());
 	}
 
 	class URIList extends AbstractURIList<Job> {
@@ -63,6 +64,12 @@ public class JobsResource extends AbstractUserResource {
 				jobElem.setCreated(AbstractDatedResource.dateToCalendar(job.getCreated()));
 				jobElem.setModified(AbstractDatedResource.dateToCalendar(job.getLastModified()));
 			}
+		}
+	}
+	
+	class Velocity extends OwnedVelocity {
+		public Velocity() {
+			super(user.getJobs(), "Jobs");
 		}
 	}
 
@@ -101,7 +108,6 @@ public class JobsResource extends AbstractUserResource {
 		Job job = new Job();
 		// Force owner by URI, ignore 'owner' in XML
 		job.setOwner(user);
-		user.getJobs().add(job);
 
 		Workflow wf = jobDoc.getJob().getWorkflow();
 		if (wf == null) {

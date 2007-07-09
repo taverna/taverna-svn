@@ -3,12 +3,18 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
+import net.sf.taverna.service.datastore.bean.Queue;
+import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.rest.UserGuard;
+import net.sf.taverna.service.rest.resources.CapabilitiesResource.CapabilitiesVelocityRepresentation;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.User;
 import net.sf.taverna.service.xml.UserDocument;
 
@@ -30,6 +36,7 @@ public class UserResource extends AbstractUserResource {
 
 	public UserResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		addRepresentation(new UserVelocity());
 		addRepresentation(new Text());
 		addRepresentation(new XML());
 		setResource(user);
@@ -88,6 +95,32 @@ public class UserResource extends AbstractUserResource {
 			return sb.toString();
 		}
 	}
+	
+	class UserVelocity extends VelocityRepresentation
+	{
+		public UserVelocity() {
+			super("user.vm");
+		}
+
+		@Override
+		protected Map<String, Object> getDataModel() {
+			Map<String,Object> model = new HashMap<String, Object>();			
+			model.put("user", user);
+			model.put("uriFactory", uriFactory);
+			
+			model.put("jobsURI", uriFactory.getURI(user, Job.class));
+			model.put("jobsCount", user.getJobs().size());
+
+			model.put("datasURI", uriFactory.getURI(user, DataDoc.class));
+			model.put("datasCount", user.getDatas().size());
+			
+			model.put("wfURI", uriFactory.getURI(user, Workflow.class));
+			model.put("wfCount", user.getWorkflows().size());
+
+			return model;
+		}
+	}
+	
 
 	@Override
 	public long maxSize() {

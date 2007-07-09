@@ -28,12 +28,13 @@ public class DatasResource extends AbstractUserResource {
 		super(context, request, response);
 		addRepresentation(new URIList());
 		addRepresentation(new XML());
+		addRepresentation(new Velocity());
 	}
 
 	class URIList extends AbstractURIList<DataDoc> {
 		@Override
 		public Iterator<DataDoc> iterator() {
-			return dao.iterator();
+			return user.getDatas().iterator();
 		}
 	}
 
@@ -47,9 +48,15 @@ public class DatasResource extends AbstractUserResource {
 
 		@Override
 		public void addElements(Datas datas) {
-			for (DataDoc dataDoc : dao) {
+			for (DataDoc dataDoc : user.getDatas()) {
 				datas.addNewData().setHref(uriFactory.getURI(dataDoc));
 			}
+		}
+	}
+	
+	class Velocity extends OwnedVelocity {
+		public Velocity() {
+			super(user.getWorkflows(), "Data documents");
 		}
 	}
 

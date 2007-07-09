@@ -1,8 +1,13 @@
 package net.sf.taverna.service.rest.resources;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.rest.resources.JobResource.JobVelocityRepresentation;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.Capabilities;
 import net.sf.taverna.service.xml.CapabilitiesDocument;
 
@@ -16,7 +21,9 @@ public class CapabilitiesResource extends AbstractResource {
 	public CapabilitiesResource(Context context, Request request,
 		Response response) {
 		super(context, request, response);
+		addRepresentation(new CapabilitiesVelocityRepresentation());
 		addRepresentation(new XML());
+		
 	}
 
 	public class XML extends AbstractREST<Capabilities> {
@@ -36,6 +43,22 @@ public class CapabilitiesResource extends AbstractResource {
 				uriFactory.getURICurrentUser());
 			capabilities.addNewWorkers().setHref(
 				uriFactory.getURI(Worker.class));
+		}
+	}
+	
+	class CapabilitiesVelocityRepresentation extends VelocityRepresentation {
+		public CapabilitiesVelocityRepresentation() {
+			super("capabilities.vm");
+		}
+
+		@Override
+		protected Map<String, Object> getDataModel() {
+			Map<String, Object> model = new HashMap<String, Object>();
+			model.put("users", uriFactory.getURI(User.class));
+			model.put("currentUser", uriFactory.getURICurrentUser());
+			model.put("queues", uriFactory.getURI(Queue.class));
+			model.put("workers", uriFactory.getURI(Worker.class));
+			return model;
 		}
 	}
 

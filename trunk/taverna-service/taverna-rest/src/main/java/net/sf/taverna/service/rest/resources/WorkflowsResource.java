@@ -3,10 +3,14 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.WorkflowDAO;
+import net.sf.taverna.service.rest.resources.UserResource.UserVelocity;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.Workflows;
 import net.sf.taverna.service.xml.WorkflowsDocument;
 
@@ -26,6 +30,7 @@ public class WorkflowsResource extends AbstractUserResource {
 
 	public WorkflowsResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		addRepresentation(new Velocity());
 		addRepresentation(new URIList());
 		addRepresentation(new XML());
 	}
@@ -51,6 +56,12 @@ public class WorkflowsResource extends AbstractUserResource {
 			for (Workflow wf : user.getWorkflows()) {
 				workflows.addNewWorkflow().setHref(uriFactory.getURI(wf));
 			}
+		}
+	}
+	
+	class Velocity extends OwnedVelocity {
+		public Velocity() {
+			super(user.getWorkflows(), "Workflows");
 		}
 	}
 
@@ -88,7 +99,6 @@ public class WorkflowsResource extends AbstractUserResource {
 			return;
 		}
 		wf.setOwner(user);
-		user.getWorkflows().add(wf);
 		wfDao.create(wf);
 		daoFactory.commit();
 		logger.info("Created " + wf);
