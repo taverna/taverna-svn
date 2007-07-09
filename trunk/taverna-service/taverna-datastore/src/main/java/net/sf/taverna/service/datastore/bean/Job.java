@@ -162,5 +162,14 @@ public class Job extends AbstractOwned {
 		}
 		return getQueueEntry().getQueue();
 	}
+	
+	@Override
+	public void setOwner(User owner) {
+		if (getOwner() != null) {
+			getOwner().getJobs().remove(this);
+		}
+		super.setOwner(owner);
+		owner.getJobs().add(this);
+	}
 
 }

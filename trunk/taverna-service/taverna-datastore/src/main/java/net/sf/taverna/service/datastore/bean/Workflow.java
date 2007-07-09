@@ -36,5 +36,14 @@ public class Workflow extends AbstractOwned {
 		this.scufl = scufl;
 		setLastModified();
 	}
+	
+	@Override
+	public void setOwner(User owner) {
+		if (getOwner() != null) {
+			getOwner().getWorkflows().remove(this);
+		}
+		super.setOwner(owner);
+		owner.getWorkflows().add(this);
+	}
 
 }

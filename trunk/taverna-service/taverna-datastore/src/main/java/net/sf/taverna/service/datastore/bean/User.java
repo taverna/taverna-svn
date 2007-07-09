@@ -53,8 +53,16 @@ public class User extends AbstractDated {
 	private Date lastSeen = new Date();
 
 	@OneToMany(mappedBy = "owner")
-	protected List<Job> jobs = new ArrayList<Job>();
+	protected Collection<Job> jobs = new ArrayList<Job>();
 
+
+	@OneToMany(mappedBy = "owner")
+	@OrderBy("lastModified")
+	private Collection<Workflow> workflows = new ArrayList<Workflow>();
+
+	@OneToMany(mappedBy = "owner")
+	@OrderBy("lastModified")
+	private Collection<DataDoc> datas = new ArrayList<DataDoc>();
 
 	/**
 	 * Construct a user with a system generated (ie. UUID-based) username.
@@ -105,15 +113,10 @@ public class User extends AbstractDated {
 		return Arrays.equals(passwordHash, suggestedHash);
 	}
 
-	@OneToMany()
-	@OrderBy("lastModified")
-	private Collection<Workflow> workflows = new ArrayList<Workflow>();
 
+	
 	private boolean admin = false;
 
-	public Collection<Workflow> getWorkflows() {
-		return workflows;
-	}
 
 	/**
 	 * Generate a random salt. Each user normally has a unique salt, that is
@@ -163,8 +166,17 @@ public class User extends AbstractDated {
 		return digest.digest();
 	}
 
-	public List<Job> getJobs() {
+	public Collection<Job> getJobs() {
 		return jobs;
+	}
+	
+
+	public Collection<Workflow> getWorkflows() {
+		return workflows;
+	}
+	
+	public Collection<DataDoc> getDatas() {
+		return datas;
 	}
 
 	public String getEmail() {
@@ -173,6 +185,7 @@ public class User extends AbstractDated {
 
 	public void setEmail(String email) {
 		if (!email.contains("@")) {
+			// FIXME: Test stronger if email is valid
 			throw new IllegalArgumentException("Invalid email address");
 		}
 		this.email = email;
@@ -198,5 +211,7 @@ public class User extends AbstractDated {
 	public boolean isAdmin() {
 		return admin;
 	}
+
+
 	
 }

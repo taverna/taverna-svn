@@ -63,5 +63,14 @@ public class DataDoc extends AbstractOwned {
 	public void setDataMap(Map<String, DataThing> values) {
 		setBaclava(XMLUtils.makeDataDocument(values));
 	}
+	
+	@Override
+	public void setOwner(User owner) {
+		if (getOwner() != null) {
+			getOwner().getDatas().remove(this);
+		}
+		super.setOwner(owner);
+		owner.getDatas().add(this);
+	}
 
 }
