@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 public class ProcessJobExecutor implements JobExecutor {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ProcessJobExecutor.class);
 
 	private URIFactory uriFactory;
