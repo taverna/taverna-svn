@@ -28,6 +28,8 @@ public class TavernaService {
 	private static final String STOP_DB = "stopdb";
 
 	private static final String PORT = "port";
+	
+	private static final String VELOCITY = "velocity";
 
 	private static final String HELP = "help";
 
@@ -88,12 +90,21 @@ public class TavernaService {
 			port = (Integer) line.getOptionObject(PORT);
 		}
 		
-		URIFactory uriFactory = URIFactory.getInstance("http://localhost:" + port + "/v1/");
+		if (line.hasOption(VELOCITY)) {
+			VelocityRepresentation.setResourcePath(line.getOptionValue(VELOCITY));
+		} else {
+			System.err.println("Option -" + VELOCITY + " is required");
+			System.exit(1);
+		}
+		
+		// FIXME: Workers should be started from separate main with the URI in a
+		// configuration file
+		URIFactory uriFactory =
+			URIFactory.getInstance("http://localhost:" + port + "/"
+				+ URIFactory.V1 + "/");
 		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor(uriFactory);
 		queueMonitor.start();
 		
-		//FIXME: needs to be hard-coded path until we get the assembled application struture done.
-		//VelocityRepresentation.setResourcePath("/Users/sowen/java/workspace/taverna-service/taverna-service/src/main/webapp/html");
 		
 		RestApplication application = new RestApplication();
 		application.startServer(port);
@@ -131,7 +142,12 @@ public class TavernaService {
 				"Stop the Apache Derby server. The Taverna server is not started").create(
 				STOP_DB);
 		options.addOption(stopDb);
-
+		
+		Option velocity =
+			OptionBuilder.withDescription("Path to velocity templates").hasArg().withArgName(
+				VELOCITY).create(VELOCITY);
+		options.addOption(velocity);
+		
 		return options;
 	}
 }
