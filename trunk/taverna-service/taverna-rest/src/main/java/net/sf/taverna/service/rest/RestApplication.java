@@ -35,6 +35,7 @@ import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Filter;
 import org.restlet.Guard;
+import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
@@ -133,6 +134,14 @@ public class RestApplication extends Application {
 			new DaoCloseFilter(component.getContext(), router);
 		// Map /v1
 		component.getDefaultHost().attach("/" + URIFactory.V1, daoCloser);
+		
+		//  Redirector for anything else not matching
+		String template = "{op}v1/";
+		Route route = component.getDefaultHost().attach("/",
+			new Redirector(component.getContext(), template,
+				Redirector.MODE_CLIENT_TEMPORARY));
+		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
+		
 	}
 
 	public Component createComponent() {
