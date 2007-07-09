@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<title>$ownedType owned by $user.username</title>
+		<style type="text/css">
+		<!--
+		.created {
+			font-size: smaller;
+		}		
+		
+		/* -->
+		</style>
+	</head>
+	<body>
+			<h1>$ownedType owned by <a href="$userURI">$user.username</a></h1>
+			
+			<div class="collection">
+			
+			#foreach( $obj in $collection )
+				<div>
+				<a href="$uriFactory.getURI($obj)">
+					#if ($obj.name)
+						$obj.name
+					#else
+						$obj.id
+					#end
+				</a>
+				<span class="created">
+					Created at: $obj.created
+				</span>
+				
+				</div>
+			#end
+			
+			</div>
+			
+	</body>
+</html>

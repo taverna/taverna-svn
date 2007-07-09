@@ -1,0 +1,14 @@
+<html>
+	<head>
+		<title>Taverna service</title>
+	</head>
+	<body>
+		<h1>Taverna service</h1>
+		<ul class="capabilities">
+			<li class="users"><a href="$users">Users</a></li>
+			<li class="currentUser"><a href="$currentUser">Current user</a></li>
+			<li class="queues"><a href="$queues">Queues</a></li>
+			<li class="workers"><a href="$workers">Workers</a></li>
+		</ul>
+	</body>
+</html>
