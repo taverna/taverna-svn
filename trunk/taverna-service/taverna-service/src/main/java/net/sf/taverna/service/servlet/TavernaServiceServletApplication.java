@@ -1,5 +1,8 @@
 package net.sf.taverna.service.servlet;
 
+/**
+ * The Application used for running within a J2EE web application container.
+ */
 import net.sf.taverna.service.rest.RestApplication;
 
 import org.apache.log4j.Logger;
@@ -7,7 +10,6 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.Restlet;
-import org.restlet.Router;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
