@@ -49,7 +49,9 @@ public class UserRegisterResource extends AbstractResource {
 			String name = form.getValues("name");
 			String password = form.getValues("password");
 			String email = form.getValues("email");
+			String confirm = form.getValues("confirm");
 			try {
+				validate(name,password,confirm,email);
 				User user=createUser(name,password,email);
 				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(user));
 				getResponse().setStatus(Status.REDIRECTION_FOUND);
@@ -59,14 +61,24 @@ public class UserRegisterResource extends AbstractResource {
 			}
 		}
 	}
+	
+	private void validate(String name,String password,String confirm, String email) throws CreateUserException
+	{
+		if (name==null) throw new CreateUserException("You must provide a username");
+		if (password==null) throw new CreateUserException("You must provide a password");
+		if (confirm==null) throw new CreateUserException("You must confirm the passowrd");
+		if (email==null) throw new CreateUserException("You must provide a valid email address");
+		if (!password.equals(confirm)) throw new CreateUserException("The confirmation password does not match");
+		if (!email.contains("@")) throw new CreateUserException("The email address is invalid");
+		
+		UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
+		if (userDAO.readByUsername(name)!=null) throw new CreateUserException("The username '"+name+"' has already been taken.");
+	}
 
 	private User createUser(String name, String password, String email) throws CreateUserException {
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		UserDAO userDAO = daoFactory.getUserDAO();
 		User user=null;
-		
-		if (userDAO.readByUsername(name)!=null) throw new CreateUserException("The username '"+name+"' has already been taken.");
-		if (!email.contains("@")) throw new CreateUserException("The email address is invalid");
 		
 		try {
 			user = new User(name);
