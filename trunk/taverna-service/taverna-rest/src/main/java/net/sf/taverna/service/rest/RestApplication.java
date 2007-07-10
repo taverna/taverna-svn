@@ -137,7 +137,7 @@ public class RestApplication extends Application {
 		
 		//  Redirector for anything else not matching
 		String template = "{op}v1/";
-		Route route = component.getDefaultHost().attach("/",
+		Route route = component.getDefaultHost().attach("",
 			new Redirector(component.getContext(), template,
 				Redirector.MODE_CLIENT_TEMPORARY));
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);

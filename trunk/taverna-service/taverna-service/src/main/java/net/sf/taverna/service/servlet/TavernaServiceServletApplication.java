@@ -44,13 +44,6 @@ public class TavernaServiceServletApplication extends RestApplication {
 	}
 
 	@Override
-	protected void attachFilters(Component component, Router router) {
-		DaoCloseFilter daoCloser =
-			new DaoCloseFilter(component.getContext(), router);
-		component.getDefaultHost().attach("/v1", daoCloser);
-	}
-
-	@Override
 	protected void attachHTMLSource(Component component) {
 		//nothing needs to be done, this is handled by tomcat
 	}

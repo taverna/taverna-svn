@@ -54,10 +54,12 @@ public class JobResource extends AbstractJobResource {
 				DAOFactory.getFactory().getQueueEntryDAO().delete(entry);
 				DAOFactory.getFactory().getJobDAO().delete(job);
 				DAOFactory.getFactory().commit();
+				getResponse().setRedirectRef(getRequest().getReferrerRef());
+				getResponse().setStatus(Status.REDIRECTION_FOUND);
 			}
 			catch(Exception e) {
 				logger.error("An error occurred trying to delete the job:"+job.getId());
-				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "An error occurred trying to delete the job:"+e.getCause().getMessage());
 			}
 		}
 		else {
