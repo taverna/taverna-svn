@@ -65,6 +65,7 @@ public class UserRegisterResource extends AbstractResource {
 	private void validate(String name,String password,String confirm, String email) throws CreateUserException
 	{
 		if (name==null) throw new CreateUserException("You must provide a username");
+		if (!isAlphaNumeric(name)) throw new CreateUserException("The username must contain only alpha numeric characters and no spaces");
 		if (password==null) throw new CreateUserException("You must provide a password");
 		if (confirm==null) throw new CreateUserException("You must confirm the passowrd");
 		if (email==null) throw new CreateUserException("You must provide a valid email address");
@@ -75,6 +76,13 @@ public class UserRegisterResource extends AbstractResource {
 		if (userDAO.readByUsername(name)!=null) throw new CreateUserException("The username '"+name+"' has already been taken.");
 	}
 
+	private boolean isAlphaNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isLetterOrDigit(c)) return false;
+		}
+		return true;
+	}
+	
 	private User createUser(String name, String password, String email) throws CreateUserException {
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		UserDAO userDAO = daoFactory.getUserDAO();
