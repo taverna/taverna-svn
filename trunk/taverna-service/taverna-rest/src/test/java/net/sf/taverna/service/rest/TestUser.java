@@ -102,6 +102,8 @@ public class TestUser extends ClientTest {
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
 				justPassword);
 		request.setChallengeResponse(challengeResponse);
+		request.getClientInfo().getAcceptedMediaTypes().add(
+				new Preference<MediaType>(MediaType.TEXT_PLAIN));
 		response = client.handle(request);
 		assertEquals("Request did not succeed", Status.SUCCESS_OK,
 			response.getStatus());
@@ -152,6 +154,8 @@ public class TestUser extends ClientTest {
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.PUT);
+		request.getClientInfo().getAcceptedMediaTypes().add(
+				new Preference<MediaType>(restType));
 		ChallengeResponse challengeResponse =
 			new ChallengeResponse(ChallengeScheme.HTTP_BASIC, justUsername,
 				justPassword);
@@ -168,6 +172,8 @@ public class TestUser extends ClientTest {
 		request.setResourceRef(justCreated);
 		request.setMethod(Method.GET);
 		request.setChallengeResponse(challengeResponse);
+		request.getClientInfo().getAcceptedMediaTypes().add(
+				new Preference<MediaType>(MediaType.TEXT_PLAIN));
 		response = client.handle(request);
 		String result = response.getEntity().getText();
 		assertTrue(MediaType.TEXT_PLAIN.includes(response.getEntity().getMediaType()));

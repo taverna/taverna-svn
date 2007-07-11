@@ -17,6 +17,7 @@
 		<class>net.sf.taverna.service.datastore.bean.Worker</class>
 		<class>net.sf.taverna.service.datastore.bean.Queue</class>
 		<class>net.sf.taverna.service.datastore.bean.QueueEntry</class>
+		<class>net.sf.taverna.service.datastore.bean.Configuration</class>
 
 		<properties>
 			<property name="hibernate.archive.autodetection"

@@ -8,12 +8,14 @@ import javax.persistence.EntityManager;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.service.datastore.Util;
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.datastore.dao.ConfigurationDAO;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.DataDocDAO;
 import net.sf.taverna.service.datastore.dao.JobDAO;
@@ -153,5 +155,11 @@ public class JPADAOFactory extends DAOFactory {
 	@Override
 	public QueueEntryDAO getQueueEntryDAO() {
 		return new QueueEntryDAOImpl(getEntityManager());
+	}
+
+	@DAO(Configuration.class)
+	@Override
+	public ConfigurationDAO getConfigurationDAO() {
+		return new ConfigurationDAOImpl(getEntityManager());
 	}	
 }

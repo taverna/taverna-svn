@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
@@ -108,5 +109,8 @@ public abstract class DAOFactory {
 
 	@DAO(QueueEntry.class)
 	public abstract QueueEntryDAO getQueueEntryDAO();
+	
+	@DAO(Configuration.class)
+	public abstract ConfigurationDAO getConfigurationDAO();
 
 }

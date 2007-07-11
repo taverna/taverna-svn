@@ -45,6 +45,8 @@ public class TestWorkflow extends ClientTest {
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(useruri + "/workflows");
 		System.out.println("Checking " + request.getResourceRef());
+		request.getClientInfo().getAcceptedMediaTypes().add(
+				new Preference<MediaType>(restType));
 		request.setMethod(Method.GET);
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());

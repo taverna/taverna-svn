@@ -1,0 +1,50 @@
+package net.sf.taverna.service.datastore.bean;
+
+import javax.persistence.Entity;
+
+import org.hibernate.validator.NotNull;
+
+@Entity
+public class Configuration extends AbstractDated {
+
+	@NotNull
+	private boolean allowRegister = false;
+	
+	private String smtpServer;
+	private boolean smtpAuthRequired;
+	private String smtpUser;
+	private String smtpPassword;
+	
+	public boolean isAllowRegister() {
+		return allowRegister;
+	}
+	public void setAllowRegister(boolean allowRegister) {
+		this.allowRegister = allowRegister;
+	}
+	public boolean isSmtpAuthRequired() {
+		return smtpAuthRequired;
+	}
+	public void setSmtpAuthRequired(boolean smtpAuthRequired) {
+		this.smtpAuthRequired = smtpAuthRequired;
+	}
+	public String getSmtpPassword() {
+		return smtpPassword;
+	}
+	public void setSmtpPassword(String smtpPassword) {
+		this.smtpPassword = smtpPassword;
+	}
+	public String getSmtpServer() {
+		return smtpServer;
+	}
+	public void setSmtpServer(String smtpServer) {
+		this.smtpServer = smtpServer;
+	}
+	public String getSmtpUser() {
+		return smtpUser;
+	}
+	public void setSmtpUser(String smtpUser) {
+		this.smtpUser = smtpUser;
+	}
+	
+	
+}
