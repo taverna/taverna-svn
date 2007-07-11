@@ -3,17 +3,22 @@ package net.sf.taverna.service.rest.resources.representation;
 
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.restlet.data.MediaType;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.resource.Representation;
 
 public abstract class VelocityRepresentation extends AbstractRepresentation {
 
+	private static Logger logger = Logger
+			.getLogger(VelocityRepresentation.class);
+	
 	private static String resourcePath;
 	private String templateName;
 	
 	public static void setResourcePath(String path)
 	{
+		logger.info("Using velocity resource loader path of :"+path);
 		resourcePath=path;
 	}
 	
