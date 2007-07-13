@@ -24,6 +24,7 @@ import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.MediaType;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -365,6 +366,8 @@ public abstract class AbstractResource extends RepresentationalResource {
 	/**
 	 * An <code>text/uri-list</code> over UUIDResource's. The URIs will be
 	 * generated using {@link URIFactory}.
+	 * 
+	 * @see ReferenceList
 	 */
 	public abstract class AbstractURIList<ResourceType extends AbstractUUID> extends
 		AbstractText implements Iterable<ResourceType> {
@@ -374,6 +377,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 		@Override
 		public String getText() {
 			StringBuilder message = new StringBuilder();
+			
 			for (ResourceType resource : this) {
 				message.append(uriFactory.getURI(resource)).append("\r\n");
 			}
