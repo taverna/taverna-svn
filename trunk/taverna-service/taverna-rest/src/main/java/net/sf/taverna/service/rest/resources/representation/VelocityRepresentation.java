@@ -1,6 +1,5 @@
 package net.sf.taverna.service.rest.resources.representation;
 
-
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -10,22 +9,25 @@ import org.restlet.resource.Representation;
 
 public abstract class VelocityRepresentation extends AbstractRepresentation {
 
-	private static Logger logger = Logger
-			.getLogger(VelocityRepresentation.class);
-	
+	private static Logger logger =
+		Logger.getLogger(VelocityRepresentation.class);
+
 	private static String resourcePath;
+
 	private String templateName;
-	
-	public static void setResourcePath(String path)
-	{
-		logger.info("Using velocity resource loader path of :"+path);
-		resourcePath=path;
+
+	public static void setResourcePath(String path) {
+		if (path == null) {
+			throw new NullPointerException("Resource path can't be null");
+		}
+		logger.info("Using velocity resource loader path of :" + path);
+		resourcePath = path;
 	}
-	
+
 	public VelocityRepresentation(String templateName) {
-		this.templateName=templateName;
+		this.templateName = templateName;
 	}
-	
+
 	@Override
 	public MediaType getMediaType() {
 		return MediaType.TEXT_HTML;
@@ -33,12 +35,19 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 
 	@Override
 	public Representation getRepresentation() {
-		Map<String,Object> dataModel = getDataModel();
-		TemplateRepresentation result = new TemplateRepresentation(templateName,MediaType.TEXT_HTML);
-		result.getEngine().setProperty("file.resource.loader.path", resourcePath);
-		if (dataModel != null) result.setDataModel(dataModel);
+		Map<String, Object> dataModel = getDataModel();
+		TemplateRepresentation result =
+			new TemplateRepresentation(templateName, MediaType.TEXT_HTML);
+		if (resourcePath == null) {
+			logger.warn("Velocity resource path has not been set");
+			return null;
+		}
+		result.getEngine().setProperty("file.resource.loader.path",
+			resourcePath);
+		if (dataModel != null)
+			result.setDataModel(dataModel);
 		return result;
 	}
-	
-	protected abstract Map<String,Object> getDataModel();
+
+	protected abstract Map<String, Object> getDataModel();
 }
