@@ -22,13 +22,31 @@ public class TestJavaProcess {
 	}
 	
 	@Test
-	public void runProcess() throws IOException, ClassNotFoundException {
+	public void runProcessClasspath() throws IOException, ClassNotFoundException {
 		URL path = HelloWorld.class.getResource("/net/sf/taverna/service/util/HelloWorld.class");
 		assertNotNull(path);
 		URL root = new URL(path, "../../../../../");
 		
 		JavaProcess p = new JavaProcess(new URL[]{root},
 			"net.sf.taverna.service.util.HelloWorld");
+		assertFalse(p.isInherittingClasspath());
+		assertTrue(p.isRedirectingError());
+		p.addArguments("my", "arguments");
+		p.addArguments("added", "here");
+		p.addSystemProperty("fish", "soup");
+		p.addSystemProperty("very", "nice");
+		Process proc = p.run();
+		assertEquals("Hello world!\n" +
+				"[my, arguments, added, here]\n" +
+				"soup nice\n", IOUtils.toString(proc.getInputStream()));
+	}
+	
+	@Test
+	public void runProcessInherited() throws IOException, ClassNotFoundException {
+		JavaProcess p = new JavaProcess(
+			"net.sf.taverna.service.util.HelloWorld", getClass().getClassLoader());
+		assertTrue(p.isInherittingClasspath());
+		assertTrue(p.isRedirectingError());
 		p.addArguments("my", "arguments");
 		p.addArguments("added", "here");
 		p.addSystemProperty("fish", "soup");
