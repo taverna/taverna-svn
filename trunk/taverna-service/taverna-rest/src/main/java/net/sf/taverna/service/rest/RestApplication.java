@@ -181,7 +181,7 @@ public class RestApplication extends Application {
 		
 		userGuard.setNext(authenticated);
 		
-		// /admin/config
+		// /config
 		authenticated.attach("/"+URIFactory.getMapping(Configuration.class),ConfigurationResource.class);
 		
 		// /jobs/X
