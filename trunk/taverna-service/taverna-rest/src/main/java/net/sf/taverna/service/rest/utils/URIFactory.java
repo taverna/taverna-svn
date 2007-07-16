@@ -228,6 +228,10 @@ public class URIFactory {
 		return "/register";
 	}
 	
+	public static String getMappingAddUser() {
+		return "/add";
+	}
+	
 	/**
 	 * The mapping added to the URI of the {@link Job} to get the progress report.
 	 * 

@@ -11,11 +11,20 @@ public class Configuration extends AbstractDated {
 	private boolean allowRegister = false;
 	private boolean allowEmail = false;
 	
+	private String fromEmail;
 	private String smtpServer;
 	private boolean smtpAuthRequired;
 	private String smtpUser;
 	private String smtpPassword;
 	
+	
+	
+	public String getFromEmail() {
+		return fromEmail;
+	}
+	public void setFromEmail(String fromEmail) {
+		this.fromEmail = fromEmail;
+	}
 	public boolean isAllowEmailNotifications() {
 		return allowEmail;
 	}

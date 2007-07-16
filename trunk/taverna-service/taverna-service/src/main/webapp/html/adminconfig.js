@@ -3,6 +3,7 @@
 		function enableAll() {
 			var form=document.forms["configform"]
 			form.smtpserver.disabled=false;
+			form.fromemailaddress.disabled=false;
 			form.smtpauthrequired.disabled=false;
 			form.smtpusername.disabled=false;
 			form.smtppassword.disabled=false;
@@ -16,6 +17,16 @@
 		 if (form.allowemail.checked) {
 		 	if (form.smtpserver.value==null || form.smtpserver.value.length<=0) {
 		 		alert("You must provide an smtp server name");
+		 		return false;
+		 	}
+		 	
+		 	if (form.fromemailaddress.value==null || form.fromemailaddress.value.length==0) {
+		 		alert("You must provide a senders email address");
+		 		return false;
+		 	}
+		 	
+		 	if (form.fromemailaddress.value.indexOf("@")<=-1) {
+		 		alert("You must provide a valid email address");
 		 		return false;
 		 	}
 		 }
@@ -38,9 +49,11 @@
 			if (form.allowemail.checked) {
 				form.smtpserver.disabled=false;
 				form.smtpauthrequired.disabled=false;
+				form.fromemailaddress.disabled=false;
 			}
 			else {
 				form.smtpserver.disabled=true;
+				form.fromemailaddress.disabled=true;
 				form.smtpauthrequired.disabled=true;
 				form.smtpauthrequired.checked=false;
 			}

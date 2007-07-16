@@ -21,6 +21,7 @@ import net.sf.taverna.service.rest.resources.JobResource;
 import net.sf.taverna.service.rest.resources.JobStatusResource;
 import net.sf.taverna.service.rest.resources.JobsResource;
 import net.sf.taverna.service.rest.resources.QueueResource;
+import net.sf.taverna.service.rest.resources.UserAddResource;
 import net.sf.taverna.service.rest.resources.UserRegisterResource;
 import net.sf.taverna.service.rest.resources.UserResource;
 import net.sf.taverna.service.rest.resources.UsersResource;
@@ -203,12 +204,12 @@ public class RestApplication extends Application {
 		authenticated.attach("/" + URIFactory.getMapping(User.class)
 			+ URIFactory.getMappingCurrentUser(), CurrentUserResource.class);
 
+//		 /users/add
+		authenticated.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingAddUser(), UserAddResource.class);
+		
 		// /users/X
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER,
 			UserResource.class);
-
-//		authenticated.attach("/" + URIFactory.getMapping(Worker.class) + USER,
-//			UserResource.class);
 
 		// Collections - below user
 
