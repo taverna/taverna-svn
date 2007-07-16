@@ -2,28 +2,7 @@
 	<head>
 		<title>Admin Configuration</title>
 	</head>
-	<script language="javascript">
-		function validateDetails(form) {
-		 if (form.allowemail.checked) {
-		 	if (form.smtpserver.value==null || form.smtpserver.value.length<=0) {
-		 		alert("You must provide an smtp server name");
-		 		return false;
-		 	}
-		 }
-		 
-		 if (form.smtpauthrequired.checked) {
-		 	if (form.smtpusername.value==null || form.smtpusername.value.length<=0) {
-		 		alert("You must provide an smtp username");
-		 		return false;
-		 	}
-		 	if (form.smtppassword.value != form.smtppasswordconfirm.value) {
-		 		alert("The password and confirmation do not match");
-		 		return false;
-		 	}
-		 }
-		 return true;
-		}
-	</script>
+	#include("adminconfig.js")
 	<body>
 		<center><h1>Admin Configuration</h1>
 		#if ($currentuser.admin)
@@ -42,26 +21,30 @@
 				#set($smtpauthrequired_tag="CHECKED")
 			#end
 			
-			#if($errorMsg)
-				Error: $errorMsg<br>
+			#if($message)
+				#if ($isError)
+					Error: $message
+				#else
+					$message
+				#end
 			#end
 			
-			<form method="post">
+			<form name="configform" method="post">
 				<table>
 					<tr><td>Allow User Registration</td><td><input type="checkbox" name="allowregister" $allowregister_tag ></td></tr>
-					<tr><td>Allow Email Notifications</td><td><input type="checkbox" name="allowemail" $allowemail_tag ></td></tr>
+					<tr><td>Allow Email Notifications</td><td><input type="checkbox" name="allowemail" onChange="javascript:enableDisableElements()" $allowemail_tag ></td></tr>
 					<tr><td>SMTP Server</td><td><input type="text" name="smtpserver" value="$!smtpserver"></td></tr>
-					<tr><td>Authentication Required</td><td><input type="checkbox" name="smtpauthrequired" $smtpauthrequired_tag ></td></tr>
+					<tr><td>Authentication Required</td><td><input type="checkbox" name="smtpauthrequired" onChange="javascript:enableDisableElements()" $smtpauthrequired_tag ></td></tr>
 					<tr><td>Username</td><td><input type="text" name="smtpusername" value="$!smtpusername"></td></tr>
 					<tr><td>Password</td><td><input type="password" name="smtppassword" value="$!smtppassword"></td></tr>
 					<tr><td>Confirm</td><td><input type="password" name="smtppasswordconfirm" value="$!smtppasswordconfirm"></td></tr>
 					<tr><td><input type="submit" value="Update" onClick="return validateDetails(this.form)"/></td><td></td></tr>
+					<script language="javascript">enableDisableElements();</script>
 				</table>
 			</form>
 		#else
 			<h2>You need to be an administrator to view this page.</h2>
 			<script language="javascript">alert("Sorry, but this page is restricted to administrator users only!")</script>
 		#end
-	
 	</body>
 </html>

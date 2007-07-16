@@ -6,7 +6,6 @@ import java.util.Map;
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
-import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;
@@ -26,16 +25,11 @@ public class ConfigurationResource extends AbstractResource {
 		super(context, request, response);
 		addRepresentation(new ConfigVelocityRepresentation());
 	}
-	
-	
-	
+		
 	@Override
 	public boolean allowPost() {
 		return true;
 	}
-
-	
-
 
 	@Override
 	public void post(Representation entity) {
@@ -59,10 +53,9 @@ public class ConfigurationResource extends AbstractResource {
 			
 			try {
 				validate(allowRegister,allowEmail,smtpServer,smtpAuthRequired,username,password,confirm);
-				Configuration config=updateConfig(allowRegister,allowEmail,smtpServer,smtpAuthRequired,username,password);
+				updateConfig(allowRegister,allowEmail,smtpServer,smtpAuthRequired,username,password);
 				if (logger.isDebugEnabled()) logger.debug("Successfully updated the configuration");
-				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(config));
-				getResponse().setStatus(Status.REDIRECTION_FOUND);
+				getResponse().setEntity(new ConfigVelocityRepresentation("Successfully updated").getRepresentation());
 			}
 			catch(ConfigurationUpdateException e) {
 				logger.warn("Unable to update configuration:",e);
@@ -72,7 +65,7 @@ public class ConfigurationResource extends AbstractResource {
 		}
 	}
 	
-	private Configuration updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer, boolean smtpAuthRequired,String username,String password) throws ConfigurationUpdateException {
+	private void updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer, boolean smtpAuthRequired,String username,String password) throws ConfigurationUpdateException {
 		Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
 		if (config==null) throw new ConfigurationUpdateException("Unable to find configuration database record");
 		try {
@@ -93,7 +86,6 @@ public class ConfigurationResource extends AbstractResource {
 			logger.error("Error updating configuration",e);
 			throw new ConfigurationUpdateException("An internal error occurred trying to update the configuration:"+e.getMessage());
 		}
-		return config;
 	}
 	
 	private void validate(boolean allowRegister, boolean allowEmail, String smtpServer, boolean smtpAuthRequired,String username,String password, String confirmPassword) throws ConfigurationUpdateException {
@@ -121,7 +113,14 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("smtppassword",password);
 			model.put("smtppasswordconfirm",confirmPassword);
 			model.put("smtpauthrequired", smtpAuthRequired);
-			model.put("errorMsg",errorMsg);
+			model.put("message",errorMsg);
+			model.put("isError",true);
+		}
+		
+		public ConfigVelocityRepresentation(String successMsg) {
+			this();
+			model.put("message", successMsg);
+			model.put("isError", false);
 		}
 		
 		public ConfigVelocityRepresentation() {
