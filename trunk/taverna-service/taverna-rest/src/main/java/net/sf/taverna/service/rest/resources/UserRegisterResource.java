@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest.resources;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
@@ -56,7 +57,7 @@ public class UserRegisterResource extends AbstractResource {
 				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(user));
 				getResponse().setStatus(Status.REDIRECTION_FOUND);
 			} catch (CreateUserException e) {
-				getResponse().setEntity(new RegisterVelocityRepresentation(name,password,form.getValues("confirm"),email,e.getMessage()).getRepresentation());
+				getResponse().setEntity(new RegisterVelocityRepresentation(name,password,confirm,email,e.getMessage()).getRepresentation());
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 		}
@@ -121,6 +122,8 @@ public class UserRegisterResource extends AbstractResource {
 		
 		@Override
 		protected Map<String, Object> getDataModel() {
+			Configuration config=DAOFactory.getFactory().getConfigurationDAO().getConfig();
+			model.put("allowRegister", config.isAllowRegister());
 			return model;
 		}
 	}

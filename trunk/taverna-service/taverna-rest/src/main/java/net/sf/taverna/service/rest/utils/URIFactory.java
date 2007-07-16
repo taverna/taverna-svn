@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.AbstractUUID;
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
@@ -71,6 +72,7 @@ public class URIFactory {
 		resourceMap.put(User.class, "users");
 		resourceMap.put(Queue.class, "queues");
 		resourceMap.put(Worker.class, "workers");
+		resourceMap.put(Configuration.class, "config");
 	}
 
 	/**

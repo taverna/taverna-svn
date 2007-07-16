@@ -22,7 +22,7 @@ public class UserGuard extends Guard {
 	public static final String AUTHENTICATED_USER =
 		"UserGuard.authenticatedUser";
 
-	private static DAOFactory daoFactory = DAOFactory.getFactory();
+	protected static DAOFactory daoFactory = DAOFactory.getFactory();
 
 	public final static ChallengeScheme SCHEME = ChallengeScheme.HTTP_BASIC;
 

@@ -2,6 +2,7 @@ package net.sf.taverna.service.rest;
 
 import java.net.URL;
 
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
@@ -10,6 +11,7 @@ import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.CapabilitiesResource;
+import net.sf.taverna.service.rest.resources.ConfigurationResource;
 import net.sf.taverna.service.rest.resources.CurrentUserResource;
 import net.sf.taverna.service.rest.resources.DataResource;
 import net.sf.taverna.service.rest.resources.DatasResource;
@@ -28,6 +30,7 @@ import net.sf.taverna.service.rest.resources.WorkflowResource;
 import net.sf.taverna.service.rest.resources.WorkflowsResource;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
+import org.apache.batik.util.gui.URIChooser;
 import org.apache.log4j.Logger;
 import org.restlet.Application;
 import org.restlet.Component;
@@ -151,12 +154,14 @@ public class RestApplication extends Application {
 		
 		
 		Router router = new Router(component.getContext());
+		
 		attachFilters(component, router);
 
 		Guard userGuard = new UserGuard(router.getContext());
 
 		// Authenticate access to mostly anything
 		router.attach(userGuard);
+		
 		// /user (exact match) is not authenticated (for registering with POST)
 		Route route =
 			router.attach("/" + URIFactory.getMapping(User.class),
@@ -172,7 +177,13 @@ public class RestApplication extends Application {
 
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
+		
+		
 		userGuard.setNext(authenticated);
+		
+		// /admin/config
+		authenticated.attach("/"+URIFactory.getMapping(Configuration.class),ConfigurationResource.class);
+		
 		// /jobs/X
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB,
 			JobResource.class);
@@ -227,7 +238,6 @@ public class RestApplication extends Application {
 		authenticated.attach("/"+URIFactory.getMapping(Worker.class),WorkersResource.class);
 		authenticated.attach("/"+URIFactory.getMapping(Worker.class) + WORKER,WorkerResource.class);
 		// /workers/X
-		
 
 		return component;
 	}

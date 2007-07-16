@@ -16,6 +16,7 @@ import org.restlet.data.Status;
 
 public class WorkersResource extends AbstractResource {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(WorkersResource.class);
 	
 	public WorkersResource(Context context, Request request, Response response) {

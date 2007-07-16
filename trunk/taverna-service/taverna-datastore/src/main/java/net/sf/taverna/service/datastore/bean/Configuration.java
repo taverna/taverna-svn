@@ -9,12 +9,19 @@ public class Configuration extends AbstractDated {
 
 	@NotNull
 	private boolean allowRegister = false;
+	private boolean allowEmail = false;
 	
 	private String smtpServer;
 	private boolean smtpAuthRequired;
 	private String smtpUser;
 	private String smtpPassword;
 	
+	public boolean isAllowEmailNotifications() {
+		return allowEmail;
+	}
+	public void setAllowEmailNotifications(boolean allowEmailNotifications) {
+		this.allowEmail = allowEmailNotifications;
+	}
 	public boolean isAllowRegister() {
 		return allowRegister;
 	}
@@ -45,6 +52,4 @@ public class Configuration extends AbstractDated {
 	public void setSmtpUser(String smtpUser) {
 		this.smtpUser = smtpUser;
 	}
-	
-	
 }
