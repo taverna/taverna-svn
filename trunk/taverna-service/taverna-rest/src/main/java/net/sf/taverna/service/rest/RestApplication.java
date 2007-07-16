@@ -30,7 +30,6 @@ import net.sf.taverna.service.rest.resources.WorkflowResource;
 import net.sf.taverna.service.rest.resources.WorkflowsResource;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
-import org.apache.batik.util.gui.URIChooser;
 import org.apache.log4j.Logger;
 import org.restlet.Application;
 import org.restlet.Component;
