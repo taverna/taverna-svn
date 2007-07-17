@@ -6,6 +6,7 @@ import java.util.Iterator;
 import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.AbstractUUID;
+import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
@@ -251,6 +252,16 @@ public abstract class AbstractResource extends RepresentationalResource {
 		}
 
 		if (entity instanceof Data) {
+			for (Job job : worker.getWorkerJobs()) {
+				if (entity.equals(job.getInputs())) {
+					return true;
+				}
+				if (entity.equals(job.getOutputs())) {
+					return true;
+				}
+			}
+		}
+		if (entity instanceof DataDoc) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getInputs())) {
 					return true;

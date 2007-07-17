@@ -37,6 +37,7 @@ import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.restlet.data.Reference;
@@ -100,9 +101,9 @@ public class RestfulExecutionThread extends Thread {
 			String scufl = job.getWorkflow().getScufl();
 			launcher = constructWorkflowLauncher(scufl);
 			Map<String,DataThing> inputs = new HashMap<String, DataThing>();
-//			if (job.getInputs()!=null) {
-//				inputs=job.getInputs().
-//			}
+			if (job.getInputs()!=null) {
+				inputs=DataThingXMLFactory.parseDataDocument(new SAXBuilder().build(job.getInputs().getBaclavaStream()));
+			}
 			job.setStatus(StatusType.RUNNING);
 			
 			GDuration updateInterval = job.getUpdateInterval();

@@ -13,6 +13,4 @@ public class AbstractNamed extends AbstractDated {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
 }

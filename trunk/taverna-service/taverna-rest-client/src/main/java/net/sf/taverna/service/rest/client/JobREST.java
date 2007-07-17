@@ -73,7 +73,12 @@ public class JobREST extends OwnedREST<Job> {
 	}
 
 	public DataREST getInputs() {
-		return new DataREST(context, getDocument().getInputs());
+		if (getDocument().getInputs()!=null) {
+			return new DataREST(context, getDocument().getInputs());
+		}
+		else {
+			return null;
+		}
 	}
 
 	public DataREST getOutputs() {

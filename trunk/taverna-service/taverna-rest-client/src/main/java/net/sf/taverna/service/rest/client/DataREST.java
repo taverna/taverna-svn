@@ -39,7 +39,6 @@ public class DataREST extends OwnedREST<Data> {
 			return response.getEntity().getStream();
 		}
 		
-		
 		/**
 		 * Set the owner of the resource, or set to <code>null</code> if the
 		 * resource is to have no owner.
