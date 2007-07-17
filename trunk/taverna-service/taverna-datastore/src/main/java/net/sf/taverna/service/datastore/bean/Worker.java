@@ -23,6 +23,8 @@ public class Worker extends User {
 	@OneToMany(mappedBy = "worker", fetch=FetchType.EAGER)
 	private List<Job> workerJobs = new ArrayList<Job>();
 	
+	private String workerPwd;
+	
 	public boolean isBusy() {
 		for (Job j : getWorkerJobs()) {
 			if (j.getStatus().equals(Status.RUNNING) || j.getStatus().equals(Status.DEQUEUED)) return true;
@@ -39,6 +41,20 @@ public class Worker extends User {
 		return false;
 	}
 	
+	@Override
+	public void setPassword(String password) {
+		super.setPassword(password);
+		getWorkerPasswordStr(password);
+	}
+
+	public String getWorkerPasswordStr() {
+		return workerPwd;
+	}
+
+	public void getWorkerPasswordStr(String passwordStr) {
+		this.workerPwd = passwordStr;
+	}
+
 	public List<Job> getWorkerJobs() {
 		return workerJobs;
 	}

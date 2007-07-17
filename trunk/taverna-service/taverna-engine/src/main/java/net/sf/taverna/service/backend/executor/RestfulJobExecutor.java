@@ -18,7 +18,7 @@ public class RestfulJobExecutor implements JobExecutor {
 	public void executeJob(Job job, Worker worker) {
 		RestfulExecutionThread thread =
 			new RestfulExecutionThread(uriFactory.getURI(job),
-				uriFactory.getApplicationRoot().toString(), worker.getUsername(), "Bob");
+				uriFactory.getApplicationRoot().toString(), worker.getUsername(), worker.getWorkerPasswordStr());
 		thread.setDaemon(true);
 		thread.start();
 	}

@@ -29,9 +29,12 @@ public class TestWorker extends TestDAO {
 	public void makeWorker() {
 		WorkerDAO workerDao = daoFactory.getWorkerDAO();
 		Worker worker = new Worker();
-		worker.setPassword(User.generatePassword());
+		worker.setPassword("ABCDE");
 		workerDao.create(worker);
 		daoFactory.commit();
+		worker=daoFactory.getWorkerDAO().read(worker.getId());
+		assertEquals("ABCDE",worker.getWorkerPasswordStr());
+		assertTrue(worker.checkPassword("ABCDE"));
 	}
 
 	@Test(expected = PersistenceException.class)

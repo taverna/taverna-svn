@@ -23,7 +23,7 @@ public class ProcessJobExecutor implements JobExecutor {
 		String baseUri = uriFactory.getApplicationRoot().toString();
 		String username = worker.getUsername();
 		// FIXME: Use slightly better passwords, and don't hardcode
-		String password = "Bob";
+		String password = worker.getWorkerPasswordStr();
 		
 		RavenProcess raven = new RavenProcess("uk.org.mygrid.tavernaservice", "taverna-engine", "1.0.0", "net.sf.taverna.service.RestfulExecutionProcess", "main");
 		raven.addArguments("-base", baseUri);

@@ -31,7 +31,7 @@ public class WorkersResource extends AbstractResource {
 	public void handlePost() {
 		try {
 			Worker worker = new Worker();
-			worker.setPassword("Bob"); //FIXME: hard-coded password
+			worker.setPassword(Worker.generatePassword()); 
 			worker.setQueue(daoFactory.getQueueDAO().defaultQueue());
 			DAOFactory.getFactory().getWorkerDAO().create(worker);
 			DAOFactory.getFactory().commit();
