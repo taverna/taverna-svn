@@ -185,36 +185,41 @@ public abstract class AbstractResource extends RepresentationalResource {
 		if (authUser!=null && authUser.isAdmin()) {
 			return true;
 		}
+		
 		if (entity instanceof User) {
 			logger.debug("Comparing " + entity + " with " + authUser);
 			// Users can access their own user
 			if (entity.equals(authUser))
 				return true;
 		}
-		if (!(entity instanceof AbstractOwned)) {
-			logger.debug("Not ownable resource, access granted");
-			// All non-owned resources are free to access
-			// (Unless an overloaded version of this method says otherwise)
-			return true;
+		if (entity instanceof AbstractOwned) {
+//			 Owned resources only readable by owner
+			AbstractOwned owned = (AbstractOwned) entity;
+			if (owned.getOwner() == null) {
+				logger.debug("Not owned resource, access granted");
+				// No owner, also readable by all
+				return true;
+			}
+			logger.debug("Comparing owner " + owned.getOwner() + " with " + authUser);
+			if (owned.getOwner().equals(authUser)) {
+				return true;
+			}
 		}
-		// Owned resources only readable by owner
-		AbstractOwned owned = (AbstractOwned) entity;
-		if (owned.getOwner() == null) {
-			logger.debug("Not owned resource, access granted");
-			// No owner, also readable by all
-			return true;
+		else {
+			if (!(entity instanceof User)) { //anything, other than User, that is not owned should be accessible
+				return true;
+			}
 		}
-		logger.debug("Comparing owner " + owned.getOwner() + " with " + authUser);
-		if (owned.getOwner().equals(authUser)) {
-			return true;
-		}
+		
 		if (authUser instanceof Worker
 			&& isWorkerAuthorized((Worker) authUser, entity)) {
 			return true;
 		}
+		
 		return false;
 
 	}
+
 
 	private boolean isWorkerAuthorized(Worker worker, AbstractBean entity) {
 		//refresh the worker to ensure the list of worker jobs is up to date.
