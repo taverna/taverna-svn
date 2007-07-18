@@ -4,20 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Configuration;
-import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
-import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.Representation;
 
 /**
  * Resource responsible for user registration. Its based around a Velocity template named register.vm
@@ -26,6 +19,7 @@ import org.restlet.resource.Representation;
  *
  */
 public class UserRegisterResource extends AbstractUserCreationResource {
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(UserRegisterResource.class);
 
 	public UserRegisterResource(Context context, Request request, Response response) {
@@ -38,7 +32,7 @@ public class UserRegisterResource extends AbstractUserCreationResource {
 	
 	
 
-	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, CreateUserException e) {
+	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e) {
 		return new RegisterVelocityRepresentation(name,password,confirm,email,e.getMessage());
 	}
 	

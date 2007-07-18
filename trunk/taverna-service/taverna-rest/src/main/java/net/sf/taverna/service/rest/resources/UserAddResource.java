@@ -23,7 +23,7 @@ public class UserAddResource extends AbstractUserCreationResource {
 	}
 
 	@Override
-	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, CreateUserException e) {
+	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e) {
 		return new AddUserVelocityRepresentation(name,password,confirm,email,e.getMessage());
 	}
 

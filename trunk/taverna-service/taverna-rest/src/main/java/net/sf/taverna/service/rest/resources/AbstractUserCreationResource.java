@@ -4,6 +4,8 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
+import net.sf.taverna.service.rest.resources.util.UserDetailsValidator;
+import net.sf.taverna.service.rest.resources.util.UserValidationException;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.apache.log4j.Logger;
@@ -48,32 +50,16 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 				User user=createUser(name,password,email);
 				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(user));
 				getResponse().setStatus(Status.REDIRECTION_FOUND);
-			} catch (CreateUserException e) {
+			} catch (Exception e) {
 				getResponse().setEntity(getVelocityRepresentationForError(name, password, email, confirm, e).getRepresentation());
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-			}
+			} 
 		}
 	}
 	
-	private void validate(String name,String password,String confirm, String email) throws CreateUserException
+	public void validate(String name,String password,String confirm, String email) throws UserValidationException
 	{
-		if (name==null) throw new CreateUserException("You must provide a username");
-		if (!isAlphaNumeric(name)) throw new CreateUserException("The username must contain only alpha numeric characters and no spaces");
-		if (password==null) throw new CreateUserException("You must provide a password");
-		if (confirm==null) throw new CreateUserException("You must confirm the passowrd");
-		if (email==null) throw new CreateUserException("You must provide a valid email address");
-		if (!password.equals(confirm)) throw new CreateUserException("The confirmation password does not match");
-		if (!email.contains("@")) throw new CreateUserException("The email address is invalid");
-		
-		UserDAO userDAO = DAOFactory.getFactory().getUserDAO();
-		if (userDAO.readByUsername(name)!=null) throw new CreateUserException("The username '"+name+"' has already been taken.");
-	}
-
-	private boolean isAlphaNumeric(String str) {
-		for (char c : str.toCharArray()) {
-			if (!Character.isLetterOrDigit(c)) return false;
-		}
-		return true;
+		UserDetailsValidator.validate(name, password, confirm, email);
 	}
 	
 	private User createUser(String name, String password, String email) throws CreateUserException {
@@ -95,7 +81,7 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 	}
 	
 	protected abstract VelocityRepresentation getVelocityRepresentation();
-	protected abstract VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, CreateUserException e);
+	protected abstract VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e);
 	
 	@SuppressWarnings("serial")
 	class CreateUserException extends Exception {

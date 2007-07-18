@@ -232,6 +232,10 @@ public class URIFactory {
 		return "/add";
 	}
 	
+	public static String getMappingEditUser() {
+		return "/edit";
+	}
+	
 	/**
 	 * The mapping added to the URI of the {@link Job} to get the progress report.
 	 * 
