@@ -107,6 +107,7 @@ public class TavernaService {
 		
 		
 		RestApplication application = new RestApplication();
+		
 		application.startServer(port);
 	}
 

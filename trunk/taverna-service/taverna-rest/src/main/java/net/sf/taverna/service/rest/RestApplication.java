@@ -70,10 +70,31 @@ public class RestApplication extends Application {
 
 	public RestApplication(Context context) {
 		super(context);
+		init();
 	}
 
 	public RestApplication() {
 		super();
+		init();
+	}
+	
+	/**
+	 * Do some pre-start initialisation.
+	 * 
+	 * This includes 
+	 * <ul>
+	 * 	<li>Creating a default worker, so there is always at least 1</li>
+	 * </ul>
+	 */
+	private void init() {
+		createDefaultWorker();
+	}
+	
+	private void createDefaultWorker() {
+		if (daoFactory.getWorkerDAO().all().size()==0) {
+			logger.info("No workers exist. Creating a default worker");
+			WorkerInitialisation.createNew();
+		}
 	}
 
 	@Override

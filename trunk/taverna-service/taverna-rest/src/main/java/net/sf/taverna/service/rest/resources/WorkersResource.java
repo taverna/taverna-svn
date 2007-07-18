@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.rest.WorkerInitialisation;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 
 import org.apache.log4j.Logger;
@@ -30,13 +31,14 @@ public class WorkersResource extends AbstractResource {
 
 	public void handlePost() {
 		try {
-			Worker worker = new Worker();
-			worker.setPassword(Worker.generatePassword()); 
-			worker.setQueue(daoFactory.getQueueDAO().defaultQueue());
-			DAOFactory.getFactory().getWorkerDAO().create(worker);
-			DAOFactory.getFactory().commit();
-			getResponse().setRedirectRef(getRequest().getReferrerRef());
-			getResponse().setStatus(Status.REDIRECTION_FOUND);
+			if (getAuthUser().isAdmin()) {
+				WorkerInitialisation.createNew();
+				getResponse().setRedirectRef(getRequest().getReferrerRef());
+				getResponse().setStatus(Status.REDIRECTION_FOUND);
+			}
+			else {
+				getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+			}
 		}
 		catch(Throwable e) {
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "An error occurred creating the worker: "+e.getCause().getMessage());
@@ -54,7 +56,6 @@ public class WorkersResource extends AbstractResource {
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("workers", workers);
 			boolean isAdmin = getAuthUser().isAdmin();
-			isAdmin=true; //FIXME: REMOVE-forced to true just for development.
 			result.put("isAdmin", isAdmin);
 			return result;
 		}

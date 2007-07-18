@@ -23,7 +23,7 @@
 				    </td>
 				    #if ($isAdmin && !$worker.isBusy())
 				    	<td>
-				    	<form method="POST" action="$worker.getId()?method=delete">
+				    	<form method="POST" action="$worker.getId()?method=DELETE">
 				    		<input type="Submit" value="Delete"/>
 	    				</form>
 	    				</td>

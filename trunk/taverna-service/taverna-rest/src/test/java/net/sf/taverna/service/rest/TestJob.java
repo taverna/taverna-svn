@@ -1,9 +1,9 @@
 package net.sf.taverna.service.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -31,7 +31,6 @@ import org.restlet.data.Status;
 
 public class TestJob extends ClientTest {
 
-	private static String lastJob;
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 	private net.sf.taverna.service.datastore.bean.Job job;
 	private String jobURI;
@@ -66,7 +65,10 @@ public class TestJob extends ClientTest {
 		assertNotNull(jobBean);
 		
 		Queue q = daoFactory.getQueueDAO().defaultQueue();
-		assertTrue(q.getJobs().contains(jobBean));
+		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getQueue());
+		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getStatus());
+		assertEquals("The jobs queue should equal the default queue",q,jobBean.getQueue());
+		assertTrue("The default queue should now contain the new job",q.getJobs().contains(jobBean));
 		
 		assertEquals("job should be queued status",net.sf.taverna.service.datastore.bean.Job.Status.QUEUED,jobBean.getStatus());
 	}
