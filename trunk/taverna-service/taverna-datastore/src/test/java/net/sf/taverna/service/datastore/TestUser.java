@@ -7,6 +7,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
+import java.util.List;
 
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.UserDAO;
@@ -72,6 +73,32 @@ public class TestUser extends TestDAO {
 		userDao.create(user);
 		daoFactory.commit();
 		assertTrue(user.checkPassword(pw));
+	}
+	
+	@Test
+	public void getAdmins() {
+		UserDAO userDao = daoFactory.getUserDAO();
+		List<User> all = userDao.all();
+		for (User u : all) if (u.isAdmin()) userDao.delete(u);
+		
+		assertEquals("There should be no admins present",0,userDao.admins().size());
+		
+		User u = new User("God");
+		u.setPassword("Gabr13l");
+		u.setAdmin(true);
+		userDao.create(u);
+		
+		assertEquals("There should be 1 admins present",1,userDao.admins().size());
+		
+		User u2 = new User("Root");
+		u2.setPassword("G0D");
+		u2.setAdmin(true);
+		userDao.create(u2);
+		
+		assertEquals("There should be 2 admins present",2,userDao.admins().size());
+		
+		userDao.delete(u);
+		userDao.delete(u2);
 	}
 	
 }

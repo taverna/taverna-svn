@@ -24,7 +24,8 @@ import org.hibernate.validator.NotNull;
 @Table(name = "Users")
 @NamedQueries(value = {
 		@NamedQuery(name = User.NAMED_QUERY_ALL, query = "SELECT u FROM User u ORDER BY u.created DESC"),
-		@NamedQuery(name = User.NAMED_QUERY_USER, query = "SELECT u FROM User u WHERE u.username=:username") })
+		@NamedQuery(name = User.NAMED_QUERY_USER, query = "SELECT u FROM User u WHERE u.username=:username"), 
+		@NamedQuery(name = User.NAMED_QUERY_ADMINS,query = "SELECT u FROM User u WHERE u.admin = true")})
 public class User extends AbstractDated {
 
 	private static final int SALT_SIZE = 16;
@@ -36,6 +37,8 @@ public class User extends AbstractDated {
 	public static final String NAMED_QUERY_ALL = "allUsers";
 
 	public static final String NAMED_QUERY_USER = "userByName";
+	
+	public static final String NAMED_QUERY_ADMINS = "userByAdmin";
 
 	@NotNull
 	@Column(unique = true, nullable = false)
