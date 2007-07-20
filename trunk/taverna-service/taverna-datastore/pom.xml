@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.0</version>
+			<version>4.3.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -97,13 +97,6 @@
 			<artifactId>c3p0</artifactId>
 			<version>0.9.1</version>
 		</dependency>
-
-		<!--<dependency>
-			<groupId>hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>1.8.0.7</version>
-			</dependency>-->
-
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
@@ -130,26 +123,6 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2</version>
 		</dependency>
-
-		<!-- EJB --><!--
-			<dependency>
-			<groupId>geronimo-spec</groupId>
-			<artifactId>geronimo-spec-j2ee</artifactId>
-			<version>1.4-rc4</version>
-			</dependency>
-			<dependency>
-			<groupId>geronimo-spec</groupId>
-			<artifactId>geronimo-spec-ejb</artifactId>
-			<version>2.1-rc4</version>
-			</dependency>
-			
-		-->
-		<!--<dependency>
-			<groupId>org.apache.openjpa</groupId>
-			<artifactId>openjpa-all</artifactId>
-			<version>0.9.6-incubating</version>
-			</dependency>-->
-
 	</dependencies>
 	<build>
 		<extensions>

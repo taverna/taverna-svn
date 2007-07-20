@@ -51,12 +51,6 @@ public class URIFactory {
 
 	private Reference applicationRoot;
 	
-	/**
-	 * For future use, like generating relative URIs.
-	 * 
-	 */
-	private Request request;
-
 	private String htmlRoot;
 
 	/**

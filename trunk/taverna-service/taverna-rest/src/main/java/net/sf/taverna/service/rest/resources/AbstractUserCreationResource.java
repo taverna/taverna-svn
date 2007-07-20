@@ -62,7 +62,7 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 		UserDetailsValidator.validate(name, password, confirm, email);
 	}
 	
-	private User createUser(String name, String password, String email) throws CreateUserException {
+	protected User createUser(String name, String password, String email) throws CreateUserException {
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		UserDAO userDAO = daoFactory.getUserDAO();
 		User user=null;

@@ -10,6 +10,7 @@ import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.rest.resources.AdminCreationResource;
 import net.sf.taverna.service.rest.resources.CapabilitiesResource;
 import net.sf.taverna.service.rest.resources.ConfigurationResource;
 import net.sf.taverna.service.rest.resources.CurrentUserResource;
@@ -43,9 +44,12 @@ import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.data.MediaType;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.util.Template;
 
 public class RestApplication extends Application {
@@ -129,14 +133,49 @@ public class RestApplication extends Application {
 		component = null;
 	}
 
-	public class DaoCloseFilter extends Filter {
-		public DaoCloseFilter(Context context, Restlet next) {
+	public class AdminPresentFilter extends Filter {
+		private boolean adminFound=false;
+		private Restlet orginalNext;
+		
+		public AdminPresentFilter(Context context, Restlet next) {
 			super(context, next);
+			orginalNext=next;
 		}
 
 		@Override
+		protected void beforeHandle(Request req, Response resp) {
+			super.beforeHandle(req, resp);
+			if (req.getMethod().equals(Method.GET)) {
+				checkForAdmin(req,resp);
+			}
+		}
+		
+		private void checkForAdmin(Request req, Response resp) {
+			if (!adminFound) { //only check once. Once an admin exists it cannot be demoted.
+				if (daoFactory.getUserDAO().admins().size()==0) {
+					setNext(AdminCreationResource.class);
+				}
+				else {
+					adminFound=true;
+					setNext(orginalNext);
+				}
+			}
+		}
+	}
+	
+	public class DaoCloseFilter extends Filter {
+
+		public DaoCloseFilter(Context context, Restlet next) {
+			super(context, next);
+		}
+		
+		@Override
 		protected void afterHandle(Request req, Response response) {
 			super.afterHandle(req, response);
+			closeDao();
+		}
+
+		private void closeDao() {
 			try {
 				daoFactory.rollback();
 			} catch (IllegalStateException ex) { // Expected
@@ -157,8 +196,9 @@ public class RestApplication extends Application {
 	protected void attachFilters(Component component, Router router) {
 		DaoCloseFilter daoCloser =
 			new DaoCloseFilter(component.getContext(), router);
+		AdminPresentFilter adminFilter=new AdminPresentFilter(component.getContext(),daoCloser);
 		// Map /v1
-		component.getDefaultHost().attach("/" + URIFactory.V1, daoCloser);
+		component.getDefaultHost().attach("/" + URIFactory.V1, adminFilter);
 		
 		//  Redirector for anything else not matching
 		String template = "{op}v1/";

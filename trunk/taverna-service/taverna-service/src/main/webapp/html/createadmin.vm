@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<title>Admin Registration</title>
+	</head>
+</html>
+#include("uservalidate.js")
+<script language="javascript">
+	
+	function validateDetails(form) {
+		var name=form.name.value;
+		var password=form.password.value;
+		var confirm=form.confirm.value;
+		var email=form.email.value;
+		
+		if (validateName(name) && validatePasswords(password,confirm) && validateEmail(email))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+</script>
+<body>
+	
+	
+<center>
+	
+<h1>Admin Registration</h1>
+<p>Before you can use the system you must first create an admin user</p>
+
+#if ($errorMsg)
+Error: $errorMsg<br>
+#end
+
+<form name="register" method="POST">
+<table>
+<tr><td>Username:</td><td><input type="text" name="name" value="$!name"/></td></tr>
+<tr><td>Password:</td><td><input type="password" name="password" value="$!password"/></td></tr>
+<tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
+<tr><td>Email:</td><td><input type="text" name="email" value="$!email"/></td></tr>
+<tr><td></td><td><input type="submit" value="Register" onClick="return validateDetails(this.form)"/></td><td></td></tr>
+</table>
+</form>
+
+</center>
+</body>
+<html>
