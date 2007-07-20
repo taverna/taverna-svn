@@ -84,7 +84,6 @@ public class URIFactory {
 	 * @param request
 	 */
 	public URIFactory(Request request) {
-		this.request = request;
 		setApplicationRoot(request.getRootRef());
 	}
 
