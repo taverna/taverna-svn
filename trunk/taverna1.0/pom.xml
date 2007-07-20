@@ -179,6 +179,7 @@
 				</property>
 			</activation>
 			<modules>
+				<module>archetypes</module>
 				<module>baclava</module>
 				<module>scufl</module>
 				<module>perspectives</module>
