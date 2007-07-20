@@ -56,6 +56,25 @@
 
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>repository</id>
+			<name>My Repository</name>
+			<url>
+				
+			</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>snapshot-repository</id>
+			<name>My Snapshot Repository</name>
+			<url>
+				
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
