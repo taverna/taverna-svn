@@ -33,7 +33,7 @@
 	<!-- Map /rest/* requests to Restlet -->
 	<servlet-mapping>
 		<servlet-name>RestletServlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 
 	<listener>
