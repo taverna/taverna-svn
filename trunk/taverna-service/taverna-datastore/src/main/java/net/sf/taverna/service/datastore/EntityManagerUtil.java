@@ -26,5 +26,4 @@ public class EntityManagerUtil {
 		}
 		factory = null;
 	}
-	
 }
