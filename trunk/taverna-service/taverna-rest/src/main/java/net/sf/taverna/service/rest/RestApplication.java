@@ -44,12 +44,10 @@ import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.util.Template;
 
 public class RestApplication extends Application {
