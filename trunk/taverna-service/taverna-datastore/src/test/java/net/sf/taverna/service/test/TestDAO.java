@@ -1,6 +1,6 @@
 package net.sf.taverna.service.test;
 
-import net.sf.taverna.service.datastore.Util;
+import net.sf.taverna.service.datastore.EntityManagerUtil;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 
 import org.junit.After;
@@ -50,7 +50,7 @@ public abstract class TestDAO extends TestCommon {
 		
 	@AfterClass
 	public static void disconnect() {        
-		Util.close();
+		EntityManagerUtil.close();
 	}
 	
 }

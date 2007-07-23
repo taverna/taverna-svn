@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.service.datastore.Util;
+import net.sf.taverna.service.datastore.EntityManagerUtil;
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
@@ -65,7 +65,7 @@ public class JPADAOFactory extends DAOFactory {
 				if (! create) {
 					return null;
 				}
-				em = Util.createEntityManager();
+				em = EntityManagerUtil.createEntityManager();
 				managers.put(Thread.currentThread(), em);
 			}
 		}

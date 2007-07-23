@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 
-public class Util {
+public class EntityManagerUtil {
 
 	public static final String PERSISTENCE_UNIT = "tavernaService";
 	

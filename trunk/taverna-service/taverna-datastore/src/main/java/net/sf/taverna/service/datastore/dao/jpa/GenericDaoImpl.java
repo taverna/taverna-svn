@@ -7,11 +7,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
-import org.hibernate.Session;
-
 import net.sf.taverna.service.datastore.bean.AbstractBean;
 import net.sf.taverna.service.datastore.dao.GenericDao;
+
+import org.apache.log4j.Logger;
 
 public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, PrimaryKey extends Serializable>
 	implements GenericDao<Bean, PrimaryKey> {
