@@ -38,7 +38,39 @@ public class LocalServiceScavenger extends Scavenger {
 
 	private static Map<String, Scavenger> workerList = new HashMap<String, Scavenger>();
 
-	static {
+	/**
+	 * Create a new local service scavenger
+	 */
+	public LocalServiceScavenger() throws ScavengerCreationException {
+		super("Local Java widgets");
+		initialiseLocalWorkers();
+		// Get all the categories and create nodes
+		Map<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
+		for (Iterator i = workerList.keySet().iterator(); i.hasNext();) {
+			String key = (String) i.next();
+			Scavenger s = workerList.get(key);
+			String category = "default";
+			if (key.split(":").length == 2) {
+				category = key.split(":")[0];
+			}
+			// If the category doesn't exist create it
+			DefaultMutableTreeNode categoryNode;
+			if (nodeMap.containsKey(category)) {
+				categoryNode = nodeMap.get(category);
+			} else {
+				categoryNode = new DefaultMutableTreeNode(category);
+				nodeMap.put(category, categoryNode);
+			}
+			categoryNode.add(s);
+		}
+		// for all available local widgets, add them as
+		// children to this scavenger.
+		for (Iterator i = nodeMap.values().iterator(); i.hasNext();) {
+			add((DefaultMutableTreeNode) i.next());
+		}
+	}
+	
+	private void initialiseLocalWorkers() {
 		try {
 			Properties properties = new Properties();
 			List<LocalWorker> workers = LocalWorkerRegistry.instance()
@@ -82,37 +114,6 @@ public class LocalServiceScavenger extends Scavenger {
 		} catch (Exception e) {
 			logger.error("Failure in initialization of LocalWorker scavenger",
 					e);
-		}
-	}
-
-	/**
-	 * Create a new local service scavenger
-	 */
-	public LocalServiceScavenger() throws ScavengerCreationException {
-		super("Local Java widgets");
-		// Get all the categories and create nodes
-		Map<String, DefaultMutableTreeNode> nodeMap = new HashMap<String, DefaultMutableTreeNode>();
-		for (Iterator i = workerList.keySet().iterator(); i.hasNext();) {
-			String key = (String) i.next();
-			Scavenger s = workerList.get(key);
-			String category = "default";
-			if (key.split(":").length == 2) {
-				category = key.split(":")[0];
-			}
-			// If the category doesn't exist create it
-			DefaultMutableTreeNode categoryNode;
-			if (nodeMap.containsKey(category)) {
-				categoryNode = nodeMap.get(category);
-			} else {
-				categoryNode = new DefaultMutableTreeNode(category);
-				nodeMap.put(category, categoryNode);
-			}
-			categoryNode.add(s);
-		}
-		// for all available local widgets, add them as
-		// children to this scavenger.
-		for (Iterator i = nodeMap.values().iterator(); i.hasNext();) {
-			add((DefaultMutableTreeNode) i.next());
 		}
 	}
 
