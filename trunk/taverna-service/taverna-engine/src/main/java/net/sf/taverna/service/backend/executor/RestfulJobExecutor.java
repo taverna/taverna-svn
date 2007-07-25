@@ -7,6 +7,8 @@ import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 public class RestfulJobExecutor implements JobExecutor {
+	
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(RestfulJobExecutor.class);
 
 	private URIFactory uriFactory;
