@@ -39,8 +39,6 @@ public class JobResource extends AbstractJobResource {
 		return true;
 	}
 	
-	
-	
 	@Override
 	public boolean allowDelete() {
 		return true;
@@ -186,6 +184,29 @@ public class JobResource extends AbstractJobResource {
 		protected Map<String, Object> getDataModel() {
 			Map<String,Object> model = new HashMap<String, Object>();
 			model.put("job",job);
+			
+			model.put("workflow", job.getWorkflow());
+			model.put("workflowUri",uriFactory.getURI(job.getWorkflow()));
+		
+			if (job.getInputs()!=null) {
+				model.put("input", job.getInputs());
+				model.put("inputUri", uriFactory.getURI(job.getInputs()));
+			}
+			
+			String progressUri=uriFactory.getURI(job);
+			if (!progressUri.endsWith("/")) progressUri+="/";
+			progressUri+="report";
+			model.put("progressUri",progressUri);
+			if (job.isFinished()) {
+				model.put("isFinished",true);
+				if (job.getOutputs()!=null) {
+					model.put("output", job.getOutputs());
+					model.put("outputUri",uriFactory.getURI(job.getOutputs()));
+				}
+			}
+			else {
+				model.put("isFinished",false);
+			}
 			model.put("currentuser",getAuthUser());
 			return model;
 		}

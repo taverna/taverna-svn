@@ -1,0 +1,48 @@
+<html>
+	<head>
+		<title>Job</title>
+	</head>
+	
+	<body>
+		<center>
+			<h1>Job: $job.getId()</h1>
+			<table>
+				<tr><td>Status:</td><td>$job.getStatus()</td></tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr><td>Workflow:</td><td><a href="$workflowUri">
+					#if($workflow.name)
+						$workflow.name
+					#else
+						$workflow.id
+					#end
+					</a></td></tr>
+				<tr><td>Inputs: </td><td>
+					#if($input)
+						<a href="$inputUri">$input.getId()</a>
+					#else
+						No Inputs
+					#end
+				</td></tr>
+					
+				<tr><td>Progress Report: </td><td><a href="$progressUri">progress</a></td></tr>
+				
+				#if($isFinished)
+					<tr><td>Outputs: </td><td>
+					#if($output)
+						<a href="$outputUri">$output.getId()</a></td></tr>
+					#else
+						No Outputs
+					#end
+				#end                   	
+			</table>
+			<br>		
+			#set($userjob=$job.getOwner().equals($currentuser))
+			#if ($userjob && (!$job.hasStarted() || $job.isFinished()))
+				<form method="POST" action="?method=delete">
+					<input type="submit" value="Delete">
+				</form> 
+			#end
+			
+		</center>
+	</body>
+</html>

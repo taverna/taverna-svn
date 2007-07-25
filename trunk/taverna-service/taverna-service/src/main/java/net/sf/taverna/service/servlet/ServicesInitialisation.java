@@ -38,7 +38,7 @@ public class ServicesInitialisation implements ServletContextListener {
 		URIFactory uriFactory = URIFactory.getInstance(base + "v1/");
 		URIFactory.setHTMLpath(base+"html/");
 		logger.info("Setting velocity template path to:"+context.getRealPath("/html/"));
-		VelocityRepresentation.setResourcePath(context.getRealPath("/html/"));
+		VelocityRepresentation.setResourcePath(context.getRealPath("/templates/"));
 		queueMonitor=new DefaultQueueMonitor(uriFactory);
 		queueMonitor.setDaemon(true);
 		queueMonitor.start();

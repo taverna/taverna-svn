@@ -2,7 +2,6 @@ package net.sf.taverna.service.rest.client;
 
 import net.sf.taverna.service.rest.ClientTest;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 
 public abstract class ContextTest extends ClientTest {
