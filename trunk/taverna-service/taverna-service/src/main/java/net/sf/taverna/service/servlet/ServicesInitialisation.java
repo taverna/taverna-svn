@@ -16,6 +16,8 @@ public class ServicesInitialisation implements ServletContextListener {
 	
 	private DefaultQueueMonitor queueMonitor;
 	
+	private static final String TEMPLATES_PATH="/templates/";
+	
 	public void contextDestroyed(ServletContextEvent event) {
 		stopQueueMonitor();
 	}
@@ -37,8 +39,8 @@ public class ServicesInitialisation implements ServletContextListener {
 		if (!base.endsWith("/")) base+="/";
 		URIFactory uriFactory = URIFactory.getInstance(base + "v1/");
 		URIFactory.setHTMLpath(base+"html/");
-		logger.info("Setting velocity template path to:"+context.getRealPath("/html/"));
-		VelocityRepresentation.setResourcePath(context.getRealPath("/templates/"));
+		logger.info("Setting velocity template path to:"+context.getRealPath(TEMPLATES_PATH));
+		VelocityRepresentation.setResourcePath(context.getRealPath(TEMPLATES_PATH));
 		queueMonitor=new DefaultQueueMonitor(uriFactory);
 		queueMonitor.setDaemon(true);
 		queueMonitor.start();
