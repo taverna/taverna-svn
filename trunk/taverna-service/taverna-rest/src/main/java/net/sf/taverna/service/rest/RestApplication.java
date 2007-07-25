@@ -44,6 +44,7 @@ import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -143,7 +144,7 @@ public class RestApplication extends Application {
 		@Override
 		protected void beforeHandle(Request req, Response resp) {
 			super.beforeHandle(req, resp);
-			if (req.getMethod().equals(Method.GET)) {
+			if (req.getMethod().equals(Method.GET) && req.getEntity().getMediaType().equals(MediaType.TEXT_HTML)) {
 				checkForAdmin(req,resp);
 			}
 		}
@@ -196,7 +197,7 @@ public class RestApplication extends Application {
 			new DaoCloseFilter(component.getContext(), router);
 		AdminPresentFilter adminFilter=new AdminPresentFilter(component.getContext(),daoCloser);
 		// Map /v1
-		component.getDefaultHost().attach("/" + URIFactory.V1, adminFilter);
+		component.getDefaultHost().attach("/" + URIFactory.V1, daoCloser);
 		
 		//  Redirector for anything else not matching
 		String template = "{op}v1/";
