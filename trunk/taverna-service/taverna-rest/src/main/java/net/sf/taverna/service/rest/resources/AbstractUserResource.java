@@ -31,9 +31,18 @@ public abstract class AbstractUserResource extends AbstractDatedResource<User> {
 		private String ownedType;
 
 		public OwnedVelocity(Collection<?> collection, String ownedType) {
-			super("ownedCollection.vm");
 			this.collection = collection;
 			this.ownedType = ownedType;
+		}
+
+		@Override
+		protected String pageTitle() {
+			return ownedType+" owned by "+user.getUsername();
+		}
+
+		@Override
+		protected String templateName() {
+			return "ownedCollection.vm";
 		}
 
 		@Override

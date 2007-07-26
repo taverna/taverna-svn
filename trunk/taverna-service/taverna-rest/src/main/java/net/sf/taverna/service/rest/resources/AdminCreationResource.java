@@ -53,9 +53,10 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 	class AdminCreationRepresentation extends VelocityRepresentation {
 		
 		private Map<String,Object> model = new HashMap<String, Object>();
-		
+		public AdminCreationRepresentation() {
+			
+		}
 		public AdminCreationRepresentation(String name,String password,String confirm,String email,String errorMsg) {
-			super("createadmin.vm");
 			model.put("name", name);
 			model.put("password",password);
 			model.put("confirm", confirm);
@@ -63,9 +64,18 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 			model.put("errorMsg", errorMsg);
 		}
 		
-		public AdminCreationRepresentation() {
-			super("createadmin.vm");
+	
+		@Override
+		protected String pageTitle() {
+			return "Admin registration";
 		}
+
+		@Override
+		protected String templateName() {
+			return "createadmin.vm";
+		}
+
+
 
 		@Override
 		protected Map<String, Object> getDataModel() {

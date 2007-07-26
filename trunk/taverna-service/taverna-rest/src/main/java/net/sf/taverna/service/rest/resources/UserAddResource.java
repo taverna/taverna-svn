@@ -33,7 +33,6 @@ public class UserAddResource extends AbstractUserCreationResource {
 		private Map<String,Object> model = new HashMap<String, Object>();
 		
 		public AddUserVelocityRepresentation() {
-			super("adduser.vm");
 			User user = getAuthUser();
 			model.put("isAdmin",user!=null && user.isAdmin());
 		}
@@ -47,6 +46,16 @@ public class UserAddResource extends AbstractUserCreationResource {
 			model.put("errorMsg", errorMsg);
 		}
 		
+		@Override
+		protected String pageTitle() {
+			return "Add a new user";
+		}
+
+		@Override
+		protected String templateName() {
+			return "adduser.vm";
+		}
+
 		@Override
 		protected Map<String, Object> getDataModel() {
 			Configuration config=DAOFactory.getFactory().getConfigurationDAO().getConfig();

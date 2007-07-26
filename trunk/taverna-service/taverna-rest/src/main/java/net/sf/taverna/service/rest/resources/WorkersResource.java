@@ -46,10 +46,7 @@ public class WorkersResource extends AbstractResource {
 	}
 
 	class WorkersVelocityRepresentation extends VelocityRepresentation {
-		public WorkersVelocityRepresentation() {
-			super("workers.vm");
-		}
-
+		
 		@Override
 		protected Map<String, Object> getDataModel() {
 			List<Worker> workers = DAOFactory.getFactory().getWorkerDAO().all();
@@ -59,5 +56,17 @@ public class WorkersResource extends AbstractResource {
 			result.put("isAdmin", isAdmin);
 			return result;
 		}
+
+		@Override
+		protected String pageTitle() {
+			return "Workers";
+		}
+
+		@Override
+		protected String templateName() {
+			return "workers.vm";
+		}
+		
+		
 	}
 }

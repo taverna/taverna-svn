@@ -1,8 +1,4 @@
-<html>
-	<head>
-		<title>Admin Registration</title>
-	</head>
-</html>
+
 #include("uservalidate.js")
 <script language="javascript">
 	
@@ -20,12 +16,11 @@
 		return false;
 	}
 </script>
-<body>
 	
 	
 <center>
 	
-<h1>Admin Registration</h1>
+<h3>Admin Registration</h3>
 <p>Before you can use the system you must first create an admin user</p>
 
 #if ($errorMsg)
@@ -43,5 +38,3 @@ Error: $errorMsg<br>
 </form>
 
 </center>
-</body>
-<html>

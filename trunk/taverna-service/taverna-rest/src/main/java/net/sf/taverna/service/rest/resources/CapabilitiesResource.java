@@ -47,8 +47,15 @@ public class CapabilitiesResource extends AbstractResource {
 	}
 	
 	class CapabilitiesVelocityRepresentation extends VelocityRepresentation {
-		public CapabilitiesVelocityRepresentation() {
-			super("capabilities.vm");
+	
+		@Override
+		protected String pageTitle() {
+			return "Taverna service";
+		}
+
+		@Override
+		protected String templateName() {
+			return "capabilities.vm";
 		}
 
 		@Override

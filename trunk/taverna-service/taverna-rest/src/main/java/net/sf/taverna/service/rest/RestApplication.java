@@ -45,7 +45,6 @@ import org.restlet.Redirector;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Router;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -239,12 +238,10 @@ public class RestApplication extends Application {
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
 		
-		
 		userGuard.setNext(authenticated);
 		
 		// /config
 		authenticated.attach("/"+URIFactory.getMapping(Configuration.class),ConfigurationResource.class);
-		
 		// /jobs/X
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB,
 			JobResource.class);
@@ -256,8 +253,7 @@ public class RestApplication extends Application {
 			+ URIFactory.getMappingReport(), JobReportResource.class);
 		// /jobs/X/console
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
-			+ URIFactory.getMappingConsole(), JobConsoleResource.class);
-		
+			+ URIFactory.getMappingConsole(), JobConsoleResource.class);		
 		// /workflows/X
 		authenticated.attach("/" + URIFactory.getMapping(Workflow.class)
 			+ WORKFLOW, WorkflowResource.class);

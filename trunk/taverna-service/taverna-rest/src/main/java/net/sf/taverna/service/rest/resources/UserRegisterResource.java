@@ -41,11 +41,10 @@ public class UserRegisterResource extends AbstractUserCreationResource {
 		private Map<String,Object> model = new HashMap<String, Object>();
 		
 		public RegisterVelocityRepresentation() {
-			super("register.vm");
+			
 		}
 		
 		public RegisterVelocityRepresentation(String name,String password, String confirm, String email,String errorMsg) {
-			super("register.vm");
 			model.put("name", name);
 			model.put("password",password);
 			model.put("confirm", confirm);
@@ -53,6 +52,16 @@ public class UserRegisterResource extends AbstractUserCreationResource {
 			model.put("errorMsg", errorMsg);
 		}
 		
+		@Override
+		protected String pageTitle() {
+			return "User registration";
+		}
+
+		@Override
+		protected String templateName() {
+			return "register.vm";
+		}
+
 		@Override
 		protected Map<String, Object> getDataModel() {
 			Configuration config=DAOFactory.getFactory().getConfigurationDAO().getConfig();

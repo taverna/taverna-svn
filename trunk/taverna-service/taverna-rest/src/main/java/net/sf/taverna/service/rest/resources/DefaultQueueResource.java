@@ -24,8 +24,15 @@ public class DefaultQueueResource extends AbstractResource {
 	
 	
 	class QueueVelocityRepresentation extends VelocityRepresentation {
-		public QueueVelocityRepresentation() {
-			super("queue.vm");
+		
+		@Override
+		protected String pageTitle() {
+			return "Queue";
+		}
+
+		@Override
+		protected String templateName() {
+			return "queue.vm";
 		}
 
 		@Override

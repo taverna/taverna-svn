@@ -106,10 +106,8 @@ public class ConfigurationResource extends AbstractResource {
 	class ConfigVelocityRepresentation extends VelocityRepresentation {
 		
 		private Map<String,Object> model = new HashMap<String, Object>();
-		private static final String template="adminconfig.vm";
 		
 		public ConfigVelocityRepresentation(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail, boolean smtpAuthRequired,String username,String password, String confirmPassword,String errorMsg) {
-			super(template);
 			model.put("allowregister",allowRegister);
 			model.put("allowemail", allowEmail);
 			model.put("smtpserver", smtpServer);
@@ -129,7 +127,6 @@ public class ConfigurationResource extends AbstractResource {
 		}
 		
 		public ConfigVelocityRepresentation() {
-			super(template);
 			Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
 			model.put("allowregister",config.isAllowRegister());
 			model.put("allowemail", config.isAllowEmailNotifications());
@@ -139,6 +136,17 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("smtppasswordconfirm",config.getSmtpPassword());
 			model.put("smtpauthrequired", config.isSmtpAuthRequired());
 			model.put("fromemailaddress", config.getFromEmail());
+		}
+
+		
+		@Override
+		protected String pageTitle() {
+			return "System configuration";
+		}
+
+		@Override
+		protected String templateName() {
+			return "adminconfig.vm";
 		}
 
 		@Override

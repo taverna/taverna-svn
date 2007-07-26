@@ -95,7 +95,6 @@ public class UserEditResource extends AbstractUserResource {
 		private Map<String,Object> model = new HashMap<String, Object>();
 		
 		public VelocityEditUserRepresentation(String password, boolean updatePassword, boolean userIsAdmin,String email,String newPassword, String newConfirm, String errorMsg) {
-			super("edituser.vm");
 			model.put("name",user.getUsername());
 			model.put("updatepassword",updatePassword);
 			model.put("userisadmin",userIsAdmin);
@@ -107,7 +106,6 @@ public class UserEditResource extends AbstractUserResource {
 		}
 		
 		public VelocityEditUserRepresentation() {
-			super("edituser.vm");
 			if (user!=null) {
 				model.put("name", user.getUsername());
 				model.put("email", user.getEmail());
@@ -116,6 +114,17 @@ public class UserEditResource extends AbstractUserResource {
 			}
 			else logger.error("No user found");
 		}
+		
+		@Override
+		protected String pageTitle() {
+			return "Edit user settings";
+		}
+
+		@Override
+		protected String templateName() {
+			return "edituser.vm";
+		}
+
 		@Override
 		protected Map<String, Object> getDataModel() {
 			model.put("isAdmin", getAuthUser().isAdmin());

@@ -1,8 +1,4 @@
-<html>
-	<head>
-		<title>User Registration</title>
-	</head>
-</html>
+
 #include("uservalidate.js")
 <script language="javascript">
 	
@@ -19,11 +15,11 @@
 		
 		return false;
 	}
-</script>
-<body>
+</script>	
+
 	
 	
-<center><h1>User Registration</h1>
+<center><h3>User Registration</h3>
 #if($allowRegister)
 	#if ($errorMsg)
 	Error: $errorMsg<br>
@@ -44,5 +40,3 @@
 #end
 
 </center>
-</body>
-<html>

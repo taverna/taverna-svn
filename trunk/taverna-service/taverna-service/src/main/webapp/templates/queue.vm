@@ -1,10 +1,6 @@
-<html>
-	<head>
-		<title>Queue</title>
-	</head>
-	<body>
+
 		<center>
-			<h1>Queue: $queue.getId()</h1>
+			<h3>Queue: $queue.getId()</h3>
 			<table>
 			<tr><th>ID</th><th>Owner</th><th>Status</th></tr>
 			#foreach ($job in $jobs)
@@ -34,5 +30,4 @@
 			#end
 			</table>
 		</center>
-	</body>
-</html>
+	

@@ -8,11 +8,8 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
-import net.sf.taverna.service.datastore.bean.Queue;
-import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.rest.UserGuard;
-import net.sf.taverna.service.rest.resources.CapabilitiesResource.CapabilitiesVelocityRepresentation;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.User;
@@ -98,9 +95,6 @@ public class UserResource extends AbstractUserResource {
 	
 	class UserVelocity extends VelocityRepresentation
 	{
-		public UserVelocity() {
-			super("user.vm");
-		}
 
 		@Override
 		protected Map<String, Object> getDataModel() {
@@ -119,6 +113,17 @@ public class UserResource extends AbstractUserResource {
 
 			return model;
 		}
+
+		@Override
+		protected String pageTitle() {
+			return "User "+user.getUsername();
+		}
+
+		@Override
+		protected String templateName() {
+			return "user.vm";
+		}
+		
 	}
 	
 

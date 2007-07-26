@@ -1,13 +1,8 @@
-<html>
-	<head>
-		<title>Job</title>
-	</head>
-	
-	<body>
+
 		<center>
-			<h1>Job: $job.getId()</h1>
+			<h3>Job: $job.getId()</h3>
 			<table>
-				<tr><td>Status:</td><td>$job.getStatus()</td></tr>
+				<tr><td>Status:</td><td>$job.status</td></tr>
 				<tr><td>&nbsp;</td></tr>
 				<tr><td>Workflow:</td><td><a href="$workflowUri">
 					#if($workflow.name)
@@ -18,7 +13,7 @@
 					</a></td></tr>
 				<tr><td>Inputs: </td><td>
 					#if($input)
-						<a href="$inputUri">$input.getId()</a>
+						<a href="$inputUri">$input.id</a>
 					#else
 						No Inputs
 					#end
@@ -29,7 +24,7 @@
 				#if($isFinished)
 					<tr><td>Outputs: </td><td>
 					#if($output)
-						<a href="$outputUri">$output.getId()</a></td></tr>
+						<a href="$outputUri">$output.id</a></td></tr>
 					#else
 						No Outputs
 					#end
@@ -44,5 +39,4 @@
 			#end
 			
 		</center>
-	</body>
-</html>
+	

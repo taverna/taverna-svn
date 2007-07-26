@@ -1,8 +1,4 @@
-<html>
-	<head>
-		<title>Edit user settings</title>
-	</head>
-</html>
+
 #include("edituser.js")
 #include("uservalidate.js")
 
@@ -19,10 +15,9 @@
 		return validateEmail(email);
 	}
 </script>
-<body>
 	
 	
-<center><h1>Edit user settings</h1>
+<center><h3>Edit user settings</h3>
 
 	#if ($errorMsg)
 	Error: $errorMsg<br>
@@ -59,5 +54,3 @@
 	</form>
 
 </center>
-</body>
-<html>

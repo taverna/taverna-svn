@@ -1,17 +1,5 @@
-<html>
-	<head>
-		<title>$ownedType owned by $user.username</title>
-		<style type="text/css">
-		<!--
-		.created {
-			font-size: smaller;
-		}		
-		
-		/* -->
-		</style>
-	</head>
-	<body>
-			<h1>$ownedType owned by <a href="$userURI">$user.username</a></h1>
+
+			<h3>$ownedType owned by <a href="$userURI">$user.username</a></h3>
 			
 			<div class="collection">
 			
@@ -32,6 +20,4 @@
 			#end
 			
 			</div>
-			
-	</body>
-</html>
+	

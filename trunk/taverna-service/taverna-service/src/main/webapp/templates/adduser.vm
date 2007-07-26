@@ -1,8 +1,4 @@
-<html>
-	<head>
-		<title>Add New User</title>
-	</head>
-</html>
+
 #include("uservalidate.js")
 <script language="javascript">
 	
@@ -20,10 +16,9 @@
 		return false;
 	}
 </script>
-<body>
 	
 	
-<center><h1>Add New User</h1>
+<center><h3>Add New User</h3>
 #if($isAdmin)
 	#if ($errorMsg)
 	Error: $errorMsg<br>
@@ -44,5 +39,3 @@
 #end
 
 </center>
-</body>
-<html>

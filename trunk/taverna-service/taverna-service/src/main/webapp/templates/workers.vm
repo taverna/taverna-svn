@@ -1,11 +1,5 @@
-<html>
-	<head>
-		<title>
-			Workers
-		</title>
-	</head>
-	<body>
-		<center><h1>The Workers</h1>
+		<center>
+			<h3>The Workers</h3>
 			<table>
 				<tr><th>Worker ID</th><th>Status</th><th>Jobs Run</th></tr>
 				#foreach($worker in $workers)
@@ -37,5 +31,3 @@
 				</form>
 			#end
 		</center>
-	</body>
-</html>

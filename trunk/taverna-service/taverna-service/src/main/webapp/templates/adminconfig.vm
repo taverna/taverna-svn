@@ -1,9 +1,6 @@
-<html>
-	<head>
-		<title>Admin Configuration</title>
-	</head>
-	#include("adminconfig.js")
-	<body>
+
+		#include("adminconfig.js")
+	
 		<center><h1>Admin Configuration</h1>
 		#if ($currentuser.admin)
 			#set($allowregister_tag="")
@@ -47,5 +44,3 @@
 			<h2>You need to be an administrator to view this page.</h2>
 			<script language="javascript">alert("Sorry, but this page is restricted to administrator users only!")</script>
 		#end
-	</body>
-</html>

@@ -178,7 +178,7 @@ public class JobResource extends AbstractJobResource {
 	class JobVelocityRepresentation extends VelocityRepresentation
 	{
 		public JobVelocityRepresentation() {
-			super("job.vm");
+			
 		}
 
 		@Override
@@ -211,5 +211,17 @@ public class JobResource extends AbstractJobResource {
 			model.put("currentuser",getAuthUser());
 			return model;
 		}
+
+		@Override
+		protected String pageTitle() {
+			return "Job "+job.getId();
+		}
+
+		@Override
+		protected String templateName() {
+			return "job.vm";
+		}
+		
+		
 	}
 }
