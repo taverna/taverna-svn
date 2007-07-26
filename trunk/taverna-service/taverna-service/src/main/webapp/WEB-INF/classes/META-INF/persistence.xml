@@ -9,7 +9,7 @@
 		<!-- Should not really be needed, Hibernate supports auto-detection even in J2SE.
 			However, running inside Eclipse, this IS needed because of classpath issues.
 		-->
-
+		
 		<class>net.sf.taverna.service.datastore.bean.Job</class>
 		<class>net.sf.taverna.service.datastore.bean.Workflow</class>
 		<class>net.sf.taverna.service.datastore.bean.DataDoc</class>
@@ -24,19 +24,12 @@
 				value="class, hbm" />
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
-
-			<!--
+			
 			<property name="hibernate.connection.driver_class"
-				value="org.apache.derby.jdbc.ClientDriver" />
-			<property name="hibernate.connection.url"
-				value="jdbc:derby://localhost:1337/tavernaservice;create=true;upgrade=true" />
-			-->
-				<property name="hibernate.connection.driver_class"
 				value="org.apache.derby.jdbc.EmbeddedDriver" />
 				<property name="hibernate.connection.url"
-				value="jdbc:derby:tavernaservice;create=true;upgrade=true"
-				/> 
-			
+				value="jdbc:derby:tavernaService;create=true"
+			/> 
 
 			<property name="hibernate.c3p0.min_size" value="5" />
 			<property name="hibernate.c3p0.max_size" value="20" />
