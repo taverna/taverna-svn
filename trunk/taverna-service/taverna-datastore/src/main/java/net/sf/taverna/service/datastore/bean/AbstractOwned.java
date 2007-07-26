@@ -14,8 +14,8 @@ public abstract class AbstractOwned extends AbstractNamed {
 	}
 
 	public void setOwner(User owner) {
-		this.setLastModified();
 		this.owner = owner;
+		setLastModified();
 	}
 	
 }

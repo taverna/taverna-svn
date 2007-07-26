@@ -70,7 +70,7 @@ public class DataDoc extends AbstractOwned {
 			getOwner().getDatas().remove(this);
 		}
 		super.setOwner(owner);
-		if (owner!=null) {
+		if (owner != null) {
 			owner.getDatas().add(this);
 		}
 	}

@@ -43,7 +43,9 @@ public class Workflow extends AbstractOwned {
 			getOwner().getWorkflows().remove(this);
 		}
 		super.setOwner(owner);
-		owner.getWorkflows().add(this);
+		if (owner != null) {
+			owner.getWorkflows().add(this);
+		}
 	}
 
 }
