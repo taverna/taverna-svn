@@ -62,13 +62,14 @@ public abstract class ClientTest extends TestCommon {
 	}
 	
 	@BeforeClass
-	public synchronized static void registerUser() {
+	public synchronized static void registerAdminUser() {
 		username = null;
 		useruri = null;
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		user = new User();
 		password = User.generatePassword();
 		user.setPassword(password);
+		user.setAdmin(true);
 		daoFactory.getUserDAO().create(user);
 		daoFactory.commit();
 		username = user.getUsername();

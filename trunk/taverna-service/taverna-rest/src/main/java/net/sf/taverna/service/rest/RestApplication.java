@@ -145,7 +145,7 @@ public class RestApplication extends Application {
 		@Override
 		protected void beforeHandle(Request req, Response resp) {
 			super.beforeHandle(req, resp);
-			if (req.getMethod().equals(Method.GET) && req.getEntity().getMediaType().equals(MediaType.TEXT_HTML)) {
+			if (req.getMethod().equals(Method.GET)) {
 				checkForAdmin(req,resp);
 			}
 		}
@@ -198,7 +198,7 @@ public class RestApplication extends Application {
 			new DaoCloseFilter(component.getContext(), router);
 		AdminPresentFilter adminFilter=new AdminPresentFilter(component.getContext(),daoCloser);
 		// Map /v1
-		component.getDefaultHost().attach("/" + URIFactory.V1, daoCloser);
+		component.getDefaultHost().attach("/" + URIFactory.V1, adminFilter);
 		
 		//  Redirector for anything else not matching
 		String template = "{op}v1/";
@@ -213,7 +213,6 @@ public class RestApplication extends Application {
 		Component component = new Component();
 		component.getClients().add(Protocol.FILE);
 		attachHTMLSource(component);
-		
 		
 		Router router = new Router(component.getContext());
 		
