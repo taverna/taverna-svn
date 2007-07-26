@@ -19,6 +19,8 @@ import org.hibernate.validator.NotNull;
 public class Job extends AbstractOwned {
 
 	public static final int MAX_REPORT_SIZE = 65535;
+	
+	public static final int MAX_CONSOLE_SIZE = 65535;
 
 	// 5 minutes in xsd:duration format
 	public static final String DEFAULT_UPDATE_INTERVAL = "PT5M";
@@ -61,6 +63,10 @@ public class Job extends AbstractOwned {
 	@Lob
 	@Column(length = MAX_REPORT_SIZE)
 	private String progressReport;
+	
+	@Lob
+	@Column(length = MAX_CONSOLE_SIZE)
+	private String console;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Worker worker;
@@ -169,7 +175,19 @@ public class Job extends AbstractOwned {
 			getOwner().getJobs().remove(this);
 		}
 		super.setOwner(owner);
-		owner.getJobs().add(this);
+		if (owner != null) {
+			owner.getJobs().add(this);
+		}
+	}
+
+
+	public String getConsole() {
+		return console;
+	}
+
+	public void setConsole(String console) {
+		this.console = console;
+		setLastModified();
 	}
 
 }

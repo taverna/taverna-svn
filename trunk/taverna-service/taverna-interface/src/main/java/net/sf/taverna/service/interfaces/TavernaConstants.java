@@ -14,5 +14,7 @@ public interface TavernaConstants {
 	
 	public static final String reportType = "application/vnd.taverna.report+xml";
 	
+	public static final String consoleType = "text/plain";
+	
 
 }

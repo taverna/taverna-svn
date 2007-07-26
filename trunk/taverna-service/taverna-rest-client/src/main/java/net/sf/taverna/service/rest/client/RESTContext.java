@@ -66,6 +66,12 @@ public class RESTContext {
 
 	public static final MediaType baclavaType =
 		new MediaType(TavernaConstants.baclavaType);
+	
+	public static final MediaType reportType =
+		new MediaType(TavernaConstants.reportType);
+	
+	public static final MediaType consoleType =
+		new MediaType(TavernaConstants.consoleType);
 
 	private static Logger logger = Logger.getLogger(RESTContext.class);
 

@@ -49,16 +49,11 @@ public class JobREST extends OwnedREST<Job> {
 			return (StatusType.Enum) getDocument().getStatus().enumValue();
 		}
 		// Return the freshest of the freshest status with a new get()
-		Response response = context.get(statusURI, MediaType.TEXT_PLAIN);
-		String status;
-		try {
-			status = response.getEntity().getText();
-		} catch (IOException e) {
-			throw new RESTException("Could not receive status", e);
-		}
+		String status = getString(statusURI, MediaType.TEXT_PLAIN);
 		logger.debug("Status for " + this + ": " + status);
 		return StatusType.Enum.forString(status);
 	}
+
 
 	public void setStatus(StatusType.Enum status) throws NotSuccessException {
 		Reference statusURI = getStatusURI();
@@ -97,32 +92,26 @@ public class JobREST extends OwnedREST<Job> {
 		if (reportURI == null) {
 			return null;
 		}
-		return new Reference(getURIReference(), reportURI);
+		return getRelativeReference(reportURI);
 	}
 
+
 	public String getReport() throws RESTException {
-		Reference reportURI = getReportURI();
-		if (reportURI == null) {
+		if (getDocument().getReport() == null) {
+			return null;
+		}
+		String uri = getDocument().getReport().getHref();
+		if (uri == null) {
 			return getDocument().getReport().xmlText();
 		}
-
-		// Return the freshest report with a new get()
-		Response response = context.get(reportURI, MediaType.TEXT_XML);
-		String report;
-		try {
-			report = response.getEntity().getText();
-		} catch (IOException e) {
-			throw new RESTException("Could not receive report " + reportURI, e);
-		}
-		System.out.println("Report is: " + report);
-		return report;
+		return getString(uri, RESTContext.reportType);
 	}
 
 	public void setReport(String report) throws NotSuccessException,
 		XmlException {
 		Reference reportURI = getReportURI();
 		if (reportURI != null) {
-			context.put(reportURI, report, MediaType.TEXT_XML);
+			context.put(reportURI, report, RESTContext.reportType);
 		} else {
 			JobDocument job = JobDocument.Factory.newInstance();
 			XmlObject reportXML = XmlObject.Factory.parse(report);
@@ -141,6 +130,41 @@ public class JobREST extends OwnedREST<Job> {
 		JobDocument job = JobDocument.Factory.newInstance();
 		job.addNewJob().setUpdateInterval(interval);
 		context.put(getURIReference(), job);
+		invalidate();
+	}
+	
+	private Reference getConsoleURI() {
+		if (getDocument().getConsole() == null) {
+			return null;
+		}
+		String reportURI = getDocument().getConsole().getHref();
+		if (reportURI == null) {
+			return null;
+		}
+		return getRelativeReference(reportURI);
+	}
+	
+	public String getConsole() throws RESTException {
+		if (getDocument().getConsole() == null) {
+			return null;
+		}
+		Reference uri = getConsoleURI();
+		if (uri == null) {
+			return getDocument().getConsole().getStringValue();
+		} else {
+			return getString(uri, RESTContext.consoleType);
+		}
+	}
+	
+	public void setConsole(String console) throws NotSuccessException {
+		Reference uri = getConsoleURI();
+		if (uri != null) {
+			context.put(uri, console, RESTContext.consoleType);
+		} else {
+			JobDocument job = JobDocument.Factory.newInstance();
+			job.addNewJob().addNewConsole().setStringValue(console);
+			context.put(getURIReference(), job);
+		}
 		invalidate();
 	}
 	

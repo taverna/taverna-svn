@@ -17,6 +17,7 @@ import net.sf.taverna.service.rest.resources.CurrentUserResource;
 import net.sf.taverna.service.rest.resources.DataResource;
 import net.sf.taverna.service.rest.resources.DatasResource;
 import net.sf.taverna.service.rest.resources.DefaultQueueResource;
+import net.sf.taverna.service.rest.resources.JobConsoleResource;
 import net.sf.taverna.service.rest.resources.JobReportResource;
 import net.sf.taverna.service.rest.resources.JobResource;
 import net.sf.taverna.service.rest.resources.JobStatusResource;
@@ -254,6 +255,10 @@ public class RestApplication extends Application {
 		// /jobs/X/report
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
 			+ URIFactory.getMappingReport(), JobReportResource.class);
+		// /jobs/X/console
+		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
+			+ URIFactory.getMappingConsole(), JobConsoleResource.class);
+		
 		// /workflows/X
 		authenticated.attach("/" + URIFactory.getMapping(Workflow.class)
 			+ WORKFLOW, WorkflowResource.class);

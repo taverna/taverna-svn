@@ -1,8 +1,13 @@
 package net.sf.taverna.service.rest.client;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
+import org.restlet.data.Response;
 
 public class AbstractREST<DocumentClass extends XmlObject> {
 
@@ -90,6 +95,25 @@ public class AbstractREST<DocumentClass extends XmlObject> {
 		return uriReference;
 	}
 
+	public Reference getRelativeReference(String uri) {
+		return new Reference(getURIReference(), uri).getTargetRef();
+	}
+	
+
+	public String getString(Reference uriReference, MediaType mediaType) throws RESTException {
+		Response response = context.get(uriReference, mediaType);
+		try {
+			return response.getEntity().getText();
+		} catch (IOException e) {
+			throw new RESTException("Could not receive  " + uriReference, e);
+		}
+	}
+	
+	public String getString(String uri, MediaType mediaType) throws RESTException {
+		Reference uriReference = getRelativeReference(uri);
+		return getString(uriReference, mediaType);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof AbstractREST)) {

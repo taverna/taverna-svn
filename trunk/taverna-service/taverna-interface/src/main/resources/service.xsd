@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://taverna.sf.net/service"
-	elementFormDefault="qualified"
-	xml:lang="en"
+	elementFormDefault="qualified" xml:lang="en"
 	xmlns:tav="http://taverna.sf.net/service"
-    xmlns:dc="http://purl.org/dc/elements/1.1/"
-    xmlns:dcterms="http://purl.org/dc/terms/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:dcterms="http://purl.org/dc/terms/"
 	xmlns:xlink="http://www.w3.org/1999/xlink">
 
 	<!-- <import namespace="http://www.w3.org/1999/xlink"
 		schemaLocation="http://www.loc.gov/standards/mets/xlink.xsd" />
 	-->
-    
+
 	<import namespace="http://www.w3.org/1999/xlink"
 		schemaLocation="xlink.xsd" />
 
-    <import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd" />
-    <import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd" />
-    
+	<import namespace="http://purl.org/dc/elements/1.1/"
+		schemaLocation="dc.xsd" />
+	<import namespace="http://purl.org/dc/terms/"
+		schemaLocation="dcterms.xsd" />
+
 
 	<complexType name="Linked">
-        <annotation>
-        	<documentation>        		An (abstract) complex type of any element that can        		potentially be linked using xlink:href. In general an        		empty element with an xlink:href means that the content        		of the resource is available in another document at that        		location. So for instance:        		GET /users/stain        		&lt;user&gt;        			&lt;username>stain&lt;/username&gt;        			&lt;email>spam@soiland.no&lt;/email&gt;        			&lt;jobs xlink:href="/users/stain/jobs" /&gt;        		&lt;/user&gt;        		will not contain a full Jobs element, but only a link to        		the full document, which would be something like:        		GET /users/stain/jobs        		&lt;jobs&gt;        			&lt;job xlink:href="/jobs/13"&gt;        				&lt;status&gt;FINISHED&lt;/status&gt;        			&lt;/job&gt;        			&lt;job xlink:href="/jobs/15"&gt;        				&lt;status&gt;RUNNING&lt;/status&gt;        			&lt;/job&gt;        		&lt;/jobs&gt;        		An element that is xlinked might provide a limited view        		of the resource that is useful for display purposes, for        		instance an xlink-ed User in the owner element of Job        		might contain &lt;username&gt;, while the full content of that element is
-        		retrieved by following the link.
-        	</documentation>
-        </annotation>
-        <attribute ref="xlink:href" use="optional" />
+		<annotation>
+			<documentation>				An (abstract) complex type of any element that can				potentially be linked using xlink:href. In general an				empty element with an xlink:href means that the content				of the resource is available in another document at that				location. So for instance:				GET /users/stain &lt;user&gt;				&lt;username>stain&lt;/username&gt;				&lt;email>spam@soiland.no&lt;/email&gt; &lt;jobs				xlink:href="/users/stain/jobs" /&gt; &lt;/user&gt;				will not contain a full Jobs element, but only a link to				the full document, which would be something like:				GET /users/stain/jobs &lt;jobs&gt; &lt;job				xlink:href="/jobs/13"&gt;				&lt;status&gt;FINISHED&lt;/status&gt; &lt;/job&gt;				&lt;job xlink:href="/jobs/15"&gt;				&lt;status&gt;RUNNING&lt;/status&gt; &lt;/job&gt;				&lt;/jobs&gt;				An element that is xlinked might provide a limited view				of the resource that is useful for display purposes, for				instance an xlink-ed User in the owner element of Job				might contain &lt;username&gt;, while the full content				of that element is retrieved by following the link.			</documentation>
+		</annotation>
+		<attribute ref="xlink:href" use="optional" />
 	</complexType>
 
 	<complexType name="Owned">
@@ -50,10 +49,10 @@
 
 
 	<complexType name="Capabilities">
-        <annotation>
-        	<documentation>        		The capabilities of this service. This element is the        		starting point of finding other parts of the service        		with xlink's to the main resource collections.        		Registration is done by POST-ing a User document to the        		address given by users. This and the capabilities        		document is the only part of the service available        		without authentication.        		The address xlink-ed from currentUser will redirect to        		the current User document of the authenticated user,        		which will provide links to the user's collections of        		workflows, jobs, etc.        	</documentation>
-        </annotation>
-        <sequence>
+		<annotation>
+			<documentation>				The capabilities of this service. This element is the				starting point of finding other parts of the service				with xlink's to the main resource collections.				Registration is done by POST-ing a User document to the				address given by users. This and the capabilities				document is the only part of the service available				without authentication.				The address xlink-ed from currentUser will redirect to				the current User document of the authenticated user,				which will provide links to the user's collections of				workflows, jobs, etc.			</documentation>
+		</annotation>
+		<sequence>
 			<element name="users" type="tav:Users">
 				<annotation>
 					<documentation>
@@ -61,7 +60,8 @@
 						requires special privileges, but POST-ing a User
 						document there means registering a new user.
 					</documentation>
-				</annotation></element>
+				</annotation>
+			</element>
 			<element name="currentUser" type="tav:User">
 				<annotation>
 					<documentation>
@@ -69,17 +69,25 @@
 						this link will redirect to the real URI of the
 						currently authenticated user.
 					</documentation>
-				</annotation></element>
+				</annotation>
+			</element>
 			<element name="workers" type="tav:Workers">
 				<annotation>
 					<documentation>
 						The list of active workers
 					</documentation>
-				</annotation></element>
+				</annotation>
+			</element>
 			<element name="queues" type="tav:Queues">
 				<annotation>
 					<documentation>The list of queues</documentation>
-				</annotation></element>
+				</annotation>
+			</element>
+			<element name="defaultQueue" type="tav:Queue">
+				<annotation>
+					<documentation>The default queue</documentation>
+				</annotation>
+			</element>
 		</sequence>
 	</complexType>
 
@@ -243,12 +251,13 @@
 					<element name="outputs" type="tav:Data"
 						minOccurs="0">
 					</element>
-					
+					<element name="console" type="tav:LinkedConsoleType"
+						minOccurs="0">
+					</element>
 				</sequence>
 			</extension>
 		</complexContent>
 	</complexType>
-
 
 	<simpleType name="StatusType">
 		<annotation>
@@ -282,6 +291,24 @@
 		</simpleContent>
 	</complexType>
 
+	<simpleType name="ConsoleType">
+		<annotation>
+			<documentation>
+				The console output of a job. Typically system out and
+				system error containing log lines.
+			</documentation>
+		</annotation>
+		<restriction base="string"></restriction>
+	</simpleType>
+
+	<complexType name="LinkedConsoleType">
+		<simpleContent>
+			<extension base="tav:ConsoleType">
+				<attribute ref="xlink:href" use="optional" />
+			</extension>
+		</simpleContent>
+	</complexType>
+
 	<complexType name="Report">
 		<complexContent>
 			<extension base="tav:Linked">
@@ -309,24 +336,24 @@
 
 
 	<complexType name="Workflow">
-        <annotation>
-        	<documentation>
-        		A Taverna workflow, in practice an XScufl document.
-        		Retrieving this resource with the content-type of XScufl
-        		will give the 'pure' XSCufl instead.
-        	</documentation>
-        </annotation>
-        <complexContent>
+		<annotation>
+			<documentation>
+				A Taverna workflow, in practice an XScufl document.
+				Retrieving this resource with the content-type of XScufl
+				will give the 'pure' XSCufl instead.
+			</documentation>
+		</annotation>
+		<complexContent>
 			<extension base="tav:Owned">
 				<sequence>
 					<element minOccurs="0" name="scufl"
 						type="tav:Scufl">
-                        <annotation>
-                        	<documentation>
-                        		The XScufl as a nested element within
-                        		the XScufl namespace.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								The XScufl as a nested element within
+								the XScufl namespace.
+							</documentation>
+						</annotation>
 					</element>
 				</sequence>
 			</extension>
@@ -346,25 +373,25 @@
 	</complexType>
 
 	<complexType name="Data">
-        <annotation>
-        	<documentation>
-        		A Baclava data document, usable as workflow input, as
-        		well as workflow output.
-        	</documentation>
-        </annotation>
-        <complexContent>
+		<annotation>
+			<documentation>
+				A Baclava data document, usable as workflow input, as
+				well as workflow output.
+			</documentation>
+		</annotation>
+		<complexContent>
 			<extension base="tav:Owned">
 				<sequence>
 					<element minOccurs="0" name="baclava"
 						type="tav:Baclava">
-                        <annotation>
-                        	<documentation>
-                        		The real Baclava XML document as a
-                        		nested element. Also available as 'pure'
-                        		Baclava document by GET-ing this
-                        		resource by the Baclava content type.
-                        	</documentation>
-                        </annotation>
+						<annotation>
+							<documentation>
+								The real Baclava XML document as a
+								nested element. Also available as 'pure'
+								Baclava document by GET-ing this
+								resource by the Baclava content type.
+							</documentation>
+						</annotation>
 					</element>
 				</sequence>
 			</extension>
@@ -514,11 +541,11 @@
 		<complexContent>
 			<extension base="tav:Linked">
 				<sequence>
-					<element ref="dcterms:created"
-						maxOccurs="1" minOccurs="0">
+					<element ref="dcterms:created" maxOccurs="1"
+						minOccurs="0">
 					</element>
-					<element ref="dcterms:modified"
-						maxOccurs="1" minOccurs="0">
+					<element ref="dcterms:modified" maxOccurs="1"
+						minOccurs="0">
 					</element>
 				</sequence>
 			</extension>
@@ -529,12 +556,13 @@
 		<complexContent>
 			<extension base="tav:Dated">
 				<sequence>
-					<element ref="dc:title" 
-                        maxOccurs="1" minOccurs="0">
+					<element ref="dc:title" maxOccurs="1"
+						minOccurs="0">
 					</element>
 				</sequence>
 
 			</extension>
 		</complexContent>
 	</complexType>
+
 </schema>

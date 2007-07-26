@@ -174,6 +174,17 @@ public class URIFactory {
 	public String getURIReport(Job job) {
 		return getURI(job) + getMappingReport();
 	}
+	
+	/**
+	 * Get the URI for the console log of a job
+	 * 
+	 * @param job The {@link Job} bean
+	 * @return The full URI for the job's console log
+	 */
+	public String getURIConsole(Job job) {
+		return getURI(job) + getMappingConsole();
+	}
+
 
 	/**
 	 * The URI for getting the currently authenticated user. This URI will
@@ -227,6 +238,17 @@ public class URIFactory {
 	
 	public static String getMappingEditUser() {
 		return "/edit";
+	}
+	
+	/**
+	 * The mapping added to the URI of the {@link Job} to get the console.
+	 * 
+	 * @see #getURIConsole(Job))
+	 * @see #getURI(AbstractUUID)
+	 * @return The suffix to be attached to the Job resource URI
+	 */
+	public static String getMappingConsole() {
+		return "/console";
 	}
 	
 	/**

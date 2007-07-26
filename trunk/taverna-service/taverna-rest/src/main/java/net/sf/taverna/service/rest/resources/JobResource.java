@@ -171,6 +171,7 @@ public class JobResource extends AbstractJobResource {
 			if (job.getUpdateInterval() != null) {
 				jobElement.setUpdateInterval(new GDuration(job.getUpdateInterval()));
 			}
+			jobElement.addNewConsole().setHref(uriFactory.getURIConsole(job));
 		}
 	}
 	
