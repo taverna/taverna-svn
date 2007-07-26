@@ -82,8 +82,8 @@
 				<annotation>
 					<documentation>The list of queues</documentation>
 				</annotation>
-			</element>
-			<element name="defaultQueue" type="tav:Queue">
+			</element> 
+			<element minOccurs="0" name="defaultQueue" type="tav:Queue">
 				<annotation>
 					<documentation>The default queue</documentation>
 				</annotation>
@@ -398,10 +398,6 @@
 		</complexContent>
 	</complexType>
 
-
-
-
-
 	<complexType name="Workers">
 		<complexContent>
 			<extension base="tav:Linked">
@@ -413,7 +409,6 @@
 			</extension>
 		</complexContent>
 	</complexType>
-
 
 	<complexType name="Worker">
 		<annotation>
