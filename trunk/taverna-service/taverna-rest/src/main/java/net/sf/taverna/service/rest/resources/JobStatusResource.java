@@ -40,14 +40,7 @@ public class JobStatusResource extends AbstractJobResource {
 
 	@Override
 	public void put(Representation entity) {
-		if (!MediaType.TEXT_PLAIN.includes(entity.getMediaType())) {
-			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
-				"Content type must be " + MediaType.TEXT_PLAIN);
-			return;
-		}
-		if (overMaxSize(entity)) {
-			logger.warn("Uploaded user document was too large: "
-				+ entity.getSize());
+		if (! isEntityValid(entity, MediaType.TEXT_PLAIN)) {
 			return;
 		}
 		String status;

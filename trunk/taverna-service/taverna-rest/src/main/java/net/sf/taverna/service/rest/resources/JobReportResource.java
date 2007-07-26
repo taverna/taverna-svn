@@ -2,6 +2,7 @@ package net.sf.taverna.service.rest.resources;
 
 import java.io.IOException;
 
+import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 
 import org.apache.log4j.Logger;
@@ -22,17 +23,15 @@ public class JobReportResource extends AbstractJobResource {
 	}
 	
 	class Text extends AbstractText {
+		
 		@Override
 		public String getText() {
 			return job.getProgressReport();
 		}
 		
-		/**
-		 * By default, the media type is <code>text/plain</code>
-		 */
 		@Override
 		public MediaType getMediaType() {
-			return MediaType.TEXT_XML;
+			return reportType;
 		}
 	}
 	
@@ -43,7 +42,7 @@ public class JobReportResource extends AbstractJobResource {
 	
 	@Override
 	public void put(Representation entity) {
-		if (!MediaType.TEXT_XML.includes(entity.getMediaType())) {
+		if (!reportType.includes(entity.getMediaType())) {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
 				"Content type must be " + MediaType.TEXT_XML);
 			return;

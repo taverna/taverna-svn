@@ -9,6 +9,7 @@ import net.sf.taverna.service.datastore.TestJob;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.interfaces.ParseException;
+import net.sf.taverna.service.interfaces.TavernaConstants;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +25,8 @@ import org.restlet.data.Status;
 
 public class TestJobProgressReport extends ClientTest {
 
+	public static final MediaType reportType = new MediaType(TavernaConstants.reportType);
+	
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
 	String jobURI;
@@ -50,7 +53,7 @@ public class TestJobProgressReport extends ClientTest {
 		request.setMethod(Method.GET);
 		request.setResourceRef(progressReportURI);
 		request.getClientInfo().getAcceptedMediaTypes().add(
-			new Preference<MediaType>(MediaType.TEXT_XML));
+			new Preference<MediaType>(reportType));
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -74,7 +77,7 @@ public class TestJobProgressReport extends ClientTest {
 		Request request = makeAuthRequest();
 		request.setMethod(Method.PUT);
 		request.setResourceRef(progressReportURI);
-		request.setEntity("<progres>updated</progress>", MediaType.TEXT_XML);
+		request.setEntity("<progres>updated</progress>", reportType);
 		// Just to be sure we will be changing it since makeJob()
 		assertFalse("<progres>updated</progress>".equals(job.getProgressReport()));
 
@@ -91,7 +94,7 @@ public class TestJobProgressReport extends ClientTest {
 		request.setMethod(Method.GET);
 		request.setResourceRef(progressReportURI);
 		request.getClientInfo().getAcceptedMediaTypes().add(
-			new Preference<MediaType>(MediaType.TEXT_XML));
+			new Preference<MediaType>(reportType));
 		response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertEquals("<progres>updated</progress>", response.getEntity().getText().trim());
