@@ -46,6 +46,7 @@ public class RESTContext {
 		xmlOptions.setSavePrettyPrintIndent(4);
 		xmlOptions.setSaveOuter();
 		xmlOptions.setUseDefaultNamespace();
+		xmlOptions.setCompileNoValidation();
 		xmlOptions.setSaveAggressiveNamespaces();
 		xmlOptions.setCharacterEncoding(ENCODING);
 		Map<String, String> ns = new HashMap<String, String>();
