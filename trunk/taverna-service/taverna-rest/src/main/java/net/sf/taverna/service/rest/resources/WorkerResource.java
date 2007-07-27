@@ -35,19 +35,17 @@ public class WorkerResource extends AbstractResource {
 	@Override
 	public void delete() {
 		if (getAuthUser().isAdmin()) {
-			if (worker!=null) {
+			if (worker != null) {
 				if (!worker.isBusy()) {
 					deleteWorker();
+				} else {
+					getResponse().setStatus(
+						Status.CLIENT_ERROR_PRECONDITION_FAILED);
 				}
-				else {
-					getResponse().setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
-				}
-			}
-			else {
+			} else {
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
 			}
-		}
-		else {
+		} else {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
 		}
 	}
