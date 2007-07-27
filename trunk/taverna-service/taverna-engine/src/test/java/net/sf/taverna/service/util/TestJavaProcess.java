@@ -56,4 +56,17 @@ public class TestJavaProcess {
 				"[my, arguments, added, here]\n" +
 				"soup nice\n", IOUtils.toString(proc.getInputStream()));
 	}
+	
+	@Test
+	public void runProcessEngine() throws IOException, ClassNotFoundException {
+		JavaProcess p = new JavaProcess(
+			"net.sf.taverna.service.backend.executor.RestfulExecutionProcess", getClass().getClassLoader());
+		assertTrue(p.isInherittingClasspath());
+		assertTrue(p.isRedirectingError());
+		p.addArguments("-help");
+		Process proc = p.run();
+		String helpText = IOUtils.toString(proc.getInputStream());
+		assertTrue(helpText.contains("usage: restfulexecution <job-uri> .."));
+	}
+	
 }

@@ -200,6 +200,7 @@ public class JavaProcess {
 			return procBuilder.start();
 		} catch (IOException e) {
 			logger.warn("Could not execute: " + cmdLine, e);
+			System.err.println("Could not execute " + cmdLine);
 			return null;
 		}
 	}
@@ -242,19 +243,26 @@ public class JavaProcess {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		args = buildArguments();
+		List<String> args = buildArguments();
 		for (String arg : args) {
 			if (arg.matches("^[-A-Za-z0-9_/=.]*$")) {
-				sb.append(arg);
+				sb.append(shortened(arg));
 			} else {
 				sb.append('"');
-				sb.append(arg.replace("\"", "\\\""));
+				sb.append(shortened(arg.replace("\"", "\\\"")));
 				sb.append('"');
 			}
 			sb.append(" ");
 		}
 
 		return sb.toString();
+	}
+
+	private String shortened(String string) {
+		if (string.length() <= 40) {
+			return string;
+		}
+		return string.substring(0, 19) + "..." + string.substring(string.length() - 19);
 	}
 
 	/**
