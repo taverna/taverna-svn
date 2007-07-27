@@ -43,6 +43,7 @@ public class CapabilitiesResource extends AbstractResource {
 				uriFactory.getURICurrentUser());
 			capabilities.addNewWorkers().setHref(
 				uriFactory.getURI(Worker.class));
+			capabilities.addNewDefaultQueue().setHref(uriFactory.getURIDefaultQueue());
 		}
 	}
 	

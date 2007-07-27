@@ -155,6 +155,10 @@ public class URIFactory {
 		return uri + "/" + getMapping(ownedClass);
 	}
 
+	public String getURIDefaultQueue() {
+		return getURI(Queue.class) + getMappingDefaultQueue();
+	}
+	
 	/**
 	 * Get the URI for the status of a job
 	 * 
