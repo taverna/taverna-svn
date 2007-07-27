@@ -1,5 +1,6 @@
 package net.sf.taverna.service.datastore;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
@@ -13,6 +14,7 @@ import java.util.List;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.QueueEntry;
+import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.test.TestDAO;
@@ -51,28 +53,33 @@ public class TestQueue extends TestDAO {
 	}
 	
 	@Test
-	public void testDefaultQueueIsCreated() {
-		deleteQueues(); //delete existing queues
+	public void defaultQueueIsCreated() {
+		deleteDefaultQueue(); //delete existing default queue
+		
 		QueueDAO queueDao = daoFactory.getQueueDAO();
-		
-		assertEquals("There should be 0 queues",0,queueDao.all().size());
-		
 		Queue q = queueDao.defaultQueue();
-		assertNotNull("The default queue should not be null",q);
-		
-		assertEquals("There should now be 1 queue",1,queueDao.all().size());
+		assertNotNull("The default queue should not be null", q);
+
+		assertNotNull("Default queue should now exist",
+			queueDao.read(q.getId()));
+
+		assertSame(q, queueDao.defaultQueue());
 		daoFactory.rollback();
 	}
 	
-	private void deleteQueues() {
+	private void deleteDefaultQueue() {
 		QueueDAO queueDao = daoFactory.getQueueDAO();
-		for (Queue queue : queueDao.all()) {
-			for (Job job : queue.getJobs()) {
-				QueueEntry entry = queue.removeJob(job);
-				daoFactory.getQueueEntryDAO().delete(entry);
-			}
-			queueDao.delete(queue);
+		Queue defaultQueue = queueDao.defaultQueue();
+		for (Job job : defaultQueue.getJobs()) {
+			QueueEntry entry = defaultQueue.removeJob(job);
+			daoFactory.getQueueEntryDAO().delete(entry);
 		}
+		for (Worker worker : defaultQueue.getWorkers()) {
+			worker.setQueue(null);
+		}
+		queueDao.delete(defaultQueue);
+		assertNull("Default queue should have been deleted",
+			queueDao.read(defaultQueue.getId()));
 	}
 	
 	public Queue makeBigQueue() throws ParseException {

@@ -7,14 +7,19 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
 import net.sf.taverna.service.datastore.dao.QueueEntryDAO;
 
+
+@NamedQuery(name = Queue.NAMED_QUERY_NAME, query = "SELECT q FROM Queue q WHERE q.name=:name")
 @Entity
 public class Queue extends AbstractNamed {
+	
+	public static final String NAMED_QUERY_NAME = "queueByName";
 	
 	@OneToMany(cascade=CascadeType.ALL, mappedBy="queue")
 	@OrderBy("id")
