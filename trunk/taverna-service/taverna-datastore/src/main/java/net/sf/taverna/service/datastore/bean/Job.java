@@ -35,7 +35,8 @@ public class Job extends AbstractOwned {
 	 * <p>
 	 * In addition, NEW means that the job is not yet on a queue, and DESTROYED
 	 * means that some or all of the data of this job is no longer available in
-	 * the data store.
+	 * the data store. CANCELLING in this context means that the worker process is
+	 * to be terminated, leading to CANCELLED.
 	 */
 	public enum Status {
 		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED
