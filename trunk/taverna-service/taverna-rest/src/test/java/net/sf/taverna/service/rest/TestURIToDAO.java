@@ -11,6 +11,7 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.rest.utils.URItoDAO;
 import net.sf.taverna.service.test.TestCommon;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.restlet.data.Reference;
 
@@ -20,9 +21,17 @@ public class TestURIToDAO extends TestCommon {
 
 	DAOFactory daoFactory = DAOFactory.getFactory();
 
-	URIFactory uriFactory = URIFactory.getInstance(ROOT);
-
-	URItoDAO uriToDao = URItoDAO.getInstance(uriFactory);
+	URIFactory uriFactory;
+	
+	URItoDAO uriToDao;
+	
+	@Before
+	public void setRoot() {
+		DAOFactory.getFactory().getConfigurationDAO().getConfig().setBaseuri(ROOT);
+		URIFactory.BASE_URI_CHANGED=true;
+		uriFactory=URIFactory.getInstance();
+		uriToDao = URItoDAO.getInstance(uriFactory);
+	}
 
 	@Test
 	public void resolveWorkflow() {

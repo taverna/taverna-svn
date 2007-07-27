@@ -12,6 +12,7 @@ import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.xml.Capabilities;
 
 import org.apache.log4j.Logger;
@@ -38,18 +39,16 @@ public class URIFactory {
 	public static final String V1 = "v1";
 	
 	public static final String DEFAULT_HTML_PATH = "../" + HTML;
+	
+	public static boolean BASE_URI_CHANGED=true;
+	
+	private static Reference applicationRoot;
 
-	public static URIFactory getInstance(String root) {
-		return new URIFactory(root);
-	}
-
-	public static URIFactory getInstance(Request request) {
-		return new URIFactory(request);
+	public static URIFactory getInstance() {
+		return new URIFactory();
 	}
 
 	private static String html = DEFAULT_HTML_PATH;
-
-	private Reference applicationRoot;
 	
 	private String htmlRoot;
 
@@ -69,23 +68,6 @@ public class URIFactory {
 		resourceMap.put(Configuration.class, "config");
 	}
 
-	/**
-	 * Use {@link #getInstance(String)} instead
-	 * 
-	 * @param applicationRoot
-	 */
-	private URIFactory(String applicationRoot) {
-		setApplicationRoot(applicationRoot);
-	}
-
-	/**
-	 * Use {@link #getInstance(Request)} instead
-	 * 
-	 * @param request
-	 */
-	public URIFactory(Request request) {
-		setApplicationRoot(request.getRootRef());
-	}
 
 
 	/**
@@ -289,36 +271,7 @@ public class URIFactory {
 		return html;
 	}
 
-	/**
-	 * Set the application root to the given URI, typically
-	 * <code>http://localhost:1238/v1</code>. The root is where the
-	 * {@link Capabilities} document is served, and also the base of the URIs to
-	 * collections such as <code>users</code> defined by {@link #resourceMap}
-	 * 
-	 * @param root
-	 *            The URI of the application root
-	 */
-	public void setApplicationRoot(Reference root) {
-		logger.debug(root + " " + root.getBaseRef());
-		applicationRoot = root.getTargetRef();
-		if (! applicationRoot.getPath().endsWith("/")) {
-			applicationRoot.setPath(applicationRoot.getPath() + "/");
-		}
-		logger.debug("Set application root to " + applicationRoot);
-	}
-
-	/**
-	 * Set the application root to the given URI, typically
-	 * <code>http://localhost:1238/v1</code>. The root is where the
-	 * {@link Capabilities} document is served, and also the base of the URIs to
-	 * collections such as <code>users</code> defined by {@link #resourceMap}
-	 * 
-	 * @param root
-	 *            The URI of the application root
-	 */
-	public void setApplicationRoot(String root) {
-		setApplicationRoot(new Reference(root));
-	}
+	
 	
 	/**
 	 * Get the application root. The root is where the
@@ -328,6 +281,14 @@ public class URIFactory {
 	 * @return The application root as a {@link Reference}
 	 */
 	public Reference getApplicationRoot() {
+		if (applicationRoot==null || BASE_URI_CHANGED) {
+			Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
+			String root=config.getBaseuri();
+			if (!root.endsWith("/")) root+="/";
+			applicationRoot=new Reference(root+URIFactory.V1+"/");
+			logger.info("Set application root to "+applicationRoot.toString());
+			BASE_URI_CHANGED=false;
+		}
 		return applicationRoot;
 	}
 	

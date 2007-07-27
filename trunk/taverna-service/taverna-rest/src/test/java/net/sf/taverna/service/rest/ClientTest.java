@@ -7,12 +7,12 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.test.TestCommon;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Preference;
 import org.restlet.data.Request;
 
 /**
@@ -45,8 +45,15 @@ public abstract class ClientTest extends TestCommon {
 	
 	public static User user;
 	
-	public URIFactory uriFactory = URIFactory.getInstance(BASE_URL);
+	public URIFactory uriFactory;
 		
+	@Before
+	public void setBaseUri() {
+		DAOFactory.getFactory().getConfigurationDAO().getConfig().setBaseuri(ROOT_URL);
+		DAOFactory.getFactory().commit();
+		URIFactory.BASE_URI_CHANGED=true;
+		uriFactory=URIFactory.getInstance();
+	}
 	@BeforeClass
 	public synchronized static void startServer() throws Exception {
 		stopServer();

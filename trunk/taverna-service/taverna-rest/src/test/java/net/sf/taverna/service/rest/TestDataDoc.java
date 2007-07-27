@@ -13,7 +13,7 @@ import net.sf.taverna.service.xml.DataDocument;
 import net.sf.taverna.service.xml.DatasDocument;
 
 import org.apache.xmlbeans.XmlException;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
@@ -34,10 +34,10 @@ import org.w3c.dom.Node;
 
 public class TestDataDoc extends ClientTest {
 
-	private static Reference justCreated;
+	private Reference justCreated;
 
-	@BeforeClass
-	public static void resetJustCreated() {
+	@Before
+	public void resetJustCreated() {
 		justCreated = null;
 	}
 

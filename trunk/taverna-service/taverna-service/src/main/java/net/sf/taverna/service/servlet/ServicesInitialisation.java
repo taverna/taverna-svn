@@ -35,10 +35,7 @@ public class ServicesInitialisation implements ServletContextListener {
 
 	private void startQueueMonitor(ServletContext context) {
 		logger.info("Starting the Job Queue Monitor");
-		String base=context.getInitParameter("baseuri");
-		if (!base.endsWith("/")) base+="/";
-		URIFactory uriFactory = URIFactory.getInstance(base + "v1/");
-		URIFactory.setHTMLpath(base+"html/");
+		URIFactory uriFactory = URIFactory.getInstance();
 		logger.info("Setting velocity template path to:"+context.getRealPath(TEMPLATES_PATH));
 		VelocityRepresentation.setResourcePath(context.getRealPath(TEMPLATES_PATH));
 		queueMonitor=new DefaultQueueMonitor(uriFactory);

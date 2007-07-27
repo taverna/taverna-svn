@@ -18,7 +18,7 @@ public class CurrentUserResource extends Resource {
 
 	public CurrentUserResource(Context context, Request req, Response response) {
 		super(context, req, response);
-		uriFactory = URIFactory.getInstance(req);
+		uriFactory = URIFactory.getInstance();
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class RepresentationalResource extends Resource {
 	public RepresentationalResource(Context context, Request request,
 		Response response) {
 		super(context, request, response);
-		uriFactory = URIFactory.getInstance(request);
+		uriFactory = URIFactory.getInstance();
 	}
 
 	/**

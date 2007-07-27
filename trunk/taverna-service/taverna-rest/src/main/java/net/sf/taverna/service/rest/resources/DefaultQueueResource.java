@@ -40,7 +40,7 @@ public class DefaultQueueResource extends AbstractResource {
 			Map<String,Object> model = new HashMap<String, Object>();
 			model.put("queue",queue);
 			model.put("jobs",queue.getJobs());
-			model.put("uriFactory", URIFactory.getInstance(getRequest()));
+			model.put("uriFactory", URIFactory.getInstance());
 			model.put("currentuser", getAuthUser());
 			return model;
 		}

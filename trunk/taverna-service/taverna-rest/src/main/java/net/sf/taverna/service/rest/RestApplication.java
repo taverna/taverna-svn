@@ -90,6 +90,7 @@ public class RestApplication extends Application {
 	 * </ul>
 	 */
 	private void init() {
+		createDefaultQueue();
 		createDefaultWorker();
 	}
 	
@@ -98,6 +99,11 @@ public class RestApplication extends Application {
 			logger.info("No workers exist. Creating a default worker");
 			WorkerInitialisation.createNew();
 		}
+	}
+	
+	private void createDefaultQueue() {
+		DAOFactory.getFactory().getQueueDAO().defaultQueue();
+		DAOFactory.getFactory().commit();
 	}
 
 	@Override

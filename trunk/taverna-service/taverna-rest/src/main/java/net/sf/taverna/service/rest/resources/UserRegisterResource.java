@@ -9,6 +9,7 @@ import net.sf.taverna.service.rest.resources.representation.VelocityRepresentati
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -31,11 +32,14 @@ public class UserRegisterResource extends AbstractUserCreationResource {
 	}
 	
 	
-
-	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e) {
-		return new RegisterVelocityRepresentation(name,password,confirm,email,e.getMessage());
-	}
 	
+	@Override
+	protected VelocityRepresentation getVelocityRepresentationForError(Form form, Exception e) {
+		return new RegisterVelocityRepresentation(form.getValues("name"),form.getValues("password"),form.getValues("confirm"),form.getValues("email"),e.getMessage());
+	}
+
+
+
 	class RegisterVelocityRepresentation extends VelocityRepresentation {
 
 		private Map<String,Object> model = new HashMap<String, Object>();

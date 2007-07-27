@@ -14,14 +14,7 @@
 			net.sf.taverna.service.servlet.TavernaServiceServletApplication
 		</param-value>
 	</context-param>
-
-	<context-param>
-		<param-name>baseuri</param-name>
-		<param-value>
-			http://localhost:9090/taverna-service-1.0.0
-		</param-value>
-	</context-param>
-
+	
 	<!-- Restlet adapter -->
 	<servlet>
 		<servlet-name>RestletServlet</servlet-name>

@@ -36,6 +36,7 @@
 					<tr><td>Username</td><td><input type="text" name="smtpusername" value="$!smtpusername"></td></tr>
 					<tr><td>Password</td><td><input type="password" name="smtppassword" value="$!smtppassword"></td></tr>
 					<tr><td>Confirm password</td><td><input type="password" name="smtppasswordconfirm" value="$!smtppasswordconfirm"></td></tr>
+					<tr><td>Base URI</td><td><input type="text" name="baseuri" value="$!baseuri"></td></tr>
 					<tr><td><input type="submit" value="Update" onClick="return validateDetails(this.form)"/></td><td></td></tr>
 					<script language="javascript">enableDisableElements();</script>
 				</table>

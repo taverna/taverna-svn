@@ -97,16 +97,12 @@ public class TavernaService {
 			System.exit(1);
 		}
 		
-		// FIXME: Workers should be started from separate main with the URI in a
-		// configuration file
+		RestApplication application = new RestApplication();
+		
 		URIFactory uriFactory =
-			URIFactory.getInstance("http://localhost:" + port + "/"
-				+ URIFactory.V1 + "/");
+			URIFactory.getInstance();
 		DefaultQueueMonitor queueMonitor = new DefaultQueueMonitor(uriFactory);
 		queueMonitor.start();
-		
-		
-		RestApplication application = new RestApplication();
 		
 		application.startServer(port);
 	}

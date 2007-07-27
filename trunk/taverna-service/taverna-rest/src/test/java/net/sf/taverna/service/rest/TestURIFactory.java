@@ -10,6 +10,7 @@ import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Workflow;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.junit.Test;
@@ -119,24 +120,10 @@ public class TestURIFactory extends ClientTest {
 
 	@Test
 	public void getInstancePath() {
-		String URL = "http://www.example.com/blah/v1/";
+		DAOFactory.getFactory().getConfigurationDAO().getConfig().setBaseuri("http://www.example.com/blah/");
+		URIFactory.BASE_URI_CHANGED=true;
 		Job j = new Job();
-		URIFactory blah = URIFactory.getInstance(URL);	
-		assertEquals(URL + "jobs/" + j.getId(), blah.getURI(j));
-	}
-	
-	@Test
-	public void getInstanceReference() {
-		// Should be getTarget-ed to /fish/bowl/
-		Reference ref = new Reference(new Reference("http://example.com/fish/soup"), "bowl/");
-		assertEquals("http://example.com/fish/bowl/", ref.getTargetRef().toString());
-		Request req = new Request(Method.GET, "http://example.com/somewhere/else");
-		req.setRootRef(ref);
-		URIFactory f = URIFactory.getInstance(req);
-		assertTrue(f.getApplicationRoot().isEquivalentTo(ref));
-		assertEquals("http://example.com/fish/bowl/users;current", f.getURICurrentUser());
-		// Because it's ../html from fish/bowl/
-		assertEquals("http://example.com/fish/html", f.getHTMLRoot());
-
+		URIFactory blah = URIFactory.getInstance();	
+		assertEquals("http://www.example.com/blah/v1/jobs/" + j.getId(), blah.getURI(j));
 	}
 }

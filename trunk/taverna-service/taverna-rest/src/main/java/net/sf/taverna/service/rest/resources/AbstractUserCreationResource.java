@@ -41,19 +41,23 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 		}
 		else {
 			Form form = new Form(entity);
-			String name = form.getValues("name");
-			String password = form.getValues("password");
-			String email = form.getValues("email");
-			String confirm = form.getValues("confirm");
-			try {
-				validate(name,password,confirm,email);
-				User user=createUser(name,password,email);
-				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(user));
-				getResponse().setStatus(Status.REDIRECTION_FOUND);
-			} catch (Exception e) {
-				getResponse().setEntity(getVelocityRepresentationForError(name, password, email, confirm, e).getRepresentation());
-				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-			} 
+			processForm(form); 
+		}
+	}
+
+	protected void processForm(Form form) {
+		String name = form.getValues("name");
+		String password = form.getValues("password");
+		String email = form.getValues("email");
+		String confirm = form.getValues("confirm");
+		try {
+			validate(name,password,confirm,email);
+			User user=createUser(name,password,email);
+			getResponse().setRedirectRef(URIFactory.getInstance().getURI(user));
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+		} catch (Exception e) {
+			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation());
+			getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 		}
 	}
 	
@@ -81,7 +85,7 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 	}
 	
 	protected abstract VelocityRepresentation getVelocityRepresentation();
-	protected abstract VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e);
+	protected abstract VelocityRepresentation getVelocityRepresentationForError(Form form, Exception e);
 	
 	@SuppressWarnings("serial")
 	class CreateUserException extends Exception {

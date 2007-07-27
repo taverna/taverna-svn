@@ -16,9 +16,15 @@ public class Configuration extends AbstractDated {
 	private boolean smtpAuthRequired;
 	private String smtpUser;
 	private String smtpPassword;
+	private String baseuri;
 	
 	
-	
+	public String getBaseuri() {
+		return baseuri;
+	}
+	public void setBaseuri(String baseuri) {
+		this.baseuri = baseuri;
+	}
 	public String getFromEmail() {
 		return fromEmail;
 	}

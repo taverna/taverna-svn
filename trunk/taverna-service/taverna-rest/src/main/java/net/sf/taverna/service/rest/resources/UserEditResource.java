@@ -60,7 +60,7 @@ public class UserEditResource extends AbstractUserResource {
 			try {
 				validate(password,updatePassword,userIsAdmin,email,newPassword,newConfirm);
 				updateUser(updatePassword,userIsAdmin,email,newPassword);
-				getResponse().setRedirectRef(URIFactory.getInstance(getRequest()).getURI(user));
+				getResponse().setRedirectRef(URIFactory.getInstance().getURI(user));
 				getResponse().setStatus(Status.REDIRECTION_FOUND);
 			}
 			catch(Exception e) {

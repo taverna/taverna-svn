@@ -9,6 +9,7 @@ import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -23,10 +24,9 @@ public class UserAddResource extends AbstractUserCreationResource {
 	}
 
 	@Override
-	protected VelocityRepresentation getVelocityRepresentationForError(String name, String password, String email, String confirm, Exception e) {
-		return new AddUserVelocityRepresentation(name,password,confirm,email,e.getMessage());
+	protected VelocityRepresentation getVelocityRepresentationForError(Form form, Exception e) {
+		return new AddUserVelocityRepresentation(form.getValues("name"),form.getValues("password"),form.getValues("confirm"),form.getValues("email"),e.getMessage());
 	}
-
 
 	class AddUserVelocityRepresentation extends VelocityRepresentation {
 

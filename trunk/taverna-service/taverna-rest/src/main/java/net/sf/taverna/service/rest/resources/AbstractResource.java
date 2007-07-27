@@ -59,7 +59,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 	public AbstractResource(Context context, Request request, Response response) {
 		super(context, request, response);
-		uriFactory = URIFactory.getInstance(request);
+		uriFactory = URIFactory.getInstance();
 		uriToDAO = URItoDAO.getInstance(uriFactory);
 	}
 	
