@@ -67,8 +67,9 @@ public class TestJob extends ClientTest {
 		Queue q = daoFactory.getQueueDAO().defaultQueue();
 		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getQueue());
 		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getStatus());
-		assertEquals("The jobs queue should equal the default queue",q,jobBean.getQueue());
-		assertTrue("The default queue should now contain the new job",q.getJobs().contains(jobBean));
+		assertEquals("The jobs queue should equal the default queue", q,jobBean.getQueue());
+		
+		assertTrue("The default queue should now contain the new job", q.getJobs().contains(jobBean));
 		
 		assertEquals("job should be queued status",net.sf.taverna.service.datastore.bean.Job.Status.QUEUED,jobBean.getStatus());
 	}
