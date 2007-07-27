@@ -104,6 +104,9 @@ public class JobResource extends AbstractJobResource {
 			GDuration interval = jobDoc.getJob().getUpdateInterval();
 			job.setUpdateInterval(interval.toString());
 		}
+		if (jobDoc.getJob().getTitle() != null) {
+			job.setName(jobDoc.getJob().getTitle());
+		}
 		daoFactory.getJobDAO().update(job);
 		daoFactory.commit();
 		logger.info("Updated " + job);
@@ -207,6 +210,9 @@ public class JobResource extends AbstractJobResource {
 			}
 			else {
 				model.put("isFinished",false);
+			}
+			if (job.getConsole() != null && job.getConsole().length() > 0) {
+				model.put("consoleUri", uriFactory.getURIConsole(job));
 			}
 			model.put("currentuser",getAuthUser());
 			return model;

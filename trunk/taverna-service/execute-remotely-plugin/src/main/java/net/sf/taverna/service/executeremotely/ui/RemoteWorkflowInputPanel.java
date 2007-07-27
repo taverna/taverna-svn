@@ -1,5 +1,6 @@
 package net.sf.taverna.service.executeremotely.ui;
 
+import java.util.Date;
 import java.util.Map;
 
 import javax.swing.Action;
@@ -63,6 +64,13 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 			logger.warn("Could not add job for workflow " + wf, e);
 			return;
 		}
+		try {
+			service.setJobTitle(job, model);
+		} catch (NotSuccessException e) {
+			uiLog.log("Could not set title for " + job);
+			logger.warn("Could not set title for " + job, e);
+		}
+		
 		uiLog.log("Added " + job);
 	}
 
@@ -90,6 +98,12 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 				return;
 			}
 			uiLog.log("Added " + job);
+			try {
+				service.setJobTitle(job, model);
+			} catch (NotSuccessException e) {
+				uiLog.log("Could not set title for " + job);
+				logger.warn("Could not set title for " + job, e);
+			}
 		}
 	}
 

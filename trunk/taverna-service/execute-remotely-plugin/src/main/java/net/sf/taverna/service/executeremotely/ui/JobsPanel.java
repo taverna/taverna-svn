@@ -41,6 +41,7 @@ class JobsPanel extends JPanel {
 		private class MouseClickListener extends MouseAdapter {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				// TODO: Show stuff inline instead
 				if (!ModelMap.getInstance().getModels().contains(job.getURI())) {
 					// Create and add a Workflow instance
 					RemoteWorkflowInstance instance =
@@ -65,7 +66,13 @@ class JobsPanel extends JPanel {
 				uiLog.log("Can't get status for " + job);
 			}
 			setBackground(Color.WHITE);
-			setText(job.getURI() + ": " + state);
+			String title = job.getTitle();
+			if (title == null || title.equals("")) {
+				title = job.getURI();
+			}
+			title += " <small>" + job.getCreated() + "</small>";
+			// FIXME: Use tables or similar for all this info
+			setText("<html>" + title + ": <strong>" + state + "</strong></html>");
 			addMouseListener(new MouseClickListener());
 		}
 	}

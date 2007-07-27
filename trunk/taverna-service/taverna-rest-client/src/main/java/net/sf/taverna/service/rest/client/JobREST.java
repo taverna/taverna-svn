@@ -1,10 +1,12 @@
 package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.StatusType;
+import static net.sf.taverna.service.rest.client.RESTContext.xmlOptions;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.GDuration;
@@ -60,7 +62,7 @@ public class JobREST extends OwnedREST<Job> {
 		if (statusURI != null) {
 			context.put(statusURI, status.toString(), MediaType.TEXT_PLAIN);
 		} else {
-			JobDocument job = JobDocument.Factory.newInstance();
+			JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
 			job.addNewJob().addNewStatus().set(status);
 			context.put(getURIReference(), job);
 			invalidate();
@@ -81,7 +83,7 @@ public class JobREST extends OwnedREST<Job> {
 	}
 
 	public void setOutputs(DataREST rest) throws NotSuccessException {
-		JobDocument job = JobDocument.Factory.newInstance();
+		JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
 		job.addNewJob().addNewOutputs().setHref(rest.getURI());
 		context.put(getURIReference(), job);
 		invalidate();
@@ -113,7 +115,7 @@ public class JobREST extends OwnedREST<Job> {
 		if (reportURI != null) {
 			context.put(reportURI, report, RESTContext.reportType);
 		} else {
-			JobDocument job = JobDocument.Factory.newInstance();
+			JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
 			XmlObject reportXML = XmlObject.Factory.parse(report);
 			job.addNewJob().addNewReport().set(reportXML);
 			context.put(getURIReference(), job);
@@ -127,7 +129,7 @@ public class JobREST extends OwnedREST<Job> {
 
 	public void setUpdateInterval(GDuration interval)
 		throws NotSuccessException {
-		JobDocument job = JobDocument.Factory.newInstance();
+		JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
 		job.addNewJob().setUpdateInterval(interval);
 		context.put(getURIReference(), job);
 		invalidate();
@@ -161,7 +163,7 @@ public class JobREST extends OwnedREST<Job> {
 		if (uri != null) {
 			context.put(uri, console, RESTContext.consoleType);
 		} else {
-			JobDocument job = JobDocument.Factory.newInstance();
+			JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
 			job.addNewJob().addNewConsole().setStringValue(console);
 			context.put(getURIReference(), job);
 		}
@@ -171,5 +173,7 @@ public class JobREST extends OwnedREST<Job> {
 	public JobREST clone() {
 		return new JobREST(context, getURIReference());
 	}
+
+
 
 }

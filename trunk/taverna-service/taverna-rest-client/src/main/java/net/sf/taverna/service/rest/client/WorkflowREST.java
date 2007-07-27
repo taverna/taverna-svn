@@ -1,6 +1,8 @@
 package net.sf.taverna.service.rest.client;
 
 import net.sf.taverna.service.xml.Workflow;
+import net.sf.taverna.service.xml.WorkflowDocument;
+import static net.sf.taverna.service.rest.client.RESTContext.xmlOptions;
 
 import org.restlet.data.Reference;
 
@@ -26,4 +28,5 @@ public class WorkflowREST extends OwnedREST<Workflow> {
 	public WorkflowREST clone() {
 		return new WorkflowREST(context, getURIReference());
 	}
+
 }

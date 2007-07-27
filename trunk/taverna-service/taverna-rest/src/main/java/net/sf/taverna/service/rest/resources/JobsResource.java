@@ -144,6 +144,10 @@ public class JobsResource extends AbstractUserResource {
 		if (updateInterval != null) {
 			job.setUpdateInterval(updateInterval.toString());
 		}
+		
+		if (jobDoc.getJob().getTitle() != null) {
+			job.setName(jobDoc.getJob().getTitle());
+		}
 
 		daoFactory.getJobDAO().create(job);
 		addJobToDefaultQueue(job);

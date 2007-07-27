@@ -1,7 +1,6 @@
 package net.sf.taverna.service.rest.client;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;

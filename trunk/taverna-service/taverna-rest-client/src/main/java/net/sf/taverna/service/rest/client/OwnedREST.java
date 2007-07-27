@@ -1,5 +1,10 @@
 package net.sf.taverna.service.rest.client;
 
+import static net.sf.taverna.service.rest.client.RESTContext.xmlOptions;
+
+import java.util.Calendar;
+
+import net.sf.taverna.service.xml.JobDocument;
 import net.sf.taverna.service.xml.Owned;
 import net.sf.taverna.service.xml.User;
 
@@ -29,6 +34,27 @@ public class OwnedREST<OwnedClass extends Owned> extends LinkedREST<OwnedClass> 
 			return null;
 		}
 		return new UserREST(context, owner);
+	}
+
+	
+	public void setTitle(String title) throws NotSuccessException {
+		JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
+		job.addNewJob().setTitle(title);
+		context.put(getURIReference(), job);
+		invalidate();
+	}
+	
+	public String getTitle() {
+		// Might be null
+		return getDocument().getTitle();
+	}
+
+	public Calendar getCreated() {
+		return getDocument().getCreated();
+	}
+
+	public Calendar getLastModified() {
+		return getDocument().getModified();
 	}
 
 }

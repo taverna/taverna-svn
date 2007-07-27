@@ -21,6 +21,7 @@ import org.restlet.util.Engine;
 import com.noelios.restlet.ext.httpclient.HttpClientHelper;
 
 public class RESTService {
+
 	
 	private static Logger logger = Logger.getLogger(RESTService.class);
 
@@ -75,6 +76,10 @@ public class RESTService {
 
 	public JobREST addJob(WorkflowREST wf) throws NotSuccessException {
 		return context.getUser().getJobs().add(wf);
+	}
+
+	public void setJobTitle(JobREST job, ScuflModel model) throws NotSuccessException {
+		job.setTitle(model.getDescription().getTitle());
 	}
 
 }

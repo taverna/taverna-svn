@@ -1,7 +1,16 @@
 
 		<center>
-			<h3>Job: $job.getId()</h3>
+			<h3>Job: 
+			#if($job.title)
+ 				$job.title
+			#else
+				$job.id
+			#end
+			</h3>
 			<table>
+				<tr><td>Created:</td><td>$job.created</td></tr>
+				<tr><td>Last modified:</td><td>$job.lastModified</td></tr>
+				
 				<tr><td>Status:</td><td>$job.status</td></tr>
 				<tr><td>&nbsp;</td></tr>
 				<tr><td>Workflow:</td><td><a href="$workflowUri">
@@ -22,13 +31,26 @@
 				<tr><td>Progress Report: </td><td><a href="$progressUri">progress</a></td></tr>
 				
 				#if($isFinished)
-					<tr><td>Outputs: </td><td>
+					<tr>
+					 <td>Outputs: </td>
+					 <td>
 					#if($output)
-						<a href="$outputUri">$output.id</a></td></tr>
+						<a href="$outputUri">$output.id</a>
 					#else
 						No Outputs
 					#end
-				#end                   	
+					</td></tr>
+				#end
+				<tr>
+				 <td>Console: </td>
+				 <td>
+					#if($consoleUri)
+						<a href="$consoleUri">Console output</a>
+					#else
+						No console output
+					#end
+					</td></tr>
+				</td>                   	
 			</table>
 			<br>		
 			#set($userjob=$job.getOwner().equals($currentuser))
