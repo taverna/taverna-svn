@@ -28,9 +28,8 @@ import org.restlet.data.Reference;
  */
 public class RestfulExecutionProcess {
 
-	
 	// Command line parameters
-	
+
 	private static final String PASSWORD = "password";
 
 	private static final String USERNAME = "username";
@@ -43,8 +42,7 @@ public class RestfulExecutionProcess {
 	 * @author Stian Soiland
 	 */
 	public enum Exit {
-		NORMAL, CONF_CANT_READ, CONF_INVALID, CMD_PARSE, MISSING_JOB, 
-		MISSING_BASE, MISSING_USER, MISSING_PW, INTERRUPTED ;
+		NORMAL, CONF_CANT_READ, CONF_INVALID, CMD_PARSE, MISSING_JOB, MISSING_BASE, MISSING_USER, MISSING_PW, INTERRUPTED;
 
 		public void exit() {
 			System.exit(ordinal());
@@ -121,9 +119,6 @@ public class RestfulExecutionProcess {
 		if (line.hasOption(PASSWORD)) {
 			password = line.getOptionValue(PASSWORD);
 		}
-		
-		
-		
 
 		if (line.getArgs().length < 1) {
 			System.err.println("At least one job URI must be given.");
@@ -141,15 +136,14 @@ public class RestfulExecutionProcess {
 			System.err.println("Password must be given in config file or as parameter");
 			Exit.MISSING_PW.exit();
 		}
-		
-		
+
 		startThreads(line.getArgs());
 		joinThreads();
 	}
 
 	public void loadProperties() {
 		properties = new Properties();
-		if (! config.exists()) {
+		if (!config.exists()) {
 			logger.info("Did not exist: " + config);
 			return;
 		}

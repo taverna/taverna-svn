@@ -12,44 +12,25 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Execute a Java main() method in a new JVM as a new process. In particular
+ * this gives the caller the possibillity to kill the process after a timeout
+ * without worrying about how many threads the class forks out, and this class
+ * will do the magic needed to find the "java" binary.
+ * <p>
+ * The new JVM can optionally inherit the classpath of the current JVM (guessed
+ * using various heuristics) by construction with
+ * {@link JavaProcess#JavaProcess(String, ClassLoader)}
+ * 
+ * @author Stian Soiland
+ */
 public class JavaProcess {
 
 	private static Logger logger = Logger.getLogger(JavaProcess.class);
 
 	private static final String BIN = "bin";
 
-	private static String classpathToString(URL[] classpath) {
-		return classpathToString(Arrays.asList(classpath));
-	}
-
-	private static String classpathToString(Iterable<URL> urls) {
-		String pathSep = System.getProperty("path.separator");
-		StringBuffer sb = new StringBuffer();
-		for (URL url : urls) {
-			if (! url.getProtocol().equals("file")) {
-				logger.debug("Ignoring non-file " + url);
-				continue;
-			}
-			String file = url.getFile();
-			if (file.contains(pathSep)) {
-				logger.debug("Ignoring invalid character in " + url);
-				continue;
-			}
-			if (file.equals("")) {
-				// Use current directory instead
-				sb.append(System.getProperty("user.dir"));
-			} else {
-				sb.append(file);
-			}
-			sb.append(pathSep);
-		}
-		if (sb.length() > 0) {
-			// Delete last ;
-			sb.deleteCharAt(sb.length() - 1);
-		}
-		return sb.toString();
-	}
-
+	
 	private String classpath;
 
 	private String className;
@@ -144,53 +125,6 @@ public class JavaProcess {
 		return cmdLine;
 	}
 
-	private LinkedHashSet<URL> getCurrentClasspath() {
-		LinkedHashSet<URL> classpath = new LinkedHashSet<URL>();
-		LinkedHashSet<ClassLoader> classloaders = new LinkedHashSet<ClassLoader>();
-
-		classloaders.add(getCallingClassLoader());
-		classloaders.add(getClass().getClassLoader());
-		classloaders.add(Thread.currentThread().getContextClassLoader());
-		
-		// Iterate over copy so we can modify it
-		for (ClassLoader cl : new ArrayList<ClassLoader>(classloaders)) {
-			if (cl == null) {
-				continue;
-			}
-			// Add all the parents
-			cl = cl.getParent();
-			// FIXME: Parents are not added immediately after their children
-			while (cl != null && ! classloaders.contains(cl)) {
-				classloaders.add(cl);
-				cl = cl.getParent();
-			}				
-		}		
-		classloaders.add(ClassLoader.getSystemClassLoader());
-		
-		// Extract URLs
-		for (ClassLoader cl : classloaders) {
-			if (cl == null || ! (cl instanceof URLClassLoader)) {
-				continue;
-			}
-			if (cl == ClassLoader.getSystemClassLoader()) {
-				// Only include stuff in java.class.path instead
-				String[] paths = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
-				for (String path : paths) {
-					File pathFile = new File(path).getAbsoluteFile();
-					try {
-						classpath.add(pathFile.toURI().toURL());
-					} catch (MalformedURLException e) {						
-						logger.warn("Ignoring invalid path " + path, e);
-					}
-				}
-				continue;
-			}
-			URLClassLoader urlCL = (URLClassLoader) cl;
-			classpath.addAll(Arrays.asList(urlCL.getURLs()));
-		}
-		return classpath;
-	}
-
 	public Process run() {
 		List<String> cmdLine = buildArguments();
 		ProcessBuilder procBuilder = new ProcessBuilder(cmdLine);
@@ -258,16 +192,6 @@ public class JavaProcess {
 		return sb.toString();
 	}
 
-	private String shortened(String string) {
-		if (string.length() <= 40) {
-			return string;
-		}
-		return string.substring(0, 19) + "..." + string.substring(string.length() - 19);
-	}
-
-	/**
-	 * @return the inherittingClasspath
-	 */
 	public boolean isInherittingClasspath() {
 		return inherittingClasspath;
 	}
@@ -285,9 +209,6 @@ public class JavaProcess {
 		this.inherittingClasspath = inherittingClasspath;
 	}
 
-	/**
-	 * @return the callingClassLoader
-	 */
 	public ClassLoader getCallingClassLoader() {
 		return callingClassLoader;
 	}
@@ -308,5 +229,92 @@ public class JavaProcess {
 	public void setCallingClassLoader(ClassLoader callingClassLoader) {
 		this.callingClassLoader = callingClassLoader;
 	}
+	
+	private static String classpathToString(URL[] classpath) {
+		return classpathToString(Arrays.asList(classpath));
+	}
+
+	private LinkedHashSet<URL> getCurrentClasspath() {
+		LinkedHashSet<URL> classpath = new LinkedHashSet<URL>();
+		LinkedHashSet<ClassLoader> classloaders = new LinkedHashSet<ClassLoader>();
+	
+		classloaders.add(getCallingClassLoader());
+		classloaders.add(getClass().getClassLoader());
+		classloaders.add(Thread.currentThread().getContextClassLoader());
+		
+		// Iterate over copy so we can modify it
+		for (ClassLoader cl : new ArrayList<ClassLoader>(classloaders)) {
+			if (cl == null) {
+				continue;
+			}
+			// Add all the parents
+			cl = cl.getParent();
+			// FIXME: Parents are not added immediately after their children
+			while (cl != null && ! classloaders.contains(cl)) {
+				classloaders.add(cl);
+				cl = cl.getParent();
+			}				
+		}		
+		classloaders.add(ClassLoader.getSystemClassLoader());
+		
+		// Extract URLs
+		for (ClassLoader cl : classloaders) {
+			if (cl == null || ! (cl instanceof URLClassLoader)) {
+				continue;
+			}
+			if (cl == ClassLoader.getSystemClassLoader()) {
+				// Only include stuff in java.class.path instead
+				String[] paths = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
+				for (String path : paths) {
+					File pathFile = new File(path).getAbsoluteFile();
+					try {
+						classpath.add(pathFile.toURI().toURL());
+					} catch (MalformedURLException e) {						
+						logger.warn("Ignoring invalid path " + path, e);
+					}
+				}
+				continue;
+			}
+			URLClassLoader urlCL = (URLClassLoader) cl;
+			classpath.addAll(Arrays.asList(urlCL.getURLs()));
+		}
+		return classpath;
+	}
+
+	private static String shortened(String string) {
+		if (string.length() <= 40) {
+			return string;
+		}
+		return string.substring(0, 19) + "..." + string.substring(string.length() - 19);
+	}
+
+	private static String classpathToString(Iterable<URL> urls) {
+		String pathSep = System.getProperty("path.separator");
+		StringBuffer sb = new StringBuffer();
+		for (URL url : urls) {
+			if (! url.getProtocol().equals("file")) {
+				logger.debug("Ignoring non-file " + url);
+				continue;
+			}
+			String file = url.getFile();
+			if (file.contains(pathSep)) {
+				logger.debug("Ignoring invalid character in " + url);
+				continue;
+			}
+			if (file.equals("")) {
+				// Use current directory instead
+				sb.append(System.getProperty("user.dir"));
+			} else {
+				sb.append(file);
+			}
+			sb.append(pathSep);
+		}
+		if (sb.length() > 0) {
+			// Delete last ;
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb.toString();
+	}
+
 
 }

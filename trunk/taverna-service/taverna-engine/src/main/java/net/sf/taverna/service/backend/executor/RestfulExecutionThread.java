@@ -154,7 +154,7 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private WorkflowLauncher constructWorkflowLauncher(String scufl) throws MalformedURLException, ArtifactNotFoundException, ArtifactStateException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		System.setProperty("raven.eclipse", "1");
+		//System.setProperty("raven.eclipse", "1");
 		// FIXME: Should have a real  home
 		File base = new File("/tmp/");
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
@@ -165,8 +165,11 @@ public class RestfulExecutionThread extends Thread {
 		
 		Repository repository = LocalRepository.getRepository(base, this.getClass().getClassLoader(), systemArtifacts);
 		System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
-		for (Artifact a : systemArtifacts) repository.addArtifact(a);
-		repository.addRemoteRepository(new URL("file:/Users/sowen/.m2/repository/"));
+		for (Artifact a : systemArtifacts) {
+			repository.addArtifact(a);
+		}
+		// TODO: Avoid hardcoding of local test-repository!
+		repository.addRemoteRepository(new URL("file:/Users/stain/.m2/repository/"));
 		repository.addRemoteRepository(new URL("http://www.mygrid.org.uk/maven/proxy/repository/"));
 		repository.addRemoteRepository(new URL("http://www.mygrid.org.uk/maven/repository/"));
 		TavernaSPIRegistry.setRepository(repository);

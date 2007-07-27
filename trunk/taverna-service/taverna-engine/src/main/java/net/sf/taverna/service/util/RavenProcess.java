@@ -5,6 +5,12 @@ import java.net.URL;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Note: Preferably use {@link JavaProcess} instead.
+ * 
+ * @author Stian Soiland
+ *
+ */
 public class RavenProcess extends JavaProcess {
 
 	private static Logger logger = Logger.getLogger(RavenProcess.class);

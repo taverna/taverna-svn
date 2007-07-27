@@ -13,8 +13,8 @@ public class JobExecutorFactory {
 	}
 	
 	public JobExecutor createExecutor(URIFactory uriFactory) {
-		//the only executor that presently exists.
 		return new RestfulJobExecutor(uriFactory);
+		//return new ProcessJobExecutor(uriFactory);
 	}
 	
 }
