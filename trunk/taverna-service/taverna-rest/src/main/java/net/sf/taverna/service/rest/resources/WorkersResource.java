@@ -51,6 +51,7 @@ public class WorkersResource extends AbstractResource {
 		protected Map<String, Object> getDataModel() {
 			List<Worker> workers = DAOFactory.getFactory().getWorkerDAO().all();
 			Map<String, Object> result = new HashMap<String, Object>();
+			result.put("uriFactory", uriFactory);
 			result.put("workers", workers);
 			boolean isAdmin = getAuthUser().isAdmin();
 			result.put("isAdmin", isAdmin);

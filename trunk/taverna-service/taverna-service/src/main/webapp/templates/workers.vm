@@ -17,7 +17,7 @@
 				    </td>
 				    #if ($isAdmin && !$worker.isBusy())
 				    	<td>
-				    	<form method="POST" action="$worker.getId()?method=DELETE">
+				    	<form method="POST" action="${uriFactory.getURI($worker)}?method=DELETE">
 				    		<input type="Submit" value="Delete"/>
 	    				</form>
 	    				</td>
