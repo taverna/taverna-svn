@@ -28,7 +28,7 @@
 					#end
 				</td></tr>
 					
-				<tr><td>Progress Report: </td><td><a href="$progressUri">progress</a></td></tr>
+				<tr><td>Progress Report: </td><td><a href="$progressUri">report</a></td></tr>
 				
 				#if($isFinished)
 					<tr>
