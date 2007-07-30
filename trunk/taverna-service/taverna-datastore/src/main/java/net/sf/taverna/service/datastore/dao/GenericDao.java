@@ -16,7 +16,7 @@ public interface GenericDao<Bean extends AbstractBean<PrimaryKey>, PrimaryKey ex
 
 	public void delete(Bean bean);
 
-	public void refresh(Bean bean);
+	public Bean refresh(Bean bean);
 	
 	public List<Bean> all();
 	

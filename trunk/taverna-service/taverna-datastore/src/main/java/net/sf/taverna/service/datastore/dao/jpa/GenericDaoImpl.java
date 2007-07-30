@@ -52,8 +52,11 @@ public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, Prim
 		em.remove(bean);
 	}
 
-	public void refresh(Bean bean) {
-		em.refresh(em.merge(bean));
+	public Bean refresh(Bean bean) {
+		Bean newBean = em.merge(bean);
+		// refresh is then not needed
+		//em.refresh(newBean);
+		return newBean;
 	}
 
 	@SuppressWarnings("unchecked")
