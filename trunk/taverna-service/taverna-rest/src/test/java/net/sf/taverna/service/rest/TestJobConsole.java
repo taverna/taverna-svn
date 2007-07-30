@@ -78,7 +78,7 @@ public class TestJobConsole extends ClientTest {
 		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 
 		// Confirm in database
-		daoFactory.getJobDAO().refresh(job);
+		job = daoFactory.getJobDAO().refresh(job);
 		assertEquals(THIS_IS_THE_CONSOLE, job.getConsole());
 
 		// GET it to confirm

@@ -229,7 +229,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 	private boolean isWorkerAuthorized(Worker worker, AbstractBean entity) {
 		//refresh the worker to ensure the list of worker jobs is up to date.
-		daoFactory.getWorkerDAO().refresh(worker);
+		worker = daoFactory.getWorkerDAO().refresh(worker);
 
 		if (entity instanceof Queue) {
 			Queue queue = (Queue) entity;

@@ -70,7 +70,7 @@ public class TestJobStatus extends ClientTest {
 		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 		
 		// Confirm in database
-		daoFactory.getJobDAO().refresh(job);
+		job = daoFactory.getJobDAO().refresh(job);
 		assertEquals(Job.Status.COMPLETE, job.getStatus());
 		
 		// GET it to confirm

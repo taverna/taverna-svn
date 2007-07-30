@@ -86,7 +86,7 @@ public class TestJobProgressReport extends ClientTest {
 		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
 		
 		// Confirm in database
-		daoFactory.getJobDAO().refresh(job);
+		job = daoFactory.getJobDAO().refresh(job);
 		assertEquals("<progres>updated</progress>", job.getProgressReport());
 		
 		// GET it to confirm
@@ -108,13 +108,13 @@ public class TestJobProgressReport extends ClientTest {
 		String PLAIN = "some plain text";
 		request.setEntity(PLAIN, MediaType.TEXT_PLAIN);
 		// Just to be sure we will be changing it since makeJob()
-		daoFactory.getJobDAO().refresh(job);
+		job = daoFactory.getJobDAO().refresh(job);
 		assertFalse(PLAIN.equals(job.getProgressReport()));
 
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 		assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
-		daoFactory.getJobDAO().refresh(job);
+		job = daoFactory.getJobDAO().refresh(job);
 		assertFalse(PLAIN.equals(job.getProgressReport()));
 	}
 }
