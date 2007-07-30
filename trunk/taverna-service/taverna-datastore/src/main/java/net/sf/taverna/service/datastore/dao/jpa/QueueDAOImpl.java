@@ -1,13 +1,12 @@
 package net.sf.taverna.service.datastore.dao.jpa;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
-
-import org.apache.log4j.Logger;
 
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.dao.QueueDAO;
+
+import org.apache.log4j.Logger;
 
 public class QueueDAOImpl extends GenericDaoImpl<Queue, String> implements QueueDAO {
 
@@ -25,13 +24,13 @@ public class QueueDAOImpl extends GenericDaoImpl<Queue, String> implements Queue
 	 * 
 	 * @return The default queue
 	 */
-	public Queue defaultQueue() {
+	public synchronized Queue defaultQueue() {
 		Queue queue;
 		Query query = em.createNamedQuery(Queue.NAMED_QUERY_NAME);
 		query.setParameter("name", DEFAULT);
 		try {
-			queue = (Queue) query.getSingleResult();
-		} catch (NoResultException ex) {
+			queue = (Queue) query.getResultList().get(0);
+		} catch (IndexOutOfBoundsException ex) {
 			queue = new Queue();
 			queue.setName(DEFAULT);
 			create(queue);
