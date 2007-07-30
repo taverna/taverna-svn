@@ -2,6 +2,7 @@ package net.sf.taverna.service.queue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.taverna.service.backend.executor.JobExecutor;
 import net.sf.taverna.service.backend.executor.JobExecutorFactory;
@@ -42,24 +43,24 @@ public class DefaultQueueMonitor extends Thread {
 			DAOFactory daoFactory = null;
 			try {
 				daoFactory = DAOFactory.getFactory();
-				
+
 				List<Job> waitingJobs = determineWaitingJobs(daoFactory);
-				if (waitingJobs.size()>0) {
-					logger.info(waitingJobs.size()+" waiting jobs found");
-					List<Worker> availableWorkers = determineAvaliableWorkers(daoFactory);
-					if (availableWorkers.size()>0) {
-						logger.info(availableWorkers.size()+" available workers found.");
-						assignJobsToWorkers(daoFactory,availableWorkers,waitingJobs);
-					}
-					else {
+				if (waitingJobs.size() > 0) {
+					logger.info(waitingJobs.size() + " waiting jobs found");
+					List<Worker> availableWorkers =
+						determineAvailableWorkers(daoFactory);
+					if (availableWorkers.size() > 0) {
+						logger.info(availableWorkers.size()
+							+ " available workers found.");
+						assignJobsToWorkers(daoFactory, availableWorkers,
+							waitingJobs);
+					} else {
 						logger.info("No workers available");
 					}
 				}
-			}
-			catch(Exception e) {
-				logger.error("Error monitoring queue",e);
-			}
-			finally {
+			} catch (Exception e) {
+				logger.error("Error monitoring queue", e);
+			} finally {
 				if (daoFactory != null) {
 					daoFactory.commit();
 					daoFactory.close();
@@ -90,8 +91,12 @@ public class DefaultQueueMonitor extends Thread {
 	private List<Job> determineWaitingJobs(DAOFactory daoFactory) {
 		List<Job> result = new ArrayList<Job>();
 		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
+		defaultQueue = daoFactory.getQueueDAO().refresh(defaultQueue);
 		for (Job job : defaultQueue.getJobs()) {
-			if (job.getStatus().equals(Status.QUEUED)) result.add(job);
+			job = daoFactory.getJobDAO().refresh(job);
+			if (job.getStatus().equals(Status.QUEUED)) {
+				result.add(job);
+			}
 		}
 		return result;
 	}
@@ -99,11 +104,13 @@ public class DefaultQueueMonitor extends Thread {
 	/** 
 	 * @return any workers that are not busy
 	 */
-	private List<Worker> determineAvaliableWorkers(DAOFactory daoFactory) {
+	private List<Worker> determineAvailableWorkers(DAOFactory daoFactory) {
 		List<Worker> result = new ArrayList<Worker>();
 		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
 		for (Worker worker : defaultQueue.getWorkers()) {
-			if (!worker.isBusy()) result.add(worker);
+			if (!worker.isBusy()) { 
+				result.add(worker);
+			}
 		}
 		return result;
 	}
@@ -113,7 +120,9 @@ public class DefaultQueueMonitor extends Thread {
 		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
 		JobDAO jobDAO = daoFactory.getJobDAO();
 		for (Worker worker : workers) {
-			if (jobIndex>=jobs.size()) break;
+			if (jobIndex >= jobs.size()) {
+				break;
+			}
 			Job job = jobs.get(jobIndex);
 			worker.assignJob(job);
 			jobDAO.update(job);
@@ -124,18 +133,27 @@ public class DefaultQueueMonitor extends Thread {
 	
 	private void kickstartWorkers() {
 		DAOFactory daoFactory = DAOFactory.getFactory();
-		
-		for (Worker worker : daoFactory.getQueueDAO().defaultQueue().getWorkers()) {
+		Set<Worker> workers =  daoFactory.getQueueDAO().defaultQueue().getWorkers();
+		for (Worker worker : workers) {
+			worker = daoFactory.getWorkerDAO().read(worker.getId());
 			if (!worker.isRunning()) {
 				Job job = worker.getNextDequeuedJob();
-				if (job!=null) {
+				if (job != null) {
+//					job = daoFactory.getJobDAO().refresh(job);
+//					if (! job.getStatus().equals(Status.DEQUEUED)) {
+//						logger.warn("dequeued job " + job + " was in status "
+//							+ job.getStatus());
+//						worker.getJobs().remove(job);
+//						continue;
+//					}
 					logger.info("Starting job execution:"+job.getId());
 					JobExecutor executor = JobExecutorFactory.getInstance().createExecutor(uriFactory);
+					daoFactory.commit();
 					executor.executeJob(job, worker);
 				}
 			}
 		}
-		daoFactory.commit();
-		daoFactory.close();
+		
+		
 	}
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.utils.URIFactory;
 import net.sf.taverna.service.util.JavaProcess;
 
@@ -12,6 +13,50 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 public class ProcessJobExecutor implements JobExecutor {
+
+	public class ConsoleReaderThread extends Thread {
+
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		
+		private final Job job;
+
+		private final Process process;
+
+		private ConsoleReaderThread(Job job, Process process) {
+			super("Console reader for " + job);
+			this.job = daoFactory.getJobDAO().read(job.getId());
+			this.process = process;
+		}
+
+		@Override
+		public void run() {
+			String stdout;
+			try {
+				stdout = IOUtils.toString(process.getInputStream());
+			} catch (IOException e) {
+				logger.warn("Could not read stdout for " + job, e);
+				return;
+			}
+			int status;
+			try {
+				status = process.waitFor();
+			} catch (InterruptedException e) {
+				logger.info("Thread interrupted while waiting for " + job);
+				System.out.println(stdout);
+				job.setConsole(stdout);
+				Thread.currentThread().interrupt();
+				return;
+			}
+			if (status == 0) {
+				logger.info("Completed process for " + job);
+			} else {
+				logger.warn("Error code " + status + " from process for " + job);
+			}
+			System.out.println(stdout);
+			job.setConsole(stdout);
+		}
+	}
+
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ProcessJobExecutor.class);
@@ -72,35 +117,12 @@ public class ProcessJobExecutor implements JobExecutor {
 		// FIXME: Don't expose our password on command line
 		javaProcess.addArguments("-password", password);
 		
-		javaProcess.setRedirectingError(false);
+		javaProcess.setRedirectingError(true);
 		
 		javaProcess.addArguments(jobUri);
 		logger.info("Starting process " + javaProcess);
 		Process process = javaProcess.run();
-		String stdout;
-		try {
-			stdout = IOUtils.toString(process.getInputStream());
-		} catch (IOException e) {
-			logger.warn("Could not read stdout from process " + javaProcess, e);
-			return;
-		}
-		int status;
-		try {
-			status = process.waitFor();
-		} catch (InterruptedException e) {
-			logger.info("Thread interrupted while waiting for " + javaProcess);
-			System.out.println(stdout);
-			job.setConsole(stdout);
-			Thread.currentThread().interrupt();
-			return;
-		}
-		if (status == 0) {
-			logger.info("Completed process " + javaProcess);
-		} else {
-			logger.warn("Error code " + status + " from process " + javaProcess);
-		}
-		System.out.println(stdout);
-		job.setConsole(stdout);
+		new ConsoleReaderThread(job, process).start();
 	}
 
 }
