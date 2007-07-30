@@ -41,10 +41,10 @@ public class TestQueue extends TestDAO {
 		daoFactory.getQueueEntryDAO().create(q.addJob(job));
 		assertEquals(1, q.getJobs().size());
 		daoFactory.getQueueDAO().create(q);
-		Queue q2 = altFactory.getQueueDAO().read(q.getId());
+		Queue q2 = altFactory.getQueueDAO().reread(q);
 		assertNull(q2);
 		daoFactory.commit();
-		q2 = altFactory.getQueueDAO().read(q.getId());
+		q2 = altFactory.getQueueDAO().reread(q);
 		assertNotNull(q2);
 		assertNotSame(q, q2);
 		assertEquals(1, q2.getJobs().size());
@@ -61,7 +61,7 @@ public class TestQueue extends TestDAO {
 		assertNotNull("The default queue should not be null", q);
 
 		assertNotNull("Default queue should now exist",
-			queueDao.read(q.getId()));
+			queueDao.reread(q));
 
 		assertSame(q, queueDao.defaultQueue());
 		daoFactory.rollback();
@@ -79,7 +79,7 @@ public class TestQueue extends TestDAO {
 		}
 		queueDao.delete(defaultQueue);
 		assertNull("Default queue should have been deleted",
-			queueDao.read(defaultQueue.getId()));
+			queueDao.reread(defaultQueue));
 	}
 	
 	public Queue makeBigQueue() throws ParseException {
@@ -103,7 +103,7 @@ public class TestQueue extends TestDAO {
 		assertEquals(JOBS, jobs.size());
 		daoFactory.commit();
 
-		Queue q2 = altFactory.getQueueDAO().read(q.getId());
+		Queue q2 = altFactory.getQueueDAO().reread(q);
 		assertEquals(JOBS, q2.getJobs().size());
 		
 		// OK, check that all of them are there
@@ -140,10 +140,10 @@ public class TestQueue extends TestDAO {
 		daoFactory.getQueueEntryDAO().delete(q.removeJob(jobs.get(JOBS-1)));
 		daoFactory.getQueueDAO().update(q);
 		daoFactory.commit();
-		q = daoFactory.getQueueDAO().read(q.getId());
+		q = daoFactory.getQueueDAO().reread(q);
 		assertEquals(JOBS-2, q.getJobs().size());
 		
-		Queue q2 = altFactory.getQueueDAO().read(q.getId());
+		Queue q2 = altFactory.getQueueDAO().reread(q);
 		assertEquals(JOBS-2, q2.getJobs().size());
 		// Check the order
 		Iterator<Job> jobIterator = jobs.iterator();
@@ -169,9 +169,9 @@ public class TestQueue extends TestDAO {
 		
 		daoFactory.getQueueDAO().update(q);
 		daoFactory.commit();
-		q = daoFactory.getQueueDAO().read(q.getId());
+		q = daoFactory.getQueueDAO().reread(q);
 		assertEquals(JOBS, q.getJobs().size());		
-		Queue q2 = altFactory.getQueueDAO().read(q.getId());
+		Queue q2 = altFactory.getQueueDAO().reread(q);
 		assertEquals(JOBS, q2.getJobs().size());
 		
 		// Check the order

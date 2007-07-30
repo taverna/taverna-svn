@@ -135,7 +135,7 @@ public class DefaultQueueMonitor extends Thread {
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		Set<Worker> workers =  daoFactory.getQueueDAO().defaultQueue().getWorkers();
 		for (Worker worker : workers) {
-			worker = daoFactory.getWorkerDAO().read(worker.getId());
+			worker = daoFactory.getWorkerDAO().reread(worker);
 			if (!worker.isRunning()) {
 				Job job = worker.getNextDequeuedJob();
 				if (job != null) {

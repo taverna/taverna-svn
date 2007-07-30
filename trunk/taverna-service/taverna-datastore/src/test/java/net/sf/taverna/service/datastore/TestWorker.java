@@ -32,7 +32,7 @@ public class TestWorker extends TestDAO {
 		worker.setPassword("ABCDE");
 		workerDao.create(worker);
 		daoFactory.commit();
-		worker=daoFactory.getWorkerDAO().read(worker.getId());
+		worker=daoFactory.getWorkerDAO().reread(worker);
 		assertEquals("ABCDE",worker.getWorkerPasswordStr());
 		assertTrue(worker.checkPassword("ABCDE"));
 	}
@@ -73,7 +73,7 @@ public class TestWorker extends TestDAO {
 		
 		workerDao.update(worker);
 		
-		Worker readWorker = workerDao.read(worker.getId());
+		Worker readWorker = workerDao.reread(worker);
 		
 		assertEquals("There queue should match",queue.getId(),readWorker.getQueue().getId());
 	}
@@ -96,14 +96,15 @@ public class TestWorker extends TestDAO {
 		workerDAO.update(worker);
 		jobDAO.update(job);
 		
-		Job job2 = jobDAO.read(job.getId());
+		Job job2 = jobDAO.reread(job);
 		
 		assertNotNull(job2);
 		assertEquals("Status should now be DEQUEUED",job.getStatus(),Status.DEQUEUED);
 		
-		Worker worker2 = workerDAO.read(worker.getId());
+		Worker worker2 = workerDAO.reread(worker);
 		assertNotNull(worker2);
-		assertEquals("There should be 1 job assigned to the worker",1,worker.getWorkerJobs().size());	
+		assertEquals("There should be 1 job assigned to the worker", 1,
+			worker.getWorkerJobs().size());
 	}
 	
 	@Test 
@@ -128,7 +129,7 @@ public class TestWorker extends TestDAO {
 		List<Job> removed=worker.unassignJobs();
 		for (Job removedJob : removed) jobDAO.update(removedJob);
 		
-		Job job2=jobDAO.read(job.getId());
+		Job job2=jobDAO.reread(job);
 		assertTrue(job2.getWorker()==null);
 		assertEquals(0,worker.getWorkerJobs().size());
 		
@@ -154,13 +155,13 @@ public class TestWorker extends TestDAO {
 		jobDAO.update(job);
 		
 		assertTrue("Worker should be busy now on the assigned job",worker.isBusy());
-		assertTrue("Looked up worker should be busy now on the assigned job",workerDAO.read(worker.getId()).isBusy());
+		assertTrue("Looked up worker should be busy now on the assigned job",workerDAO.reread(worker).isBusy());
 		
 		job.setStatus(Status.RUNNING);
 		jobDAO.update(job);
 		
 		assertTrue("Worker should be busy now on the running job",worker.isBusy());
-		assertTrue("Looked up worker should be busy now on the running job",workerDAO.read(worker.getId()).isBusy());
+		assertTrue("Looked up worker should be busy now on the running job",workerDAO.reread(worker).isBusy());
 		
 		job.setStatus(Status.COMPLETE);
 		jobDAO.update(job);
@@ -188,13 +189,13 @@ public class TestWorker extends TestDAO {
 		jobDAO.update(job);
 		
 		assertFalse("Worker should be not be running the assigned job",worker.isRunning());
-		assertFalse("Looked up worker should be not be running the assigned job",workerDAO.read(worker.getId()).isRunning());
+		assertFalse("Looked up worker should be not be running the assigned job",workerDAO.reread(worker).isRunning());
 		
 		job.setStatus(Status.RUNNING);
 		jobDAO.update(job);
 		
 		assertTrue("Worker should be busy now on the running job",worker.isRunning());
-		assertTrue("Looked up worker should be busy now on the running job",workerDAO.read(worker.getId()).isRunning());
+		assertTrue("Looked up worker should be busy now on the running job",workerDAO.reread(worker).isRunning());
 		
 		job.setStatus(Status.COMPLETE);
 		jobDAO.update(job);
