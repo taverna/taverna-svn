@@ -14,11 +14,13 @@ import static org.junit.Assert.*;
 
 public class MyLocalWorkerTest 
 {
-	LocalWorker worker;
+	private LocalWorker worker;
+	
 	@Before
 	public void createWorker() {
 		worker=new MyLocalWorker();
 	}
+	
 	@Test
 	public void execute() throws TaskExecutionException {
 		Map<String,DataThing> inputs = new HashMap<String, DataThing>();
