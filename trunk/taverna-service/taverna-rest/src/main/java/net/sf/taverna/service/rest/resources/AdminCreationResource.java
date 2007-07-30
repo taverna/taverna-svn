@@ -15,6 +15,7 @@ import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.restlet.Context;
 import org.restlet.data.Form;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -85,7 +86,7 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 		
 		private Map<String,Object> model = new HashMap<String, Object>();
 		public AdminCreationRepresentation() {
-			model.put("baseuri", "http://<host>:<port>/taverna-service/");
+			model.put("baseuri", new Reference(getRequest().getRootRef(), ".").getTargetRef());
 		}
 		
 		public AdminCreationRepresentation(String name,String password,String confirm,String email, String baseuri,String errorMsg) {
