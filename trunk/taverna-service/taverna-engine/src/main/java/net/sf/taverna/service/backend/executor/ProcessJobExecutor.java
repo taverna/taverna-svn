@@ -54,6 +54,14 @@ public class ProcessJobExecutor implements JobExecutor {
 		File tavernaHome = makeTavernaHome();
 		javaProcess.addSystemProperty("taverna.home", tavernaHome.getAbsolutePath());
 
+		// FIXME don't hardcode the path to the taverna distribution (and is it needed?)
+		javaProcess.addSystemProperty("taverna.startup", 
+			"/Users/stain/download/taverna-1.5.2");
+		
+		javaProcess.addSystemProperty("java.awt.headless", "true");
+		
+		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
+		
 //		RavenProcess javaProcess =
 //			new RavenProcess("uk.org.mygrid.tavernaservice", "taverna-engine",
 //				"1.0.0", "net.sf.taverna.service.RestfulExecutionProcess",
@@ -64,8 +72,8 @@ public class ProcessJobExecutor implements JobExecutor {
 		// FIXME: Don't expose our password on command line
 		javaProcess.addArguments("-password", password);
 		
+		javaProcess.setRedirectingError(false);
 		
-
 		javaProcess.addArguments(jobUri);
 		logger.info("Starting process " + javaProcess);
 		Process process = javaProcess.run();
@@ -82,6 +90,7 @@ public class ProcessJobExecutor implements JobExecutor {
 		} catch (InterruptedException e) {
 			logger.info("Thread interrupted while waiting for " + javaProcess);
 			System.out.println(stdout);
+			job.setConsole(stdout);
 			Thread.currentThread().interrupt();
 			return;
 		}
