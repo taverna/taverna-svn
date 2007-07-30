@@ -7,7 +7,6 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.User;
-import net.sf.taverna.service.datastore.dao.ConfigurationDAO;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;

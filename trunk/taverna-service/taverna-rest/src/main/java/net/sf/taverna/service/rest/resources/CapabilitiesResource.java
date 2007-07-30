@@ -6,7 +6,6 @@ import java.util.Map;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.bean.Worker;
-import net.sf.taverna.service.rest.resources.JobResource.JobVelocityRepresentation;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.Capabilities;
 import net.sf.taverna.service.xml.CapabilitiesDocument;

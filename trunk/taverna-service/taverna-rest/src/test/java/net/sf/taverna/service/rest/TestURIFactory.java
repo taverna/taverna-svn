@@ -1,7 +1,6 @@
 package net.sf.taverna.service.rest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import net.sf.taverna.service.datastore.bean.AbstractOwned;
 import net.sf.taverna.service.datastore.bean.AbstractUUID;
 import net.sf.taverna.service.datastore.bean.DataDoc;
@@ -14,9 +13,6 @@ import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.junit.Test;
-import org.restlet.data.Method;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
 
 public class TestURIFactory extends ClientTest {
 	

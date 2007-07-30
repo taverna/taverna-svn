@@ -3,14 +3,10 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Workflow;
 import net.sf.taverna.service.datastore.dao.WorkflowDAO;
-import net.sf.taverna.service.rest.resources.UserResource.UserVelocity;
-import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.Workflows;
 import net.sf.taverna.service.xml.WorkflowsDocument;
 
