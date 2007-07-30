@@ -31,18 +31,21 @@ public class Job extends AbstractOwned {
 	public static final String NAMED_QUERY_ALL = "allJobs";
 
 	/**
-	 * In addition to the statuses of Freefluo:
+	 * Status enumeration. Basically follows Freefluo's statuses, but in
+	 * addition there's:
 	 * <p>
 	 * QUEUED: Placed on a queue <br>
 	 * DEQUEUED: Worker has taken job and is downloading the data for the job
 	 * <p>
-	 * In addition, NEW means that the job is not yet on a queue, and DESTROYED
-	 * means that some or all of the data of this job is no longer available in
-	 * the data store. CANCELLING in this context means that the worker process is
-	 * to be terminated, leading to CANCELLED.
+	 * In addition, NEW means that the job is not yet (or no longer) on a queue,
+	 * and DESTROYED means that some or all of the data of this job is no longer
+	 * available in the data store. CANCELLING in this context means that the
+	 * worker process is to be terminated, leading to CANCELLED.
 	 */
 	public enum Status {
-		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED
+		// NOTE: Also update service.xsd StatusType
+		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, 
+		CANCELLED, COMPLETE, FAILED, DESTROYED
 	}
 
 	@NotNull

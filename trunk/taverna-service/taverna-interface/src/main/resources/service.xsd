@@ -269,6 +269,7 @@
 			</documentation>
 		</annotation>
 		<restriction base="string">
+			<!--  Note: Also update Job.java Status -->
 			<enumeration value="NEW"></enumeration>
 			<enumeration value="QUEUED"></enumeration>
 			<enumeration value="DEQUEUED"></enumeration>
