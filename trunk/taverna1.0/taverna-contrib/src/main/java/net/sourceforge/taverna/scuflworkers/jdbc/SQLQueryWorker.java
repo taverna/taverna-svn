@@ -29,7 +29,7 @@ import com.sun.rowset.WebRowSetImpl;
  * the results.
  * 
  * @author mfortner
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  * @tavinput url The jdbc database URL.
  * @tavinput driver A fully qualified driver classname.
@@ -97,6 +97,7 @@ public class SQLQueryWorker implements LocalWorker {
 
 			// get the sql statement parameters
 			String[] params = inAdapter.getStringArray(PARAMS);
+			
 			String sql = inAdapter.getString(SQL);
 			if (sql == null || sql.equals("")) {
 				throw new TaskExecutionException("The '" + SQL + "' port cannot be empty");
@@ -113,9 +114,11 @@ public class SQLQueryWorker implements LocalWorker {
 
 			ps = connection.prepareStatement(sql);
 
-			// bind the parameters to the prepared statement & execute it.
-			for (int i = 0; i < params.length; i++) {
-				ps.setObject(i + 1, params[i]);
+			// if they exist, bind the parameters to the prepared statement & execute it.
+			if (params!=null) {
+				for (int i = 0; i < params.length; i++) {
+					ps.setObject(i + 1, params[i]);
+				}
 			}
 			rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
