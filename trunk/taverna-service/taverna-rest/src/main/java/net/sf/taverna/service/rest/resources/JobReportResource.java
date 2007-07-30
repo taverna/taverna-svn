@@ -2,7 +2,6 @@ package net.sf.taverna.service.rest.resources;
 
 import java.io.IOException;
 
-import net.sf.taverna.service.interfaces.TavernaConstants;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 
 import org.apache.log4j.Logger;
@@ -20,6 +19,7 @@ public class JobReportResource extends AbstractJobResource {
 	public JobReportResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		addRepresentation(new Text());
+		// TODO Some fancy velocity representation
 	}
 	
 	class Text extends AbstractText {
