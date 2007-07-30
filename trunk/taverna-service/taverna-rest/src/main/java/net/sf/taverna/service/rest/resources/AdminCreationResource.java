@@ -63,7 +63,10 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 		String baseuri;
 		try {
 			baseuri=form.getValues("baseuri");
-			new URL(baseuri);
+			if (! baseuri.endsWith("/")) {
+				baseuri += "/";
+			}
+			new URL(baseuri); // to test if it's valid
 			updateBaseuri(baseuri);
 			super.processForm(form);
 		}
