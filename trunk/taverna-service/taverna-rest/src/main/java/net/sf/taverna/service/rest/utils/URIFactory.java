@@ -115,11 +115,13 @@ public class URIFactory {
 	 * @return The full URI for the resource
 	 */
 	public String getURI(AbstractUUID resource) {
-		String resourcePrefix = getURI(resource.getClass());
 		if (resource instanceof User) {
+			// Always user "User" class, even for Workers
+			// TODO: Might break worker deletion
 			User user = (User) resource;
-			return resourcePrefix + "/" + user.getUsername();
+			return getURI(User.class) + "/" + user.getUsername();
 		}
+		String resourcePrefix = getURI(resource.getClass());
 		return resourcePrefix + "/" + resource.getId();
 	}
 
