@@ -55,8 +55,8 @@ public class ProgressUpdaterThread extends Thread {
 		updateSleepUntil();
 		while (loop) {
 			try {
-				// We'll always sleep MIN_SLEEP even if our job submitter wants us to be
-				// faster
+				// We'll always sleep MIN_SLEEP even if our job submitter wants
+				// us to be faster
 				sleep(MIN_SLEEP);
 			} catch (InterruptedException e) {
 				logger.warn("Aborting " + this);
@@ -76,7 +76,6 @@ public class ProgressUpdaterThread extends Thread {
 				return;
 			}
 			logger.info("Updated progress report for " + job);
-			job.invalidate();
 			updateSleepUntil();
 		}
 	}
