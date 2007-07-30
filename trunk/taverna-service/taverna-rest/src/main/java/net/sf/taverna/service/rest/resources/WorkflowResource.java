@@ -40,7 +40,7 @@ public class WorkflowResource extends AbstractOwnedResource<Workflow> {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Workflow ").append(workflow.getId()).append('\n');
 			sb.append("Created: ").append(workflow.getCreated()).append('\n');
-			sb.append("Owner: ").append(uriFactory.getURI(workflow.getOwner())).append(
+			sb.append("Owner: ").append(uriFactory.getURIUser(workflow.getOwner())).append(
 				'\n');
 			sb.append(workflow.getScufl());
 			return sb.toString();

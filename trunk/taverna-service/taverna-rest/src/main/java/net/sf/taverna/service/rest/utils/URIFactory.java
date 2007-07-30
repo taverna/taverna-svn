@@ -115,15 +115,14 @@ public class URIFactory {
 	 * @return The full URI for the resource
 	 */
 	public String getURI(AbstractUUID resource) {
-		if (resource instanceof User) {
-			// Always user "User" class, even for Workers
-			// TODO: Might break worker deletion
-			User user = (User) resource;
-			return getURI(User.class) + "/" + user.getUsername();
+		if (resource.getClass().equals(User.class)) {
+			// But not Worker as that is resolved by ID
+			return getURIUser((User) resource);
 		}
 		String resourcePrefix = getURI(resource.getClass());
 		return resourcePrefix + "/" + resource.getId();
 	}
+
 
 	/**
 	 * Get the URI for a collection of owned resources
@@ -135,8 +134,12 @@ public class URIFactory {
 	 * @return An URI such as http://blah/user/tom/workflows
 	 */
 	public String getURI(User owner, Class<? extends AbstractOwned> ownedClass) {
-		String uri = getURI(owner);
+		String uri = getURIUser(owner);
 		return uri + "/" + getMapping(ownedClass);
+	}
+	
+	public String getURIUser(User user) {
+		return getURI(User.class) + "/" + user.getUsername();
 	}
 
 	public String getURIDefaultQueue() {
@@ -172,7 +175,6 @@ public class URIFactory {
 	public String getURIConsole(Job job) {
 		return getURI(job) + getMappingConsole();
 	}
-
 
 	/**
 	 * The URI for getting the currently authenticated user. This URI will

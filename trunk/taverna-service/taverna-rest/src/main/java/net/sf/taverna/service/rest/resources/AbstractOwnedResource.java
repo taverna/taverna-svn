@@ -26,7 +26,7 @@ public abstract class AbstractOwnedResource<OwnedClass extends AbstractOwned>
 			if (owner != null) {
 				net.sf.taverna.service.xml.User ownerElem =
 					element.addNewOwner();
-				ownerElem.setHref(uriFactory.getURI(owner));
+				ownerElem.setHref(uriFactory.getURIUser(owner));
 				ownerElem.setUsername(owner.getUsername());
 			}
 		}

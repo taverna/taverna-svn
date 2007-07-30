@@ -39,6 +39,6 @@ public class CurrentUserResource extends Resource {
 		User user =
 			(User) getContext().getAttributes().get(
 				UserGuard.AUTHENTICATED_USER);
-		getResponse().redirectTemporary(uriFactory.getURI(user));
+		getResponse().redirectTemporary(uriFactory.getURIUser(user));
 	}
 }
