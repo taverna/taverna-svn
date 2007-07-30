@@ -12,6 +12,14 @@ import net.sf.taverna.service.datastore.dao.GenericDao;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Implementation of {@link GenericDao} using JPA bindings.
+ * 
+ * @see GenericDao
+ * @author Stian Soiland
+ * @param <Bean> 
+ * @param <PrimaryKey>
+ */
 public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, PrimaryKey extends Serializable>
 	implements GenericDao<Bean, PrimaryKey> {
 
@@ -52,14 +60,14 @@ public abstract class GenericDaoImpl<Bean extends AbstractBean<PrimaryKey>, Prim
 		em.remove(bean);
 	}
 
-	public Bean refresh(Bean bean) {	
-		// Bean newBean = em.merge(bean);
-		// refresh should not be needed after a merge
-		//em.refresh(newBean);
-		
-		// Use the db-overwriting-style refresh instead of merge
-		em.refresh(bean);
-		return bean;
+	public Bean refresh(Bean bean) {
+		Bean newBean = em.merge(bean);
+		em.refresh(newBean);
+		return newBean;
+	}
+
+	public Bean reread(Bean bean) {
+		return read(bean.getId());
 	}
 
 	@SuppressWarnings("unchecked")
