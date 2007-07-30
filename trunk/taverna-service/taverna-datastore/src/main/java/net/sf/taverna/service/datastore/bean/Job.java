@@ -12,11 +12,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import org.apache.log4j.Logger;
 import org.hibernate.validator.NotNull;
 
 @Entity
 @NamedQueries(value = { @NamedQuery(name = Job.NAMED_QUERY_ALL, query = "SELECT j FROM Job j ORDER BY j.created DESC") })
 public class Job extends AbstractOwned {
+	
+	private static Logger logger = Logger.getLogger(Job.class);
 
 	public static final int MAX_REPORT_SIZE = 65535;
 	
@@ -100,7 +103,11 @@ public class Job extends AbstractOwned {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public synchronized void setStatus(Status status) {
+		if (status.compareTo(getStatus()) < 0) {
+			logger.warn("Attempt to reverse status from " + this.status + " to " + status);
+			throw new IllegalArgumentException("Can't change status from " + this.status + " to " + status);
+		}
 		this.status = status;
 		setLastModified();
 	}
