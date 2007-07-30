@@ -34,7 +34,7 @@ Error: $errorMsg<br>
 <tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
 <tr><td>Email:</td><td><input type="text" name="email" value="$!email"/></td></tr>
 </table>
-<p>You also need to configure the base URL of your service.
+<p>You also need to configure the base URL of your service. (Up to, but excluding <code>v1</code>.)
 </p>
 <table>
 <tr><td>Base URL:</td><td><input type="text" name="baseuri" value="$!baseuri"></td><tr>
