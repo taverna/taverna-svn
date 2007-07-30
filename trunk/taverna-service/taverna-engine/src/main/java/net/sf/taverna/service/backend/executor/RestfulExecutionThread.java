@@ -24,7 +24,6 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.service.rest.client.DataREST;
 import net.sf.taverna.service.rest.client.JobREST;
-import net.sf.taverna.service.rest.client.MediaTypeException;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.RESTContext;
 import net.sf.taverna.service.xml.StatusType;
@@ -35,17 +34,13 @@ import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
-import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.restlet.data.Reference;
-
-import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
 
 public class RestfulExecutionThread extends Thread {
 

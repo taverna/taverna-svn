@@ -24,4 +24,9 @@ public class RestfulJobExecutor implements JobExecutor {
 		thread.setDaemon(true);
 		thread.start();
 	}
+
+	public boolean killJob(Job job) {
+		// TODO: At least try to interrupt the thread
+		return false;
+	}
 }
