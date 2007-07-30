@@ -197,10 +197,8 @@ public class JobResource extends AbstractJobResource {
 				model.put("inputUri", uriFactory.getURI(job.getInputs()));
 			}
 			
-			String progressUri=uriFactory.getURI(job);
-			if (!progressUri.endsWith("/")) progressUri+="/";
-			progressUri+="report";
-			model.put("progressUri",progressUri);
+			String progressUri=uriFactory.getURIReport(job);
+			model.put("progressUri", progressUri);
 			if (job.isFinished()) {
 				model.put("isFinished",true);
 				if (job.getOutputs()!=null) {
