@@ -162,12 +162,10 @@ public class Job extends AbstractOwned {
 		return queueEntry;
 	}
 
-	public void setQueueEntry(QueueEntry queueEntry) {
+	public synchronized void setQueueEntry(QueueEntry queueEntry) {
 		this.queueEntry = queueEntry;
-		if (queueEntry != null) {
+		if (queueEntry != null && getStatus().equals(Status.NEW)) {
 			setStatus(Status.QUEUED);
-		} else if (getStatus().equals(Status.QUEUED)) {
-			setStatus(Status.NEW);
 		}
 		setLastModified();
 	}
