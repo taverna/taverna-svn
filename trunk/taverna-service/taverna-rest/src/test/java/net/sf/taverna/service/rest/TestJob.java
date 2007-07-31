@@ -32,53 +32,64 @@ import org.restlet.data.Status;
 public class TestJob extends ClientTest {
 
 	private DAOFactory daoFactory = DAOFactory.getFactory();
+
 	private net.sf.taverna.service.datastore.bean.Job job;
+
 	private String jobURI;
-	
+
 	@Test
 	public void newJobIsAddedToQueue() {
 		WorkflowDAO workflowDao = daoFactory.getWorkflowDAO();
 		Workflow w = new Workflow();
-    	w.setScufl(workflow);
-    	w.setOwner(user);
-    	workflowDao.create(w);
-    	daoFactory.commit();
-    	
-    	String workflowURI=uriFactory.getURI(w);
-    	JobDocument jobDocument = JobDocument.Factory.newInstance();
-    	Job job=jobDocument.addNewJob();
-    	job.addNewWorkflow().setHref(workflowURI);
-    	
-    	Request request = makeAuthRequest();
+		w.setScufl(workflow);
+		w.setOwner(user);
+		workflowDao.create(w);
+		daoFactory.commit();
+
+		String workflowURI = uriFactory.getURI(w);
+		JobDocument jobDocument = JobDocument.Factory.newInstance();
+		Job job = jobDocument.addNewJob();
+		job.addNewWorkflow().setHref(workflowURI);
+
+		Request request = makeAuthRequest();
 		Client client = new Client(Protocol.HTTP);
 		request.setResourceRef(useruri + "/jobs");
 		request.setMethod(Method.POST);
 		request.setEntity(jobDocument.xmlText(), restType);
 		Response response = client.handle(request);
-		
-		assertEquals("Job was not created", Status.SUCCESS_CREATED,response.getStatus());
-		Reference ref=response.getRedirectRef();
-		assertTrue(ref.toString().startsWith(BASE_URL+"jobs"));
-		String id = ref.toString().replaceAll(BASE_URL+"jobs/", "");
-		
-		net.sf.taverna.service.datastore.bean.Job jobBean = daoFactory.getJobDAO().read(id);
+
+		assertEquals("Job was not created", Status.SUCCESS_CREATED,
+			response.getStatus());
+		Reference ref = response.getRedirectRef();
+		assertTrue(ref.toString().startsWith(BASE_URL + "jobs"));
+		String id = ref.toString().replaceAll(BASE_URL + "jobs/", "");
+
+		net.sf.taverna.service.datastore.bean.Job jobBean =
+			daoFactory.getJobDAO().read(id);
 		assertNotNull(jobBean);
-		
+
 		Queue q = daoFactory.getQueueDAO().defaultQueue();
-		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getQueue());
-		System.out.println(">>> "+daoFactory.getJobDAO().read(id).getStatus());
-		assertEquals("The jobs queue should equal the default queue", q,jobBean.getQueue());
-		
-		assertTrue("The default queue should now contain the new job", q.getJobs().contains(jobBean));
-		
-		assertEquals("job should be queued status",net.sf.taverna.service.datastore.bean.Job.Status.QUEUED,jobBean.getStatus());
+		q = daoFactory.getQueueDAO().refresh(q);
+		System.out.println(">>> " + daoFactory.getJobDAO().read(id).getQueue());
+		System.out.println(">>> " + daoFactory.getJobDAO().read(id).getStatus());
+		assertEquals("The jobs queue should equal the default queue", q,
+			jobBean.getQueue());
+
+		assertTrue("The default queue should now contain the new job",
+			q.getJobs().contains(jobBean));
+
+		assertEquals("job should be queued status",
+			net.sf.taverna.service.datastore.bean.Job.Status.QUEUED,
+			jobBean.getStatus());
 	}
-	
+
 	@Before
 	public void makeJob() throws ParseException {
 		Date started = new Date();
 		new net.sf.taverna.service.datastore.TestJob().createAndStore();
-		job = daoFactory.getJobDAO().read(net.sf.taverna.service.datastore.TestJob.lastJob);
+		job =
+			daoFactory.getJobDAO().read(
+				net.sf.taverna.service.datastore.TestJob.lastJob);
 		// Steal the job so we are allowed to access it
 		job.setOwner(daoFactory.getUserDAO().readByUsername(username));
 		daoFactory.commit();
@@ -87,7 +98,7 @@ public class TestJob extends ClientTest {
 		assertFalse(job.getCreated().before(started));
 		assertFalse(job.getLastModified().before(job.getCreated()));
 	}
-	
+
 	@Test
 	public void getJob() throws XmlException, IOException {
 		Request request = makeAuthRequest();
@@ -98,12 +109,13 @@ public class TestJob extends ClientTest {
 		Response response = client.handle(request);
 		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		assertTrue(restType.includes(response.getEntity().getMediaType()));
-		JobDocument j = JobDocument.Factory.parse(response.getEntity().getStream());
+		JobDocument j =
+			JobDocument.Factory.parse(response.getEntity().getStream());
 		Job jobElem = j.getJob();
 		assertEquals(job.getCreated(), jobElem.getCreated().getTime());
 		assertEquals(job.getLastModified(), jobElem.getModified().getTime());
 		assertFalse(jobElem.getModified().before(jobElem.getCreated()));
 
 	}
-	
+
 }
