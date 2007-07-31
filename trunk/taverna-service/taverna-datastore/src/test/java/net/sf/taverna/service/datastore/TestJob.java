@@ -22,7 +22,7 @@ import org.junit.Test;
 
 public class TestJob extends TestDAO  {
 
-	public static final Status status = Status.RUNNING;
+	public static final Status status = Status.NEW;
 	
 	public static final String progressReport = "<progress>report</progress>";
 	
@@ -46,7 +46,7 @@ public class TestJob extends TestDAO  {
     	Job job = new Job();
     	job.setWorkflow(w);
     	job.setOwner(user);
-    	job.setStatus(status);    	
+    	// job.setStatus(status);  leave at NEW
     	job.setProgressReport(progressReport);
         jobDao.create(job);
         lastJob = job.getId();
@@ -90,7 +90,7 @@ public class TestJob extends TestDAO  {
 	
 	@Test
 	public void isFinished() throws Exception {
-		if (lastJob==null) createAndStore();
+		createAndStore();
 		Job job = daoFactory.getJobDAO().read(lastJob);
 		job.setStatus(Status.RUNNING);
 		assertFalse(job.isFinished());
@@ -103,9 +103,9 @@ public class TestJob extends TestDAO  {
 		
 		job.setStatus(Status.CANCELLED);
 		assertTrue(job.isFinished());
-		job.setStatus(Status.FAILED);
-		assertTrue(job.isFinished());
 		job.setStatus(Status.COMPLETE);
+		assertTrue(job.isFinished());
+		job.setStatus(Status.FAILED);
 		assertTrue(job.isFinished());
 		job.setStatus(Status.DESTROYED);
 		assertTrue(job.isFinished());
@@ -113,7 +113,7 @@ public class TestJob extends TestDAO  {
 	
 	@Test
 	public void hasStarted() throws Exception {
-		if (lastJob==null) createAndStore();
+		createAndStore();
 		Job job = daoFactory.getJobDAO().read(lastJob);
 		job.setStatus(Status.QUEUED);
 		assertFalse(job.hasStarted());
@@ -128,12 +128,21 @@ public class TestJob extends TestDAO  {
 		assertTrue(job.hasStarted());
 		job.setStatus(Status.CANCELLED);
 		assertTrue(job.hasStarted());
-		job.setStatus(Status.FAILED);
-		assertTrue(job.hasStarted());
 		job.setStatus(Status.COMPLETE);
+		assertTrue(job.hasStarted());
+		job.setStatus(Status.FAILED);
 		assertTrue(job.hasStarted());
 		job.setStatus(Status.DESTROYED);
 		assertTrue(job.hasStarted());
+	}
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void cantReverseStatus() throws ParseException {
+		createAndStore();
+		Job job = daoFactory.getJobDAO().read(lastJob);
+		job.setStatus(Status.QUEUED);
+		job.setStatus(Status.RUNNING);
+		job.setStatus(Status.QUEUED);
 	}
 	
 }
