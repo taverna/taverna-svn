@@ -1,6 +1,8 @@
 package net.sf.taverna.service.rest;
 
 import java.net.URL;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.DataDoc;
@@ -90,10 +92,21 @@ public class RestApplication extends Application {
 	 * </ul>
 	 */
 	private void init() {
+		initializeRestletLogging();
 		createDefaultQueue();
 		createDefaultWorker();
 	}
 	
+	private void initializeRestletLogging() {
+
+	    Handler[] handlers = java.util.logging.Logger.getLogger("").getHandlers();
+	    for (Handler handler : handlers) {
+    		handler.setFormatter(new ReallySimpleFormatter());
+	    }
+	    java.util.logging.Logger.getLogger("org.mortbay.log").setLevel(Level.WARNING);
+
+	}
+
 	private void createDefaultWorker() {
 		if (daoFactory.getWorkerDAO().all().size()==0) {
 			logger.info("No workers exist. Creating a default worker");
@@ -312,4 +325,10 @@ public class RestApplication extends Application {
 
 		return component;
 	}
+}
+class ReallySimpleFormatter extends java.util.logging.Formatter {
+	@Override
+	public String format(java.util.logging.LogRecord record) {
+		return record.getMessage() + "\n";
+	}	
 }
