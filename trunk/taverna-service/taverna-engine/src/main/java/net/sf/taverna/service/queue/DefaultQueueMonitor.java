@@ -29,7 +29,7 @@ public class DefaultQueueMonitor extends Thread {
 	private static Logger logger = Logger.getLogger(DefaultQueueMonitor.class);
 
 	//FIXME: this should be increased after testing, or better still read from config
-	private final int CHECK_PERIOD = 5; //checks every 5 seconds.
+	private final int CHECK_PERIOD = 15; //checks every 15 seconds.
 	private boolean terminate = false;
 
 	private URIFactory uriFactory;
@@ -43,34 +43,32 @@ public class DefaultQueueMonitor extends Thread {
 		while(!terminate) {
 			killCancelledJobs();
 			
-			DAOFactory daoFactory = null;
+			List<Job> waitingJobs = null;
+			DAOFactory daoFactory = DAOFactory.getFactory();
 			try {
-				daoFactory = DAOFactory.getFactory();
-
-				List<Job> waitingJobs = determineWaitingJobs(daoFactory);
+				waitingJobs = determineWaitingJobs(daoFactory);
 				if (waitingJobs.size() > 0) {
 					logger.info(waitingJobs.size() + " waiting jobs found");
 					List<Worker> availableWorkers =
-						determineAvailableWorkers(daoFactory);
+						determineAvailableWorkers();
 					if (availableWorkers.size() > 0) {
 						logger.info(availableWorkers.size()
 							+ " available workers found.");
-						assignJobsToWorkers(daoFactory, availableWorkers,
+						List<Job> assignedJobs = assignJobsToWorkers(daoFactory,availableWorkers,
 							waitingJobs);
+						daoFactory.commit();
+						startJobs(assignedJobs);
 					} else {
 						logger.info("No workers available");
 					}
 				}
 			} catch (Exception e) {
 				logger.error("Error monitoring queue", e);
-			} finally {
-				if (daoFactory != null) {
-					daoFactory.commit();
-					daoFactory.close();
-				}
 			}
-			
-			kickstartWorkers();
+			finally {
+				daoFactory.commit();
+				daoFactory.close();
+			}
 			
 			try {
 				if (!terminate) Thread.sleep(CHECK_PERIOD * 1000);
@@ -113,6 +111,8 @@ public class DefaultQueueMonitor extends Thread {
 	 */
 	private List<Job> determineWaitingJobs(DAOFactory daoFactory) {
 		List<Job> result = new ArrayList<Job>();
+		
+		
 		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
 		defaultQueue = daoFactory.getQueueDAO().refresh(defaultQueue);
 		for (Job job : defaultQueue.getJobs()) {
@@ -121,25 +121,36 @@ public class DefaultQueueMonitor extends Thread {
 				result.add(job);
 			}
 		}
+		
+		
+		
 		return result;
 	}
 	
 	/** 
 	 * @return any workers that are not busy
 	 */
-	private List<Worker> determineAvailableWorkers(DAOFactory daoFactory) {
+	private List<Worker> determineAvailableWorkers() {
+		DAOFactory daoFactory=DAOFactory.getFactory();
 		List<Worker> result = new ArrayList<Worker>();
-		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
-		for (Worker worker : defaultQueue.getWorkers()) {
-			if (!worker.isBusy()) { 
-				result.add(worker);
+		try {
+			Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
+			for (Worker worker : defaultQueue.getWorkers()) {
+				if (!worker.isBusy()) { 
+					result.add(worker);
+				}
 			}
+		}
+		finally {
+			daoFactory.close();
 		}
 		return result;
 	}
 	
-	private void assignJobsToWorkers(DAOFactory daoFactory, List<Worker> workers, List<Job> jobs) {
+	private List<Job> assignJobsToWorkers(DAOFactory daoFactory,List<Worker> workers, List<Job> jobs) {
+		List<Job> result = new ArrayList<Job>();
 		int jobIndex=0;
+		
 		WorkerDAO workerDAO = daoFactory.getWorkerDAO();
 		JobDAO jobDAO = daoFactory.getJobDAO();
 		for (Worker worker : workers) {
@@ -151,32 +162,23 @@ public class DefaultQueueMonitor extends Thread {
 			jobDAO.update(job);
 			workerDAO.update(worker);
 			jobIndex++;
+			result.add(job);
 		}
+		
+		return result;
 	}	
 	
-	private void kickstartWorkers() {
-		DAOFactory daoFactory = DAOFactory.getFactory();
-		Set<Worker> workers =  daoFactory.getQueueDAO().defaultQueue().getWorkers();
-		for (Worker worker : workers) {
-			worker = daoFactory.getWorkerDAO().reread(worker);
-			if (!worker.isRunning()) {
-				Job job = worker.getNextDequeuedJob();
-				if (job != null) {
-//					job = daoFactory.getJobDAO().refresh(job);
-//					if (! job.getStatus().equals(Status.DEQUEUED)) {
-//						logger.warn("dequeued job " + job + " was in status "
-//							+ job.getStatus());
-//						worker.getJobs().remove(job);
-//						continue;
-//					}
-					logger.info("Starting job execution:"+job.getId());
-					JobExecutor executor = jobExecutorFactory.createExecutor(uriFactory);
-					daoFactory.commit();
-					executor.executeJob(job, worker);
-				}
+	private void startJobs(List<Job> jobs) {
+		for (Job job : jobs) {
+			Worker worker = job.getWorker();
+			if (worker!=null) {
+				logger.info("Starting job execution:"+job.getId());
+				JobExecutor executor = jobExecutorFactory.createExecutor(uriFactory);
+				executor.executeJob(job, worker);
+			}
+			else {
+				logger.error("Assigned job has no worker [jobid="+job.getId()+"]");
 			}
 		}
-		
-		
 	}
 }
