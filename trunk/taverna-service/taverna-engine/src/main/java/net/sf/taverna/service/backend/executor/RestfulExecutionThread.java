@@ -218,7 +218,7 @@ public class RestfulExecutionThread extends Thread {
 		ArtifactStateException, ClassNotFoundException, NoSuchMethodException,
 		InstantiationException, IllegalAccessException,
 		InvocationTargetException {
-		System.setProperty("raven.eclipse", "1");
+		//System.setProperty("raven.eclipse", "1");
 		// FIXME: Should have a real home
 		File base = new File("/tmp/");
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
