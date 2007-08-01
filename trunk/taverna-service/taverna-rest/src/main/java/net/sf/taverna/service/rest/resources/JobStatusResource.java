@@ -7,6 +7,7 @@ import net.sf.taverna.service.rest.resources.representation.AbstractText;
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -40,28 +41,34 @@ public class JobStatusResource extends AbstractJobResource {
 
 	@Override
 	public void put(Representation entity) {
-		if (! isEntityValid(entity, MediaType.TEXT_PLAIN)) {
-			return;
-		}
 		String status;
-		try {
-			status = entity.getText();
-		} catch (IOException e) {
-			logger.warn("Could not read job status", e);
-			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
-				"Could not read job status");
-			return;
+		if (MediaType.APPLICATION_WWW_FORM.includes(entity.getMediaType())) {
+			Form form = new Form(entity);
+			status = form.getValues("status");
+		} else {
+			if (!isEntityValid(entity, MediaType.TEXT_PLAIN)) {
+				return;
+			}
+			try {
+				status = entity.getText();
+			} catch (IOException e) {
+				logger.warn("Could not read job status", e);
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
+					"Could not read job status");
+				return;
+			}
 		}
 		try {
 			job.setStatus(Job.Status.valueOf(status));
 		} catch (IllegalArgumentException e) {
 			logger.warn("Attempt to set invalid job status: " + status, e);
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-				"Unknown job status: " + status);
+				"Can't set job status: " + status + ", status is " + job.getStatus());
 			return;
 		}
 		daoFactory.commit();
-		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		getResponse().setStatus(Status.SUCCESS_OK, 
+			"Set job status to " + job.getStatus());
 		logger.info("Updated status " + job);
 	}
 }

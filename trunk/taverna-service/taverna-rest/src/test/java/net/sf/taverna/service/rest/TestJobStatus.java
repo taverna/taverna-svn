@@ -67,7 +67,7 @@ public class TestJobStatus extends ClientTest {
 
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
-		assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+		assertEquals(Status.SUCCESS_OK, response.getStatus());
 		
 		// Confirm in database
 		job = daoFactory.getJobDAO().refresh(job);
