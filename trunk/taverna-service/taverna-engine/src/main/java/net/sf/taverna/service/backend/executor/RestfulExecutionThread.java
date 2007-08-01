@@ -3,10 +3,8 @@ package net.sf.taverna.service.backend.executor;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -34,6 +32,15 @@ import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingXMLFactory;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
+import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 import org.jdom.Document;
@@ -44,8 +51,8 @@ import org.restlet.data.Reference;
 
 public class RestfulExecutionThread extends Thread {
 
-	private static Logger logger =
-		Logger.getLogger(RestfulExecutionThread.class);
+	private static Logger logger = Logger
+			.getLogger(RestfulExecutionThread.class);
 
 	private String jobUri;
 
@@ -56,7 +63,7 @@ public class RestfulExecutionThread extends Thread {
 	private String workerPassword;
 
 	public RestfulExecutionThread(String jobUri, String baseUri,
-		String workerUsername, String workerPassword) {
+			String workerUsername, String workerPassword) {
 		super("Restful Executor Thread");
 		logger.info("Starting job execution. Job " + jobUri);
 		this.jobUri = jobUri;
@@ -76,15 +83,15 @@ public class RestfulExecutionThread extends Thread {
 	 * @throws IOException
 	 */
 	public static PipedInputStream xmlAsInputStream(final Document doc)
-		throws IOException {
+			throws IOException {
 		PipedInputStream inputStream = new PipedInputStream();
-		final PipedOutputStream outputStream =
-			new PipedOutputStream(inputStream);
+		final PipedOutputStream outputStream = new PipedOutputStream(
+				inputStream);
 		Thread t = new Thread("XMLOutputter input stream pipe") {
 			@Override
 			public void run() {
-				XMLOutputter xmlOutputter =
-					new XMLOutputter(Format.getCompactFormat());
+				XMLOutputter xmlOutputter = new XMLOutputter(Format
+						.getCompactFormat());
 				try {
 					xmlOutputter.output(doc, outputStream);
 				} catch (IOException e) {
@@ -120,17 +127,19 @@ public class RestfulExecutionThread extends Thread {
 			Map<String, DataThing> inputs = new HashMap<String, DataThing>();
 			if (job.getInputs() != null) {
 				try {
-					inputs =
-						DataThingXMLFactory.parseDataDocument(new SAXBuilder().build(job.getInputs().getBaclavaStream()));
+					inputs = DataThingXMLFactory
+							.parseDataDocument(new SAXBuilder().build(job
+									.getInputs().getBaclavaStream()));
 				} catch (Exception e) {
 					logger.warn(
-						"Could not read inputs from " + job.getInputs(), e);
+							"Could not read inputs from " + job.getInputs(), e);
 				}
 			}
 			try {
 				job.setStatus(StatusType.RUNNING);
 			} catch (NotSuccessException e2) {
-				logger.warn("Could not set status to running", e2); // OK for now..
+				logger.warn("Could not set status to running", e2); // OK for
+																	// now..
 			}
 
 			GDuration updateInterval = job.getUpdateInterval();
@@ -154,10 +163,9 @@ public class RestfulExecutionThread extends Thread {
 			Document doc = DataThingXMLFactory.getDataDocument(outputs);
 			DataREST data = null;
 			try {
-				data =
-					job.getOwner().getDatas().add(
-						new ByteArrayInputStream(
-							new XMLOutputter().outputString(doc).getBytes()));
+				data = job.getOwner().getDatas().add(
+						new ByteArrayInputStream(new XMLOutputter()
+								.outputString(doc).getBytes()));
 			} catch (NotSuccessException e1) {
 				logger.warn("Could not upload data for job " + job, e1);
 				// But we're still complete, so don't return
@@ -180,31 +188,33 @@ public class RestfulExecutionThread extends Thread {
 			if (!complete) {
 				failedJob(job);
 			}
-			if (launcher == null || updater == null) {
-				return;
-			}
-			updater.loop = false;
-			try {
-				updater.join(); // So we're not sending two progress
-				// reports at once
-			} catch (InterruptedException e) {
-				logger.warn(
-					"Interrupted " + this + " while joining " + updater, e);
-				updater.interrupt(); // take it down with us!
-				Thread.currentThread().interrupt();
+
+			if (updater != null) {
+				updater.loop = false;
+				try {
+					updater.join(); // So we're not sending two progress
+					// reports at once
+				} catch (InterruptedException e) {
+					logger.warn("Interrupted " + this + " while joining "
+							+ updater, e);
+					updater.interrupt(); // take it down with us!
+					Thread.currentThread().interrupt();
+				}
 			}
 
-			try {
-				job.setReport(launcher.getProgressReportXML());
-			} catch (NotSuccessException e) {
-				logger.warn("Could not set progress report for " + job, e);
-			} catch (XmlException e) {
-				logger.error("Could not serialize progress report for " + job,
-					e);
+			if (launcher != null) {
+				try {
+					job.setReport(launcher.getProgressReportXML());
+				} catch (NotSuccessException e) {
+					logger.warn("Could not set progress report for " + job, e);
+				} catch (XmlException e) {
+					logger.error("Could not serialize progress report for "
+							+ job, e);
+				}
 			}
 		}
 	}
-	
+
 	private void failedJob(JobREST job) {
 		try {
 			job.setStatus(StatusType.FAILED);
@@ -214,57 +224,92 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private WorkflowLauncher constructWorkflowLauncher(String scufl)
-		throws MalformedURLException, ArtifactNotFoundException,
-		ArtifactStateException, ClassNotFoundException, NoSuchMethodException,
-		InstantiationException, IllegalAccessException,
-		InvocationTargetException {
-		//System.setProperty("raven.eclipse", "1");
+			throws MalformedURLException, ArtifactNotFoundException,
+			ArtifactStateException, ClassNotFoundException,
+			NoSuchMethodException, InstantiationException,
+			IllegalAccessException, InvocationTargetException,
+			UnknownProcessorException, ConcurrencyConstraintCreationException,
+			XScuflFormatException, UnknownPortException,
+			DuplicateProcessorNameException, ProcessorCreationException,
+			DataConstraintCreationException, MalformedNameException,
+			DuplicateConcurrencyConstraintNameException {
+		// System.setProperty("raven.eclipse", "1");
 		// FIXME: Should have a real home
 		File base = new File("/tmp/");
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-			"scufl-tools", "1.5.2.0"));
-		systemArtifacts.add(new BasicArtifact(
-			"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-			"1.5.2.0"));
-		systemArtifacts.add(new BasicArtifact(
-			"uk.org.mygrid.taverna.processors", "taverna-java-processor",
-			"1.5.2.0"));
-		systemArtifacts.add(new BasicArtifact(
-			"uk.org.mygrid.taverna.processors",
-			"taverna-stringconstant-processor", "1.5.2.0"));
+				"scufl-tools", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-core", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-tools", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-core", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-enactor", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-tools", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-core", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-model", "1.5.2.0"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-workflow", "1.5.2.0"));
 
-		Repository repository =
-			LocalRepository.getRepository(base,
-				this.getClass().getClassLoader(), systemArtifacts);
-		System.setProperty("raven.profile",
-			"http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
+		Repository repository = LocalRepository.getRepository(base, this
+				.getClass().getClassLoader(), systemArtifacts);
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
+				"1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
+				"1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-stringconstant-processor", "1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
+				"1.5.2.0"));
+		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
+				"taverna-contrib", "1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-beanshell-processor", "1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-biomart-processor", "1.5.2.1"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-soaplab-processor", "1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-notification-processor", "1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-rshell-processor",
+				"1.5.2.0"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-rserv-processor",
+				"1.5.2.0"));
+		repository.addArtifact(new BasicArtifact("biomoby.org",
+				"taverna-biomoby", "1.5.2.0"));
+
 		for (Artifact a : systemArtifacts) {
 			repository.addArtifact(a);
 		}
 		// TODO: Avoid hardcoding of local test-repository!
 		repository.addRemoteRepository(new URL(
-			"file:/Users/stain/.m2/repository/"));
+				"file:/Users/stian/.m2/repository/"));
 		repository.addRemoteRepository(new URL(
-			"http://www.mygrid.org.uk/maven/proxy/repository/"));
+				"http://www.mygrid.org.uk/maven/proxy/repository/"));
 		repository.addRemoteRepository(new URL(
-			"http://www.mygrid.org.uk/maven/repository/"));
+				"http://www.mygrid.org.uk/maven/repository/"));
 		TavernaSPIRegistry.setRepository(repository);
 		Bootstrap.properties = new Properties();
 		repository.update();
 
-		ClassLoader cl =
-			repository.getLoader(new BasicArtifact(
-				"uk.org.mygrid.taverna.scufl", "scufl-tools", "1.5.2.0"),
-				this.getClass().getClassLoader());
-		Class workflowLauncherClass =
-			cl.loadClass("org.embl.ebi.escience.scufl.tools.WorkflowLauncher");
-		Constructor constructor =
-			workflowLauncherClass.getConstructor(new Class[] { InputStream.class });
-		ByteArrayInputStream inStream =
-			new ByteArrayInputStream(scufl.getBytes());
-		WorkflowLauncher launcher =
-			(WorkflowLauncher) constructor.newInstance(new Object[] { inStream });
+		ByteArrayInputStream inStream = new ByteArrayInputStream(scufl
+				.getBytes());
+		WorkflowLauncher launcher = new WorkflowLauncher(inStream);
 		return launcher;
 	}
 
@@ -275,8 +320,8 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private RESTContext getRESTContext() {
-		RESTContext context =
-			new RESTContext(baseUri, workerUsername, workerPassword);
+		RESTContext context = new RESTContext(baseUri, workerUsername,
+				workerPassword);
 		return context;
 	}
 }
