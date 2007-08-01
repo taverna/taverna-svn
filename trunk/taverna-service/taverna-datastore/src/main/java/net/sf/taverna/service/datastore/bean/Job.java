@@ -16,7 +16,13 @@ import org.apache.log4j.Logger;
 import org.hibernate.validator.NotNull;
 
 @Entity
-@NamedQueries(value = { @NamedQuery(name = Job.NAMED_QUERY_ALL, query = "SELECT j FROM Job j ORDER BY j.created DESC") })
+@NamedQueries(value = { 
+	@NamedQuery(name = Job.NAMED_QUERY_ALL, 
+		query = "SELECT j FROM Job j ORDER BY j.created DESC"),
+	@NamedQuery(name = Job.NAMED_QUERY_STATUS, 
+		query = "SELECT j FROM Job j WHERE j.status=:status ORDER BY j.created DESC") }
+
+)
 public class Job extends AbstractOwned {
 	
 	private static Logger logger = Logger.getLogger(Job.class);
@@ -25,10 +31,12 @@ public class Job extends AbstractOwned {
 	
 	public static final int MAX_CONSOLE_SIZE = 65535;
 
-	// 5 minutes in xsd:duration format
-	public static final String DEFAULT_UPDATE_INTERVAL = "PT5M";
+	// 5 minutes in xsd:duration format, but for testing we'll say 5 seconds
+	public static final String DEFAULT_UPDATE_INTERVAL = "PT5S";
 
 	public static final String NAMED_QUERY_ALL = "allJobs";
+	
+	public static final String NAMED_QUERY_STATUS = "jobsByStatus";
 
 	/**
 	 * Status enumeration. Basically follows Freefluo's statuses, but in
