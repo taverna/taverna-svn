@@ -289,14 +289,12 @@ public class LocalRepository implements Repository {
 	private synchronized void setStatus(ArtifactImpl a, ArtifactStatus newStatus) {
 		if (status.containsKey(a) && status.get(a) != newStatus) {
 			synchronized (listeners) {
-				for (RepositoryListener l : listeners) {
-					ArtifactStatus old = status.get(a);
-					// FIXME: why put the status inside loop?
-					status.put(a, newStatus);
-					l.statusChanged(a, old, newStatus);
+				ArtifactStatus oldStatus = status.get(a);
+				status.put(a, newStatus);
+				for (RepositoryListener l : new ArrayList<RepositoryListener>(listeners)) {
+					l.statusChanged(a, oldStatus, newStatus);
 				}
 			}
-			status.put(a, newStatus);
 		}
 	}
 
