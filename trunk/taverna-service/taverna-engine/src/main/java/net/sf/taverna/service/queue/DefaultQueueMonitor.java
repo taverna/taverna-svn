@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
  * @author Stuart Owen
  */
 public class DefaultQueueMonitor extends Thread {
+	private JobExecutorFactory jobExecutorFactory = JobExecutorFactory.getInstance();
+	
 	private static Logger logger = Logger.getLogger(DefaultQueueMonitor.class);
 
 	//FIXME: this should be increased after testing, or better still read from config
@@ -39,7 +41,8 @@ public class DefaultQueueMonitor extends Thread {
 	
 	public void run() {
 		while(!terminate) {
-			logger.debug("Checking queue for new jobs");
+			killCancelledJobs();
+			
 			DAOFactory daoFactory = null;
 			try {
 				daoFactory = DAOFactory.getFactory();
@@ -72,11 +75,31 @@ public class DefaultQueueMonitor extends Thread {
 			try {
 				if (!terminate) Thread.sleep(CHECK_PERIOD * 1000);
 			} catch (InterruptedException e) {
-				
+				terminate = true;
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
 	
+	private void killCancelledJobs() {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		JobExecutor executor = jobExecutorFactory.createExecutor(uriFactory);
+		for (Job j : daoFactory.getJobDAO().byStatus(Status.CANCELLING)) {
+			j = daoFactory.getJobDAO().reread(j);
+			logger.info("Attempting to kill " + j);
+			if (executor.killJob(j)) {
+				j = daoFactory.getJobDAO().refresh(j);
+				synchronized (j) {
+					if (j.getStatus().equals(Status.CANCELLING)) {
+						j.setStatus(Status.CANCELLED);
+						j.getWorker().unassignJobs();
+					}
+				}
+				daoFactory.commit();
+			}
+		}
+	}
+
 	/**
 	 * Causes the thread to exit the poll loop.
 	 *
@@ -147,7 +170,7 @@ public class DefaultQueueMonitor extends Thread {
 //						continue;
 //					}
 					logger.info("Starting job execution:"+job.getId());
-					JobExecutor executor = JobExecutorFactory.getInstance().createExecutor(uriFactory);
+					JobExecutor executor = jobExecutorFactory.createExecutor(uriFactory);
 					daoFactory.commit();
 					executor.executeJob(job, worker);
 				}
