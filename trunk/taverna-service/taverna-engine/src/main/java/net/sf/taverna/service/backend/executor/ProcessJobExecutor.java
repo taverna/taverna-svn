@@ -61,32 +61,35 @@ public class ProcessJobExecutor implements JobExecutor {
 	public boolean killJob(Job job) {
 		Process process = jobProcesses.get(job);
 		if (process == null) { 
-			// Unknown, probably already finished
+			logger.info("Attempt to kill unknown job (already finished?): "
+				+ job);
 			return true;
 		}
 		try {
 			process.exitValue();
-			// It was already finished!
+			logger.info("Didn't kill already finished job " + job);
 			jobProcesses.remove(job);
 			return true;
 		} catch (IllegalThreadStateException ex) {
-			// Expected, then we can actually kill it
+			logger.debug("Attempting to kill " + job);
 			process.destroy();
 		}
 		
 		// Did it die?
 		try {
+			logger.info("Killed " + job);
 			process.exitValue();
 			jobProcesses.remove(job);
 			return true;
 		} catch (IllegalThreadStateException ex) {
-			// Still running!
+			logger.warn("Could not kill job " + job);
 			return false;
 		}
 	}
 	
 
 	public void executeJob(Job job, Worker worker) {
+		logger.info("Executing " + job + " at " + worker);
 		String jobUri = uriFactory.getURI(job);
 		String baseUri = uriFactory.getApplicationRoot().toString();
 		String username = worker.getUsername();
