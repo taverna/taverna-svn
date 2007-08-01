@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.sf.taverna.t2.cloudone.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
-import net.sf.taverna.t2.invocation.ContextManager;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;

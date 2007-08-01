@@ -9,6 +9,7 @@ import java.util.Map;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
@@ -45,6 +46,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 	protected List<ProcessorOutputPortImpl> outputPorts = new ArrayList<ProcessorOutputPortImpl>();
 
 	protected List<Service<?>> serviceList = new ArrayList<Service<?>>();
+	
+	protected List<AbstractMutableAnnotatedThing> serviceAnnotations = new ArrayList<AbstractMutableAnnotatedThing>();
 
 	protected AbstractCrystalizer crystalizer;
 
@@ -201,6 +204,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 		for (Element serviceElement : (List<Element>) e.getChild("services")
 				.getChildren("service")) {
 			serviceList.add(Tools.buildService(serviceElement));
+			serviceAnnotations.add(new AbstractMutableAnnotatedThing());
 		}
 	}
 
@@ -287,6 +291,14 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 	public void forgetDepthFor(String owningProcess) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public Annotated getAnnotationForService(Service<?> service) {
+		int index = serviceList.indexOf(service);
+		if (index >= 0) {
+			return serviceAnnotations.get(index);
+		}
+		return null;
 	}
 
 }

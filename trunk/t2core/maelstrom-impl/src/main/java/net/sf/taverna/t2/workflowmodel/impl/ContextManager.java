@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.invocation;
+package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.cloudone.DataManager;
 
@@ -11,6 +11,11 @@ import net.sf.taverna.t2.cloudone.DataManager;
  * moment this means the DataManager used to resolve references and store
  * collections and data objects but it will probably expand to other facilities
  * as and when we find them.
+ * 
+ * TODO - implement this properly, at the moment it's just returning a fixed
+ * DataManager which has to be set manually before anything will work! Should be
+ * discovering the data manager somehow or using different managers per workflow
+ * instance etc etc.
  * 
  * @author Tom Oinn
  * 

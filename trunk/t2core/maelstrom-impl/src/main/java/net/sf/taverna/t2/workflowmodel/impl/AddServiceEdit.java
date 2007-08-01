@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
@@ -24,9 +25,13 @@ public class AddServiceEdit extends AbstractProcessorEdit {
 
 	@Override
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
-		List<Service<?>> services = processor.getServiceList();
+		List<Service<?>> services = processor.serviceList;
 		if (services.contains(serviceToAdd) == false) {
-			services.add(serviceToAdd);
+			synchronized (processor) {
+				services.add(serviceToAdd);
+				processor.serviceAnnotations
+						.add(new AbstractMutableAnnotatedThing());
+			}
 		} else {
 			throw new EditException(
 					"Cannot add a duplicate service to processor");
@@ -36,7 +41,11 @@ public class AddServiceEdit extends AbstractProcessorEdit {
 
 	@Override
 	protected void undoEditAction(ProcessorImpl processor) {
-		processor.getServiceList().remove(serviceToAdd);
+		synchronized (processor) {
+			processor.serviceAnnotations.remove(processor.serviceList
+					.indexOf(serviceToAdd));
+			processor.serviceList.remove(serviceToAdd);
+		}
 	}
 
 }
