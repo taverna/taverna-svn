@@ -34,7 +34,7 @@ public class UserGuard extends Guard {
 
 	@Override
 	public int authenticate(Request req) {
-		getContext().getAttributes().remove(AUTHENTICATED_USER);
+		req.getAttributes().remove(AUTHENTICATED_USER);
 		if (req.getChallengeResponse() == null) {
 			return 0;
 		}
@@ -54,7 +54,7 @@ public class UserGuard extends Guard {
 		String password = new String(req.getChallengeResponse().getSecret());
 		
 		if (user.checkPassword(password)) {
-			getContext().getAttributes().put(AUTHENTICATED_USER, user);
+			req.getAttributes().put(AUTHENTICATED_USER, user);
 			logger.debug("Authenticated " + userName);
 			user.setLastSeen();
 			daoFactory.commit();

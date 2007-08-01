@@ -175,7 +175,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	}
 
 	public User getAuthUser() {
-		return (User) getContext().getAttributes().get(
+		return (User) getRequest().getAttributes().get(
 			UserGuard.AUTHENTICATED_USER);
 	}
 

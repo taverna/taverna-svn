@@ -152,7 +152,7 @@ public class UserResource extends AbstractUserResource {
 		// Double-check that the user is changing his own data
 		// (Should already have been checked by checkEntity(user), but
 		// we'll double-check because we might be dealing with passwords here)
-		if (!user.equals(getContext().getAttributes().get(
+		if (!user.equals(getRequest().getAttributes().get(
 			UserGuard.AUTHENTICATED_USER))) {
 			challenge();
 			return;
