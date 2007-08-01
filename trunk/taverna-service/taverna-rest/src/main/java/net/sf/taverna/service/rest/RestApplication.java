@@ -104,6 +104,7 @@ public class RestApplication extends Application {
 	private void createDefaultQueue() {
 		DAOFactory.getFactory().getQueueDAO().defaultQueue();
 		DAOFactory.getFactory().commit();
+		DAOFactory.getFactory().close();
 	}
 
 	@Override
