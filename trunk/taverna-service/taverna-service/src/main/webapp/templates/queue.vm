@@ -26,7 +26,7 @@
 						</td>
 					#else
 						<td>
-						<form action="$jobstatusuri?method=PUT">					
+						<form method="POST" action="$jobstatusuri?method=PUT">					
 							<input type="hidden" name="status" value="CANCELLING" />
 							<input type="submit" value="Cancel" "/>
 						</form>
