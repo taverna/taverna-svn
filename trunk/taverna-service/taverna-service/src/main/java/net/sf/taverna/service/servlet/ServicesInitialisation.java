@@ -4,6 +4,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.queue.DefaultQueueMonitor;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
@@ -30,7 +31,24 @@ public class ServicesInitialisation implements ServletContextListener {
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
+		createDefaultQueue();
 		startQueueMonitor(event.getServletContext());
+	}
+	
+	private void createDefaultQueue() {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		try {
+			if(daoFactory.getQueueDAO().all().size()==0) {
+				daoFactory.getQueueDAO().defaultQueue();
+				daoFactory.commit();
+			}
+		}
+		catch(Exception e) {
+			logger.error("Error creating default queue",e);
+		}
+		finally {
+			daoFactory.close();
+		}
 	}
 
 	private void startQueueMonitor(ServletContext context) {
