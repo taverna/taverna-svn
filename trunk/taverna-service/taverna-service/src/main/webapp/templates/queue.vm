@@ -5,6 +5,8 @@
 			<tr><th>ID</th><th>Owner</th><th>Status</th></tr>
 			#foreach ($job in $jobs)
 				#set($joburi=$uriFactory.getURI($job))
+				#set($jobstatusuri=$uriFactory.getURIStatus($job))
+				
 				#set($myjob=$job.getOwner().equals($currentuser))
 				<tr>
 				<td>
@@ -23,7 +25,12 @@
 							</form>
 						</td>
 					#else
-						<td><input type="button" value="Cancel" onClick="javascript:alert('Not yet implemented')"/>
+						<td>
+						<form action="$jobstatusuri?method=PUT">					
+							<input type="hidden" name="status" value="CANCELLING" />
+							<input type="submit" value="Cancel" "/>
+						</form>
+						</td>
 					#end
 				#end			
 				</tr>
