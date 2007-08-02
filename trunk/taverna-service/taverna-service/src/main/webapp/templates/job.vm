@@ -27,8 +27,17 @@
 						No Inputs
 					#end
 				</td></tr>
-					
-				<tr><td>Progress Report: </td><td><a href="$progressUri">report</a></td></tr>
+				
+				
+				<tr><td>Progress Report: </td><td><a href="$progressUri">report</a>
+				
+				
+				#if($updateInterval)
+				  (updated every $updateInterval)
+				#else
+				  (not updated until complete)
+				#end
+				</td></tr>
 				
 				#if($isFinished)
 					<tr>
@@ -53,12 +62,17 @@
 				</td>                   	
 			</table>
 			<br>		
-			#set($userjob=$job.getOwner().equals($currentuser))
-			#if ($userjob && (!$job.hasStarted() || $job.isFinished()))
-				<form method="POST" action="?method=delete">
-					<input type="submit" value="Delete">
-				</form> 
-			#end
-			
+					#if (!$job.hasStarted() || $job.isFinished())
+						
+							<form method="POST" action="?method=DELETE">
+								<input type="submit" value="Delete"/>
+							</form>
+					#else
+						<form method="POST" action="$jobstatusUri?method=PUT">					
+							<input type="hidden" name="status" value="CANCELLING" />
+							<input type="submit" value="Cancel" "/>
+						</form>
+					#end
+				
 		</center>
 	
