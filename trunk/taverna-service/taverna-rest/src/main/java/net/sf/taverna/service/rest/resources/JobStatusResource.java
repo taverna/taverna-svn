@@ -73,8 +73,8 @@ public class JobStatusResource extends AbstractJobResource {
 			return;
 		}
 		daoFactory.commit();
-		getResponse().setStatus(Status.SUCCESS_OK, 
-			"Set job status to " + job.getStatus());
+		getResponse().setRedirectRef(getRequest().getReferrerRef());
+		getResponse().setStatus(Status.REDIRECTION_FOUND);
 		logger.info("Updated status " + job);
 	}
 	

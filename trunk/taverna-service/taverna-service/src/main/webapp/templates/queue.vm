@@ -16,7 +16,7 @@
 						$job.getId()
 					#end
 					</td>
-					<td>$job.getOwner().getUsername()</td><td>$job.getStatus()</td>
+					<td>$job.owner.getUsername()</td><td>$job.status</td>
 				#if ($myjob)
 					#if (!$job.hasStarted() || $job.isFinished())
 						<td>
@@ -24,7 +24,7 @@
 								<input type="submit" value="Delete"/>
 							</form>
 						</td>
-					#else
+					#elseif (!$job.isCancelling())
 						<td>
 						<form method="POST" action="$jobstatusuri?method=PUT">					
 							<input type="hidden" name="status" value="CANCELLING" />

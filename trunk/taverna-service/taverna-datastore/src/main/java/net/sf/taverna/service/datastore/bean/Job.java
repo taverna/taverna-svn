@@ -130,6 +130,10 @@ public class Job extends AbstractOwned {
 	public boolean isFinished() {
 		return getStatus().compareTo(Status.CANCELLING) > 0;
 	}
+	
+	public boolean isCancelling() {
+		return getStatus().equals(Status.CANCELLING);
+	}
 
 	public String getUpdateInterval() {
 		return updateInterval;
