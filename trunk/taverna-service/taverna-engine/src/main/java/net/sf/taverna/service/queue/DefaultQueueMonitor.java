@@ -27,8 +27,7 @@ public class DefaultQueueMonitor extends Thread {
 	
 	private static Logger logger = Logger.getLogger(DefaultQueueMonitor.class);
 
-	//FIXME: this should be increased after testing, or better still read from config
-	private final int CHECK_PERIOD = 15; //checks every 15 seconds.
+	private final int CHECK_PERIOD = 20; //checks every 20 seconds.
 	private boolean terminate = false;
 
 	private URIFactory uriFactory;
@@ -44,6 +43,9 @@ public class DefaultQueueMonitor extends Thread {
 			
 			List<Job> waitingJobs = null;
 			DAOFactory daoFactory = DAOFactory.getFactory();
+			
+			if (logger.isDebugEnabled()) logger.debug("Checking queue for new jobs");
+			
 			try {
 				waitingJobs = determineWaitingJobs(daoFactory);
 				if (waitingJobs.size() > 0) {
