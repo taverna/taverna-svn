@@ -13,7 +13,6 @@ public class JobExecutorFactory {
 	}
 	
 	public JobExecutor createExecutor(URIFactory uriFactory) {
-		//return new RestfulJobExecutor(uriFactory);
 		return new ProcessJobExecutor(uriFactory);
 	}
 	

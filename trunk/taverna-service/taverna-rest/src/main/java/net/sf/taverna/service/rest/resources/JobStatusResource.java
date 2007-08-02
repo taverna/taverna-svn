@@ -73,8 +73,14 @@ public class JobStatusResource extends AbstractJobResource {
 			return;
 		}
 		daoFactory.commit();
-		getResponse().setRedirectRef(getRequest().getReferrerRef());
-		getResponse().setStatus(Status.REDIRECTION_FOUND);
+		if (entity.getMediaType().equals(MediaType.TEXT_HTML)) {
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+		}
+		else {
+			getResponse().setStatus(Status.SUCCESS_OK, 
+					"Set job status to " + job.getStatus());
+		}
 		logger.info("Updated status " + job);
 	}
 	

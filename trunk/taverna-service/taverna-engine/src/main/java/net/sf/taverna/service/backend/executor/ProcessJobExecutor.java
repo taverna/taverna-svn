@@ -22,9 +22,6 @@ public class ProcessJobExecutor implements JobExecutor {
 	
 	public static final JobProcesses jobProcesses = new JobProcesses();
 	
-
-	
-
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ProcessJobExecutor.class);
 
