@@ -31,7 +31,8 @@ public class WorkersResource extends AbstractResource {
 
 	public void handlePost() {
 		try {
-			if (getAuthUser().isAdmin()) {
+			if (getAuthUser().isAdmin() && daoFactory.getWorkerDAO().all().size()<4) {
+				
 				WorkerInitialisation.createNew();
 				getResponse().setRedirectRef(getRequest().getReferrerRef());
 				getResponse().setStatus(Status.REDIRECTION_FOUND);
