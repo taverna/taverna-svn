@@ -34,6 +34,8 @@ public class JavaProcess {
 	private String classpath;
 
 	private String className;
+	
+	private String allocatedMemory;
 
 	private ClassLoader callingClassLoader;
 
@@ -51,18 +53,20 @@ public class JavaProcess {
 	 *            process.
 	 * @param callingClassLoader
 	 *            The caller's classloader from where to extract the classpath.
+	 * @param allocatedMemory The maximum memory to be allocated to this process. In megabytes.
 	 */
-	public JavaProcess(String className, ClassLoader callingClassLoader) {
-		this(new URL[0], className);
+	public JavaProcess(String className, ClassLoader callingClassLoader,String allocatedMemory) {
+		this(new URL[0], className,allocatedMemory);
 		setInherittingClasspath(true);
 		this.callingClassLoader = callingClassLoader;
 	}
 
-	public JavaProcess(URL[] classpath, String className) {
+	public JavaProcess(URL[] classpath, String className, String allocatedMemory) {
 		this(classpathToString(classpath), className);
+		this.allocatedMemory=allocatedMemory;
 	}
 
-	public JavaProcess(String classpath, String className) {
+	private JavaProcess(String classpath, String className) {
 		this.classpath = classpath;
 		this.className = className;
 	}
@@ -106,7 +110,7 @@ public class JavaProcess {
 
 		cmdLine.add(findJava());
 
-		cmdLine.add("-Xmx256m");
+		cmdLine.add("-Xmx"+allocatedMemory+"m");
 
 		cmdLine.add("-classpath");
 		if (isInherittingClasspath()) {

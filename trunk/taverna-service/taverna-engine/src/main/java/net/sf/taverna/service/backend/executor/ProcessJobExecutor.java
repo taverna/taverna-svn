@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
@@ -94,10 +95,11 @@ public class ProcessJobExecutor implements JobExecutor {
 		String baseUri = uriFactory.getApplicationRoot().toString();
 		String username = worker.getUsername();
 		String password = worker.getWorkerPasswordStr();
+		String memory=getConfiguredMemory();
 	
 		JavaProcess javaProcess =
 			new JavaProcess("net.sf.taverna.service.backend.executor.RestfulExecutionProcess",
-				getClass().getClassLoader());
+				getClass().getClassLoader(),memory);
 		
 		File tavernaHome = makeTavernaHome();
 		javaProcess.addSystemProperty("taverna.home", tavernaHome.getAbsolutePath());
@@ -119,6 +121,7 @@ public class ProcessJobExecutor implements JobExecutor {
 		javaProcess.addArguments("-username", username);
 		// FIXME: Don't expose our password on command line
 		javaProcess.addArguments("-password", password);
+		javaProcess.addArguments("xmx",memory);
 		
 		javaProcess.setRedirectingError(true);
 		
@@ -127,6 +130,13 @@ public class ProcessJobExecutor implements JobExecutor {
 		Process process = javaProcess.run();
 		new ConsoleReaderThread(job, process).start();
 		jobProcesses.put(job, process);
+	}
+	
+	private String getConfiguredMemory() {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		Configuration config = daoFactory.getConfigurationDAO().getConfig();
+		daoFactory.close();
+		return config.getWorkerMemory();
 	}
 }
 

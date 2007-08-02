@@ -17,8 +17,14 @@ public class Configuration extends AbstractDated {
 	private String smtpUser;
 	private String smtpPassword;
 	private String baseuri;
+	private String workerMemory="500";
 	
-	
+	public String getWorkerMemory() {
+		return workerMemory;
+	}
+	public void setWorkerMemory(String workerMemory) {
+		this.workerMemory = workerMemory;
+	}
 	public String getBaseuri() {
 		return baseuri;
 	}

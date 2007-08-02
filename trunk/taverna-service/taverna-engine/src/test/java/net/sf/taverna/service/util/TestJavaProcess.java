@@ -28,7 +28,7 @@ public class TestJavaProcess {
 		URL root = new URL(path, "../../../../../");
 		
 		JavaProcess p = new JavaProcess(new URL[]{root},
-			"net.sf.taverna.service.util.HelloWorld");
+			"net.sf.taverna.service.util.HelloWorld","256");
 		assertFalse(p.isInherittingClasspath());
 		assertTrue(p.isRedirectingError());
 		p.addArguments("my", "arguments");
@@ -44,7 +44,7 @@ public class TestJavaProcess {
 	@Test
 	public void runProcessInherited() throws IOException, ClassNotFoundException {
 		JavaProcess p = new JavaProcess(
-			"net.sf.taverna.service.util.HelloWorld", getClass().getClassLoader());
+			"net.sf.taverna.service.util.HelloWorld", getClass().getClassLoader(),"256");
 		assertTrue(p.isInherittingClasspath());
 		assertTrue(p.isRedirectingError());
 		p.addArguments("my", "arguments");
@@ -60,7 +60,7 @@ public class TestJavaProcess {
 	@Test
 	public void runProcessEngine() throws IOException, ClassNotFoundException {
 		JavaProcess p = new JavaProcess(
-			"net.sf.taverna.service.backend.executor.RestfulExecutionProcess", getClass().getClassLoader());
+			"net.sf.taverna.service.backend.executor.RestfulExecutionProcess", getClass().getClassLoader(),"256");
 		assertTrue(p.isInherittingClasspath());
 		assertTrue(p.isRedirectingError());
 		p.addArguments("-help");

@@ -50,29 +50,32 @@ public class ConfigurationResource extends AbstractResource {
 			String confirm=form.getValues("smtppasswordconfirm");
 			String fromEmail=form.getValues("fromemailaddress");
 			String baseuri=form.getValues("baseuri");
+			String workermemory=form.getValues("workermemory");
 			if (password==null) password="";
 			if (confirm==null) confirm="";
 			if (username==null) username="";
 			if (smtpServer==null) smtpServer="";
 			if (fromEmail==null) fromEmail="";
 			if (baseuri==null) baseuri="";
+			if (workermemory==null) workermemory="500";
+			
 			boolean smtpAuthRequired=form.getValues("smtpauthrequired")!=null;
 			
 			try {
-				validate(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri);
-				updateConfig(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,baseuri);
+				validate(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory);
+				updateConfig(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,baseuri,workermemory);
 				if (logger.isDebugEnabled()) logger.debug("Successfully updated the configuration");
 				getResponse().setEntity(new ConfigVelocityRepresentation("Successfully updated").getRepresentation());
 			}
 			catch(ConfigurationUpdateException e) {
 				logger.warn("Unable to update configuration:",e);
-				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,e.getMessage()).getRepresentation());
+				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,e.getMessage()).getRepresentation());
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 		}
 	}
 	
-	private void updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer,String fromEmail, boolean smtpAuthRequired,String username,String password,String baseuri) throws ConfigurationUpdateException {
+	private void updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer,String fromEmail, boolean smtpAuthRequired,String username,String password,String baseuri,String workermemory) throws ConfigurationUpdateException {
 		Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
 		if (config==null) throw new ConfigurationUpdateException("Unable to find configuration database record");
 		try {
@@ -88,6 +91,7 @@ public class ConfigurationResource extends AbstractResource {
 				}
 			}
 			config.setBaseuri(baseuri);
+			config.setWorkerMemory(workermemory);
 			URIFactory.BASE_URI_CHANGED=true;
 			DAOFactory.getFactory().getConfigurationDAO().update(config);
 			DAOFactory.getFactory().commit();
@@ -98,7 +102,7 @@ public class ConfigurationResource extends AbstractResource {
 		}
 	}
 	
-	private void validate(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail,boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri) throws ConfigurationUpdateException {
+	private void validate(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail,boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory) throws ConfigurationUpdateException {
 		if (allowEmail) {
 			if  (smtpServer.length()<=0) throw new ConfigurationUpdateException("You must provide an SMTP server name");
 			if (fromEmail.length()<=0 || !fromEmail.contains("@")) throw new ConfigurationUpdateException("You must provide a valid senders email address");
@@ -107,6 +111,13 @@ public class ConfigurationResource extends AbstractResource {
 		if (smtpAuthRequired) {
 			if (username.length()<=0) throw new ConfigurationUpdateException("You must provide a username if you required SMTP authentication");
 			if (!password.equals(confirmPassword)) throw new ConfigurationUpdateException("The password does not match the confirmation password");
+		}
+		
+		try {
+			Integer.valueOf(workermemory);
+		}
+		catch(NumberFormatException e) {
+			throw new ConfigurationUpdateException("The memory allocated to a worker must be a number");
 		}
 		
 		try {
@@ -121,7 +132,7 @@ public class ConfigurationResource extends AbstractResource {
 		
 		private Map<String,Object> model = new HashMap<String, Object>();
 		
-		public ConfigVelocityRepresentation(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail, boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String errorMsg) {
+		public ConfigVelocityRepresentation(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail, boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory,String errorMsg) {
 			model.put("allowregister",allowRegister);
 			model.put("allowemail", allowEmail);
 			model.put("smtpserver", smtpServer);
@@ -130,6 +141,8 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("smtppasswordconfirm",confirmPassword);
 			model.put("smtpauthrequired", smtpAuthRequired);
 			model.put("fromemailaddress", fromEmail);
+			model.put("workermemory",workermemory);
+			model.put("baseuri", baseuri);
 			model.put("message",errorMsg);
 			model.put("isError",true);
 		}
@@ -151,6 +164,7 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("smtpauthrequired", config.isSmtpAuthRequired());
 			model.put("fromemailaddress", config.getFromEmail());
 			model.put("baseuri", config.getBaseuri());
+			model.put("workermemory", config.getWorkerMemory());
 		}
 
 		

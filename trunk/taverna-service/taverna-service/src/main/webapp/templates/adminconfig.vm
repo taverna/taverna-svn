@@ -29,6 +29,7 @@
 			<form name="configform" method="post">
 				<table>
 					<tr><td>Allow user registration</td><td><input type="checkbox" name="allowregister" $allowregister_tag ></td></tr>
+					<tr><td>Upper memory allocated<br>to each worker</td><td><input type="text" name="workermemory" value="$!workermemory" style="text-align:right">Mb</td></tr>
 					<tr><td>Allow email notifications</td><td><input type="checkbox" name="allowemail" onChange="javascript:enableDisableElements()" $allowemail_tag ></td></tr>
 					<tr><td>SMTP server</td><td><input type="text" name="smtpserver" value="$!smtpserver"></td></tr>
 					<tr><td>Senders email address</td><td><input type="text" name="fromemailaddress" value="$!fromemailaddress"></td></tr>
