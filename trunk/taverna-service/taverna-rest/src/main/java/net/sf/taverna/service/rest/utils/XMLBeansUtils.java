@@ -46,7 +46,6 @@ public class XMLBeansUtils {
 		validateOptions.setErrorListener(errors);
 		if (!xmlObject.validate(validateOptions)) {
 			for (Object error: errors) {
-				System.out.println(error.getClass());
 				logger.warn(error);
 			}
 			throw new IllegalArgumentException("xml object does not validate");

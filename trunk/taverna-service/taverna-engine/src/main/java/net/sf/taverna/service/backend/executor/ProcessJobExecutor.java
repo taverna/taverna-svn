@@ -45,7 +45,7 @@ public class ProcessJobExecutor implements JobExecutor {
 			logger.warn("Could not create directory " + tavernaHome);
 			return null;
 		}
-		System.out.println("Temporary taverna.home is " + tavernaHome);
+		if (logger.isDebugEnabled()) logger.debug("Temporary taverna.home is " + tavernaHome);
 		return tavernaHome;
 	}
 	
@@ -232,7 +232,7 @@ class ConsoleReaderThread extends Thread {
 
 	public ConsoleReaderThread(Job job, Process process) {
 		super("Console reader for " + job);
-		this.job = daoFactory.getJobDAO().reread(job);
+		this.job = job;
 		this.process = process;
 	}
 
@@ -248,20 +248,21 @@ class ConsoleReaderThread extends Thread {
 		int status;
 		try {
 			status = process.waitFor();
+			if (status == 0) {
+				logger.info("Completed process for " + job);
+			} else {
+				logger.warn("Error code " + status + " from process for " + job);
+			}
 		} catch (InterruptedException e) {
 			logger.info("Thread interrupted while waiting for " + job);
 			System.out.println(stdout);
-			job.setConsole(stdout);
+			
 			Thread.currentThread().interrupt();
-			return;
 		}
-		if (status == 0) {
-			logger.info("Completed process for " + job);
-		} else {
-			logger.warn("Error code " + status + " from process for " + job);
+		finally {
+			daoFactory.getJobDAO().reread(job).setConsole(stdout);
+			daoFactory.commit();
+			daoFactory.close();
 		}
-		System.out.println(stdout);
-		job.setConsole(stdout);
-		daoFactory.commit();
 	}
 }

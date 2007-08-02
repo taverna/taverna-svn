@@ -45,6 +45,8 @@ public class UserGuard extends Guard {
 		}
 		String userName = req.getChallengeResponse().getIdentifier();
 		User user = daoFactory.getUserDAO().readByUsername(userName);
+		daoFactory.commit();
+		daoFactory.close();
 		if (user == null) {
 			logger.warn("Unknown user " + userName);
 			return 0;
@@ -56,8 +58,6 @@ public class UserGuard extends Guard {
 		if (user.checkPassword(password)) {
 			req.getAttributes().put(AUTHENTICATED_USER, user);
 			logger.debug("Authenticated " + userName);
-			user.setLastSeen();
-			daoFactory.commit();
 			return 1;
 		}
 		logger.warn("Wrong password supplied for " + userName);

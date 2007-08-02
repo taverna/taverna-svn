@@ -81,7 +81,6 @@ public class JobsResource extends AbstractUserResource {
 	@Override
 	public void post(Representation entity) {
 		if (!restType.includes(entity.getMediaType())) {
-			System.out.println("Wrong type: " + entity.getMediaType());
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
 				"Content type must be " + restType);
 			return;
