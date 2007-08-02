@@ -30,6 +30,13 @@
 				<property name="hibernate.connection.url"
 				value="jdbc:derby:tavernaService;create=true"
 			/> 
+			
+			<!-- The following is a configuration to connect to a Derby instance running locally on port 1337.  
+			<property name="hibernate.connection.driver_class"
+				value="org.apache.derby.jdbc.ClientDriver" />
+			<property name="hibernate.connection.url"
+				value="jdbc:derby://localhost:1337/tavernaservice;create=true;upgrade=true" />
+			 -->
 
 			<property name="hibernate.c3p0.min_size" value="5" />
 			<property name="hibernate.c3p0.max_size" value="20" />
