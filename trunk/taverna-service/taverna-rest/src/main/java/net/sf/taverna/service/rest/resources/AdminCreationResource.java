@@ -48,6 +48,7 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 			user.setAdmin(true);
 			userDAO.create(user);
 			daoFactory.commit();
+			daoFactory.close();
 		}
 		catch(Throwable e) {
 			throw new CreateUserException("An internal error prevented the user beining created. The error was:"+e.getCause().getMessage());
