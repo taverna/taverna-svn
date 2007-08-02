@@ -298,13 +298,17 @@ public class RestfulExecutionThread extends Thread {
 		for (Artifact a : systemArtifacts) {
 			repository.addArtifact(a);
 		}
-		// TODO: Avoid hardcoding of local test-repository!
-		repository.addRemoteRepository(new URL(
-			"file:/Users/stain/.m2/repository/"));
-		repository.addRemoteRepository(new URL(
-				"http://www.mygrid.org.uk/maven/proxy/repository/"));
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
+		repository.addRemoteRepository(new URL(
+			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+		repository.addRemoteRepository(new URL(
+				"http://mirrors.sunsite.dk/maven2/"));
+		repository.addRemoteRepository(new URL(
+				"http://www.ibiblio.org/maven2/"));
+		repository.addRemoteRepository(new URL(
+				"http://mobycentral.icapture.ubc.ca/maven/"));
+		
 		TavernaSPIRegistry.setRepository(repository);
 		Bootstrap.properties = new Properties();
 		repository.update();
