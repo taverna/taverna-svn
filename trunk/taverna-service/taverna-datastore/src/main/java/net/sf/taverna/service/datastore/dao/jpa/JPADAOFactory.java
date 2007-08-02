@@ -59,21 +59,18 @@ public class JPADAOFactory extends DAOFactory {
 	 */
 	private EntityManager getEntityManager(boolean create) {
 		EntityManager em;
-		synchronized (managers) {
-			em = managers.get(Thread.currentThread());
-			if (em == null) {
-				if (! create) {
-					return null;
-				}
-				em = EntityManagerUtil.createEntityManager();
-				managers.put(Thread.currentThread(), em);
+		em = managers.get(Thread.currentThread());
+		if (em == null) {
+			if (! create) {
+				return null;
 			}
+			em = EntityManagerUtil.createEntityManager();
+			managers.put(Thread.currentThread(), em);
 		}
+		
 		if (create) {
-			synchronized (em) {
-				if (!em.getTransaction().isActive()) {
-					em.getTransaction().begin();
-				}
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
 			}
 		}
 		return em;
@@ -101,18 +98,15 @@ public class JPADAOFactory extends DAOFactory {
 
 	@Override
 	public void close() {
-		synchronized (managers) {
-			EntityManager em = getEntityManager(false);
-			if (em == null) {
-				logger.debug("Close on not-yet-used entity manager");
-				return;
-			}
-			synchronized (em) {
-				em.clear();
-				em.close();
-			}
-			managers.remove(Thread.currentThread());
+		EntityManager em = getEntityManager(false);
+		if (em == null) {
+			logger.debug("Close on not-yet-used entity manager");
+			return;
 		}
+		em.clear();
+		em.close();
+		managers.remove(Thread.currentThread());
+
 	}
 
 	@DAO(Job.class)
