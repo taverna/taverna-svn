@@ -33,6 +33,12 @@ public class JobStatusResource extends AbstractJobResource {
 	public boolean allowPut() {
 		return true;
 	}
+	
+	@Override
+	public boolean allowPost() {
+		// FIXME: To work around Restlet's TunnelFilter not behaving
+		return allowPut();
+	}
 
 	@Override
 	public long maxSize() {
@@ -70,5 +76,11 @@ public class JobStatusResource extends AbstractJobResource {
 		getResponse().setStatus(Status.SUCCESS_OK, 
 			"Set job status to " + job.getStatus());
 		logger.info("Updated status " + job);
+	}
+	
+	@Override
+	public void post(Representation entity) {
+		// FIXME: To work around Restlet's TunnelFilter not behaving
+		put(entity);
 	}
 }

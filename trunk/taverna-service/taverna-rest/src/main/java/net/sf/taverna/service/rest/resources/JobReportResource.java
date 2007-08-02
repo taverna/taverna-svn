@@ -42,14 +42,8 @@ public class JobReportResource extends AbstractJobResource {
 	
 	@Override
 	public void put(Representation entity) {
-		if (!reportType.includes(entity.getMediaType())) {
-			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
-				"Content type must be " + MediaType.TEXT_XML);
-			return;
-		}
-		if (overMaxSize(entity)) {
-			logger.warn("Uploaded report document was too large: "
-				+ entity.getSize());
+		logger.debug("About to set progress report for " + job);
+		if (! isEntityValid(entity, reportType)) {
 			return;
 		}
 		String report;
@@ -61,6 +55,7 @@ public class JobReportResource extends AbstractJobResource {
 				"Could not read job status");
 			return;
 		}
+		logger.debug("Received:\n" +report);
 		try {
 			job.setProgressReport(report);
 		} catch (IllegalArgumentException e) {

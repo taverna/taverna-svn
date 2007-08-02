@@ -184,6 +184,29 @@ class JobProcesses {
 	}
 }
 
+class ConsolePipingThread extends Thread {
+	
+	private static Logger logger = Logger.getLogger(ConsolePipingThread.class);
+	
+	DAOFactory daoFactory = DAOFactory.getFactory();
+
+	private final Process process;
+
+	public ConsolePipingThread(Job job, Process process) {
+		super("Console piper for " + job);
+		this.process = process;
+	}
+	
+	@Override
+	public void run() {
+		try {
+			IOUtils.copy(process.getInputStream(), System.err);
+		} catch (IOException e) {
+			logger.warn("An error occured", e);
+		}
+	}
+}
+
 /**
  * Read the {@link Process}'s standard output (the console output) and store it
  * with {@link Job#setConsole(String)}

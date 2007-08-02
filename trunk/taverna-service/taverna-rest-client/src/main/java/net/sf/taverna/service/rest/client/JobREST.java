@@ -111,13 +111,20 @@ public class JobREST extends OwnedREST<Job> {
 
 	public void setReport(String report) throws NotSuccessException,
 		XmlException {
+		if (report == null) {
+			report = "";
+		}
 		Reference reportURI = getReportURI();
 		if (reportURI != null) {
 			context.put(reportURI, report, RESTContext.reportType);
 		} else {
 			JobDocument job = JobDocument.Factory.newInstance(xmlOptions);
-			XmlObject reportXML = XmlObject.Factory.parse(report);
-			job.addNewJob().addNewReport().set(reportXML);
+			job.addNewJob().addNewReport(); // empty
+			if (!report.equals("")) {
+				XmlObject reportXML = XmlObject.Factory.parse(report);
+				job.getJob().getReport().set(reportXML);
+				logger.info("Setting report to:\n" + reportXML);
+			}
 			context.put(getURIReference(), job);
 		}
 		invalidate();

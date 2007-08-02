@@ -51,8 +51,8 @@ import org.restlet.data.Reference;
 
 public class RestfulExecutionThread extends Thread {
 
-	private static Logger logger = Logger
-			.getLogger(RestfulExecutionThread.class);
+	private static Logger logger =
+		Logger.getLogger(RestfulExecutionThread.class);
 
 	private String jobUri;
 
@@ -138,19 +138,23 @@ public class RestfulExecutionThread extends Thread {
 			try {
 				job.setStatus(StatusType.RUNNING);
 			} catch (NotSuccessException e2) {
-				logger.warn("Could not set status to running", e2); // OK for
-																	// now..
+				logger.warn("Could not set status to running", e2); // OK for now..
 			}
 
 			GDuration updateInterval = job.getUpdateInterval();
 			if (updateInterval != null) {
-				updater = new ProgressUpdaterThread(launcher, job);
+				updater = new ProgressUpdaterThread(job);
 				updater.start();
 			}
 
 			Map outputs = null;
 			try {
-				outputs = launcher.execute(inputs);
+				if (updater != null) {
+					outputs =
+						launcher.execute(inputs, updater.workflowEventListener);
+				} else {
+					outputs = launcher.execute(inputs);
+				}
 			} catch (Exception e) {
 				logger.warn("Workflow execution failed", e);
 				return;
@@ -188,29 +192,27 @@ public class RestfulExecutionThread extends Thread {
 			if (!complete) {
 				failedJob(job);
 			}
-
-			if (updater != null) {
-				updater.loop = false;
-				try {
-					updater.join(); // So we're not sending two progress
-					// reports at once
-				} catch (InterruptedException e) {
-					logger.warn("Interrupted " + this + " while joining "
-							+ updater, e);
-					updater.interrupt(); // take it down with us!
-					Thread.currentThread().interrupt();
-				}
+			if (launcher == null || updater == null) {
+				return;
+			}
+			updater.loop = false;
+			try {
+				updater.join(); // So we're not sending two progress
+				// reports at once
+			} catch (InterruptedException e) {
+				logger.warn(
+					"Interrupted " + this + " while joining " + updater, e);
+				updater.interrupt(); // take it down with us!
+				Thread.currentThread().interrupt();
 			}
 
-			if (launcher != null) {
-				try {
-					job.setReport(launcher.getProgressReportXML());
-				} catch (NotSuccessException e) {
-					logger.warn("Could not set progress report for " + job, e);
-				} catch (XmlException e) {
-					logger.error("Could not serialize progress report for "
-							+ job, e);
-				}
+			try {
+				job.setReport(launcher.getProgressReportXML());
+			} catch (NotSuccessException e) {
+				logger.warn("Could not set progress report for " + job, e);
+			} catch (XmlException e) {
+				logger.error("Could not serialize progress report for " + job,
+					e);
 			}
 		}
 	}
@@ -298,7 +300,7 @@ public class RestfulExecutionThread extends Thread {
 		}
 		// TODO: Avoid hardcoding of local test-repository!
 		repository.addRemoteRepository(new URL(
-				"file:/Users/stian/.m2/repository/"));
+			"file:/Users/stain/.m2/repository/"));
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/proxy/repository/"));
 		repository.addRemoteRepository(new URL(
@@ -320,8 +322,8 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private RESTContext getRESTContext() {
-		RESTContext context = new RESTContext(baseUri, workerUsername,
-				workerPassword);
+		RESTContext context =
+			new RESTContext(baseUri, workerUsername, workerPassword);
 		return context;
 	}
 }

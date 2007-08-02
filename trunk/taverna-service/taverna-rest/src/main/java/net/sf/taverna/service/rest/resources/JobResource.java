@@ -3,25 +3,30 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.DataDoc;
+import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.QueueEntry;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.xml.JobDocument;
+import net.sf.taverna.service.xml.Report;
 import net.sf.taverna.service.xml.StatusType;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.w3c.dom.Node;
 
 public class JobResource extends AbstractJobResource {
 
@@ -92,24 +97,45 @@ public class JobResource extends AbstractJobResource {
 	}
 	
 	public void updateJob(JobDocument jobDoc) {
-		if (jobDoc.getJob().getInputs() != null) {
+		net.sf.taverna.service.xml.Job jobElem = jobDoc.getJob();
+		if (jobElem.getInputs() != null) {
 			job.setInputs(uriToDAO.getResource(
-				jobDoc.getJob().getInputs().getHref(), DataDoc.class));
+				jobElem.getInputs().getHref(), DataDoc.class));
 		}
-		if (jobDoc.getJob().getOutputs() != null) {
+		if (jobElem.getOutputs() != null) {
 			job.setOutputs(uriToDAO.getResource(
-				jobDoc.getJob().getOutputs().getHref(), DataDoc.class));
+				jobElem.getOutputs().getHref(), DataDoc.class));
 		}
-		if (jobDoc.getJob().getUpdateInterval() != null) {
-			GDuration interval = jobDoc.getJob().getUpdateInterval();
+		if (jobElem.getUpdateInterval() != null) {
+			GDuration interval = jobElem.getUpdateInterval();
 			job.setUpdateInterval(interval.toString());
 		}
-		if (jobDoc.getJob().getTitle() != null) {
-			job.setName(jobDoc.getJob().getTitle());
+		if (jobElem.getTitle() != null) {
+			job.setName(jobElem.getTitle());
+		}
+		if (jobElem.getReport() != null) {
+			Report report = jobElem.getReport();
+			Node firstChild = report.getDomNode().getFirstChild();
+			if (firstChild == null) {
+				job.setProgressReport(null);
+			} else {
+				// Don't save outer, so don't use xmlOptions
+				job.setProgressReport(report.xmlText());
+			}			
+		}
+		if (jobElem.getConsole() != null) {
+			job.setConsole(jobElem.getConsole().getStringValue());
+		}
+		if (jobElem.getStatus() != null) {
+			job.setStatus(Job.Status.valueOf(jobElem.getStatus().getStringValue()));
+		}
+		if (jobElem.getUpdateInterval() != null) {
+			job.setUpdateInterval(jobElem.getUpdateInterval().toString());
 		}
 		daoFactory.getJobDAO().update(job);
 		daoFactory.commit();
 		logger.info("Updated " + job);
+		logger.debug("job xml \n" + jobDoc);
 	}
 
 	class Text extends AbstractText {
@@ -209,9 +235,14 @@ public class JobResource extends AbstractJobResource {
 			else {
 				model.put("isFinished",false);
 			}
+			
+			model.put("jobstatusUri", uriFactory.getURIStatus(job));
+			
 			if (job.getConsole() != null && job.getConsole().length() > 0) {
 				model.put("consoleUri", uriFactory.getURIConsole(job));
 			}
+			
+			model.put("updateInterval", humanDuration(job.getUpdateInterval()));
 			model.put("currentuser",getAuthUser());
 			return model;
 		}
@@ -227,5 +258,64 @@ public class JobResource extends AbstractJobResource {
 		}
 		
 		
+	}
+
+	/**
+	 * Produce a human-readable version of an xsd:duration string. For example,
+	 * "P1D5M" is represented as "1 day 5 minutes". Returns null if the string
+	 * is empty or don't specify any period, this normally means "never".
+	 * 
+	 * @param duration
+	 *            A XML Schema "duration" style (ISO 8601) duration
+	 * @return An (English) human readable presentation of the duration
+	 */
+	public static String humanDuration(String xsdDuration) {
+		if (xsdDuration == null || xsdDuration.equals("")) {
+			return null;
+		}
+		GDuration duration = new GDuration(xsdDuration);
+		StringBuffer sb = new StringBuffer();
+		includeDuration(sb, duration.getYear(), "year");
+		includeDuration(sb, duration.getMonth(), "month");
+		includeDuration(sb, duration.getDay(), "day");
+		includeDuration(sb, duration.getHour(), "hour");
+		includeDuration(sb, duration.getMinute(), "minute");
+		if (duration.getFraction().equals(BigDecimal.ZERO)) {
+			includeDuration(sb, duration.getSecond(), "second");
+		} else {
+			BigDecimal seconds = BigDecimal.valueOf(duration.getSecond());
+			seconds = seconds.add(duration.getFraction());
+			sb.append(seconds.toPlainString());
+			sb.append(" seconds ");
+		}
+		
+		if (sb.length() == 0) {
+			return null;
+		}
+		// Remove trailing space
+		if (sb.charAt(sb.length()-1) == ' ') {
+			sb.deleteCharAt(sb.length()-1);
+		}
+		return sb.toString();
+	}
+
+	/** 
+	 * Used by {@link #humanDuration(GDuration)}.
+	 * 
+	 * @param sb
+	 * @param num
+	 * @param string
+	 */
+	private static void includeDuration(StringBuffer sb, int num, String string) {
+		if (num == 0) {
+			return;
+		}
+		sb.append(num);
+		sb.append(' ');
+		sb.append(string);
+		if (Math.abs(num) != 1) {
+			sb.append('s');
+		}
+		sb.append(' ');
 	}
 }

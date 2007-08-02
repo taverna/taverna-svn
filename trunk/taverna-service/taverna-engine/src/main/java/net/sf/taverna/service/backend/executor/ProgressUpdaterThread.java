@@ -11,7 +11,10 @@ import net.sf.taverna.service.rest.client.NotSuccessException;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.GDateBuilder;
 import org.apache.xmlbeans.XmlException;
-import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventAdapter;
+import org.embl.ebi.escience.scufl.enactor.WorkflowEventListener;
+import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
+import org.embl.ebi.escience.scufl.enactor.event.WorkflowCreationEvent;
 
 /**
  * Thread that updates progress report on given intervals
@@ -31,18 +34,36 @@ public class ProgressUpdaterThread extends Thread {
 
 	private JobREST job;
 
-	private WorkflowLauncher launcher;
-
 	private Date sleepUntil;
 
 	public boolean loop = true;
 
-	public ProgressUpdaterThread(WorkflowLauncher launcher, JobREST job) {
+	public final WorkflowEventListener workflowEventListener = new ProgressReportListener();
+
+	public WorkflowInstance wfInstance = null;
+	
+	public ProgressUpdaterThread(JobREST job) {
 		super("Job progress updater");
-		this.launcher = launcher;
 		this.job = job.clone();
 	}
 
+	public class ProgressReportListener extends WorkflowEventAdapter {
+		
+		@Override
+		public void workflowCreated(WorkflowCreationEvent event) {
+			if (wfInstance == null) {
+				// Only pick it up the first time
+				wfInstance  = event.getWorkflowInstance();
+			} else {
+				logger.warn("Got a second workflowCreated, first wfInstance is "
+					+ wfInstance
+					+ " and now got "
+					+ event.getWorkflowInstance());
+			}
+		}			
+		
+	}
+	
 	public void updateSleepUntil() {
 		GDateBuilder gDateBuilder = new GDateBuilder();
 		gDateBuilder.setDate(new Date());
@@ -65,8 +86,11 @@ public class ProgressUpdaterThread extends Thread {
 			if (sleepUntil.after(new Date())) {
 				continue;
 			}
+			if (wfInstance == null) {
+				continue;
+			}
 			try {
-				job.setReport(launcher.getProgressReportXML());
+				job.setReport(wfInstance.getProgressReportXMLString());
 			} catch (NotSuccessException e) {
 				logger.warn("Could not set progress report for " + job, e);
 				continue;
