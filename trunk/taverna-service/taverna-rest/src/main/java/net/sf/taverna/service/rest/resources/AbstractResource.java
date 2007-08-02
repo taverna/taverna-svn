@@ -221,7 +221,15 @@ public abstract class AbstractResource extends RepresentationalResource {
 			&& isWorkerAuthorized((Worker) authUser, entity)) {
 			return true;
 		}
-		
+		if (entity instanceof Queue) {
+			if (entity.equals(daoFactory.getQueueDAO().defaultQueue())) {
+				// Access for everyone on default queue!
+				return true;
+			} else {
+				logger.warn("Can't check access on non-default queue");
+				// TODO: Implement ACLs on other queues
+			}
+		}
 		return false;
 
 	}
