@@ -288,6 +288,7 @@ public class URIFactory {
 		if (applicationRoot==null || BASE_URI_CHANGED) {
 			Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
 			String root=config.getBaseuri();
+			DAOFactory.getFactory().close();
 			if (!root.endsWith("/")) root+="/";
 			applicationRoot=new Reference(root+URIFactory.V1+"/");
 			logger.info("Set application root to "+applicationRoot.toString());
