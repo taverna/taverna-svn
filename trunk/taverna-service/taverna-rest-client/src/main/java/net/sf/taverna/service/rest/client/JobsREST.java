@@ -63,5 +63,9 @@ public class JobsREST extends LinkedREST<Jobs> implements Iterable<JobREST> {
 	public JobsREST clone() {
 		return new JobsREST(context, getURIReference());
 	}
+
+	public Response delete(JobREST job) throws NotSuccessException {
+		return context.delete(job.getURIReference());		
+	}
 	
 }
