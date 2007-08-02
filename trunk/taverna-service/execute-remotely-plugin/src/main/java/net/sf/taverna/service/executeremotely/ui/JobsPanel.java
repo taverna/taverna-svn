@@ -4,6 +4,7 @@
 package net.sf.taverna.service.executeremotely.ui;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -16,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import net.sf.taverna.service.executeremotely.RemoteWorkflowInstance;
 import net.sf.taverna.service.executeremotely.UILogger;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.JobsREST;
@@ -26,37 +26,69 @@ import net.sf.taverna.service.rest.client.RESTException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
-class JobsPanel extends JPanel {
+public class JobsPanel extends JPanel {
+
+	JobInfo lastJobInfo = null;
 
 	private static Logger logger = Logger.getLogger(JobsPanel.class);
 
+	private UILogger uiLog;
+
+	private RESTContext context;
+
 	private static final long serialVersionUID = -8349011048303447414L;
 
-	private class Job extends JLabel {
+	class Job extends JPanel {
 		private static final long serialVersionUID = 3825708919735076714L;
 
-		private class MouseClickListener extends MouseAdapter {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO: Show stuff inline instead
-				if (!ModelMap.getInstance().getModels().contains(job.getURI())) {
-					// Create and add a Workflow instance
-					RemoteWorkflowInstance instance =
-						new RemoteWorkflowInstance(job, uiLog);
-					ModelMap.getInstance().setModel(job.getURI(), instance);
-				}
-			}
-		}
-
-		private String state;
+		private String state = "(loading)";
 
 		private JobREST job;
 
+		JLabel line;
+		
+		private class MouseClickListener extends MouseAdapter {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				synchronized (JobsPanel.this) {
+					if (lastJobInfo != null) {
+						Container lastParent = lastJobInfo.getParent();
+						lastParent.remove(lastJobInfo);
+						lastParent.invalidate();
+						lastJobInfo.removeAll();
+						lastJobInfo = null;
+					}
+				}
+				GridBagConstraints c = new GridBagConstraints();
+				c.anchor = GridBagConstraints.CENTER;
+				c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridwidth = GridBagConstraints.REMAINDER;
+				c.gridx = 0;
+				c.gridy = 1;
+				lastJobInfo = new JobInfo(uiLog, JobsPanel.this, job);
+				add(lastJobInfo, c);
+				invalidate();
+				JobsPanel.this.revalidate();
+				JobsPanel.this.repaint();
+
+			}
+		}
+
+
 		private Job(JobREST job) {
-			super("Parsing job");
+			setLayout(new GridBagLayout());
+			setOpaque(false);
+			GridBagConstraints c = new GridBagConstraints();
+			c.anchor = GridBagConstraints.FIRST_LINE_START;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridwidth = GridBagConstraints.REMAINDER;
+			c.gridx = 0;
+			c.gridy = 0;
+
+			line = new JLabel("Parsing job");
+			add(line, c);
 			this.job = job;
 			try {
 				state = job.getStatus().toString();
@@ -72,8 +104,14 @@ class JobsPanel extends JPanel {
 			}
 			title += " <small>" + job.getCreated() + "</small>";
 			// FIXME: Use tables or similar for all this info
-			setText("<html>" + title + ": <strong>" + state + "</strong></html>");
+			line.setText("<html>" + title + ": <strong>" + state
+				+ "</strong></html>");
 			addMouseListener(new MouseClickListener());
+			
+			c.gridy = 2;
+			c.weightx = 0.2;
+			add(new JPanel(), c); // filler
+
 		}
 	}
 
@@ -91,10 +129,6 @@ class JobsPanel extends JPanel {
 			refresh();
 		}
 	}
-
-	private RESTContext context;
-
-	private UILogger uiLog;
 
 	JobsPanel(UILogger uiLog) {
 		super(new GridBagLayout());
