@@ -2,7 +2,6 @@ package net.sf.taverna.service.queue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.taverna.service.backend.executor.JobExecutor;
 import net.sf.taverna.service.backend.executor.JobExecutorFactory;
