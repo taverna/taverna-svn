@@ -1,48 +1,30 @@
 package net.sf.taverna.service.rest.resources;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
-import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Resource;
 
-public class DefaultQueueResource extends AbstractResource {
+public class DefaultQueueResource extends Resource {
 
 	private Queue queue;
-	
-	public DefaultQueueResource(Context context, Request request, Response response) {
-		super(context,request,response);
-		queue=DAOFactory.getFactory().getQueueDAO().defaultQueue();
-		addRepresentation(new QueueVelocityRepresentation());
-	}
-	
-	
-	class QueueVelocityRepresentation extends VelocityRepresentation {
-		
-		@Override
-		protected String pageTitle() {
-			return "Queue";
-		}
 
-		@Override
-		protected String templateName() {
-			return "queue.vm";
-		}
+	private URIFactory uriFactory;
 
-		@Override
-		protected Map<String, Object> getDataModel() {
-			Map<String,Object> model = new HashMap<String, Object>();
-			model.put("queue",queue);
-			model.put("jobs",queue.getJobs());
-			model.put("uriFactory", URIFactory.getInstance());
-			model.put("currentuser", getAuthUser());
-			return model;
-		}
+	public DefaultQueueResource(Context context, Request request,
+		Response response) {
+		super(context, request, response);
+		queue = DAOFactory.getFactory().getQueueDAO().defaultQueue();
+		uriFactory = URIFactory.getInstance();
 	}
+
+	@Override
+	public void handleGet() {
+		getResponse().redirectTemporary(uriFactory.getURI(queue));
+	}
+
 }

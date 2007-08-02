@@ -64,6 +64,7 @@ public class CapabilitiesResource extends AbstractResource {
 			model.put("users", uriFactory.getURI(User.class));
 			model.put("currentUser", uriFactory.getURICurrentUser());
 			model.put("queues", uriFactory.getURI(Queue.class));
+			model.put("defaultQueue", uriFactory.getURIDefaultQueue());
 			model.put("workers", uriFactory.getURI(Worker.class));
 			return model;
 		}
