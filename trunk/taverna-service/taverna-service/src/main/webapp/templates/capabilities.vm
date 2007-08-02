@@ -3,6 +3,7 @@
 		<ul class="capabilities">
 			<li class="users"><a href="$users">Users</a></li>
 			<li class="currentUser"><a href="$currentUser">Current user</a></li>
-			<li class="queues"><a href="$queues">Queues</a></li>
 			<li class="workers"><a href="$workers">Workers</a></li>
+			<li class="queues"><a href="$queues">Queues</a></li>
+			<li class="defaultQueue"><a href="$defaultQueue">Default queue</a></li>
 		</ul>
