@@ -10,6 +10,7 @@ import java.util.Map;
 import net.sf.taverna.service.datastore.bean.DataDoc;
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.QueueEntry;
+import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
@@ -50,23 +51,25 @@ public class JobResource extends AbstractJobResource {
 
 	@Override
 	public void delete() {
-		if (job!=null) {
-			try {
-				QueueEntry entry = DAOFactory.getFactory().getQueueDAO().defaultQueue().removeJob(job);
-				DAOFactory.getFactory().getQueueEntryDAO().delete(entry);
-				DAOFactory.getFactory().getJobDAO().delete(job);
-				DAOFactory.getFactory().commit();
-				getResponse().setRedirectRef(getRequest().getReferrerRef());
-				getResponse().setStatus(Status.REDIRECTION_FOUND);
-			}
-			catch(Exception e) {
-				logger.error("An error occurred trying to delete the job:"+job.getId());
-				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "An error occurred trying to delete the job:"+e.getCause().getMessage());
-			}
+		if (job == null) {
+			// already non-existing, everything OK
+			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+			return;
 		}
-		else {
-			getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		if (job.getQueue() != null) {
+			QueueEntry entry = job.getQueue().removeJob(job);
+			daoFactory.getQueueEntryDAO().delete(entry);
 		}
+		if (job.getOwner() != null) {
+			User owner = job.getOwner();
+			owner.getJobs().remove(job);
+			daoFactory.getUserDAO().update(owner);
+		}
+		daoFactory.getJobDAO().delete(job);
+		daoFactory.commit();
+		logger.info("Deleted " + job);
+		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 	}
 
 	@Override
