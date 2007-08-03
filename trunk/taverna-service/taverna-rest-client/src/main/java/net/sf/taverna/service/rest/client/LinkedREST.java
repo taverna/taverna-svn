@@ -33,7 +33,16 @@ public class LinkedREST<LinkedClass extends Linked> extends AbstractREST<LinkedC
 		return document;
 	}
 	
-
+	/**
+	 * Get current document, which might be incomplete. Use
+	 * {@link #getDocument()} if you want to be sure to get the full document.
+	 * 
+	 * @return The current (possibly incomplete) document if it has been
+	 *         loaded, otherwise <code>null</code>
+	 */
+	public LinkedClass getCurrentDocument() {
+		return super.getDocument();
+	}
 	
 	
 }

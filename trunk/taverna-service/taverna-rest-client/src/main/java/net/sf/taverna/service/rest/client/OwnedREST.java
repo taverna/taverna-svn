@@ -45,15 +45,26 @@ public class OwnedREST<OwnedClass extends Owned> extends LinkedREST<OwnedClass> 
 	}
 	
 	public String getTitle() {
-		// Might be null
+		String title = getCurrentDocument().getTitle();
+		if (title != null) {
+			return title;
+		}
 		return getDocument().getTitle();
 	}
 
 	public Calendar getCreated() {
+		Calendar created = getCurrentDocument().getCreated();
+		if (created != null) {
+			return created;
+		}
 		return getDocument().getCreated();
 	}
 
 	public Calendar getLastModified() {
+		Calendar modified = getCurrentDocument().getModified();
+		if (modified != null) {
+			return modified;
+		}
 		return getDocument().getModified();
 	}
 

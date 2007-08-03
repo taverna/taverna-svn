@@ -3,8 +3,11 @@ package net.sf.taverna.service.rest.client;
 import java.io.IOException;
 import java.util.Calendar;
 
+import net.sf.taverna.service.xml.Data;
 import net.sf.taverna.service.xml.Job;
 import net.sf.taverna.service.xml.JobDocument;
+import net.sf.taverna.service.xml.LinkedStatusType;
+import net.sf.taverna.service.xml.Report;
 import net.sf.taverna.service.xml.StatusType;
 import static net.sf.taverna.service.rest.client.RESTContext.xmlOptions;
 
@@ -45,15 +48,11 @@ public class JobREST extends OwnedREST<Job> {
 	}
 
 	public StatusType.Enum getStatus() throws RESTException {
-		Reference statusURI = getStatusURI();
-		if (statusURI == null) {
-			// no link for live-update, return what we have
-			return (StatusType.Enum) getDocument().getStatus().enumValue();
+		LinkedStatusType status = getCurrentDocument().getStatus();
+		if (status == null) {
+			status = getDocument().getStatus();
 		}
-		// Return the freshest of the freshest status with a new get()
-		String status = getString(statusURI, MediaType.TEXT_PLAIN);
-		logger.debug("Status for " + this + ": " + status);
-		return StatusType.Enum.forString(status);
+		return (StatusType.Enum) status.enumValue();
 	}
 
 
@@ -69,17 +68,26 @@ public class JobREST extends OwnedREST<Job> {
 		}
 	}
 
-	public DataREST getInputs() {
-		if (getDocument().getInputs()!=null) {
-			return new DataREST(context, getDocument().getInputs());
+	public DataREST getInputs() {		
+		Data inputs = getCurrentDocument().getInputs();
+		if (inputs == null) {
+			inputs = getDocument().getInputs();
 		}
-		else {
+		if (inputs == null) {
 			return null;
 		}
+		return new DataREST(context, inputs);
 	}
 
 	public DataREST getOutputs() {
-		return new DataREST(context, getDocument().getOutputs());
+		Data outputs = getCurrentDocument().getOutputs();
+		if (outputs == null) {
+			outputs = getDocument().getOutputs();
+		}
+		if (outputs == null) {
+			return null;
+		}
+		return new DataREST(context, outputs);
 	}
 
 	public void setOutputs(DataREST rest) throws NotSuccessException {
@@ -90,7 +98,11 @@ public class JobREST extends OwnedREST<Job> {
 	}
 
 	private Reference getReportURI() {
-		String reportURI = getDocument().getReport().getHref();
+		Report report = getCurrentDocument().getReport();
+		if (report == null) {
+			report = getDocument().getReport();
+		}
+		String reportURI = report.getHref();
 		if (reportURI == null) {
 			return null;
 		}
@@ -99,12 +111,16 @@ public class JobREST extends OwnedREST<Job> {
 
 
 	public String getReport() throws RESTException {
-		if (getDocument().getReport() == null) {
+		Report report = getCurrentDocument().getReport();
+		if (report == null) {
+			report = getDocument().getReport();
+		}
+		if (report == null) {
 			return null;
 		}
-		String uri = getDocument().getReport().getHref();
+		String uri = report.getHref();
 		if (uri == null) {
-			return getDocument().getReport().xmlText();
+			return report.xmlText();
 		}
 		return getString(uri, RESTContext.reportType);
 	}
