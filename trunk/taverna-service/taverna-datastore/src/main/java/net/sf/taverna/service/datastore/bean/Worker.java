@@ -27,7 +27,10 @@ public class Worker extends User {
 	
 	public boolean isBusy() {
 		for (Job j : getWorkerJobs()) {
-			if (j.getStatus().equals(Status.RUNNING) || j.getStatus().equals(Status.DEQUEUED)) return true;
+			if (j.getStatus().equals(Status.RUNNING) || 
+				j.getStatus().equals(Status.DEQUEUED)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -35,7 +38,9 @@ public class Worker extends User {
 	public boolean isRunning() {
 		if (isBusy()) {
 			for (Job j : getWorkerJobs()) {
-				if (j.getStatus().equals(Status.RUNNING)) return true;
+				if (j.getStatus().equals(Status.RUNNING)) {
+					return true;
+				}
 			}
 		}
 		return false;
