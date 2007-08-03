@@ -19,6 +19,7 @@ import net.sf.taverna.service.xml.StatusType;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 
 public class JobInfo extends JPanel {
@@ -84,7 +85,7 @@ public class JobInfo extends JPanel {
 		if (status == StatusType.RUNNING) {
 			add(cancelAction(), c);
 			c.gridy = row++;
-//		} else if (status == StatusType.QUEUED) {
+			//} else if (status == StatusType.QUEUED) {
 			//add(removeFromQueueAction(), c); Not implemented
 			// c.gridy = row++;
 		} else {
@@ -120,6 +121,15 @@ public class JobInfo extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				// REST interface does not yet support removing from the queue
 				throw new RuntimeException("Not implemented");
+			}
+		});
+	}
+	
+	private JButton loadWorkflowAction() {
+		return new JButton(new AbstractAction("Open workflow"){
+			public void actionPerformed(ActionEvent e) {
+				Reference url = new Reference(job.getURIReference());
+				//url.setUserInfo(arg0)
 			}
 		});
 	}

@@ -57,6 +57,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		addHeader();
 		addConnection();
 		addRunButton();
+		addRefreshButton();
 		addJobs();
 		addFiller();
 		addLogs();
@@ -142,13 +143,6 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		add(new ShadedLabel("Execute remotely", ShadedLabel.TAVERNA_GREEN), c);
 	}
 
-	protected void addRunButton() {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
-		add(new JButton(new RunWorkflowAction()), c);
-	}
-
 	protected void addConnection() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
@@ -176,8 +170,22 @@ public class ExecuteRemotelyPanel extends JPanel implements
 
 		Action removeService = new RemoveServiceAction();
 		add(new JButton(removeService), c);
-
 	}
+
+	protected void addRunButton() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = GridBagConstraints.RELATIVE;
+		add(new JButton(new RunWorkflowAction()), c);
+	}
+	
+	private void addRefreshButton() {
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridx = GridBagConstraints.RELATIVE;
+		add(new JButton(new RefreshAction()), c);
+	}
+
 
 	protected void addJobs() {
 		GridBagConstraints c = new GridBagConstraints();
@@ -187,7 +195,9 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.1;
 		c.weighty = 0.1;
-		add(jobs, c);
+		JScrollPane scrollPane = new JScrollPane(jobs);
+		//scrollPane.setPreferredSize(new Dimension(0, 100));
+		add(scrollPane, c);
 	}
 
 	protected void addFiller() {
@@ -195,8 +205,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
 		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 0.1;
-		c.weighty = 0.1;
+		c.weightx = 0.01;
+		c.weighty = 0.01;
 		c.anchor = GridBagConstraints.SOUTHEAST;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		add(new JPanel(), c);
@@ -212,7 +222,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.gridx = 0;
 		c.gridy = GridBagConstraints.RELATIVE;
 		JScrollPane scrollPane = new JScrollPane(uiLog);
-		scrollPane.setPreferredSize(new Dimension(0, 100));
+		scrollPane.setMinimumSize(new Dimension(0, 100));
 		add(scrollPane, c);
 	}
 
@@ -281,6 +291,22 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		}
 	}
 
+
+	public class RefreshAction extends AbstractAction {
+
+		private static final long serialVersionUID = -4718304414344585132L;
+
+		public RefreshAction() {
+			putValue(SMALL_ICON, TavernaIcons.refreshIcon);
+			putValue(NAME, "Refresh");
+			putValue(SHORT_DESCRIPTION, "Refresh list of jobs from server");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			jobs.refresh();
+		}
+	}
+	
 	public class LogPanel extends JPanel implements UILogger {
 
 		public LogPanel() {

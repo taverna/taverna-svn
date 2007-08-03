@@ -115,20 +115,6 @@ public class JobsPanel extends JPanel {
 		}
 	}
 
-	public class RefreshAction extends AbstractAction {
-
-		private static final long serialVersionUID = -4718304414344585132L;
-
-		public RefreshAction() {
-			putValue(SMALL_ICON, TavernaIcons.refreshIcon);
-			putValue(NAME, "Refresh");
-			putValue(SHORT_DESCRIPTION, "Refresh list of jobs from server");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			refresh();
-		}
-	}
 
 	JobsPanel(UILogger uiLog) {
 		super(new GridBagLayout());
@@ -147,7 +133,6 @@ public class JobsPanel extends JPanel {
 				removeAll();
 				addHeader();
 				addJobs();
-				addRefreshButton();
 				revalidate();
 				repaint();
 			}
@@ -166,15 +151,6 @@ public class JobsPanel extends JPanel {
 
 	}
 
-	private void addRefreshButton() {
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.FIRST_LINE_END;
-		c.fill = GridBagConstraints.NONE;
-		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
-		add(new JButton(new RefreshAction()), c);
-	}
 
 	@SuppressWarnings("unchecked")
 	private void addJobs() {
