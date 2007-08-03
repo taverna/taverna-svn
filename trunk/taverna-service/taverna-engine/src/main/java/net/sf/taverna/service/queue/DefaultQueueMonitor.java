@@ -37,7 +37,7 @@ public class DefaultQueueMonitor extends Thread {
 	// (ie. JPA) and is perfectly thread-safe and can be shared all-over
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
-	private final int CHECK_PERIOD = 2; // checks every 2 seconds.
+	private final int CHECK_PERIOD = 20; // checks every 20 seconds.
 
 	private boolean terminate = false;
 
