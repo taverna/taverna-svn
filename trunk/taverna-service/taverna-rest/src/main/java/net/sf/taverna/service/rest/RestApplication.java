@@ -188,17 +188,17 @@ public class RestApplication extends Application {
 		public DaoCloseFilter(Context context, Restlet next) {
 			super(context, next);
 		}
-		
+				
 		@Override
 		protected void afterHandle(Request req, Response response) {
-			super.afterHandle(req, response);
 			closeDao();
 		}
 
 		private void closeDao() {
 			try {
 				daoFactory.rollback();
-			} catch (IllegalStateException ex) { // Expected
+			} catch (IllegalStateException ex) { 
+				// Expected
 			} finally {
 				daoFactory.close();
 			}
