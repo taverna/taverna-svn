@@ -37,7 +37,8 @@ public class TestUser extends TestDAO {
 		assertNotNull(lastUser);
 		UserDAO userDao = daoFactory.getUserDAO();
 		User user = userDao.read(lastUser);
-		assertFalse("User has modified date in the future", user.getLastModified().after(new Date()));
+		assertFalse("User has modified date in the future",
+			user.getLastModified().after(new Date()));
 		assertEquals(lastUser, user.getId());
 		User otherUser = userDao.readByUsername(user.getUsername());
 		assertSame(user, otherUser);
@@ -79,26 +80,28 @@ public class TestUser extends TestDAO {
 	public void getAdmins() {
 		UserDAO userDao = daoFactory.getUserDAO();
 		List<User> all = userDao.all();
-		for (User u : all) if (u.isAdmin()) userDao.delete(u);
-		
-		assertEquals("There should be no admins present",0,userDao.admins().size());
-		
-		User u = new User("God");
-		u.setPassword("Gabr13l");
+
+		int origAdmins = userDao.admins().size();
+		User u = new User();
+		u.setPassword(User.generatePassword());
 		u.setAdmin(true);
 		userDao.create(u);
-		
-		assertEquals("There should be 1 admins present",1,userDao.admins().size());
-		
-		User u2 = new User("Root");
-		u2.setPassword("G0D");
+		assertEquals("There should be 1 extra admin present", origAdmins + 1,
+			userDao.admins().size());
+
+		User u2 = new User();
+		u2.setPassword(User.generatePassword());
 		u2.setAdmin(true);
 		userDao.create(u2);
-		
-		assertEquals("There should be 2 admins present",2,userDao.admins().size());
-		
+		assertEquals("There should be 2 extra admins present", origAdmins + 2,
+			userDao.admins().size());
+
+		u = userDao.reread(u);
+		u2 = userDao.reread(u2);
 		userDao.delete(u);
 		userDao.delete(u2);
+		assertEquals("There should be no extra admins present", origAdmins,
+			userDao.admins().size());
 	}
 	
 }
