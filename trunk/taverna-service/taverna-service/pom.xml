@@ -16,6 +16,20 @@
 	</description>
 	<build>
 		<plugins>
+<!-- only works for packaging jar
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <configuration>
+                    <programs>
+                        <program>
+                            <mainClass>net.sf.taverna.service.TavernaService</mainClass>
+                            <name>tavernaservice</name>
+                        </program>
+                    </programs>
+                </configuration>
+            </plugin>
+-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
@@ -46,7 +60,7 @@
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>
 			<artifactId>com.noelios.restlet.ext.servlet</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.4</version>
 		</dependency>
 	</dependencies>
 </project>
