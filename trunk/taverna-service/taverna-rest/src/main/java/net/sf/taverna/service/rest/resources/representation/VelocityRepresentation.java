@@ -31,7 +31,7 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 	public Representation getRepresentation() {
 		Map<String, Object> dataModel = getDataModel();
 		dataModel.put("page_template", templateName());
-		dataModel.put("page_title",pageTitle());
+		dataModel.put("page_title", pageTitle());
 		TemplateRepresentation result =
 			new TemplateRepresentation("layout.vm", MediaType.TEXT_HTML);
 		if (resourcePath == null) {
@@ -40,8 +40,7 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 		}
 		result.getEngine().setProperty("file.resource.loader.path",
 			resourcePath);
-		if (dataModel != null)
-			result.setDataModel(dataModel);
+		result.setDataModel(dataModel);
 		return result;
 	}
 
