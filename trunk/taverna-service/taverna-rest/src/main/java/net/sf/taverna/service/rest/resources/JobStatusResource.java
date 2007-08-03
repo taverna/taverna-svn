@@ -1,9 +1,12 @@
 package net.sf.taverna.service.rest.resources;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
+import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 
 import org.apache.log4j.Logger;
 import org.restlet.Context;
@@ -73,14 +76,15 @@ public class JobStatusResource extends AbstractJobResource {
 			return;
 		}
 		daoFactory.commit();
+		logger.info("Updated status " + job);
 		
-		//FIXME: should only set redirection when coming from a browser.
-		getResponse().setRedirectRef(getRequest().getReferrerRef());
-		getResponse().setStatus(Status.REDIRECTION_FOUND);
-		
-//		getResponse().setStatus(Status.SUCCESS_OK, 
-//					"Set job status to " + job.getStatus());
-//		}
+		if (MediaType.APPLICATION_WWW_FORM.includes(entity.getMediaType())) {
+			// only set redirection when coming from a browser.
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+		} else {
+			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		}
 	}
 	
 	@Override
