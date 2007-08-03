@@ -1,11 +1,12 @@
 package net.sf.taverna.service.datastore.dao.jpa;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.persistence.EntityManager;
-
-import org.apache.log4j.Logger;
+import javax.persistence.EntityTransaction;
 
 import net.sf.taverna.service.datastore.EntityManagerUtil;
 import net.sf.taverna.service.datastore.bean.Configuration;
@@ -25,11 +26,18 @@ import net.sf.taverna.service.datastore.dao.UserDAO;
 import net.sf.taverna.service.datastore.dao.WorkerDAO;
 import net.sf.taverna.service.datastore.dao.WorkflowDAO;
 
+import org.apache.log4j.Logger;
+
 public class JPADAOFactory extends DAOFactory {
 
 	private static Logger logger = Logger.getLogger(JPADAOFactory.class);
 	
 	private Map<Thread, EntityManager> managers = new HashMap<Thread, EntityManager>();
+	
+	// For debugging open transactions (Notice: Weak references)
+	private static Map<EntityTransaction, Thread> transactions =
+		Collections.synchronizedMap(new WeakHashMap<EntityTransaction, Thread>());
+	
 	
 	/**
 	 * Get the entity manager associated with the current thread. A new entity
@@ -59,18 +67,32 @@ public class JPADAOFactory extends DAOFactory {
 	 */
 	private EntityManager getEntityManager(boolean create) {
 		EntityManager em;
-		em = managers.get(Thread.currentThread());
+		synchronized (managers) {
+			em = managers.get(Thread.currentThread());
+		}
 		if (em == null) {
 			if (! create) {
 				return null;
 			}
 			em = EntityManagerUtil.createEntityManager();
-			managers.put(Thread.currentThread(), em);
+			synchronized (managers) {
+				if (managers.containsKey(Thread.currentThread())) {
+					logger.error("Duplicate entity managers for "
+						+ Thread.currentThread(), new Exception());
+					throw new RuntimeException("Duplicate entity managers for "
+						+ Thread.currentThread());
+					// Should not really happen, as we are using our currentThread as key
+				}
+				managers.put(Thread.currentThread(), em);
+			}
 		}
 		
 		if (create) {
 			if (!em.getTransaction().isActive()) {
+				logger.debug("Starting transaction for " + Thread.currentThread());
 				em.getTransaction().begin();
+				transactions.put(em.getTransaction(), Thread.currentThread());
+				logger.debug("Started transaction for " + Thread.currentThread());
 			}
 		}
 		return em;
@@ -80,20 +102,23 @@ public class JPADAOFactory extends DAOFactory {
 	public void commit() {
 		EntityManager em = getEntityManager(false);
 		if (em == null) {
-			logger.info("Commit on not-yet-used entity manager");
+			logger.info("Commit on not-yet-used entity manager", new Exception());
 			return;
 		}
 		em.getTransaction().commit();
+		logger.debug("Committed transaction for " + Thread.currentThread());
 	}
 
 	@Override
 	public void rollback() {
 		EntityManager em = getEntityManager(false);
 		if (em == null) {
+			// Not as bad as a commit(), so only debug
 			logger.debug("Rollback on not-yet-used entity manager");
 			return;
-		}
+		}		
 		em.getTransaction().rollback();
+		logger.debug("Rolled back transaction for " + Thread.currentThread());
 	}
 
 	@Override
@@ -103,9 +128,14 @@ public class JPADAOFactory extends DAOFactory {
 			logger.debug("Close on not-yet-used entity manager");
 			return;
 		}
+		//transactions.remove(em.getTransaction());
+		logger.debug("Closing transaction for " + Thread.currentThread());
 		em.clear();
 		em.close();
-		managers.remove(Thread.currentThread());
+		synchronized(managers) {
+			managers.remove(Thread.currentThread());
+		}
+		logger.debug("Closed transaction for " + Thread.currentThread());
 
 	}
 
