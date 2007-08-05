@@ -15,7 +15,6 @@ import net.sf.taverna.service.datastore.bean.Worker;
 import net.sf.taverna.service.datastore.bean.Job.Status;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.JobDAO;
-import net.sf.taverna.service.datastore.dao.QueueDAO;
 import net.sf.taverna.service.datastore.dao.WorkerDAO;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
@@ -56,8 +55,14 @@ public class DefaultQueueMonitor extends Thread {
 			}
 		} finally {
 			try {
-				daoFactory.rollback();
-			} finally {
+				if (daoFactory.hasActiveTransaction()) {
+					daoFactory.rollback();
+				}
+			} 
+			catch(IllegalStateException e) {
+				logger.error("Illegal state trying to role back transaction",e);
+			}
+			finally {
 				daoFactory.close();
 			}
 		}
@@ -76,23 +81,50 @@ public class DefaultQueueMonitor extends Thread {
 			killCancelledJobs();
 			startWaitingJobs();
 		} finally {
-			daoFactory.rollback();
+			try {
+				if (daoFactory.hasActiveTransaction()) {
+					daoFactory.rollback();
+				}
+			} 
+			catch(IllegalStateException e) {
+				logger.error("Illegal state trying to role back transaction",e);
+			}
+			daoFactory.close();
 		}
 	}
 
 	private void removeCompletedJobs() {
-		JobDAO jobDAO = daoFactory.getJobDAO();
-		QueueDAO queueDao = daoFactory.getQueueDAO();
-		Queue queue = queueDao.defaultQueue();
-		List<Job> completedJobs = jobDAO.byStatus(Status.COMPLETE);
-		completedJobs.addAll(jobDAO.byStatus(Status.CANCELLED));
+		Queue queue=daoFactory.getQueueDAO().defaultQueue();
+		List<Job> completedJobs = determineCompletedJobs(daoFactory);
+		completedJobs.addAll(determineCancelledJobs(daoFactory));
 		for (Job job : completedJobs) {
-			QueueEntry entry = queue.removeJob(job);
+			QueueEntry entry=queue.removeJob(job);
 			daoFactory.getQueueEntryDAO().delete(entry);
-			jobDAO.update(job);
+			daoFactory.getJobDAO().update(job);
 		}
-		queueDao.update(queue);
+		daoFactory.getQueueDAO().update(queue);
 		daoFactory.commit();
+	}
+	
+	private List<Job> determineCompletedJobs(DAOFactory daoFactory) {
+		return findQueuedJobsByStatus(daoFactory, Status.COMPLETE);
+	}
+	
+	private List<Job> determineCancelledJobs(DAOFactory daoFactory) {
+		return findQueuedJobsByStatus(daoFactory, Status.CANCELLED);
+	}
+	
+	private List<Job> findQueuedJobsByStatus(DAOFactory daoFactory, Status status) {
+		List<Job> result = new ArrayList<Job>();
+		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
+		defaultQueue = daoFactory.getQueueDAO().refresh(defaultQueue);
+		for (Job job : defaultQueue.getJobs()) {
+			job = daoFactory.getJobDAO().refresh(job);
+			if (job.getStatus().equals(status)) {
+				result.add(job);
+			}
+		}
+		return result;
 	}
 	
 	private void startWaitingJobs() {
@@ -100,20 +132,26 @@ public class DefaultQueueMonitor extends Thread {
 			logger.debug("Checking queue for new jobs");
 			List<Job> waitingJobs =
 				daoFactory.getJobDAO().byStatus(Status.QUEUED);
-			if (waitingJobs.isEmpty()) {
-				return;
+			if (!waitingJobs.isEmpty()) {
+				logger.info(waitingJobs.size() + " waiting jobs found");
+				List<Worker> availableWorkers = determineAvailableWorkers();
+				if (!availableWorkers.isEmpty()) {
+					logger.info(availableWorkers.size() + " available workers found.");
+					List<Job> assignedJobs =
+						assignJobsToWorkers(availableWorkers, waitingJobs);
+					if (assignedJobs!=null && assignedJobs.size()>0) {
+						startJobs(assignedJobs);
+					}
+					else {
+						logger.error("Unable to assign any jobs, although workers should be available");
+					}
+				}
+				else {
+					logger.info("No workers available");
+				}
+				
 			}
-			logger.info(waitingJobs.size() + " waiting jobs found");
-			List<Worker> availableWorkers = determineAvailableWorkers();
-			if (!availableWorkers.isEmpty()) {
-				logger.info("No workers available");
-				return;
-			}
-			logger.info(availableWorkers.size() + " available workers found.");
-			List<Job> assignedJobs =
-				assignJobsToWorkers(availableWorkers, waitingJobs);
 			daoFactory.commit();
-			startJobs(assignedJobs);
 		} catch (RuntimeErrorException ex) {
 			logger.warn("Could not start waiting jobs", ex);
 		}

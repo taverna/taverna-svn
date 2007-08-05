@@ -108,6 +108,14 @@ public class JPADAOFactory extends DAOFactory {
 		em.getTransaction().commit();
 		logger.debug("Committed transaction for " + Thread.currentThread());
 	}
+	
+	@Override
+	public boolean hasActiveTransaction() {
+		boolean result=false;
+		EntityManager em = getEntityManager();
+		if (em!=null) result=em.getTransaction().isActive();
+		return result;
+	}
 
 	@Override
 	public void rollback() {

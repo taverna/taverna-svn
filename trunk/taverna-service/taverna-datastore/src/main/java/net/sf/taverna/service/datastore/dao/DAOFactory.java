@@ -88,6 +88,8 @@ public abstract class DAOFactory {
 	public abstract void rollback();
 
 	public abstract void close();
+	
+	public abstract boolean hasActiveTransaction();
 
 	@DAO(Job.class)
 	public abstract JobDAO getJobDAO();
