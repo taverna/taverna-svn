@@ -118,7 +118,6 @@ public class ProcessJobExecutor implements JobExecutor {
 		javaProcess.addArguments("-username", username);
 		// FIXME: Don't expose our password on command line
 		javaProcess.addArguments("-password", password);
-		javaProcess.addArguments("xmx",memory);
 		
 		javaProcess.setRedirectingError(true);
 		
