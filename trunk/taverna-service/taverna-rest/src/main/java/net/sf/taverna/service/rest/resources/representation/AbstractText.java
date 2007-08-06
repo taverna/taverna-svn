@@ -4,6 +4,8 @@ package net.sf.taverna.service.rest.resources.representation;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
@@ -13,7 +15,7 @@ public /**
  */
 abstract class AbstractText extends AbstractRepresentation {
 	@Override
-	public Representation getRepresentation() {
+	public Representation getRepresentation(Request request,Response response) {
 		return new StringRepresentation(getText(), getMediaType(),
 			getLanguage(), getCharacterSet());
 	}

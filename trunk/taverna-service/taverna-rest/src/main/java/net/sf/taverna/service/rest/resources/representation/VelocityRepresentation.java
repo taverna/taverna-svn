@@ -2,8 +2,17 @@ package net.sf.taverna.service.rest.resources.representation;
 
 import java.util.Map;
 
+import net.sf.taverna.service.datastore.bean.Configuration;
+import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.rest.UserGuard;
+import net.sf.taverna.service.rest.resources.DefaultQueueResource;
+import net.sf.taverna.service.rest.utils.URIFactory;
+import net.sf.taverna.service.xml.Workers;
+
 import org.apache.log4j.Logger;
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.resource.Representation;
 
@@ -28,7 +37,7 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 	}
 
 	@Override
-	public Representation getRepresentation() {
+	public Representation getRepresentation(Request request,Response response) {
 		Map<String, Object> dataModel = getDataModel();
 		dataModel.put("page_template", templateName());
 		dataModel.put("page_title", pageTitle());
@@ -40,6 +49,16 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 		}
 		result.getEngine().setProperty("file.resource.loader.path",
 			resourcePath);
+	
+		if (request.getAttributes().get(UserGuard.AUTHENTICATED_USER)!=null) {
+			dataModel.put("authuser", request.getAttributes().get(UserGuard.AUTHENTICATED_USER));
+			dataModel.put("config_uri", URIFactory.getInstance().getURI(Configuration.class));
+			dataModel.put("queue_uri", URIFactory.getInstance().getURIDefaultQueue());
+			dataModel.put("workers_uri",URIFactory.getInstance().getURI(Worker.class));
+			dataModel.put("user_uri",URIFactory.getInstance().getURICurrentUser());
+		}
+		
+		
 		result.setDataModel(dataModel);
 		return result;
 	}

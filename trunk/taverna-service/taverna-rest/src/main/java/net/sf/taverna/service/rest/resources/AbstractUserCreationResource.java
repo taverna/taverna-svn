@@ -56,7 +56,7 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 			getResponse().setRedirectRef(URIFactory.getInstance().getURI(user));
 			getResponse().setStatus(Status.REDIRECTION_FOUND);
 		} catch (Exception e) {
-			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation());
+			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation(getRequest(),getResponse()));
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 		}
 	}

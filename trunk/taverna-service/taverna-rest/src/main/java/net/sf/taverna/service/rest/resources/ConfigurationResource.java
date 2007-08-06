@@ -65,11 +65,11 @@ public class ConfigurationResource extends AbstractResource {
 				validate(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory);
 				updateConfig(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,baseuri,workermemory);
 				if (logger.isDebugEnabled()) logger.debug("Successfully updated the configuration");
-				getResponse().setEntity(new ConfigVelocityRepresentation("Successfully updated").getRepresentation());
+				getResponse().setEntity(new ConfigVelocityRepresentation("Successfully updated").getRepresentation(getRequest(),getResponse()));
 			}
 			catch(ConfigurationUpdateException e) {
 				logger.warn("Unable to update configuration:",e);
-				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,e.getMessage()).getRepresentation());
+				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,e.getMessage()).getRepresentation(getRequest(),getResponse()));
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 		}

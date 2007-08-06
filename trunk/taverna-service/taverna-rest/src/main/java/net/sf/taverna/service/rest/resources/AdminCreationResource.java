@@ -71,7 +71,7 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 			super.processForm(form);
 		}
 		catch(MalformedURLException e) {
-			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation());
+			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation(getRequest(),getResponse()));
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 		}
 		

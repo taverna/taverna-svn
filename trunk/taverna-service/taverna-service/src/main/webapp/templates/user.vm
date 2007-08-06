@@ -33,5 +33,7 @@
 			<div class="jobs">
 			 $jobsCount <a href="$jobsURI">Jobs</a>
 			</div>
+			<br><br>
+			<a href="edit">Edit Settings</a>
 			
 	

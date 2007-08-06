@@ -65,7 +65,7 @@ public class UserEditResource extends AbstractUserResource {
 			}
 			catch(Exception e) {
 				logger.warn("Error updating user:");
-				getResponse().setEntity(new VelocityEditUserRepresentation(password,updatePassword,userIsAdmin,email,newPassword,newConfirm,e.getMessage()).getRepresentation());
+				getResponse().setEntity(new VelocityEditUserRepresentation(password,updatePassword,userIsAdmin,email,newPassword,newConfirm,e.getMessage()).getRepresentation(getRequest(),getResponse()));
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 		}

@@ -97,7 +97,7 @@ public class RepresentationalResource extends Resource {
 			logger.warn("No representation found for " + variant.getMediaType());
 			return null;
 		}
-		return representation.getRepresentation();
+		return representation.getRepresentation(getRequest(),getResponse());
 	}
 	
 	/**
@@ -119,7 +119,7 @@ public class RepresentationalResource extends Resource {
 		}
 
 		@Override
-		public Representation getRepresentation() {
+		public Representation getRepresentation(Request request,Response response) {
 			return new XmlBeansRepresentation(getXML(), getMediaType(), uriFactory);
 		}
 	}

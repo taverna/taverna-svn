@@ -3,6 +3,8 @@ package net.sf.taverna.service.rest.resources.representation;
 import net.sf.taverna.service.rest.resources.AbstractResource;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
@@ -35,9 +37,12 @@ public abstract class AbstractRepresentation {
 	 * representation's media type should be included in
 	 * {@link #getMediaType()}.
 	 * 
-	 * @return An inialized {@link Representation}
+	 * @param request the Request
+	 * @param response the Response
+	 * @return An initialized {@link Representation}
 	 */
-	public abstract Representation getRepresentation();
+	
+	public abstract Representation getRepresentation(Request request,Response response);
 	
 	@Override
 	public String toString() {
