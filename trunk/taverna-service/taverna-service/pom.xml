@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<parent>
-		<artifactId>tavernaservice</artifactId>
-		<groupId>uk.org.mygrid.tavernaservice</groupId>
-		<version>1.0.0</version>
+		<artifactId>remotetaverna</artifactId>
+		<groupId>uk.org.mygrid.remotetaverna</groupId>
+		<version>0.4.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>uk.org.mygrid.tavernaservice</groupId>
+	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>taverna-service</artifactId>
 	<packaging>war</packaging>
-	<name>Taverna service</name>
+	<name>Taverna web-app service</name>
 	<description>
-		This is the Taverna Service application itself that runs the
-		rest server, and web-app.
+		The Remote Taverna Execution application wrapping as a web-app (WAR).
 	</description>
 	<build>
 		<plugins>
@@ -23,8 +22,8 @@
                 <configuration>
                     <programs>
                         <program>
-                            <mainClass>net.sf.taverna.service.TavernaService</mainClass>
-                            <name>tavernaservice</name>
+                            <mainClass>net.sf.taverna.service.remotetaverna</mainClass>
+                            <name>remotetaverna</name>
                         </program>
                     </programs>
                 </configuration>
@@ -48,14 +47,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
 			<artifactId>taverna-rest</artifactId>
-			<version>1.0.0</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
 			<artifactId>taverna-engine</artifactId>
-			<version>1.0.0</version>
+			<version>0.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.noelios.restlet</groupId>

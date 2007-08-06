@@ -2,11 +2,11 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>uk.org.mygrid.tavernaservice</groupId>
-		<artifactId>tavernaservice</artifactId>
-		<version>1.0.0</version>
+		<groupId>uk.org.mygrid.remotetaverna</groupId>
+		<artifactId>remotetaverna</artifactId>
+		<version>0.4.0</version>
 	</parent>
-	<groupId>uk.org.mygrid.tavernaservice</groupId>
+	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>taverna-rest-xmlbeans</artifactId>
 	<packaging>jar</packaging>
 	<name>Taverna service REST XMLBeans bindings</name>
@@ -21,9 +21,9 @@
 		</dependency>
         
 		<dependency>
-			<groupId>uk.org.mygrid.tavernaservice</groupId>
+			<groupId>uk.org.mygrid.remotetaverna</groupId>
 			<artifactId>taverna-interface</artifactId>
-			<version>1.0.0</version>
+			<version>0.4.0</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -55,7 +55,7 @@
                     we have to use schemaDirectory instead.. -->
 					<xsdJars>
 						<xsdJar implementation="java.lang.String">
-							uk.org.mygrid.tavernaservice:taverna-interface
+							uk.org.mygrid.remotetaverna:taverna-interface
 						</xsdJar>
 					</xsdJars>
                     <schemaDirectory>../taverna-interface/src/main/resources</schemaDirectory>
