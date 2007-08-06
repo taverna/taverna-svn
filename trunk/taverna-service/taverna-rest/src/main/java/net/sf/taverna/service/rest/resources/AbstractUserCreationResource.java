@@ -35,6 +35,10 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 	@Override
 	public void post(Representation entity) {
 		
+		if (! userCreationAllowed()) {
+			return;
+		}
+				
 		if (!entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,"The media type must be of type:"+MediaType.APPLICATION_WWW_FORM);
 			logger.warn("Unsupported media type, "+entity.getMediaType()+", not supported");
@@ -45,6 +49,8 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 		}
 	}
 
+	public abstract boolean userCreationAllowed();
+	
 	protected void processForm(Form form) {
 		String name = form.getValues("name");
 		String password = form.getValues("password");

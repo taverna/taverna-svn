@@ -119,6 +119,17 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 			return model;
 		}
 	}
+
+
+	@Override
+	public boolean userCreationAllowed() {
+		if (daoFactory.getUserDAO().admins().isEmpty()) {
+			return true;
+		}
+		getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, 
+			"First admin already registered");
+		return false;
+	}
 	
 
 }

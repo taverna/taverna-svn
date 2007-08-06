@@ -12,6 +12,7 @@ import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Resource responsible for user registration. Its based around a Velocity template named register.vm
@@ -72,5 +73,16 @@ public class UserRegisterResource extends AbstractUserCreationResource {
 			model.put("allowRegister", config.isAllowRegister());
 			return model;
 		}
+	}
+
+
+
+	@Override
+	public boolean userCreationAllowed() {
+		if (daoFactory.getConfigurationDAO().getConfig().isAllowRegister()) {
+			return true;
+		}
+		getResponse().setStatus(Status.CLIENT_ERROR_FORBIDDEN, "User registration is disabled");
+		return false;
 	}
 }

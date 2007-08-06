@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.GDuration;
 import org.apache.xmlbeans.XmlException;
 import org.restlet.Context;
+import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -69,7 +70,13 @@ public class JobResource extends AbstractJobResource {
 		daoFactory.getJobDAO().delete(job);
 		daoFactory.commit();
 		logger.info("Deleted " + job);
-		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		if (MediaType.TEXT_HTML.includes(getPreferredVariant().getMediaType())
+			&& getRequest().getReferrerRef() != null) {
+			// Probably a browser, we'll redirect to the previous page
+			getResponse().redirectSeeOther(getRequest().getReferrerRef());
+		} else {
+			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		}
 	}
 
 	@Override

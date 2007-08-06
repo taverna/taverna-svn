@@ -6,6 +6,7 @@ import java.util.Map;
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
+import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 
 import org.restlet.Context;
@@ -62,6 +63,11 @@ public class UserAddResource extends AbstractUserCreationResource {
 			model.put("allowRegister", config.isAllowRegister());
 			return model;
 		}
+	}
+
+	@Override
+	public boolean userCreationAllowed() {
+		return checkIsAdmin();
 	}
 	
 }
