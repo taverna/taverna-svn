@@ -289,7 +289,7 @@ public class RESTContext {
 
 	public <DocumentClass extends XmlObject> DocumentClass loadDocument(
 		String uri, Class<DocumentClass> documentClass) {
-		return loadDocument(new Reference(uri), documentClass);
+		return loadDocument(makeReference(uri), documentClass);
 	}
 
 	public <DocumentClass extends XmlObject> DocumentClass loadDocument(
@@ -390,7 +390,8 @@ public class RESTContext {
 
 	private Request makeRequest(Reference uri, MediaType accepts) {
 		Request request = new Request();
-		request.setResourceRef(uri);
+		logger.debug("Making new request for " + uri + " -- " + uri.getTargetRef());
+		request.setResourceRef(uri.getTargetRef());
 		if (accepts != null) {
 			request.getClientInfo().getAcceptedMediaTypes().add(
 				new Preference<MediaType>(accepts));
