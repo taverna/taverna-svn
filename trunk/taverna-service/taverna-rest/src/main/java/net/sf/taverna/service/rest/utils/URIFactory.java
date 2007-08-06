@@ -187,6 +187,10 @@ public class URIFactory {
 	public String getURICurrentUser() {
 		return getURI(User.class) + getMappingCurrentUser();
 	}
+	
+	public String getURICreateAdmin() {
+		return getURI(User.class)  + getMappingCreateAdmin();
+	}
 
 	/**
 	 * The mapping added to the URI of the {@link User} collection to form the
@@ -219,11 +223,15 @@ public class URIFactory {
 	}
 
 	public static String getMappingRegisterUser() {
-		return "/register";
+		return ";register";
+	}
+	
+	public static String getMappingCreateAdmin() {
+		return ";createAdmin";
 	}
 	
 	public static String getMappingAddUser() {
-		return "/add";
+		return ";add";
 	}
 	
 	public static String getMappingEditUser() {
@@ -320,5 +328,11 @@ public class URIFactory {
 	public String toString() {
 		return super.toString() + ": " + getApplicationRoot();
 	}
+
+	public String getURIRegisterAdmin() {
+		return null;
+	}
+
+
 	
 }
