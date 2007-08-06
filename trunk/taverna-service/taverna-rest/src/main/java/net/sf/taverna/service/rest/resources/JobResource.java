@@ -70,10 +70,10 @@ public class JobResource extends AbstractJobResource {
 		daoFactory.getJobDAO().delete(job);
 		daoFactory.commit();
 		logger.info("Deleted " + job);
-		if (MediaType.TEXT_HTML.includes(getPreferredVariant().getMediaType())
-			&& getRequest().getReferrerRef() != null) {
-			// Probably a browser, we'll redirect to the previous page
-			getResponse().redirectSeeOther(getRequest().getReferrerRef());
+		if (getRequest().getEntity()!=null) {
+			// only set redirection when coming from a browser.
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
 		} else {
 			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 		}
@@ -101,7 +101,13 @@ public class JobResource extends AbstractJobResource {
 			return;
 		}
 		updateJob(jobDoc);
-		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		if (MediaType.APPLICATION_WWW_FORM.includes(entity.getMediaType())) {
+			// only set redirection when coming from a browser.
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+		} else {
+			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
+		}
 	}
 	
 	public void updateJob(JobDocument jobDoc) {
