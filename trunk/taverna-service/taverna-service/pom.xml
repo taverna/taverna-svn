@@ -14,6 +14,7 @@
 		The Remote Taverna Execution application wrapping as a web-app (WAR).
 	</description>
 	<build>
+		<finalName>remotetaverna</finalName>
 		<plugins>
 <!-- only works for packaging jar
             <plugin>
