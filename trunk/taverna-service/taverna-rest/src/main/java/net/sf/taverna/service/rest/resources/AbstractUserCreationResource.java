@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest.resources;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
+import net.sf.taverna.service.rest.UserGuard;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.resources.util.UserDetailsValidator;
 import net.sf.taverna.service.rest.resources.util.UserValidationException;
@@ -59,8 +60,14 @@ public abstract class AbstractUserCreationResource extends AbstractResource {
 		try {
 			validate(name,password,confirm,email);
 			User user=createUser(name,password,email);
-			getResponse().setRedirectRef(URIFactory.getInstance().getURI(user));
-			getResponse().setStatus(Status.REDIRECTION_FOUND);
+			if (getRequest().getAttributes().containsKey(
+				UserGuard.AUTHENTICATED_USER)) {
+				getResponse().redirectSeeOther(
+					URIFactory.getInstance().getURI(user));
+			} else {
+				// Avoid popping up password prompt, go to /v1 instead
+				getResponse().redirectSeeOther(uriFactory.getApplicationRoot());
+			}
 		} catch (Exception e) {
 			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation(getRequest(),getResponse()));
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
