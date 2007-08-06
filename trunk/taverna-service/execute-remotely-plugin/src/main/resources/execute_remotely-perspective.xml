@@ -8,7 +8,7 @@
   </child>
   <namedcomponents>
     <namedcomponent>
-      <groupid>uk.org.mygrid.tavernaservice</groupid>
+      <groupid>uk.org.mygrid.remotetaverna</groupid>
       <artifact>execute-remotely-plugin</artifact>
       <classname>net.sf.taverna.service.executeremotely.ui.ExecuteRemotelyFactory</classname>
       <name>executeremotely</name>
