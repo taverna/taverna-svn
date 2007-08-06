@@ -58,17 +58,18 @@ public class JobsPanel extends JPanel {
 						lastParent.remove(lastJobInfo);
 						lastParent.invalidate();
 						lastJobInfo.removeAll();
-						lastJobInfo = null;
 					}
 				}
-				GridBagConstraints c = new GridBagConstraints();
-				c.anchor = GridBagConstraints.CENTER;
-				c.fill = GridBagConstraints.HORIZONTAL;
-				c.gridwidth = GridBagConstraints.REMAINDER;
-				c.gridx = 0;
-				c.gridy = 1;
-				lastJobInfo = new JobInfo(uiLog, JobsPanel.this, job);
-				add(lastJobInfo, c);
+				if (! lastJobInfo.job.equals(job)) {
+					GridBagConstraints c = new GridBagConstraints();
+					c.anchor = GridBagConstraints.CENTER;
+					c.fill = GridBagConstraints.HORIZONTAL;
+					c.gridwidth = GridBagConstraints.REMAINDER;
+					c.gridx = 0;
+					c.gridy = 1;
+					lastJobInfo = new JobInfo(uiLog, JobsPanel.this, job);
+					add(lastJobInfo, c);
+				} // Else: Remove the existing one
 				invalidate();
 				JobsPanel.this.revalidate();
 				JobsPanel.this.repaint();

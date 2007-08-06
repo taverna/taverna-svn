@@ -30,7 +30,7 @@ public class JobInfo extends JPanel {
 	
 	DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.FULL);
 
-	private JobREST job;
+	public final JobREST job;
 
 	private JobsPanel jobsPanel;
 

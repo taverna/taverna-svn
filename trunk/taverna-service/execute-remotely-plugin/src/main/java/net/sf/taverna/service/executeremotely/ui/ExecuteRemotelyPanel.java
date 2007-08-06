@@ -51,6 +51,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	public JComboBox services;
 
 	private RESTService service;
+	
+	private int row = -1;
 
 	public ExecuteRemotelyPanel() {
 		super(new GridBagLayout());
@@ -59,7 +61,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		addRunButton();
 		addRefreshButton();
 		addJobs();
-		addFiller();
+		//addFiller();
 		addLogs();
 		updateServiceList();
 		logger.info("showing ourselves");
@@ -135,7 +137,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	protected void addHeader() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = ++row;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.weightx = 0.1;
 		c.anchor = GridBagConstraints.NORTHWEST;
@@ -146,7 +148,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	protected void addConnection() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridy = ++row;
 		c.anchor = GridBagConstraints.LINE_END;
 		c.ipadx = 5;
 		c.ipady = 5;
@@ -175,14 +177,14 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	protected void addRunButton() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridy = ++row;
 		add(new JButton(new RunWorkflowAction()), c);
 	}
 	
 	private void addRefreshButton() {
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = GridBagConstraints.RELATIVE;
-		c.gridx = GridBagConstraints.RELATIVE;
+		c.gridy = 1;
+		c.gridx = row;
 		add(new JButton(new RefreshAction()), c);
 	}
 
@@ -191,7 +193,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridwidth = GridBagConstraints.REMAINDER;
-		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridy = ++row;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.1;
 		c.weighty = 0.1;
@@ -203,7 +205,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	protected void addFiller() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridy = ++row;
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.01;
 		c.weighty = 0.01;
@@ -220,7 +222,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.weighty = 0.0;
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
-		c.gridy = GridBagConstraints.RELATIVE;
+		c.gridy = ++row;
 		JScrollPane scrollPane = new JScrollPane(uiLog);
 		scrollPane.setMinimumSize(new Dimension(0, 100));
 		add(scrollPane, c);
