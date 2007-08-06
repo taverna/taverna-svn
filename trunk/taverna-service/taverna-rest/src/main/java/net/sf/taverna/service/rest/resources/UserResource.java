@@ -3,6 +3,7 @@ package net.sf.taverna.service.rest.resources;
 import static net.sf.taverna.service.rest.utils.XMLBeansUtils.xmlOptions;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -97,6 +98,11 @@ public class UserResource extends AbstractUserResource {
 	{
 
 		@Override
+		public boolean isDynamic() {
+			return true;
+		}
+		
+		@Override
 		protected Map<String, Object> getDataModel() {
 			Map<String,Object> model = new HashMap<String, Object>();			
 			model.put("user", user);
@@ -110,7 +116,6 @@ public class UserResource extends AbstractUserResource {
 			
 			model.put("wfURI", uriFactory.getURI(user, Workflow.class));
 			model.put("wfCount", user.getWorkflows().size());
-
 			return model;
 		}
 

@@ -69,6 +69,11 @@ public class QueueResource extends AbstractNamedResource<Queue> {
 	class QueueVelocityRepresentation extends VelocityRepresentation {
 
 		@Override
+		public boolean isDynamic() {
+			return true;
+		}
+		
+		@Override
 		protected String pageTitle() {
 			return "Queue";
 		}
