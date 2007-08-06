@@ -1,5 +1,7 @@
 package net.sf.taverna.service.rest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -50,6 +52,7 @@ import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.util.Template;
@@ -159,7 +162,7 @@ public class RestApplication extends Application {
 		
 		public AdminPresentFilter(Context context, Restlet next) {
 			super(context, next);
-			orginalNext=next;
+			orginalNext = next;
 		}
 
 		@Override
@@ -171,13 +174,22 @@ public class RestApplication extends Application {
 		}
 		
 		private void checkForAdmin(Request req, Response resp) {
+			Reference createAdminRef = new Reference(req.getRootRef(), URIFactory.V1 + "/" + URIFactory.getMapping(User.class) + URIFactory.getMappingCreateAdmin()).getTargetRef();
+			
+			URIFactory uriFactory = URIFactory.getInstance();
+			if (req.getResourceRef().equals(createAdminRef)) {
+				// always pass through
+				setNext(orginalNext);
+				return;
+			}
 			if (!adminFound) { //only check once. Once an admin exists it cannot be demoted.
-				if (daoFactory.getUserDAO().admins().size()==0) {
-					setNext(AdminCreationResource.class);
-				}
-				else {
-					adminFound=true;
+				if (daoFactory.getUserDAO().admins().isEmpty()) {
+					resp.redirectTemporary(createAdminRef);
+					setNext(new Restlet());  // to avoid 404
+					//setNext(AdminCreationResource.class);
+				} else {
 					setNext(orginalNext);
+					adminFound=true;
 				}
 			}
 		}
@@ -206,6 +218,7 @@ public class RestApplication extends Application {
 	}
 
 	protected void attachHTMLSource(Component component) {
+		component.getClients().add(Protocol.FILE);
 		URL htmlSource = this.getClass().getResource("/html");
 		Directory htmlDir =
 			new Directory(component.getContext(), htmlSource.toString());
@@ -221,17 +234,16 @@ public class RestApplication extends Application {
 		component.getDefaultHost().attach("/" + URIFactory.V1, adminFilter);
 		
 		//  Redirector for anything else not matching
-		String template = "{op}v1/";
+		String template = "{oi}" + "/" + URIFactory.V1 + "/";
 		Route route = component.getDefaultHost().attach("",
 			new Redirector(component.getContext(), template,
 				Redirector.MODE_CLIENT_TEMPORARY));
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
-		
 	}
 
 	public Component createComponent() {
 		Component component = new Component();
-		component.getClients().add(Protocol.FILE);
+		
 		attachHTMLSource(component);
 		
 		Router router = new Router(component.getContext());
@@ -255,6 +267,13 @@ public class RestApplication extends Application {
 		
 		route = router.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingRegisterUser(),UserRegisterResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
+		
+		route =
+			router.attach("/" + URIFactory.getMapping(User.class)
+				+ URIFactory.getMappingCreateAdmin(),
+				AdminCreationResource.class);
+		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
+		
 
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
@@ -286,7 +305,7 @@ public class RestApplication extends Application {
 		authenticated.attach("/" + URIFactory.getMapping(User.class)
 			+ URIFactory.getMappingCurrentUser(), CurrentUserResource.class);
 
-//		 /users/add
+//		 /users;add
 		authenticated.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingAddUser(), UserAddResource.class);
 		
 		// /users/X
@@ -330,6 +349,11 @@ public class RestApplication extends Application {
 class ReallySimpleFormatter extends java.util.logging.Formatter {
 	@Override
 	public String format(java.util.logging.LogRecord record) {
-		return record.getMessage() + "\n";
+		String msg = record.getMessage() + "\n";
+		StringWriter sw = new StringWriter();
+		if (record.getThrown() != null) {
+			record.getThrown().printStackTrace(new PrintWriter(sw));
+		}
+		return msg + sw;
 	}	
 }
