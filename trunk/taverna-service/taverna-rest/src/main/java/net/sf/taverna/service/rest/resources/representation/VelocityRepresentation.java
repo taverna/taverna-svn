@@ -1,5 +1,6 @@
 package net.sf.taverna.service.rest.resources.representation;
 
+import java.util.Date;
 import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Configuration;
@@ -60,7 +61,17 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 		
 		
 		result.setDataModel(dataModel);
+		
+		if (isDynamic()) {
+			result.setModificationDate(new Date());
+			result.setExpirationDate(result.getModificationDate());
+		}
+		
 		return result;
+	}
+
+	public boolean isDynamic() {
+		return false;
 	}
 
 	protected abstract Map<String, Object> getDataModel();
