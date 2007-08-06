@@ -100,14 +100,10 @@ public class ProcessJobExecutor implements JobExecutor {
 		
 		File tavernaHome = makeTavernaHome();
 		javaProcess.addSystemProperty("taverna.home", tavernaHome.getAbsolutePath());
-
-		// FIXME don't hardcode the path to the taverna distribution (and is it needed?)
-		javaProcess.addSystemProperty("taverna.startup", 
-			"/Users/stain/download/taverna-1.5.2");
 		
 		javaProcess.addSystemProperty("java.awt.headless", "true");
 		
-		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
+		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.1-profile.xml");
 		
 //		RavenProcess javaProcess =
 //			new RavenProcess("uk.org.mygrid.tavernaservice", "taverna-engine",
@@ -131,6 +127,7 @@ public class ProcessJobExecutor implements JobExecutor {
 	private String getConfiguredMemory() {
 		DAOFactory daoFactory = DAOFactory.getFactory();
 		Configuration config = daoFactory.getConfigurationDAO().getConfig();
+		if (daoFactory.hasActiveTransaction()) daoFactory.rollback();
 		daoFactory.close();
 		return config.getWorkerMemory();
 	}

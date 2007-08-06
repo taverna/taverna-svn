@@ -139,6 +139,7 @@ public class DefaultQueueMonitor extends Thread {
 					logger.info(availableWorkers.size() + " available workers found.");
 					List<Job> assignedJobs =
 						assignJobsToWorkers(availableWorkers, waitingJobs);
+					daoFactory.commit();
 					if (assignedJobs!=null && assignedJobs.size()>0) {
 						startJobs(assignedJobs);
 					}
@@ -151,7 +152,6 @@ public class DefaultQueueMonitor extends Thread {
 				}
 				
 			}
-			daoFactory.commit();
 		} catch (RuntimeErrorException ex) {
 			logger.warn("Could not start waiting jobs", ex);
 		}

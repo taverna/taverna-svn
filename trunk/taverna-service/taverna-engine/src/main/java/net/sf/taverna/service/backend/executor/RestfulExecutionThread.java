@@ -107,19 +107,26 @@ public class RestfulExecutionThread extends Thread {
 	@Override
 	public void run() {
 		JobREST job = getJobREST();
+		System.out.println("Got Job");
 		WorkflowLauncher launcher = null;
 		ProgressUpdaterThread updater = null;
 		boolean complete = false;
 		try {
 			String scufl;
 			try {
+				System.out.println("Getting scufl");
+				System.out.println("Workflow="+job.getWorkflow());
 				scufl = job.getWorkflow().getScufl();
+				System.out.println("Got Scufl");
 			} catch (RuntimeException ex) {
+				ex.printStackTrace();
 				logger.warn("Could not load scufl for " + job);
 				return;
 			}
 			try {
+				System.out.println("Constructing workflow");
 				launcher = constructWorkflowLauncher(scufl);
+				System.out.println("Workflow Constructed");
 			} catch (Exception ex) {
 				logger.warn("Could not initiate launcher for " + job, ex);
 				return;
@@ -136,23 +143,29 @@ public class RestfulExecutionThread extends Thread {
 				}
 			}
 			try {
+				System.out.println("Setting status to running");
 				job.setStatus(StatusType.RUNNING);
+				System.out.println("Status set");
 			} catch (NotSuccessException e2) {
 				logger.warn("Could not set status to running", e2); // OK for now..
 			}
 
+			System.out.println("About to start updater thread");
 			GDuration updateInterval = job.getUpdateInterval();
 			if (updateInterval != null) {
 				updater = new ProgressUpdaterThread(job);
 				updater.start();
 			}
+			System.out.println("Updater thread started");
 
 			Map outputs = null;
 			try {
 				if (updater != null) {
+					System.out.println("Executing with listener");
 					outputs =
 						launcher.execute(inputs, updater.workflowEventListener);
 				} else {
+					System.out.println("Executing without listener");
 					outputs = launcher.execute(inputs);
 				}
 			} catch (Exception e) {
@@ -286,18 +299,9 @@ public class RestfulExecutionThread extends Thread {
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
 				"taverna-notification-processor", "1.5.2.0"));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-rshell-processor",
-				"1.5.2.0"));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-rserv-processor",
-				"1.5.2.0"));
 		repository.addArtifact(new BasicArtifact("biomoby.org",
 				"taverna-biomoby", "1.5.2.0"));
 
-		for (Artifact a : systemArtifacts) {
-			repository.addArtifact(a);
-		}
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
 		repository.addRemoteRepository(new URL(
@@ -322,6 +326,7 @@ public class RestfulExecutionThread extends Thread {
 	private JobREST getJobREST() {
 		RESTContext context = getRESTContext();
 		Reference refUri = new Reference(jobUri);
+		System.out.println("Trying job ref:"+refUri);
 		return new JobREST(context, refUri);
 	}
 

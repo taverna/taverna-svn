@@ -139,6 +139,12 @@ public class JPADAOFactory extends DAOFactory {
 		//transactions.remove(em.getTransaction());
 		logger.debug("Closing transaction for " + Thread.currentThread());
 		em.clear();
+		//defensive code to check for open transactions and to roll them back
+		if (em.getTransaction().isActive()) {
+			logger.warn("Transaction still open for "+Thread.currentThread()+", rolling back");
+			Thread.dumpStack();
+			em.getTransaction().rollback();
+		}
 		em.close();
 		synchronized(managers) {
 			managers.remove(Thread.currentThread());
