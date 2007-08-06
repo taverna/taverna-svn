@@ -55,15 +55,16 @@ public class User extends AbstractDated {
 	private Date lastSeen = new Date();
 
 	@OneToMany(mappedBy = "owner")
+	@OrderBy("created")
 	protected Collection<Job> jobs = new ArrayList<Job>();
 
 
 	@OneToMany(mappedBy = "owner")
-	@OrderBy("lastModified")
+	@OrderBy("created")
 	private Collection<Workflow> workflows = new ArrayList<Workflow>();
 
 	@OneToMany(mappedBy = "owner")
-	@OrderBy("lastModified")
+	@OrderBy("created")
 	private Collection<DataDoc> datas = new ArrayList<DataDoc>();
 
 	/**
