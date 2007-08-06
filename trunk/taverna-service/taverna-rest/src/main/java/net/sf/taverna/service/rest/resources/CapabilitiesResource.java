@@ -50,7 +50,7 @@ public class CapabilitiesResource extends AbstractResource {
 	
 		@Override
 		protected String pageTitle() {
-			return "Taverna service";
+			return "Remote Taverna Execution";
 		}
 
 		@Override
