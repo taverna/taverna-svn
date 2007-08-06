@@ -112,7 +112,7 @@ public class JPADAOFactory extends DAOFactory {
 	@Override
 	public boolean hasActiveTransaction() {
 		boolean result=false;
-		EntityManager em = getEntityManager();
+		EntityManager em = getEntityManager(false);
 		if (em!=null) result=em.getTransaction().isActive();
 		return result;
 	}
