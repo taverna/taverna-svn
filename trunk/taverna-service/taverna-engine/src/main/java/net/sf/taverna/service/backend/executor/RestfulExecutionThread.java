@@ -114,19 +114,13 @@ public class RestfulExecutionThread extends Thread {
 		try {
 			String scufl;
 			try {
-				System.out.println("Getting scufl");
-				System.out.println("Workflow="+job.getWorkflow());
 				scufl = job.getWorkflow().getScufl();
-				System.out.println("Got Scufl");
 			} catch (RuntimeException ex) {
-				ex.printStackTrace();
-				logger.warn("Could not load scufl for " + job);
+				logger.warn("Could not load scufl for " + job,ex);
 				return;
 			}
 			try {
-				System.out.println("Constructing workflow");
 				launcher = constructWorkflowLauncher(scufl);
-				System.out.println("Workflow Constructed");
 			} catch (Exception ex) {
 				logger.warn("Could not initiate launcher for " + job, ex);
 				return;
@@ -143,29 +137,23 @@ public class RestfulExecutionThread extends Thread {
 				}
 			}
 			try {
-				System.out.println("Setting status to running");
 				job.setStatus(StatusType.RUNNING);
-				System.out.println("Status set");
 			} catch (NotSuccessException e2) {
 				logger.warn("Could not set status to running", e2); // OK for now..
 			}
 
-			System.out.println("About to start updater thread");
 			GDuration updateInterval = job.getUpdateInterval();
 			if (updateInterval != null) {
 				updater = new ProgressUpdaterThread(job);
 				updater.start();
 			}
-			System.out.println("Updater thread started");
 
 			Map outputs = null;
 			try {
 				if (updater != null) {
-					System.out.println("Executing with listener");
 					outputs =
 						launcher.execute(inputs, updater.workflowEventListener);
 				} else {
-					System.out.println("Executing without listener");
 					outputs = launcher.execute(inputs);
 				}
 			} catch (Exception e) {
