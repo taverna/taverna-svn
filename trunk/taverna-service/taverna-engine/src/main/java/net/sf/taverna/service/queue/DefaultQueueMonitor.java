@@ -95,8 +95,8 @@ public class DefaultQueueMonitor extends Thread {
 
 	private void removeCompletedJobs() {
 		Queue queue=daoFactory.getQueueDAO().defaultQueue();
-		List<Job> completedJobs = determineCompletedJobs(daoFactory);
-		completedJobs.addAll(determineCancelledJobs(daoFactory));
+		List<Job> completedJobs = findQueuedJobsByStatus(Status.COMPLETE);
+		completedJobs.addAll(findQueuedJobsByStatus(Status.CANCELLED));
 		for (Job job : completedJobs) {
 			QueueEntry entry=queue.removeJob(job);
 			daoFactory.getQueueEntryDAO().delete(entry);
@@ -106,15 +106,7 @@ public class DefaultQueueMonitor extends Thread {
 		daoFactory.commit();
 	}
 	
-	private List<Job> determineCompletedJobs(DAOFactory daoFactory) {
-		return findQueuedJobsByStatus(daoFactory, Status.COMPLETE);
-	}
-	
-	private List<Job> determineCancelledJobs(DAOFactory daoFactory) {
-		return findQueuedJobsByStatus(daoFactory, Status.CANCELLED);
-	}
-	
-	private List<Job> findQueuedJobsByStatus(DAOFactory daoFactory, Status status) {
+	private List<Job> findQueuedJobsByStatus(Status status) {
 		List<Job> result = new ArrayList<Job>();
 		Queue defaultQueue = daoFactory.getQueueDAO().defaultQueue();
 		defaultQueue = daoFactory.getQueueDAO().refresh(defaultQueue);
@@ -130,8 +122,7 @@ public class DefaultQueueMonitor extends Thread {
 	private void startWaitingJobs() {
 		try {
 			logger.debug("Checking queue for new jobs");
-			List<Job> waitingJobs =
-				daoFactory.getJobDAO().byStatus(Status.QUEUED);
+			List<Job> waitingJobs = findQueuedJobsByStatus(Status.QUEUED);
 			if (!waitingJobs.isEmpty()) {
 				logger.info(waitingJobs.size() + " waiting jobs found");
 				List<Worker> availableWorkers = determineAvailableWorkers();
