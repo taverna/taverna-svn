@@ -183,8 +183,9 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	
 	private void addRefreshButton() {
 		GridBagConstraints c = new GridBagConstraints();
-		c.gridy = 1;
-		c.gridx = row;
+		c.gridx = 1;
+		c.gridy = row;
+		c.anchor = GridBagConstraints.WEST;
 		add(new JButton(new RefreshAction()), c);
 	}
 
@@ -198,7 +199,6 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.weightx = 0.1;
 		c.weighty = 0.1;
 		JScrollPane scrollPane = new JScrollPane(jobs);
-		//scrollPane.setPreferredSize(new Dimension(0, 100));
 		add(scrollPane, c);
 	}
 

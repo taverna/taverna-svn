@@ -7,12 +7,9 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -25,7 +22,6 @@ import net.sf.taverna.service.rest.client.RESTContext;
 import net.sf.taverna.service.rest.client.RESTException;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
 public class JobsPanel extends JPanel {
@@ -60,7 +56,7 @@ public class JobsPanel extends JPanel {
 						lastJobInfo.removeAll();
 					}
 				}
-				if (! lastJobInfo.job.equals(job)) {
+				if (lastJobInfo==null || !lastJobInfo.job.equals(job)) {
 					GridBagConstraints c = new GridBagConstraints();
 					c.anchor = GridBagConstraints.CENTER;
 					c.fill = GridBagConstraints.HORIZONTAL;
@@ -69,7 +65,10 @@ public class JobsPanel extends JPanel {
 					c.gridy = 1;
 					lastJobInfo = new JobInfo(uiLog, JobsPanel.this, job);
 					add(lastJobInfo, c);
-				} // Else: Remove the existing one
+				} 
+				else {
+					lastJobInfo=null;
+				}
 				invalidate();
 				JobsPanel.this.revalidate();
 				JobsPanel.this.repaint();

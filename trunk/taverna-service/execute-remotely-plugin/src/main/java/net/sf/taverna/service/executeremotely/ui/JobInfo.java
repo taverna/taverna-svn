@@ -24,6 +24,8 @@ import org.restlet.data.Status;
 
 public class JobInfo extends JPanel {
 	
+	private static final long serialVersionUID = -6878731337707257390L;
+
 	private static Logger logger = Logger.getLogger(JobInfo.class);
 
 	private UILogger uiLog;
@@ -151,6 +153,7 @@ public class JobInfo extends JPanel {
 		});
 	}
 
+	@SuppressWarnings("serial")
 	private JButton progressButton() {
 		String report = null;
 		try {
@@ -170,7 +173,15 @@ public class JobInfo extends JPanel {
 		if (report == null || report.equals("")) {
 			return null;
 		}
-		return new JButton(new AbstractAction("View progress") {
+		String buttonText="View progress";
+		try {
+			if (job.getStatus().equals(StatusType.COMPLETE)) {
+				buttonText="View results";
+			}
+		} catch (RESTException e1) {
+			logger.error("Error reading job status",e1);
+		}
+		return new JButton(new AbstractAction(buttonText) {
 			public void actionPerformed(ActionEvent e) {
 				ModelMap modelMap = ModelMap.getInstance();
 				if (modelMap.getModels().contains(job.getURI())) {
