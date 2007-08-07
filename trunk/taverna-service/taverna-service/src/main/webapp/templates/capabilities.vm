@@ -1,5 +1,8 @@
 
 		<ul class="capabilities">
+			#if($register_uri)
+				<li><a href="$register_uri">Register</a></li>
+			#end
 			<!--<li class="users"><a href="$users">Users</a></li>-->
 			<li class="currentUser"><a href="$currentUser">Current user home</a></li>
 			<li class="workers"><a href="$workers">Workers</a></li>

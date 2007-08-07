@@ -10,6 +10,7 @@
 	<td>&nbsp;</td>
 	<td><a href="$config_uri">System Configuration</a></td>
 	<td><a href="$workers_uri">Workers</a></td>
+	<td><a href="$adduser_uri">Add User</a></td>
 	#end
 </tr>	
 	

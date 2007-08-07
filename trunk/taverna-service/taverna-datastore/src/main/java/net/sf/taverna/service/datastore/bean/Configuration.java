@@ -18,7 +18,14 @@ public class Configuration extends AbstractDated {
 	private String smtpPassword;
 	private String baseuri;
 	private String workerMemory="500";
+	private String tavernaHome="/tmp/tavernaHome";
 	
+	public String getTavernaHome() {
+		return tavernaHome;
+	}
+	public void setTavernaHome(String tavernaHome) {
+		this.tavernaHome = tavernaHome;
+	}
 	public String getWorkerMemory() {
 		return workerMemory;
 	}

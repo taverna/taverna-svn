@@ -7,6 +7,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -107,7 +108,6 @@ public class RestfulExecutionThread extends Thread {
 	@Override
 	public void run() {
 		JobREST job = getJobREST();
-		System.out.println("Got Job");
 		WorkflowLauncher launcher = null;
 		ProgressUpdaterThread updater = null;
 		boolean complete = false;
@@ -122,6 +122,7 @@ public class RestfulExecutionThread extends Thread {
 			try {
 				launcher = constructWorkflowLauncher(scufl);
 			} catch (Exception ex) {
+				ex.printStackTrace();
 				logger.warn("Could not initiate launcher for " + job, ex);
 				return;
 			}
@@ -235,10 +236,13 @@ public class RestfulExecutionThread extends Thread {
 			XScuflFormatException, UnknownPortException,
 			DuplicateProcessorNameException, ProcessorCreationException,
 			DataConstraintCreationException, MalformedNameException,
-			DuplicateConcurrencyConstraintNameException {
-		// System.setProperty("raven.eclipse", "1");
-		// FIXME: Should have a real home
-		File base = new File("/tmp/");
+			DuplicateConcurrencyConstraintNameException, URISyntaxException {
+		
+		File base = getRepositoryBase();
+		if (base==null) {
+			throw new IllegalStateException("Unable to set repository base");
+		}
+		
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
 				"scufl-tools", "1.5.2.0"));
@@ -293,13 +297,13 @@ public class RestfulExecutionThread extends Thread {
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
 		repository.addRemoteRepository(new URL(
-			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
-		repository.addRemoteRepository(new URL(
 				"http://mirrors.sunsite.dk/maven2/"));
 		repository.addRemoteRepository(new URL(
 				"http://www.ibiblio.org/maven2/"));
 		repository.addRemoteRepository(new URL(
 				"http://mobycentral.icapture.ubc.ca/maven/"));
+		repository.addRemoteRepository(new URL(
+			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
 		
 		TavernaSPIRegistry.setRepository(repository);
 		Bootstrap.properties = new Properties();
@@ -311,10 +315,24 @@ public class RestfulExecutionThread extends Thread {
 		return launcher;
 	}
 
+	private File getRepositoryBase() {
+		String tavernaHome = System.getProperty("taverna.home");
+		File base = null;
+		
+		if (tavernaHome!=null) {
+			File tavernaHomeFile = new File(tavernaHome);
+			base = new File(tavernaHomeFile,"repository");
+		}
+		else {
+			logger.error("No taverna.home defined");
+		}
+		
+		return base;
+	}
+
 	private JobREST getJobREST() {
 		RESTContext context = getRESTContext();
 		Reference refUri = new Reference(jobUri);
-		System.out.println("Trying job ref:"+refUri);
 		return new JobREST(context, refUri);
 	}
 

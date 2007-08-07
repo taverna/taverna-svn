@@ -1,5 +1,6 @@
 package net.sf.taverna.service.rest.resources;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
+import net.sf.taverna.service.rest.resources.ConfigurationResource.ConfigurationUpdateException;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
@@ -33,7 +35,7 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 
 	
 	protected VelocityRepresentation getVelocityRepresentationForError(Form form, Exception e) {
-		return new AdminCreationRepresentation(form.getValues("name"), form.getValues("password"),form.getValues("confirm"),form.getValues("email"),form.getValues("baseuri"),e.getMessage());
+		return new AdminCreationRepresentation(form.getValues("name"), form.getValues("password"),form.getValues("confirm"),form.getValues("email"),form.getValues("baseuri"),form.getValues("tavernahome"),e.getMessage());
 	}
 	
 	protected User createUser(String name, String password, String email) throws CreateUserException {
@@ -61,25 +63,34 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 	@Override
 	protected void processForm(Form form) {
 		String baseuri;
+		String tavernahome;
 		try {
 			baseuri=form.getValues("baseuri");
 			if (! baseuri.endsWith("/")) {
 				baseuri += "/";
 			}
 			new URL(baseuri); // to test if it's valid
-			updateBaseuri(baseuri);
+			
+			tavernahome=form.getValues("tavernahome");
+			if (tavernahome==null) tavernahome="";
+			tavernahome=new File(tavernahome).getAbsolutePath();
+			
+			updateConfig(baseuri,tavernahome);
+			
 			super.processForm(form);
 		}
-		catch(MalformedURLException e) {
+		catch(Exception e) {
 			getResponse().setEntity(getVelocityRepresentationForError(form, e).getRepresentation(getRequest(),getResponse()));
 			getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 		}
 		
 	}
+	
 
-	private void updateBaseuri(String url) {
+	private void updateConfig(String url,String tavernaHome) {
 		Configuration config=daoFactory.getConfigurationDAO().getConfig();
 		config.setBaseuri(url);
+		config.setTavernaHome(tavernaHome);
 		daoFactory.getConfigurationDAO().update(config);
 		URIFactory.BASE_URI_CHANGED=true;
 	}
@@ -90,14 +101,16 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 		private Map<String,Object> model = new HashMap<String, Object>();
 		public AdminCreationRepresentation() {
 			model.put("baseuri", new Reference(getRequest().getRootRef(), ".").getTargetRef());
+			model.put("tavernahome",daoFactory.getConfigurationDAO().getConfig().getTavernaHome());
 		}
 		
-		public AdminCreationRepresentation(String name,String password,String confirm,String email, String baseuri,String errorMsg) {
+		public AdminCreationRepresentation(String name,String password,String confirm,String email, String baseuri,String tavernahome,String errorMsg) {
 			model.put("name", name);
 			model.put("password",password);
 			model.put("confirm", confirm);
 			model.put("email", email);
 			model.put("baseuri",baseuri);
+			model.put("tavernahome",tavernahome);
 			model.put("errorMsg", errorMsg);
 		}
 		
@@ -111,8 +124,6 @@ public class AdminCreationResource extends AbstractUserCreationResource {
 		protected String templateName() {
 			return "createadmin.vm";
 		}
-
-
 
 		@Override
 		protected Map<String, Object> getDataModel() {

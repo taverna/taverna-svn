@@ -5,10 +5,9 @@ import java.util.Map;
 
 import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.Worker;
+import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.rest.UserGuard;
-import net.sf.taverna.service.rest.resources.DefaultQueueResource;
 import net.sf.taverna.service.rest.utils.URIFactory;
-import net.sf.taverna.service.xml.Workers;
 
 import org.apache.log4j.Logger;
 import org.restlet.data.MediaType;
@@ -51,14 +50,20 @@ public abstract class VelocityRepresentation extends AbstractRepresentation {
 		result.getEngine().setProperty("file.resource.loader.path",
 			resourcePath);
 	
+		URIFactory uriFactory = URIFactory.getInstance();
 		if (request.getAttributes().get(UserGuard.AUTHENTICATED_USER)!=null) {
 			dataModel.put("authuser", request.getAttributes().get(UserGuard.AUTHENTICATED_USER));
-			dataModel.put("config_uri", URIFactory.getInstance().getURI(Configuration.class));
-			dataModel.put("queue_uri", URIFactory.getInstance().getURIDefaultQueue());
-			dataModel.put("workers_uri",URIFactory.getInstance().getURI(Worker.class));
-			dataModel.put("user_uri",URIFactory.getInstance().getURICurrentUser());
+			dataModel.put("config_uri", uriFactory.getURI(Configuration.class));
+			dataModel.put("queue_uri", uriFactory.getURIDefaultQueue());
+			dataModel.put("workers_uri",uriFactory.getURI(Worker.class));
+			dataModel.put("user_uri",uriFactory.getURICurrentUser());
+			dataModel.put("adduser_uri", uriFactory.getURIAddUser());
 		}
-		
+		else {
+			if (DAOFactory.getFactory().getConfigurationDAO().getConfig().isAllowRegister()) {
+				dataModel.put("register_uri", uriFactory.getURIRegister());
+			}
+		}
 		
 		result.setDataModel(dataModel);
 		

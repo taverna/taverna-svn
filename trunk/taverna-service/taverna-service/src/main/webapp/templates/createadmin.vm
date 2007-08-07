@@ -29,15 +29,16 @@ Error: $errorMsg<br>
 
 <form name="register" method="POST">
 <table>
-<tr><td>Username:</td><td><input type="text" name="name" value="$!name"/></td></tr>
-<tr><td>Password:</td><td><input type="password" name="password" value="$!password"/></td></tr>
-<tr><td>Confirm password:</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
-<tr><td>Email:</td><td><input type="text" name="email" value="$!email"/></td></tr>
+<tr><td>Username</td><td><input type="text" name="name" value="$!name"/></td></tr>
+<tr><td>Password</td><td><input type="password" name="password" value="$!password"/></td></tr>
+<tr><td>Confirm password</td><td><input type="password" name="confirm" value="$!confirm"/></td></tr>
+<tr><td>Email</td><td><input type="text" name="email" value="$!email"/></td></tr>
 </table>
 <p>You also need to configure the base URL of your service. (Up to, but excluding <code>v1</code>.)
 </p>
 <table>
-<tr><td>Base URL:</td><td><input type="text" name="baseuri" value="$!baseuri"></td><tr>
+<tr><td>Base URL</td><td><input type="text" size="40" name="baseuri" value="$!baseuri"></td><tr>
+<tr><td>Taverna home</td><td><input type="text" size="40" name="tavernahome" value="$!tavernahome"></td><tr>
 </table>
 <input type="submit" value="Create" onClick="return validateDetails(this.form)"/>
 </form>

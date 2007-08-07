@@ -1,5 +1,6 @@
 package net.sf.taverna.service.rest.resources;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -51,6 +52,7 @@ public class ConfigurationResource extends AbstractResource {
 			String fromEmail=form.getValues("fromemailaddress");
 			String baseuri=form.getValues("baseuri");
 			String workermemory=form.getValues("workermemory");
+			String tavernahome=form.getValues("tavernahome");
 			if (password==null) password="";
 			if (confirm==null) confirm="";
 			if (username==null) username="";
@@ -58,25 +60,28 @@ public class ConfigurationResource extends AbstractResource {
 			if (fromEmail==null) fromEmail="";
 			if (baseuri==null) baseuri="";
 			if (workermemory==null) workermemory="500";
+			if (tavernahome==null) tavernahome="";
+			tavernahome=new File(tavernahome).getAbsolutePath();
 			
 			boolean smtpAuthRequired=form.getValues("smtpauthrequired")!=null;
 			
 			try {
-				validate(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory);
-				updateConfig(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,baseuri,workermemory);
+				validate(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,tavernahome);
+				updateConfig(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,baseuri,workermemory,tavernahome);
 				if (logger.isDebugEnabled()) logger.debug("Successfully updated the configuration");
 				getResponse().setEntity(new ConfigVelocityRepresentation("Successfully updated").getRepresentation(getRequest(),getResponse()));
 			}
 			catch(ConfigurationUpdateException e) {
 				logger.warn("Unable to update configuration:",e);
-				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,e.getMessage()).getRepresentation(getRequest(),getResponse()));
+				getResponse().setEntity(new ConfigVelocityRepresentation(allowRegister,allowEmail,smtpServer,fromEmail,smtpAuthRequired,username,password,confirm,baseuri,workermemory,tavernahome,e.getMessage()).getRepresentation(getRequest(),getResponse()));
 				getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 			}
 		}
 	}
 	
-	private void updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer,String fromEmail, boolean smtpAuthRequired,String username,String password,String baseuri,String workermemory) throws ConfigurationUpdateException {
-		Configuration config = DAOFactory.getFactory().getConfigurationDAO().getConfig();
+	private void updateConfig(boolean allowRegister, boolean allowEmail, String smtpServer,String fromEmail, boolean smtpAuthRequired,String username,String password,String baseuri,String workermemory,String tavernahome) throws ConfigurationUpdateException {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		Configuration config = daoFactory.getConfigurationDAO().getConfig();
 		if (config==null) throw new ConfigurationUpdateException("Unable to find configuration database record");
 		try {
 			config.setAllowRegister(allowRegister);
@@ -92,9 +97,10 @@ public class ConfigurationResource extends AbstractResource {
 			}
 			config.setBaseuri(baseuri);
 			config.setWorkerMemory(workermemory);
+			config.setTavernaHome(tavernahome);
 			URIFactory.BASE_URI_CHANGED=true;
-			DAOFactory.getFactory().getConfigurationDAO().update(config);
-			DAOFactory.getFactory().commit();
+			daoFactory.getConfigurationDAO().update(config);
+			daoFactory.commit();
 		}
 		catch(Throwable e) {
 			logger.error("Error updating configuration",e);
@@ -102,7 +108,7 @@ public class ConfigurationResource extends AbstractResource {
 		}
 	}
 	
-	private void validate(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail,boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory) throws ConfigurationUpdateException {
+	private void validate(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail,boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory,String tavernahome) throws ConfigurationUpdateException {
 		if (allowEmail) {
 			if  (smtpServer.length()<=0) throw new ConfigurationUpdateException("You must provide an SMTP server name");
 			if (fromEmail.length()<=0 || !fromEmail.contains("@")) throw new ConfigurationUpdateException("You must provide a valid senders email address");
@@ -132,7 +138,7 @@ public class ConfigurationResource extends AbstractResource {
 		
 		private Map<String,Object> model = new HashMap<String, Object>();
 		
-		public ConfigVelocityRepresentation(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail, boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory,String errorMsg) {
+		public ConfigVelocityRepresentation(boolean allowRegister, boolean allowEmail, String smtpServer, String fromEmail, boolean smtpAuthRequired,String username,String password, String confirmPassword,String baseuri,String workermemory,String tavernahome,String errorMsg) {
 			model.put("allowregister",allowRegister);
 			model.put("allowemail", allowEmail);
 			model.put("smtpserver", smtpServer);
@@ -143,6 +149,7 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("fromemailaddress", fromEmail);
 			model.put("workermemory",workermemory);
 			model.put("baseuri", baseuri);
+			model.put("tavernahome", tavernahome);
 			model.put("message",errorMsg);
 			model.put("isError",true);
 		}
@@ -165,6 +172,7 @@ public class ConfigurationResource extends AbstractResource {
 			model.put("fromemailaddress", config.getFromEmail());
 			model.put("baseuri", config.getBaseuri());
 			model.put("workermemory", config.getWorkerMemory());
+			model.put("tavernahome", config.getTavernaHome());
 		}
 
 		

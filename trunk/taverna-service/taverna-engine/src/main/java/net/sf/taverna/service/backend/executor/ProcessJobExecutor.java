@@ -31,22 +31,42 @@ public class ProcessJobExecutor implements JobExecutor {
 		this.uriFactory = uriFactory;
 	}
 	
-	public File makeTavernaHome() {
-		File tavernaHome;
-		try {
-			tavernaHome = File.createTempFile("taverna", "");
-		} catch (IOException e) {
-			logger.warn("Could not create temporary taverna home", e);
-			return null;
+	private File makeTavernaHome() {
+		String tavernHomePath = getConfiguredTavernaHome();
+		File tavernaHome = new File(tavernHomePath);
+		
+		if (!tavernaHome.exists()) {
+			logger.info("Creating new taverna home directory:"+tavernHomePath);
+			tavernaHome.mkdir();
 		}
-		tavernaHome.delete();
-		tavernaHome.mkdir();
+		
 		if (! tavernaHome.isDirectory()) {
-			logger.warn("Could not create directory " + tavernaHome);
+			logger.error("Could not create directory " + tavernaHome);
 			return null;
 		}
-		if (logger.isDebugEnabled()) logger.debug("Temporary taverna.home is " + tavernaHome);
+		
+		File repository = new File(tavernaHome,"repository");
+		if (!repository.exists()) {
+			if (!repository.mkdir()) {
+				logger.error("Unable to make repository directory:"+repository.getAbsolutePath());
+			}
+			else {
+				logger.info("Successfully made repository directory:"+repository.getAbsolutePath());
+			}
+		}
+		else {
+			if (!repository.isDirectory()) {
+				logger.error("Repository directory already exists but is a file (not a directory):"+repository.getAbsolutePath());
+			}
+		}
 		return tavernaHome;
+	}
+	
+	private String getConfiguredTavernaHome() {
+		DAOFactory daoFactory = DAOFactory.getFactory();
+		Configuration config = daoFactory.getConfigurationDAO().getConfig();
+		String result = config.getTavernaHome();
+		return result;
 	}
 	
 	/**

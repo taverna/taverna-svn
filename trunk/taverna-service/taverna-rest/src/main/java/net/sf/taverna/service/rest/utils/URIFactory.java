@@ -333,6 +333,12 @@ public class URIFactory {
 		return null;
 	}
 
-
+	public String getURIAddUser() {
+		return getURI(User.class)+getMappingAddUser();
+	}
 	
+	public String getURIRegister() {
+		return getURI(User.class)+getMappingRegisterUser();
+	}
+
 }

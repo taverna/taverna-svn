@@ -3,6 +3,7 @@ package net.sf.taverna.service.backend.executor;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -69,6 +70,8 @@ public class RestfulExecutionProcess {
 	private String username;
 
 	private String password;
+	
+	private URL tavernaHomeURL;
 
 	private List<RestfulExecutionThread> threads =
 		new ArrayList<RestfulExecutionThread>();
@@ -163,6 +166,7 @@ public class RestfulExecutionProcess {
 	}
 
 	public void startThreads(String[] uris) {
+		
 		for (String jobURI : uris) {
 			RestfulExecutionThread thread =
 				new RestfulExecutionThread(jobURI, base.toString(), username,
