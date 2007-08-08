@@ -119,6 +119,21 @@ Rserv started in daemon mode.
     <remark>The RServe documentation describes several RServe clients, note
     that the RShell processor is based on the <literal>JRclient</literal>
     library.</remark>
+
+    <section>
+      <title>Installing on Windows</title>
+
+      <para>At the moment, Taverna is only compatible with R-2.4.0 and the
+      corresponding <ulink
+      url="http://rosuda.org/Rserve/dist/rserve-win.html">Rserve
+      0.4-3</ulink>.</para>
+
+      <para>Download the binary Rserve.exe to the same directory as where
+      <emphasis role="bold">R.dll</emphasis> is located (by default C:\Program
+      files\R\R-2.4.0\bin). Start Rserve by double clicking on Rserve.exe
+      located in the bin directory. You can now use the Rserve processor in
+      Taverna.</para>
+    </section>
   </section>
 
   <section id="rshell_using">
