@@ -141,6 +141,10 @@ public class URIFactory {
 	public String getURIUser(User user) {
 		return getURI(User.class) + "/" + user.getUsername();
 	}
+	
+	public String getURIEditUser(User user) {
+		return getURIUser(user)+getMappingEditUser();
+	}
 
 	public String getURIDefaultQueue() {
 		return getURI(Queue.class) + getMappingDefaultQueue();

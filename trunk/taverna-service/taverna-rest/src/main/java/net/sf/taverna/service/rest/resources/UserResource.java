@@ -116,6 +116,8 @@ public class UserResource extends AbstractUserResource {
 			
 			model.put("wfURI", uriFactory.getURI(user, Workflow.class));
 			model.put("wfCount", user.getWorkflows().size());
+			
+			model.put("edituser_uri",uriFactory.getURIEditUser(user));
 			return model;
 		}
 

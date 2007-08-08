@@ -34,6 +34,6 @@
 			 $jobsCount <a href="$jobsURI">Jobs</a>
 			</div>
 			<br><br>
-			<a href="edit">Edit Settings</a>
+			<a href="$edituser_uri">Edit Settings</a>
 			
 	
