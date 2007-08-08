@@ -467,7 +467,12 @@ public class BiomobyScavengerWorker {
 		ServiceInstanceParser parser;
 		parser = new ServiceInstanceParser("file:///"
 				+ cache.getServiceInstanceRDFLocation());
-		services = parser.getMobyServicesFromRDF();
+		try {
+			services = parser.getMobyServicesFromRDF();
+		} catch (NoSuchFieldError ex) {
+			log.warn("Could not get moby services from RDF", ex);
+			services = new MobyService[0];
+		}
 		StringBuffer sb = new StringBuffer();
 		if (services.length == 0) {
 			// try classic method
