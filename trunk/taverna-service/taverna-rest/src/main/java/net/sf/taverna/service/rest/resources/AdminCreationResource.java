@@ -1,7 +1,6 @@
 package net.sf.taverna.service.rest.resources;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +9,6 @@ import net.sf.taverna.service.datastore.bean.Configuration;
 import net.sf.taverna.service.datastore.bean.User;
 import net.sf.taverna.service.datastore.dao.DAOFactory;
 import net.sf.taverna.service.datastore.dao.UserDAO;
-import net.sf.taverna.service.rest.resources.ConfigurationResource.ConfigurationUpdateException;
 import net.sf.taverna.service.rest.resources.representation.VelocityRepresentation;
 import net.sf.taverna.service.rest.utils.URIFactory;
 
