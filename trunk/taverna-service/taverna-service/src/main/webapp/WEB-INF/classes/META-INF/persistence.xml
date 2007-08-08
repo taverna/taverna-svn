@@ -28,14 +28,14 @@
 			<property name="hibernate.connection.driver_class"
 				value="org.apache.derby.jdbc.EmbeddedDriver" />
 				<property name="hibernate.connection.url"
-				value="jdbc:derby:tavernaService;create=true"
+				value="jdbc:derby:/tmp/remoteTavernaDB;create=true"
 			/> 
 			
 			<!-- The following is a configuration to connect to a Derby instance running locally on port 1337.  
 			<property name="hibernate.connection.driver_class"
 				value="org.apache.derby.jdbc.ClientDriver" />
 			<property name="hibernate.connection.url"
-				value="jdbc:derby://localhost:1337/tavernaservice;create=true;upgrade=true" />
+				value="jdbc:derby://localhost:1337/remoteTavernaDB;create=true;upgrade=true" />
 			 -->
 
 			<property name="hibernate.c3p0.min_size" value="5" />
