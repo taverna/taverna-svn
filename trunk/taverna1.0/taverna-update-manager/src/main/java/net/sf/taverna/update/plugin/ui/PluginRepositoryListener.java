@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginRepositoryListener.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-12-13 16:25:45 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-08-08 15:38:36 $
+ *               by   $Author: stain $
  * Created on 7 Dec 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin.ui;
@@ -94,7 +94,7 @@ public class PluginRepositoryListener implements
 						}
 					}
 				}
-			});
+			}, "Plugin repository progress bar");
 			progressThread.start();
 		}
 	}

@@ -13,6 +13,7 @@ public class PopupThread extends Thread {
 	boolean done = false;
 
 	PopupThread(BiomobyObjectProcessor bop, BiomobyObjectAction boa) {
+		super("Biomoby popup");
 		this.objectAction = boa;
 		this.objectProcessor = bop;
 		setDaemon(true);

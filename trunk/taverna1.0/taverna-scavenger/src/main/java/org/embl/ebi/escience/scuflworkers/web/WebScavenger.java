@@ -76,7 +76,7 @@ public class WebScavenger extends Scavenger {
 		} catch (MalformedURLException e) {
 			throw new ScavengerCreationException("Invalid URL: " + initialURL);
 		}
-		Thread urlThread = new Thread() {
+		Thread urlThread = new Thread("Creating web scavenger") {
 			public void run() {
 				logger.info("Created new web scavenger thread...");
 				try {

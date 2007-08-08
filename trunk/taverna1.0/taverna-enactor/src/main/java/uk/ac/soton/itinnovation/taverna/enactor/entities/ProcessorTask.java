@@ -23,9 +23,9 @@
 //Created for Project :   MYGRID
 //Dependencies        :
 
-//Last commit info    :   $Author: sowen70 $
-//$Date: 2007-05-30 14:08:31 $
-//$Revision: 1.8 $
+//Last commit info    :   $Author: stain $
+//$Date: 2007-08-08 15:38:36 $
+//$Revision: 1.9 $
 
 ///////////////////////////////////////////////////////////////////////////////////////
 package uk.ac.soton.itinnovation.taverna.enactor.entities;
@@ -776,7 +776,7 @@ public class ProcessorTask extends AbstractTask implements IProcessorTask {
 			for (int i = 0; i < workers; i++) {
 				final int position = i;
 				final ResumableIterator irootNode = rootNode;
-				new Thread() {
+				new Thread("Processor worker " + activeProcessor + " #" + position) {
 					public void run() {
 						try {
 							logger.info(Thread.currentThread() + " started");

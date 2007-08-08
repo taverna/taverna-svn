@@ -78,7 +78,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		addMouseListener(this);
 		setVisible(true);
 		ticker = buildTicker();
-		animation = new Thread(new Animator(true));
+		animation = new Thread(new Animator(true), "Infinite progress animator");
 		animation.setDaemon(true);
 		animation.start();
 	}
@@ -87,7 +87,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		if (animation != null) {
 			animation.interrupt();
 			animation = null;
-			animation = new Thread(new Animator(false));
+			animation = new Thread(new Animator(false), "Infinite progress animator");
 			animation.start();
 		}
 	}

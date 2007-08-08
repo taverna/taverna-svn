@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-08-24 13:43:18 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-08-08 15:38:36 $
+ *               by   $Author: stain $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -70,7 +70,7 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 						JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://www.biomart.org/biomart");
 				if (baseURL != null) {
-					new Thread() {
+					new Thread("Adding BioMart scavenger") {
 						public void run() {
 							s.scavengingStarting("Adding BioMart scavenger");
 							try {

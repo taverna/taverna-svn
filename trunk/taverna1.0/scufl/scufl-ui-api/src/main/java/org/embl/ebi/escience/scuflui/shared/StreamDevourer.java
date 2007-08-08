@@ -48,7 +48,7 @@ public class StreamDevourer extends Thread {
 	 * Create the StreamDevourer and point it at an InputStream to consume
 	 */
 	public StreamDevourer(InputStream is) {
-		super();
+		super("StreamDevourer");
 		this.br = new BufferedReader(new InputStreamReader(is));
 		this.output = new ByteArrayOutputStream();
 	}

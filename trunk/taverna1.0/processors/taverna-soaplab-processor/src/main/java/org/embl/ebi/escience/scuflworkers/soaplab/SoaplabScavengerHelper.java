@@ -44,7 +44,7 @@ public class SoaplabScavengerHelper implements ScavengerHelper {
 						"Base location for your soaplab installation?", "Soaplab location",
 						JOptionPane.QUESTION_MESSAGE, null, null, "http://www.ebi.ac.uk/soaplab/services/");
 				if (baseURL != null) {
-					new Thread() {
+					new Thread("Adding SOAPlab Scavenger") {
 						public void run() {
 							s.scavengingStarting("Adding SOAPLab scavenger");
 							try {

@@ -240,7 +240,7 @@ public class WorkflowEventDispatcher {
 	class NotifyThread extends Thread {        
 
 		protected NotifyThread() {
-			super();
+			super("WorkflowEventDispatcher NotifyThread");
 			setDaemon(true);
 			start();
 		}

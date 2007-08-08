@@ -87,7 +87,7 @@ public abstract class ArtifactClassLoaderTest extends TestCase {
 		Random r = new Random();
 		for (int i=0; i<THREADS; i++) {
 			final int sleep = r.nextInt(MAXSLEEP);
-			threads.add(new Thread(){
+			threads.add(new Thread("ArtifactClassLoaderTest manythreads"){
 				public void run() {
 					// Make sure we are not alone
 					try {

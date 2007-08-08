@@ -65,7 +65,7 @@ public class WSDLScavengerHelper implements ScavengerHelper {
 							s.scavengingDone();
 						}
 					};
-					new Thread(r).start();
+					new Thread(r, "WSDL Scavenger processing").start();
 				}
 			}
 		};

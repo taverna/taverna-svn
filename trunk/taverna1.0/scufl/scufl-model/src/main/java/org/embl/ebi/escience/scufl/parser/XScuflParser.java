@@ -457,6 +457,7 @@ class ProcessorLoaderThread extends Thread {
 	protected ProcessorLoaderThread(ScuflModel model, Element processorNode,
 			String name, Namespace namespace, ExceptionHolder holder,
 			String workersString) {
+		super("XSCuflParser processer loader");
 		this.model = model;
 		this.namespace = namespace;
 		this.processorNode = processorNode;

@@ -70,7 +70,7 @@ public class ScavengerTreePanel extends JPanel implements WorkflowModelViewSPI {
 		public void receiveModelEvent(ScuflModelEvent event) {
 			if (event.getEventType() == ScuflModelEvent.LOAD
 					&& ScavengerTreePanel.this.isWatchingLoads) {
-				new Thread() {
+				new Thread("Scavenger tree adding from model") {
 					public void run() {
 						try {
 							ScavengerTreePanel.this.tree

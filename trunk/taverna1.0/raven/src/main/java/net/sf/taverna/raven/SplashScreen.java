@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-18 12:11:30 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-08-08 15:38:36 $
+ *               by   $Author: stain $
  * Created on 18 Jan 2007
  *****************************************************************/
 package net.sf.taverna.raven;
@@ -121,7 +121,7 @@ public class SplashScreen extends JWindow {
 						}
 					}
 				}
-			});
+			}, "Splashscreen progress bar");
 			progressThread.start();			
 		}
 	}

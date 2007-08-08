@@ -353,6 +353,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 		ScavengerTree scavengerTree;
 
 		public DefaultScavengerLoaderThread(ScavengerTree scavengerTree) {
+			super("Default scavenger loader");
 			this.scavengerTree = scavengerTree;
 			start();
 		}

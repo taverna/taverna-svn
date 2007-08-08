@@ -459,7 +459,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 									public void actionPerformed(ActionEvent ae) {
 										// you would like to search for
 										// selectedObject
-										new Thread() {
+										new Thread("Finding biomoby services") {
 											public void run() {
 												try {
 													String name = selectedObject;
@@ -572,7 +572,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 									public void actionPerformed(ActionEvent ae) {
 										// you would like to search for
 										// selectedObject
-										new Thread() {
+										new Thread("Finding BioMoby services") {
 
 											public void run() {
 												try {

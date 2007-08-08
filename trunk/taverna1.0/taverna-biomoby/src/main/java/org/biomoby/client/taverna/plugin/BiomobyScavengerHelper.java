@@ -82,7 +82,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
                             try {
                             	final String url = registryEndpoint;
                             	final String uri = registryURI;
-                            	Thread t = new Thread() {
+                            	Thread t = new Thread("Adding Biomoby scavenger") {
             						public void run() {
             							s.scavengingStarting("Adding BioMOBY scavenger");
             							try {

@@ -93,6 +93,7 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 		private JProgressBar bar = new JProgressBar();
 
 		public Worker(BiomobyObjectProcessor bop, BiomobyObjectAction object) {
+			super("Biomoby object action worker");
 			this.theProcessor = bop;
 			this.action = object;
 			bar.setIndeterminate(true);

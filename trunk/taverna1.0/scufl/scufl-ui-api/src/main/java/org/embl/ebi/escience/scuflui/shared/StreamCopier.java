@@ -24,6 +24,7 @@ public class StreamCopier extends Thread {
 	 * InputStream to the specified OutputStream
 	 */
 	public StreamCopier(InputStream is, OutputStream os) {
+		super("StreamCopier");
 		this.is = is;
 		this.os = os;
 	}

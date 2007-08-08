@@ -110,7 +110,7 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 					public void actionPerformed(ActionEvent ae) {
 						// Create a new thread to iterate over all child
 						// items and fetch descriptions where possible
-						new Thread() {
+						new Thread("Scavenger tree fetching descriptions") {
 							public void run() {
 								Enumeration en = node.depthFirstEnumeration();
 								List pflist = new ArrayList();
