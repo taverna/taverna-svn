@@ -58,4 +58,9 @@
 
     <para>executeworkflow -output result_run1 myworkflow.xml</para>
   </example>
+
+  <para>If you are interested in executing a workflow from within your own
+  application you should also read the section <link
+  linkend="executeworkflowprogram">Programmatically executing a
+  workflow</link>.</para>
 </section>

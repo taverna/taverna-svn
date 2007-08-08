@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="executeworkflowprogram">
+  <title>Using the Taverna API to programmatically execute a workflow.</title>
+
+  <para>Since Taverna version 1.4 it has been possible to execute workflow
+  through the WorkflowLauncher helper class. However, since the introduction
+  of Raven with version 1.5 onwards this has become non-trivial and needed to
+  be bootstrapped.</para>
+
+  <para>This section describes an approach to directly access the Taverna API
+  without the need to bootstrap your application. </para>
+
+  <para>Although this relates to executing a workflow through the
+  WorkflowLauncher, it also applies to accessing other parts of the Taverna
+  API with careful selection of the relevant artifacts.</para>
+
+  <section>
+    <title>Initialising the Repository.</title>
+
+    <para>To avoid needing to use a bootstrapped approach, the solution is to
+    initialise the Raven repository programmatically. This is achieved by
+    using the LocalRepository method introduced with Taverna 1.5.2:</para>
+
+    <programlisting>public Repository getRepository(File base, ClassLoader loader, Set&lt;Artifact&gt; systemArtifacts);</programlisting>
+
+    <para>The parameter <literal>base</literal> is a File representing a
+    directory to which any necessary artifacts will be downloaded. These are
+    external artifacts that shouldn't be included in the application that is
+    invoking the Taverna API.</para>
+
+    <para>The parameter <literal>loader</literal> is the ClassLoader of the
+    application that is invoking the Taverna API.</para>
+
+    <para>The parameter <literal>systemArtifacts</literal> is a Set of
+    Artifacts that are included within the application invoking the Taverna
+    API. Defining these tell Raven that classes within these artifacts can be
+    found within the classloader provided as the <literal>loader</literal>
+    parameter, and not to use its own internal classloaders to create
+    instances of these classes. This is important because otherwise Raven may
+    create an instance of this class from its own internal classloaders and
+    wherever Taverna interacts with your applications ClassCastExceptions will
+    occur. In practice this has been found to be rare but providing these
+    system artifacts acts as a good safety net.</para>
+
+    <para>Next any external artifacts need to be defined. These are artifacts
+    that are accessed through the Taverna SPI extension points and are loaded
+    through Tavernas internal plugin machinery. In this example of invoking a
+    workflow these artifacts are the Processor artifacts. These are added to
+    your Repository instance created previously through the method:</para>
+
+    <programlisting>repository.addArtifact(Artifact artifact);</programlisting>
+
+    <para>For these external artifacts, Raven needs to know where to find
+    them. This is acheived by providing the repository with a list of Maven 2
+    repository URLs that contain the required artifacts. This should at least
+    include:</para>
+
+    <simplelist>
+      <member><filename>http://www.mygrid.org.uk/maven/repository/</filename>
+      - the myGrid artifact repository</member>
+
+      <member><filename>http://mobycentral.icapture.ubc.ca/maven/</filename> -
+      Biomoby specific artifacts</member>
+
+      <member><filename>http://www.ibiblio.org/maven2/</filename> - the maven
+      central repository. You should also include some additional mirror
+      sites.</member>
+    </simplelist>
+
+    <tip>
+      <para>The <literal>raven.properties</literal> included with Taverna (in
+      the conf folder) provides a comprehensive list of mirrors assigned to
+      the property <literal>raven.repository.&lt;number&gt;</literal>.
+      Essentially here we are providing this same information
+      programmatically.</para>
+    </tip>
+
+    <para>To finalise the initialisation of the repository the method</para>
+
+    <programlisting>repository.update();</programlisting>
+
+    <para>now needs to be called. This will download any missing artifacts to
+    the local repository base directory defined previously, which can take a
+    few minutes when first run. Once they've been downloaded subsequent calls
+    will be quick as long as the repsository location does not change.
+    Optionally you may wish to distribute a copy of this repository with your
+    application and set the local repository directory accordingly.</para>
+  </section>
+
+  <section>
+    <title>Registering the repository with the Taverna SPI registry.</title>
+
+    <para>Before using the API, the Taverna plugin registries need to provided
+    with the repository initialised previously. This is acheived with the
+    simple call to:</para>
+
+    <programlisting>TavernaSPIRegistry.setRepository(Repository repository);</programlisting>
+
+    <para>You are now ready to interact with the Taverna API. The following
+    example demostrates a simplified approach to using the WorkflowLauncher,
+    and further details on using Workflow Launcher can be found by reading the
+    <ulink
+    url="http://www.mygrid.org.uk/wiki/Mygrid/ExecutingWorkflowOutsideOfTaverna">original
+    documentation</ulink>.</para>
+  </section>
+
+  <section>
+    <title>Example application</title>
+
+    <para>There follows the sourcecode for an example wrapper to
+    WorkflowLauncher that demonstrates the procedure for setting up and
+    invoking the WorkflowLauncher. This example can be downloaded from ??? and
+    built using maven. To make things simple it makes use of the maven plugin
+    appassembler, so to build simply issue the command:</para>
+
+    <screen>mvn package appassembler:assemble</screen>
+
+    <para>This will build the application to target/appassembler and can be
+    invoked with the bin/runme[.bat] script which takes the following
+    parameters:</para>
+
+    <screen>runme [-inputdoc &lt;path to input doc&gt; -outputdoc &lt;path to output doc&gt; -basedir &lt;path to local repository download dir&gt;] -workflow &lt;path to workflow scufl file&gt;.</screen>
+  </section>
+
+  <section>
+    <title>Example source code</title>
+
+    <programlisting>[imports ommitted]
+
+/**
+ * &lt;p&gt;
+ * A simplified example application demonstrating how to invoke the Taverna API through Raven, without the need
+ * to bootstrap the application.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * Its main point is to demonstrate populating an {@link Repository} instance with the system artifacts and external artifacts
+ * required to execute a workflow. Workflow execution is the most popular request, but this technique can also be applied
+ * to access other parts of the Taverna API.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The system artifacts relate to the artifacts that exist within the applications classpath. Correctly defining these ensures
+ * that the applications classloader is used to create instances of classes contained within these artifacts. This prevents Raven creating instances
+ * through its own classloaders leading to ClassCastException, or similar, errors.&lt;br&gt;
+ * These artifacts are defined in {@link WorkflowLauncherWrapper#buildSystemArtifactSet()}
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The external artifacts relate to artifacts that exist outside of the application as SPI plugin points. For the purpose
+ * of this example these are the Processors that are used during workflow execution.
+ * These artifacts are defined in {@link WorkflowLauncherWrapper#buildExternalArtifactSet()}.&lt;br&gt;
+ * Because these artifacts are not defined in the application they, and their dependencies, need to be downloaded when the application is first run
+ * and are downloaded to the local repository location defined by the method {@link WorkflowLauncherWrapper#getRepositoryBaseFile()}, and ultimately
+ * the runtime argument &lt;em&gt;-basedir&lt;/em&gt; if provided.&lt;br&gt;
+ * These are downloaded from the remote repository locations defined in {@link WorkflowLauncherWrapper#buildRepositoryLocationSet}.
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * The key to this approach is initialising a Repository using the API call&lt;br&gt;
+ * &lt;code&gt;Repository repository = LocalRepository.getRepository(localrepository,applicationClassloader,systemArtifacts);&lt;/code&gt;&lt;br&gt;
+ * Then making sure the local repository is up to date with a call to &lt;br&gt;
+ * &lt;code&gt;repository.update();&lt;/code&gt;&lt;br&gt;
+ * The repsitory is then registered with the TavernaSPIRegistry with the call &lt;br&gt;
+ * &lt;code&gt;TavernaSPIRegistry..setRepository(repository);&lt;/code&gt;&lt;br&gt;
+ * This all takes place within {@link WorkflowLauncherWrapper#initialiseRepository()}
+ * &lt;/p&gt;
+ * &lt;p&gt;
+ * Note that for simplicity in this example the external artifacts and remote repositories have been hardcoded and would normally be better defined seperatly.&lt;br&gt;
+ * For the same reason, Exception handling has also been kept to a minimum.
+ * &lt;/p&gt;
+ * &lt;p&gt;To Use:&lt;br&gt;
+ * 
+ * First build using maven together with the appassembler plugin:
+ * mvn package appassembler:assemble
+ * then navigate to the target/appassembler/bin directory and run the runme[.bat] command as follows:
+ * &lt;br&gt;
+ * &lt;code&gt;runme [-inputdoc &amp;lt;path to input doc&amp;gt; -outputdoc &amp;lt;path to output doc&amp;gt; -basedir &amp;lt;path to local repository download dir&amp;gt;] -workflow &amp;lt;path to workflow scufl file&amp;gt;.&lt;/code&gt;
+ * &lt;/p&gt;
+ * 
+ * @author Stuart Owen
+ *
+ */
+public class WorkflowLauncherWrapper {
+	
+	String workflowName;
+	String inputDocumentName;
+	String outputDocumentName;
+	String baseDirName;
+	
+	private static Logger logger = Logger
+			.getLogger(WorkflowLauncherWrapper.class);
+
+	public static void main(String[] args) {
+		try {
+			
+			new WorkflowLauncherWrapper().run(args);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	
+	/**
+	 * The execution entry point.
+	 * 
+	 * @param args - the arguments passed to main
+	 * @throws Exception
+	 */
+	public void run(String [] args) throws Exception {
+		processArgs(args);
+		if (workflowName==null) {
+			logger.error("You must specify a workflow with the argument -workflow");
+			logger.error("e.g. runme.bat -workflow C:/myworkflow.xml");
+			System.exit(-1);
+		}
+		
+		InputStream workflowInputStream = getWorkflowInputStream();
+		
+		Map inputs = loadInputDocument();
+		if (inputs==null) inputs=new HashMap();
+		
+		Repository repository = initialiseRepository();
+		TavernaSPIRegistry.setRepository(repository);
+		
+		WorkflowLauncher launcher = new WorkflowLauncher(workflowInputStream);
+		
+		Map outputs = launcher.execute(inputs);
+		if (outputDocumentName==null) {
+			logger.warn("No -outputdoc defined to save results. Results returned contained "+outputs.size() +" outputs.");
+		}
+		else {
+			saveOutputDocument(outputs);
+		}
+		
+	}
+	
+	/**
+	 * Opens an input stream to the workflow defined by the value of the argument -workflow
+	 * 
+	 * @return the workflow InputStream
+	 * @throws FileNotFoundException if the -workflow argument does not represent a valid path to an existing file.
+	 */
+	protected InputStream getWorkflowInputStream() throws FileNotFoundException  {
+		return new FileInputStream(new File(workflowName));
+	}
+	
+	/**
+	 * Provides the required initialisation of a Repository instance for executing a Workflow.&lt;br&gt;
+	 * This involves first defining the artifacts that exist within the application classpath, external plugin artifacts
+	 * required during workflow execution (processors) and a location to download these artifacts.&lt;br&gt;
+	 * Based upon this information the repository is updated, causing any external artifacts to be downloaded
+	 * to the local repository location defined by -basedir if required.
+	 * 
+	 * @return the intialised Repository instance
+	 * @throws IOException 
+	 */
+	protected Repository initialiseRepository() throws IOException {
+		
+		//these 2 lines are necessary if working with Taverna 1.5.2 libraries.
+		//System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.1-profile.xml");
+		//Bootstrap.properties=new Properties();
+		
+		Set&lt;Artifact&gt; systemArtifacts = buildSystemArtifactSet();
+		Set&lt;Artifact&gt; externalArtifacts = buildExternalArtifactSet();
+		Set&lt;URL&gt; repositoryLocations = buildRepositoryLocationSet();
+		
+		File base = getRepositoryBaseFile();
+		Repository repository = LocalRepository.getRepository(base,WorkflowLauncherWrapper.class.getClassLoader(),systemArtifacts);
+		for (Artifact artifact : externalArtifacts) {
+			repository.addArtifact(artifact);
+		}
+		
+		for (URL location : repositoryLocations) {
+			repository.addRemoteRepository(location);
+		}
+		
+		repository.update();
+		return repository;
+	}
+	
+	/**
+	 * Provides a list of URL's to public maven2 repositories containing required artifacts. This must contain at a minimum
+	 * &lt;ul&gt;
+	 * &lt;li&gt;http://www.mygrid.org.uk/maven/repository/ - the myGrid artifact repository&lt;/li&gt;
+	 * &lt;li&gt;http://mobycentral.icapture.ubc.ca/maven/ - Biomoby specific artifacts&lt;/li&gt;
+	 * &lt;li&gt;http://www.ibiblio.org/maven2/ - the maven central repository and/or any mirrors&lt;/li&gt;
+	 * &lt;/ul&gt;
+	 * &lt;br&gt;
+	 * Although hard-coded in this example, it would be advised to store these in a seperate settings file in a real application.
+	 * 
+	 * @return a Set containing the list of URL locations
+	 * @throws MalformedURLException
+	 */
+	protected Set&lt;URL&gt; buildRepositoryLocationSet() throws MalformedURLException {
+		Set&lt;URL&gt; result = new HashSet&lt;URL&gt;();
+		result.add(new URL("file:/Users/sowen/.m2/repository/"));
+		result.add(new URL(
+				"http://www.mygrid.org.uk/maven/repository/"));
+		result.add(new URL(
+		"http://mirrors.sunsite.dk/maven2/"));
+		result.add(new URL(
+		"http://www.ibiblio.org/maven2/"));
+		result.add(new URL(
+		"http://mobycentral.icapture.ubc.ca/maven/"));
+		result.add(new URL(
+		"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+		return result;
+	}
+
+	/**
+	 * Provides a set of Artifact objects defining the artifacts whose classes and dependencies also
+	 * exist within the applications classpath. These are used to let Raven know that these classes already exist
+	 * and prevents it creating duplicate classes from its own classloaders leading to a potential ClassCastException
+	 * or similar.
+	 * 
+	 * @return Set&lt;Artifact&gt; containing the list of system artifacts.
+	 */
+	protected Set&lt;Artifact&gt; buildSystemArtifactSet() {
+		Set&lt;Artifact&gt; systemArtifacts = new HashSet&lt;Artifact&gt;();
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-tools", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-core", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-tools", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-core", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-enactor", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-tools", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-core", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-model", "1.5.2-SNAPSHOT"));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-workflow", "1.5.2-SNAPSHOT"));
+		return systemArtifacts;
+	}
+	
+	/**
+	 * Provides additional artifacts that are external SPI plugins and won't already exist on the classpath.&lt;br&gt;
+	 * In this example these are required in the execution of a workflow, so define all the processor types.
+	 * These, and their dependencies, will be downloaded when first run.&lt;br&gt;
+	 * Although hard-coded for this example it would be advisable to define these in an external file.
+	 * 
+	 * @return Set&lt;Artifact&gt; containing the list of external artifacts.
+	 */
+	protected Set&lt;Artifact&gt; buildExternalArtifactSet() {
+		Set&lt;Artifact&gt; externalArtifacts = new HashSet&lt;Artifact&gt;();
+		
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
+				"1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
+				"1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-stringconstant-processor", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
+				"1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.",
+				"taverna-contrib", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-beanshell-processor", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-biomart-processor", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-soaplab-processor", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-notification-processor", "1.5.2-SNAPSHOT"));
+		externalArtifacts.add(new BasicArtifact("biomoby.org",
+				"taverna-biomoby", "1.5.2-SNAPSHOT"));
+		
+		return externalArtifacts;
+	}
+	
+	/**
+	 * Provides a File representation of the local repository directory that external artifacts and their dependencies will
+	 * be downloaded to.&lt;br&gt;
+	 * This is defined by the argument -basedir. If this is not defined a temporary directory is created.&lt;/br&gt;
+	 * 
+	 * @return a File representation
+	 * @throws IOException
+	 */
+	protected File getRepositoryBaseFile() throws IOException {
+		if (baseDirName!=null) {
+			return new File(baseDirName);
+		}
+		else {
+			File temp = File.createTempFile("repository","");
+			temp.delete();
+			temp.mkdir();
+			logger.warn("No -basedir defined, so using temporary location of:"+temp.getAbsolutePath());
+			return temp;
+		}
+	}
+	
+	/**
+	 * Loads an xml input document, if defined by the argument -inputdoc.
+	 * 
+	 * @return the Map of input DataThing's
+	 * @throws FileNotFoundException
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	protected Map loadInputDocument() throws FileNotFoundException, JDOMException, IOException {
+		Map result = null;
+		if (inputDocumentName!=null) {
+			File file = new File(inputDocumentName);
+			SAXBuilder builder = new SAXBuilder();
+			Document inputDoc = builder.build(new FileReader(file));
+			result = DataThingXMLFactory.parseDataDocument(inputDoc);
+		}
+		return result;
+	}
+	
+	/**
+	 * Saves an xml output document for the results of running the workflow to the location
+	 * defined by -outputdoc.
+	 * @param outputs
+	 * @throws IOException
+	 */
+	protected void saveOutputDocument(Map outputs) throws IOException {
+		if (outputDocumentName!=null) {
+			File file = new File(outputDocumentName);
+			Document outputDoc=DataThingXMLFactory.getDataDocument(outputs);
+			XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
+			String xmlString = xo.outputString(outputDoc);
+			System.out.println(file.getAbsolutePath());
+			FileUtils.writeStringToFile(file, xmlString, "utf8");
+		}
+	}
+	
+	private void processArgs(String [] args) {
+		for (int i=0;i&lt;args.length;i+=2) {
+			boolean handled=false;
+			String param = args[i];
+			String value = args[i+1];
+			if (param.equals("-workflow")) {
+				workflowName=value;
+				handled=true;
+			}
+			if (param.equals("-inputdoc")) {
+				inputDocumentName=value;
+				handled=true;
+			}
+			if (param.equals("-outputdoc")) {
+				outputDocumentName=value;
+				handled=true;
+			}
+			if (param.equals("-basedir")) {
+				baseDirName=value;
+				handled=true;
+			}
+			if (!handled) logger.error("Unrecognised argument:"+param+" with value:"+value);
+		}
+	}
+
+}
+</programlisting>
+  </section>
+</section>
