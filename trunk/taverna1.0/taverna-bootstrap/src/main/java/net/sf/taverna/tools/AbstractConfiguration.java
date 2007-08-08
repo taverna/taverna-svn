@@ -38,16 +38,13 @@ public abstract class AbstractConfiguration {
 		String conf = getConfFolder();
 		File result=null;
 		if (home!=null) {
-			String filename=home+File.separatorChar+conf+File.separatorChar+getConfigurationFilename();
-			File file = new File(filename);
+			File file = new File(new File(home, conf), getConfigurationFilename());
 			if (file.exists()) {
 				result=file;
 			}
 		}
-		
 		if (result==null && startup!=null) {
-			String filename=startup+File.separatorChar+conf+File.separatorChar+getConfigurationFilename();
-			File file = new File(filename);
+			File file = new File(new File(startup, conf), getConfigurationFilename());
 			if (file.exists()) {
 				result=file;
 			}
