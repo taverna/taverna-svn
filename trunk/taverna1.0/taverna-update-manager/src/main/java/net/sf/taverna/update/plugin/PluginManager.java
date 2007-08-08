@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.26 $
+ * Revision           $Revision: 1.27 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-30 13:34:49 $
+ * Last modified on   $Date: 2007-08-08 16:56:35 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -623,43 +623,45 @@ public class PluginManager implements PluginListener {
 	public List<TavernaPluginSite> getTavernaPluginSites() {
 		List<TavernaPluginSite> result = new ArrayList<TavernaPluginSite>();
 		String prefix="raven.pluginsite.";
-		Map<Integer,String> pluginSiteMap = new TreeMap<Integer,String>(); //tree map will do the sorting for us
-		for (Entry prop : Bootstrap.properties.entrySet()) {
-			String propertyName=(String)prop.getKey();
-			if (propertyName.startsWith(prefix) && !propertyName.endsWith("name")) {		
-				try {
-					Integer index=new Integer(propertyName.replace(prefix,""));
-					pluginSiteMap.put(index, (String)prop.getValue());
+		if (Bootstrap.properties!=null) {
+			Map<Integer,String> pluginSiteMap = new TreeMap<Integer,String>(); //tree map will do the sorting for us
+			for (Entry prop : Bootstrap.properties.entrySet()) {
+				String propertyName=(String)prop.getKey();
+				if (propertyName.startsWith(prefix) && !propertyName.endsWith("name")) {		
+					try {
+						Integer index=new Integer(propertyName.replace(prefix,""));
+						pluginSiteMap.put(index, (String)prop.getValue());
+					}
+					catch(NumberFormatException e) {
+						logger.error("Error with index for property: "+propertyName);
+					}								
 				}
-				catch(NumberFormatException e) {
-					logger.error("Error with index for property: "+propertyName);
-				}								
 			}
-		}
-		
-		//create a list of URL objects from the space seperated list of alternatives for each site		
-		for (Integer siteIndex : pluginSiteMap.keySet()) {
-			String siteList = pluginSiteMap.get(siteIndex);
-			String nameKey=prefix+siteIndex+".name";
-			String name=(String)Bootstrap.properties.get(nameKey);
-			if (name==null) name="Taverna Plugin Update Site";
 			
-			List<URL> urls = new ArrayList<URL>();
-			logger.info("Adding plugin sitelist: "+siteList);
-			String [] siteUrls = siteList.split(" ");
-			for (String siteUrl : siteUrls) {
-				siteUrl=siteUrl.trim();
-				if (!siteUrl.endsWith("/")) siteUrl+="/";
-				try {
-					URL url = new URL(siteUrl);
-					urls.add(url);
+			//create a list of URL objects from the space seperated list of alternatives for each site		
+			for (Integer siteIndex : pluginSiteMap.keySet()) {
+				String siteList = pluginSiteMap.get(siteIndex);
+				String nameKey=prefix+siteIndex+".name";
+				String name=(String)Bootstrap.properties.get(nameKey);
+				if (name==null) name="Taverna Plugin Update Site";
+				
+				List<URL> urls = new ArrayList<URL>();
+				logger.info("Adding plugin sitelist: "+siteList);
+				String [] siteUrls = siteList.split(" ");
+				for (String siteUrl : siteUrls) {
+					siteUrl=siteUrl.trim();
+					if (!siteUrl.endsWith("/")) siteUrl+="/";
+					try {
+						URL url = new URL(siteUrl);
+						urls.add(url);
+					}
+					catch(MalformedURLException e) {
+						logger.error("Malformed URL for plugin site (or mirror):"+siteUrl);
+					}
 				}
-				catch(MalformedURLException e) {
-					logger.error("Malformed URL for plugin site (or mirror):"+siteUrl);
+				if (urls.size()>0) {
+					result.add(new TavernaPluginSite(name,urls.toArray(new URL[]{})));
 				}
-			}
-			if (urls.size()>0) {
-				result.add(new TavernaPluginSite(name,urls.toArray(new URL[]{})));
 			}
 		}
 		return result;

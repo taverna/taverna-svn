@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-25 09:38:46 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-08-08 16:56:35 $
+ *               by   $Author: sowen70 $
  * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
@@ -66,6 +66,10 @@ public class ProfileFactory {
 		}
 		return instance;
 	}
+	
+	public boolean isProfileDefined() {
+		return System.getProperty("raven.profile")!=null;
+	}
 
 	/**
 	 * Get the current system profile as specified by 
@@ -78,11 +82,11 @@ public class ProfileFactory {
 		if (profile != null) {
 			return profile;
 		}
-		String profileStr = System.getProperty("raven.profile");
-		if (profileStr == null) {
+		if (!isProfileDefined()) {
 			logger.warn("No profile defined, try specifying -Draven.profile");
 			return null;
 		}
+		String profileStr = System.getProperty("raven.profile");
 		try {
 			URL profileURL = new URL(profileStr);
 			profile = new Profile(profileURL.openStream(), true);

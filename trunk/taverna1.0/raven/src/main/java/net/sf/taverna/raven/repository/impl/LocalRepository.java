@@ -759,16 +759,19 @@ public class LocalRepository implements Repository {
 				logger.error("Unknown suffix " + suffix + " for " + artifact);
 				return false;
 			}
-			// Note how we also copy the .pom, just so that the .jar we
-			// have to copy anyway is accompanied with the .pom
-			Set<Artifact> systemArtifacts = ProfileFactory.getInstance()
-					.getProfile().getSystemArtifacts();
-			if (systemArtifacts.contains(artifact)) {
-				// Need to copy it so that the system classloader can
-				// find it (We can't interact with it here as Raven shouldn't
-				// depend on Taverna's BootstrapClassLoader)
-				// TODO: something like SystemClassLoaderSPI.addURL(file)
-				return false;
+			
+
+			//check if artifact is defined as a system artifact in the profile, if one is defined.
+			ProfileFactory profileFactory = ProfileFactory.getInstance();
+			if (profileFactory.isProfileDefined()) {
+				Set<Artifact> systemArtifacts = profileFactory.getProfile().getSystemArtifacts();
+				if (systemArtifacts.contains(artifact)) {
+					// Need to copy it so that the system classloader can
+					// find it (We can't interact with it here as Raven shouldn't
+					// depend on Taverna's BootstrapClassLoader)
+					// TODO: something like SystemClassLoaderSPI.addURL(file)
+					return false;
+				}
 			}
 			return true; // OK to use cache
 		}
