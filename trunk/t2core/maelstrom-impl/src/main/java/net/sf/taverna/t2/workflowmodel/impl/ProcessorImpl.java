@@ -340,14 +340,6 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		return this.name;
 	}
 
-	/**
-	 * public int getEmptyListDepth(String owningProcess) { return
-	 * this.iterationStack.getIterationDepth(); }
-	 * 
-	 * public void forgetDepthFor(String owningProcess) { // TODO Auto-generated
-	 * method stub }
-	 */
-
 	public Annotated getAnnotationForService(Service<?> service) {
 		int index = serviceList.indexOf(service);
 		if (index >= 0) {
