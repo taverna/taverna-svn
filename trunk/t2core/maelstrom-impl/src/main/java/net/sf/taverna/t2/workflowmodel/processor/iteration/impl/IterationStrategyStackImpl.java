@@ -1,7 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.jdom.Element;
 
@@ -10,10 +12,12 @@ import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 
 /**
- * Contains an ordered list of IterationStrategyImpl objects. The top of the list is
- * fed data directly, all other nodes are fed complete Job objects and
+ * Contains an ordered list of IterationStrategyImpl objects. The top of the
+ * list is fed data directly, all other nodes are fed complete Job objects and
  * Completion events from the layer above. The bottom layer pushes events onto
  * the processor event queue to be consumed by the dispatch stack.
  * 
@@ -24,29 +28,48 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 
 	private List<IterationStrategyImpl> strategies = new ArrayList<IterationStrategyImpl>();
 
-	public int getIterationDepth() {
-		int depth = 0;
-		for (IterationStrategyImpl isi : strategies) {
-			depth += isi.getTerminal().getIterationDepth();
+	/**
+	 * The iteration depth here is calculated by taking first the top iteration
+	 * strategy and applying the actual input types to it, then for each
+	 * subsequent strategy in the stack using the 'desired cardinality' of the
+	 * input nodes for each layer to work out the increase in index array
+	 * length.
+	 * 
+	 * @param inputDepths
+	 * @return
+	 * @throws IterationTypeMismatchException
+	 */
+	public int getIterationDepth(Map<String, Integer> inputDepths)
+			throws IterationTypeMismatchException, MissingIterationInputException {
+		IterationStrategyImpl strategy = strategies.get(0);
+		int depth = strategy.getIterationDepth(inputDepths);
+		for (int index = 1; index < strategies.size(); index++) {
+			// Construct the input depths for the staged iteration strategies
+			// after the first one by looking at the previous iteration
+			// strategy's desired cardinalities on its input ports.
+			Map<String, Integer> stagedInputDepths = strategy
+					.getDesiredCardinalities();
+			strategy = strategies.get(index);
+			depth += strategy.getIterationDepth(stagedInputDepths);
 		}
 		return depth;
 	}
-	
+
 	public void addStrategy(IterationStrategy is) {
 		if (is instanceof IterationStrategyImpl) {
-			IterationStrategyImpl isi = (IterationStrategyImpl)is;
+			IterationStrategyImpl isi = (IterationStrategyImpl) is;
 			strategies.add(isi);
 			isi.setIterationStrategyStack(this);
-		}
-		else {
-			throw new WorkflowStructureException("IterationStrategyStackImpl can only hold IterationStrategyImpl objects");
+		} else {
+			throw new WorkflowStructureException(
+					"IterationStrategyStackImpl can only hold IterationStrategyImpl objects");
 		}
 	}
 
 	public List<IterationStrategyImpl> getStrategies() {
-		return this.strategies;
+		return Collections.unmodifiableList(this.strategies);
 	}
-	
+
 	public void receiveData(String inputPortName, String owningProcess,
 			int[] indexArray, EntityIdentifier dataReference) {
 		if (!strategies.isEmpty()) {
@@ -58,7 +81,8 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	public void receiveCompletion(String inputPortName, String owningProcess,
 			int[] completionArray) {
 		if (!strategies.isEmpty()) {
-			strategies.get(0).receiveCompletion(inputPortName, owningProcess, completionArray);
+			strategies.get(0).receiveCompletion(inputPortName, owningProcess,
+					completionArray);
 		}
 	}
 
@@ -69,16 +93,17 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 		}
 		return strategyStackElement;
 	}
+
 	public void configureFromElement(Element e) {
 		strategies.clear();
 		for (Object child : e.getChildren("strategy")) {
-			Element strategyElement = (Element)child;
+			Element strategyElement = (Element) child;
 			IterationStrategyImpl strategy = new IterationStrategyImpl();
 			strategy.configureFromXML(strategyElement);
 			addStrategy(strategy);
 		}
 	}
-	
+
 	/**
 	 * Return the layer below the specified one, or null if there is no lower
 	 * layer

@@ -100,20 +100,13 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 
 	}
 
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	private int oid = -1;
-
-	public synchronized int getIterationDepth() {
-		if (this.oid > -1) {
-			return this.oid;
-		} else {
-			this.oid = 0;
-			for (IterationStrategyNode child : getChildren()) {
-				this.oid += child.getIterationDepth();
-			}
-			return this.oid;
+	public synchronized int getIterationDepth(Map<String, Integer> inputDepths)
+			throws IterationTypeMismatchException {
+		int temp = 0;
+		for (IterationStrategyNode child : getChildren()) {
+			temp += child.getIterationDepth(inputDepths);
 		}
+		return temp;
 	}
 
 }

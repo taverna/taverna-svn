@@ -20,10 +20,6 @@ public class DotProduct extends AbstractIterationStrategyNode {
 
 	Map<String, TreeCache[]> ownerToCache = new HashMap<String, TreeCache[]>();
 
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	private int oid = -1;
-
 	public synchronized void receiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
 		if (!ownerToCache.containsKey(owningProcess)) {
@@ -78,13 +74,17 @@ public class DotProduct extends AbstractIterationStrategyNode {
 		}
 	}
 
-	public int getIterationDepth() {
-		if (oid > -1) {
-			return oid;
-		} else {
-			this.oid = getChildren().get(0).getIterationDepth();
-			return this.oid;
+	public int getIterationDepth(Map<String, Integer> inputDepths)
+			throws IterationTypeMismatchException {
+		// Check that all input depths are the same
+		int depth = getChildren().get(0).getIterationDepth(inputDepths);
+		for (IterationStrategyNode childNode : getChildren()) {
+			if (childNode.getIterationDepth(inputDepths) != depth) {
+				throw new IterationTypeMismatchException(
+						"Mismatched input types for dot product node");
+			}
 		}
+		return depth;
 	}
 
 }

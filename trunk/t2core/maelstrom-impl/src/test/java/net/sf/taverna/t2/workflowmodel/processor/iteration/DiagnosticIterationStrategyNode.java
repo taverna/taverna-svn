@@ -99,7 +99,7 @@ public class DiagnosticIterationStrategyNode extends
 		jobs.add(newJob);
 	}
 
-	public int getIterationDepth() {
+	public int getIterationDepth(Map<String, Integer> inputDepths) throws IterationTypeMismatchException {
 		// TODO Auto-generated method stub
 		return 0;
 	}

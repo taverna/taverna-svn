@@ -24,5 +24,5 @@ public interface EventForwardingOutputPort extends OutputPort {
 	/**
 	 * The set of datalinks for which this output port is the source of events
 	 */
-	public Set<Datalink> getOutgoingLinks();
+	public Set<? extends Datalink> getOutgoingLinks();
 }

@@ -1,9 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
-import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
@@ -24,7 +22,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 
 	private ProcessorOutputPortImpl outputPort;
 	
-	private Datalink newLink = null;
+	private DatalinkImpl newLink = null;
 
 	public ConnectProcessorOutputEdit(Processor p, String outputName,
 			EventHandlingInputPort targetPort) {
@@ -40,25 +38,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 				newLink = new DatalinkImpl(popi, target);
 				popi.addOutgoingLink(newLink);
 				if (target instanceof AbstractEventHandlingInputPort) {
-					((AbstractFilteringInputPort)target).setIncomingLink(newLink);
-				}
-				//popi.addTarget(target);
-				if (target instanceof FilteringInputPort) {
-					FilteringInputPort fip = (FilteringInputPort) target;
-					// Set the filter to filter on the granular depth of this
-					// output port unless this is finer than the input port
-					// depth in which case set the filter to be equal to that
-					// (i.e. if the input port depth is a list we never set the
-					// filter to be a single item, it's always the list level.
-					// If the granular depth were a list of lists then we'd use
-					// that).
-					int gDepth = popi.getGranularDepth();
-					int pDepth = fip.getDepth();
-					if (gDepth > pDepth) {
-						fip.setFilterDepth(gDepth);
-					} else {
-						fip.setFilterDepth(pDepth);
-					}
+					((AbstractEventHandlingInputPort)target).setIncomingLink(newLink);
 				}
 				outputPort = popi;
 				return;

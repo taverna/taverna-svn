@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.tree.TreeNode;
 
@@ -37,11 +38,30 @@ public interface IterationStrategyNode extends TreeNode {
 	public void receiveCompletion(int inputIndex, Completion completion);
 
 	public void setParent(IterationStrategyNode newParent);
-	
+
 	public List<IterationStrategyNode> getChildren();
-	
+
 	public void clear();
-	
-	public int getIterationDepth();
-	
+
+	/**
+	 * In the context of an enclosing iteration strategy each node should be
+	 * able to return the iteration depth, i.e. the length of the index array,
+	 * for items it will emit. In all cases other than leaf nodes this is
+	 * defined in terms of the depth of child nodes. The input cardinalities for
+	 * named ports are pushed through each node so that the terminal nodes
+	 * corresponding to input port collators can evaluate this expression -
+	 * pushing it through the entire evaluation means we don't have to keep
+	 * state anywhere in the leaf nodes (standard dependency injection)
+	 * <p>
+	 * Nodes can choose to throw the IterationTypeMismatchException if their
+	 * inputs aren't compatible with the operational semantics of the node such
+	 * as in the case of a dot product node with inputs with different depths.
+	 * 
+	 * @param inputDepths
+	 * @return
+	 * @throws IterationTypeMismatchException
+	 */
+	public int getIterationDepth(Map<String, Integer> inputDepths)
+			throws IterationTypeMismatchException;
+
 }

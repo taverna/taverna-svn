@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.Annotated;
@@ -20,6 +19,8 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
@@ -35,7 +36,8 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public final class ProcessorImpl extends AbstractMutableAnnotatedThing implements Processor {
+public final class ProcessorImpl extends AbstractMutableAnnotatedThing
+		implements Processor {
 
 	protected List<ConditionImpl> conditions = new ArrayList<ConditionImpl>();
 
@@ -46,7 +48,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 	protected List<ProcessorOutputPortImpl> outputPorts = new ArrayList<ProcessorOutputPortImpl>();
 
 	protected List<Service<?>> serviceList = new ArrayList<Service<?>>();
-	
+
 	protected List<AbstractMutableAnnotatedThing> serviceAnnotations = new ArrayList<AbstractMutableAnnotatedThing>();
 
 	protected AbstractCrystalizer crystalizer;
@@ -58,6 +60,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 	private static int pNameCounter = 0;
 
 	protected String name;
+	
+	public transient int resultWrappingDepth = -1;
 
 	/**
 	 * Create a new processor implementation with default blank iteration
@@ -95,9 +99,6 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 			@Override
 			protected void pushEvent(Event e) {
 				// System.out.println("Sending event to crystalizer : "+e);
-
-				crystalizer.baseListDepth = getEmptyListDepth(e
-						.getOwningProcess());
 				crystalizer.receiveEvent(e);
 			}
 
@@ -142,6 +143,61 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 		// Configure crystalizer to send realized events to the output ports
 		crystalizer = new ProcessorCrystalizerImpl(this);
 
+	}
+	
+	/**
+	 * When called this method configures input port filters and the
+	 * crystalizer, pushing cardinality information into outgoing datalinks.
+	 * 
+	 * @return true if the typecheck was successful
+	 * @throws IterationTypeMismatchException
+	 *             if the typing occured but didn't match because of an
+	 *             iteration mismatch
+	 */
+	public boolean doTypeCheck() throws IterationTypeMismatchException {
+		// Check whether all our input ports have inbound links
+		Map<String, Integer> inputDepths = new HashMap<String, Integer>();
+		for (ProcessorInputPortImpl input : inputPorts) {
+			if (input.getIncomingLink() == null) {
+				return false;
+			} else {
+				if (input.getIncomingLink().getResolvedDepth() == -1) {
+					// Incoming link hasn't been resolved yet, can't do this
+					// processor at the moment
+					return false;
+				}
+				// Get the conceptual resolved depth of the datalink
+				inputDepths.put(input.getName(), input.getIncomingLink()
+						.getResolvedDepth());
+				// Configure the filter with the finest grained item from the
+				// link source
+				input.setFilterDepth(input.getIncomingLink().getSource()
+						.getGranularDepth());
+			}
+		}
+		// Got here so we have all the inputs, now test whether the iteration
+		// strategy typechecks correctly
+		try {
+			this.resultWrappingDepth = iterationStack
+					.getIterationDepth(inputDepths);
+			for (ProcessorOutputPortImpl output : outputPorts) {
+				for (DatalinkImpl outgoingLink : output.outgoingLinks) {
+					// Set the resolved depth on each output edge
+					outgoingLink.setResolvedDepth(this.resultWrappingDepth
+							+ output.getDepth());
+				}
+			}
+
+		} catch (MissingIterationInputException e) {
+			// This should never happen as we only get here if we've already
+			// checked that all the inputs have been provided. If it does happen
+			// we've got some deeper issues.
+			e.printStackTrace();
+			return false;
+		}
+
+		// If we get to here everything has been configured appropriately
+		return true;
 	}
 
 	/* Serialization handling */
@@ -284,14 +340,13 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing implement
 		return this.name;
 	}
 
-	public int getEmptyListDepth(String owningProcess) {
-		return this.iterationStack.getIterationDepth();
-	}
-
-	public void forgetDepthFor(String owningProcess) {
-		// TODO Auto-generated method stub
-
-	}
+	/**
+	 * public int getEmptyListDepth(String owningProcess) { return
+	 * this.iterationStack.getIterationDepth(); }
+	 * 
+	 * public void forgetDepthFor(String owningProcess) { // TODO Auto-generated
+	 * method stub }
+	 */
 
 	public Annotated getAnnotationForService(Service<?> service) {
 		int index = serviceList.indexOf(service);

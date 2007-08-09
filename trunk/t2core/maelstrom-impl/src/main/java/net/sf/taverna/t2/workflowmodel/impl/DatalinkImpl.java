@@ -18,6 +18,16 @@ public class DatalinkImpl extends AbstractMutableAnnotatedThing implements
 
 	private EventHandlingInputPort sink;
 
+	private transient int resolvedDepth = -1;
+	
+	public int getResolvedDepth() {
+		return this.resolvedDepth;
+	}
+	
+	public void setResolvedDepth(int newResolvedDepth) {
+		this.resolvedDepth = newResolvedDepth;
+	}
+	
 	protected DatalinkImpl(EventForwardingOutputPort source,
 			EventHandlingInputPort sink) {
 		this.source = source;

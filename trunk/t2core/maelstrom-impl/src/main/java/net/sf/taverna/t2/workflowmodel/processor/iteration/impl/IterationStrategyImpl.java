@@ -22,6 +22,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStra
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
@@ -43,16 +44,12 @@ public class IterationStrategyImpl implements IterationStrategy {
 
 	private TerminalNode terminal = new TerminalNode();
 
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	public void setDepth(String inputName, int depth) {
-		for (NamedInputPortNode nipn : inputs) {
-			if (nipn.getPortName().equals(inputName)) {
-				nipn.setObservedIterationDepth(depth);
-			}
-		}
-	}
-
+	/**
+	 * The terminal node is used internally as the root of the iteration
+	 * strategy tree, it is responsible for forwarding all events up to the
+	 * iteration strategy itself which can then propogate them to the strategy
+	 * stack.
+	 */
 	class TerminalNode extends AbstractIterationStrategyNode {
 
 		public void receiveCompletion(int inputIndex, Completion completion) {
@@ -89,11 +86,12 @@ public class IterationStrategyImpl implements IterationStrategy {
 			}
 		}
 
-		public int getIterationDepth() {
+		public int getIterationDepth(Map<String, Integer> inputDepths)
+				throws IterationTypeMismatchException {
 			if (getChildren().isEmpty()) {
 				return -1;
 			} else {
-				return getChildren().get(0).getIterationDepth();
+				return getChildren().get(0).getIterationDepth(inputDepths);
 			}
 		}
 
@@ -209,9 +207,6 @@ public class IterationStrategyImpl implements IterationStrategy {
 						.getOwningProcess());
 				NamedInputPortNode ipn = nodeForName(portName);
 				int desiredDepth = ipn.getCardinality();
-				ipn
-						.setObservedIterationDepth(dataRef.getDepth()
-								- desiredDepth);
 				Iterator<ContextualizedIdentifier> ids = manager.traverse(
 						dataRef, desiredDepth);
 				while (ids.hasNext()) {
@@ -319,6 +314,18 @@ public class IterationStrategyImpl implements IterationStrategy {
 					.getChildAt(0));
 			nipn.setParent(node);
 		}
+	}
+
+	public int getIterationDepth(Map<String, Integer> inputDepths) throws IterationTypeMismatchException {
+		return getTerminal().getIterationDepth(inputDepths);
+	}
+
+	public Map<String, Integer> getDesiredCardinalities() {
+		Map<String, Integer> result = new HashMap<String, Integer>();
+		for (NamedInputPortNode nipn : inputs) {
+			result.put(nipn.getPortName(), nipn.getCardinality());
+		}
+		return result;
 	}
 
 }

@@ -38,7 +38,7 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort impl
 					.getIndex(), token.getData()));
 	}
 	
-	protected void addOutgoingLink(Datalink link) {
+	protected void addOutgoingLink(DatalinkImpl link) {
 		if (outgoingLinks.contains(link) == false) {
 			outgoingLinks.add(link);
 		}

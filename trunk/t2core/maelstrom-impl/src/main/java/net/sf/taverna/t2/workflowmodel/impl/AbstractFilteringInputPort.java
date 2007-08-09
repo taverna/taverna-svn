@@ -25,6 +25,10 @@ public abstract class AbstractFilteringInputPort extends
 		this.filterDepth = depth;
 	}
 
+	public int getFilterDepth() {
+		return this.filterDepth;
+	}
+	
 	private int filterDepth;
 
 	public void receiveEvent(Event e) {
@@ -34,16 +38,6 @@ public abstract class AbstractFilteringInputPort extends
 			throw new WorkflowStructureException(
 					"Filtering input port only accepts WorkflowDataToken");
 		}
-	}
-
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	private int oid = -1;
-
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	public int getObservedDepth() {
-		return this.oid;
 	}
 
 	public void pushToken(WorkflowDataToken dt, String owningProcess,
@@ -75,7 +69,6 @@ public abstract class AbstractFilteringInputPort extends
 	}
 
 	public void receiveToken(WorkflowDataToken token) {
-		this.oid = token.getIndex().length + token.getData().getDepth();
 		String newOwner = transformOwningProcess(token.getOwningProcess());
 		if (filterDepth == -1) {
 			throw new WorkflowStructureException(
@@ -136,6 +129,9 @@ public abstract class AbstractFilteringInputPort extends
 
 	public void setFilterDepth(int filterDepth) {
 		this.filterDepth = filterDepth;
+		if (filterDepth < getDepth()) {
+			filterDepth = getDepth();
+		}
 	}
 
 	/**

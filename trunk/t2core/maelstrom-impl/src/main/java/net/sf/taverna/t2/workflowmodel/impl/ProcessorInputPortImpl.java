@@ -3,7 +3,6 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
 /**
  * An implementation of the filtering input port interface used as an input for
@@ -34,30 +33,14 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 	
 	@Override
 	protected void pushCompletion(String portName, String owningProcess, int[] index) {
-		checkDepth();
 		parent.iterationStack.receiveCompletion(portName, owningProcess, index);	
 	}
 
 	@Override
 	protected void pushData(String portName, String owningProcess, int[] index, EntityIdentifier data) {
-		checkDepth();
 		parent.iterationStack.receiveData(portName, owningProcess, index, data);
 	}
 	
-	private boolean sentDepth = false;
-	
-	// FIXME - this should really be per-process or at least be possible to reset.
-	private void checkDepth() {
-		if (sentDepth) {
-			return;
-		}
-		else {
-			IterationStrategyImpl isi = parent.iterationStack.getStrategies().get(0);
-			isi.setDepth(this.getName(), getObservedDepth());
-			sentDepth = true;
-		}
-	}
-
 	public Processor getProcessor() {
 		return this.parent;
 	}

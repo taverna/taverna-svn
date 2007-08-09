@@ -18,7 +18,7 @@ import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 public class BasicEventForwardingOutputPort extends AbstractOutputPort
 		implements EventForwardingOutputPort {
 
-	protected Set<Datalink> outgoingLinks;
+	protected Set<DatalinkImpl> outgoingLinks;
 
 	/**
 	 * Construct a new abstract output port with event forwarding capability
@@ -30,13 +30,13 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 	public BasicEventForwardingOutputPort(String portName, int portDepth,
 			int granularDepth) {
 		super(portName, portDepth, granularDepth);
-		this.outgoingLinks = new HashSet<Datalink>();
+		this.outgoingLinks = new HashSet<DatalinkImpl>();
 	}
 
 	/**
 	 * Implements EventForwardingOutputPort
 	 */
-	public final Set<Datalink> getOutgoingLinks() {
+	public final Set<? extends Datalink> getOutgoingLinks() {
 		return Collections.unmodifiableSet(this.outgoingLinks);
 	}
 

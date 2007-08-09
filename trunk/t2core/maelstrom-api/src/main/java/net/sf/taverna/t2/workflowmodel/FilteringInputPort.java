@@ -30,6 +30,6 @@ public interface FilteringInputPort extends EventHandlingInputPort {
 	 * 
 	 * @param filterDepth
 	 */
-	public void setFilterDepth(int filterDepth);
+	public int getFilterDepth();
 
 }

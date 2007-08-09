@@ -160,7 +160,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 			}
 
 			@Override
-			public Job getEmptyJob(String owningProcess, int[] index, int depth) {
+			public Job getEmptyJob(String owningProcess, int[] index) {
 				// TODO Auto-generated method stub
 				return null;
 			}

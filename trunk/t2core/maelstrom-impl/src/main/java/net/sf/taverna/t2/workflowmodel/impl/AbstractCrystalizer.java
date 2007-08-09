@@ -29,13 +29,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 
 	private Map<String, CompletionAwareTreeCache> cacheMap = new HashMap<String, CompletionAwareTreeCache>();
 
-	protected int baseListDepth = -1;
-
-	public void setBaseListDepth(int newDepth) {
-		this.baseListDepth = newDepth;
-	}
-
-	public abstract Job getEmptyJob(String owningProcess, int[] index, int depth);
+	public abstract Job getEmptyJob(String owningProcess, int[] index);
 
 	/**
 	 * Receive a Job or Completion, Jobs are emitted unaltered and cached,
@@ -95,20 +89,15 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 			if (n != null) {
 				assignNamesTo(n, completionIndex);
 			} else {
-				if (baseListDepth == -1) {
-					AbstractCrystalizer.this.completionCreated(new Completion(
-							owningProcess, completionIndex));
-				} else {
-					// We know what the list depth should be, so we can
-					// construct appropriate depth empty lists to fill in the
-					// gaps.
-					int wrappingDepth = baseListDepth - completionIndex.length;
-					Job j = getEmptyJob(owningProcess, completionIndex,
-							wrappingDepth);
-					// System.out.println("Inserting new empty collection "+j);
-					insertJob(j);
-					jobCreated(j);
-				}
+
+				// We know what the list depth should be, so we can
+				// construct appropriate depth empty lists to fill in the
+				// gaps.
+				Job j = getEmptyJob(owningProcess, completionIndex);
+				// System.out.println("Inserting new empty collection "+j);
+				insertJob(j);
+				jobCreated(j);
+
 			}
 		}
 
@@ -116,18 +105,19 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 			// Only act if contents of this node undefined
 			// StringBuffer iString = new StringBuffer();
 			// for (int foo : index) {
-			//	iString.append(foo+" ");
-			//}
-			//System.out.println("assignNamesTo "+iString.toString());
+			// iString.append(foo+" ");
+			// }
+			// System.out.println("assignNamesTo "+iString.toString());
 			if (n.contents == null) {
 				Map<String, List<EntityIdentifier>> listItems = new HashMap<String, List<EntityIdentifier>>();
 				int pos = 0;
-				// System.out.println(" Unnamed node : ["+iString.toString()+"]");
+				// System.out.println(" Unnamed node :
+				// ["+iString.toString()+"]");
 				// for (NamedNode child : n.children) {
-				//	System.out.println("        ++ "+child);
+				// System.out.println(" ++ "+child);
 				// }
 				for (NamedNode child : n.children) {
-					
+
 					// If child doesn't have a defined name map yet then define
 					// it
 					Job j;
@@ -139,10 +129,10 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 							newIndex[i] = index[i];
 						}
 						newIndex[index.length] = pos++;
-						j = getEmptyJob(owningProcess, newIndex, baseListDepth - newIndex.length);
+						j = getEmptyJob(owningProcess, newIndex);
 						AbstractCrystalizer.this.jobCreated(j);
 					} else {
-						
+
 						if (child.contents == null) {
 							int[] newIndex = new int[index.length + 1];
 							for (int i = 0; i < index.length; i++) {

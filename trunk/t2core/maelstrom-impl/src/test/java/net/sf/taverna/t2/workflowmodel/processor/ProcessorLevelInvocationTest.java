@@ -12,9 +12,10 @@ import net.sf.taverna.t2.cloudone.impl.InMemoryDataManager;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
+import net.sf.taverna.t2.workflowmodel.impl.ProcessorInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
@@ -27,7 +28,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 	// Create a diagnostic event receiver
 	DiagnosticEventHandler deh = new DiagnosticEventHandler();
 
-	Processor processor;
+	ProcessorImpl processor;
 
 	DataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
@@ -77,6 +78,14 @@ public class ProcessorLevelInvocationTest extends TestCase {
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess2",
 				new int[0], listIdentifier);
 
+		// This is not a public API! We're using it here because we need some
+		// way to push the configuration data into the processor that would
+		// normally be created during the typecheck operation. In this case
+		// we're declaring that we've given a list to the processor where it
+		// wanted a single item and that it therefore has a wrapping level of 1
+		// after the iteration strategy has been applied.
+		processor.resultWrappingDepth = 1;
+
 		processor.getInputPorts().get(0).receiveEvent(token);
 		// This shouldn't do anything as we've got the filter by default set to
 		// 0 so it ignores this list which has depth 1. It will now, however,
@@ -100,7 +109,8 @@ public class ProcessorLevelInvocationTest extends TestCase {
 		// Reconfigure processor to set the filter to level 1, i.e. consume
 		// lists and iterate over them using the data manager's traversal
 		// functionality
-		processor.getInputPorts().get(0).setFilterDepth(1);
+		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
+				.setFilterDepth(1);
 		processor.getInputPorts().get(0).receiveEvent(token);
 
 		// Should produce two outputs followed by a collection
@@ -114,27 +124,50 @@ public class ProcessorLevelInvocationTest extends TestCase {
 		System.out.println("Top level empty list (depth 2)");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
 				.registerEmptyList(2);
-		processor.getInputPorts().get(0).setFilterDepth(0);
+		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
+				.setFilterDepth(0);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess4",
 				new int[0], listIdentifier);
+
+		// This is not a public API! We're using it here because we need some
+		// way to push the configuration data into the processor that would
+		// normally be created during the typecheck operation. In this case
+		// we're declaring that we've given a list of lists to the processor
+		// where it wanted a single item and that it therefore has a wrapping
+		// level of 2 after the iteration strategy has been applied.
+		processor.resultWrappingDepth = 2;
+
 		processor.getInputPorts().get(0).receiveEvent(token);
 		assertTrue(deh.getEventCount() == 1);
 	}
-	
-	public void testPartiallyEmptyCollection() throws EditException, JDOMException, IOException, ServiceConfigurationException, MalformedIdentifierException {
+
+	public void testPartiallyEmptyCollection() throws EditException,
+			JDOMException, IOException, ServiceConfigurationException,
+			MalformedIdentifierException {
 		createProcessor();
 		EntityIdentifier emptyListIdentifier = ContextManager.baseManager
-		.registerEmptyList(1);
+				.registerEmptyList(1);
 		System.out.println("Partially empty collection : {{}{foo, bar}}");
 		EntityIdentifier populatedListIdentifier = ContextManager.baseManager
-		.registerList(new EntityIdentifier[] {
-				Literal.buildLiteral("foo"),
-				Literal.buildLiteral("bar") });
+				.registerList(new EntityIdentifier[] {
+						Literal.buildLiteral("foo"),
+						Literal.buildLiteral("bar") });
 		EntityIdentifier listIdentifier = ContextManager.baseManager
-		.registerList(new EntityIdentifier[] {emptyListIdentifier, populatedListIdentifier});
-		processor.getInputPorts().get(0).setFilterDepth(2);
+				.registerList(new EntityIdentifier[] { emptyListIdentifier,
+						populatedListIdentifier });
+		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
+				.setFilterDepth(2);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess5",
 				new int[0], listIdentifier);
+		
+		// This is not a public API! We're using it here because we need some
+		// way to push the configuration data into the processor that would
+		// normally be created during the typecheck operation. In this case
+		// we're declaring that we've given a list of lists to the processor
+		// where it wanted a single item and that it therefore has a wrapping
+		// level of 2 after the iteration strategy has been applied.
+		processor.resultWrappingDepth = 2;
+		
 		processor.getInputPorts().get(0).receiveEvent(token);
 		assertTrue(deh.getEventCount() == 5);
 	}

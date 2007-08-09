@@ -23,4 +23,15 @@ public interface Datalink {
 	 */
 	public EventForwardingOutputPort getSource();
 
+	/**
+	 * Each datalink has a resolved depth, this being the constant sum of index
+	 * array length + item depth for all tokens exchanged along this link. Where
+	 * no iteration or data streaming is occuring this will evaluate to the
+	 * output port depth the link is from (as is always the case with the
+	 * internal output ports in dataflow inputs)
+	 * 
+	 * @return
+	 */
+	public int getResolvedDepth();
+
 }

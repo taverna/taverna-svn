@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration;
 
+import java.util.Map;
+
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 
@@ -17,10 +19,6 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 	private String portName;
 
 	private int desiredCardinality;
-
-	// FIXME - this should really be per-process or at least be possible to
-	// reset.
-	private int oid = -1;
 
 	public NamedInputPortNode(String name, int cardinality) {
 		super();
@@ -77,24 +75,14 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 	}
 
 	/**
-	 * The iteration depth is the difference between cardinality of the given
-	 * and expected input data plus the index array length of that data. For
-	 * example, if this input port expected a single item and was given an array
-	 * with an index length 2 the value returned here would be 3, one for the
-	 * single step mismatch in depth and two for the index array defining the
-	 * position of that input list within its parent collection. This is set by
-	 * the internal logic of the workflow when data is first received by a
-	 * processor input port.
+	 * Iteration depth is the difference between the supplied input depth and
+	 * the desired one. If the desired depth is greater then wrapping will
+	 * happen and the iteration depth will be zero (rather than a negative!)
 	 */
-	public void setObservedIterationDepth(int oid) {
-		this.oid = oid;
-	}
-
-	/**
-	 * Returns the value defined by the setObservedIterationDepth method.
-	 */
-	public int getIterationDepth() {
-		return this.oid;
+	public int getIterationDepth(Map<String, Integer> inputDepths) {
+		int myInputDepth = inputDepths.get(portName);
+		int depthMismatch = myInputDepth - desiredCardinality;
+		return (depthMismatch > 0 ? depthMismatch : 0);
 	}
 
 }
