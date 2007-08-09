@@ -40,7 +40,17 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	 * @throws IterationTypeMismatchException
 	 */
 	public int getIterationDepth(Map<String, Integer> inputDepths)
-			throws IterationTypeMismatchException, MissingIterationInputException {
+			throws IterationTypeMismatchException,
+			MissingIterationInputException {
+		// If there are no iteration strategies or no inputs then by definition
+		// there's no iteration, no wrapping and the depth of wrapping must be
+		// zero
+		if (strategies.isEmpty()) {
+			return 0;
+		}
+		if (strategies.get(0).inputs.isEmpty()) {
+			return 0;
+		}
 		IterationStrategyImpl strategy = strategies.get(0);
 		int depth = strategy.getIterationDepth(inputDepths);
 		for (int index = 1; index < strategies.size(); index++) {
