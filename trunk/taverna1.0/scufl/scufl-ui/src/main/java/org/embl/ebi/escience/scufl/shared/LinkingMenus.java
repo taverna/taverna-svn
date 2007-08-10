@@ -71,10 +71,56 @@ public class LinkingMenus {
 			theMenu.add(workflowSinks);
 			theMenu.addSeparator();
 		}
+		/**
+		JMenu expansion = null;
+		boolean added = false;
+		
 		for (int i = 0; i < wsp.length; i++) {
+			if (i>5) {
+				if (!added) {
+					expansion = new JMenu("More");
+					workflowSinks.add(expansion);
+					added = true;
+				}
+				expansion.add(new AddDataConstraintAction(model, fromPort,
+						wsp[i]));
+			} else {
 			workflowSinks.add(new AddDataConstraintAction(model, fromPort,
 					wsp[i]));
+			}
+		}**/
+		//code for multiple cascading menus
+		JMenu tempMenu = null;
+		JMenu newTempMenu = null;
+		boolean set = false;
+		int cascadeSize = 20; //how many outputs do we want in a pop-up menu
+		for (int i = 0; i < wsp.length; i++) {
+			if (i>(cascadeSize-1) && !set) {
+				//add inner menus
+				set = true;
+				for (int j=1; j< (Math.ceil((wsp.length)/cascadeSize))+1;j++) {
+					JMenu exp = new JMenu("More");
+					for (int x=(j*cascadeSize);x<((j*cascadeSize)+cascadeSize);x++) {
+						if (x<wsp.length) {
+							//don't add any null values
+							exp.add(new AddDataConstraintAction(model, fromPort, wsp[x]));
+						}
+					}
+					newTempMenu = exp;
+					tempMenu.add(newTempMenu);
+					tempMenu=newTempMenu;
+				}
+			} else {
+				if (!set) {
+					//add outer menu
+					workflowSinks.add(new AddDataConstraintAction(model, fromPort, wsp[i]));
+					tempMenu = workflowSinks;
+				}
+			}
 		}
+		
+		
+		
 		theMenu.add(new ShadedLabel("Processors", ShadedLabel.TAVERNA_BLUE));
 		theMenu.addSeparator();
 		// Do the target processors
