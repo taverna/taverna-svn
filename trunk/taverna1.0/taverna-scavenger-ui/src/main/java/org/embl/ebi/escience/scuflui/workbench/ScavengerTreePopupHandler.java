@@ -310,11 +310,11 @@ public class ScavengerTreePopupHandler extends MouseAdapter {
 							try {
 								pf.createProcessor(validName, ScavengerTreePopupHandler.this.scavenger.model);
 							} catch (ProcessorCreationException pce) {
-								logger.error("Problen creating processor", pce);
+								logger.error("Problem creating processor", pce);
 								JOptionPane.showMessageDialog(null, "Processor creation exception : \n"
 										+ pce.getMessage(), "Exception!", JOptionPane.ERROR_MESSAGE);
 							} catch (DuplicateProcessorNameException dpne) {
-								logger.error("Problen creating processor", dpne);
+								logger.error("Problem creating processor", dpne);
 								JOptionPane.showMessageDialog(null, "Duplicate name : \n" + dpne.getMessage(),
 										"Exception!", JOptionPane.ERROR_MESSAGE);
 							}
