@@ -9,9 +9,6 @@
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-soaplab-processor" version="1.5.2-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-wsdl-processor" version="1.5.2-SNAPSHOT"/>
 	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-apiconsumer-processor" version="1.5.2-SNAPSHOT"/>
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-inferno-processor" version="1.5.2-SNAPSHOT"/>
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-notification-processor" version="1.5.2-SNAPSHOT"/>
-	<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="taverna-talisman-processor" version="1.5.2-SNAPSHOT"/>
 	<artifact groupId="biomoby.org" artifactId="taverna-biomoby" version="1.5.2-SNAPSHOT"/>	
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-scavenger" version="1.5.2-SNAPSHOT"/>
 
