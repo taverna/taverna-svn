@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkflowLauncher.java,v $
- * Revision           $Revision: 1.13 $
+ * Revision           $Revision: 1.14 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-25 16:00:11 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-08-10 17:29:26 $
+ *               by   $Author: stain $
  * Created on 16-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl.tools;
@@ -41,8 +41,8 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
@@ -82,7 +82,6 @@ import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowCompletionEvent;
 import org.embl.ebi.escience.scufl.enactor.event.WorkflowFailureEvent;
-import org.embl.ebi.escience.scufl.enactor.event.WorkflowToBeDestroyedEvent;
 import org.embl.ebi.escience.scufl.enactor.implementation.FreefluoEnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.implementation.WorkflowEventDispatcher;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
@@ -273,11 +272,11 @@ public class WorkflowLauncher {
 		return progressReportXML;
 	}
 
-	public Map execute(Map inputs) throws WorkflowSubmissionException,
+	public Map<String, DataThing> execute(Map<String, DataThing> inputs) throws WorkflowSubmissionException,
 			InvalidInputException {
 
 		EnactorProxy enactor = FreefluoEnactorProxy.getInstance();
-		Map result;
+		Map<String, DataThing> result;
 
 		final WorkflowInstance workflowInstance = enactor.compileWorkflow(
 				model, inputs, userContext);
@@ -344,7 +343,7 @@ public class WorkflowLauncher {
 	 * @see org.embl.ebi.escience.baclava.DataThing
 	 * @see org.embl.ebi.escience.scufl.enactor.WorkflowEventListener
 	 */
-	public Map execute(Map inputs,
+	public Map<String, DataThing> execute(Map<String, DataThing> inputs,
 			WorkflowEventListener[] workflowEventListeners)
 			throws WorkflowSubmissionException, InvalidInputException {
 		initialise();
@@ -370,7 +369,7 @@ public class WorkflowLauncher {
 	 * @see org.embl.ebi.escience.baclava.DataThing
 	 * @see org.embl.ebi.escience.scufl.enactor.WorkflowEventListener
 	 */
-	public Map execute(Map inputs, WorkflowEventListener workflowEventListener)
+	public Map<String, DataThing> execute(Map<String, DataThing> inputs, WorkflowEventListener workflowEventListener)
 			throws WorkflowSubmissionException, InvalidInputException {
 		WorkflowEventDispatcher.DISPATCHER.addListener(workflowEventListener);
 		return execute(inputs);
@@ -414,11 +413,11 @@ public class WorkflowLauncher {
 			TavernaSPIRegistry.setRepository(repository);
 	}
 
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access"})
 	private WorkflowLauncher(String[] args) throws MalformedURLException {
 		// For compatability with old-style code using
 		// System.getProperty("taverna.*")
-		MyGridConfiguration.loadMygridProperties();
+		MyGridConfiguration.getInstance();
 
 		// Return code to exit with, normally 0
 		int error = 0;
@@ -491,7 +490,7 @@ public class WorkflowLauncher {
 			System.exit(0);
 		}
 
-		Map inputs = new HashMap();
+		Map<String, DataThing> inputs = new HashMap<String, DataThing>();
 		if (line.hasOption("inputdoc")) {
 			File inputDoc = new File(line.getOptionValue("inputdoc"));
 			try {
@@ -578,7 +577,7 @@ public class WorkflowLauncher {
 		}
 
 		// PUH! Ok, all the file stuff set up, let's get to work
-		Map outputs;
+		Map<String, DataThing> outputs;
 		WorkflowLauncher launcher;
 		try {
 			launcher = new WorkflowLauncher(workflowURL);
@@ -668,7 +667,18 @@ public class WorkflowLauncher {
 		new WorkflowLauncher(args);
 	}
 
-	private static Map loadInputDoc(File file) throws JDOMException,
+	/**
+	 * Load a XML-serialised Baclava data document from a file.
+	 * 
+	 * @param file
+	 *            The file to load
+	 * @return The String -> {@link DataThing} {@link Map} of input values
+	 * @throws JDOMException
+	 *             If the file could not be parsed
+	 * @throws IOException
+	 *             If the file could not be opened/read
+	 */
+	public static Map<String, DataThing> loadInputDoc(File file) throws JDOMException,
 			IOException {
 		SAXBuilder builder = new SAXBuilder();
 		Document inputDoc = builder.build(new FileReader(file));
@@ -679,13 +689,13 @@ public class WorkflowLauncher {
 	 * Save workflow outputs as an DataThing XML document
 	 * 
 	 * @param outputs
-	 *            Map of DataThing to save
+	 *            Map of String -> {@link DataThing} to save
 	 * @param outputDoc
 	 *            File to write the document
 	 * @throws IOException
 	 *             If the file cannot be written
 	 */
-	private static void saveOutputDoc(Map outputs, File outputDoc)
+	public static void saveOutputDoc(Map<String, DataThing> outputs, File outputDoc)
 			throws IOException {
 		Document doc = DataThingXMLFactory.getDataDocument(outputs);
 		XMLOutputter xo = new XMLOutputter(Format.getPrettyFormat());
@@ -705,17 +715,14 @@ public class WorkflowLauncher {
 	 *            Base directory for structure
 	 * @throws IOException
 	 */
-	private static void saveOutputs(Map outputs, File outputDir)
+	public static void saveOutputs(Map<String, DataThing> outputs, File outputDir)
 			throws IOException {
 		if (outputs == null) {
 			return;
 		}
-		for (Iterator iterator = outputs.keySet().iterator(); iterator
-				.hasNext();) {
-			String outputName = (String) iterator.next();
-			DataThing thing = (DataThing) outputs.get(outputName);
-			DataThing.writeObjectToFileSystem(outputDir, outputName, thing
-					.getDataObject(), "");
+		for (Entry<String, DataThing> entry : outputs.entrySet()) {
+			DataThing.writeObjectToFileSystem(outputDir, entry.getKey(),
+				entry.getValue().getDataObject(), "");
 		}
 	}
 
