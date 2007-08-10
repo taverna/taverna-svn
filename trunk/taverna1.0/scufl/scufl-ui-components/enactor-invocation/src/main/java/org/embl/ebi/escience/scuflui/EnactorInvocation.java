@@ -465,9 +465,9 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		toolbar.add(Box.createHorizontalGlue());						
 		toolbar.addSeparator();
 		toolbar.add(playButton);
-		toolbar.add(pauseButton);
+		//toolbar.add(pauseButton);
 		toolbar.addSeparator();
-		toolbar.add(stopButton);
+		//toolbar.add(stopButton);
 		toolbar.addSeparator();
 		toolbar.add(closeButton);
 
