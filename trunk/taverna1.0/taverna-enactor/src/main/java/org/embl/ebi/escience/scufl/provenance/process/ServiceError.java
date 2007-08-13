@@ -64,14 +64,13 @@ public class ServiceError extends ProcessEvent {
 							"\\.");
 					String className = classNameParts[classNameParts.length - 1];
 					String methodName = stack[i].getMethodName();
-					boolean isNativeMethod = stack[i].isNativeMethod();
 					int line = stack[i].getLineNumber();
 					sb.append("   " + className + "." + methodName
 							+ "(..) : line " + line + " &lt;" + fileName
 							+ "&gt;<br>");
 				}
 				if (ex.getCause() != null) {
-					ex = (Throwable) ex.getCause();
+					ex = ex.getCause();
 					sb.append("<br>");
 				} else {
 					doneFullTrace = true;
