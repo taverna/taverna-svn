@@ -25,8 +25,8 @@
 //      Dependencies        :
 //
 //      Last commit info    :   $Author: stain $
-//                              $Date: 2006-11-06 17:02:00 $
-//                              $Revision: 1.5 $
+//                              $Date: 2007-08-13 15:05:04 $
+//                              $Revision: 1.6 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -36,8 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.IProcessorTask;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.enactor.EnactorProxy;
 import org.embl.ebi.escience.scufl.enactor.UserContext;
@@ -56,6 +56,21 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.EnactorWorkflowTask;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
+	private class WorkflowFinishedListener implements WorkflowStateListener {
+		private final Thread thread;
+
+		private WorkflowFinishedListener(Thread thread) {
+			this.thread = thread;
+		}
+
+		public void workflowStateChanged(WorkflowStateChangedEvent event) {
+			WorkflowState state = event.getWorkflowState();
+			if (state.isFinal()) {
+				thread.interrupt();
+			}
+		}
+	}
+
 	private static EnactorProxy defaultEnactor = FreefluoEnactorProxy.getInstance();
 
 	private static Logger logger = Logger.getLogger(WorkflowTask.class);	
@@ -79,13 +94,24 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
 		WorkflowProcessor theProcessor = (WorkflowProcessor) proc;
 		ScuflModel theNestedModel = theProcessor.getInternalModel();
-
+		
 		// The inputMap is already in the form we need for a submission
 		try {
 			// Get the parent workflow instance
 			WorkflowInstance parentInstance = parentTask.getWorkflowInstance();
 			UserContext context = parentInstance.getUserContext();			
-			workflowInstance = defaultEnactor.compileWorkflow(theNestedModel, inputMap, context);
+			WorkflowInstance wfInstance =
+				defaultEnactor.compileWorkflow(theNestedModel, inputMap,
+					context);
+			synchronized(this) {
+				if (workflowInstance != null) {
+					// Fail on TAV-548
+					logger.error("execute() called twice");
+					wfInstance.destroy();
+					throw new IllegalStateException("execute() called twice on nested workflow");
+				}
+				workflowInstance = wfInstance;
+			}
 			WorkflowEventDispatcher.DISPATCHER.fireEvent(new NestedWorkflowCreationEvent(parentTask.getWorkflowInstance(), inputMap, workflowInstance));
 		} catch (WorkflowSubmissionException e) {
 			String msg = "Error executing workflow task.  Error compiling the nested workflow.";
@@ -95,14 +121,7 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 
 		try {
 			final Thread taskThread = Thread.currentThread();
-			((WorkflowInstanceImpl) workflowInstance).addWorkflowStateListener(new WorkflowStateListener() {
-				public void workflowStateChanged(WorkflowStateChangedEvent event) {
-					WorkflowState state = event.getWorkflowState();
-					if (state.isFinal()) {
-						taskThread.interrupt();
-					}
-				}
-			});
+			((WorkflowInstanceImpl) workflowInstance).addWorkflowStateListener(new WorkflowFinishedListener(taskThread));
 			workflowInstance.run();
 		} catch (Exception e) {
 			String msg = "Nested workflow failed in task, error message was: " + e.getMessage();
@@ -113,9 +132,10 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 		try {
 			while (true) {
 				Thread.sleep(10000);
+				// Wait for WorkflowFinishedListener
 			}
 		} catch (InterruptedException ie) {
-			//
+			// workflow was finished
 		}
 
 		WorkflowState workflowState = WorkflowState.getState(workflowInstance.getStatus());
