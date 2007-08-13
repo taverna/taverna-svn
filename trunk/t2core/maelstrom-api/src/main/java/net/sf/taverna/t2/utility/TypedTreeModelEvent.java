@@ -35,8 +35,8 @@ public class TypedTreeModelEvent<NodeType> {
 		this.path = new TreePath(path);
 		this.source = source;
 		this.childIndices = new int[0];
-		this.children = NodeType[].class.cast(java.lang.reflect.Array
-				.newInstance(NodeType[].class, 0));
+		//this.children = NodeType[].class.cast(java.lang.reflect.Array
+		//		.newInstance(NodeType[].class, 0));
 	}
 
 	/**
@@ -51,8 +51,8 @@ public class TypedTreeModelEvent<NodeType> {
 		this.path = path;
 		this.source = source;
 		this.childIndices = new int[0];
-		this.children = NodeType[].class.cast(java.lang.reflect.Array
-				.newInstance(NodeType[].class, 0));
+		//this.children = NodeType[].class.cast(java.lang.reflect.Array
+		//		.newInstance(NodeType[].class, 0));
 	}
 
 	/**
