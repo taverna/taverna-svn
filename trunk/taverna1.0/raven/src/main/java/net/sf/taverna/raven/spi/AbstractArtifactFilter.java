@@ -1,11 +1,10 @@
 package net.sf.taverna.raven.spi;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractArtifactFilter implements ArtifactFilter {
 
-	private List<ArtifactFilterListener> artifactFilterListeners = new ArrayList<ArtifactFilterListener>();
+	private ArrayList<ArtifactFilterListener> artifactFilterListeners = new ArrayList<ArtifactFilterListener>();
 
 	public AbstractArtifactFilter() {
 		super();
@@ -25,9 +24,12 @@ public abstract class AbstractArtifactFilter implements ArtifactFilter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireFilterChanged(ArtifactFilter filter) {
 		synchronized (artifactFilterListeners) {
-			for (ArtifactFilterListener listener : artifactFilterListeners) {
+			ArrayList<ArtifactFilterListener> listeners =
+				(ArrayList<ArtifactFilterListener>) artifactFilterListeners.clone();
+			for (ArtifactFilterListener listener : listeners) {
 				listener.filterChanged(filter);
 			}
 		}
