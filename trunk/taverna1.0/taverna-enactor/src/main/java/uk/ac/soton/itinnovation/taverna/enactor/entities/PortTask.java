@@ -24,9 +24,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-11-22 15:28:11 $
-//                              $Revision: 1.6 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2007-08-13 14:37:47 $
+//                              $Revision: 1.7 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -130,6 +130,7 @@ public class PortTask extends AbstractTask {
 	 * @param newDataThing
 	 *            holder for data
 	 */
+	@SuppressWarnings("unchecked")
 	public synchronized void setData(DataThing newDataThing, boolean forced) {
 		if (!forced && dataAvailable()) {
 			if (getScuflPort() instanceof InputPort) {
@@ -179,7 +180,7 @@ public class PortTask extends AbstractTask {
 				// While the dimensionality has not been reconciled create
 				// a new List container and put the current object in it.
 				// System.out.println("Wrapping data...");
-				List newList = new ArrayList();
+				List<Object> newList = new ArrayList<Object>();
 				newList.add(theDataObject);
 				theDataObject = newList;
 			}
@@ -224,8 +225,8 @@ public class PortTask extends AbstractTask {
 			if (theDataThing == null) {
 				theDataThing = new DataThing(new ArrayList());
 			}
-			((List) (theDataThing.getDataObject())).add(newDataThing
-					.getDataObject());
+			List<Object> thingList = (List<Object>) theDataThing.getDataObject();
+			thingList.add(newDataThing.getDataObject());
 			theDataThing.copyMetadataFrom(newDataThing);
 		} else {
 			theDataThing = newDataThing;
