@@ -196,6 +196,7 @@
 				<module>raven</module>
 				<module>raven-log4j</module>
 				<module>zaria</module>
+				<module>examples</module>
 			</modules>
 		</profile>
 		<profile>
