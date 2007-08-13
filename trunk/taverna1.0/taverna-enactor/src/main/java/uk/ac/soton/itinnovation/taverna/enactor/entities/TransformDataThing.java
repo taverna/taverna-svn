@@ -21,9 +21,9 @@
 //      Created for Project :   MYGRID
 //      Dependencies        :
 //
-//      Last commit info    :   $Author: sowen70 $
-//                              $Date: 2006-07-10 14:05:58 $
-//                              $Revision: 1.2 $
+//      Last commit info    :   $Author: stain $
+//                              $Date: 2007-08-13 15:06:10 $
+//                              $Revision: 1.3 $
 //
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +66,8 @@ public class TransformDataThing
     private static Logger logger = Logger.getLogger(TransformDataThing.class);
     /** recursive worker for replacelsid
      */
-    protected static Object replaceLSIDsInDataThingValues(Map inputMap, Map outputMap, DataThing dt, Object value) 
+    @SuppressWarnings("unchecked")
+	protected static Object replaceLSIDsInDataThingValues(Map inputMap, Map outputMap, DataThing dt, Object value) 
     {
 	Object newValue = value;
 	if (value instanceof String) 		
@@ -183,7 +184,7 @@ public class TransformDataThing
 	} 
 	else if (value instanceof List) 
 	{
-	    ArrayList newList = new ArrayList((List)value);
+	    ArrayList<Object> newList = new ArrayList<Object>((List<Object>)value);
 	    for (int i=0; i<newList.size(); i++) 
 		newList.set(i, replaceLSIDsInDataThingValues(inputMap, outputMap, dt, newList.get(i)));
 	    newValue = newList;
