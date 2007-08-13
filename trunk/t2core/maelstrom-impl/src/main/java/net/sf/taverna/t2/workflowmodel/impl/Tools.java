@@ -14,6 +14,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
+import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -57,7 +58,7 @@ public class Tools {
 			throws EditException {
 		ProcessorImpl result = new ProcessorImpl();
 		// Add the Service to the processor
-		result.serviceList.add(service);
+		result.serviceList.add(new ServiceAnnotationContainerImpl(service));
 		// Create processor inputs and outputs corresponding to service inputs
 		// and outputs and set the mappings in the Service object.
 		service.getInputPortMapping().clear();

@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
+import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
@@ -16,21 +16,19 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
  */
 public class AddServiceEdit extends AbstractProcessorEdit {
 
-	private Service<?> serviceToAdd;
+	private ServiceAnnotationContainerImpl serviceToAdd;
 
 	public AddServiceEdit(Processor p, Service<?> s) {
 		super(p);
-		this.serviceToAdd = s;
+		this.serviceToAdd = new ServiceAnnotationContainerImpl(s);
 	}
 
 	@Override
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
-		List<Service<?>> services = processor.serviceList;
+		List<ServiceAnnotationContainerImpl> services = processor.serviceList;
 		if (services.contains(serviceToAdd) == false) {
 			synchronized (processor) {
 				services.add(serviceToAdd);
-				processor.serviceAnnotations
-						.add(new AbstractMutableAnnotatedThing());
 			}
 		} else {
 			throw new EditException(
@@ -42,8 +40,6 @@ public class AddServiceEdit extends AbstractProcessorEdit {
 	@Override
 	protected void undoEditAction(ProcessorImpl processor) {
 		synchronized (processor) {
-			processor.serviceAnnotations.remove(processor.serviceList
-					.indexOf(serviceToAdd));
 			processor.serviceList.remove(serviceToAdd);
 		}
 	}

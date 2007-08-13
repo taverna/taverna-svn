@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.impl.InMemoryDataManager;
@@ -17,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 import junit.framework.TestCase;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
@@ -24,10 +26,13 @@ public class DispatchStackTestWithParallelize extends TestCase {
 
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		
-		private List<Service<?>> services;
+		private List<ServiceAnnotationContainerImpl> services;
 		
-		public BasicDispatchStackImpl(List<Service<?>> services) {
-			this.services = services;			
+		public BasicDispatchStackImpl(List<? extends Service> servicelist) {
+			this.services = new ArrayList<ServiceAnnotationContainerImpl>();
+			for (Service s : servicelist) {
+				services.add(new ServiceAnnotationContainerImpl(s));
+			}		
 		}
 
 		@Override
@@ -36,7 +41,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		}
 
 		@Override
-		protected List<Service<?>> getServices() {
+		protected List<? extends ServiceAnnotationContainer> getServices() {
 			return this.services;
 		}
 

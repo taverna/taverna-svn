@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
+import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -24,7 +24,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInput
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
 import org.jdom.Element;
@@ -47,9 +47,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 
 	protected List<ProcessorOutputPortImpl> outputPorts = new ArrayList<ProcessorOutputPortImpl>();
 
-	protected List<Service<?>> serviceList = new ArrayList<Service<?>>();
-
-	protected List<AbstractMutableAnnotatedThing> serviceAnnotations = new ArrayList<AbstractMutableAnnotatedThing>();
+	protected List<ServiceAnnotationContainerImpl> serviceList = new ArrayList<ServiceAnnotationContainerImpl>();
 
 	protected AbstractCrystalizer crystalizer;
 
@@ -117,7 +115,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 			}
 
 			@Override
-			protected List<Service<?>> getServices() {
+			protected List<? extends ServiceAnnotationContainer> getServices() {
 				return ProcessorImpl.this.getServiceList();
 			}
 
@@ -225,8 +223,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		e.addContent(iterationStack.asXML());
 		e.addContent(dispatchStack.asXML());
 		Element servicesElement = new Element("services");
-		for (Service s : serviceList) {
-			Element serviceElement = Tools.serviceAsXML(s);
+		for (ServiceAnnotationContainerImpl saci : serviceList) {
+			Element serviceElement = Tools.serviceAsXML(saci.getService());
 			servicesElement.addContent(serviceElement);
 		}
 		e.addContent(servicesElement);
@@ -259,8 +257,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		serviceList.clear();
 		for (Element serviceElement : (List<Element>) e.getChild("services")
 				.getChildren("service")) {
-			serviceList.add(Tools.buildService(serviceElement));
-			serviceAnnotations.add(new AbstractMutableAnnotatedThing());
+			// TODO - add annotation from annotation element here
+			serviceList.add(new ServiceAnnotationContainerImpl(Tools.buildService(serviceElement)));
 		}
 	}
 
@@ -328,7 +326,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		return Collections.unmodifiableList(outputPorts);
 	}
 
-	public List<Service<?>> getServiceList() {
+	public List<? extends ServiceAnnotationContainer> getServiceList() {
 		return Collections.unmodifiableList(serviceList);
 	}
 
@@ -338,14 +336,6 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 
 	public String getLocalName() {
 		return this.name;
-	}
-
-	public Annotated getAnnotationForService(Service<?> service) {
-		int index = serviceList.indexOf(service);
-		if (index >= 0) {
-			return serviceAnnotations.get(index);
-		}
-		return null;
 	}
 
 }

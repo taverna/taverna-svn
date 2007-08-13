@@ -9,7 +9,7 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Convenience abstract implementation of DispatchLayer, all actions are set to
@@ -122,7 +122,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public void receiveJob(Job job, List<Service> services) {
+	public void receiveJob(Job job, List<? extends ServiceAnnotationContainer> services) {
 		checkValid(DispatchMessageType.JOB);
 		DispatchLayer below = dispatchStack.layerBelow(this);
 		if (below != null) {
@@ -132,7 +132,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 
 	@SuppressWarnings("unchecked")
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<Service> services) {
+			BlockingQueue<Event> queue, List<? extends ServiceAnnotationContainer> services) {
 		checkValid(DispatchMessageType.JOBQUEUE);
 		DispatchLayer below = dispatchStack.layerBelow(this);
 		if (below != null) {

@@ -17,6 +17,7 @@ import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousService;
 import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousServiceCallback;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Context free invoker layer, does not pass index arrays of jobs into service
@@ -92,8 +93,9 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, List<Service> services) {
-		for (Service s : services) {
+	public void receiveJob(final Job job, List<? extends ServiceAnnotationContainer> annotatedServices) {
+		for (ServiceAnnotationContainer sac : annotatedServices) {
+			Service s = sac.getService();
 			if (s instanceof AsynchronousService) {
 
 				// The service is an AsynchronousService so we invoke it with an

@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
+import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +9,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
-import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Acts as a fake invocation layer as with the DummyInvokerLayer but this one
@@ -21,7 +22,7 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
  */
 public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 
-	public void receiveJob(Job job, List<Service> services) {
+	public void receiveJob(Job job, List<? extends ServiceAnnotationContainer> services) {
 		final Job j = job;
 		new Thread(new Runnable() {
 			public void run() {

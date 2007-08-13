@@ -6,7 +6,7 @@ import java.util.TimerTask;
 
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Implements retry policy with delay between retries and exponential backoff
@@ -45,7 +45,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 
 		int currentRetryCount = 0;
 
-		public RetryState(Job job, List<Service> services) {
+		public RetryState(Job job, List<? extends ServiceAnnotationContainer> services) {
 			super(job, services);
 		}
 
@@ -80,7 +80,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 	}
 
 	@Override
-	protected JobState getStateObject(Job j, List<Service> services) {
+	protected JobState getStateObject(Job j, List<? extends ServiceAnnotationContainer> services) {
 		return new RetryState(j, services);
 	}
 

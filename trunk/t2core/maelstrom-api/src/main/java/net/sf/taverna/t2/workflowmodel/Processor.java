@@ -5,7 +5,7 @@ import java.util.List;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * A single node within the dataflow digraph, the Processor is the basic
@@ -78,18 +78,8 @@ public interface Processor extends NamedWorkflowEntity, Annotated {
 	 * 
 	 * @return list of Service instances
 	 */
-	public List<Service<?>> getServiceList();
+	public List<? extends ServiceAnnotationContainer> getServiceList();
 
-	/**
-	 * Each service in a processor can be annotated with contextual information.
-	 * This annotation is in addition to that inherent to the service object
-	 * itself and can, unlike the inherent information, be modified by the
-	 * workflow designer. To get the resultant annotation on a service in this
-	 * context it is therefore necessary to merge the result from this call and
-	 * the service's own annotation. If the service isn't found within this
-	 * processor this method will return null.
-	 */
-	public Annotated getAnnotationForService(Service<?> service);
 
 	/**
 	 * A processor with no inputs cannot be driven by the supply of data tokens
