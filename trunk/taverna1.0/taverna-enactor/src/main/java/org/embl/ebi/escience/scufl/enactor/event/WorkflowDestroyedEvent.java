@@ -1,6 +1,5 @@
 package org.embl.ebi.escience.scufl.enactor.event;
 
-import org.embl.ebi.escience.scufl.enactor.WorkflowInstance;
 
 /**
  * This event is sent after workflowInstance.destroy() has been called.
