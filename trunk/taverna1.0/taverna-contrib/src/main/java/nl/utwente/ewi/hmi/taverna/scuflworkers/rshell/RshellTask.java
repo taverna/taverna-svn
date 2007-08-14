@@ -1,8 +1,8 @@
 /*
  * CVS
- * $Author: sowen70 $
- * $Date: 2006-07-20 14:51:32 $
- * $Revision: 1.1 $
+ * $Author: stain $
+ * $Date: 2007-08-14 12:23:40 $
+ * $Revision: 1.2 $
  * University of Twente, Human Media Interaction Group
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.rshell;
@@ -37,7 +37,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * A task to invoke a RProcessor. Connect to the Rserv by using JRclient, and
  * execute R script. Converts inputs and outputs as appropriate
- * 
+ *
  * @author Stian Soiland, Ingo Wassink
  */
 public class RshellTask implements ProcessorTaskWorker {
@@ -47,7 +47,7 @@ public class RshellTask implements ProcessorTaskWorker {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param processor
 	 *            the processor to be invoked
 	 */
@@ -57,21 +57,22 @@ public class RshellTask implements ProcessorTaskWorker {
 
 	/*
 	 * Process R script on the workflow inputs.
-	 * 
+	 *
 	 * Inputs will be converted to suitable R types as specified in the
 	 * RservInputPort and defined in the RservConfigPanel.
-	 * 
+	 *
 	 * Each RservInputPort is available as a local variable in the R
 	 * environment, which will be fresh on each execute()
-	 * 
+	 *
 	 * Output will be converted to a (list of) strings.
-	 * 
+	 *
 	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
 	 *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
 	 *      @param workflowInputMap the input map of the processor @param
 	 *      parentTask the parent task @return output map of the processor
 	 */
-	public Map execute(Map workflowInputMap, IProcessorTask parentTask)
+	@SuppressWarnings("unchecked")
+    public Map<String, Object> execute(Map workflowInputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 
 		Map<String, Object> outputs = new HashMap<String, Object>();
@@ -125,25 +126,32 @@ public class RshellTask implements ProcessorTaskWorker {
 			// create filename variables for output ports that are files
 			for (OutputPort outputPort : processor.getOutputPorts()) {
 				RshellOutputPort rshellOutputPort = (RshellOutputPort) outputPort;
-				if (rshellOutputPort.getSymanticType().isFile)
-					connection.assign(outputPort.getName(),
+				if (rshellOutputPort.getSymanticType().isFile) {
+	                connection.assign(outputPort.getName(),
 							generateFilename(rshellOutputPort));
+                }
 			}
 
 			// execute script
 			String script = processor.getScript();
-			if (script.length() != 0)
-				connection.voidEval(script);
+			if (script.length() != 0) {
+	            connection.voidEval(script);
+            }
 
 			// create last statement for getting output for output ports
 			OutputPort[] outputPorts = processor.getOutputPorts();
 			StringBuffer returnString = new StringBuffer("list(");
+			boolean first = true;
 			for (OutputPort outputPort : outputPorts) {
+				if (first) {
+					first = false;
+				} else {
+					returnString.append(", ");
+				}
 				String portName = outputPort.getName();
 				returnString.append(portName);
 				returnString.append("=");
 				returnString.append(portName);
-				returnString.append(", ");
 			}
 			returnString.append(")\n");
 			REXP results = connection.eval(returnString.toString());
@@ -182,10 +190,11 @@ public class RshellTask implements ProcessorTaskWorker {
 				break;
 			}
 			case REXP.XT_VECTOR: {
-				if (outputPorts.length == 0)
-					break;
-				else
-					throw new TaskExecutionException("Unexpected result");
+				if (outputPorts.length == 0) {
+	                break;
+                } else {
+	                throw new TaskExecutionException("Unexpected result");
+                }
 			}
 
 			default:
@@ -220,8 +229,170 @@ public class RshellTask implements ProcessorTaskWorker {
 	}
 
 	/**
+	 * Method for cleaing up all generated files
+	 *
+	 * @param connection
+	 *            the connection to be used
+	 */
+	private void cleanUpServerFiles(RshellConnection connection) {
+		for (InputPort inputPort : processor.getInputPorts()) {
+			RshellInputPort rshellInputPort = (RshellInputPort) inputPort;
+
+			if (rshellInputPort.getSymanticType().isFile) {
+				try {
+					connection.removeFile(generateFilename(inputPort));
+				} catch (RSrvException rse) {
+					// do nothing, try to delete other files
+				}
+			}
+		}
+
+		for (OutputPort outputPort : processor.getOutputPorts()) {
+			RshellOutputPort rshellInputPort = (RshellOutputPort) outputPort;
+
+			if (rshellInputPort.getSymanticType().isFile) {
+				try {
+					connection.removeFile(generateFilename(outputPort));
+				} catch (RSrvException rse) {
+					// do nothing, try to delete other files
+				}
+			}
+		}
+	}
+
+	/**
+	 * Method for generating a valid filename for a port
+	 *
+	 * @param Port
+	 *            the port to generate a filename for
+	 * @return the filename
+	 *
+	 */
+	private String generateFilename(Port Port) {
+		String portName = Port.getName();
+		return portName.replaceAll("\\W", "_") + ".png";
+	}
+
+	/**
+	 * Convert workflow input to an REXP using the given javaType. For instance,
+	 * if javaType is double[], and input is a list of strings, each string will
+	 * be converted to a double, and the array will be wrapped in an REXP.
+	 *
+	 * @param input
+	 *            the input object to be converted
+	 * @param symantic
+	 *            type to which the rExp should be converted
+	 * @throws TaskExecutionException
+	 *             if symantictype is not supported
+	 */
+	@SuppressWarnings("unchecked")
+    private REXP javaToRExp(Object value, SymanticTypes symanticType)
+			throws TaskExecutionException {
+		switch (symanticType) {
+		case REXP:
+			return (REXP) value;
+
+		case BOOL: {
+			String strValue = (String) value;
+			boolean bool = strValue.toLowerCase().equals("true")
+					|| strValue.equals("1");
+			return new REXP(new String[] { (bool) ? "true" : "false" });
+		}
+		case DOUBLE:
+			return new REXP(new double[] { Double.parseDouble((String) value) });
+		case INTEGER:
+			return new REXP(new int[] { Integer.parseInt((String) value) });
+		case STRING:
+			return new REXP(new String[] { (String) value });
+
+		case DOUBLE_LIST: {
+			List values = (List) value;
+			double[] doubles = new double[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				doubles[i] = Double.parseDouble((String) values.get(i));
+			}
+			return new REXP(doubles);
+		}
+		case INTEGER_LIST: {
+			List values = (List) value;
+			int[] ints = new int[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				ints[i] = Integer.parseInt((String) values.get(i));
+			}
+			return new REXP(ints);
+		}
+		case STRING_LIST: {
+			List values = (List) value;
+			String[] strings = new String[values.size()];
+			for (int i = 0; i < values.size(); i++) {
+				strings[i] = (String) values.get(i);
+			}
+			return new REXP(strings);
+		}
+
+		default:
+			throw new TaskExecutionException("Symantic type " + symanticType
+					+ " not supported");
+		}
+	}
+
+	/**
+	 * Method for reading the png image
+	 *
+	 * @param outputPort
+	 *            the output port to read the file from
+	 * @param connection
+	 *            the connection to be used
+	 * @return data the data of the file
+	 */
+	private Object readRServeFile(RshellOutputPort outputPort,
+			RshellConnection connection) throws TaskExecutionException {
+
+		String filename = generateFilename(outputPort);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		RFileInputStream inputStream = null;
+		byte[] bytes;
+
+		try {
+			inputStream = connection.openFile(filename);
+
+			int bytesRead;
+			byte[] buffer = new byte[BUF_SIZE];
+			while ((bytesRead = inputStream.read(buffer)) > 0) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+			inputStream.close();
+			outputStream.close();
+
+			bytes = outputStream.toByteArray();
+			outputStream.close();
+
+		} catch (IOException ioe) {
+			try {
+				if (inputStream != null && connection.isConnected()) {
+	                inputStream.close();
+                }
+			} catch (Exception e) {
+			}
+
+			throw new TaskExecutionException("Cannot read file '" + filename
+					+ "' from Rserve: " + ioe.getMessage());
+		}
+
+		Object value;
+		switch (outputPort.getSymanticType()) {
+		case TEXT_FILE:
+			value = new String(bytes);
+			break;
+		default:
+			value = bytes;
+		}
+		return value;
+	}
+
+	/**
 	 * Convert REXP to suitable (list of)
-	 * 
+	 *
 	 * @param rExp
 	 *            the r expression
 	 * @param symanticType
@@ -321,14 +492,16 @@ public class RshellTask implements ProcessorTaskWorker {
 				return new ArrayList<String>();
 			case REXP.XT_ARRAY_DOUBLE: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (double value : rExp.asDoubleArray())
-					values.add(Double.toString(value));
+				for (double value : rExp.asDoubleArray()) {
+	                values.add(Double.toString(value));
+                }
 				return values;
 			}
 			case REXP.XT_ARRAY_INT: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (int value : rExp.asIntArray())
-					values.add(Double.toString(value));
+				for (int value : rExp.asIntArray()) {
+	                values.add(Double.toString(value));
+                }
 				return values;
 			}
 			case REXP.XT_BOOL:
@@ -346,14 +519,16 @@ public class RshellTask implements ProcessorTaskWorker {
 				return new ArrayList<String>();
 			case REXP.XT_ARRAY_DOUBLE: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (double value : rExp.asDoubleArray())
-					values.add(Integer.toString((int) value));
+				for (double value : rExp.asDoubleArray()) {
+	                values.add(Integer.toString((int) value));
+                }
 				return values;
 			}
 			case REXP.XT_ARRAY_INT: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (int value : rExp.asIntArray())
-					values.add(Integer.toString(value));
+				for (int value : rExp.asIntArray()) {
+	                values.add(Integer.toString(value));
+                }
 				return values;
 			}
 			case REXP.XT_BOOL:
@@ -372,14 +547,16 @@ public class RshellTask implements ProcessorTaskWorker {
 				return new ArrayList<String>();
 			case REXP.XT_ARRAY_DOUBLE: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (double value : rExp.asDoubleArray())
-					values.add(Double.toString((int) value));
+				for (double value : rExp.asDoubleArray()) {
+	                values.add(Double.toString((int) value));
+                }
 				return values;
 			}
 			case REXP.XT_ARRAY_INT: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (int value : rExp.asIntArray())
-					values.add(Integer.toString(value));
+				for (int value : rExp.asIntArray()) {
+	                values.add(Integer.toString(value));
+                }
 				return values;
 			}
 			case REXP.XT_BOOL:
@@ -390,14 +567,16 @@ public class RshellTask implements ProcessorTaskWorker {
 				return new String[] { Integer.toString(rExp.asInt()) };
 			case REXP.XT_VECTOR: {
 				ArrayList<String> values = new ArrayList<String>();
-				for (Object value : rExp.asVector())
-					values.add((String) rExpToJava((REXP) value,
+				for (Object value : rExp.asVector()) {
+	                values.add((String) rExpToJava((REXP) value,
 							SymanticTypes.STRING));
+                }
 				return values;
 			}
 			default:
 			}
-		default:
+		break;
+			default:
 		}
 
 		// should never end here
@@ -409,7 +588,7 @@ public class RshellTask implements ProcessorTaskWorker {
 
 	/**
 	 * Helper method for rExpToJava for converting a list to a string value
-	 * 
+	 *
 	 * @param rExp
 	 *            the rExp to be converted
 	 * @return the string representation
@@ -428,99 +607,24 @@ public class RshellTask implements ProcessorTaskWorker {
 
 	/**
 	 * Helper function for converting a vector to a string
-	 * 
+	 *
 	 * @rExp the rExp to be converted to a string
 	 * @return the string representation
 	 */
-	private String rVectorToString(REXP rExp) throws TaskExecutionException {
+	@SuppressWarnings("unchecked")
+    private String rVectorToString(REXP rExp) throws TaskExecutionException {
 		Vector elements = rExp.asVector();
 		ArrayList<String> strings = new ArrayList<String>();
 		for (Object object : elements) {
-			strings
-					.add((String) rExpToJava((REXP) object,
+			strings.add((String) rExpToJava((REXP) object,
 							SymanticTypes.STRING));
 		}
 		return Arrays.toString(strings.toArray());
 	}
 
 	/**
-	 * Convert workflow input to an REXP using the given javaType. For instance,
-	 * if javaType is double[], and input is a list of strings, each string will
-	 * be converted to a double, and the array will be wrapped in an REXP.
-	 * 
-	 * @param input
-	 *            the input object to be converted
-	 * @param symantic
-	 *            type to which the rExp should be converted
-	 * @throws TaskExecutionException
-	 *             if symantictype is not supported
-	 */
-	private REXP javaToRExp(Object value, SymanticTypes symanticType)
-			throws TaskExecutionException {
-		switch (symanticType) {
-		case REXP:
-			return (REXP) value;
-
-		case BOOL: {
-			String strValue = (String) value;
-			boolean bool = strValue.toLowerCase().equals("true")
-					|| strValue.equals("1");
-			return new REXP(new String[] { (bool) ? "true" : "false" });
-		}
-		case DOUBLE:
-			return new REXP(new double[] { Double.parseDouble((String) value) });
-		case INTEGER:
-			return new REXP(new int[] { Integer.parseInt((String) value) });
-		case STRING:
-			return new REXP(new String[] { (String) value });
-
-		case DOUBLE_LIST: {
-			List values = (List) value;
-			double[] doubles = new double[values.size()];
-			for (int i = 0; i < values.size(); i++) {
-				doubles[i] = Double.parseDouble((String) values.get(i));
-			}
-			return new REXP(doubles);
-		}
-		case INTEGER_LIST: {
-			List values = (List) value;
-			int[] ints = new int[values.size()];
-			for (int i = 0; i < values.size(); i++) {
-				ints[i] = Integer.parseInt((String) values.get(i));
-			}
-			return new REXP(ints);
-		}
-		case STRING_LIST: {
-			List values = (List) value;
-			String[] strings = new String[values.size()];
-			for (int i = 0; i < values.size(); i++) {
-				strings[i] = (String) values.get(i);
-			}
-			return new REXP(strings);
-		}
-
-		default:
-			throw new TaskExecutionException("Symantic type " + symanticType
-					+ " not supported");
-		}
-	}
-
-	/**
-	 * Method for generating a valid filename for a port
-	 * 
-	 * @param Port
-	 *            the port to generate a filename for
-	 * @return the filename
-	 * 
-	 */
-	private String generateFilename(Port Port) {
-		String portName = Port.getName();
-		return portName.replaceAll("\\W", "_") + ".png";
-	}
-
-	/**
 	 * Method for writing the server file
-	 * 
+	 *
 	 * @param inputPort
 	 *            the input port to write a file to
 	 * @param connection
@@ -552,98 +656,14 @@ public class RshellTask implements ProcessorTaskWorker {
 			outputStream.close();
 		} catch (IOException ioe) {
 			try {
-				if (outputStream != null && connection.isConnected())
-					outputStream.close();
+				if (outputStream != null && connection.isConnected()) {
+	                outputStream.close();
+                }
 			} catch (Exception e) {
 			}
 
 			throw new TaskExecutionException("Cannot read file '" + filename
 					+ "' from Rserve: " + ioe.getMessage());
-		}
-	}
-
-	/**
-	 * Method for reading the png image
-	 * 
-	 * @param outputPort
-	 *            the output port to read the file from
-	 * @param connection
-	 *            the connection to be used
-	 * @return data the data of the file
-	 */
-	private Object readRServeFile(RshellOutputPort outputPort,
-			RshellConnection connection) throws TaskExecutionException {
-
-		String filename = generateFilename(outputPort);
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		RFileInputStream inputStream = null;
-		byte[] bytes;
-
-		try {
-			inputStream = connection.openFile(filename);
-
-			int bytesRead;
-			byte[] buffer = new byte[BUF_SIZE];
-			while ((bytesRead = inputStream.read(buffer)) > 0) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-			inputStream.close();
-			outputStream.close();
-
-			bytes = outputStream.toByteArray();
-			outputStream.close();
-
-		} catch (IOException ioe) {
-			try {
-				if (inputStream != null && connection.isConnected())
-					inputStream.close();
-			} catch (Exception e) {
-			}
-
-			throw new TaskExecutionException("Cannot read file '" + filename
-					+ "' from Rserve: " + ioe.getMessage());
-		}
-
-		Object value;
-		switch (outputPort.getSymanticType()) {
-		case TEXT_FILE:
-			value = new String(bytes);
-			break;
-		default:
-			value = bytes;
-		}
-		return value;
-	}
-
-	/**
-	 * Method for cleaing up all generated files
-	 * 
-	 * @param connection
-	 *            the connection to be used
-	 */
-	private void cleanUpServerFiles(RshellConnection connection) {
-		for (InputPort inputPort : processor.getInputPorts()) {
-			RshellInputPort rshellInputPort = (RshellInputPort) inputPort;
-
-			if (rshellInputPort.getSymanticType().isFile) {
-				try {
-					connection.removeFile(generateFilename(inputPort));
-				} catch (RSrvException rse) {
-					// do nothing, try to delete other files
-				}
-			}
-		}
-
-		for (OutputPort outputPort : processor.getOutputPorts()) {
-			RshellOutputPort rshellInputPort = (RshellOutputPort) outputPort;
-
-			if (rshellInputPort.getSymanticType().isFile) {
-				try {
-					connection.removeFile(generateFilename(outputPort));
-				} catch (RSrvException rse) {
-					// do nothing, try to delete other files
-				}
-			}
 		}
 	}
 
