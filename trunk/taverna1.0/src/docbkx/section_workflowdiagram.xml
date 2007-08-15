@@ -287,7 +287,7 @@
     <para>Colour is used both in the diagram and explorer views to denote the
     service architecture behind each processor. The diagram below shows a
     workflow including examples of each different processor type (excluding
-    the biomart and styx based operations):</para>
+    the biomart based operations):</para>
 
     <screenshot>
       <screeninfo></screeninfo>
