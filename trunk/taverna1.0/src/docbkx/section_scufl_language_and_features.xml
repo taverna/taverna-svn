@@ -15,7 +15,6 @@
   <xi:include href="section_beanshell.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_rshell.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_biomart.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-  <xi:include href="section_styx.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_soaplab.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_wsdl.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
   <xi:include href="section_breakpoints.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />

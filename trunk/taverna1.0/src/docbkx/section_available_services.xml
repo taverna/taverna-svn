@@ -243,9 +243,7 @@
           </mediaobject>
         </screenshot>
 
-        <para>The Talisman scavenger can be ignored here. It is extremely
-        specialized and only applicable to those already using the Talisman
-        web application system. The others, however, operate as
+        <para>The scavengers operate as
         follows:</para>
 
         <itemizedlist>
@@ -272,17 +270,6 @@
             Description Language (WSDL) file on the web. It inspects this file
             to pull out all appropriate operations and adds them as WSDL based
             service nodes to the services panel.</para>
-          </listitem>
-
-          <listitem>
-            <para><emphasis role="bold">Styx Grid scavenger</emphasis> This
-            service type is currently experimental and interfaces to the peer
-            to peer streaming enabled service framework developed using the
-            Styx protocols either natively or layered on top of the Inferno
-            embedded operating system. If selected this asks for the host and
-            port on which the SGS container is running and presents each
-            contained service under a node representing the host in the
-            services panel.</para>
           </listitem>
 
           <listitem>
