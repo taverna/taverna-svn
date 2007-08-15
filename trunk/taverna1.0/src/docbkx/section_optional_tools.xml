@@ -13,9 +13,6 @@
   <xi:include href="section_api_consumer.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude" />
 
-  <xi:include href="section_interaction_service.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude" />
-              
   <xi:include href="section_webservice_dataproxy.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude" />
 </section>
