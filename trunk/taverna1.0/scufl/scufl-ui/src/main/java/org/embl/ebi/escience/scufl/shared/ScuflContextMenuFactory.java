@@ -30,6 +30,7 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
+import org.embl.ebi.escience.scuflui.actions.AddDataConstraintAction;
 import org.embl.ebi.escience.scuflui.actions.AddInputAction;
 import org.embl.ebi.escience.scuflui.actions.AddOutputAction;
 import org.embl.ebi.escience.scuflui.actions.EditMetadataAction;
@@ -344,8 +345,94 @@ public class ScuflContextMenuFactory {
 			((JMenu) block).add(new ShadedLabel("Processors", ShadedLabel.TAVERNA_ORANGE));
 			((JMenu) block).addSeparator();
 		}
-
+		
+		JMenu tempMenu = null;
+		JMenu newTempMenu = null;
+		boolean set = false;
+		int cascadeSize = 20; //how many processors do we want in a pop-up menu
 		for (int i = 0; i < gp.length; i++) {
+			if (i>(cascadeSize-1) && !set) {
+				//add inner menus
+				set = true;
+				for (int j=1; j< (Math.ceil((gp.length)/cascadeSize))+1;j++) {
+					JMenu exp = new JMenu("More");
+					for (int x=(j*cascadeSize);x<((j*cascadeSize)+cascadeSize);x++) {
+						if (x<gp.length) {
+							//don't add any null values
+							if (gp[x] != processor) {
+								JMenuItem gpi = new JMenuItem(gp[x].getName());
+								gpi.setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(gp[x]));
+								exp.add(gpi);
+								final Processor controller = gp[x];
+								final Processor target = processor;
+								final ScuflModel model = processor.getModel();
+								gpi.addActionListener(new ActionListener() {
+									// Create a new concurrency constraint
+									public void actionPerformed(ActionEvent ae) {
+										String ccName = target.getName() + "_BLOCKON_" + controller.getName();
+										try {
+											// Constraints created by this menu are, for now,
+											// always
+											// of the form 'block scheduled to running until
+											// completed',
+											// as this is all the enactor can currently support.
+											ConcurrencyConstraint cc = new ConcurrencyConstraint(model, ccName, controller, target,
+													ConcurrencyConstraint.SCHEDULED, ConcurrencyConstraint.RUNNING,
+													ConcurrencyConstraint.COMPLETED);
+											model.addConcurrencyConstraint(cc);
+										} catch (Exception e) {
+											JOptionPane.showMessageDialog(null, "Something wasn't happy : \n" + e.getMessage(),
+													"Exception!", JOptionPane.ERROR_MESSAGE);
+										}
+									}
+								});
+
+							}
+						}
+					}
+					newTempMenu = exp;
+					tempMenu.add(newTempMenu);
+					tempMenu=newTempMenu;
+				}
+			} else {
+				if (!set) {
+					//add outer menu
+					if (gp[i] != processor) {
+						JMenuItem gpi = new JMenuItem(gp[i].getName());
+						gpi.setIcon(org.embl.ebi.escience.scuflworkers.ProcessorHelper.getPreferredIcon(gp[i]));
+						block.add(gpi);
+						final Processor controller = gp[i];
+						final Processor target = processor;
+						final ScuflModel model = processor.getModel();
+						gpi.addActionListener(new ActionListener() {
+							// Create a new concurrency constraint
+							public void actionPerformed(ActionEvent ae) {
+								String ccName = target.getName() + "_BLOCKON_" + controller.getName();
+								try {
+									// Constraints created by this menu are, for now,
+									// always
+									// of the form 'block scheduled to running until
+									// completed',
+									// as this is all the enactor can currently support.
+									ConcurrencyConstraint cc = new ConcurrencyConstraint(model, ccName, controller, target,
+											ConcurrencyConstraint.SCHEDULED, ConcurrencyConstraint.RUNNING,
+											ConcurrencyConstraint.COMPLETED);
+									model.addConcurrencyConstraint(cc);
+								} catch (Exception e) {
+									JOptionPane.showMessageDialog(null, "Something wasn't happy : \n" + e.getMessage(),
+											"Exception!", JOptionPane.ERROR_MESSAGE);
+								}
+							}
+						});
+
+					}
+					//block.add(gpi);
+					tempMenu = (JMenu) block;
+				}
+			}
+		}
+
+		/**for (int i = 0; i < gp.length; i++) {
 			// Doesn't make sense to block on self, will deadlock.
 			if (gp[i] != processor) {
 				JMenuItem gpi = new JMenuItem(gp[i].getName());
@@ -376,7 +463,7 @@ public class ScuflContextMenuFactory {
 				});
 
 			}
-		}
+		}**/
 		return theMenu;
 	}
 

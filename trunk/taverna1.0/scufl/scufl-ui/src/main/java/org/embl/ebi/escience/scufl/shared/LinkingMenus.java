@@ -90,10 +90,12 @@ public class LinkingMenus {
 			}
 		}**/
 		//code for multiple cascading menus
+		//outputs
 		JMenu tempMenu = null;
 		JMenu newTempMenu = null;
 		boolean set = false;
-		int cascadeSize = 20; //how many outputs do we want in a pop-up menu
+		int cascadeSize = 30; //how many outputs do we want in a pop-up menu, see also ScuflContextMenuFactory.getProcessorMenu
+		int inputCascadeSize = 40;
 		for (int i = 0; i < wsp.length; i++) {
 			if (i>(cascadeSize-1) && !set) {
 				//add inner menus
@@ -118,10 +120,168 @@ public class LinkingMenus {
 				}
 			}
 		}
-		
-		
-		
+		//version 1 each input added separately
+		//processors
 		theMenu.add(new ShadedLabel("Processors", ShadedLabel.TAVERNA_BLUE));
+		theMenu.addSeparator();
+		JMenu processMenu = null;
+		tempMenu = null;
+		newTempMenu = null;
+		JMenu tmMenu = null;
+		set = false;
+		for (int i = 0; i < processors.length; i++) {
+			if (i>(cascadeSize-1) && !set) {
+				//add inner menus
+				set = true;
+				for (int j=1; j< (Math.ceil((processors.length)/cascadeSize))+1;j++) {
+					JMenu exp = new JMenu("More");
+					if (j==1) {
+						//can't make JPopUpMenu into a JMenu so add this workaround
+						theMenu.add(exp);
+						tempMenu=exp;
+					}
+					for (int x=(j*cascadeSize);x<((j*cascadeSize)+cascadeSize);x++) {
+						if (x<processors.length) {
+							//don't add any null values
+							InputPort[] inputs = processors[x].getInputPorts();
+							if (inputs.length > 0 && processors[x] != sourcePort.getProcessor()) {
+								ImageIcon icon = null;
+								icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper
+										.getPreferredIcon(processors[x]);
+								processMenu = new JMenu(processors[x].getName());
+								processMenu.add(new ShadedLabel("Choose an Input",
+										ShadedLabel.TAVERNA_ORANGE));
+								processMenu.addSeparator();
+								processMenu.setIcon(icon);
+								exp.add(processMenu);
+								int offset = 0;
+								int menuSize = 15;
+								JMenu currentMenu = processMenu;
+								boolean finished = false;
+								boolean menuSet = false;
+								while (!finished) {
+									if (inputs.length > menuSize) {
+										currentMenu = new JMenu(
+												"Inputs "
+														//+ (offset + 1) + " " + inputs[offset].getName()
+														+ " " + inputs[offset].getName()
+														+ " to "
+														//+ ((offset + menuSize > inputs.length) ? inputs[inputs.length - 2].getName() : inputs[offset + menuSize-2].getName())  
+														+ ((offset + menuSize > inputs.length) ? inputs[inputs.length -1].getName() : inputs[offset + menuSize -1].getName()));
+										processMenu.add(currentMenu);
+										currentMenu
+												.add(new ShadedLabel(
+														"Inputs "
+																+ inputs[offset].getName()
+																+ " to "
+																+ ((offset + menuSize > inputs.length) ? inputs[inputs.length -1].getName()
+																		: inputs[offset + menuSize -1].getName()),
+														ShadedLabel.TAVERNA_ORANGE));
+										currentMenu.addSeparator();
+									}
+									for (int k = offset; (k < inputs.length)
+											&& (k < offset + menuSize); k++) {
+										final Port toPort = inputs[k];
+										final JMenuItem ip = new JMenuItem(inputs[k].getName(),
+												TavernaIcons.inputPortIcon);
+										currentMenu.add(ip);
+										ip.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent ae) {
+												try {
+													model.addDataConstraint(new DataConstraint(
+															model, fromPort, toPort));
+												} catch (DataConstraintCreationException dcce) {
+													//
+												}
+											}
+										});
+									}
+									offset += menuSize;
+									if (offset >= inputs.length) {
+										finished = true;
+									}
+								}
+							}	
+						}
+					}
+					newTempMenu = exp;
+					//need to remember to add the new "More" menu, first time round it is already done
+					if (j>1) { 
+						tempMenu.add(newTempMenu);
+					}
+					tempMenu=newTempMenu;
+				}
+			} else {
+				if (!set) {
+					//add outer menu
+					InputPort[] inputs = processors[i].getInputPorts();
+					if (inputs.length > 0 && processors[i] != sourcePort.getProcessor()) {
+						ImageIcon icon = null;
+						icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper
+								.getPreferredIcon(processors[i]);
+						processMenu = new JMenu(processors[i].getName());
+						processMenu.add(new ShadedLabel("Choose an Input",
+								ShadedLabel.TAVERNA_ORANGE));
+						processMenu.addSeparator();
+						processMenu.setIcon(icon);
+						theMenu.add(processMenu);
+						boolean menuSet = false;
+						int offset = 0;
+						int menuSize = 15;
+						JMenu currentMenu = processMenu;
+						boolean finished = false;
+						//add all the inputs
+						while (!finished) {
+							if (inputs.length > menuSize) {
+								currentMenu = new JMenu(
+										"Inputs "
+												+ (offset + 1) + " " + inputs[offset].getName()
+												+ " to "
+												+ ((offset + menuSize > inputs.length) ? inputs[inputs.length - 1]
+														: inputs[offset + menuSize-1]) + 
+												+ ((offset + menuSize > inputs.length) ? inputs.length
+														: offset + menuSize));
+								processMenu.add(currentMenu);
+								currentMenu
+										.add(new ShadedLabel(
+												"Inputs "
+														+ (offset + 1)
+														+ " to "
+														+ ((offset + menuSize > inputs.length) ? inputs.length
+																: offset + menuSize),
+												ShadedLabel.TAVERNA_ORANGE));
+								currentMenu.addSeparator();
+							}
+							for (int j = offset; (j < inputs.length)
+									&& (j < offset + menuSize); j++) {
+								final Port toPort = inputs[j];
+								final JMenuItem ip = new JMenuItem(inputs[j].getName(),
+										TavernaIcons.inputPortIcon);
+								currentMenu.add(ip);
+								ip.addActionListener(new ActionListener() {
+									public void actionPerformed(ActionEvent ae) {
+										try {
+											model.addDataConstraint(new DataConstraint(
+													model, fromPort, toPort));
+										} catch (DataConstraintCreationException dcce) {
+											//
+										}
+									}
+								});
+							}
+							offset += menuSize;
+							if (offset >= inputs.length) {
+								finished = true;
+							}
+						}
+
+					}
+				}
+				}
+			}
+		
+		
+		/**theMenu.add(new ShadedLabel("Processors", ShadedLabel.TAVERNA_BLUE));
 		theMenu.addSeparator();
 		// Do the target processors
 		for (int i = 0; i < processors.length; i++) {
@@ -145,8 +305,10 @@ public class LinkingMenus {
 					if (inputs.length > menuSize) {
 						currentMenu = new JMenu(
 								"Inputs "
-										+ (offset + 1)
+										+ (offset + 1) + " " + inputs[offset].getName()
 										+ " to "
+										+ ((offset + menuSize > inputs.length) ? inputs[inputs.length - 1]
+												: inputs[offset + menuSize-1]) + 
 										+ ((offset + menuSize > inputs.length) ? inputs.length
 												: offset + menuSize));
 						processorMenu.add(currentMenu);
@@ -184,6 +346,158 @@ public class LinkingMenus {
 				}
 			}
 		}
+		for (int i = 0; i < processors.length; i++) {
+			if (i>(cascadeSize-1) && !set) {
+				//add inner menus
+				set = true;
+				for (int j=1; j< (Math.ceil((processors.length)/cascadeSize))+1;j++) {
+					JMenu exp = new JMenu("More");
+					if (j==1) {
+						//can't make JPopUpMenu into a JMenu so add this workaround
+						theMenu.add(exp);
+						tempMenu=exp;
+					}
+					for (int x=(j*cascadeSize);x<((j*cascadeSize)+cascadeSize);x++) {
+						if (x<processors.length) {
+							//don't add any null values
+							InputPort[] inputs = processors[x].getInputPorts();
+							if (inputs.length > 0 && processors[x] != sourcePort.getProcessor()) {
+								ImageIcon icon = null;
+								icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper
+										.getPreferredIcon(processors[x]);
+								processMenu = new JMenu(processors[x].getName());
+								processMenu.add(new ShadedLabel("Choose an Input",
+										ShadedLabel.TAVERNA_ORANGE));
+								processMenu.addSeparator();
+								processMenu.setIcon(icon);
+								exp.add(processMenu);
+								boolean menuSet = false;
+								for (int l = 0; l<inputs.length;l++) {
+									if ((l>inputCascadeSize-1)&&!menuSet) {
+										//inner input menu
+										menuSet = true;
+										for (int m=1; m< (Math.ceil((inputs.length)/inputCascadeSize))+1;m++) {
+											JMenu more = new JMenu("More");
+											tmMenu.add(more);
+											for (int n=(m*inputCascadeSize);n<((m*inputCascadeSize)+inputCascadeSize);n++) {
+												if (n<inputs.length) {
+													final Port toPort = inputs[n];
+													final JMenuItem ip = new JMenuItem(inputs[n].getName(),
+															TavernaIcons.inputPortIcon);
+													more.add(ip);
+													ip.addActionListener(new ActionListener() {
+														public void actionPerformed(ActionEvent ae) {
+															try {
+																model.addDataConstraint(new DataConstraint(
+																		model, fromPort, toPort));
+															} catch (DataConstraintCreationException dcce) {
+																//
+															}
+														}
+													});
+												}
+											}
+											tmMenu=more;
+										}
+									} else {
+										//outer input menu
+										if (!menuSet) {
+											final Port toPort = inputs[l];
+											final JMenuItem ip = new JMenuItem(inputs[l].getName(),
+													TavernaIcons.inputPortIcon);
+											processMenu.add(ip);
+											ip.addActionListener(new ActionListener() {
+												public void actionPerformed(ActionEvent ae) {
+													try {
+														model.addDataConstraint(new DataConstraint(
+																model, fromPort, toPort));
+													} catch (DataConstraintCreationException dcce) {
+														//
+													}
+												}
+											});
+											tmMenu = processMenu;
+										}
+									}
+								}
+							}	
+						}
+					}
+					newTempMenu = exp;
+					//need to remember to add the new "More" menu, first time round it is already done
+					if (j>1) { 
+						tempMenu.add(newTempMenu);
+					}
+					tempMenu=newTempMenu;
+				}
+			} else {
+				if (!set) {
+					//add outer menu
+					InputPort[] inputs = processors[i].getInputPorts();
+					if (inputs.length > 0 && processors[i] != sourcePort.getProcessor()) {
+						ImageIcon icon = null;
+						icon = org.embl.ebi.escience.scuflworkers.ProcessorHelper
+								.getPreferredIcon(processors[i]);
+						processMenu = new JMenu(processors[i].getName());
+						processMenu.add(new ShadedLabel("Choose an Input",
+								ShadedLabel.TAVERNA_ORANGE));
+						processMenu.addSeparator();
+						processMenu.setIcon(icon);
+						theMenu.add(processMenu);
+						boolean menuSet = false;
+						//add all the inputs
+						for (int l = 0; l<inputs.length;l++) {
+							if ((l>inputCascadeSize-1)&&!menuSet) {
+								//inner input menu
+								menuSet = true;
+								for (int m=1; m< (Math.ceil((inputs.length)/inputCascadeSize))+1;m++) {
+									JMenu more = new JMenu("More");
+									tmMenu.add(more);
+									for (int n=(m*inputCascadeSize);n<((m*inputCascadeSize)+inputCascadeSize);n++) {
+										if (n<inputs.length) {
+											final Port toPort = inputs[n];
+											final JMenuItem ip = new JMenuItem(inputs[n].getName(),
+													TavernaIcons.inputPortIcon);
+											more.add(ip);
+											ip.addActionListener(new ActionListener() {
+												public void actionPerformed(ActionEvent ae) {
+													try {
+														model.addDataConstraint(new DataConstraint(
+																model, fromPort, toPort));
+													} catch (DataConstraintCreationException dcce) {
+														//
+													}
+												}
+											});
+										}
+									}
+									tmMenu=more;
+								}
+							} else {
+								//outer input menu
+								if (!menuSet) {
+									final Port toPort = inputs[l];
+									final JMenuItem ip = new JMenuItem(inputs[l].getName(),
+											TavernaIcons.inputPortIcon);
+									processMenu.add(ip);
+									ip.addActionListener(new ActionListener() {
+										public void actionPerformed(ActionEvent ae) {
+											try {
+												model.addDataConstraint(new DataConstraint(
+														model, fromPort, toPort));
+											} catch (DataConstraintCreationException dcce) {
+												//
+											}
+										}
+									});
+									tmMenu = processMenu;
+								}	
+							}
+						}
+					}
+				}
+				}
+			}**/
 		return theMenu;
 	}
 
