@@ -1,0 +1,3 @@
+net.sourceforge.taverna.scuflworkers.bsf.BSFProcessorInfoBean
+nl.utwente.ewi.hmi.taverna.scuflworkers.abstractprocessor.APProcessorInfoBean
+nl.utwente.ewi.hmi.taverna.scuflworkers.rshell.RshellProcessorInfoBean
