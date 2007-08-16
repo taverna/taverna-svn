@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="" author="Mark Fortner" title="ExcelFileReader and Data Selection Test Workflows">This test workflow demonstrates the ability to read a file.</s:workflowdescription>
+  <s:processor name="title">
+    <s:stringconstant>Select Excel File</s:stringconstant>
+  </s:processor>
+  <s:processor name="Read_Excel_File">
+    <s:local>net.sourceforge.taverna.scuflworkers.io.ExcelFileReader</s:local>
+  </s:processor>
+  <s:processor name="extensions">
+    <s:stringconstant>xls</s:stringconstant>
+  </s:processor>
+  <s:processor name="SelectFile">
+    <s:local>net.sourceforge.taverna.scuflworkers.ui.SelectFileWorker</s:local>
+  </s:processor>
+  <s:processor name="extensionLabels">
+    <s:stringconstant>Excel Files</s:stringconstant>
+  </s:processor>
+  <s:processor name="getColumn1">
+    <s:local>net.sourceforge.taverna.scuflworkers.io.DataRangeColumnTask</s:local>
+  </s:processor>
+  <s:processor name="columnNumber">
+    <s:stringconstant>1</s:stringconstant>
+  </s:processor>
+  <s:link source="title:value" sink="SelectFile:title" />
+  <s:link source="extensions:value" sink="SelectFile:fileExtensions" />
+  <s:link source="extensionLabels:value" sink="SelectFile:fileExtLabels" />
+  <s:link source="SelectFile:selectedFile" sink="Read_Excel_File:filename" />
+  <s:link source="Read_Excel_File:data" sink="ExcelContents" />
+  <s:link source="Read_Excel_File:data" sink="getColumn1:inputArray" />
+  <s:link source="getColumn1:outputArray" sink="column1" />
+  <s:link source="columnNumber:value" sink="getColumn1:column" />
+  <s:sink name="ExcelContents" />
+  <s:sink name="column1" />
+</s:scufl>
+
+
