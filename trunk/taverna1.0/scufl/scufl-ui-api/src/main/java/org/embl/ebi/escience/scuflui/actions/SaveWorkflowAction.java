@@ -206,7 +206,7 @@ public class SaveWorkflowAction extends AbstractAction {
 			fc.setCurrentDirectory(new File(curDir));
 		} else {
 			// Suggest a filename from the title
-			fc.setSelectedFile(new File(curDir, title + extension));
+			fc.setSelectedFile(new File(curDir, title + "." + extension));
 		}
 		int returnVal = fc.showSaveDialog(parentComponent);
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
