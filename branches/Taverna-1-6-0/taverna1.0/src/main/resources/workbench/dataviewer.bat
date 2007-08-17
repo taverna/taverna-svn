@@ -7,4 +7,4 @@ set ARGS=%ARGS% -Draven.target.artifactid=baclava-tools
 set ARGS=%ARGS% -Draven.target.class=org.embl.ebi.escience.baclava.tools.DataThingViewer 
 set ARGS=%ARGS% -Draven.target.method=main
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.2-SNAPSHOT.jar" %*
+java %ARGS% -jar "%~dp0\taverna-bootstrap-1.6.0.0.jar" %*

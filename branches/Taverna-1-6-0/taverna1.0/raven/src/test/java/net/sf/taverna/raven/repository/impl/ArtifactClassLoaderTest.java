@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 import junit.framework.TestCase;
-import net.sf.taverna.raven.RavenException;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.JavaLog;
 import net.sf.taverna.raven.log.Log;
@@ -25,70 +24,31 @@ public abstract class ArtifactClassLoaderTest extends TestCase {
 	// Sleep up to 200 ms
 	private static final int MAXSLEEP = 300;
 	private static final int THREADS = 200;
-	
+
 	private static final String CLASSNAME = "org.jdom.Namespace";
 	//private static final String CLASSNAME = "org.embl.ebi.escience.scufl.XScufl";
-	
+
+	public static void main(String args[]) {
+	      JUnitCore.main(ArtifactClassLoaderTest.class.getName());
+	}
 	private File dir;
 	private LocalRepository repository;
-	BasicArtifact tavernaCore;
-	BasicArtifact baclavaCore;
 	private ClassLoader oldContextLoader;
 	private BasicArtifact xerces;
 	private ClassLoader xerxesLoader;
 	private BasicArtifact jdom;
+	BasicArtifact tavernaCore;
 
-	public void setUp() throws IOException, ArtifactNotFoundException, ArtifactStateException {
-		Log.setImplementation(new ConsoleLog());
-		ConsoleLog.level = Priority.WARN;
-		dir = LocalRepositoryTest.createTempDirectory();
-		repository = new LocalRepository(dir);
-		repository.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
-		repository.addRemoteRepository(new URL("http://rpc268.cs.man.ac.uk/repository/"));
-		tavernaCore = new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core","1.5.1-SNAPSHOT");
-		baclavaCore = new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core","1.5.1-SNAPSHOT");
-		jdom = new BasicArtifact("jdom", "jdom", "1.0");
-		xerces = new BasicArtifact("xerces", "xercesImpl", "2.6.2");
-		repository.addArtifact(xerces);
-		repository.addArtifact(jdom);
-		repository.addArtifact(tavernaCore);
-		repository.addArtifact(baclavaCore);
-		repository.update();
-		ConsoleLog.level = Priority.DEBUG;
-		//ConsoleLog.console = new PrintStream(new FileOutputStream(new File("/tmp/fish.log"), true));
-		
-		// Make xerces available in context class loader
-		oldContextLoader = Thread.currentThread().getContextClassLoader();
-		xerxesLoader = repository.getLoader(xerces, oldContextLoader);
-		Thread.currentThread().setContextClassLoader(xerxesLoader);
-	}
-	
-	public void tearDown() throws InterruptedException {
-		Thread.currentThread().setContextClassLoader(oldContextLoader);
-		baclavaCore = null;
-		tavernaCore = null;
-		repository = null;
-		try {
-			FileUtils.deleteDirectory(dir);
-		} catch (IOException e) {
-			// ignore
-		}
-		System.gc();
-		Thread.sleep(500);
-		System.gc();
-		ConsoleLog.console.flush();
-		Log.setImplementation(new JavaLog());
-	}
-	
+	BasicArtifact baclavaCore;
+
 	public void runManyThreads(final Runnable target) {
 		List<Thread> threads = new ArrayList<Thread>();
 		Random r = new Random();
 		for (int i=0; i<THREADS; i++) {
 			final int sleep = r.nextInt(MAXSLEEP);
 			threads.add(new Thread("ArtifactClassLoaderTest manythreads"){
-				public void run() {
+				@Override
+                public void run() {
 					// Make sure we are not alone
 					try {
 						Thread.sleep(sleep);
@@ -111,18 +71,46 @@ public abstract class ArtifactClassLoaderTest extends TestCase {
 			}
 		}
 	}
-//	
+//
 //	public void testRunManyThreads() {
 //		final List<Object> runs = new ArrayList<Object>();
 //		runManyThreads(new Runnable() {
 //			public void run() {
 //				synchronized (runs) {
-//					runs.add(null);							
+//					runs.add(null);
 //				}
 //			}
 //		});
 //		assertEquals(THREADS, runs.size());
 //	}
+
+	@Override
+    public void setUp() throws IOException, ArtifactNotFoundException, ArtifactStateException {
+		Log.setImplementation(new ConsoleLog());
+		ConsoleLog.level = Priority.WARN;
+		dir = LocalRepositoryTest.createTempDirectory();
+		repository = new LocalRepository(dir);
+		repository.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
+		repository.addRemoteRepository(new URL("http://rpc268.cs.man.ac.uk/repository/"));
+		tavernaCore = new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-core","1.5.1");
+		baclavaCore = new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-core","1.5.1");
+		jdom = new BasicArtifact("jdom", "jdom", "1.0");
+		xerces = new BasicArtifact("xerces", "xercesImpl", "2.6.2");
+		repository.addArtifact(xerces);
+		repository.addArtifact(jdom);
+		repository.addArtifact(tavernaCore);
+		repository.addArtifact(baclavaCore);
+		repository.update();
+		ConsoleLog.level = Priority.DEBUG;
+		//ConsoleLog.console = new PrintStream(new FileOutputStream(new File("/tmp/fish.log"), true));
+
+		// Make xerces available in context class loader
+		oldContextLoader = Thread.currentThread().getContextClassLoader();
+		xerxesLoader = repository.getLoader(xerces, oldContextLoader);
+		Thread.currentThread().setContextClassLoader(xerxesLoader);
+	}
 
 
 	// WARNING: This test don't work from mvn test
@@ -140,12 +128,12 @@ public abstract class ArtifactClassLoaderTest extends TestCase {
 //				try {
 //					loader = repository.getLoader(artifact, null);
 //					Class c = loader.loadClass(CLASSNAME);
-//					System.out.println(Thread.currentThread().getId() + ": " + loader + 
+//					System.out.println(Thread.currentThread().getId() + ": " + loader +
 //							" found " + c.getName() + " in " + c.getClassLoader());
 //				} catch (Throwable e) {
 //					System.out.println(Thread.currentThread().getId() + ": failed using " + loader);
 //					synchronized (exceptions) {
-//						exceptions.add(e);						
+//						exceptions.add(e);
 //					}
 //				}
 //			}
@@ -171,9 +159,23 @@ public abstract class ArtifactClassLoaderTest extends TestCase {
 	// Try running this test suite as:
 	// : stain@mira ~/Documents/workspace/taverna1.x/raven;
 	//   java -classpath test-classes/:classes/:/Users/stain/.m2/repository/junit/junit/4.0/junit-4.0.jar net.sf.taverna.raven.repository.impl.ArtifactClassLoaderTest
-	
-	public static void main(String args[]) {
-	      JUnitCore.main(ArtifactClassLoaderTest.class.getName());
+
+	@Override
+    public void tearDown() throws InterruptedException {
+		Thread.currentThread().setContextClassLoader(oldContextLoader);
+		baclavaCore = null;
+		tavernaCore = null;
+		repository = null;
+		try {
+			FileUtils.deleteDirectory(dir);
+		} catch (IOException e) {
+			// ignore
+		}
+		System.gc();
+		Thread.sleep(500);
+		System.gc();
+		ConsoleLog.console.flush();
+		Log.setImplementation(new JavaLog());
 	}
-	
+
 }

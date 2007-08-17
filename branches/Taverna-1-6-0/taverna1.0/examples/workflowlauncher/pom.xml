@@ -58,7 +58,30 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-tools</artifactId>
-			<version>1.5.2-SNAPSHOT</version>
+			<version>1.6.0.0</version>
 		</dependency>
 	</dependencies>
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>mygrid-repository</id>
+            <name>myGrid Repository</name>
+            <url>
+                scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository
+            </url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>mygrid-snapshot-repository</id>
+            <name>myGrid Snapshot Repository</name>
+            <url>
+                scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository
+            </url>
+        </snapshotRepository>
+        <site>
+            <id>test-site</id>
+            <name>test-site</name>
+            <url>file:///</url>
+        </site>
+    </distributionManagement>
 </project>
