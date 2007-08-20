@@ -43,7 +43,7 @@ public class Job extends AbstractOwned {
 	 * addition there's:
 	 * <p>
 	 * QUEUED: Placed on a queue <br>
-	 * DEQUEUED: Worker has taken job and is downloading the data for the job
+	 * INITIALISING: Worker has taken job and is downloading the data for the job
 	 * <p>
 	 * In addition, NEW means that the job is not yet (or no longer) on a queue,
 	 * and DESTROYED means that some or all of the data of this job is no longer
@@ -52,7 +52,7 @@ public class Job extends AbstractOwned {
 	 */
 	public enum Status {
 		// NOTE: Also update service.xsd StatusType
-		NEW, QUEUED, DEQUEUED, RUNNING, PAUSED, FAILING, CANCELLING, 
+		NEW, QUEUED, INITIALISING, RUNNING, PAUSED, FAILING, CANCELLING, 
 		CANCELLED, COMPLETE, FAILED, DESTROYED
 	}
 

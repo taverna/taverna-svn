@@ -8,8 +8,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.PersistenceException;
-
 import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.datastore.bean.Queue;
 import net.sf.taverna.service.datastore.bean.User;
@@ -37,7 +35,7 @@ public class TestWorker extends TestDAO {
 		assertTrue(worker.checkPassword("ABCDE"));
 	}
 
-	@Test(expected = PersistenceException.class)
+	@Test(expected = javax.persistence.PersistenceException.class)
 	public void makeInvalidWorker() {
 		WorkerDAO workerDao = daoFactory.getWorkerDAO();
 		Worker worker = new Worker();
@@ -99,7 +97,8 @@ public class TestWorker extends TestDAO {
 		Job job2 = jobDAO.reread(job);
 		
 		assertNotNull(job2);
-		assertEquals("Status should now be DEQUEUED",job.getStatus(),Status.DEQUEUED);
+		assertEquals("Status should now be " + Status.INITIALISING, job
+				.getStatus(), Status.INITIALISING);
 		
 		Worker worker2 = workerDAO.reread(worker);
 		assertNotNull(worker2);

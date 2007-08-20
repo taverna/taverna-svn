@@ -109,7 +109,7 @@ public class RESTContext {
 	 * 
 	 * @param baseURI Base URI of service
 	 * @param username Desired username
-	 * @return An initialized {@link RESTContext}
+	 * @return An initialised {@link RESTContext}
 	 * @throws NotSuccessException
 	 */
 	public static RESTContext register(String baseURI, String username)

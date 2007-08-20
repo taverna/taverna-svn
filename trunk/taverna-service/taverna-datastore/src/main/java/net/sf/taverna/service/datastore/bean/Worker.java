@@ -28,7 +28,7 @@ public class Worker extends User {
 	public boolean isBusy() {
 		for (Job j : getWorkerJobs()) {
 			if (j.getStatus().equals(Status.RUNNING) || 
-				j.getStatus().equals(Status.DEQUEUED)) {
+				j.getStatus().equals(Status.INITIALISING)) {
 				return true;
 			}
 		}
@@ -93,7 +93,7 @@ public class Worker extends User {
 
 	public void assignJob(Job job) {
 		job.setWorker(this);
-		job.setStatus(Status.DEQUEUED);
+		job.setStatus(Status.INITIALISING);
 		getWorkerJobs().add(job);
 	}
 	
@@ -117,7 +117,7 @@ public class Worker extends User {
 	
 	public Job getNextDequeuedJob() {
 		for (Job job : getWorkerJobs()) {
-			if (job.getStatus().equals(Status.DEQUEUED)) return job;
+			if (job.getStatus().equals(Status.INITIALISING)) return job;
 		}
 		return null;
 	}

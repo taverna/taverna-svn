@@ -272,7 +272,7 @@
 			<!--  Note: Also update Job.java Status -->
 			<enumeration value="NEW"></enumeration>
 			<enumeration value="QUEUED"></enumeration>
-			<enumeration value="DEQUEUED"></enumeration>
+			<enumeration value="INITIALISING"></enumeration>
 			<enumeration value="RUNNING"></enumeration>
 			<enumeration value="PAUSED"></enumeration>
 			<enumeration value="FAILING"></enumeration>

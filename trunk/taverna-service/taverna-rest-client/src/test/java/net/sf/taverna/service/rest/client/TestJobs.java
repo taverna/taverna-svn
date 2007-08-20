@@ -49,7 +49,7 @@ public class TestJobs extends ContextTest {
 		if (job == null) {
 			uploadJob();
 		}
-		job.setStatus(StatusType.DEQUEUED);
+		job.setStatus(StatusType.INITIALISING);
 	}
 	
 	@Test
