@@ -105,7 +105,9 @@ public class JobsPanel extends JPanel {
 			title += " <small>" + job.getCreated() + "</small>";
 			// FIXME: Use tables or similar for all this info
 			line.setText("<html>" + title + ": <strong>" + state
-				+ "</strong></html>");
+				+ "</strong> " +
+						"<small><a href='#'>details</a></small>" +
+						"</html>");
 			addMouseListener(new MouseClickListener());
 			
 			c.gridy = 2;
