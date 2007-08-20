@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -26,6 +28,9 @@ import org.embl.ebi.escience.scuflui.workbench.Workbench;
  * @author Stian Soiland
  */
 public class AddEditServiceFrame extends JDialog {
+
+	private final static String EXAMPLE_URI = 
+		"http://myserver.mydomain.com:8080/tavernaservice/v1/";
 
 	private ExecuteRemotelyPanel parentPanel;
 
@@ -57,13 +62,13 @@ public class AddEditServiceFrame extends JDialog {
 		this.service = service;
 		setLocationRelativeTo(parentPanel);
 		if (service == null) {
-			setTitle("Add a new service");
+			setTitle("Add a new server");
 		} else {
-			setTitle("Edit service " + service);
+			setTitle("Edit server " + service);
 		}
 		setLayout(new BorderLayout());
 		setSize(new Dimension(450, 200));
-		add(new JLabel("Service entrypoint"), BorderLayout.NORTH);
+		add(new JLabel("Server entrypoint"), BorderLayout.NORTH);
 		add(new JPanel(), BorderLayout.WEST);
 		add(new JPanel(), BorderLayout.EAST);
 		fields = new Fields();
@@ -73,13 +78,13 @@ public class AddEditServiceFrame extends JDialog {
 	}
 
 	class Fields extends JPanel {
-		private JTextField nameField;
+		private final JTextField nameField;
 
-		private JTextField uriField;
+		private final JTextField uriField;
 
-		private JTextField userField;
+		private final JTextField userField;
 
-		private JPasswordField pwField;
+		private final JPasswordField pwField;
 
 		Fields() {
 			super(new GridBagLayout());
@@ -149,6 +154,8 @@ public class AddEditServiceFrame extends JDialog {
 	}
 
 	class Buttons extends JPanel {
+		
+		
 		Action okAction = new AbstractAction("OK") {
 			public void actionPerformed(ActionEvent e) {
 				String name = fields.nameField.getText();
@@ -159,9 +166,29 @@ public class AddEditServiceFrame extends JDialog {
 					JOptionPane.showMessageDialog(AddEditServiceFrame.this,
 						"URI field can't be empty", "Empty URI",
 						JOptionPane.ERROR_MESSAGE);
-					// Don't dipose of the window
+					// Don't dispose of the window
 					return;
 				}
+				
+					try {
+						if (! new URI(uri).isAbsolute()) {
+							JOptionPane.showMessageDialog(AddEditServiceFrame.this,
+									"<html>URI field must be absolute, example: " +
+									"<code>" + EXAMPLE_URI + "</code></html>", "Relative URI",
+									JOptionPane.ERROR_MESSAGE);
+								// Don't dispose of the window
+								return;
+						}
+					} catch (URISyntaxException ex) {
+						JOptionPane.showMessageDialog(AddEditServiceFrame.this,
+								"<html>Invalid URI, example: " +
+								"<code>" + EXAMPLE_URI + "</code></html>", "Invalid URI",
+								JOptionPane.ERROR_MESSAGE);
+							// Don't dispose of the window
+							return;
+					}
+				
+				
 				if (service == null) {
 					parentPanel.addService(name, uri, username, password);
 				} else {

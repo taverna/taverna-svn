@@ -54,6 +54,14 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	
 	private int row = -1;
 
+	private JButton runButton;
+
+	private JButton refreshButton;
+
+	private JButton editButton;
+
+	private JButton removeButton;
+
 	public ExecuteRemotelyPanel() {
 		super(new GridBagLayout());
 		addHeader();
@@ -64,7 +72,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		//addFiller();
 		addLogs();
 		updateServiceList();
-		logger.info("showing ourselves");
+		checkButtons();
 	}
 
 	public ImageIcon getIcon() {
@@ -128,9 +136,6 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	public void updateServiceList() {
 		DefaultComboBoxModel servicelist =
 			new DefaultComboBoxModel(conf.getServices());
-		if (servicelist.getSize() > 0) {
-			servicelist.setSelectedItem(servicelist.getElementAt(0));
-		}
 		services.setModel(servicelist);
 	}
 
@@ -152,7 +157,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		c.anchor = GridBagConstraints.LINE_END;
 		c.ipadx = 5;
 		c.ipady = 5;
-		add(new JLabel("Taverna service:"), c);
+		add(new JLabel("Taverna server:"), c);
 
 		c.weightx = 0.1;
 		c.anchor = GridBagConstraints.LINE_START;
@@ -168,25 +173,41 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		add(new JButton(addService), c);
 
 		Action editService = new EditServiceAction();
-		add(new JButton(editService), c);
+		editButton = new JButton(editService);
+		add(editButton, c);
 
 		Action removeService = new RemoveServiceAction();
-		add(new JButton(removeService), c);
+		removeButton = new JButton(removeService);
+		add(removeButton, c);
 	}
 
 	protected void addRunButton() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		c.gridy = ++row;
-		add(new JButton(new RunWorkflowAction()), c);
+		runButton = new JButton(new RunWorkflowAction());
+		add(runButton, c);
 	}
 	
+	private void checkButtons() {
+		runButton.setEnabled(context != null && model != null);
+		refreshButton.setEnabled(context != null);
+		removeButton.setEnabled(context != null);
+		editButton.setEnabled(context != null);
+		
+		runButton.invalidate();
+		refreshButton.invalidate();
+		removeButton.invalidate();
+		editButton.invalidate();
+	}
+
 	private void addRefreshButton() {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.gridy = row;
 		c.anchor = GridBagConstraints.WEST;
-		add(new JButton(new RefreshAction()), c);
+		refreshButton = new JButton(new RefreshAction());
+		add(refreshButton, c);
 	}
 
 
@@ -229,9 +250,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
 	}
 
 	protected void setContext(RESTContext context) {
-		this.service = new RESTService(context);
+		this.service = new RESTService(context); // copy
 		this.context = context;
+		conf.setSelected(context);
 		jobs.setContext(context);
+		checkButtons();
 	}
 
 	public class ServiceSelectionListener implements ActionListener {
@@ -286,6 +309,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
 		public void actionPerformed(ActionEvent ev) {
 			if (context == null || model == null) {
 				logger.info("Can't run workflow without connection or current workflow");
+				checkButtons();
 				return;
 			}
 			RemoteWorkflowInputPanel.run(model, service, uiLog);

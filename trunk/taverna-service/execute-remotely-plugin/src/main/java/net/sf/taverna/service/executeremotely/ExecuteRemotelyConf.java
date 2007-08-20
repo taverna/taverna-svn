@@ -18,6 +18,15 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * Configuration for execute remotely panel. Saved in {@value #CONFFILE} inside
+ * the configuration directory of the Taverna home directory.
+ * <p>
+ * What is stored is the list of services with their URL, username and password.
+ * 
+ * @author Stian Soiland
+ * 
+ */
 public class ExecuteRemotelyConf {
 
 	private static Logger logger = Logger.getLogger(ExecuteRemotelyConf.class);
@@ -27,9 +36,11 @@ public class ExecuteRemotelyConf {
 	private static final String CONFFILE =
 		"net.sf.taverna.service.executeremotely.xml";
 
-	private File confFile = findConfFile();
+	private final File confFile = findConfFile();
 
-	private List<RESTContext> services = new ArrayList<RESTContext>();
+	private final List<RESTContext> services = new ArrayList<RESTContext>();
+	
+	private RESTContext selected;
 
 	private static ExecuteRemotelyConf instance;
 
@@ -87,6 +98,9 @@ public class ExecuteRemotelyConf {
 				logger.warn("Invalid service element: " + service);
 				continue;
 			}
+			if ("selected".equals(service.getAttribute("selected"))) {
+				selected = context;
+			}
 			services.add(context);
 		}
 		logger.debug("Loaded services from " + file);
@@ -100,7 +114,12 @@ public class ExecuteRemotelyConf {
 		Element servicesElem = new Element("services");
 		execElem.addContent(servicesElem);
 		for (RESTContext context : services) {
-			servicesElem.addContent(context.toXML());
+			Element elem = context.toXML();
+			/* Don't use getSelected() as it would pick the first one */
+			if (context.equals(selected)) {
+				elem.setAttribute("selected", "selected");
+			}
+			servicesElem.addContent(elem);
 		}
 		Document doc = new Document(execElem);
 		try {
@@ -118,6 +137,9 @@ public class ExecuteRemotelyConf {
 	 * Add or replace service. A service is identified by it's URI and username.
 	 */
 	public void addService(RESTContext service) {
+		if (service == null) { 
+			throw new NullPointerException("Service can't be null");
+		}
 		if (services.contains(service)) {
 			// Replace it
 			services.remove(service);
@@ -135,12 +157,53 @@ public class ExecuteRemotelyConf {
 	 */
 	public void removeService(RESTContext service) {
 		services.remove(service);
+		if (getSelected().equals(service)) {
+			setSelected(service);
+		}
 		save();
 		logger.info("Removed service " + service);
 	}
 
+	/**
+	 * Get a copy of the list of services
+	 * 
+	 * @return An RESTContext[] array of the services
+	 */
 	public RESTContext[] getServices() {
 		return services.toArray(new RESTContext[0]);
+	}
+
+	/**
+	 * Get the currently active service, or the first available service. If no
+	 * services are available, <code>null</code> is returned.
+	 * 
+	 * @return The currently selected service.
+	 */
+	public RESTContext getSelected() {
+		if (selected == null && !services.isEmpty()) {
+			// Just choose the first one instead
+			return services.get(0);
+		}
+		return selected;
+	}
+
+	/**
+	 * Set the currently active service. If this service has not yet been
+	 * registered with {@link #addService(RESTContext)} it will be added. The
+	 * currently active service is stored and is available as
+	 * {@link #getSelected()}.
+	 * 
+	 * @param service
+	 *            The service to set selected, or <code>null</code> if the
+	 *            current service is to be reset.
+	 */
+	public void setSelected(RESTContext service) {
+		if (! services.contains(service) && service != null) {
+			addService(service);
+		}
+		this.selected = service;
+		logger.debug("Selected service " + this.selected);
+		save();
 	}
 
 }
