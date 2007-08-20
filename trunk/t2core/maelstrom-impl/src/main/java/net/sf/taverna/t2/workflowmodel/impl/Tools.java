@@ -13,7 +13,15 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactNotFoundException;
+import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
+import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
@@ -106,6 +114,74 @@ public class Tools {
 	}
 
 	/**
+	 * Return the annotation element for a specified annotated entity
+	 * 
+	 * @param a
+	 *            the workflow entity to serialize annotations for
+	 * @return a JDOM Element object containing the annotations
+	 */
+	public static Element getAnnotationsElement(Annotated a) {
+		Element result = new Element("annotations");
+		for (WorkflowAnnotation annotation : a.getAnnotations()) {
+			Element annotationElement = new Element("annotation");
+			// If this was loaded by raven then store the artifact details
+			if (annotation.getClass().getClassLoader() instanceof LocalArtifactClassLoader) {
+				LocalArtifactClassLoader lacl = (LocalArtifactClassLoader) annotation
+						.getClass().getClassLoader();
+				annotationElement.addContent(ravenElement(lacl));
+			}
+			try {
+				annotationElement.addContent(beanAsElement(annotation));
+			} catch (JDOMException e) {
+				// Auto-generated catch block but should never see this
+				e.printStackTrace();
+			} catch (IOException e) {
+				// Auto-generated catch block but should never see this
+				e.printStackTrace();
+			}
+			result.addContent(annotationElement);
+		}
+		return result;
+	}
+
+	/**
+	 * Add the annotations contained in the specified &lt;annotations&gt;
+	 * element to the specified instance of a MutableAnnotated object
+	 */
+	@SuppressWarnings("unchecked")
+	public static void annotateObject(Element annotationsElement,
+			MutableAnnotated annotateMe) {
+		for (Element e : (List<Element>) annotationsElement
+				.getChildren("annotation")) {
+			ClassLoader cl = Tools.class.getClassLoader();
+			Element ravenElement = e.getChild("raven");
+			if (ravenElement != null) {
+				try {
+					cl = getRavenLoader(ravenElement);
+				} catch (Exception ex) {
+					System.out
+							.println("Exception loading raven classloader for Service instance");
+					ex.printStackTrace();
+					// TODO - handle this properly, either by logging correctly
+					// or
+					// by going back to the repository and attempting to fetch
+					// the
+					// offending missing artifacts
+				}
+			}
+			Object annotationBean = createBean(e.getChild("java"), cl);
+			if (annotationBean instanceof WorkflowAnnotation) {
+				WorkflowAnnotation newAnnotation = (WorkflowAnnotation) annotationBean;
+				annotateMe.addAnnotation(newAnnotation);
+			} else {
+				System.out
+						.println("Found non annotation bean inside an annotation element, something's not right here");
+			}
+		}
+
+	}
+
+	/**
 	 * Build a Service instance from the specified &lt;service&gt; JDOM Element
 	 * using reflection to assemble the configuration bean and configure the new
 	 * Service object. If the &lt;service&gt; has a &lt;raven&gt; child element
@@ -127,8 +203,16 @@ public class Tools {
 		Element ravenElement = e.getChild("raven");
 		ClassLoader cl = Tools.class.getClassLoader();
 		if (ravenElement != null) {
-			// TODO - setup artifact classloader if defined otherwise use the
-			// classloader from this class
+			try {
+				cl = getRavenLoader(ravenElement);
+			} catch (Exception ex) {
+				System.out
+						.println("Exception loading raven classloader for Service instance");
+				ex.printStackTrace();
+				// TODO - handle this properly, either by logging correctly or
+				// by going back to the repository and attempting to fetch the
+				// offending missing artifacts
+			}
 		}
 		String className = e.getChild("class").getTextTrim();
 		Class<? extends Service> c = (Class<? extends Service>) cl
@@ -177,6 +261,69 @@ public class Tools {
 	}
 
 	/**
+	 * Create the &lt;raven&gt; element for a given local artifact classloader
+	 * 
+	 * @param loader
+	 * @return
+	 */
+	public static Element ravenElement(LocalArtifactClassLoader loader) {
+		Element result = new Element("raven");
+		Artifact a = loader.getArtifact();
+		// Group
+		Element groupIdElement = new Element("group");
+		groupIdElement.setText(a.getGroupId());
+		result.addContent(groupIdElement);
+		// Artifact ID
+		Element artifactIdElement = new Element("artifact");
+		artifactIdElement.setText(a.getArtifactId());
+		result.addContent(artifactIdElement);
+		// Version
+		Element versionElement = new Element("version");
+		versionElement.setText(a.getVersion());
+		result.addContent(versionElement);
+		// Return assembled raven element
+		return result;
+	}
+
+	/**
+	 * Assuming this class is itself loaded by raven this method returns the
+	 * classloader to be used to load classes from the artifact specified by the
+	 * &lt;raven&gt; element passed in here.
+	 * <p>
+	 * If this class wasn't loaded by Raven then this ignores the element
+	 * entirely and defaults to using the same classloader as this class (Tools)
+	 * was loaded by. This is probably not what you want but it's a sensible
+	 * enough fallback position
+	 * 
+	 * @param ravenElement
+	 * @return
+	 * @throws ArtifactNotFoundException
+	 * @throws ArtifactStateException
+	 */
+	public static ClassLoader getRavenLoader(Element ravenElement)
+			throws ArtifactNotFoundException, ArtifactStateException {
+		// Try to get the current Repository object, if there isn't one we can't
+		// do this here
+		Repository repository = null;
+		try {
+			LocalArtifactClassLoader lacl = (LocalArtifactClassLoader) (Tools.class
+					.getClassLoader());
+			repository = lacl.getRepository();
+
+		} catch (ClassCastException cce) {
+			return Tools.class.getClassLoader();
+			// TODO - should probably warn that this is happening as it's likely
+			// to be because of an error in API usage. There are times it won't
+			// be though so leave it for now.
+		}
+		String groupId = ravenElement.getChildTextTrim("group");
+		String artifactId = ravenElement.getChildTextTrim("artifact");
+		String version = ravenElement.getChildTextTrim("version");
+		Artifact a = new BasicArtifact(groupId, artifactId, version);
+		return repository.getLoader(a, null);
+	}
+
+	/**
 	 * Return a JDOM &lt;layer&gt; Element corresponding to the given
 	 * DispatchLayer
 	 */
@@ -186,8 +333,7 @@ public class Tools {
 
 		ClassLoader cl = l.getClass().getClassLoader();
 		if (cl instanceof LocalArtifactClassLoader) {
-			// TODO - insert artifact metadata from raven here
-			// in form <raven><artifact...></raven>
+			e.addContent(ravenElement((LocalArtifactClassLoader) cl));
 		}
 		Element classNameElement = new Element("class");
 		classNameElement.setText(l.getClass().getName());
@@ -215,14 +361,22 @@ public class Tools {
 		Element ravenElement = e.getChild("raven");
 		ClassLoader cl = Tools.class.getClassLoader();
 		if (ravenElement != null) {
-			// TODO - setup artifact classloader if defined otherwise use the
-			// classloader from this class
+			try {
+				cl = getRavenLoader(ravenElement);
+			} catch (Exception ex) {
+				System.out
+						.println("Exception loading raven classloader for Service instance");
+				ex.printStackTrace();
+				// TODO - handle this properly, either by logging correctly or
+				// by going back to the repository and attempting to fetch the
+				// offending missing artifacts
+			}
 		}
 		String className = e.getChild("class").getTextTrim();
 		Class<? extends DispatchLayer> c = (Class<? extends DispatchLayer>) cl
 				.loadClass(className);
 		DispatchLayer<Object> layer = c.newInstance();
-		
+
 		// Handle the configuration of the dispatch layer
 		Element configElement = e.getChild("java");
 		Object configObject = createBean(configElement, cl);
@@ -247,8 +401,7 @@ public class Tools {
 
 		ClassLoader cl = s.getClass().getClassLoader();
 		if (cl instanceof LocalArtifactClassLoader) {
-			// TODO - insert artifact metadata from raven here
-			// in form <raven><artifact...></raven>
+			e.addContent(ravenElement((LocalArtifactClassLoader) cl));
 		}
 		Element classNameElement = new Element("class");
 		classNameElement.setText(s.getClass().getName());
