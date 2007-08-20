@@ -58,7 +58,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 	private static int pNameCounter = 0;
 
 	protected String name;
-	
+
 	public transient int resultWrappingDepth = -1;
 
 	/**
@@ -142,12 +142,14 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		crystalizer = new ProcessorCrystalizerImpl(this);
 
 	}
-	
+
 	/**
 	 * When called this method configures input port filters and the
 	 * crystalizer, pushing cardinality information into outgoing datalinks.
 	 * 
-	 * @return true if the typecheck was successful
+	 * @return true if the typecheck was successful or false if the check failed
+	 *         because there were preconditions missing such as unsatisfied
+	 *         input types
 	 * @throws IterationTypeMismatchException
 	 *             if the typing occured but didn't match because of an
 	 *             iteration mismatch
@@ -258,7 +260,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		for (Element serviceElement : (List<Element>) e.getChild("services")
 				.getChildren("service")) {
 			// TODO - add annotation from annotation element here
-			serviceList.add(new ServiceAnnotationContainerImpl(Tools.buildService(serviceElement)));
+			serviceList.add(new ServiceAnnotationContainerImpl(Tools
+					.buildService(serviceElement)));
 		}
 	}
 
