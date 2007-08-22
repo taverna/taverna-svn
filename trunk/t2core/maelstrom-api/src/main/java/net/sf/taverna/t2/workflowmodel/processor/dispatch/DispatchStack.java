@@ -25,7 +25,7 @@ public interface DispatchStack extends Annotated {
 	 * dispatch stack configuration)
 	 * 
 	 */
-	public List<DispatchLayer> getLayers();
+	public List<DispatchLayer<?>> getLayers();
 
 	/**
 	 * Return the layer above (lower index!) the specified layer, or a reference
@@ -40,7 +40,7 @@ public interface DispatchStack extends Annotated {
 	 * @param layer
 	 * @return
 	 */
-	public DispatchLayer layerAbove(DispatchLayer layer);
+	public DispatchLayer<?> layerAbove(DispatchLayer<?> layer);
 
 	/**
 	 * Return the layer below (higher index) the specified layer, or null if
@@ -49,6 +49,6 @@ public interface DispatchStack extends Annotated {
 	 * @param layer
 	 * @return
 	 */
-	public DispatchLayer layerBelow(DispatchLayer layer);
+	public DispatchLayer<?> layerBelow(DispatchLayer<?> layer);
 
 }

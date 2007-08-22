@@ -12,12 +12,12 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
  */
 public class DeleteDispatchLayerEdit extends AbstractDispatchLayerEdit {
 
-	private DispatchLayer layer;
+	private DispatchLayer<?> layer;
 
 	private int index;
 
 	public DeleteDispatchLayerEdit(DispatchStack stack,
-			DispatchLayer removeLayer) {
+			DispatchLayer<?> removeLayer) {
 		super(stack);
 		this.layer = removeLayer;
 	}

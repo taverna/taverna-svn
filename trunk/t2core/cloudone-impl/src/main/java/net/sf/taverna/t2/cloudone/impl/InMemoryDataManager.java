@@ -37,7 +37,7 @@ public class InMemoryDataManager implements DataManager {
 
 	private Set<LocationalContext> contexts;
 
-	private Map<EntityIdentifier, Entity> contents;
+	private Map<EntityIdentifier, Entity<? extends EntityIdentifier>> contents;
 
 	private String namespace;
 
@@ -68,7 +68,7 @@ public class InMemoryDataManager implements DataManager {
 	public InMemoryDataManager(String namespace, Set<LocationalContext> contexts) {
 		this.contexts = contexts;
 		this.namespace = namespace;
-		this.contents = new HashMap<EntityIdentifier, Entity>();
+		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier>>();
 	}
 
 	@SuppressWarnings("unchecked")

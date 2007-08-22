@@ -34,6 +34,6 @@ public interface MonitorNode {
 	 * Each monitor node exposes a set of properties, which may or may not be
 	 * mutable
 	 */
-	public Set<MonitorableProperty> getProperties();
+	public Set<MonitorableProperty<?>> getProperties();
 
 }

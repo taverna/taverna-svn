@@ -52,7 +52,7 @@ public class OrderedPair<T> {
 	 */
 	public boolean equals(Object other) {
 		if (other instanceof OrderedPair) {
-			OrderedPair op = (OrderedPair) other;
+			OrderedPair<?> op = (OrderedPair<?>) other;
 			return (a.equals(op.getA()) && b.equals(op.getB()));
 		} else {
 			return false;

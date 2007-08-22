@@ -12,11 +12,11 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
  */
 public class AddDispatchLayerEdit extends AbstractDispatchLayerEdit {
 
-	private DispatchLayer layer;
+	private DispatchLayer<?> layer;
 
 	private int index;
 
-	public AddDispatchLayerEdit(DispatchStack stack, DispatchLayer newLayer,
+	public AddDispatchLayerEdit(DispatchStack stack, DispatchLayer<?> newLayer,
 			int index) {
 		super(stack);
 		this.layer = newLayer;

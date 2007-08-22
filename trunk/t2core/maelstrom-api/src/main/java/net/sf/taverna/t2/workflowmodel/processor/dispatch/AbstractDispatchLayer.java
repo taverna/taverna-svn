@@ -95,11 +95,11 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 				DispatchLayerAction.FORBIDDEN);
 	}
 
-	protected final DispatchLayer getAbove() {
+	protected final DispatchLayer<?> getAbove() {
 		return this.dispatchStack.layerAbove(this);
 	}
 
-	protected final DispatchLayer getBelow() {
+	protected final DispatchLayer<?> getBelow() {
 		return this.dispatchStack.layerBelow(this);
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 	public void receiveError(String owningProcess, int[] errorIndex,
 			String errorMessage, Throwable detail) {
 		checkValid(DispatchMessageType.ERROR);
-		DispatchLayer above = dispatchStack.layerAbove(this);
+		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
 			above.receiveError(owningProcess, errorIndex, errorMessage, detail);
 		}
@@ -124,7 +124,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 	@SuppressWarnings("unchecked")
 	public void receiveJob(Job job, List<? extends ServiceAnnotationContainer> services) {
 		checkValid(DispatchMessageType.JOB);
-		DispatchLayer below = dispatchStack.layerBelow(this);
+		DispatchLayer<?> below = dispatchStack.layerBelow(this);
 		if (below != null) {
 			below.receiveJob(job, services);
 		}
@@ -143,7 +143,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 
 	public void receiveResult(Job job) {
 		checkValid(DispatchMessageType.RESULT);
-		DispatchLayer above = dispatchStack.layerAbove(this);
+		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
 			above.receiveResult(job);
 		}
@@ -151,7 +151,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 
 	public void receiveResultCompletion(Completion completion) {
 		checkValid(DispatchMessageType.RESULTCOMPLETION);
-		DispatchLayer above = dispatchStack.layerAbove(this);
+		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
 			above.receiveResultCompletion(completion);
 		}

@@ -18,6 +18,6 @@ import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
  * @author Matthew Pocock
  * 
  */
-public class URLReferenceSchemeFactory extends AbstractReferenceSchemeFactory {
+public class URLReferenceSchemeFactory extends AbstractReferenceSchemeFactory<URLReferenceScheme> {
 
 }

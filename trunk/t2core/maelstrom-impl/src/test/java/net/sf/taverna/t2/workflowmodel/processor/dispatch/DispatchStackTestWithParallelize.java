@@ -28,9 +28,9 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		
 		private List<ServiceAnnotationContainerImpl> services;
 		
-		public BasicDispatchStackImpl(List<? extends Service> servicelist) {
+		public BasicDispatchStackImpl(List<? extends Service<?>> servicelist) {
 			this.services = new ArrayList<ServiceAnnotationContainerImpl>();
-			for (Service s : servicelist) {
+			for (Service<?> s : servicelist) {
 				services.add(new ServiceAnnotationContainerImpl(s));
 			}		
 		}

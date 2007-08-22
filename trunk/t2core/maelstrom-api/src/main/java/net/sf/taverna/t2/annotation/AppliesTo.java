@@ -17,7 +17,7 @@ public @interface AppliesTo {
 	/**
 	 * The class of the metadata object allowed by this annotation
 	 */
-	Class[] workflowObjectType();
+	Class<?>[] workflowObjectType();
 
 	/**
 	 * Can you have more than one of these metadata objects?

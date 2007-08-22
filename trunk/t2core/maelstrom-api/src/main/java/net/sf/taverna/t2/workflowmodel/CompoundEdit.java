@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class CompoundEdit implements Edit<Object> {
 
-	private final transient List<Edit> childEdits;
+	private final transient List<Edit<?>> childEdits;
 
 	private transient boolean applied = false;
 
@@ -23,13 +23,13 @@ public class CompoundEdit implements Edit<Object> {
 	 * 
 	 */
 	public CompoundEdit() {
-		this.childEdits = new ArrayList<Edit>();
+		this.childEdits = new ArrayList<Edit<?>>();
 	}
 
 	/**
 	 * Create a new compound edit with the specified edits as children.
 	 */
-	public CompoundEdit(List<Edit> edits) {
+	public CompoundEdit(List<Edit<?>> edits) {
 		this.childEdits = edits;
 	}
 
@@ -43,9 +43,9 @@ public class CompoundEdit implements Edit<Object> {
 		if (isApplied()) {
 			throw new EditException("Cannot apply an edit more than once!");
 		}
-		List<Edit> doneEdits = new ArrayList<Edit>();
+		List<Edit<?>> doneEdits = new ArrayList<Edit<?>>();
 		try {
-			for (Edit edit : childEdits) {
+			for (Edit<?> edit : childEdits) {
 				edit.doEdit();
 				// Insert the done edit at position 0 in the list so we can
 				// iterate over the list in the normal order if we need to
@@ -54,7 +54,7 @@ public class CompoundEdit implements Edit<Object> {
 			}
 			applied = true;
 		} catch (EditException ee) {
-			for (Edit undoMe : doneEdits) {
+			for (Edit<?> undoMe : doneEdits) {
 				undoMe.undo();
 			}
 			applied = false;

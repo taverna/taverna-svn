@@ -18,12 +18,14 @@ import javax.swing.tree.TreePath;
 public final class TreeModelAdapter {
 
 	private class TypedListenerPair {
+		@SuppressWarnings("unchecked")
 		TypedListenerPair(TypedTreeModelListener typedListener,
 				TreeModelListener untypedListener) {
 			this.typedListener = typedListener;
 			this.untypedListener = untypedListener;
 		}
 
+		@SuppressWarnings("unchecked")
 		TypedTreeModelListener typedListener;
 
 		TreeModelListener untypedListener;

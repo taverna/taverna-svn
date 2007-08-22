@@ -13,7 +13,7 @@ import java.util.ListIterator;
  * @author Matthew Pocock
  * 
  */
-public class EntityList implements Entity, List<EntityIdentifier> {
+public class EntityList implements Entity<EntityListIdentifier>, List<EntityIdentifier> {
 	private final EntityListIdentifier identifier;
 
 	private final List<EntityIdentifier> list;
@@ -25,7 +25,7 @@ public class EntityList implements Entity, List<EntityIdentifier> {
 		this.list = list;
 	}
 
-	public EntityIdentifier getIdentifier() {
+	public EntityListIdentifier getIdentifier() {
 		return identifier;
 	}
 

@@ -134,7 +134,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			nodeElement.setAttribute("name", nipn.getPortName());
 			nodeElement.setAttribute("depth", nipn.getCardinality() + "");
 		}
-		Enumeration children = node.children();
+		Enumeration<?> children = node.children();
 		while (children.hasMoreElements()) {
 			TreeNode tn = (TreeNode) children.nextElement();
 			nodeElement

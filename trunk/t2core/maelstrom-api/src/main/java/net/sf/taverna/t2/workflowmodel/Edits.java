@@ -81,7 +81,7 @@ public interface Edits {
 	 *            Where to add the new layer? 0 is at the top of the stack.
 	 */
 	public Edit<DispatchStack> getAddDispatchLayerEdit(DispatchStack stack,
-			DispatchLayer layer, int position);
+			DispatchLayer<?> layer, int position);
 
 	/**
 	 * Remove a dispatch layer from its dispatch stack
@@ -92,7 +92,7 @@ public interface Edits {
 	 *            The layer to remove
 	 */
 	public Edit<DispatchStack> getDeleteDispatchLayerEdit(DispatchStack stack,
-			DispatchLayer layer);
+			DispatchLayer<?> layer);
 
 	/**
 	 * Add a service implementation to the set of services within a Processor

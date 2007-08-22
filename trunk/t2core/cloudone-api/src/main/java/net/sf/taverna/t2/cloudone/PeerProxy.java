@@ -23,7 +23,7 @@ public interface PeerProxy {
 	 * @param identifier
 	 * @return
 	 */
-	public Entity export(EntityIdentifier identifier)
+	public Entity<?> export(EntityIdentifier identifier)
 			throws EntityNotFoundException;
 
 }

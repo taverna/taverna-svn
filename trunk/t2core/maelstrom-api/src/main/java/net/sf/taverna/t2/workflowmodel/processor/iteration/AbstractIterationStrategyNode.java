@@ -132,8 +132,8 @@ public abstract class AbstractIterationStrategyNode implements
 	/**
 	 * Implement TreeNode
 	 */
-	public final Enumeration children() {
-		return new Enumeration() {
+	public final Enumeration<?> children() {
+		return new Enumeration<Object>() {
 			int currentPosition = 0;
 
 			public boolean hasMoreElements() {

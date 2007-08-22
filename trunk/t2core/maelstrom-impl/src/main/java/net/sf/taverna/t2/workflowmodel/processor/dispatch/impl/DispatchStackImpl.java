@@ -41,7 +41,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 
 	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
 
-	private List<DispatchLayer> dispatchLayers = new ArrayList<DispatchLayer>();
+	private List<DispatchLayer<?>> dispatchLayers = new ArrayList<DispatchLayer<?>>();
 
 	/**
 	 * Override to return the list of services to be used by this dispatch
@@ -95,7 +95,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 */
 	public Element asXML() throws JDOMException, IOException {
 		Element stackElement = new Element("dispatch");
-		for (DispatchLayer layer : dispatchLayers) {
+		for (DispatchLayer<?> layer : dispatchLayers) {
 			stackElement.addContent(Tools.dispatchLayerAsXML(layer));
 		}
 		return stackElement;
@@ -123,7 +123,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 		}
 	}
 
-	private DispatchLayer topLayer = new AbstractDispatchLayer<Object>() {
+	private DispatchLayer<Object> topLayer = new AbstractDispatchLayer<Object>() {
 		public void receiveResult(Job j) {
 			DispatchStackImpl.this.pushEvent(j);
 			if (j.getIndex().length == 0) {
@@ -150,7 +150,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 		}
 
 		private void sendCachePurge(String owningProcess) {
-			for (DispatchLayer layer : dispatchLayers) {
+			for (DispatchLayer<?> layer : dispatchLayers) {
 				layer.finishedWith(owningProcess);
 			}
 			DispatchStackImpl.this.finishedWith(owningProcess);
@@ -255,21 +255,21 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.service.dispatch.DispatchStack#getLayers()
 	 */
-	public List<DispatchLayer> getLayers() {
+	public List<DispatchLayer<?>> getLayers() {
 		return Collections.unmodifiableList(this.dispatchLayers);
 	}
 
-	public void addLayer(DispatchLayer newLayer) {
+	public void addLayer(DispatchLayer<?> newLayer) {
 		dispatchLayers.add(newLayer);
 		newLayer.setDispatchStack(this);
 	}
 
-	public void addLayer(DispatchLayer newLayer, int index) {
+	public void addLayer(DispatchLayer<?> newLayer, int index) {
 		dispatchLayers.add(index, newLayer);
 		newLayer.setDispatchStack(this);
 	}
 
-	public int removeLayer(DispatchLayer layer) {
+	public int removeLayer(DispatchLayer<?> layer) {
 		int priorIndex = dispatchLayers.indexOf(layer);
 		dispatchLayers.remove(layer);
 		return priorIndex;
@@ -288,7 +288,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 * @param layer
 	 * @return
 	 */
-	public DispatchLayer layerAbove(DispatchLayer layer) {
+	public DispatchLayer<?> layerAbove(DispatchLayer<?> layer) {
 		int layerIndex = dispatchLayers.indexOf(layer);
 		if (layerIndex > 0) {
 			return dispatchLayers.get(layerIndex - 1);
@@ -303,7 +303,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 * Return the layer below (higher index) the specified layer, or null if
 	 * there are no layers below this one
 	 */
-	public DispatchLayer layerBelow(DispatchLayer layer) {
+	public DispatchLayer<?> layerBelow(DispatchLayer<?> layer) {
 		int layerIndex = dispatchLayers.indexOf(layer);
 		if (layerIndex < dispatchLayers.size() - 1) {
 			return dispatchLayers.get(layerIndex + 1);

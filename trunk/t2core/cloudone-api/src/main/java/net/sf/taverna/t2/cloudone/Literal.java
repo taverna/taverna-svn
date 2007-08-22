@@ -167,7 +167,7 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @return the Class of the object that would be returned by getValue()
 	 */
-	public Class getValueType() {
+	public Class<?> getValueType() {
 		String namespace = getNamespace();
 
 		if (namespace.startsWith("string")) {

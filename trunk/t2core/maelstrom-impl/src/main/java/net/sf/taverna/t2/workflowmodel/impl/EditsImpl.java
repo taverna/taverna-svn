@@ -35,7 +35,7 @@ public class EditsImpl implements Edits {
 	}
 
 	public Edit<DispatchStack> getAddDispatchLayerEdit(DispatchStack stack,
-			DispatchLayer layer, int position) {
+			DispatchLayer<?> layer, int position) {
 		return new AddDispatchLayerEdit(stack, layer, position);
 	}
 
@@ -56,7 +56,7 @@ public class EditsImpl implements Edits {
 	}
 
 	public Edit<DispatchStack> getDeleteDispatchLayerEdit(DispatchStack stack,
-			DispatchLayer layer) {
+			DispatchLayer<?> layer) {
 		return new DeleteDispatchLayerEdit(stack, layer);
 	}
 

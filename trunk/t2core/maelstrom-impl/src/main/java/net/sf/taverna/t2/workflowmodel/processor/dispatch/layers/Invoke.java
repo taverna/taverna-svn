@@ -95,7 +95,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 */
 	public void receiveJob(final Job job, List<? extends ServiceAnnotationContainer> annotatedServices) {
 		for (ServiceAnnotationContainer sac : annotatedServices) {
-			Service s = sac.getService();
+			Service<?> s = sac.getService();
 			if (s instanceof AsynchronousService) {
 
 				// The service is an AsynchronousService so we invoke it with an

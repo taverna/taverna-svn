@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.ReferenceSchemeFactorySPI;
 
 /**
@@ -21,8 +22,8 @@ import net.sf.taverna.t2.cloudone.ReferenceSchemeFactorySPI;
  * @author Matthew Pocock
  * 
  */
-public abstract class AbstractReferenceSchemeFactory implements
-		ReferenceSchemeFactorySPI {
+public abstract class AbstractReferenceSchemeFactory<RS extends ReferenceScheme> implements
+		ReferenceSchemeFactorySPI<RS> {
 
 	private Map<String, Set<List<String>>> keyMap = new HashMap<String, Set<List<String>>>();
 
