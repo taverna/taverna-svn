@@ -205,17 +205,30 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 	public Element asXML() throws JDOMException, IOException {
 		Element e = new Element("processor");
 		e.setAttribute("name", name);
+
+		// If there are annotations on this processor then add them to the
+		// element for the top level processor
+		Tools.injectAnnotations(e, this);
+
+		// Handle processor level input port declarations
 		Element ipElement = new Element("inputs");
 		for (InputPort ip : inputPorts) {
 			Element port = new Element("port");
+			// Add annotations on the input port objects
+			Tools.injectAnnotations(port, ip);
+			// Set basic port attributes
 			port.setAttribute("name", ip.getName());
 			port.setAttribute("depth", ip.getDepth() + "");
 			ipElement.addContent(port);
 		}
 		e.addContent(ipElement);
+
+		// And outputs
 		Element opElement = new Element("outputs");
 		for (OutputPort op : outputPorts) {
 			Element port = new Element("port");
+			// Add annotations on the output port objects
+			Tools.injectAnnotations(port, op);
 			port.setAttribute("name", op.getName());
 			port.setAttribute("depth", op.getDepth() + "");
 			port.setAttribute("grain", op.getGranularDepth() + "");
@@ -226,8 +239,13 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		e.addContent(dispatchStack.asXML());
 		Element servicesElement = new Element("services");
 		for (ServiceAnnotationContainerImpl saci : serviceList) {
+			Element containerElement = new Element("servicecontainer");
+			// Add service detail element
 			Element serviceElement = Tools.serviceAsXML(saci.getService());
-			servicesElement.addContent(serviceElement);
+			containerElement.addContent(serviceElement);
+			// Add annotations on service container objects
+			Tools.injectAnnotations(containerElement, saci);
+			servicesElement.addContent(containerElement);
 		}
 		e.addContent(servicesElement);
 		return e;
@@ -239,29 +257,42 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 			ClassNotFoundException, InstantiationException,
 			IllegalAccessException, ServiceConfigurationException {
 		setName(e.getAttributeValue("name"));
+
+		// Pick up any annotations on the top level processor object
+		Tools.populateAnnotationsFromParent(e, this);
+
 		Element ipElement = e.getChild("inputs");
 		for (Element portElement : (List<Element>) ipElement
 				.getChildren("port")) {
-			inputPorts.add(new ProcessorInputPortImpl(this, portElement
-					.getAttributeValue("name"), Integer.parseInt(portElement
-					.getAttributeValue("depth"))));
+			ProcessorInputPortImpl pipi = new ProcessorInputPortImpl(this,
+					portElement.getAttributeValue("name"), Integer
+							.parseInt(portElement.getAttributeValue("depth")));
+			// Pick up annotations on input port
+			Tools.populateAnnotationsFromParent(portElement, pipi);
+			inputPorts.add(pipi);
 		}
 		Element opElement = e.getChild("outputs");
 		for (Element portElement : (List<Element>) opElement
 				.getChildren("port")) {
-			outputPorts.add(new ProcessorOutputPortImpl(portElement
-					.getAttributeValue("name"), Integer.parseInt(portElement
-					.getAttributeValue("depth")), Integer.parseInt(portElement
-					.getAttributeValue("grain")), this));
+			ProcessorOutputPortImpl popi = new ProcessorOutputPortImpl(
+					portElement.getAttributeValue("name"), Integer
+							.parseInt(portElement.getAttributeValue("depth")),
+					Integer.parseInt(portElement.getAttributeValue("grain")),
+					this);
+			// Pick up annotations on output port
+			Tools.populateAnnotationsFromParent(portElement, popi);
+			outputPorts.add(popi);
 		}
 		dispatchStack.configureFromElement(e.getChild("dispatch"));
 		iterationStack.configureFromElement(e.getChild("iteration"));
 		serviceList.clear();
 		for (Element serviceElement : (List<Element>) e.getChild("services")
-				.getChildren("service")) {
-			// TODO - add annotation from annotation element here
-			serviceList.add(new ServiceAnnotationContainerImpl(Tools
-					.buildService(serviceElement)));
+				.getChildren("servicecontainer")) {
+			ServiceAnnotationContainerImpl sac = new ServiceAnnotationContainerImpl(
+					Tools.buildService(serviceElement.getChild("service")));
+			// Pick up annotations on service container
+			Tools.populateAnnotationsFromParent(serviceElement, sac);
+			serviceList.add(sac);
 		}
 	}
 
