@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
@@ -12,7 +14,7 @@ import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
  * 
  */
 public abstract class AbstractEventHandlingInputPort extends AbstractPort
-		implements EventHandlingInputPort {
+		implements EventHandlingInputPort, MutableAnnotated {
 
 	private Datalink incomingLink = null;
 
@@ -26,6 +28,14 @@ public abstract class AbstractEventHandlingInputPort extends AbstractPort
 
 	protected void setIncomingLink(Datalink newLink) {
 		this.incomingLink = newLink;
+	}
+	
+	public void addAnnotation(WorkflowAnnotation newAnnotation) {
+		annotations.add(newAnnotation);
+	}
+
+	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
+		annotations.remove(annotationToRemove);
 	}
 
 }
