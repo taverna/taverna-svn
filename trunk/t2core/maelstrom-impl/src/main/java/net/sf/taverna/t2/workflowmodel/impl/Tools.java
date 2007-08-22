@@ -145,6 +145,42 @@ public class Tools {
 	}
 
 	/**
+	 * If the annotations set for the annotated object is non-empty then this
+	 * will insert the element produce by the getAnnotationElement method into
+	 * the specified element. If the set is empty this does nothing - this is to
+	 * prevent copy and paste code of the style 'if there are annotations
+	 * add...'
+	 * 
+	 * @param e
+	 * @param a
+	 */
+	public static void injectAnnotations(Element e, Annotated a) {
+		if (a.getAnnotations().isEmpty() == false) {
+			e.addContent(getAnnotationsElement(a));
+		}
+	}
+
+	/**
+	 * Similarly to the inject annotations method, this looks for a child
+	 * 'annotations' element in the supplied element and, if present, uses it to
+	 * annotate the supplied mutable annotated object. If the annotations
+	 * element is not present this method does nothing - this allows us to make
+	 * the annotations element optional in all places it can occur without
+	 * having to write a whole pile of ugly cut and paste style code to detect
+	 * these cases.
+	 * 
+	 * @param e
+	 * @param a
+	 */
+	public static void populateAnnotationsFromParent(Element e,
+			MutableAnnotated a) {
+		Element annotationsElement = e.getChild("annotations");
+		if (annotationsElement != null) {
+			annotateObject(annotationsElement, a);
+		}
+	}
+
+	/**
 	 * Add the annotations contained in the specified &lt;annotations&gt;
 	 * element to the specified instance of a MutableAnnotated object
 	 */
