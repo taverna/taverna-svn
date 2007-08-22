@@ -9,7 +9,7 @@
       <s:default name="comment">some comment...</s:default>
     </s:defaults>
     <s:interaction>
-      <s:baseurl>http://www.ebi.ac.uk/collab/mygrid/service1/interaction/</s:baseurl>
+      <s:baseurl>http://api.bioinfo.no/interaction-service/</s:baseurl>
       <s:patternname>annotation.GenomeAnnotationFlatfile</s:patternname>
     </s:interaction>
   </s:processor>
