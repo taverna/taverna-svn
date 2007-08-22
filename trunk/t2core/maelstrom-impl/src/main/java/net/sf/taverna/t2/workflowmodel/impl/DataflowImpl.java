@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -22,11 +23,11 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		this.processors = new ArrayList<ProcessorImpl>();
 	}
 	
-	public List<DataflowInputPort> getInputPorts() {
+	public List<? extends DataflowInputPort> getInputPorts() {
 		return null;
 	}
 
-	public List<Datalink> getLinks() {
+	public List<? extends Datalink> getLinks() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -35,13 +36,18 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		return Collections.unmodifiableList(this.processors);
 	}
 
-	public List<DataflowOutputPort> getOutputPorts() {
+	public List<? extends DataflowOutputPort> getOutputPorts() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getLocalName() {
 		return this.name;
+	}
+
+	public DataflowValidationReport checkValidity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

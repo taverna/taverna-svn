@@ -50,4 +50,13 @@ public interface Dataflow extends Annotated, NamedWorkflowEntity {
 	 */
 	public List<? extends Datalink> getLinks();
 
+	/**
+	 * Triggers a check for various basic potential problems with the workflow,
+	 * in particular ones related to type checking. Returns a report object
+	 * containing the state of the workflow and any problems found.
+	 * 
+	 * @return validation report
+	 */
+	public DataflowValidationReport checkValidity();
+
 }
