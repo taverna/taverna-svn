@@ -56,7 +56,7 @@ public class DatasResource extends AbstractUserResource {
 	
 	class Velocity extends OwnedVelocity {
 		public Velocity() {
-			super(user.getWorkflows(), "Data documents");
+			super(user.getDatas(), "Data documents");
 		}
 	}
 
