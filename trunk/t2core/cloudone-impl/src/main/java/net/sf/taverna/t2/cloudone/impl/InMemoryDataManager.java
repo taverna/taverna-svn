@@ -44,24 +44,24 @@ public class InMemoryDataManager implements DataManager {
 	private int counter = 0;
 
 	private DataDocumentIdentifier nextDataIdentifier() {
+		String id = "urn:t2data:ddoc://" + namespace + "/data" + (counter++);
 		try {
-			return new DataDocumentIdentifier("urn:t2data:ddoc://" + namespace
-					+ "/data" + (counter++));
+			return new DataDocumentIdentifier(id);
 		} catch (MalformedIdentifierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException("Malformed data identifier: " + id, e);
 		}
 	}
 
 	private EntityListIdentifier nextListIdentifier(int depth) {
+		if (depth < 1) {
+			throw new IllegalArgumentException("Depth must be at least 1");
+		}
+		String id = "urn:t2data:list://" + namespace + "/list" + (counter++)
+				+ "/" + depth;
 		try {
-			return new EntityListIdentifier("urn:t2data:list://" + namespace
-					+ "/list" + (counter++) + "/" + depth);
+			return new EntityListIdentifier(id);
 		} catch (MalformedIdentifierException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			throw new RuntimeException("Malformed list identifier: " + id, e);
 		}
 	}
 
