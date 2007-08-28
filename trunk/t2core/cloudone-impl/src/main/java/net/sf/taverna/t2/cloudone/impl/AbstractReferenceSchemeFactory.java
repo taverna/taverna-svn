@@ -34,13 +34,18 @@ public abstract class AbstractReferenceSchemeFactory<RS extends ReferenceScheme>
 						"/META-INF/referencescheme/" + className + ".text"));
 		while (scanner.hasNextLine()) {
 			String[] line = scanner.nextLine().split("\\s*=\\s*");
+			String contextname = line[0];
+			String property = line[1];
+			
 			Set<List<String>> keySet = new HashSet<List<String>>();
-			String[] keys = line[1].split("\\s*");
+			
+			String[] keys = property.split("\\s+");
 			for (String key : keys) {
 				String[] keyParts = key.split("\\.");
 				keySet.add(Arrays.asList(keyParts));
 			}
-			keyMap.put(line[0], keySet);
+			
+			keyMap.put(contextname, keySet);
 		}
 	}
 
