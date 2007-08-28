@@ -30,7 +30,7 @@
   API with careful selection of the relevant artifacts, for example for
   building a workflow using the API.</para>
 
-  <section>
+  <section id="initialise_the_repository">
     <title>Initialising the Repository</title>
 
     <para>To avoid needing to use a bootstrapped approach, the solution is to
@@ -43,7 +43,7 @@
     <para>The parameter <literal>base</literal> is a <literal>File</literal>
     representing a directory to which any necessary artifacts will be
     downloaded. These are external artifacts that shouldn't be included in the
-    classpath of the application that is using the Taverna API. </para>
+    classpath of the application that is using the Taverna API.</para>
 
     <para>The parameter <literal>loader</literal> is the
     <literal>ClassLoader</literal> of the application that is invoking the
@@ -109,7 +109,7 @@
     application and set the local repository directory accordingly.</para>
   </section>
 
-  <section>
+  <section id="register_spi_registry">
     <title>Registering the repository with the Taverna SPI registry</title>
 
     <para>Before using the API, the Taverna plugin registries need to provided
@@ -128,19 +128,19 @@
     Taverna distribution should do the job.</para>
   </section>
 
-  <section>
+  <section id="example_execute_application">
     <title>Example application</title>
 
     <para>The next section includes the <link
     linkend="executeworkflowprogram_source">sourcecode for an example
     wrapper</link> to <literal>WorkflowLauncher</literal> that demonstrates
     the procedure for setting up Raven and invoking the
-    <literal>WorkflowLauncher</literal>. This example can be downloaded from
-    <ulink
-    url="http://taverna.sourceforge.net/index.php?doc=download.html">Taverna's
-    download page</ulink> and built using Maven. To make execution simple it
-    makes use of the maven plugin <literal>appassembler</literal>, so to build
-    simply issue the command:</para>
+    <literal>WorkflowLauncher</literal>. This example can be found in the
+    directory <emphasis>examples/workflowlauncher</emphasis> within the main
+    <link linkend="getting_the_code">Taverna source code</link> and is built
+    using Maven. To make execution simple it makes use of the maven plugin
+    <literal>appassembler</literal>, so to build simply issue the
+    command:</para>
 
     <screen>mvn package appassembler:assemble</screen>
 
@@ -156,6 +156,9 @@
 
   <section id="executeworkflowprogram_source">
     <title>Example source code</title>
+
+    <para>For quick reference the source code for the example application is
+    listed below:</para>
 
     <programlisting>package net.sf.taverna.example;
 
