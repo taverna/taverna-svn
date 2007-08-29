@@ -41,7 +41,10 @@ public class Bootstrap {
 			InvocationTargetException {
 
 		findUserDir();
-		
+		if (System.getProperty("taverna.startup")==null) {
+			determineStartup();
+		}
+		new ProxyConfiguration().initialiseProxySettings();
 		properties = findProperties();
 		
 		if (properties==null) {
@@ -51,8 +54,6 @@ public class Bootstrap {
 		else {
 			System.getProperties().putAll(properties);
 		}
-		
-		new ProxyConfiguration().initialiseProxySettings();
 		
 		remoteRepositories = new Repositories().find();
 
