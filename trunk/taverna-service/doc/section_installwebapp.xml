@@ -53,10 +53,10 @@
     <screen>&lt;property name="hibernate.connection.driver_class"
  value="org.apache.derby.jdbc.EmbeddedDriver" /&gt;
  &lt;property name="hibernate.connection.url"
- value="jdbc:derby:/tmp/tavernaService;create=true"
+ value="jdbc:derby:/tmp/remoteTavernaDB;create=true"
 /&gt;</screen>
 
-    <para>The path <literal>/tmp/tavernaService</literal> should be changed to
+    <para>The path <literal>/tmp/remoteTavernaDB</literal> should be changed to
     somewhere more suitable. The directory will be created and is where all
     the data is stored.</para>
   </section>
