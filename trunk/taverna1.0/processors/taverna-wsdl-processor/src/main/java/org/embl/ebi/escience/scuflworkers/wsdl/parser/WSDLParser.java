@@ -426,7 +426,7 @@ public class WSDLParser {
 					SOAPBinding soapBinding = (SOAPBinding) ee;
 					PortType portType = binding.getPortType();
 
-					styleMap.put(getWSDLLocation(), soapBinding.getStyle());
+					setStyleForBinding(soapBinding);
 
 					for (Iterator opIterator = portType.getOperations()
 							.iterator(); opIterator.hasNext();) {
@@ -445,6 +445,12 @@ public class WSDLParser {
 		}
 
 		return result;
+	}
+
+	private void setStyleForBinding(SOAPBinding soapBinding) {
+		String style = soapBinding.getStyle();
+		if (style==null) style="document"; //soap spec specifies to default to document if missing.
+		styleMap.put(getWSDLLocation(), style);
 	}
 
 	private Map<String, PortType> portTypeToOperationMap() {
@@ -483,8 +489,7 @@ public class WSDLParser {
 							SOAPBinding soapBinding = (SOAPBinding) ee;
 							PortType portType = binding.getPortType();
 
-							styleMap.put(getWSDLLocation(), soapBinding
-									.getStyle());
+							setStyleForBinding(soapBinding);
 
 							for (Iterator opIterator = portType.getOperations()
 									.iterator(); opIterator.hasNext();) {

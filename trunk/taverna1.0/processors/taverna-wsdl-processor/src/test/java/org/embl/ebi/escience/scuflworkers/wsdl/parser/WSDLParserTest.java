@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.wsdl.Operation;
 
-import junit.framework.TestCase;
-
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
 
@@ -35,6 +33,12 @@ public class WSDLParserTest extends WSDLBasedTestCase {
 		assertEquals("action uri is wrong", "einfo", actionURI);
 	}
 
+	public void testMissingStyleInBinding() throws Exception {
+		WSDLParser parser = new WSDLParser(
+				TESTWSDL_BASE+"SBWReader.wsdl");
+		assertEquals("Style should default to document if missing","document",parser.getStyle());
+	}
+	
 	public void testComplexTypeFromImport() throws Exception {
 		WSDLParser parser = new WSDLParser(
 				TESTWSDL_BASE+"eutils/eutils_lite.wsdl");
