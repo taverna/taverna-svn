@@ -6,3 +6,6 @@ which uses the custom stylesheet xsl/html-taverna.xsl - this extends the sourcef
 Depending upon your installation of docbook-xsl you are likely to modify the import path for the base chunk.xsl near the top on html-taverna.xsl
 
 Once the html has been generated, images and html.css need coping over to $OUTDIR manually.
+
+For the PDF generation I used DocMan (0.99d) from within Linux (also works in Windows but there is no Mac version).
+Docman guide and download link can be found at: http://www.goshaky.com/docman-archive/quickquide/
