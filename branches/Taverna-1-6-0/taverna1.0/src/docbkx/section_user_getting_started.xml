@@ -63,20 +63,24 @@
     <section id="taverna_artifact_repository">
       <title>Artefact repository location</title>
 
-      <para>When Taverna starts up it downloads all the
-      dependencies it needs in order to run, together with any updates if
-      requested, and optional plugins. By default, this location is on Windows
+      <para>When Taverna starts up it downloads all the dependencies it needs
+      in order to run, together with any updates if requested, and optional
+      plugins. By default, this location is on Windows
       &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository, on Linux $HOME/.taverna-1.5.2/repository and on the
-      Mac $HOME/Library/Application Support/Taverna-1.5.2/repository. This location
-      can be changed by setting the property taverna.repository in the startup
-      script. Be careful not to overwrite the existing other settings for ARGS
-      by making sure you are appending your new setting. For windows this is
-      the runme.bat and would be changed to end with:</para>
-      
-      <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository,$HOME/.taverna, or $HOME/Library/Application Support/Taverna-1.5.2/repository. If this repository exists when running Taverna 1.5.2 then
-      this repository is shared to prevent duplication of artifacts eating up disk space. Artifacts unique to Tavarna 1.5.2 are still stored in the new repsitory described previously.</para>
+      Data/Taverna/repository, on Linux $HOME/.taverna-1.5.2/repository and on
+      the Mac $HOME/Library/Application Support/Taverna-1.5.2/repository. This
+      location can be changed by setting the property taverna.repository in
+      the startup script. Be careful not to overwrite the existing other
+      settings for ARGS by making sure you are appending your new setting. For
+      windows this is the runme.bat and would be changed to end with:</para>
+
+      <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was
+      &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
+      Data/Taverna/repository,$HOME/.taverna, or $HOME/Library/Application
+      Support/Taverna-1.5.2/repository. If this repository exists when running
+      Taverna 1.5.2 then this repository is shared to prevent duplication of
+      artifacts eating up disk space. Artifacts unique to Tavarna 1.5.2 are
+      still stored in the new repsitory described previously.</para>
 
       <screen>set ARGS=%ARGS% -Dtaverna.repository=§j&lt;new location&gt; 
 
@@ -98,15 +102,16 @@ java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
       <para>If you are behind an HTTP proxy, and there's a reasonable chance
       that you are, you'll need to modify the <link
       linkend="mygrid.properties">mygrid.properties</link>. The properties
-      http.proxyHost and http.proxyPort need to be set to the hostname, or IP
-      address, and port. These are then added to the list of ARGS. There is
-      also the additional property http.nonProxyHosts which if set lists hosts
-      for which the proxy is not used, separated by a ‘|’. This should follow
-      the existing setting up of ARGS and precede the final java call to
-      invoke the taverna-bootstrap, so that your settings do not get
-      overwritten. By default these properties are commented out, to make them
-      active uncomment them and assign them to an appropriate value, for
-      example:</para>
+      <emphasis>http.proxyHost</emphasis> and
+      <emphasis>http.proxyPort</emphasis> need to be set to the hostname, or
+      IP address, and port. There is also the additional property
+      <emphasis>http.nonProxyHosts</emphasis> which if set lists hosts for
+      which the proxy is not used, separated by a ‘|’. If the proxy server
+      also requires authentication you should also assign values to
+      <emphasis>http.proxyUser</emphasis> and
+      <emphasis>http.proxyPassword</emphasis>. By default these properties are
+      commented out, to make them active uncomment them and assign them to an
+      appropriate value, for example:</para>
 
       <screen>http.proxyHost=myproxy.com
 http.proxyPort=1234
