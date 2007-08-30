@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cloudone.entity;
 import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
 /**
@@ -14,7 +15,7 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
  * @author Matthew Pocock
  * 
  */
-public interface DataDocument extends Entity<DataDocumentIdentifier, String> {
+public interface DataDocument extends Entity<DataDocumentIdentifier, DataDocumentBean> {
 
 	/**
 	 * Return the set of reference schemes contained within this data document
