@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl;
+package net.sf.taverna.t2.cloudone.datamanager.memory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,19 +9,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.DataDocument;
-import net.sf.taverna.t2.cloudone.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.Entity;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.EntityList;
-import net.sf.taverna.t2.cloudone.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.entity.EntityList;
+import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
+import net.sf.taverna.t2.cloudone.entity.Literal;
+import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.impl.DataDocumentImpl;
 
 /**
  * Naive but functional implementation of DataManager which stores all entities
@@ -37,7 +40,7 @@ public class InMemoryDataManager implements DataManager {
 
 	private Set<LocationalContext> contexts;
 
-	private Map<EntityIdentifier, Entity<? extends EntityIdentifier>> contents;
+	private Map<EntityIdentifier, Entity<? extends EntityIdentifier, ?>> contents;
 
 	private String namespace;
 
@@ -47,6 +50,16 @@ public class InMemoryDataManager implements DataManager {
 		String id = "urn:t2data:ddoc://" + namespace + "/data" + (counter++);
 		try {
 			return new DataDocumentIdentifier(id);
+		} catch (MalformedIdentifierException e) {
+			throw new RuntimeException("Malformed data identifier: " + id, e);
+		}
+	}
+	
+	private ErrorDocumentIdentifier nextErrorIdentifier(int depth, int implicitDepth) {
+		String id = "urn:t2data:error://" + namespace + "/error" + (counter++)
+				+ "/" + depth + "/" + implicitDepth;
+		try {
+			return new ErrorDocumentIdentifier(id);
 		} catch (MalformedIdentifierException e) {
 			throw new RuntimeException("Malformed data identifier: " + id, e);
 		}
@@ -68,19 +81,22 @@ public class InMemoryDataManager implements DataManager {
 	public InMemoryDataManager(String namespace, Set<LocationalContext> contexts) {
 		this.contexts = contexts;
 		this.namespace = namespace;
-		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier>>();
+		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier, ?>>();
 	}
 
 	@SuppressWarnings("unchecked")
-	public <EI extends EntityIdentifier> Entity<EI> getEntity(EI identifier)
+	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
 			throws EntityNotFoundException {
+		if (identifier instanceof Literal) {
+			return (Entity<EI, ?>) identifier;
+		}
 		Entity ent = contents.get(identifier);
 		if (contents.containsKey(identifier) == false) {
 			throw new EntityNotFoundException("No entity found with id : "
 					+ identifier);
 		}
 		// we know this is type-safe because we control what goes into the map
-		return (Entity<EI>) ent;
+		return (Entity<EI, ?>) ent;
 	}
 
 	public String getCurrentNamespace() {
@@ -95,22 +111,11 @@ public class InMemoryDataManager implements DataManager {
 		return Collections.singletonList(namespace);
 	}
 
-	public DataDocument registerDocument(final Set<ReferenceScheme> references) {
-
-		final DataDocumentIdentifier ddocid = nextDataIdentifier();
-		DataDocument d = new DataDocument() {
-
-			public Set<ReferenceScheme> getReferenceSchemes() {
-				return references;
-			}
-
-			public DataDocumentIdentifier getIdentifier() {
-				return ddocid;
-			}
-
-		};
-		contents.put(ddocid, d);
-		return d;
+	public DataDocumentIdentifier registerDocument(final Set<ReferenceScheme> references) {
+		final DataDocumentIdentifier id = nextDataIdentifier();
+		DataDocument d = new DataDocumentImpl(id, references);
+		contents.put(id, d);
+		return id;
 	}
 
 	public EntityListIdentifier registerEmptyList(int depth) {
@@ -186,5 +191,20 @@ public class InMemoryDataManager implements DataManager {
 		System.arraycopy(current, 0, result, 0, current.length);
 		result[current.length] = head;
 		return result;
+	}
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg) {
+		return registerError(depth, implicitDepth, msg, null);
+	}
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, Throwable throwable) {
+		return registerError(depth, implicitDepth, null, throwable);		
+	}
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable) {
+		final ErrorDocumentIdentifier id = nextErrorIdentifier(depth, implicitDepth);
+		ErrorDocument ed = new ErrorDocument(id, msg, throwable);
+		contents.put(id, ed);
+		return id;
 	}
 }
