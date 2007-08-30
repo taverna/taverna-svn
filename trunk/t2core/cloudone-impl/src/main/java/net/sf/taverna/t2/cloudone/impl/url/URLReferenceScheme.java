@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cloudone.impl.url;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -161,6 +162,18 @@ public class URLReferenceScheme implements ReferenceScheme {
 
 	public boolean isImmediate() {
 		return false;
+	}
+
+	public String getAsBean() {
+		return url.toExternalForm();
+	}
+
+	public void setFromBean(String url) throws IllegalArgumentException {
+		try {
+			this.url = new URL(url);
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException("Invalid URL " + url, e);
+		}
 	}
 
 }
