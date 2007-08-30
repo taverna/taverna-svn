@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.service;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * A concrete invokable service with an asynchronous invocation API and no

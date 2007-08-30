@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;

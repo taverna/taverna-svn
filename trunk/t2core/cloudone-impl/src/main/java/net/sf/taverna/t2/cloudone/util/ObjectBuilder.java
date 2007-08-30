@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.Literal;
+import net.sf.taverna.t2.cloudone.entity.Literal;
+import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
 /**
  * Utility class with a method to take an EntityIdentifier and build a POJO from

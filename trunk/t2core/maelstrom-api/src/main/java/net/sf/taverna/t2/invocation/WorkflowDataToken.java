@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.invocation;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * A single data token passed between processors in a workflow. This is distinct

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Matches jobs where the index array of the job on index 0 is the prefix of the

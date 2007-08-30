@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.service;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Abstract superclass for asynchronous services. Service providers should only

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * The callback interface used by instances of AsynchronousService to push

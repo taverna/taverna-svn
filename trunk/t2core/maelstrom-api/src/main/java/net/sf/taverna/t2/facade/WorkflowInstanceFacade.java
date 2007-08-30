@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.facade;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.utility.TypedTreeModel;

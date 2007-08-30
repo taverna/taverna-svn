@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.jdom.Element;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;

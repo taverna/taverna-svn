@@ -10,7 +10,7 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;

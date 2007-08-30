@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.facade;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Implement and use with the WorkflowInstanceFacade to listen for data
