@@ -30,7 +30,7 @@ public class ProcessorSerializationTest extends TestCase {
 		ProcessorImpl p = new ProcessorImpl();
 		DispatchStackImpl stack = p.getDispatchStack();
 		new AddDispatchLayerEdit(stack, new Parallelize(), 0).doEdit();
-		new AddDispatchLayerEdit(stack, new Retry(), 1).doEdit();
+		new AddDispatchLayerEdit(stack, new Retry(2, 50, 2000, 1), 1).doEdit();
 		new AddDispatchLayerEdit(stack, new DummyInvokerLayer(), 2).doEdit();
 		new CreateProcessorInputPortEdit(p, "Input1", 1).doEdit();
 		new CreateProcessorInputPortEdit(p, "Input2", 0).doEdit();
