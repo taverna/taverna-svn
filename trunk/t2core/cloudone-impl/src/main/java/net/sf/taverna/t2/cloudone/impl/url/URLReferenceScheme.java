@@ -14,6 +14,7 @@ import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.bean.Beanable;
 
 /**
  * Reference scheme defined by a URL. This URL can be global, site local or link
@@ -24,9 +25,20 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
  * @author Matthew Pocock
  * 
  */
-public class URLReferenceScheme implements ReferenceScheme {
+public class URLReferenceScheme implements ReferenceScheme, Beanable<String> {
 
 	private URL url;
+
+	public URLReferenceScheme() {
+		url = null;
+	}
+
+	public URLReferenceScheme(URL url) {
+		if (url == null) {
+			throw new NullPointerException("URL can't be null");
+		}
+		this.url = url;
+	}
 
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
@@ -169,11 +181,39 @@ public class URLReferenceScheme implements ReferenceScheme {
 	}
 
 	public void setFromBean(String url) throws IllegalArgumentException {
+		if (this.url != null) {
+			throw new IllegalStateException("Already initialised");
+		}
 		try {
 			this.url = new URL(url);
 		} catch (MalformedURLException e) {
 			throw new IllegalArgumentException("Invalid URL " + url, e);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof URLReferenceScheme))
+			return false;
+		final URLReferenceScheme other = (URLReferenceScheme) obj;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.toExternalForm().equals(other.url.toExternalForm()))
+			return false;
+		return true;
 	}
 
 }
