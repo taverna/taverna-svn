@@ -1,4 +1,6 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.identifier;
+
+import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 
 /**
  * Identifier for a single ErrorDocument
@@ -84,7 +86,7 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		return this.name;
 	}
 

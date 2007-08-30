@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.identifier;
 
 /**
  * Bean holding a data reference and an index path denoting its context within

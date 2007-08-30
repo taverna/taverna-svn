@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.identifier;
 
 /**
  * Enumeration of the three possible types of reference: data documents, error

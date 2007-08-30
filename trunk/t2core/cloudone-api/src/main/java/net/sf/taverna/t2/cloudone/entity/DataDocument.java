@@ -1,6 +1,9 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.entity;
 
 import java.util.Set;
+
+import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
 /**
  * A bundle of zero or more reference scheme implementations pointing to byte
@@ -11,7 +14,7 @@ import java.util.Set;
  * @author Matthew Pocock
  * 
  */
-public interface DataDocument extends Entity<DataDocumentIdentifier> {
+public interface DataDocument extends Entity<DataDocumentIdentifier, String> {
 
 	/**
 	 * Return the set of reference schemes contained within this data document

@@ -1,9 +1,15 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+
+import net.sf.taverna.t2.cloudone.bean.EntityListBean;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
 /**
  * A named list of entity identifiers. Represents a single list within the data
@@ -13,14 +19,23 @@ import java.util.ListIterator;
  * @author Matthew Pocock
  * 
  */
-public class EntityList implements Entity<EntityListIdentifier>, List<EntityIdentifier> {
-	private final EntityListIdentifier identifier;
+public class EntityList implements Entity<EntityListIdentifier, EntityListBean>, List<EntityIdentifier> {
+	
+	public EntityList() {
+		identifier = null;
+		list = new ArrayList<EntityIdentifier>();
+	}
+	
+	private EntityListIdentifier identifier;
 
 	private final List<EntityIdentifier> list;
 
 	public EntityList(final EntityListIdentifier identifier,
 			final List<EntityIdentifier> list) {
 		super();
+		if (identifier == null) {
+			throw new NullPointerException("Identifier can't be null");
+		}
 		this.identifier = identifier;
 		this.list = list;
 	}
@@ -127,6 +142,29 @@ public class EntityList implements Entity<EntityListIdentifier>, List<EntityIden
 
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
+	}
+
+	public EntityListBean getAsBean() {
+		EntityListBean bean = new EntityListBean();
+		bean.setIdentifier(identifier.getAsBean());
+		
+		List<String> content = new ArrayList<String>();
+		for (EntityIdentifier child : list) {
+			content.add(child.getAsBean());
+		}
+		bean.setContent(content);
+		
+		return bean;
+	}
+
+	public void setFromBean(EntityListBean bean) {
+		if (identifier != null || ! list.isEmpty()) {
+			throw new IllegalStateException("Can't run setFromBean() on initialised EntityList");
+		}
+		identifier = (EntityListIdentifier) EntityIdentifiers.parse(bean.getIdentifier());
+		for (String id : bean.getContent()) {
+			list.add(EntityIdentifiers.parse(id));
+		}
 	}
 
 }

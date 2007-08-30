@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
@@ -63,7 +63,7 @@ public class TestStagedIteration extends TestCase {
 			for (int j = 0; j < 2; j++) {
 				DataDocumentIdentifier ddocIdentifier = ContextManager.baseManager
 						.registerDocument(Collections
-								.<ReferenceScheme> emptySet()).getIdentifier();
+								.<ReferenceScheme> emptySet());
 				idsInList.add(ddocIdentifier);
 			}
 			EntityListIdentifier dataReference = ContextManager.baseManager.registerList(idsInList.toArray(new EntityIdentifier[0]));
@@ -76,7 +76,7 @@ public class TestStagedIteration extends TestCase {
 			for (int j = 0; j < 2; j++) {
 				DataDocumentIdentifier ddocIdentifier = ContextManager.baseManager
 						.registerDocument(Collections
-								.<ReferenceScheme> emptySet()).getIdentifier();
+								.<ReferenceScheme> emptySet());
 				idsInList.add(ddocIdentifier);
 			}
 			EntityListIdentifier dataReference = ContextManager.baseManager.registerList(idsInList.toArray(new EntityIdentifier[0]));

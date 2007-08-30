@@ -3,6 +3,9 @@ package net.sf.taverna.t2.cloudone;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+
 /**
  * Interface defining methods used by the DataPeerContainer. This interface
  * should only ever be accessed from an instance of PeerContainer to handle a

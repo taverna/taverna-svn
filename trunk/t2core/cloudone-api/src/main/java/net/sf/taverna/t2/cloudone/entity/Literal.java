@@ -1,8 +1,11 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.entity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+
+import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Used to represent literal values such as booleans, integers, short strings
@@ -17,13 +20,13 @@ import java.net.URLEncoder;
  * 
  */
 public class Literal extends EntityIdentifier implements
-		Entity<Literal> {
+		Entity<Literal, String> {
 
 	private static String prefix = "urn:t2data:literal://";
 
 	private String value;
 
-	protected Literal(String id) throws MalformedIdentifierException {
+	public Literal(String id) throws MalformedIdentifierException {
 		super(id);
 	}
 
@@ -33,7 +36,7 @@ public class Literal extends EntityIdentifier implements
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		return value;
 	}
 

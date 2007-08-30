@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
-import net.sf.taverna.t2.cloudone.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;

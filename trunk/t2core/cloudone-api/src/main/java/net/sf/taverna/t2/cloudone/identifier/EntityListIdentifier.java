@@ -1,4 +1,6 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.identifier;
+
+import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 
 /**
  * An identifier for an EntityList. Naming of this gets a bit confusing as
@@ -50,7 +52,7 @@ public class EntityListIdentifier extends EntityIdentifier {
 	}
 
 	@Override
-	protected String getName() {
+	public String getName() {
 		return this.name;
 	}
 

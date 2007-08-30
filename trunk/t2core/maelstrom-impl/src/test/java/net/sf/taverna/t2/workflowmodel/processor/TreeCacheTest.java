@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.util.HashMap;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.service.Job;
 import junit.framework.TestCase;

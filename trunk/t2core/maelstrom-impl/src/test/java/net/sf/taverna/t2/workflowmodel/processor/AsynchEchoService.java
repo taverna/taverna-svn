@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.service.AbstractAsynchronousService;
 import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousService;
 import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousServiceCallback;

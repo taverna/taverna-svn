@@ -3,6 +3,13 @@ package net.sf.taverna.t2.cloudone;
 import java.util.Iterator;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+
 /**
  * The data manager is the primary access interface for external (i.e. not in
  * the data layer) code. It contains methods for registration and resolution of
@@ -21,7 +28,7 @@ public interface DataManager {
 	/**
 	 * Fetch the named entity by identifier.
 	 */
-	public <EI extends EntityIdentifier> Entity<EI> getEntity(EI identifier)
+	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
 			throws EntityNotFoundException;
 
 	/**
@@ -72,6 +79,13 @@ public interface DataManager {
 	 * @param references
 	 * @return
 	 */
-	public DataDocument registerDocument(Set<ReferenceScheme> references);
+	public DataDocumentIdentifier registerDocument(Set<ReferenceScheme> references);
+	
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg);
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, Throwable throwable);
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable);
 
 }

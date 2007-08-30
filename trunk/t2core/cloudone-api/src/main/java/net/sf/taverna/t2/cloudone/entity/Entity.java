@@ -1,4 +1,7 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.entity;
+
+import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Superinterface for all entities within the data system. In the present
@@ -10,6 +13,7 @@ package net.sf.taverna.t2.cloudone;
  * 
  * @param <ID>
  */
-public interface Entity<ID extends EntityIdentifier> {
+public interface Entity<ID extends EntityIdentifier, Bean> extends
+		Beanable<Bean> {
 	public ID getIdentifier();
 }

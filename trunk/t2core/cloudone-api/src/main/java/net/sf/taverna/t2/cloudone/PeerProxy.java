@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.cloudone;
 
+import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+
 /**
  * A proxy interface defining the set of operations a peer container makes
  * available to a data peer on remote peers. Instances of this interface are
@@ -23,7 +26,7 @@ public interface PeerProxy {
 	 * @param identifier
 	 * @return
 	 */
-	public Entity<?> export(EntityIdentifier identifier)
+	public Entity<?, ?> export(EntityIdentifier identifier)
 			throws EntityNotFoundException;
 
 }
