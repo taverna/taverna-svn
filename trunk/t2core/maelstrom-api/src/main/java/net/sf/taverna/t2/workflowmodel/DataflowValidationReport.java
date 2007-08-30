@@ -43,4 +43,19 @@ public interface DataflowValidationReport {
 	 */
 	public List<? extends Processor> getFailedProcessors();
 
+	/**
+	 * The workflow will be marked as invalid if any of the dataflow output
+	 * ports can't be typed based on incoming links. This happens if the port
+	 * isn't linked (a common enough issue for new users in previous releases of
+	 * Taverna) or if the internal port is linked but the entity it links to
+	 * isn't validated.
+	 * 
+	 * @return a list of DataflowOutputPort implementations which are not typed
+	 *         correctly. These will have output depth of -1 indicating an
+	 *         unknown depth, they may or may not have a granular depth set but
+	 *         if the overall depth is -1 this isn't important as the thing
+	 *         won't run anyway.
+	 */
+	public List<? extends DataflowOutputPort> getUnresolvedOutputs();
+
 }

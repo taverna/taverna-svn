@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
@@ -113,4 +114,17 @@ public interface Processor extends NamedWorkflowEntity, Annotated {
 	 */
 	public List<? extends Condition> getControlledPreconditionList();
 
+	/**
+	 * When called this method configures input port filters and the
+	 * crystalizer, pushing cardinality information into outgoing datalinks.
+	 * 
+	 * @return true if the typecheck was successful or false if the check failed
+	 *         because there were preconditions missing such as unsatisfied
+	 *         input types
+	 * @throws IterationTypeMismatchException
+	 *             if the typing occured but didn't match because of an
+	 *             iteration mismatch
+	 */
+	public boolean doTypeCheck() throws IterationTypeMismatchException;
+	
 }

@@ -9,7 +9,7 @@ package net.sf.taverna.t2.workflowmodel;
  */
 public abstract class AbstractOutputPort extends AbstractPort implements OutputPort {
 
-	private int granularDepth;
+	protected int granularDepth;
 
 	protected AbstractOutputPort(String portName, int portDepth,
 			int granularDepth) {

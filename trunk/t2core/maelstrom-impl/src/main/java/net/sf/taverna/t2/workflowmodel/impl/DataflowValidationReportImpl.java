@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
@@ -15,16 +16,19 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  */
 public class DataflowValidationReportImpl implements DataflowValidationReport {
 
-	private List<ProcessorImpl> failed = new ArrayList<ProcessorImpl>();
-	private List<ProcessorImpl> unsatisfied = new ArrayList<ProcessorImpl>();
+	private List<Processor> failed = new ArrayList<Processor>();
+	private List<Processor> unsatisfied = new ArrayList<Processor>();
+	private List<DataflowOutputPort> unresolvedOutputs = new ArrayList<DataflowOutputPort>();
 	private boolean valid;
 
 	DataflowValidationReportImpl(boolean isValid,
-			List<ProcessorImpl> failedProcessors,
-			List<ProcessorImpl> unsatisfiedProcessors) {
+			List<Processor> failedProcessors,
+			List<Processor> unsatisfiedProcessors,
+			List<DataflowOutputPort> unresolvedOutputs) {
 		this.valid = isValid;
 		this.failed = Collections.unmodifiableList(failedProcessors);
 		this.unsatisfied = Collections.unmodifiableList(unsatisfiedProcessors);
+		this.unresolvedOutputs = Collections.unmodifiableList(unresolvedOutputs);
 	}
 
 	public List<? extends Processor> getFailedProcessors() {
@@ -35,6 +39,10 @@ public class DataflowValidationReportImpl implements DataflowValidationReport {
 		return this.unsatisfied;
 	}
 
+	public List<? extends DataflowOutputPort> getUnresolvedOutputs() {
+		return this.unresolvedOutputs;
+	}
+	
 	public boolean isValid() {
 		return this.valid;
 	}

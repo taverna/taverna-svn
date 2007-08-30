@@ -16,7 +16,7 @@ public abstract class AbstractPort extends AbstractAnnotatedThing implements Por
 		this.depth = depth;
 	}
 	
-	public final int getDepth() {
+	public int getDepth() {
 		return this.depth;
 	}
 
