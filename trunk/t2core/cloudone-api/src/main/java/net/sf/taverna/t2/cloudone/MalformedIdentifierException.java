@@ -8,7 +8,7 @@ package net.sf.taverna.t2.cloudone;
  * @author Matthew Pocock
  * 
  */
-public class MalformedIdentifierException extends Exception {
+public class MalformedIdentifierException extends IllegalArgumentException {
 
 	/**
 	 * 
