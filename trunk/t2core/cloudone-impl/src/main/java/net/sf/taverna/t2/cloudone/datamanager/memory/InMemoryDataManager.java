@@ -1,28 +1,14 @@
 package net.sf.taverna.t2.cloudone.datamanager.memory;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
-import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
-import net.sf.taverna.t2.cloudone.entity.EntityList;
-import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
-import net.sf.taverna.t2.cloudone.entity.Literal;
-import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
-import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.IDType;
 
 /**
  * Naive but functional implementation of DataManager which stores all entities
@@ -40,133 +26,29 @@ public class InMemoryDataManager extends AbstractDataManager {
 
 	private int counter = 0;
 
-	private DataDocumentIdentifier nextDataIdentifier() {
-		String id = "urn:t2data:ddoc://" + getCurrentNamespace() + "/data"
-				+ (counter++);
-		return new DataDocumentIdentifier(id);
-	}
-	
-	private ErrorDocumentIdentifier nextErrorIdentifier(int depth, int implicitDepth) {
-		String id = "urn:t2data:error://" + getCurrentNamespace() + "/error" + (counter++)
-				+ "/" + depth + "/" + implicitDepth;
-		return new ErrorDocumentIdentifier(id);
-	}
-
-	private EntityListIdentifier nextListIdentifier(int depth) {
-		if (depth < 1) {
-			throw new IllegalArgumentException("Depth must be at least 1");
-		}
-		String id = "urn:t2data:list://" + getCurrentNamespace() + "/list"
-				+ (counter++) + "/" + depth;
-		return new EntityListIdentifier(id);
-	}
-
 	public InMemoryDataManager(String namespace, Set<LocationalContext> contexts) {
 		super(namespace, contexts);
 		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier, ?>>();
 	}
 
+	@Override
+	protected String generateId(IDType type) {
+		if (type.equals(IDType.Literal)) {
+			throw new IllegalArgumentException("Can't generate IDs for Literal");
+		}
+		return "urn:t2data:" + type.uripart + "://" + getCurrentNamespace() + "/"
+				+ type.toString().toLowerCase() + counter++;
+	}
+
 	@SuppressWarnings("unchecked")
-	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
-			throws EntityNotFoundException {
-		if (identifier instanceof Literal) {
-			return (Entity<EI, ?>) identifier;
-		}
-		Entity ent = contents.get(identifier);
-		if (! contents.containsKey(identifier)) {
-			throw new EntityNotFoundException("No entity found with id : "
-					+ identifier);
-		}
-		// we know this is type-safe because we control what goes into the map
-		return (Entity<EI, ?>) ent;
+	@Override
+	protected Entity<EntityIdentifier, ?> retrieveEntity(EntityIdentifier id) {
+		return (Entity<EntityIdentifier, ?>) contents.get(id);
 	}
 
-	public DataDocumentIdentifier registerDocument(final Set<ReferenceScheme> references) {
-		final DataDocumentIdentifier id = nextDataIdentifier();
-		DataDocument d = new DataDocumentImpl(id, references);
-		contents.put(id, d);
-		return id;
+	@Override
+	protected <Bean> void storeEntity(Entity<?, Bean> entity) {
+		contents.put(entity.getIdentifier(), entity);
 	}
 
-	public EntityListIdentifier registerEmptyList(int depth) {
-		EntityListIdentifier id = nextListIdentifier(depth);
-		EntityList newList = new EntityList(id, Collections
-				.<EntityIdentifier> emptyList());
-		contents.put(id, newList);
-		return id;
-	}
-
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers) {
-		if (identifiers.length == 0) {
-			throw new IndexOutOfBoundsException(
-					"Cannot register an empty list through registerList method");
-		}
-		EntityListIdentifier id = nextListIdentifier(identifiers[0].getDepth() + 1);
-		EntityList newList = new EntityList(id, Arrays.asList(identifiers));
-		contents.put(id, newList);
-		return id;
-	}
-
-	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth) {
-		if (desiredDepth < 0) {
-			throw new IllegalArgumentException(
-					"Cannot traverse to a negative depth");
-		}
-		Set<ContextualizedIdentifier> workingSet = new HashSet<ContextualizedIdentifier>();
-		workingSet.add(new ContextualizedIdentifier(identifier, new int[0]));
-		int currentDepth = identifier.getDepth();
-		while (currentDepth > desiredDepth) {
-			Set<ContextualizedIdentifier> newSet = new HashSet<ContextualizedIdentifier>();
-			for (ContextualizedIdentifier ci : workingSet) {
-				switch (ci.getDataRef().getType()) {
-				case List:
-					EntityListIdentifier listIdentifier = (EntityListIdentifier) ci
-							.getDataRef();
-					try {
-						EntityList list = (EntityList) getEntity(listIdentifier);
-						int position = 0;
-						for (EntityIdentifier ei : list) {
-							newSet.add(new ContextualizedIdentifier(ei,
-									addIndex(ci.getIndex(), position++)));
-						}
-					} catch (EntityNotFoundException enfe) {
-						throw new AssertionError(
-								"Entity referenced within list but not found within this data manager");
-					}
-					break;
-				case Data:
-					throw new AssertionError(
-							"Should never be trying to drill inside a data document identifier");
-				case Error:
-					newSet
-							.add(new ContextualizedIdentifier(
-									((ErrorDocumentIdentifier) ci.getDataRef())
-											.drill(),
-									addIndex(ci.getIndex(), 0)));
-					break;
-				default:
-					throw new AssertionError(
-							"Fallen off end of case statement, something bad happened.");
-				}
-			}
-			currentDepth--;
-			workingSet = newSet;
-		}
-		return workingSet.iterator();
-	}
-
-	private static int[] addIndex(int[] current, int head) {
-		int[] result = new int[current.length + 1];
-		System.arraycopy(current, 0, result, 0, current.length);
-		result[current.length] = head;
-		return result;
-	}
-
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable) {
-		final ErrorDocumentIdentifier id = nextErrorIdentifier(depth, implicitDepth);
-		ErrorDocument ed = new ErrorDocument(id, msg, throwable);
-		contents.put(id, ed);
-		return id;
-	}
 }
