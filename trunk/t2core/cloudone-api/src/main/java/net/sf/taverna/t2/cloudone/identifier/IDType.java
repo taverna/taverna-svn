@@ -9,6 +9,12 @@ package net.sf.taverna.t2.cloudone.identifier;
  */
 public enum IDType {
 
-	Data, Error, List, Literal;
+	Data("ddoc"), Error("error"), List("list"), Literal("literal");
 
+	public final String uripart;
+
+	private IDType(String uripart) {
+		this.uripart = uripart;
+	}
+	
 }
