@@ -91,10 +91,6 @@ public abstract class EntityIdentifier implements Beanable<String> {
 					+ namespace + "' in " + id);
 		}
 		validate(pathParts[3]);
-		if (! isValidName(getName())) {
-			throw new MalformedIdentifierException("Invalid name '" + getName()
-					+ "' in " + id);
-		}
 		this.id = id;
 	}
 

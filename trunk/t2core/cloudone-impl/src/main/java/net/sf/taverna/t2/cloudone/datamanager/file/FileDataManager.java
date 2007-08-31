@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.EntityRetrievalException;
 import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
@@ -24,6 +26,40 @@ import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
 
 import org.jdom.JDOMException;
 
+/**
+ * File based {@link DataManager}. Entities are stored in a directory
+ * structure:
+ * 
+ * <pre>
+ * 	namespace1/
+ * 		ddoc/
+ * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.xml
+ * 			973ab8eb-0a5a-49d9-a7cc-d5f7f64f29b1.xml
+ * 		error/
+ * 			9e190835-ea2e-45ae-a28d-20ac781e2ede.xml
+ * 			6f02c8ac-04a3-4d45-8a35-45a59cd2da83.xml
+ * 		list/
+ * 			2549b0a5-d70a-4630-9345-ca33b045b4cd.xml
+ * 			523d00b6-0294-455e-8638-1c0a3962e7cd.xml
+ * 	namespace2/
+ * 		ddoc/
+ * 			49d725d5-0b8f-4572-a804-160a9df690a4.xml
+ * </pre>
+ * 
+ * <p>
+ * The {@link UUID} is set in {@link EntityIdentifier#getName()}, and the
+ * entities are separated into different directories depending on their type.
+ * </p>
+ * <p>
+ * Entities themselves, or more correctly, their beans as returned by
+ * {@link Beanable#getAsBean()}, are serialised by {@link EntitySerialiser}.
+ * On deserialisation the entities are reconstructed from their bean.
+ * </p>
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class FileDataManager extends AbstractDataManager {
 
 	private File path;
@@ -57,10 +93,11 @@ public class FileDataManager extends AbstractDataManager {
 		}
 		Bean bean = entity.getAsBean();
 		entityPath.getParentFile().mkdirs();
+		// TODO: Could serialise in a more portable and less space-hungry
+		// format
 		try {
 			EntitySerialiser.toXMLFile(bean, entityPath);
 		} catch (JDOMException e) {
-
 		} catch (IOException e) {
 			throw new EntityStorageException("Could not store entity to"
 					+ entityPath, e);
@@ -126,13 +163,20 @@ public class FileDataManager extends AbstractDataManager {
 		String ns = id.getNamespace();
 		String type = id.getType().uripart;
 		String name = id.getName() + ".xml";
-		if (! EntityIdentifier.isValidName(ns)
-				|| ! EntityIdentifier.isValidName(name)) {
-			throw new MalformedIdentifierException("Invalid identifier " + id);
+		if (! EntityIdentifier.isValidName(name)) {
+			// TODO: Should escape weird names instead of failing
+			// (typically entities coming over p2p)
+			throw new MalformedIdentifierException("Unsupported identifier " + id);
 		}
 
 		// /path/ns/type/name
 		File entityPath = new File(new File(new File(path, ns), type), name);
+		
+		// TODO: File systems have a maximum number of files per directory, so should be for example:
+		// a3/
+		//   a39a9aefae.txt
+		//   a3f9g9a9a.txt
+		// (Even this would support maximum 256 * 32k entities)
 		return entityPath;
 	}
 

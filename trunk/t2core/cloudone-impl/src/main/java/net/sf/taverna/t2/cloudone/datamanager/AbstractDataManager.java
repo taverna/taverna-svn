@@ -26,6 +26,16 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 
+/**
+ * Abstract {@link DataManager}. Handles all register* methods, namespaces and
+ * locational contexts, subclasses only need to implement
+ * {@link #storeEntity(Entity)}, {@link #retrieveEntity(EntityIdentifier)} and
+ * {@link #generateId(IDType)}.
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public abstract class AbstractDataManager implements DataManager {
 
 	private Set<LocationalContext> contexts;
@@ -41,6 +51,12 @@ public abstract class AbstractDataManager implements DataManager {
 		return namespace;
 	}
 
+	/**
+	 * Retrieve entity from Data manager. If the entity is a {@link Literal} the
+	 * instance will be returned directly. Otherwise, if the entity is within
+	 * the {@link DataManager}s {@link #getManagedNamespaces()}, it will be
+	 * retrieved using {@link #retrieveEntity(EntityIdentifier)}.
+	 */
 	@SuppressWarnings("unchecked")
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI id)
 			throws EntityNotFoundException, EntityRetrievalException {
@@ -83,7 +99,7 @@ public abstract class AbstractDataManager implements DataManager {
 				+ implicitDepth;
 		return new ErrorDocumentIdentifier(id);
 	}
-	
+
 	public EntityListIdentifier nextListIdentifier(int depth)
 			throws IllegalArgumentException {
 		if (depth < 1) {
@@ -94,14 +110,16 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public DataDocumentIdentifier registerDocument(
-			final Set<ReferenceScheme> references) throws EntityStorageException{
+			final Set<ReferenceScheme> references)
+			throws EntityStorageException {
 		final DataDocumentIdentifier id = nextDataIdentifier();
 		DataDocument d = new DataDocumentImpl(id, references);
 		storeEntity(d);
 		return id;
 	}
 
-	public EntityListIdentifier registerEmptyList(int depth) throws EntityStorageException{
+	public EntityListIdentifier registerEmptyList(int depth)
+			throws EntityStorageException {
 		EntityListIdentifier id = nextListIdentifier(depth);
 		EntityList newList = new EntityList(id, Collections
 				.<EntityIdentifier> emptyList());
@@ -124,11 +142,12 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			Throwable throwable) throws EntityStorageException{
+			Throwable throwable) throws EntityStorageException {
 		return registerError(depth, implicitDepth, null, throwable);
 	}
 
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers) throws EntityStorageException{
+	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+			throws EntityStorageException {
 		if (identifiers.length == 0) {
 			throw new IndexOutOfBoundsException(
 					"Cannot register an empty list through registerList method");
@@ -140,7 +159,8 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth) throws EntityRetrievalException {
+			EntityIdentifier identifier, int desiredDepth)
+			throws EntityRetrievalException {
 		if (desiredDepth < 0) {
 			throw new IllegalArgumentException(
 					"Cannot traverse to a negative depth");
@@ -171,8 +191,7 @@ public abstract class AbstractDataManager implements DataManager {
 					throw new AssertionError(
 							"Should never be trying to drill inside a data document identifier");
 				case Error:
-					newSet
-							.add(new ContextualizedIdentifier(
+					newSet.add(new ContextualizedIdentifier(
 									((ErrorDocumentIdentifier) ci.getDataRef())
 											.drill(),
 									addIndex(ci.getIndex(), 0)));
@@ -190,11 +209,26 @@ public abstract class AbstractDataManager implements DataManager {
 
 	protected abstract String generateId(IDType error);
 
+	/**
+	 * Retrieve the entity.
+	 * 
+	 * @param <ID> The type of {@link EntityIdentifier}
+	 * @param id The identifier for the entity
+	 * @return The retrieved {@link Entity}
+	 * @throws EntityRetrievalException If the entity could not be retrieved
+	 */
+	protected abstract <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(
+			ID id) throws EntityRetrievalException;
 
-	
-	protected abstract <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id) throws EntityRetrievalException;
-	
-	protected abstract <Bean> void storeEntity(Entity<?, Bean> entity) throws EntityStorageException;
+	/**
+	 * Store the entity.
+	 * 
+	 * @param <Bean> Bean that can be serialised
+	 * @param entity Entity to store
+	 * @throws EntityStorageException If the entity could not be stored
+	 */
+	protected abstract <Bean> void storeEntity(Entity<?, Bean> entity)
+			throws EntityStorageException;
 
 	private static int[] addIndex(int[] current, int head) {
 		int[] result = new int[current.length + 1];

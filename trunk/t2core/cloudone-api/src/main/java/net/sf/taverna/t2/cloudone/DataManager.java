@@ -43,10 +43,12 @@ public interface DataManager {
 	 * @param identifier
 	 * @param desiredDepth
 	 * @return
-	 * @throws EntityRetrievalException If an entity could not be retrieved
+	 * @throws EntityRetrievalException
+	 *             If an entity could not be retrieved
 	 */
 	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth) throws EntityRetrievalException;
+			EntityIdentifier identifier, int desiredDepth)
+			throws EntityRetrievalException;
 
 	/**
 	 * Register a new list from an array of identifiers. Returns the identifier
@@ -86,10 +88,33 @@ public interface DataManager {
 	public DataDocumentIdentifier registerDocument(
 			Set<ReferenceScheme> references) throws EntityStorageException;
 
-
+	/**
+	 * Register a single error with the data manager. An error has a depth, an
+	 * implicit depth, and an error message.
+	 * 
+	 * @param depth
+	 * @param implicitDepth
+	 * @param msg
+	 *            Error message
+	 * @return An {@link ErrorDocumentIdentifier}
+	 * @throws EntityStorageException
+	 *             If the error document could not be stored
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg) throws EntityStorageException;
 
+	/**
+	 * Register a single error with the data manager. An error has a depth, an
+	 * implicit depth, and a Throwable cause.
+	 * 
+	 * @param depth
+	 * @param implicitDepth
+	 * @param throwable
+	 *            Cause for error
+	 * @return An {@link ErrorDocumentIdentifier}
+	 * @throws EntityStorageException
+	 *             If the error document could not be stored
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			Throwable throwable) throws EntityStorageException;
 
@@ -100,18 +125,39 @@ public interface DataManager {
 	 * 
 	 * @param depth
 	 * @param implicitDepth
-	 * @param msg Error message
-	 * @param throwable Cause for error
+	 * @param msg
+	 *            Error message
+	 * @param throwable
+	 *            Cause for error
 	 * @return An {@link ErrorDocumentIdentifier}
-	 * @throws EntityStorageException If the error document could not be stored
+	 * @throws EntityStorageException
+	 *             If the error document could not be stored
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg, Throwable throwable) throws EntityStorageException;
 
+	/**
+	 * Get the current namespace of the data manager. Entities registered with
+	 * this datamanager will be assigned identities within this namespace.
+	 * 
+	 * @return The current namespace
+	 */
 	public String getCurrentNamespace();
 
+	/**
+	 * Get the set of {@link LocationalContext}s this Data manager knows about.
+	 * 
+	 * @return Set of {@link LocationalContext}
+	 */
 	public Set<LocationalContext> getLocationalContexts();
 
+	/**
+	 * Get the list of managed namespaces this data manager can retrieve
+	 * entities from using {@link #getEntity(EntityIdentifier)}. This normally
+	 * includes {@link #getCurrentNamespace()}.
+	 * 
+	 * @return List of managed namespaces
+	 */
 	public List<String> getManagedNamespaces();
 
 }

@@ -69,6 +69,13 @@ public class ErrorDocument implements Entity<ErrorDocumentIdentifier, ErrorDocum
 		stackTrace = bean.getStackTrace();
 	}
 
+	/**
+	 * Get the stacktrace from the cause of this error. The stacktrace might be
+	 * available even if {@link #getCause()} is null, as the cause is not
+	 * serialised by {@link #getAsBean()}.
+	 * 
+	 * @return The stacktrace of the cause, or null if no cause was set.
+	 */
 	public String getStackTrace() {
 		if (stackTrace == null && cause != null) {
 			StringWriter sw = new StringWriter();
