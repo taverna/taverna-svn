@@ -311,13 +311,13 @@ public class WorkflowLauncherWrapper {
 
     /**
      * The version of Taverna core components that is used, for instance
-     * &lt;code&gt;1.6.0.0&lt;/code&gt;.
+     * &lt;code&gt;1.6.1.0&lt;/code&gt;.
      * &lt;p&gt;
      * (Note that although processors and plugins might be updated by their
      * minor-minor version, say a
      * {@link org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessor} can
-     * be in version &lt;code&gt;1.6.0.1&lt;/code&gt;, the core components listed by
-     * {@link #buildSystemArtifactSet()} would still be &lt;code&gt;1.6.0.0&lt;/code&gt;,
+     * be in version &lt;code&gt;1.6.1.1&lt;/code&gt;, the core components listed by
+     * {@link #buildSystemArtifactSet()} would still be &lt;code&gt;1.6.1.0&lt;/code&gt;,
      * and thus this constant would also be &lt;code&gt;1.6.0.0&lt;/code&gt;. You might
      * have to update use of &lt;code&gt;TAVERNA_BASE_VERSION&lt;/code&gt; in
      * {@link #buildExternalArtifactSet()} if you want a newer version of a
@@ -326,7 +326,7 @@ public class WorkflowLauncherWrapper {
      * This version has to match the version of the real dependency you have to
      * Taverna libraries on your classpath (ie. the pom.xml dependencies).
      */
-    public static final String TAVERNA_BASE_VERSION = "1.6.0.0";
+    public static final String TAVERNA_BASE_VERSION = "1.6.1.0";
 
     String workflowName;
 
