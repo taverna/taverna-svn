@@ -67,22 +67,14 @@
       in order to run, together with any updates if requested, and optional
       plugins. By default, this location is on Windows
       &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository, on Linux $HOME/.taverna-1.5.2/repository and on
-      the Mac $HOME/Library/Application Support/Taverna-1.5.2/repository. This
+      Data/Taverna/repository, on Linux $HOME/.taverna-1.6.1/repository and on
+      the Mac $HOME/Library/Application Support/Taverna-1.6.1/repository. This
       location can be changed by setting the property taverna.repository in
       the startup script. Be careful not to overwrite the existing other
       settings for ARGS by making sure you are appending your new setting. For
       windows this is the runme.bat and would be changed to end with:</para>
 
-      <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was
-      &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository,$HOME/.taverna, or $HOME/Library/Application
-      Support/Taverna-1.5.2/repository. If this repository exists when running
-      Taverna 1.5.2 then this repository is shared to prevent duplication of
-      artifacts eating up disk space. Artifacts unique to Tavarna 1.5.2 are
-      still stored in the new repsitory described previously.</para>
-
-      <screen>set ARGS=%ARGS% -Dtaverna.repository=§j&lt;new location&gt; 
+      <screen>set ARGS=%ARGS% -Dtaverna.repository=&lt;new location&gt; 
 
 java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
 
@@ -94,6 +86,15 @@ java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
       <screen>ARGS="$ARGS –Dtaverna.repository=&lt;new location&gt;" 
 
 java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
+
+      <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was
+      &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
+      Data/Taverna/repository,$HOME/.taverna, or $HOME/Library/Application
+      Support/Taverna/repository. If this repository exists when running
+      Taverna 1.5.2, or later versions, then this and later version
+      repositories are shared to prevent duplication of artifacts eating up
+      disk space. Artifacts unique to the version of Taverna being run are
+      still stored in its specific repository described previously.</para>
     </section>
 
     <section id="taverna_proxy_config">
