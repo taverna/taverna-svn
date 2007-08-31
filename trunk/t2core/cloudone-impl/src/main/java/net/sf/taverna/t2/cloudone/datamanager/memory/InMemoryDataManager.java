@@ -5,15 +5,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.EntityNotFoundException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
@@ -36,51 +34,35 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
  * @author Matthew Pocock
  * 
  */
-public class InMemoryDataManager implements DataManager {
-
-	private Set<LocationalContext> contexts;
+public class InMemoryDataManager extends AbstractDataManager {
 
 	private Map<EntityIdentifier, Entity<? extends EntityIdentifier, ?>> contents;
-
-	private String namespace;
 
 	private int counter = 0;
 
 	private DataDocumentIdentifier nextDataIdentifier() {
-		String id = "urn:t2data:ddoc://" + namespace + "/data" + (counter++);
-		try {
-			return new DataDocumentIdentifier(id);
-		} catch (MalformedIdentifierException e) {
-			throw new RuntimeException("Malformed data identifier: " + id, e);
-		}
+		String id = "urn:t2data:ddoc://" + getCurrentNamespace() + "/data"
+				+ (counter++);
+		return new DataDocumentIdentifier(id);
 	}
 	
 	private ErrorDocumentIdentifier nextErrorIdentifier(int depth, int implicitDepth) {
-		String id = "urn:t2data:error://" + namespace + "/error" + (counter++)
+		String id = "urn:t2data:error://" + getCurrentNamespace() + "/error" + (counter++)
 				+ "/" + depth + "/" + implicitDepth;
-		try {
-			return new ErrorDocumentIdentifier(id);
-		} catch (MalformedIdentifierException e) {
-			throw new RuntimeException("Malformed data identifier: " + id, e);
-		}
+		return new ErrorDocumentIdentifier(id);
 	}
 
 	private EntityListIdentifier nextListIdentifier(int depth) {
 		if (depth < 1) {
 			throw new IllegalArgumentException("Depth must be at least 1");
 		}
-		String id = "urn:t2data:list://" + namespace + "/list" + (counter++)
-				+ "/" + depth;
-		try {
-			return new EntityListIdentifier(id);
-		} catch (MalformedIdentifierException e) {
-			throw new RuntimeException("Malformed list identifier: " + id, e);
-		}
+		String id = "urn:t2data:list://" + getCurrentNamespace() + "/list"
+				+ (counter++) + "/" + depth;
+		return new EntityListIdentifier(id);
 	}
 
 	public InMemoryDataManager(String namespace, Set<LocationalContext> contexts) {
-		this.contexts = contexts;
-		this.namespace = namespace;
+		super(namespace, contexts);
 		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier, ?>>();
 	}
 
@@ -91,24 +73,12 @@ public class InMemoryDataManager implements DataManager {
 			return (Entity<EI, ?>) identifier;
 		}
 		Entity ent = contents.get(identifier);
-		if (contents.containsKey(identifier) == false) {
+		if (! contents.containsKey(identifier)) {
 			throw new EntityNotFoundException("No entity found with id : "
 					+ identifier);
 		}
 		// we know this is type-safe because we control what goes into the map
 		return (Entity<EI, ?>) ent;
-	}
-
-	public String getCurrentNamespace() {
-		return this.namespace;
-	}
-
-	public Set<LocationalContext> getLocationalContexts() {
-		return this.contexts;
-	}
-
-	public List<String> getManagedNamespaces() {
-		return Collections.singletonList(namespace);
 	}
 
 	public DataDocumentIdentifier registerDocument(final Set<ReferenceScheme> references) {
@@ -191,14 +161,6 @@ public class InMemoryDataManager implements DataManager {
 		System.arraycopy(current, 0, result, 0, current.length);
 		result[current.length] = head;
 		return result;
-	}
-
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg) {
-		return registerError(depth, implicitDepth, msg, null);
-	}
-
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, Throwable throwable) {
-		return registerError(depth, implicitDepth, null, throwable);		
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable) {
