@@ -62,7 +62,7 @@ public class BootstrapTest extends TestCase {
 		System.setProperty("os.name", "Mac OS X");
 		Bootstrap.findUserDir();
 		File dir = new File(System.getProperty("taverna.home"));
-		File shouldBe = new File(tempHome, "Library/Application Support/Taverna-1.6.0");
+		File shouldBe = new File(tempHome, "Library/Application Support/Taverna-1.6.1");
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
 
@@ -76,7 +76,7 @@ public class BootstrapTest extends TestCase {
 		System.setProperty("os.name", "Linn0x");
 		Bootstrap.findUserDir();
 		File dir = new File(System.getProperty("taverna.home"));
-		File shouldBe = new File(tempHome, ".taverna-1.6.0");
+		File shouldBe = new File(tempHome, ".taverna-1.6.1");
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
 	}
@@ -92,9 +92,9 @@ public class BootstrapTest extends TestCase {
 		String APPDATA = System.getenv("APPDATA");
 		if (APPDATA == null) {
 			// Likely on Non-Windows platform
-			shouldBe = new File(tempHome, "Taverna-1.6.0");
+			shouldBe = new File(tempHome, "Taverna-1.6.1");
 		} else {
-			shouldBe = new File(APPDATA, "Taverna-1.6.0");
+			shouldBe = new File(APPDATA, "Taverna-1.6.1");
 		}
 		assertEquals(shouldBe, dir);
 		assertTrue(dir.isDirectory());
