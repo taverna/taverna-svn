@@ -1,5 +1,9 @@
 package net.sf.taverna.t2.cloudone.datamanager.file;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -13,33 +17,26 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class FileDataManagerTest extends AbstractDataManagerTest {
 
+	private static File tmpDir;
 
-
-	private File tmpDir;
+	private FileDataManager fileDataManager;
 
 	FileDataManager fileDataManager2;
 
-	private FileDataManager fileDataManager;
-	
-	@Before
-	public void makeTmp() throws IOException {
+	@BeforeClass
+	public static void makeTmp() throws IOException {
 		tmpDir = File.createTempFile("test", "datamanager");
 		tmpDir.delete();
 		tmpDir.mkdir();
 	}
-	
-	@After
-	public void deleteTmp() throws IOException {
-		FileUtils.deleteDirectory(tmpDir);
-	}
-	
+
 	@Override
 	@Before
 	public void setDataManager() {
@@ -47,15 +44,20 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 				.<LocationalContext> emptySet(), tmpDir);
 		dManager = fileDataManager;
 	}
-	
+
 	@Before
-	public void makeExtraDataManager() {		
+	public void makeExtraDataManager() {
 		fileDataManager2 = new FileDataManager(TEST_NS, Collections
 				.<LocationalContext> emptySet(), tmpDir);
 	}
-	
+
+	@AfterClass
+	public static void deleteTmp() throws IOException {
+		FileUtils.deleteDirectory(tmpDir);
+	}
+
 	@Test
-	public void generateIdData() {
+	public void generateIdDataUUID() {
 		String dataId = fileDataManager.generateId(IDType.Data);
 		String dataId2 = fileDataManager2.generateId(IDType.Data);
 		assertFalse("Not unique identifiers", dataId.equals(dataId2));
@@ -65,55 +67,28 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		UUID uuid = UUID.fromString(dataId.replace(dataPrefix, ""));
 		assertEquals(4, uuid.version()); // random
 	}
-	
+
+
 	@Test
-	public void generateIdList() {		
-		String id = fileDataManager.generateId(IDType.List);
-		String prefix = "urn:t2data:list://" + TEST_NS + "/";
-		assertTrue(id.startsWith(prefix));
-	}
-	
-	@Test
-	public void generateIdError() {				
-		String id = fileDataManager.generateId(IDType.Error);
-		String prefix = "urn:t2data:error://" + TEST_NS + "/";
-		assertTrue(id.startsWith(prefix));
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void generateIdLiteral() {
-		fileDataManager.generateId(IDType.Literal);
-	}
-	
-	@Test
-	public void nextListIdentifier() {
-		EntityListIdentifier listId = fileDataManager.nextListIdentifier(2);
-		assertEquals(TEST_NS, listId.getNamespace());
-		assertEquals(2, listId.getDepth());
-		UUID uuid = UUID.fromString(listId.getName());
-		assertEquals(4, uuid.version()); // random
-	}
-	
-	@Test
-	public void nextErrorIdentifier() {
-		ErrorDocumentIdentifier errorId = fileDataManager.nextErrorIdentifier(2, 3);
-		assertEquals(TEST_NS, errorId.getNamespace());
-		assertEquals(2, errorId.getDepth());
-		assertEquals(3, errorId.getImplicitDepth());
-		UUID uuid = UUID.fromString(errorId.getName());
-		assertEquals(4, uuid.version()); // random
-	}
-	
-	@Test
-	public void nextDataIdentifier() {
+	public void nextDataIdentifierUUID() {
 		DataDocumentIdentifier dataId = fileDataManager.nextDataIdentifier();
-		assertEquals(TEST_NS, dataId.getNamespace());
 		UUID uuid = UUID.fromString(dataId.getName());
 		assertEquals(4, uuid.version()); // random
 	}
 
+	@Test
+	public void nextErrorIdentifierUUID() {
+		ErrorDocumentIdentifier errorId = fileDataManager.nextErrorIdentifier(
+				2, 3);
+		UUID uuid = UUID.fromString(errorId.getName());
+		assertEquals(4, uuid.version()); // random
+	}
 
-	
-	
-	
+	@Test
+	public void nextListIdentifierUUID() {
+		EntityListIdentifier listId = fileDataManager.nextListIdentifier(2);
+		UUID uuid = UUID.fromString(listId.getName());
+		assertEquals(4, uuid.version()); // random
+	}
+
 }

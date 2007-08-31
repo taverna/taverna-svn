@@ -1,15 +1,23 @@
 package net.sf.taverna.t2.cloudone.datamanager.memory;
 
-import java.util.HashSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import org.junit.Before;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
+import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManagerTest;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
-
-
+import org.junit.Before;
+import org.junit.Test;
 
 
 /**
@@ -27,6 +35,24 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 	public void setDataManager() {
 		dManager = new InMemoryDataManager(TEST_NS,
 					new HashSet<LocationalContext>());
+	}
+	@Test
+	public void checkListCounter() throws EntityStorageException {
+		int depth = 1;
+		EntityListIdentifier list0 = dManager.registerEmptyList(depth);
+		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
+		assertFalse(list0.equals(list1));
+		// InMemoryDataManager has a naive counter, list0, list1, etc.
+		assertEquals("urn:t2data:list://" + TEST_NS + "/list1/1", list1
+				.toString());
+	}
+	
+	@Test
+	public void checkDocumentCounter() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		assertEquals("urn:t2data:ddoc://" + TEST_NS + "/data0", docId
+				.toString());
 	}
 	
 }
