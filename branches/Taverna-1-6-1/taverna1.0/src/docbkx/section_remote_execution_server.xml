@@ -9,10 +9,36 @@
   remotetaverna.war, can be downloaded from the Taverna Utilities section of
   the Taverna download site.</para>
 
+  <section>
+    <title>Configuring the database</title>
+
+    <para>Before deploying the war file, the database first needs configuring.
+    This is defined within the war file in the file
+    <literal>WEB-INF/classes/META-INF/persistence.xml</literal>. The war file
+    must first be unzipped to modify this file. Many modern GUI zip tools
+    allow you to edit zipped files without physically unzipping the
+    file.</para>
+
+    <para>By default this is set to use an embedded version of the Apache
+    Derby database. All that needs configuring is the path to which the
+    database will be installed when the war file is deployed. This is
+    configured in the section:</para>
+
+    <screen>&lt;property name="hibernate.connection.driver_class"
+ value="org.apache.derby.jdbc.EmbeddedDriver" /&gt;
+ &lt;property name="hibernate.connection.url"
+ value="jdbc:derby:/tmp/remoteTavernaDB;create=true"
+/&gt;</screen>
+
+    <para>The path <literal>/tmp/remoteTavernaDB</literal> should be changed
+    to somewhere more suitable. The directory will be created and is where all
+    the data is stored.</para>
+  </section>
+
   <section id="remote_execution_server_installation">
     <title>Installation</title>
 
-    <para>The remotetaverna.war should be deployed within a web application
+    <para>The remotetaverna.war can now be deployed within a web application
     containter such as Apache Tomcat. Once the application is deployed and
     started, it is initially necessary to configure the Remote Execution
     Server.</para>
