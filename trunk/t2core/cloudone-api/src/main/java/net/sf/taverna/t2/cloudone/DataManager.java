@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.entity.Entity;
@@ -88,4 +89,10 @@ public interface DataManager {
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable);
 
+	public String getCurrentNamespace();
+
+	public Set<LocationalContext> getLocationalContexts();
+
+	public List<String> getManagedNamespaces();
+	
 }
