@@ -245,54 +245,54 @@ public class RestfulExecutionThread extends Thread {
 		
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-tools", "1.5.2.0"));
+				"scufl-tools", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core", "1.5.2.0"));
+				"baclava-core", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-tools", "1.5.2.0"));
+				"baclava-tools", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core", "1.5.2.0"));
+				"taverna-core", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-enactor", "1.5.2.0"));
+				"taverna-enactor", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-tools", "1.5.2.0"));
+				"taverna-tools", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-core", "1.5.2.0"));
+				"scufl-core", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-model", "1.5.2.0"));
+				"scufl-model", "1.6.1.0"));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-workflow", "1.5.2.0"));
+				"scufl-workflow", "1.6.1.0"));
 
 		Repository repository = LocalRepository.getRepository(base, this
 				.getClass().getClassLoader(), systemArtifacts);
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
-				"1.5.2.0"));
+				"1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-				"1.5.2.0"));
+				"1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-stringconstant-processor", "1.5.2.0"));
+				"taverna-stringconstant-processor", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-				"1.5.2.0"));
+				"1.6.1.0"));
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
-				"taverna-contrib", "1.5.2.0"));
+				"taverna-contrib", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-beanshell-processor", "1.5.2.0"));
+				"taverna-beanshell-processor", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-biomart-processor", "1.5.2.1"));
+				"taverna-biomart-processor", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-soaplab-processor", "1.5.2.0"));
+				"taverna-soaplab-processor", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-notification-processor", "1.5.2.0"));
+				"taverna-notification-processor", "1.6.1.0"));
 		repository.addArtifact(new BasicArtifact("biomoby.org",
-				"taverna-biomoby", "1.5.2.0"));
+				"taverna-biomoby", "1.6.1.0"));
 
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));

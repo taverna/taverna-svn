@@ -3,14 +3,14 @@
 	<parent>
 		<artifactId>interaction-server</artifactId>
 		<groupId>uk.org.mygrid.interaction</groupId>
-		<version>0.7.1</version>
+		<version>0.7.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.org.mygrid.interaction</groupId>
 	<artifactId>interaction-server-webapp</artifactId>
 	<name>Interaction Server Web Application</name>
 	<packaging>war</packaging>
-	<version>0.7.1</version>
+	<version>0.7.2</version>
 	
 	<build>
 		<plugins>
@@ -59,7 +59,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.interaction</groupId>
 			<artifactId>interaction-server-plugin</artifactId>
-			<version>0.7.1</version>
+			<version>0.7.2</version>
 		</dependency>				
 	</dependencies>
 
