@@ -86,14 +86,22 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 		String[] pathParts = split[3].split("/", 4);
 		this.namespace = pathParts[2];
-		if (!namespace.matches("[a-zA-Z0-9\\-_\\.]+")) {
+		if (! isValidName(namespace)) {
 			throw new MalformedIdentifierException("Invalid namespace '"
 					+ namespace + "' in " + id);
 		}
 		validate(pathParts[3]);
+		if (! isValidName(getName())) {
+			throw new MalformedIdentifierException("Invalid name '" + getName()
+					+ "' in " + id);
+		}
 		this.id = id;
 	}
 
+	public final static boolean isValidName(String name) {
+		return name != null && name.matches("[a-zA-Z0-9\\-_\\.]+");
+	}
+	
 	@Override
 	public String toString() {
 		return this.id;
