@@ -4,20 +4,28 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
+import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.entity.EntityList;
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
@@ -25,6 +33,8 @@ import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
@@ -163,13 +173,54 @@ public class BeanTest {
 		assertTrue(newDoc.getReferenceSchemes().containsAll(refSchemes));
 	}
 	
+	@Test
+	public void testEntityList() {
+		EntityListIdentifier id = new EntityListIdentifier("urn:t2data:list://myNS/list1/2");
+		EntityListIdentifier id2 = new EntityListIdentifier("urn:t2data:list://myNS/list2/4");
+		EntityListIdentifier id3 = new EntityListIdentifier("urn:t2data:list://myNS/list3/3");
+		List<EntityIdentifier> entList = new ArrayList<EntityIdentifier>();
+		entList.add(id2);
+		entList.add(id3);
+		EntityList list = new EntityList(id, entList);
+		assertEquals(2, list.size());
+		assertEquals(id2, list.get(0));
+		assertEquals(id3, list.get(1));
+		assertEquals(id, list.getIdentifier());
+		
+		EntityListBean bean = serialised(list.getAsBean());
+		EntityList newList = new EntityList();
+		newList.setFromBean(bean);
+		assertEquals(list, newList);
+		assertEquals(2, newList.size());
+		assertEquals(id2, newList.get(0));
+		assertEquals(id3, newList.get(1));
+		assertEquals(id, newList.getIdentifier());	
+	}
+	
+	@Test
+	public void testURLReferenceScheme () throws IOException, DereferenceException {
+		
+		URL url1 = new URL("http://taverna.sourceforge.net/");
+		File newFile = File.createTempFile("test", ".txt");
+		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
+		URL fileURL = newFile.toURI().toURL();
+		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
+		InputStream stream = urlRef.dereference(dManager);
+		assertEquals("Test data\n", IOUtils.toString(stream, "utf8"));
+		
+		
+		String bean = serialised(urlRef.getAsBean());
+		URLReferenceScheme newUrlRef = new URLReferenceScheme();
+		newUrlRef.setFromBean(bean);
+		InputStream newStream = newUrlRef.dereference(dManager);
+		assertEquals("Test data\n", IOUtils.toString(newStream, "utf8"));
+	}
+	
 	/**
 	 * Serialise and deserialise using {@link EntitySerialiser}
 	 * 
 	 * @param bean Bean to be serialised
 	 * @return The deserialised bean
-	 * @throws IOException 
-	 * @throws JDOMException 
 	 */
 	@SuppressWarnings("unchecked")
 	private <Bean> Bean serialised(Bean bean) {
