@@ -100,7 +100,7 @@ public class LocalRepository implements Repository {
 
 	}
 	//the version of raven to used as the artifact for the faked classloader used during initialisation.
-	private final String RAVEN_VERSION="1.6.0.0";
+	private final String RAVEN_VERSION="1.6.1.0";
 
 	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 

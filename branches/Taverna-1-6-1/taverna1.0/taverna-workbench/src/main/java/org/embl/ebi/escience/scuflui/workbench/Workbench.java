@@ -182,6 +182,7 @@ public class Workbench extends JFrame {
 				repository.addRemoteRepository(remoteRepository);
 			}
 		}				
+		
 		TavernaSPIRegistry.setRepository(repository);
 		
 		//splashscreen needs to close here, as initialising the plugin manager can raise a message box

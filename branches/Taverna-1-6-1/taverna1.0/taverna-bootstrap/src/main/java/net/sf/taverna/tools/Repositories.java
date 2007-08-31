@@ -25,10 +25,13 @@ public class Repositories {
 		URL startupURL = findStartupURL(properties);
 		if (startupURL!=null) urls.add(startupURL);
 		
-		//detect if an old repository from 1.5.1 exists, and if so add it to the list of available repositories.
+		//detect if an old repositorys from 1.5.1 onwards exist, and if so add them to the list of available repositories.
 		//this reduces duplication between the 2 repositories.
-		URL oldRespository = findOldRepository();
-		if (oldRespository!=null) urls.add(oldRespository);
+		String [] applications=new String[]{"Taverna","Taverna-1.5.2","Taverna-1.6.0"};
+		for (String application : applications) {
+			URL oldRespository = findOldRepository(application);
+			if (oldRespository!=null) urls.add(oldRespository);
+		}
 		
 		for (Entry property : properties.entrySet()) {
 			String propName = (String) property.getKey();
@@ -94,10 +97,9 @@ public class Repositories {
 	 * then returns a URL to this for use an artifact repository.
 	 * @return
 	 */
-	private URL findOldRepository() {
+	private URL findOldRepository(String application) {
 		File appHome=null;
 		URL result = null;
-		String application = "Taverna";
 		
 		File home = new File(System.getProperty("user.home"));
 		if (home.isDirectory()) {

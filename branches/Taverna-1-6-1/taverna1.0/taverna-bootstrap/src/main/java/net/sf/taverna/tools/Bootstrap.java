@@ -208,7 +208,7 @@ public class Bootstrap {
 	 */
 	public static void findUserDir() {
 		File appHome;
-		String application = "Taverna-1.6.0";
+		String application = "Taverna-1.6.1";
 		String tavHome = System.getProperty("taverna.home");
 		if (tavHome != null) {
 			appHome = new File(tavHome);

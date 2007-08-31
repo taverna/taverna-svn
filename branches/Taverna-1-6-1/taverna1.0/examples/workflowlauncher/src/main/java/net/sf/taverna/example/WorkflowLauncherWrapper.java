@@ -164,7 +164,7 @@ public class WorkflowLauncherWrapper {
 	 * This version has to match the version of the real dependency you have to
 	 * Taverna libraries on your classpath (ie. the pom.xml dependencies).
 	 */
-	public static final String TAVERNA_BASE_VERSION = "1.6.0.0";
+	public static final String TAVERNA_BASE_VERSION = "1.6.1.0";
 
 	private static Logger logger =
 		Logger.getLogger(WorkflowLauncherWrapper.class);
