@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.HashSet;
 
 import net.sf.taverna.t2.cloudone.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.bean.SillyBean;
@@ -41,7 +43,7 @@ public class EntitySerialiserTest {
 	
 	
 	@Test
-	public void serialiseDataDocument() throws EntityNotFoundException, JDOMException, IOException {
+	public void serialiseDataDocument() throws EntityNotFoundException, JDOMException, IOException, EntityStorageException, EntityRetrievalException {
 		DataDocumentIdentifier docid = dManager.registerDocument(new HashSet<ReferenceScheme>());
 		System.out.println(docid);
 		DataDocument doc = (DataDocument) dManager.getEntity(docid);
@@ -51,7 +53,7 @@ public class EntitySerialiserTest {
 	
 	
 	@Test
-	public void serialiseEmptyList() throws EntityNotFoundException, JDOMException, IOException {
+	public void serialiseEmptyList() throws EntityNotFoundException, JDOMException, IOException, EntityStorageException, EntityRetrievalException {
 		int depth = 3;
 		EntityListIdentifier list = dManager.registerEmptyList(depth);
 		assertEquals(depth, list.getDepth());

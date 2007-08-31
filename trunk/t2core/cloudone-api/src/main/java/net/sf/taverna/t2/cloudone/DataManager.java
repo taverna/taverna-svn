@@ -30,7 +30,7 @@ public interface DataManager {
 	 * Fetch the named entity by identifier.
 	 */
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
-			throws EntityNotFoundException;
+			throws EntityNotFoundException, EntityRetrievalException;
 
 	/**
 	 * Initiates a traversal of the specified data reference, traversing to
@@ -43,9 +43,10 @@ public interface DataManager {
 	 * @param identifier
 	 * @param desiredDepth
 	 * @return
+	 * @throws EntityRetrievalException If an entity could not be retrieved
 	 */
 	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth);
+			EntityIdentifier identifier, int desiredDepth) throws EntityRetrievalException;
 
 	/**
 	 * Register a new list from an array of identifiers. Returns the identifier
@@ -57,7 +58,8 @@ public interface DataManager {
 	 * with. A list is allowed to be empty and has a conceptual depth even in
 	 * this case.
 	 */
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers);
+	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+			throws EntityStorageException;
 
 	/**
 	 * Register a new empty list. Returns the identifier of the new list,
@@ -69,7 +71,8 @@ public interface DataManager {
 	 * with. A list is allowed to be empty and has a conceptual depth even in
 	 * this case.
 	 */
-	public EntityListIdentifier registerEmptyList(int depth);
+	public EntityListIdentifier registerEmptyList(int depth)
+			throws EntityStorageException;
 
 	/**
 	 * Take a set of references, all of which must point to byte equivalent data
@@ -80,19 +83,35 @@ public interface DataManager {
 	 * @param references
 	 * @return
 	 */
-	public DataDocumentIdentifier registerDocument(Set<ReferenceScheme> references);
-	
+	public DataDocumentIdentifier registerDocument(
+			Set<ReferenceScheme> references) throws EntityStorageException;
 
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg);
 
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, Throwable throwable);
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
+			String msg) throws EntityStorageException;
 
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth, String msg, Throwable throwable);
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
+			Throwable throwable) throws EntityStorageException;
+
+	/**
+	 * Register a single error with the data manager. An error has both a depth
+	 * and an implicit depth, and either a message or a Throwable cause, or
+	 * both.
+	 * 
+	 * @param depth
+	 * @param implicitDepth
+	 * @param msg Error message
+	 * @param throwable Cause for error
+	 * @return An {@link ErrorDocumentIdentifier}
+	 * @throws EntityStorageException If the error document could not be stored
+	 */
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
+			String msg, Throwable throwable) throws EntityStorageException;
 
 	public String getCurrentNamespace();
 
 	public Set<LocationalContext> getLocationalContexts();
 
 	public List<String> getManagedNamespaces();
-	
+
 }
