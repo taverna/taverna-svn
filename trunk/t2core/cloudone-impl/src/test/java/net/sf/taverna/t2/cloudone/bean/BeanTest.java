@@ -1,14 +1,14 @@
 package net.sf.taverna.t2.cloudone.bean;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -199,8 +199,6 @@ public class BeanTest {
 	
 	@Test
 	public void testURLReferenceScheme () throws IOException, DereferenceException {
-		
-		URL url1 = new URL("http://taverna.sourceforge.net/");
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
