@@ -1,114 +1,139 @@
 package net.sf.taverna.t2.cloudone.datamanager.file;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
+import net.sf.taverna.t2.cloudone.bean.EntityListBean;
+import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
-import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManagerTest;
+import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
-import net.sf.taverna.t2.cloudone.entity.Literal;
-import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
+import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
+
+import org.jdom.JDOMException;
 
 public class FileDataManager extends AbstractDataManager {
-	
-	private File path;
 
-	private int counter = 0;
+	private File path;
 
 	public FileDataManager(String namespace, Set<LocationalContext> contexts,
 			File path) {
 		super(namespace, contexts);
-		this.path = path;
-	}
-
-	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
-			throws EntityNotFoundException {
-		if (identifier instanceof Literal) {
-			return (Entity<EI, ?>) identifier;
+		if (path == null) {
+			throw new NullPointerException("Path can't be null");
 		}
-		return null;
-	}
-
-	public DataDocumentIdentifier registerDocument(
-			Set<ReferenceScheme> references) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public EntityListIdentifier registerEmptyList(int depth) {
-		EntityListIdentifier id = nextListIdentifier(depth);
-		EntityList newList = new EntityList(id, Collections
-				.<EntityIdentifier> emptyList());
-		// TODO: STORE IT!
-		return id;
-	}
-
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth) {
-		// TODO Auto-generated method stub
-		return null;
+		this.path = path;
 	}
 
 	protected String generateId(IDType type) {
 		if (type.equals(IDType.Literal)) {
 			throw new IllegalArgumentException("Can't generate IDs for Literal");
 		}
-		return "urn:t2data:" + type.uripart + "://" + getCurrentNamespace() + "/"
-				+ UUID.randomUUID();
+		return "urn:t2data:" + type.uripart + "://" + getCurrentNamespace()
+				+ "/" + UUID.randomUUID();
 	}
 
-
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg, Throwable throwable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	protected EntityListIdentifier nextListIdentifier(int depth)
-			throws IllegalArgumentException {
-		if (depth < 1) {
-			throw new IllegalArgumentException("Depth must be at least 1");
+	@Override
+	protected <Bean> void storeEntity(Entity<?, Bean> entity)
+			throws EntityStorageException {
+		File entityPath = asPath(entity.getIdentifier());
+		if (entityPath.exists()) {
+			// Should not happen with our generateId(), but could happen in
+			// a future p2p environment for external entities
+			throw new IllegalStateException("Already exists: "
+					+ entity.getIdentifier());
 		}
-		String id = generateId(IDType.List) + "/" + depth;
-		return new EntityListIdentifier(id);
-	}
+		Bean bean = entity.getAsBean();
+		entityPath.getParentFile().mkdirs();
+		try {
+			EntitySerialiser.toXMLFile(bean, entityPath);
+		} catch (JDOMException e) {
 
-	protected ErrorDocumentIdentifier nextErrorIdentifier(int depth,
-			int implicitDepth) throws IllegalArgumentException {
-		if (depth < 0 || implicitDepth < 0) {
-			throw new IllegalArgumentException(
-					"Depth and implicit depth must be at least 0");
+		} catch (IOException e) {
+			throw new EntityStorageException("Could not store entity to"
+					+ entityPath, e);
 		}
-		String id = generateId(IDType.Error) + "/" + depth + "/"
-				+ implicitDepth;
-		return new ErrorDocumentIdentifier(id);
 	}
 
-	public DataDocumentIdentifier nextDataIdentifier() {
-		String id = generateId(IDType.Data);
-		return new DataDocumentIdentifier(id);
+	@SuppressWarnings("unchecked")
+	@Override
+	protected <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id)
+			throws EntityRetrievalException {
+		File entityPath = asPath(id);
+		if (!entityPath.isFile()) {
+			return null;
+		}
+		Object bean;
+		try {
+			bean = EntitySerialiser.fromXMLFile(entityPath);
+		} catch (JDOMException e) {
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		if (id.getType().equals(IDType.Data)) {
+			DataDocument entity = new DataDocumentImpl();
+			if (bean instanceof DataDocumentBean) {
+				entity.setFromBean((DataDocumentBean) bean);
+				return (Entity<ID, ?>) entity;
+			} else {
+				throw new EntityRetrievalException(
+						"Data integrity failure, data type changed for "
+								+ entityPath);
+			}
+		} else if (id.getType().equals(IDType.List)) {
+			EntityList entity = new EntityList();
+			if (bean instanceof EntityListBean) {
+				entity.setFromBean((EntityListBean) bean);
+				return (Entity<ID, ?>) entity;
+			} else {
+				throw new EntityRetrievalException(
+						"Data integrity failure, data type changed for "
+								+ entityPath);
+			}
+		} else if (id.getType().equals(IDType.Error)) {
+			ErrorDocument entity = new ErrorDocument();
+			if (bean instanceof ErrorDocumentBean) {
+				entity.setFromBean((ErrorDocumentBean) bean);
+				return (Entity<ID, ?>) entity;
+			} else {
+				throw new EntityRetrievalException(
+						"Data integrity failure, data type changed for "
+								+ entityPath);
+			}
+		} else {
+			throw new IllegalArgumentException("Data type not recognised for "
+					+ entityPath);
+		}
 	}
 
+	private File asPath(EntityIdentifier id) {
+		String ns = id.getNamespace();
+		String type = id.getType().uripart;
+		String name = id.getName() + ".xml";
+		if (! EntityIdentifier.isValidName(ns)
+				|| ! EntityIdentifier.isValidName(name)) {
+			throw new MalformedIdentifierException("Invalid identifier " + id);
+		}
 
+		// /path/ns/type/name
+		File entityPath = new File(new File(new File(path, ns), type), name);
+		return entityPath;
+	}
 
 }
