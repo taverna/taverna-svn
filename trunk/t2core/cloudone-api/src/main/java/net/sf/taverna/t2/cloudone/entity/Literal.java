@@ -41,8 +41,7 @@ public class Literal extends EntityIdentifier implements
 	}
 
 	@Override
-	protected void validate(String identifierString)
-			throws MalformedIdentifierException {
+	protected void validate(String identifierString) {
 		if (identifierString.contains("/")) {
 			throw new MalformedIdentifierException(
 					"Document name can not contain a slash (/) character in "
@@ -60,12 +59,9 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(Boolean value)
-			throws MalformedIdentifierException {
-		return new Literal(prefix + "boolean.literal/"
-				+ value.booleanValue());
+	public static Literal buildLiteral(Boolean value) {
+		return new Literal(prefix + "boolean.literal/" + value.booleanValue());
 	}
 
 	/**
@@ -73,12 +69,9 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(Double value)
-			throws MalformedIdentifierException {
-		return new Literal(prefix + "double.literal/"
-				+ value.doubleValue());
+	public static Literal buildLiteral(Double value) {
+		return new Literal(prefix + "double.literal/" + value.doubleValue());
 	}
 
 	/**
@@ -86,12 +79,9 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(Float value)
-			throws MalformedIdentifierException {
-		return new Literal(prefix + "float.literal/"
-				+ value.floatValue());
+	public static Literal buildLiteral(Float value) {
+		return new Literal(prefix + "float.literal/" + value.floatValue());
 	}
 
 	/**
@@ -99,10 +89,8 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(Integer value)
-			throws MalformedIdentifierException {
+	public static Literal buildLiteral(Integer value) {
 		return new Literal(prefix + "int.literal/" + value.intValue());
 	}
 
@@ -111,12 +99,9 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(Long value)
-			throws MalformedIdentifierException {
-		return new Literal(prefix + "long.literal/"
-				+ value.longValue());
+	public static Literal buildLiteral(Long value) {
+		return new Literal(prefix + "long.literal/" + value.longValue());
 	}
 
 	/**
@@ -124,13 +109,14 @@ public class Literal extends EntityIdentifier implements
 	 * 
 	 * @param value
 	 * @return
-	 * @throws UnsupportedEncodingException
-	 * @throws MalformedIdentifierException
 	 */
-	public static Literal buildLiteral(String value)
-			throws UnsupportedEncodingException, MalformedIdentifierException {
-		return new Literal(prefix + "string.literal/"
-				+ URLEncoder.encode(value, "UTF-8"));
+	public static Literal buildLiteral(String value) {
+		try {
+			return new Literal(prefix + "string.literal/"
+					+ URLEncoder.encode(value, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new Error("Unexpected exception", e);
+		}
 	}
 
 	/**
