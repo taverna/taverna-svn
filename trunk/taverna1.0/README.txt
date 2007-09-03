@@ -1,4 +1,4 @@
-Building Taverna 1.5
+Building Taverna 1.6
 ====================
 
 See the wiki page 

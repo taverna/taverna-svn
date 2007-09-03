@@ -33,7 +33,7 @@ public class Bootstrap {
 
 	private static String loaderVersion;
 
-	private static final String SPLASHSCREEN = "splashscreen-1.5.png";
+	private static final String SPLASHSCREEN = "splashscreen-1.6.png";
 
 	public static void main(String[] args) throws MalformedURLException,
 			ClassNotFoundException, SecurityException, NoSuchMethodException,

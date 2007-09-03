@@ -28,7 +28,7 @@ import java.util.Properties;
 public class ProfileSelector {
 	
 	private Properties properties;
-	public static final String CURRENT_PROFILE="current-profile-1.6.0.xml";
+	public static final String CURRENT_PROFILE="current-profile-1.6.1.xml";
 	private final String DEFAULT_RAVEN_PROFILE="profile.xml";
 	
 	public ProfileSelector(Properties properties) {
