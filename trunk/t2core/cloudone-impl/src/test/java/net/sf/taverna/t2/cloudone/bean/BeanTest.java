@@ -105,20 +105,75 @@ public class BeanTest {
 	
 	@Test
 	public void testLiteral() throws MalformedIdentifierException, UnsupportedEncodingException {
-		Literal id = new Literal("urn:t2data:literal://double.literal/-15.87");
-		assertEquals("double.literal", id.getNamespace());
+		Literal id = new Literal("urn:t2data:literal://string.literal/Some%20funky%2Fcharacters");
+		assertEquals("string.literal", id.getNamespace());
+		assertEquals(0, id.getDepth());
+		assertEquals(IDType.Literal, id.getType());
+		assertEquals("Some%20funky%2Fcharacters", id.getName());
+		String bean = serialised(id.getAsBean());
+		
+		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		assertEquals("string.literal", newId.getNamespace());
+		assertEquals(0, newId.getDepth());
+		assertEquals(IDType.Literal, newId.getType());
+		assertEquals("Some%20funky%2Fcharacters", newId.getName());
+		assertEquals(bean, newId.getAsBean());
+		assertEquals("Some funky/characters", newId.getValue());
+	}
+	
+	@Test
+	public void testLiteralFloat() throws MalformedIdentifierException, UnsupportedEncodingException {
+		Literal id = new Literal("urn:t2data:literal://float.literal/-15.87");
+		assertEquals("float.literal", id.getNamespace());
 		assertEquals(0, id.getDepth());
 		assertEquals(IDType.Literal, id.getType());
 		assertEquals("-15.87", id.getName());
 		String bean = serialised(id.getAsBean());
 		
 		Literal newId = (Literal) EntityIdentifiers.parse(bean);
-		assertEquals("double.literal", newId.getNamespace());
+		assertEquals("float.literal", newId.getNamespace());
 		assertEquals(0, newId.getDepth());
 		assertEquals(IDType.Literal, newId.getType());
 		assertEquals("-15.87", newId.getName());
 		assertEquals(bean, newId.getAsBean());
 	}
+	
+	@Test
+	public void testLiteralMaxDouble() throws MalformedIdentifierException, UnsupportedEncodingException {
+		Literal id = Literal.buildLiteral(Double.MAX_VALUE);
+		assertEquals("double.literal", id.getNamespace());
+		assertEquals(0, id.getDepth());
+		assertEquals(IDType.Literal, id.getType());
+		assertEquals("1.7976931348623157E308", id.getName());
+		String bean = serialised(id.getAsBean());
+		
+		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		assertEquals("double.literal", newId.getNamespace());
+		assertEquals(0, newId.getDepth());
+		assertEquals(IDType.Literal, newId.getType());
+		assertEquals("1.7976931348623157E308", newId.getName());
+		assertEquals(bean, newId.getAsBean());
+		assertEquals(Double.MAX_VALUE, newId.getValue());
+	}
+	
+	@Test
+	public void testLiteralInfinity() throws MalformedIdentifierException, UnsupportedEncodingException {
+		Literal id = Literal.buildLiteral(Double.NEGATIVE_INFINITY);
+		assertEquals("double.literal", id.getNamespace());
+		assertEquals(0, id.getDepth());
+		assertEquals(IDType.Literal, id.getType());
+		assertEquals("-Infinity", id.getName());
+		String bean = serialised(id.getAsBean());
+		
+		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		assertEquals("double.literal", newId.getNamespace());
+		assertEquals(0, newId.getDepth());
+		assertEquals(IDType.Literal, newId.getType());
+		assertEquals("-Infinity", newId.getName());
+		assertEquals(bean, newId.getAsBean());
+		assertEquals(Double.NEGATIVE_INFINITY, newId.getValue());
+	}
+	
 	
 	@Test
 	public void testErrorDocument() throws JDOMException, IOException {
