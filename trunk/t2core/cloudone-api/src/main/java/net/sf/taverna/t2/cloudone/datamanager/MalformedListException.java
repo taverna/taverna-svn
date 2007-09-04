@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.datamanager;
 
 /**
  * <p>Thrown on attempt to register a malformed list. A list is considered well

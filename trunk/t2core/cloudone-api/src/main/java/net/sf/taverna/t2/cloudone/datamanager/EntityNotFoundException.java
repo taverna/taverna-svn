@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.datamanager;
 
 /**
  * Thrown when a request is made for resolution of an entity that cannot be

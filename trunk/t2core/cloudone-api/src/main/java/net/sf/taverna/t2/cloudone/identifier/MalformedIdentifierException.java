@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.identifier;
 
 /**
  * Thrown when an attempt is made to construct an entity identifier subclass

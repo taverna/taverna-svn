@@ -1,4 +1,6 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.datamanager;
+
+import net.sf.taverna.t2.cloudone.DataManager;
 
 /**
  * Thrown when an entity can't be retrieved from a {@link DataManager}, for
