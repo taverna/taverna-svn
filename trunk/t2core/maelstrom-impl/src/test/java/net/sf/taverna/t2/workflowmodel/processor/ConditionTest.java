@@ -2,8 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.io.UnsupportedEncodingException;
 
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.entity.Literal;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;

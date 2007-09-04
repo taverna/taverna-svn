@@ -16,7 +16,6 @@ import java.util.List;
 
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
@@ -30,6 +29,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
 

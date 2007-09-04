@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;

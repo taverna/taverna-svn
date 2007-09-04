@@ -9,15 +9,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.EmptyListException;
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.ListException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,8 +24,8 @@ public class DataFacadeTest {
 
 	@Before
 	public void setDataManager() {
-		//dManager = new FileDataManager("testNS",
-		//	new HashSet<LocationalContext>(), new File("/tmp/fish"));
+		// dManager = new FileDataManager("testNS",
+		// new HashSet<LocationalContext>(), new File("/tmp/fish"));
 		dManager = new InMemoryDataManager("testNS",
 				new HashSet<LocationalContext>());
 		facade = new DataFacade(dManager);
@@ -38,14 +33,14 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerInteger() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		EntityIdentifier entity = facade.register(25);
 		assertEquals(25, facade.resolve(entity));
 	}
 
 	@Test
 	public void registerFloat() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		float number = (float) 13.37;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
@@ -53,7 +48,7 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerFloatInfinity() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		float number = Float.NEGATIVE_INFINITY;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
@@ -61,7 +56,7 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerDouble() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		double number = Double.MAX_VALUE;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
@@ -69,7 +64,7 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerDoubleInfinity() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		double number = Double.POSITIVE_INFINITY;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
@@ -77,7 +72,7 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerBoolean() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		boolean bool = false;
 		EntityIdentifier entity = facade.register(bool);
 		assertEquals(bool, facade.resolve(entity));
@@ -85,7 +80,7 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerLong() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		long number = Long.MIN_VALUE;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
@@ -93,18 +88,17 @@ public class DataFacadeTest {
 
 	@Test
 	public void registerString() throws EntityRetrievalException,
-			EntityNotFoundException, ListException,
+			EntityNotFoundException, DataManagerException,
 			MalformedIdentifierException, UnsupportedEncodingException {
 		String str = "hello with some / weird\n" + " ! character% and º(x) = ¹";
 		EntityIdentifier entity = facade.register(str);
-		System.out.println(entity);
 		assertEquals(str, facade.resolve(entity));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void registerList() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		List<Object> list = new ArrayList<Object>();
 		list.add(-25);
 		list.add((float) 30.56);
@@ -124,7 +118,7 @@ public class DataFacadeTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void registerListOfLists() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		List<Object> list1 = new ArrayList<Object>();
 		list1.add(-25);
 		list1.add((float) 30.56);
@@ -156,7 +150,7 @@ public class DataFacadeTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void registerListOfHalfEmptyLists() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 
 		List<Object> list1 = new ArrayList<Object>();
 		list1.add(25);
@@ -183,7 +177,7 @@ public class DataFacadeTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void registerListOfEmptyListFirst() throws EntityRetrievalException,
-			EntityNotFoundException, ListException {
+			EntityNotFoundException, DataManagerException {
 		List<Object> list1 = new ArrayList<Object>();
 		list1.add(25);
 		list1.add((float) 32.546);
@@ -208,7 +202,7 @@ public class DataFacadeTest {
 	}
 
 	@Test(expected = EmptyListException.class)
-	public void registerListOfJustEmptyListsFails() throws ListException {
+	public void registerListOfJustEmptyListsFails() throws DataManagerException {
 		List<Object> emptyList1 = new ArrayList<Object>();
 		List<Object> emptyList2 = new ArrayList<Object>();
 		List<List<Object>> bigList = new ArrayList<List<Object>>();
@@ -218,29 +212,29 @@ public class DataFacadeTest {
 	}
 
 	@Test(expected = EmptyListException.class)
-	public void registerEmptyListFails() throws ListException {
+	public void registerEmptyListFails() throws DataManagerException {
 		List<Object> emptyList = new ArrayList<Object>();
 		facade.register(emptyList);
 	}
 
 	@Test
-	public void registerEmptyList() throws ListException {
+	public void registerEmptyList() throws DataManagerException {
 		List<Object> deepEmptyList = new ArrayList<Object>();
-		// Note:  Does not actually check the parameterised types, but the
+		// Note: Does not actually check the parameterised types, but the
 		// depth should match
 		EntityIdentifier id = facade.register(deepEmptyList, 1);
 		assertEquals(1, id.getDepth());
 	}
 
 	@Test
-	public void registerDeepEmptyList() throws ListException {
+	public void registerDeepEmptyList() throws DataManagerException {
 		List<List<Object>> deepEmptyList = new ArrayList<List<Object>>();
 		EntityIdentifier id = facade.register(deepEmptyList, 2);
 		assertEquals(2, id.getDepth());
 	}
 
 	@Test(expected = MalformedListException.class)
-	public void registerMalformedList() throws ListException {
+	public void registerMalformedList() throws DataManagerException {
 		List<Object> list1 = new ArrayList<Object>();
 		list1.add(25);
 		list1.add((float) 32.546);
@@ -273,8 +267,7 @@ public class DataFacadeTest {
 	}
 
 	@Test
-	public void registerManyEmptyLists() throws EmptyListException,
-			MalformedListException {
+	public void registerManyEmptyLists() throws DataManagerException {
 		List<List<Object>> onlyEmptyLists = new ArrayList<List<Object>>();
 
 		List<Object> emptyList1 = new ArrayList<Object>();
@@ -302,8 +295,7 @@ public class DataFacadeTest {
 	}
 
 	@Test(expected = MalformedListException.class)
-	public void registerTooShortDepthFails() throws EmptyListException,
-			MalformedListException {
+	public void registerTooShortDepthFails() throws DataManagerException {
 		List<Object> list = new ArrayList<Object>();
 		list.add(25);
 		list.add((float) 32.546);
@@ -315,8 +307,7 @@ public class DataFacadeTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void registerWrongDepthFails() throws EmptyListException,
-			MalformedListException {
+	public void registerWrongDepthFails() throws DataManagerException {
 
 		List<Object> list = new ArrayList<Object>();
 		list.add(25);
@@ -334,16 +325,19 @@ public class DataFacadeTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void registerLiteralWrongDepthFails() throws EmptyListException,
-			MalformedListException {
+	public void registerLiteralWrongDepthFails() throws DataManagerException {
 		// Literals can only have depth 0 and UNKNOWN_DEPTH
 		facade.register("I've messed up my depth", 1);
 	}
 
 	@Test
-	public void registerLiteralCorrectDepth() throws EmptyListException,
-			MalformedListException {
+	public void registerLiteralCorrectDepth() throws DataManagerException {
 		facade.register("I've got correct depth", 0);
+	}
+	
+	@Test(expected=UnsupportedObjectTypeException.class)
+	public void registerUnsupportedObjectFails() throws DataManagerException {
+		facade.register(this);
 	}
 
 }

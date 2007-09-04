@@ -10,10 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.EntityStorageException;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
@@ -24,6 +20,7 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
 import org.junit.Before;
 import org.junit.Test;
