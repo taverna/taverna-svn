@@ -6,15 +6,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
+import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.EntityStorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
@@ -22,6 +21,7 @@ import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
 
 import org.jdom.JDOMException;

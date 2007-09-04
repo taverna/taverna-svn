@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;

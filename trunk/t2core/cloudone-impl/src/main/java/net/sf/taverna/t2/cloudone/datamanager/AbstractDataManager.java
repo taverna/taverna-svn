@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.EntityStorageException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
