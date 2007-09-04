@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-import net.sf.taverna.t2.cloudone.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 
 /**

@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cloudone;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
