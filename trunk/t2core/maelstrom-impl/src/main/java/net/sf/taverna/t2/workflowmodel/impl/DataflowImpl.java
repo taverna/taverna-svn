@@ -180,11 +180,9 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 			}
 		}
 
-		boolean dataflowValid = true;
-		if (unresolvedOutputs.isEmpty() == false || failed.isEmpty() == false
-				|| unresolved.isEmpty() == false) {
-			dataflowValid = false;
-		}
+		// Must all be empty
+		boolean dataflowValid = unresolvedOutputs.isEmpty() && failed.isEmpty()
+				&& unresolved.isEmpty();
 
 		// Build and return a new validation report containing the overal state
 		// along with lists of failed and unsatisfied processors and unsatisfied
