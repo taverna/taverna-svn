@@ -40,6 +40,9 @@
 
 	<!-- system sax parser -->
 	<artifact groupId="xerces" artifactId="xercesImpl" version="2.6.2" system="true"/>
+	
+	<!-- xalan required by Biomoby -->
+	<artifact groupId="xalan" artifactId="xalan" version="2.5.2" system="true"/>
 
     <!-- Jaxen XML support -->
 	<artifact groupId="jaxen" artifactId="jaxen" version="1.0-FCS" system="true"/>
