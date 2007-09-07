@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone;
 
-import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
@@ -28,6 +28,6 @@ public interface PeerProxy {
 	 * @return
 	 */
 	public Entity<?, ?> export(EntityIdentifier identifier)
-			throws EntityNotFoundException;
+			throws NotFoundException;
 
 }

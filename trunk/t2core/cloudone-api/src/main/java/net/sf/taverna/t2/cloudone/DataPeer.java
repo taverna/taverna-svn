@@ -3,7 +3,7 @@ package net.sf.taverna.t2.cloudone;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
@@ -51,7 +51,7 @@ public interface DataPeer {
 	 */
 	public DataDocument exportDataDocument(
 			Set<LocationalContext> remoteContext,
-			DataDocumentIdentifier identifier) throws EntityNotFoundException;
+			DataDocumentIdentifier identifier) throws NotFoundException;
 
 	/**
 	 * Get the document which describes the locational context for this

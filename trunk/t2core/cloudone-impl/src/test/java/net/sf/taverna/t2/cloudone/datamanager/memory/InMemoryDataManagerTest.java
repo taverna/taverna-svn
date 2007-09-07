@@ -10,9 +10,9 @@ import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManagerTest;
-import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityStorageException;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
@@ -37,7 +37,7 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 					new HashSet<LocationalContext>());
 	}
 	@Test
-	public void checkListCounter() throws EntityStorageException {
+	public void checkListCounter() throws StorageException {
 		int depth = 1;
 		EntityListIdentifier list0 = dManager.registerEmptyList(depth);
 		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
@@ -48,7 +48,7 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 	}
 	
 	@Test
-	public void checkDocumentCounter() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void checkDocumentCounter() throws NotFoundException, StorageException, RetrievalException {
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		DataDocumentIdentifier docId = dManager.registerDocument(references);
 		assertEquals("urn:t2data:ddoc://" + TEST_NS + "/data0", docId

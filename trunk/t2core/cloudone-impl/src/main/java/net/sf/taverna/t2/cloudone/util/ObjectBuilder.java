@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
@@ -33,10 +33,10 @@ public class ObjectBuilder {
 	 * @param dManager
 	 * @param id
 	 * @return
-	 * @throws EntityNotFoundException
+	 * @throws NotFoundException
 	 */
 	public static Object buildObject(DataManager dManager, EntityIdentifier id)
-			throws EntityNotFoundException, EntityRetrievalException{
+			throws NotFoundException, RetrievalException{
 		Object result = null;
 		if (id instanceof Literal) {
 			result = ((Literal) id).getValue();

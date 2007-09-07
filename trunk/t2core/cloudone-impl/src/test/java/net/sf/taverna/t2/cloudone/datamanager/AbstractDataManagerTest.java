@@ -50,32 +50,32 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void addZeroEmptyList() throws EntityStorageException {
+	public void addZeroEmptyList() throws StorageException {
 		dManager.registerEmptyList(0);
 	}
 
 	@Test
-	public void addEmptyList() throws EntityStorageException {
+	public void addEmptyList() throws StorageException {
 		int depth = 1;
 		EntityListIdentifier list = dManager.registerEmptyList(depth);
 		assertEquals(depth, list.getDepth());
 	}
 
 	@Test
-	public void addDeeperEmptyList() throws EntityStorageException {
+	public void addDeeperEmptyList() throws StorageException {
 		int depth = SMALL_LIST_SIZE;
 		EntityListIdentifier list = dManager.registerEmptyList(depth);
 		assertEquals(depth, list.getDepth());
 	}
 
 	@Test
-	public void emptyListNamespace() throws EntityStorageException {
+	public void emptyListNamespace() throws StorageException {
 		EntityListIdentifier list = dManager.registerEmptyList(1);
 		assertEquals(dManager.getCurrentNamespace(), list.getNamespace());
 	}
 
 	@Test
-	public void getEmptyList() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void getEmptyList() throws NotFoundException, StorageException, RetrievalException {
 		EntityListIdentifier listId = dManager.registerEmptyList(1);
 		Entity<EntityListIdentifier, ?> entity = dManager.getEntity(listId);
 		assertEquals("Didn't return same entity", entity, dManager
@@ -87,37 +87,37 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void addTwoEmptyLists() throws EntityStorageException {
+	public void addTwoEmptyLists() throws StorageException {
 		int depth = 1;
 		EntityListIdentifier list0 = dManager.registerEmptyList(depth);
 		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
 		assertFalse(list0.equals(list1));
 	}
 
-	@Test(expected = EntityNotFoundException.class)
-	public void getNonExistingList() throws EntityNotFoundException,
-			MalformedIdentifierException, EntityRetrievalException {
+	@Test(expected = NotFoundException.class)
+	public void getNonExistingList() throws NotFoundException,
+			MalformedIdentifierException, RetrievalException {
 		EntityListIdentifier unknownId = new EntityListIdentifier(
 				"urn:t2data:list://" + TEST_NS + "/list5311/1");
 		dManager.getEntity(unknownId);
 	}
 
 	@Test
-	public void registerListOfLists() throws EntityStorageException {
+	public void registerListOfLists() throws StorageException {
 		EntityListIdentifier[] ids = createEmptyLists();
 		EntityListIdentifier listOfLists = dManager.registerList(ids);
 		assertEquals(2, listOfLists.getDepth());
 	}
 
 	@Test
-	public void registerLiteral() throws EntityNotFoundException, EntityRetrievalException {
+	public void registerLiteral() throws NotFoundException, RetrievalException {
 		Literal lit = Literal.buildLiteral(3.14);
 		Entity<Literal, ?> ent = dManager.getEntity(lit);
 		assertSame("Literal was not its own entity", lit, ent);
 	}
 
 	@Test
-	public void registerError() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void registerError() throws NotFoundException, StorageException, RetrievalException {
 		Throwable ex = new IllegalArgumentException("Did not work",
 				new NullPointerException("No no"));
 
@@ -160,7 +160,7 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
-	public void getListOfLists() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void getListOfLists() throws NotFoundException, StorageException, RetrievalException {
 		EntityListIdentifier[] ids = createEmptyLists();
 		EntityListIdentifier listOfListsId = dManager.registerList(ids);
 		Entity<EntityListIdentifier, ?> entity = dManager
@@ -177,7 +177,7 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void getListOfDuplicateLists() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void getListOfDuplicateLists() throws NotFoundException, StorageException, RetrievalException {
 		EntityListIdentifier[] ids = createDuplicateEmptyLists();
 		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
 			assertEquals(ids[0], ids[i]);
@@ -193,7 +193,7 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void registerDocument() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void registerDocument() throws NotFoundException, StorageException, RetrievalException {
 		// not sure what a reference scheme is so empty one will have to do
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		DataDocumentIdentifier docId = dManager.registerDocument(references);
@@ -204,7 +204,7 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void addDocumentToList() throws EntityNotFoundException, EntityStorageException, EntityRetrievalException {
+	public void addDocumentToList() throws NotFoundException, StorageException, RetrievalException {
 		DataDocumentIdentifier[] ids = new DataDocumentIdentifier[SMALL_LIST_SIZE];
 		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
 			Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
@@ -248,7 +248,7 @@ public abstract class AbstractDataManagerTest {
 				.size());
 	}
 
-	private EntityListIdentifier[] createEmptyLists() throws EntityStorageException {
+	private EntityListIdentifier[] createEmptyLists() throws StorageException {
 		EntityListIdentifier[] ids = new EntityListIdentifier[SMALL_LIST_SIZE];
 		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
 			ids[i] = dManager.registerEmptyList(1);
@@ -256,7 +256,7 @@ public abstract class AbstractDataManagerTest {
 		return ids;
 	}
 
-	private EntityListIdentifier[] createDuplicateEmptyLists() throws EntityStorageException {
+	private EntityListIdentifier[] createDuplicateEmptyLists() throws StorageException {
 		EntityListIdentifier[] ids = new EntityListIdentifier[SMALL_LIST_SIZE];
 		EntityListIdentifier list = dManager.registerEmptyList(1);
 		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
