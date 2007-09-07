@@ -10,7 +10,8 @@ import java.util.UUID;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 
@@ -28,7 +29,7 @@ public class InMemoryBlobStore implements BlobStore{
 	public BlobReferenceScheme storeFromBytes(byte[] bytes) {
 		String id = UUID.randomUUID().toString();
 		blobs.put(id, bytes);
-		return new BlobReferenceScheme(namespace, id);
+		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 	
 	public BlobReferenceScheme storeFromStream(InputStream stream) throws StorageException {

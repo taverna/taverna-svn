@@ -6,7 +6,7 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 /**
  * <p>

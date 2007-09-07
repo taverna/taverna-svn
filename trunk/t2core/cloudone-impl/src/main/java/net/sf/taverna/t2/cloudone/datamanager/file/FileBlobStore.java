@@ -20,7 +20,8 @@ import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 
 public class FileBlobStore implements BlobStore {
@@ -75,7 +76,7 @@ public class FileBlobStore implements BlobStore {
 		} catch (IOException e) {
 			throw new StorageException("Could not store to " + file, e);
 		}
-		return new BlobReferenceScheme(namespace, id);
+		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 
 	public BlobReferenceScheme storeFromStream(InputStream inStream)
@@ -97,7 +98,7 @@ public class FileBlobStore implements BlobStore {
 			IOUtils.closeQuietly(outStream);		
 		}
 		
-		return new BlobReferenceScheme(namespace, id);
+		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 
 	private File fileById(String namespace, String id) {
