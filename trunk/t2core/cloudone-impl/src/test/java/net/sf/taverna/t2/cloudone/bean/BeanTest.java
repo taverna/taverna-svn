@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
@@ -30,6 +31,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
 
@@ -212,8 +214,6 @@ public class BeanTest {
 		//assertEquals("Java not buggy", url3, url4);
 		// should DIFFER from url3 although Javas URL thing it equals
 		refSchemes.add(new URLReferenceScheme(url4));
-
-		
 		DataDocument doc = new DataDocumentImpl(id, refSchemes);
 		
 		assertEquals(urn, doc.getIdentifier().getAsBean());
@@ -223,9 +223,12 @@ public class BeanTest {
 		DataDocument newDoc = new DataDocumentImpl();
 		newDoc.setFromBean(bean);
 		assertEquals(urn, newDoc.getIdentifier().getAsBean());
-		assertNotSame("Did not reconstruct set", newDoc.getReferenceSchemes(), refSchemes); 
-		assertEquals(3, newDoc.getReferenceSchemes().size());
-		assertTrue(newDoc.getReferenceSchemes().containsAll(refSchemes));
+		final Set<ReferenceScheme> retrievedRefs = newDoc.getReferenceSchemes();
+		assertNotSame("Did not reconstruct set", retrievedRefs, refSchemes);
+//		Fails due to lacking blob support
+		assertEquals(3, retrievedRefs.size());
+		System.out.println(retrievedRefs.iterator().next());
+		assertTrue(retrievedRefs.containsAll(refSchemes));
 	}
 	
 	@Test
@@ -262,7 +265,7 @@ public class BeanTest {
 		assertEquals("Test data\n", IOUtils.toString(stream, "utf8"));
 		
 		
-		String bean = serialised(urlRef.getAsBean());
+		URLReferenceBean bean = serialised(urlRef.getAsBean());
 		URLReferenceScheme newUrlRef = new URLReferenceScheme();
 		newUrlRef.setFromBean(bean);
 		InputStream newStream = newUrlRef.dereference(dManager);

@@ -4,6 +4,8 @@ import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
 public class URLReferenceBean extends ReferenceBean {
 		
+	public static final String TYPE = "url";
+	
 	String url;
 
 	public String getUrl() {
@@ -16,7 +18,7 @@ public class URLReferenceBean extends ReferenceBean {
 	
 	@Override
 	public String getType() {
-		return "url";
+		return TYPE;
 	}
 	
 }

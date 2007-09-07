@@ -71,13 +71,13 @@ public class DataDocumentImpl implements DataDocument {
 		identifier = EntityIdentifiers.parseDocumentIdentifier(bean.getIdentifier());
 		for (ReferenceBean refBean : bean.getReferences()) {
 			// TODO: Use registry
-			if (refBean.getType().equals("uri")) {
+			if (refBean.getType().equals(URLReferenceBean.TYPE)) {
 				URLReferenceBean urlRefBean = (URLReferenceBean) refBean;
 				URLReferenceScheme urlRefScheme = new URLReferenceScheme();
 				urlRefScheme.setFromBean(urlRefBean);
 				referenceSchemes.add(urlRefScheme);
 			} else if(refBean.getType().equals("blob")) {
-				// TODO: Suppor beans
+				// TODO: Support blobs
 			} else {
 				// logger.warn("Unsupported type " + refBean.getType());
 				continue;
