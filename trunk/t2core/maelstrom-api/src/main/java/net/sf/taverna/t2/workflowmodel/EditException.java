@@ -13,8 +13,12 @@ public class EditException extends Exception {
 		super(string);
 	}
 
-	public EditException(String string, EditException cause) {
+	public EditException(String string, Throwable cause) {
 		super(string, cause);
+	}
+	
+	public EditException(Throwable t) {
+		super(t);
 	}
 
 	/**
