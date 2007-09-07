@@ -20,7 +20,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
-public abstract class ScuflTestCase {
+public class TranslatorTestHelper {
 	
 	protected void setUpRavenRepository() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
@@ -32,7 +32,7 @@ public abstract class ScuflTestCase {
 
 	protected ScuflModel loadScufl(String resourceName) throws UnknownProcessorException, UnknownPortException, ProcessorCreationException, DataConstraintCreationException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException, IOException {
 		ScuflModel model = new ScuflModel();
-		InputStream inStream = ScuflTestCase.class.getResourceAsStream("/"+resourceName);
+		InputStream inStream = TranslatorTestHelper.class.getResourceAsStream("/"+resourceName);
 		XScuflParser.populate(inStream,model,null);
 		return model;
 	}

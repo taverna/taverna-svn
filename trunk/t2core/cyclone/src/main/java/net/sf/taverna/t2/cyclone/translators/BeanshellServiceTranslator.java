@@ -1,4 +1,4 @@
-package net.sf.taverna.sf.cyclone.translators;
+package net.sf.taverna.t2.cyclone.translators;
 
 import net.sf.taverna.t2.workflowmodel.processor.service.Service;
 
@@ -8,7 +8,7 @@ public class BeanshellServiceTranslator implements ServiceTranslator<BeanshellCo
 
 	public Service<BeanshellConfigurationType> doTranslation(Processor p) {
 		// TODO Auto-generated method stub
-		return null;
+		return new BeanshellService();
 	}
 
 }

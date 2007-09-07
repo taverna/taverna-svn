@@ -1,8 +1,8 @@
-package net.sf.taverna.sf.cyclone.translators;
+package net.sf.taverna.t2.cyclone.translators;
 
 public class ServiceTranslatorNotFoundException extends Exception {
 
-	private static final long serialVersionUID = -8264463299951851405L;
+	private static final long serialVersionUID = 8779255468276952392L;
 
 	public ServiceTranslatorNotFoundException(String msg) {
 		super(msg);
