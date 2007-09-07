@@ -25,17 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-07 16:15:26 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-09-07 16:39:32 $
+ *               by   $Author: sowen70 $
  * Created on Sep 7, 2007
  *****************************************************************/
 package net.sf.taverna.t2.cyclone;
 
 //import static org.junit.Assert.assertTrue;
 //
-//import java.io.IOException;
+import java.io.IOException;
 //import java.util.Arrays;
 //import java.util.List;
 //
@@ -44,17 +44,17 @@ package net.sf.taverna.t2.cyclone;
 //import net.sf.taverna.t2.workflowmodel.Port;
 //import net.sf.taverna.t2.workflowmodel.Processor;
 //
-//import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
-//import org.embl.ebi.escience.scufl.DataConstraintCreationException;
-//import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
-//import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-//import org.embl.ebi.escience.scufl.MalformedNameException;
-//import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
+import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.MalformedNameException;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
 //import org.embl.ebi.escience.scufl.ScuflModel;
-//import org.embl.ebi.escience.scufl.UnknownPortException;
-//import org.embl.ebi.escience.scufl.UnknownProcessorException;
-//import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
-//import org.junit.Test;
+import org.embl.ebi.escience.scufl.UnknownPortException;
+import org.embl.ebi.escience.scufl.UnknownProcessorException;
+import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
+import org.junit.Test;
 /**
  * @author David Withers
  * @author Stuart Owen
@@ -77,13 +77,13 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	 * @throws UnknownPortException
 	 * @throws UnknownProcessorException
 	 */
-//	@Test
-//	public void testDoTranslation() throws UnknownProcessorException,
-//			UnknownPortException, ProcessorCreationException,
-//			DataConstraintCreationException, DuplicateProcessorNameException,
-//			MalformedNameException, ConcurrencyConstraintCreationException,
-//			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
-//			IOException {
+	@Test
+	public void testDoTranslation() throws UnknownProcessorException,
+			UnknownPortException, ProcessorCreationException,
+			DataConstraintCreationException, DuplicateProcessorNameException,
+			MalformedNameException, ConcurrencyConstraintCreationException,
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			IOException {
 //		ScuflModel model = loadScufl("translation-test.xml");
 //		Dataflow dataflow = ModelTranslator.doTranslation(model);
 //		
@@ -106,6 +106,6 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 //			datalink.getSource();
 //		}
 //		
-//	}
+	}
 
 }
