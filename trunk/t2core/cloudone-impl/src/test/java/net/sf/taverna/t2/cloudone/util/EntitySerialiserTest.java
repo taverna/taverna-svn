@@ -11,6 +11,7 @@ import java.util.HashSet;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.SillyBean;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 
 import org.jdom.Element;
@@ -56,10 +57,13 @@ public class EntitySerialiserTest {
 	@Test
 	public void serialiseURLRefScheme() throws JDOMException, IOException {
 		URLReferenceScheme urlRef = new URLReferenceScheme();
-		final String bean = "http://taverna.sf.net/";
+		URLReferenceBean bean = new URLReferenceBean();
+		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
 		Element elem = EntitySerialiser.toXML(urlRef.getAsBean());
-		assertEquals(bean, EntitySerialiser.fromXML(elem, classLoader));
+		URLReferenceBean retrievedBean = (URLReferenceBean) EntitySerialiser
+				.fromXML(elem, classLoader);
+		assertEquals(bean.getUrl(), retrievedBean.getUrl());
 	}
 	
 

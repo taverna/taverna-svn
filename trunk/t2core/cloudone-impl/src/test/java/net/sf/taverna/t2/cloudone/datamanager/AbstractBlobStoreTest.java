@@ -19,7 +19,7 @@ import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public abstract class AbstractBlobStoreTest {
 	@Test
 	public void storeBytesRetrieveBytes() throws RetrievalException, NotFoundException {
 		byte[] bytes = makeByteArray();
-		BlobReferenceScheme ref = blobStore.storeFromBytes(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(bytes);
 		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
 				retrievedBytes));
@@ -63,7 +63,7 @@ public abstract class AbstractBlobStoreTest {
 	public void storeInputStreamRetrieveBytes() throws  RetrievalException, NotFoundException {
 		byte[] bytes = makeByteArray();
 		InputStream inStream = new ByteArrayInputStream(bytes);
-		BlobReferenceScheme ref = blobStore.storeFromStream(inStream);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromStream(inStream);
 		assertNotNull(ref);
 		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);		
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
@@ -74,7 +74,7 @@ public abstract class AbstractBlobStoreTest {
 	public void storeBytesRetrieveStream() throws 
 			DereferenceException, RetrievalException, NotFoundException, IOException {
 		byte[] bytes = makeByteArray();
-		BlobReferenceScheme ref = blobStore.storeFromBytes(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(bytes);
 		InputStream stream = blobStore.retrieveAsStream(ref);
 		byte[] retrievedBytes = IOUtils.toByteArray(stream);
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
@@ -85,7 +85,7 @@ public abstract class AbstractBlobStoreTest {
 	public void storeInputStreamRetrieveStream() throws IOException, RetrievalException, NotFoundException {
 		byte[] bytes = makeByteArray();
 		InputStream inStream = new ByteArrayInputStream(bytes);
-		BlobReferenceScheme ref = blobStore.storeFromStream(inStream);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromStream(inStream);
 		assertNotNull(ref);
 		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
@@ -95,7 +95,7 @@ public abstract class AbstractBlobStoreTest {
 	@Test
 	public void registerBlobAndDereference() throws DereferenceException, IOException, RetrievalException, NotFoundException {
 		byte[] bytes = makeByteArray();
-		BlobReferenceScheme ref = dManager.getBlobStore().storeFromBytes(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) dManager.getBlobStore().storeFromBytes(bytes);
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		references.add(ref);
 		DataDocumentIdentifier docId = dManager.registerDocument(references);
