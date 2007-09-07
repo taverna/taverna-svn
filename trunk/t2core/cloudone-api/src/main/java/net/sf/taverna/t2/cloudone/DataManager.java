@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.EntityNotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityStorageException;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.StorageException;
+import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
@@ -33,7 +34,7 @@ public interface DataManager {
 	 * Fetch the named entity by identifier.
 	 */
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
-			throws EntityNotFoundException, EntityRetrievalException;
+			throws NotFoundException, RetrievalException;
 
 	/**
 	 * Initiates a traversal of the specified data reference, traversing to
@@ -46,12 +47,12 @@ public interface DataManager {
 	 * @param identifier
 	 * @param desiredDepth
 	 * @return
-	 * @throws EntityRetrievalException
+	 * @throws RetrievalException
 	 *             If an entity could not be retrieved
 	 */
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
-			throws EntityRetrievalException;
+			throws RetrievalException;
 
 	/**
 	 * Register a new list from an array of identifiers. Returns the identifier
@@ -64,7 +65,7 @@ public interface DataManager {
 	 * this case.
 	 */
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
-			throws EntityStorageException;
+			throws StorageException;
 
 	/**
 	 * Register a new empty list. Returns the identifier of the new list,
@@ -77,7 +78,7 @@ public interface DataManager {
 	 * this case.
 	 */
 	public EntityListIdentifier registerEmptyList(int depth)
-			throws EntityStorageException;
+			throws StorageException;
 
 	/**
 	 * Take a set of references, all of which must point to byte equivalent data
@@ -89,7 +90,7 @@ public interface DataManager {
 	 * @return
 	 */
 	public DataDocumentIdentifier registerDocument(
-			Set<ReferenceScheme> references) throws EntityStorageException;
+			Set<ReferenceScheme> references) throws StorageException;
 
 	/**
 	 * Register a single error with the data manager. An error has a depth, an
@@ -100,11 +101,11 @@ public interface DataManager {
 	 * @param msg
 	 *            Error message
 	 * @return An {@link ErrorDocumentIdentifier}
-	 * @throws EntityStorageException
+	 * @throws StorageException
 	 *             If the error document could not be stored
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg) throws EntityStorageException;
+			String msg) throws StorageException;
 
 	/**
 	 * Register a single error with the data manager. An error has a depth, an
@@ -115,11 +116,11 @@ public interface DataManager {
 	 * @param throwable
 	 *            Cause for error
 	 * @return An {@link ErrorDocumentIdentifier}
-	 * @throws EntityStorageException
+	 * @throws StorageException
 	 *             If the error document could not be stored
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			Throwable throwable) throws EntityStorageException;
+			Throwable throwable) throws StorageException;
 
 	/**
 	 * Register a single error with the data manager. An error has both a depth
@@ -133,11 +134,11 @@ public interface DataManager {
 	 * @param throwable
 	 *            Cause for error
 	 * @return An {@link ErrorDocumentIdentifier}
-	 * @throws EntityStorageException
+	 * @throws StorageException
 	 *             If the error document could not be stored
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg, Throwable throwable) throws EntityStorageException;
+			String msg, Throwable throwable) throws StorageException;
 
 	/**
 	 * Get the current namespace of the data manager. Entities registered with
@@ -162,5 +163,9 @@ public interface DataManager {
 	 * @return List of managed namespaces
 	 */
 	public List<String> getManagedNamespaces();
+
+	public int getMaxIDLength();
+
+	public BlobStore getBlobStore();
 
 }
