@@ -22,6 +22,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
 /**
  * Abstract {@link DataManager}. Handles all register* methods, namespaces and
@@ -40,6 +41,9 @@ public abstract class AbstractDataManager implements DataManager {
 	private String namespace;
 
 	public AbstractDataManager(String namespace, Set<LocationalContext> contexts) {
+		if(! EntityIdentifier.isValidName(namespace)) {
+			throw new MalformedIdentifierException("Invalid namespace: " + namespace);
+		}
 		this.namespace = namespace;
 		this.contexts = contexts;
 	}
@@ -56,18 +60,18 @@ public abstract class AbstractDataManager implements DataManager {
 	 */
 	@SuppressWarnings("unchecked")
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI id)
-			throws EntityNotFoundException, EntityRetrievalException {
+			throws NotFoundException, RetrievalException {
 		if (id instanceof Literal) {
 			return (Entity<EI, ?>) id;
 		}
 		if (!getManagedNamespaces().contains(id.getNamespace())) {
 			// TODO: Retrieve from other DataManagers on p2p
-			throw new EntityNotFoundException("Unknown namespace "
+			throw new NotFoundException("Unknown namespace "
 					+ id.getNamespace());
 		}
 		Entity ent = retrieveEntity(id);
 		if (ent == null) {
-			throw new EntityNotFoundException("No entity found with id : " + id);
+			throw new NotFoundException("No entity found with id : " + id);
 		}
 		// we know this is type-safe because we control what goes into the store
 		return (Entity<EI, ?>) ent;
@@ -108,7 +112,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	public DataDocumentIdentifier registerDocument(
 			final Set<ReferenceScheme> references)
-			throws EntityStorageException {
+			throws StorageException {
 		final DataDocumentIdentifier id = nextDataIdentifier();
 		DataDocument d = new DataDocumentImpl(id, references);
 		storeEntity(d);
@@ -116,7 +120,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public EntityListIdentifier registerEmptyList(int depth)
-			throws EntityStorageException {
+			throws StorageException {
 		EntityListIdentifier id = nextListIdentifier(depth);
 		EntityList newList = new EntityList(id, Collections
 				.<EntityIdentifier> emptyList());
@@ -125,12 +129,12 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg) throws EntityStorageException {
+			String msg) throws StorageException {
 		return registerError(depth, implicitDepth, msg, null);
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg, Throwable throwable) throws EntityStorageException {
+			String msg, Throwable throwable) throws StorageException {
 		final ErrorDocumentIdentifier id = nextErrorIdentifier(depth,
 				implicitDepth);
 		ErrorDocument ed = new ErrorDocument(id, msg, throwable);
@@ -139,12 +143,12 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			Throwable throwable) throws EntityStorageException {
+			Throwable throwable) throws StorageException {
 		return registerError(depth, implicitDepth, null, throwable);
 	}
 
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
-			throws EntityStorageException {
+			throws StorageException {
 		if (identifiers.length == 0) {
 			throw new IndexOutOfBoundsException(
 					"Cannot register an empty list through registerList method");
@@ -157,7 +161,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
-			throws EntityRetrievalException {
+			throws RetrievalException {
 		if (desiredDepth < 0) {
 			throw new IllegalArgumentException(
 					"Cannot traverse to a negative depth");
@@ -179,7 +183,7 @@ public abstract class AbstractDataManager implements DataManager {
 							newSet.add(new ContextualizedIdentifier(ei,
 									addIndex(ci.getIndex(), position++)));
 						}
-					} catch (EntityNotFoundException enfe) {
+					} catch (NotFoundException enfe) {
 						throw new AssertionError(
 								"Entity referenced within list but not found within this data manager");
 					}
@@ -212,20 +216,20 @@ public abstract class AbstractDataManager implements DataManager {
 	 * @param <ID> The type of {@link EntityIdentifier}
 	 * @param id The identifier for the entity
 	 * @return The retrieved {@link Entity}
-	 * @throws EntityRetrievalException If the entity could not be retrieved
+	 * @throws RetrievalException If the entity could not be retrieved
 	 */
 	protected abstract <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(
-			ID id) throws EntityRetrievalException;
+			ID id) throws RetrievalException;
 
 	/**
 	 * Store the entity.
 	 * 
 	 * @param <Bean> Bean that can be serialised
 	 * @param entity Entity to store
-	 * @throws EntityStorageException If the entity could not be stored
+	 * @throws StorageException If the entity could not be stored
 	 */
 	protected abstract <Bean> void storeEntity(Entity<?, Bean> entity)
-			throws EntityStorageException;
+			throws StorageException;
 
 	private static int[] addIndex(int[] current, int head) {
 		int[] result = new int[current.length + 1];

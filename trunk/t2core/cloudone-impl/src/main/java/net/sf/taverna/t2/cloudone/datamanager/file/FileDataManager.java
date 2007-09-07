@@ -12,8 +12,8 @@ import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
-import net.sf.taverna.t2.cloudone.datamanager.EntityRetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.EntityStorageException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
@@ -44,6 +44,8 @@ import org.jdom.JDOMException;
  * 	namespace2/
  * 		ddoc/
  * 			49d725d5-0b8f-4572-a804-160a9df690a4.xml
+ * 		blob/
+ * 			0b8f4572-49d7-25d5-160a-a8049df690a4.blob
  * </pre>
  * 
  * <p>
@@ -64,9 +66,14 @@ public class FileDataManager extends AbstractDataManager {
 
 	private File path;
 
+	private FileBlobStore blobStore;
+	
+	private static final int MAX_ID_LENGTH = 80; //for debug reasons
+
 	public FileDataManager(String namespace, Set<LocationalContext> contexts,
 			File path) {
 		super(namespace, contexts);
+
 		if (path == null) {
 			throw new NullPointerException("Path can't be null");
 		}
@@ -83,7 +90,7 @@ public class FileDataManager extends AbstractDataManager {
 
 	@Override
 	protected <Bean> void storeEntity(Entity<?, Bean> entity)
-			throws EntityStorageException {
+			throws StorageException {
 		File entityPath = asPath(entity.getIdentifier());
 		if (entityPath.exists()) {
 			// Should not happen with our generateId(), but could happen in
@@ -99,7 +106,7 @@ public class FileDataManager extends AbstractDataManager {
 			EntitySerialiser.toXMLFile(bean, entityPath);
 		} catch (JDOMException e) {
 		} catch (IOException e) {
-			throw new EntityStorageException("Could not store entity to"
+			throw new StorageException("Could not store entity to"
 					+ entityPath, e);
 		}
 	}
@@ -107,7 +114,7 @@ public class FileDataManager extends AbstractDataManager {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id)
-			throws EntityRetrievalException {
+			throws RetrievalException {
 		File entityPath = asPath(id);
 		if (!entityPath.isFile()) {
 			return null;
@@ -129,7 +136,7 @@ public class FileDataManager extends AbstractDataManager {
 				entity.setFromBean((DataDocumentBean) bean);
 				return (Entity<ID, ?>) entity;
 			} else {
-				throw new EntityRetrievalException(
+				throw new RetrievalException(
 						"Data integrity failure, data type changed for "
 								+ entityPath);
 			}
@@ -139,7 +146,7 @@ public class FileDataManager extends AbstractDataManager {
 				entity.setFromBean((EntityListBean) bean);
 				return (Entity<ID, ?>) entity;
 			} else {
-				throw new EntityRetrievalException(
+				throw new RetrievalException(
 						"Data integrity failure, data type changed for "
 								+ entityPath);
 			}
@@ -149,7 +156,7 @@ public class FileDataManager extends AbstractDataManager {
 				entity.setFromBean((ErrorDocumentBean) bean);
 				return (Entity<ID, ?>) entity;
 			} else {
-				throw new EntityRetrievalException(
+				throw new RetrievalException(
 						"Data integrity failure, data type changed for "
 								+ entityPath);
 			}
@@ -170,7 +177,7 @@ public class FileDataManager extends AbstractDataManager {
 		}
 
 		// /path/ns/type/name
-		File entityPath = new File(new File(new File(path, ns), type), name);
+		File entityPath = new File(typeDir(ns, type), name);
 		
 		// TODO: File systems have a maximum number of files per directory, so should be for example:
 		// a3/
@@ -178,6 +185,38 @@ public class FileDataManager extends AbstractDataManager {
 		//   a3f9g9a9a.txt
 		// (Even this would support maximum 256 * 32k entities)
 		return entityPath;
+	}
+
+	/**
+	 * Find directory for a given type within a given namespace
+	 * 
+	 * @param ns
+	 * @param type
+	 * @return
+	 */
+	private File typeDir(String ns, String type) {
+		return new File(namespaceDir(ns), type);
+	}
+
+	/**
+	 * Find directory for a given namespace
+	 * 
+	 * @param ns
+	 * @return
+	 */
+	private File namespaceDir(String ns) {
+		return new File(path, ns);
+	}
+
+	public int getMaxIDLength() {
+		return MAX_ID_LENGTH;
+	}
+
+	public FileBlobStore getBlobStore() {
+		if (blobStore == null) {
+			blobStore = new FileBlobStore(getCurrentNamespace(), path);
+		}
+		return blobStore;
 	}
 
 }
