@@ -24,7 +24,7 @@ public class DatalinkImpl extends AbstractMutableAnnotatedThing implements
 		return this.resolvedDepth;
 	}
 	
-	public void setResolvedDepth(int newResolvedDepth) {
+	protected void setResolvedDepth(int newResolvedDepth) {
 		this.resolvedDepth = newResolvedDepth;
 	}
 	

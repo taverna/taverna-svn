@@ -8,14 +8,14 @@ import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 		implements DataflowOutputPort {
 
-	private AbstractEventHandlingInputPort ip;
+	protected AbstractEventHandlingInputPort internalInput;
 
 	private Dataflow dataflow;
 
-	DataflowOutputPortImpl(Dataflow dataflow, String portName) {
+	DataflowOutputPortImpl(String portName, Dataflow dataflow) {
 		super(portName, -1, -1);
 		this.dataflow = dataflow;
-		this.ip = new AbstractEventHandlingInputPort(name, -1) {
+		this.internalInput = new AbstractEventHandlingInputPort(name, -1) {
 			/**
 			 * Forward the event through the output port
 			 */
@@ -33,7 +33,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 	}
 
 	public EventHandlingInputPort getInternalInputPort() {
-		return this.ip;
+		return this.internalInput;
 	}
 
 	public Dataflow getDataflow() {

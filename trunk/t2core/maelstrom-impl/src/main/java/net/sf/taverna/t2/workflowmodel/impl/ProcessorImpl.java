@@ -180,7 +180,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		try {
 			this.resultWrappingDepth = iterationStack
 					.getIterationDepth(inputDepths);
-			for (ProcessorOutputPortImpl output : outputPorts) {
+			for (BasicEventForwardingOutputPort output : outputPorts) {
 				for (DatalinkImpl outgoingLink : output.outgoingLinks) {
 					// Set the resolved depth on each output edge
 					outgoingLink.setResolvedDepth(this.resultWrappingDepth

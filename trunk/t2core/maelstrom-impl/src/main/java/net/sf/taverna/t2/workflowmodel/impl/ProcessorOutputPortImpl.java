@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
-import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 
@@ -38,16 +37,6 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort impl
 					.getIndex(), token.getData()));
 	}
 	
-	protected void addOutgoingLink(DatalinkImpl link) {
-		if (outgoingLinks.contains(link) == false) {
-			outgoingLinks.add(link);
-		}
-	}
-	
-	protected void removeOutgoingLink(Datalink link) {
-		outgoingLinks.remove(link);
-	}
-
 	public Processor getProcessor() {
 		return this.parent;
 	}

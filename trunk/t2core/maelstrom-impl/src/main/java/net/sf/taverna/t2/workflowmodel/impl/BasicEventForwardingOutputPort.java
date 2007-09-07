@@ -61,4 +61,14 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 		annotations.remove(annotationToRemove);
 	}
 
+	protected void addOutgoingLink(DatalinkImpl link) {
+		if (outgoingLinks.contains(link) == false) {
+			outgoingLinks.add(link);
+		}
+	}
+
+	protected void removeOutgoingLink(Datalink link) {
+		outgoingLinks.remove(link);
+	}
+
 }

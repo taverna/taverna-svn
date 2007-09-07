@@ -9,7 +9,7 @@ import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 		implements DataflowInputPort {
 
-	private EventForwardingOutputPort internalOutput;
+	protected BasicEventForwardingOutputPort internalOutput;
 
 	private int granularInputDepth;
 

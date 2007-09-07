@@ -20,7 +20,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 
 	private String outputName;
 
-	private ProcessorOutputPortImpl outputPort;
+	private BasicEventForwardingOutputPort outputPort;
 	
 	private DatalinkImpl newLink = null;
 
@@ -33,7 +33,7 @@ public class ConnectProcessorOutputEdit extends AbstractProcessorEdit {
 
 	@Override
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
-		for (ProcessorOutputPortImpl popi : processor.outputPorts) {
+		for (BasicEventForwardingOutputPort popi : processor.outputPorts) {
 			if (popi.getName().equals(outputName)) {
 				newLink = new DatalinkImpl(popi, target);
 				popi.addOutgoingLink(newLink);
