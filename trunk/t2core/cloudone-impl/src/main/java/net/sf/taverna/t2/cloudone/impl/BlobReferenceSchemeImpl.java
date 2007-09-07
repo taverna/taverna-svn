@@ -4,18 +4,17 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
-public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
+public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
 
 	private static final String URI_PREFIX = "http://taverna.sf.net/t2data/blob/";
 
@@ -23,7 +22,7 @@ public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
 
 	private String namespace;
 
-	public BlobReferenceScheme(String namespace, String id) {
+	public BlobReferenceSchemeImpl(String namespace, String id) {
 		if (id == null || namespace == null) {
 			throw new NullPointerException("id and namespace can't be null");
 		}
@@ -56,10 +55,16 @@ public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#getId()
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#getNamespace()
+	 */
 	public String getNamespace() {
 		return namespace;
 	}
@@ -88,6 +93,9 @@ public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#toString()
+	 */
 	@Override
 	public String toString() {
 		return getAsBean();
@@ -109,9 +117,9 @@ public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof BlobReferenceScheme))
+		if (!(obj instanceof BlobReferenceSchemeImpl))
 			return false;
-		final BlobReferenceScheme other = (BlobReferenceScheme) obj;
+		final BlobReferenceSchemeImpl other = (BlobReferenceSchemeImpl) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -124,6 +132,7 @@ public class BlobReferenceScheme implements ReferenceScheme, Beanable<String> {
 			return false;
 		return true;
 	}
+
 	
 	
 
