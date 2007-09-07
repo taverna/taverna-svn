@@ -47,7 +47,7 @@ public interface BlobStore {
 	 *             If the blob could not be stored, for instance if running out
 	 *             of disk space
 	 */
-	public BlobReferenceScheme storeFromBytes(byte[] bytes)
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes)
 			throws StorageException;
 
 	/**
@@ -65,7 +65,7 @@ public interface BlobStore {
 	 *             of disk space, or if the input <code>stream</code> could
 	 *             not be read.
 	 */
-	public BlobReferenceScheme storeFromStream(InputStream stream)
+	public BlobReferenceScheme<?> storeFromStream(InputStream stream)
 			throws StorageException;
 
 	/**
@@ -76,13 +76,13 @@ public interface BlobStore {
 	 * @throws RetrievalException
 	 * @throws NotFoundException
 	 */
-	public byte[] retrieveAsBytes(BlobReferenceScheme reference)
+	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException;
 
-	public InputStream retrieveAsStream(BlobReferenceScheme reference)
+	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException;
 
-	public boolean hasBlob(BlobReferenceScheme reference)
+	public boolean hasBlob(BlobReferenceScheme<?> reference)
 			throws RetrievalException;
 
 }

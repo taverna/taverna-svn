@@ -26,13 +26,13 @@ public class InMemoryBlobStore implements BlobStore{
 		namespace = UUID.randomUUID().toString();
 	}
 	
-	public BlobReferenceScheme storeFromBytes(byte[] bytes) {
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) {
 		String id = UUID.randomUUID().toString();
 		blobs.put(id, bytes);
 		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 	
-	public BlobReferenceScheme storeFromStream(InputStream stream) throws StorageException {
+	public BlobReferenceScheme<?> storeFromStream(InputStream stream) throws StorageException {
 		byte[] bytes;
 		try {
 			bytes = IOUtils.toByteArray(stream);
@@ -42,7 +42,7 @@ public class InMemoryBlobStore implements BlobStore{
 		return storeFromBytes(bytes);
 	}
 	
-	public boolean hasBlob(BlobReferenceScheme reference) {
+	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		if (! reference.getNamespace().equals(namespace)) {
 			return false;
 		}
@@ -60,7 +60,7 @@ public class InMemoryBlobStore implements BlobStore{
 	 * @return byte[] array or <code>null</code>
 	 * @throws NotFoundException 
 	 */
-	public byte[] retrieveAsBytes(BlobReferenceScheme reference) throws NotFoundException {
+	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference) throws NotFoundException {
 		if (! reference.getNamespace().equals(namespace)) {
 			throw new NotFoundException("Unknown namespace " + reference.getNamespace());
 		}
@@ -71,7 +71,7 @@ public class InMemoryBlobStore implements BlobStore{
 		return bytes;
 	}
 	
-	public InputStream retrieveAsStream(BlobReferenceScheme reference) throws NotFoundException  {
+	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference) throws NotFoundException  {
 		byte[] bytes = retrieveAsBytes(reference);
 		return new ByteArrayInputStream(bytes);
 	}

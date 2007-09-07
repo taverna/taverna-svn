@@ -42,11 +42,11 @@ public class FileBlobStore implements BlobStore {
 		this.path = path;
 	}
 
-	public boolean hasBlob(BlobReferenceScheme reference) {
+	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		return fileByReference(reference).isFile();
 	}
 
-	public byte[] retrieveAsBytes(BlobReferenceScheme reference) throws NotFoundException {
+	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference) throws NotFoundException {
 		InputStream stream = retrieveAsStream(reference);
 	
 		try {
@@ -59,7 +59,7 @@ public class FileBlobStore implements BlobStore {
 		}
 	}
 
-	public InputStream retrieveAsStream(BlobReferenceScheme reference) throws NotFoundException {
+	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference) throws NotFoundException {
 		File file = fileByReference(reference);
 		try {
 			return new BufferedInputStream(new FileInputStream(file));
@@ -68,7 +68,7 @@ public class FileBlobStore implements BlobStore {
 		}
 	}
 
-	public BlobReferenceScheme storeFromBytes(byte[] bytes) throws StorageException {
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) throws StorageException {
 		String id = UUID.randomUUID().toString();
 		File file = fileById(namespace, id);		
 		try {
@@ -79,7 +79,7 @@ public class FileBlobStore implements BlobStore {
 		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 
-	public BlobReferenceScheme storeFromStream(InputStream inStream)
+	public BlobReferenceScheme<?> storeFromStream(InputStream inStream)
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
 		File file = fileById(namespace, id);
@@ -112,7 +112,7 @@ public class FileBlobStore implements BlobStore {
 		return new File(typeDir, fileName);
 	}
 	
-	private File fileByReference(BlobReferenceScheme reference) {
+	private File fileByReference(BlobReferenceScheme<?> reference) {
 		return fileById(reference.getNamespace(), reference.getId());
 	}
 
