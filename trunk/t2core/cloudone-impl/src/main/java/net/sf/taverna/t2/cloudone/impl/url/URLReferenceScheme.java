@@ -25,7 +25,7 @@ import net.sf.taverna.t2.cloudone.bean.Beanable;
  * @author Matthew Pocock
  * 
  */
-public class URLReferenceScheme implements ReferenceScheme, Beanable<String> {
+public class URLReferenceScheme implements ReferenceScheme, Beanable<URLReferenceBean> {
 
 	private URL url;
 
@@ -176,11 +176,14 @@ public class URLReferenceScheme implements ReferenceScheme, Beanable<String> {
 		return false;
 	}
 
-	public String getAsBean() {
-		return url.toExternalForm();
+	public URLReferenceBean getAsBean() {
+		URLReferenceBean bean = new URLReferenceBean();
+		bean.setUrl(url.toExternalForm());
+		return bean;
 	}
 
-	public void setFromBean(String url) throws IllegalArgumentException {
+	public void setFromBean(URLReferenceBean bean) throws IllegalArgumentException {
+		String url = bean.getUrl();
 		if (this.url != null) {
 			throw new IllegalStateException("Already initialised");
 		}
@@ -216,4 +219,9 @@ public class URLReferenceScheme implements ReferenceScheme, Beanable<String> {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "URLReferenceScheme: "+ url;
+	}
+	
 }
