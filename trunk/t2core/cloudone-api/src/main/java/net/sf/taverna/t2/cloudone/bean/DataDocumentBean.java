@@ -6,8 +6,7 @@ public class DataDocumentBean {
 
 	private String identifier;
 	
-	// TODO: Support other reference types
-	private List<String> urlReferences;
+	private List<ReferenceBean> references;
 
 	public String getIdentifier() {
 		return identifier;
@@ -17,12 +16,12 @@ public class DataDocumentBean {
 		this.identifier = identifier;
 	}
 
-	public List<String> getUrlReferences() {
-		return urlReferences;
+	public List<ReferenceBean> getReferences() {
+		return references;
 	}
 
-	public void setUrlReferences(List<String> urlReferences) {
-		this.urlReferences = urlReferences;
+	public void setReferences(List<ReferenceBean> references) {
+		this.references = references;
 	}
 	
 }
