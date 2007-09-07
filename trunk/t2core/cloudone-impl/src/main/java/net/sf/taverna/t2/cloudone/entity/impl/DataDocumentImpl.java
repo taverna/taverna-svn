@@ -10,9 +10,11 @@ import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
+import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
+import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 
 public class DataDocumentImpl implements DataDocument {
@@ -49,16 +51,16 @@ public class DataDocumentImpl implements DataDocument {
 	public DataDocumentBean getAsBean() {
 		DataDocumentBean bean = new DataDocumentBean();
 		bean.setIdentifier(identifier.getAsBean());
-		List<String> urlReferences = new ArrayList<String>();
+		List<ReferenceBean> references = new ArrayList<ReferenceBean>();
 		for (ReferenceScheme refSchema : referenceSchemes) {
 			if (! (refSchema instanceof URLReferenceScheme)) {
 				// TODO: Support other types of reference schema
 				continue;
 			}
-			String url = ((URLReferenceScheme) refSchema).getAsBean();
-			urlReferences.add(url);
+			URLReferenceBean refBean = ((URLReferenceScheme) refSchema).getAsBean();
+			references.add(refBean);
 		}
-		bean.setUrlReferences(urlReferences);
+		bean.setReferences(references);
 		return bean;
 	}
 
@@ -67,11 +69,19 @@ public class DataDocumentImpl implements DataDocument {
 			throw new IllegalStateException("Can't initialise twice");
 		}
 		identifier = EntityIdentifiers.parseDocumentIdentifier(bean.getIdentifier());
-		for (String url : bean.getUrlReferences()) {
-			// TODO: Support other reference schemes
-			URLReferenceScheme refScheme = new URLReferenceScheme();
-			refScheme.setFromBean(url);
-			referenceSchemes.add(refScheme);	
-		}
+		for (ReferenceBean refBean : bean.getReferences()) {
+			// TODO: Use registry
+			if (refBean.getType().equals("uri")) {
+				URLReferenceBean urlRefBean = (URLReferenceBean) refBean;
+				URLReferenceScheme urlRefScheme = new URLReferenceScheme();
+				urlRefScheme.setFromBean(urlRefBean);
+				referenceSchemes.add(urlRefScheme);
+			} else if(refBean.getType().equals("blob")) {
+				// TODO: Suppor beans
+			} else {
+				// logger.warn("Unsupported type " + refBean.getType());
+				continue;
+			}
+ 		}
 	}
 }
