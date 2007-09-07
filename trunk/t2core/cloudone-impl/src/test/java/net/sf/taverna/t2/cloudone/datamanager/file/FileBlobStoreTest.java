@@ -42,12 +42,4 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 		blobStore = dManager.getBlobStore();
 	}
 	
-	@Test
-	@Ignore("Can't serialise BlobReferenceSchemes yet")
-	@Override
-	public void registerBlobAndDereference() throws DereferenceException,
-			IOException, RetrievalException, NotFoundException {
-		super.registerBlobAndDereference();
-	}
-
 }

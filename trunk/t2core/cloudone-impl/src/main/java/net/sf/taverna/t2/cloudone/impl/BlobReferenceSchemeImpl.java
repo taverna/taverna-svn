@@ -14,13 +14,17 @@ import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
-public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
-
-	private static final String URI_PREFIX = "http://taverna.sf.net/t2data/blob/";
+public class BlobReferenceSchemeImpl implements
+		BlobReferenceScheme<BlobReferenceBean> {
 
 	private String id;
 
 	private String namespace;
+
+	public BlobReferenceSchemeImpl() {
+		this.id = null;
+		this.namespace = null;
+	}
 
 	public BlobReferenceSchemeImpl(String namespace, String id) {
 		if (id == null || namespace == null) {
@@ -46,8 +50,11 @@ public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
 		}
 	}
 
-	public String getAsBean() {
-		return URI_PREFIX + getNamespace() + "/" + getId();
+	public BlobReferenceBean getAsBean() {
+		BlobReferenceBean bean = new BlobReferenceBean();
+		bean.setNamespace(getNamespace());
+		bean.setId(getId());
+		return bean;
 	}
 
 	public Date getExpiry() {
@@ -74,17 +81,13 @@ public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
 		return false;
 	}
 
-	public void setFromBean(String uri) throws IllegalArgumentException {
+	public void setFromBean(BlobReferenceBean bean)
+			throws IllegalArgumentException {
 		if (id != null) {
 			throw new IllegalStateException("Can't initialise twice");
 		}
-		if (!uri.startsWith(URI_PREFIX)) {
-			throw new MalformedIdentifierException("Blob URI must start with "
-					+ URI_PREFIX);
-		}
-		System.out.println(uri.substring(URI_PREFIX.length()));
-		throw new IllegalArgumentException("Not yet tested");
-		// this.id = bean;
+		this.id = bean.getId();
+		this.namespace = bean.getNamespace();
 	}
 
 	public boolean validInContext(Set<LocationalContext> contextSet,
@@ -98,7 +101,7 @@ public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
 	 */
 	@Override
 	public String toString() {
-		return getAsBean();
+		return "Blob " + getNamespace() + " " + getId();
 	}
 
 	@Override
@@ -132,8 +135,5 @@ public class BlobReferenceSchemeImpl implements BlobReferenceScheme {
 			return false;
 		return true;
 	}
-
-	
-	
 
 }

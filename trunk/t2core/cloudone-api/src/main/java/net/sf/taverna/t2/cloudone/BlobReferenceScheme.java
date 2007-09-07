@@ -1,8 +1,10 @@
 package net.sf.taverna.t2.cloudone;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
-public interface BlobReferenceScheme extends ReferenceScheme, Beanable<String>{
+public interface BlobReferenceScheme<B extends ReferenceBean> extends
+		ReferenceScheme, Beanable<B> {
 
 	public abstract String getId();
 
