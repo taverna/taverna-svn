@@ -26,7 +26,11 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 	@AfterClass
 	public static void deleteTmp() throws IOException {
 //		System.out.println("FileBlobStore dir " + tmpDir);
-		FileUtils.deleteDirectory(tmpDir);
+		try {
+			FileUtils.deleteDirectory(tmpDir);
+		} catch (IOException ex) {
+			// OK
+		}
 	}
 
 	
