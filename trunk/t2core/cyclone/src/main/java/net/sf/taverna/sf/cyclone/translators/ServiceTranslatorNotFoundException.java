@@ -2,6 +2,7 @@ package net.sf.taverna.sf.cyclone.translators;
 
 public class ServiceTranslatorNotFoundException extends Exception {
 
+	private static final long serialVersionUID = -8264463299951851405L;
 
 	public ServiceTranslatorNotFoundException(String msg) {
 		super(msg);

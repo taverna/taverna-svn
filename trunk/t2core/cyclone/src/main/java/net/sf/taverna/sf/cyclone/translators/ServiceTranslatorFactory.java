@@ -19,7 +19,7 @@ import net.sf.taverna.t2.workflowmodel.processor.service.Service;
  *
  */
 public class ServiceTranslatorFactory {
-	private static Map<Class<? extends Processor>,ServiceTranslator> map = new HashMap<Class<? extends Processor>, ServiceTranslator>();
+	private static Map<Class<? extends Processor>,ServiceTranslator<?>> map = new HashMap<Class<? extends Processor>, ServiceTranslator<?>>();
 	
 	static {
 		map.put(BeanshellProcessor.class, new BeanshellServiceTranslator());
@@ -31,8 +31,8 @@ public class ServiceTranslatorFactory {
 	 * @return an appropriate ServiceTranslator
 	 * @throws ServiceTranslatorNotFoundException 
 	 */
-	public static ServiceTranslator getTranslator(Class<? extends Processor> processorClass) throws ServiceTranslatorNotFoundException {
-		ServiceTranslator result = map.get(processorClass);
+	public static ServiceTranslator<?> getTranslator(Class<? extends Processor> processorClass) throws ServiceTranslatorNotFoundException {
+		ServiceTranslator<?> result = map.get(processorClass);
 		
 		if (result == null) throw new ServiceTranslatorNotFoundException("Unable to find Service Translator for:"+processorClass);
 		return result;
