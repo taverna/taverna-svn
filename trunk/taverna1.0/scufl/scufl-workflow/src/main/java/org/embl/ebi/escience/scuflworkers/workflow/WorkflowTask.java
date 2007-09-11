@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////////////////////////////
 //
 // � University of Southampton IT Innovation Centre, 2002
 //
@@ -19,16 +19,16 @@
 // License along with this library; if not, write to the Free Software
 // Foundation Inc, 59 Temple Place, Suite 330, Boston MA 02111-1307 USA.
 //
-//      Created By          :   Darren Marvin
-//      Created Date        :   2003/6/4
-//      Created for Project :   MYGRID
-//      Dependencies        :
+// Created By : Darren Marvin
+// Created Date : 2003/6/4
+// Created for Project : MYGRID
+// Dependencies :
 //
-//      Last commit info    :   $Author: stain $
-//                              $Date: 2007-08-13 15:05:04 $
-//                              $Revision: 1.6 $
+// Last commit info : $Author: stain $
+// $Date: 2007-09-11 15:14:13 $
+// $Revision: 1.7 $
 //
-///////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////////////
 
 package org.embl.ebi.escience.scuflworkers.workflow;
 
@@ -71,16 +71,25 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 		}
 	}
 
-	private static EnactorProxy defaultEnactor = FreefluoEnactorProxy.getInstance();
+	private static EnactorProxy defaultEnactor = FreefluoEnactorProxy
+	        .getInstance();
 
-	private static Logger logger = Logger.getLogger(WorkflowTask.class);	
+	private static Logger logger = Logger.getLogger(WorkflowTask.class);
 
 	private WorkflowInstance workflowInstance = null;
 
-	private Processor proc;	
+	/**
+	 * True while a call to {@link #execute(Map, IProcessorTask)} is in
+	 * progress. Concurrent calls to {@link #execute(Map, IProcessorTask)} will
+	 * fail, but sequential calls will work, even if {@link #workflowInstance}
+	 * is set (such as when ProcessorTask is retrying).
+	 */
+	private boolean running = false;
+
+	private Processor proc;
 
 	public WorkflowTask(Processor p) {
-		this.proc = p;
+		proc = p;
 	}
 
 	public WorkflowInstance getWorkflowInstance() {
@@ -91,65 +100,84 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 	 * Invoke a nested workflow, the input map being a map of string port names
 	 * to DataThing objects containing the current values.
 	 */
-	public Map execute(Map inputMap, IProcessorTask parentTask) throws TaskExecutionException {
+	@SuppressWarnings("unchecked")
+	public Map execute(Map inputMap, IProcessorTask parentTask)
+	        throws TaskExecutionException {
 		WorkflowProcessor theProcessor = (WorkflowProcessor) proc;
 		ScuflModel theNestedModel = theProcessor.getInternalModel();
-		
-		// The inputMap is already in the form we need for a submission
 		try {
-			// Get the parent workflow instance
-			WorkflowInstance parentInstance = parentTask.getWorkflowInstance();
-			UserContext context = parentInstance.getUserContext();			
-			WorkflowInstance wfInstance =
-				defaultEnactor.compileWorkflow(theNestedModel, inputMap,
-					context);
-			synchronized(this) {
-				if (workflowInstance != null) {
-					// Fail on TAV-548
-					logger.error("execute() called twice");
-					wfInstance.destroy();
-					throw new IllegalStateException("execute() called twice on nested workflow");
+			// The inputMap is already in the form we need for a submission
+			try {
+				// Get the parent workflow instance
+				WorkflowInstance parentInstance = parentTask
+				        .getWorkflowInstance();
+				UserContext context = parentInstance.getUserContext();
+				WorkflowInstance wfInstance = defaultEnactor.compileWorkflow(
+				        theNestedModel, inputMap, context);
+				synchronized (this) {
+					if (running) {
+						// Fail on TAV-548
+						logger.error("execute() called while still running");
+						wfInstance.destroy();
+						throw new IllegalStateException(
+						        "execute() called while still running nested workflow");
+					}
+					running = true;
+					workflowInstance = wfInstance;
 				}
-				workflowInstance = wfInstance;
+				WorkflowEventDispatcher.DISPATCHER
+				        .fireEvent(new NestedWorkflowCreationEvent(parentTask
+				                .getWorkflowInstance(), inputMap,
+				                workflowInstance));
+			} catch (WorkflowSubmissionException e) {
+				String msg = "Error executing workflow task.  Error compiling the nested workflow.";
+				logger.error(msg, e);
+				throw new TaskExecutionException(msg);
 			}
-			WorkflowEventDispatcher.DISPATCHER.fireEvent(new NestedWorkflowCreationEvent(parentTask.getWorkflowInstance(), inputMap, workflowInstance));
-		} catch (WorkflowSubmissionException e) {
-			String msg = "Error executing workflow task.  Error compiling the nested workflow.";
-			logger.error(msg, e);
-			throw new TaskExecutionException(msg);
-		}
 
-		try {
-			final Thread taskThread = Thread.currentThread();
-			((WorkflowInstanceImpl) workflowInstance).addWorkflowStateListener(new WorkflowFinishedListener(taskThread));
-			workflowInstance.run();
-		} catch (Exception e) {
-			String msg = "Nested workflow failed in task, error message was: " + e.getMessage();
-			logger.error(msg, e);
-			throw new TaskExecutionException(msg);
-		}
-
-		try {
-			while (true) {
-				Thread.sleep(10000);
-				// Wait for WorkflowFinishedListener
+			try {
+				final Thread taskThread = Thread.currentThread();
+				((WorkflowInstanceImpl) workflowInstance)
+				        .addWorkflowStateListener(new WorkflowFinishedListener(
+				                taskThread));
+				workflowInstance.run();
+			} catch (Exception e) {
+				String msg = "Nested workflow failed in task, error message was: "
+				        + e.getMessage();
+				logger.error(msg, e);
+				throw new TaskExecutionException(msg);
 			}
-		} catch (InterruptedException ie) {
-			// workflow was finished
-		}
 
-		WorkflowState workflowState = WorkflowState.getState(workflowInstance.getStatus());
+			try {
+				while (true) {
+					Thread.sleep(10000);
+					// Wait for WorkflowFinishedListener
+				}
+			} catch (InterruptedException ie) {
+				// workflow was finished
+			}
 
-		// Did we finish okay?
-		if (workflowState.equals(WorkflowState.COMPLETE)) {
-			return workflowInstance.getOutput();
-		} else if (workflowState.equals(WorkflowState.FAILED)) {
-			throw new TaskExecutionException("Nested workflow failed in task, error message was : "
-					+ workflowInstance.getErrorMessage());
-		} else if (workflowState.equals(WorkflowState.CANCELLED)) {
-			return new HashMap();
-		} else {
-			throw new TaskExecutionException("Unknown flow state in task, failing.");
+			WorkflowState workflowState = WorkflowState
+			        .getState(workflowInstance.getStatus());
+
+			// Did we finish okay?
+			if (workflowState.equals(WorkflowState.COMPLETE)) {
+				return workflowInstance.getOutput();
+			} else if (workflowState.equals(WorkflowState.FAILED)) {
+				throw new TaskExecutionException(
+				        "Nested workflow failed in task, error message was : "
+				                + workflowInstance.getErrorMessage());
+			} else if (workflowState.equals(WorkflowState.CANCELLED)) {
+				return new HashMap();
+			} else {
+				throw new TaskExecutionException(
+				        "Unknown flow state in task, failing.");
+			}
+		} finally {
+			synchronized (this) {
+				// Reset to allow calling execute() again within retry
+				running = false;
+			}
 		}
 	}
 }
