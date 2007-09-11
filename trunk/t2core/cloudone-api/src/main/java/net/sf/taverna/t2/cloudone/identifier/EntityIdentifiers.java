@@ -5,10 +5,10 @@ import net.sf.taverna.t2.cloudone.entity.Literal;
 /**
  * Static methods to construct new instances of EntityIdentifier subclasses
  * without exposing their constructors outside the API.
- * 
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
 public final class EntityIdentifiers {
 	protected EntityIdentifiers() {
@@ -46,13 +46,13 @@ public final class EntityIdentifiers {
 			throw new MalformedIdentifierException(
 					"ID must start 'urn:t2data:' in " + id);
 		}
-		if (split[2].equals("list")) {
+		if (split[2].equals(IDType.List.uripart)) {
 			return IDType.List;
-		} else if (split[2].equals("ddoc")) {
+		} else if (split[2].equals(IDType.Data.uripart)) {
 			return IDType.Data;
-		} else if (split[2].equals("error")) {
+		} else if (split[2].equals(IDType.Error.uripart)) {
 			return IDType.Error;
-		} else if (split[2].equals("literal")) {
+		} else if (split[2].equals(IDType.Literal.uripart)) {
 			return IDType.Literal;
 		} else {
 			throw new MalformedIdentifierException("Unrecognized ID type : "
