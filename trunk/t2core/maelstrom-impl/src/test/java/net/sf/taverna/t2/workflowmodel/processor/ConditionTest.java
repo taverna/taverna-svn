@@ -11,7 +11,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import junit.framework.TestCase;
 
 /**
@@ -29,15 +29,15 @@ public class ConditionTest extends TestCase {
 
 	private Edits edits = new EditsImpl();
 
-	private Processor createProcessor() throws ServiceConfigurationException,
+	private Processor createProcessor() throws ActivityConfigurationException,
 			EditException {
-		AsynchEchoService service = new AsynchEchoService();
+		AsynchEchoActivity service = new AsynchEchoActivity();
 		service.configure(new EchoConfig("blah"));
-		Processor processor = Tools.buildFromService(service);
+		Processor processor = Tools.buildFromActivity(service);
 		return processor;
 	}
 
-	private void create() throws ServiceConfigurationException, EditException {
+	private void create() throws ActivityConfigurationException, EditException {
 		p1 = createProcessor();
 		edits.getRenameProcessorEdit(p1, "processor1").doEdit();
 		p2 = createProcessor();
@@ -59,7 +59,7 @@ public class ConditionTest extends TestCase {
 		edits.getConnectProcessorOutputEdit(p2, "output", deh2).doEdit();
 	}
 
-	public void testCreation() throws ServiceConfigurationException,
+	public void testCreation() throws ActivityConfigurationException,
 			EditException {
 		create();
 		assertTrue(p1.getControlledPreconditionList().size() == 1);
@@ -67,7 +67,7 @@ public class ConditionTest extends TestCase {
 	}
 
 	public void testLock() throws UnsupportedEncodingException,
-			MalformedIdentifierException, ServiceConfigurationException,
+			MalformedIdentifierException, ActivityConfigurationException,
 			EditException {
 		create();
 		System.out.println("Lock (should produce no output) :");
@@ -79,7 +79,7 @@ public class ConditionTest extends TestCase {
 	}
 
 	public void testLockUnlock() throws UnsupportedEncodingException,
-			MalformedIdentifierException, ServiceConfigurationException,
+			MalformedIdentifierException, ActivityConfigurationException,
 			EditException, InterruptedException {
 		testLock();
 		System.out.println("Unlock (should produce both tokens) :");
@@ -92,7 +92,7 @@ public class ConditionTest extends TestCase {
 	
 	public void testLockUnlockWithDifferentProcess()
 			throws UnsupportedEncodingException, MalformedIdentifierException,
-			ServiceConfigurationException, EditException, InterruptedException {
+			ActivityConfigurationException, EditException, InterruptedException {
 		testLock();
 		System.out.println("Unlock with diffent process, only output from p1 :");
 		Thread.sleep(200);

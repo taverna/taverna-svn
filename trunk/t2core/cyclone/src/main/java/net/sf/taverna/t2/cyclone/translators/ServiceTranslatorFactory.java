@@ -6,12 +6,12 @@ import java.util.Map;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * <p>
  * A Factory class responsible for providing the appropriate {@link ServiceTranslator} for a given
- * class of a Taverna 1 style Processor. This translator is responsible for providing a {@link Service} that
+ * class of a Taverna 1 style Processor. This translator is responsible for providing a {@link Activity} that
  * has similar capabilities of the original Processor.
  * </p>
  * @author Stuart Owen

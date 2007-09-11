@@ -3,11 +3,11 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Failure handling dispatch layer, consumes job events with multiple services
@@ -62,7 +62,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 	@Override
 	protected JobState getStateObject(Job j,
-			List<? extends ServiceAnnotationContainer> services) {
+			List<? extends ActivityAnnotationContainer> services) {
 		return new FailoverState(j, services);
 	}
 
@@ -74,7 +74,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receiveJob(Job job,
-			List<? extends ServiceAnnotationContainer> services) {
+			List<? extends ActivityAnnotationContainer> services) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
@@ -85,7 +85,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 			}
 		}
 		stateList.add(getStateObject(job, services));
-		List<ServiceAnnotationContainer> newServiceList = new ArrayList<ServiceAnnotationContainer>();
+		List<ActivityAnnotationContainer> newServiceList = new ArrayList<ActivityAnnotationContainer>();
 		newServiceList.add(services.get(0));
 		getBelow().receiveJob(job, newServiceList);
 
@@ -95,7 +95,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 		int currentServiceIndex = 0;
 
-		public FailoverState(Job j, List<? extends ServiceAnnotationContainer> services) {
+		public FailoverState(Job j, List<? extends ActivityAnnotationContainer> services) {
 			super(j, services);
 		}
 
@@ -105,7 +105,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 			if (currentServiceIndex == services.size()) {
 				return false;
 			} else {
-				List<ServiceAnnotationContainer> newServiceList = new ArrayList<ServiceAnnotationContainer>();
+				List<ActivityAnnotationContainer> newServiceList = new ArrayList<ActivityAnnotationContainer>();
 				newServiceList.add(services.get(currentServiceIndex));
 				getBelow().receiveJob(job, newServiceList);
 				return true;

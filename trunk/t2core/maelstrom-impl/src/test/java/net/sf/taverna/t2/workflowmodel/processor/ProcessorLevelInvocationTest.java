@@ -17,7 +17,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.jdom.JDOMException;
 
@@ -34,13 +34,13 @@ public class ProcessorLevelInvocationTest extends TestCase {
 			new HashSet<LocationalContext>());
 
 	public void createProcessor() throws EditException, JDOMException,
-			IOException, ServiceConfigurationException,
+			IOException, ActivityConfigurationException,
 			MalformedIdentifierException {
 
 		// Create a processor from the simple echo service
-		AsynchEchoService service = new AsynchEchoService();
+		AsynchEchoActivity service = new AsynchEchoActivity();
 		service.configure(new EchoConfig("blah"));
-		processor = Tools.buildFromService(service);
+		processor = Tools.buildFromActivity(service);
 
 		// Set up data manager
 		ContextManager.baseManager = this.dManager;
@@ -57,7 +57,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 
 	public void testSingleDataTokenBehaviour()
 			throws MalformedIdentifierException, EditException, JDOMException,
-			IOException, ServiceConfigurationException {
+			IOException, ActivityConfigurationException {
 		System.out.println("Single token, 'A string'");
 		createProcessor();
 		// Build an input data token
@@ -69,7 +69,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 
 	public void testSingleEmptyListDataTokenBehaviour()
 			throws MalformedIdentifierException, EditException, JDOMException,
-			IOException, ServiceConfigurationException {
+			IOException, ActivityConfigurationException {
 		createProcessor();
 		System.out.println("Empty list");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
@@ -96,7 +96,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 
 	public void testSingleListDataTokenWithFilterConfigured()
 			throws EditException, JDOMException, IOException,
-			ServiceConfigurationException, MalformedIdentifierException {
+			ActivityConfigurationException, MalformedIdentifierException {
 		createProcessor();
 		System.out.println("List with two items, 'foo' and 'bar'");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
@@ -118,7 +118,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 	}
 
 	public void testTopLevelEmptyCollection() throws EditException,
-			JDOMException, IOException, ServiceConfigurationException,
+			JDOMException, IOException, ActivityConfigurationException,
 			MalformedIdentifierException {
 		createProcessor();
 		System.out.println("Top level empty list (depth 2)");
@@ -142,7 +142,7 @@ public class ProcessorLevelInvocationTest extends TestCase {
 	}
 
 	public void testPartiallyEmptyCollection() throws EditException,
-			JDOMException, IOException, ServiceConfigurationException,
+			JDOMException, IOException, ActivityConfigurationException,
 			MalformedIdentifierException {
 		createProcessor();
 		EntityIdentifier emptyListIdentifier = ContextManager.baseManager

@@ -11,11 +11,11 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DeleteDispatchLayerEdit;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
 
 public class EditsImpl implements Edits {
 
@@ -29,7 +29,7 @@ public class EditsImpl implements Edits {
 	}
 
 	public Edit<Processor> createProcessorFromService(Dataflow dataflow,
-			Service<?> service) {
+			Activity<?> service) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -40,7 +40,7 @@ public class EditsImpl implements Edits {
 	}
 
 	public Edit<Processor> getAddServiceEdit(Processor processor,
-			Service<?> service) {
+			Activity<?> service) {
 		return new AddServiceEdit(processor, service);
 	}
 

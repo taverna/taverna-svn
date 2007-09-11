@@ -3,7 +3,7 @@ package net.sf.taverna.t2.invocation;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Tree cache for jobs waiting to be combined and dispatched down the iteration

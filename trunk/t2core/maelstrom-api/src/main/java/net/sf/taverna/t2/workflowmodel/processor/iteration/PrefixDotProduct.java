@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.TreeCache;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**

@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Debug dispatch stack layer, prints to stdout when it receives a result or

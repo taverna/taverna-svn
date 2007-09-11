@@ -1,13 +1,13 @@
 package net.sf.taverna.t2.cyclone.translators;
 
-import net.sf.taverna.t2.workflowmodel.processor.service.AbstractService;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 //FIXME: this doesn't belong in this package. It should be moved to a separate module
-public class BeanshellService extends AbstractService<BeanshellConfigurationType> {
+public class BeanshellService extends AbstractActivity<BeanshellConfigurationType> {
 
 	@Override
 	public void configure(BeanshellConfigurationType conf)
-			throws ServiceConfigurationException {
+			throws ActivityConfigurationException {
 		// TODO Auto-generated method stub	
 	}
 

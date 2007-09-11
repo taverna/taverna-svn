@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
@@ -15,8 +15,8 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * @param <ConfigType>
  *            the configuration type used for this service
  */
-public abstract class AbstractAsynchronousService<ConfigType> extends
-		AbstractService<ConfigType> implements AsynchronousService<ConfigType> {
+public abstract class AbstractAsynchronousActivity<ConfigType> extends
+		AbstractActivity<ConfigType> implements AsynchronousActivity<ConfigType> {
 
 	/**
 	 * Called immediately after object construction by the deserialization
@@ -28,7 +28,7 @@ public abstract class AbstractAsynchronousService<ConfigType> extends
 	 */
 	@Override
 	public abstract void configure(ConfigType conf)
-			throws ServiceConfigurationException;
+			throws ActivityConfigurationException;
 
 	/**
 	 * Get a configuration bean representing the definition of the service. This
@@ -55,6 +55,6 @@ public abstract class AbstractAsynchronousService<ConfigType> extends
 	 * specifically for it.
 	 */
 	public abstract void executeAsynch(Map<String, EntityIdentifier> data,
-			AsynchronousServiceCallback callback);
+			AsynchronousActivityCallback callback);
 
 }

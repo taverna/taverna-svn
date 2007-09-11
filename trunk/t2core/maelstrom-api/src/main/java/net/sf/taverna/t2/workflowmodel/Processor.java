@@ -3,10 +3,10 @@ package net.sf.taverna.t2.workflowmodel;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * A single node within the dataflow digraph, the Processor is the basic
@@ -79,7 +79,7 @@ public interface Processor extends NamedWorkflowEntity, Annotated {
 	 * 
 	 * @return list of Service instances
 	 */
-	public List<? extends ServiceAnnotationContainer> getServiceList();
+	public List<? extends ActivityAnnotationContainer> getServiceList();
 
 
 	/**

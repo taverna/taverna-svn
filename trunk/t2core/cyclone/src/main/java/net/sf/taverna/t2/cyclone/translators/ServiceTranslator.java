@@ -1,11 +1,11 @@
 package net.sf.taverna.t2.cyclone.translators;
 
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 
 public interface ServiceTranslator<ConfigurationType> {
 	
-	public Service<ConfigurationType> doTranslation(Processor p);
+	public Activity<ConfigurationType> doTranslation(Processor p);
 	
 }

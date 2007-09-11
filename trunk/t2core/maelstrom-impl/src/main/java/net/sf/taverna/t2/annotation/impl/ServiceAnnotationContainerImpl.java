@@ -1,18 +1,18 @@
 package net.sf.taverna.t2.annotation.impl;
 
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 
 public class ServiceAnnotationContainerImpl extends
-		AbstractMutableAnnotatedThing implements ServiceAnnotationContainer {
+		AbstractMutableAnnotatedThing implements ActivityAnnotationContainer {
 
-	private Service<?> theService;
+	private Activity<?> theService;
 	
-	public ServiceAnnotationContainerImpl(Service<?> service) {
+	public ServiceAnnotationContainerImpl(Activity<?> service) {
 		this.theService = service;
 	}
 	
-	public Service<?> getService() {
+	public Activity<?> getService() {
 		return this.theService;
 	}
 

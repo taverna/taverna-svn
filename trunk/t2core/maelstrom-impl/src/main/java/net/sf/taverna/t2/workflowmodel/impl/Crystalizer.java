@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Recieves Job and Completion events and emits Jobs unaltered. Completion

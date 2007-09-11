@@ -26,6 +26,8 @@ import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
@@ -33,8 +35,6 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
 /**
  * 
@@ -62,7 +62,7 @@ public class Tools {
 	 * @param service
 	 * @return
 	 */
-	public static ProcessorImpl buildFromService(Service<?> service)
+	public static ProcessorImpl buildFromActivity(Activity<?> service)
 			throws EditException {
 		ProcessorImpl result = new ProcessorImpl();
 		// Add the Service to the processor
@@ -230,12 +230,12 @@ public class Tools {
 	 * @throws ClassNotFoundException
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
-	 * @throws ServiceConfigurationException
+	 * @throws ActivityConfigurationException
 	 */
 	@SuppressWarnings("unchecked")
-	public static Service buildService(Element e)
+	public static Activity buildActivity(Element e)
 			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, ServiceConfigurationException {
+			IllegalAccessException, ActivityConfigurationException {
 		Element ravenElement = e.getChild("raven");
 		ClassLoader cl = Tools.class.getClassLoader();
 		if (ravenElement != null) {
@@ -251,9 +251,9 @@ public class Tools {
 			}
 		}
 		String className = e.getChild("class").getTextTrim();
-		Class<? extends Service> c = (Class<? extends Service>) cl
+		Class<? extends Activity> c = (Class<? extends Activity>) cl
 				.loadClass(className);
-		Service<Object> service = c.newInstance();
+		Activity<Object> service = c.newInstance();
 
 		Element ipElement = e.getChild("inputMap");
 		for (Element mapElement : (List<Element>) (ipElement.getChildren("map"))) {
@@ -431,7 +431,7 @@ public class Tools {
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public static Element serviceAsXML(Service<?> s) throws JDOMException,
+	public static Element activityAsXML(Activity<?> s) throws JDOMException,
 			IOException {
 		Element e = new Element("service");
 

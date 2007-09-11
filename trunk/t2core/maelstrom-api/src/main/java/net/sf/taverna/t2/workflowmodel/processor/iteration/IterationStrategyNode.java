@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Interface for nodes within an iteration strategy layer

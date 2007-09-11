@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 
@@ -9,9 +9,9 @@ import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
  * @author Tom Oinn
  * 
  */
-public class ServiceOutputPort extends AbstractOutputPort {
+public class ActivityOutputPort extends AbstractOutputPort {
 
-	public ServiceOutputPort(String portName, int portDepth, int granularDepth) {
+	public ActivityOutputPort(String portName, int portDepth, int granularDepth) {
 		super(portName, portDepth, granularDepth);
 	}
 

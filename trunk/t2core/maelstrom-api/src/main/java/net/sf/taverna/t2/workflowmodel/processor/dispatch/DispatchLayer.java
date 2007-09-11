@@ -5,8 +5,8 @@ import java.util.concurrent.BlockingQueue;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 
 /**
  * Layers within the dispatch stack define a control flow to handle dispatch of
@@ -66,7 +66,7 @@ public interface DispatchLayer<ConfigurationType> {
 	 * @param services
 	 */
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ServiceAnnotationContainer> services);
+			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> services);
 
 	/**
 	 * Receive a single job and associated set of services from the layer above
@@ -74,7 +74,7 @@ public interface DispatchLayer<ConfigurationType> {
 	 * @param job
 	 * @param services
 	 */
-	public void receiveJob(Job job, List<? extends ServiceAnnotationContainer> services);
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services);
 
 	/**
 	 * Receive a single error reference from the layer below

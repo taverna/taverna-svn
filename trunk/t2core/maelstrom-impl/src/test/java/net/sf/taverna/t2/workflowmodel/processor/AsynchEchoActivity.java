@@ -4,19 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.workflowmodel.processor.service.AbstractAsynchronousService;
-import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousService;
-import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousServiceCallback;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
-public class AsynchEchoService extends
-		AbstractAsynchronousService<EchoConfig> implements
-		AsynchronousService<EchoConfig> {
+public class AsynchEchoActivity extends
+		AbstractAsynchronousActivity<EchoConfig> implements
+		AsynchronousActivity<EchoConfig> {
 
 	private EchoConfig config;
 	
 	@Override
-	public void configure(EchoConfig conf) throws ServiceConfigurationException {
+	public void configure(EchoConfig conf) throws ActivityConfigurationException {
 		addInput("input",0);
 		addOutput("output",0,0);
 		this.config = conf;
@@ -24,7 +24,7 @@ public class AsynchEchoService extends
 
 	@Override
 	public void executeAsynch(Map<String, EntityIdentifier> data,
-			AsynchronousServiceCallback callback) {
+			AsynchronousActivityCallback callback) {
 		EntityIdentifier inputID = data.get("input");
 		Map<String, EntityIdentifier> outputMap = new HashMap<String, EntityIdentifier>();
 		outputMap.put("output", inputID);

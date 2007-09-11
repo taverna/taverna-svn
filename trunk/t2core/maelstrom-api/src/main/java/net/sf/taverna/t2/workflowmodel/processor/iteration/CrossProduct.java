@@ -9,7 +9,7 @@ import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * A cross product node combines its inputs in an 'all against all' manner. When

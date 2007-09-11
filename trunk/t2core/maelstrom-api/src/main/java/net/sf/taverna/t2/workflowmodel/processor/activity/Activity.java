@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +15,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * @author Tom Oinn
  * 
  */
-public interface Service<ConfigurationType> {
+public interface Activity<ConfigurationType> {
 
 	/**
 	 * Each Service implementation stores configuration within a bean of type
@@ -31,11 +31,11 @@ public interface Service<ConfigurationType> {
 	 * method is called, passing in the configuration bean returned by
 	 * getConfiguration()
 	 * 
-	 * @throws ServiceConfigurationException
+	 * @throws ActivityConfigurationException
 	 *             if a problem occurs when configuring the service
 	 */
 	public void configure(ConfigurationType conf)
-			throws ServiceConfigurationException;
+			throws ActivityConfigurationException;
 
 	/**
 	 * A Service contains a set of named input ports. Names must be unique

@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Acts as the input to a stage within the iteration strategy, passes all jobs

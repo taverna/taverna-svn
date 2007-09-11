@@ -11,12 +11,12 @@ import java.util.concurrent.BlockingQueue;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Dispatch layer which consumes a queue of events and fires off a fixed number
@@ -89,7 +89,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ServiceAnnotationContainer> services) {
+			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> services) {
 		StateModel model = new StateModel(owningProcess, queue, services,
 				config.getMaximumJobs());
 		stateMap.put(owningProcess, model);
@@ -100,7 +100,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		return DispatchLayerAction.FORBIDDEN;
 	}
 
-	public void receiveJob(Job job, List<? extends ServiceAnnotationContainer> services) {
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -143,10 +143,10 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private BlockingQueue<Event> queue;
 
-		private List<? extends ServiceAnnotationContainer> services;
+		private List<? extends ActivityAnnotationContainer> services;
 
 		public StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends ServiceAnnotationContainer> services, int maxJobs) {
+				List<? extends ActivityAnnotationContainer> services, int maxJobs) {
 			this.queue = queue;
 			this.services = services;
 			this.maximumJobs = maxJobs;

@@ -10,14 +10,14 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
-import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousService;
-import net.sf.taverna.t2.workflowmodel.processor.service.AsynchronousServiceCallback;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 /**
  * Context free invoker layer, does not pass index arrays of jobs into service
@@ -93,16 +93,16 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, List<? extends ServiceAnnotationContainer> annotatedServices) {
-		for (ServiceAnnotationContainer sac : annotatedServices) {
-			Service<?> s = sac.getService();
-			if (s instanceof AsynchronousService) {
+	public void receiveJob(final Job job, List<? extends ActivityAnnotationContainer> annotatedServices) {
+		for (ActivityAnnotationContainer sac : annotatedServices) {
+			Activity<?> s = sac.getService();
+			if (s instanceof AsynchronousActivity) {
 
 				// The service is an AsynchronousService so we invoke it with an
 				// AsynchronousServiceCallback object containing appropriate
 				// callback methods to push results, completions and failures
 				// back to the invocation layer.
-				final AsynchronousService<?> as = (AsynchronousService<?>) s;
+				final AsynchronousActivity<?> as = (AsynchronousActivity<?>) s;
 
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire
@@ -124,7 +124,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 				// Create a callback object to receive events, completions and
 				// failure notifications from the service
-				AsynchronousServiceCallback callback = new AsynchronousServiceCallback() {
+				AsynchronousActivityCallback callback = new AsynchronousActivityCallback() {
 
 					private boolean sentJob = false;
 

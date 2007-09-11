@@ -10,7 +10,7 @@ import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
  * Abstract superclass for implementations of IterationStrategyNode, adds logic

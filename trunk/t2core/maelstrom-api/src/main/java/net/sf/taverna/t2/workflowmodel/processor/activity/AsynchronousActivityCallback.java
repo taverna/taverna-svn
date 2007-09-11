@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * @author Tom Oinn
  * 
  */
-public interface AsynchronousServiceCallback {
+public interface AsynchronousActivityCallback {
 
 	/**
 	 * Services use a DataManager instance to resolve the identifiers in the

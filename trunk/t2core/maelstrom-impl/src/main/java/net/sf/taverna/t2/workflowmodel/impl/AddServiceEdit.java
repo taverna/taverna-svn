@@ -5,7 +5,7 @@ import java.util.List;
 import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * Add a new Service to a Processor, adds the new Service at the end of the
@@ -18,7 +18,7 @@ public class AddServiceEdit extends AbstractProcessorEdit {
 
 	private ServiceAnnotationContainerImpl serviceToAdd;
 
-	public AddServiceEdit(Processor p, Service<?> s) {
+	public AddServiceEdit(Processor p, Activity<?> s) {
 		super(p);
 		this.serviceToAdd = new ServiceAnnotationContainerImpl(s);
 	}

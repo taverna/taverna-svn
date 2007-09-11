@@ -17,7 +17,7 @@ import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -60,7 +60,7 @@ public class ModelTranslator {
 			try {
 				ServiceTranslator<?> translator = ServiceTranslatorFactory
 						.getTranslator(t1Processor.getClass());
-				Service<?> service = translator.doTranslation(t1Processor);
+				Activity<?> service = translator.doTranslation(t1Processor);
 				Edit<Processor> addProcessorEdit = edits
 						.createProcessorFromService(dataflow, service);
 				try {
@@ -87,7 +87,7 @@ public class ModelTranslator {
 	 * @param t2Processor
 	 * @throws EditException
 	 */
-	private static void createOutputPorts(Service<?> service,
+	private static void createOutputPorts(Activity<?> service,
 			Processor t2Processor) throws EditException {
 		Set<OutputPort> outputPorts = service.getOutputPorts();
 		for (OutputPort outputPort : outputPorts) {
@@ -104,7 +104,7 @@ public class ModelTranslator {
 	 * @param t2Processor
 	 * @throws EditException
 	 */
-	private static void createInputPorts(Service<?> service,
+	private static void createInputPorts(Activity<?> service,
 			Processor t2Processor) throws EditException {
 		Set<InputPort> inputPorts = service.getInputPorts();
 		for (InputPort inputPort : inputPorts) {

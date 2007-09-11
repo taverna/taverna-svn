@@ -2,9 +2,9 @@ package net.sf.taverna.t2.workflowmodel;
 
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
 
 /**
  * Defines the set of all available edit actions over a workflow model. This is
@@ -51,7 +51,7 @@ public interface Edits {
 	 *            a single service to build the processor around
 	 */
 	public Edit<Processor> createProcessorFromService(Dataflow dataflow,
-			Service<?> service);
+			Activity<?> service);
 
 	/**
 	 * Connect the output port of the specified processor to a target input
@@ -103,7 +103,7 @@ public interface Edits {
 	 *            service to add
 	 */
 	public Edit<Processor> getAddServiceEdit(Processor processor,
-			Service<?> service);
+			Activity<?> service);
 
 	/**
 	 * Build a new input port on a processor, creating matching ports in the

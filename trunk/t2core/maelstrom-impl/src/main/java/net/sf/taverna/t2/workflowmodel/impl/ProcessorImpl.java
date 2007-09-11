@@ -18,14 +18,14 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -115,7 +115,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 			}
 
 			@Override
-			protected List<? extends ServiceAnnotationContainer> getServices() {
+			protected List<? extends ActivityAnnotationContainer> getServices() {
 				return ProcessorImpl.this.getServiceList();
 			}
 
@@ -241,7 +241,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		for (ServiceAnnotationContainerImpl saci : serviceList) {
 			Element containerElement = new Element("servicecontainer");
 			// Add service detail element
-			Element serviceElement = Tools.serviceAsXML(saci.getService());
+			Element serviceElement = Tools.activityAsXML(saci.getService());
 			containerElement.addContent(serviceElement);
 			// Add annotations on service container objects
 			Tools.injectAnnotations(containerElement, saci);
@@ -255,7 +255,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 	public void configureFromElement(Element e)
 			throws ArtifactNotFoundException, ArtifactStateException,
 			ClassNotFoundException, InstantiationException,
-			IllegalAccessException, ServiceConfigurationException {
+			IllegalAccessException, ActivityConfigurationException {
 		setName(e.getAttributeValue("name"));
 
 		// Pick up any annotations on the top level processor object
@@ -289,7 +289,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		for (Element serviceElement : (List<Element>) e.getChild("services")
 				.getChildren("servicecontainer")) {
 			ServiceAnnotationContainerImpl sac = new ServiceAnnotationContainerImpl(
-					Tools.buildService(serviceElement.getChild("service")));
+					Tools.buildActivity(serviceElement.getChild("service")));
 			// Pick up annotations on service container
 			Tools.populateAnnotationsFromParent(serviceElement, sac);
 			serviceList.add(sac);
@@ -360,7 +360,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		return Collections.unmodifiableList(outputPorts);
 	}
 
-	public List<? extends ServiceAnnotationContainer> getServiceList() {
+	public List<? extends ActivityAnnotationContainer> getServiceList() {
 		return Collections.unmodifiableList(serviceList);
 	}
 

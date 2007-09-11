@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.TreeCache;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import junit.framework.TestCase;
 
 public class TreeCacheTest extends TestCase {

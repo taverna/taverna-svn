@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 /**
  * Thrown when attempting to configure a Service instance with an invalid
@@ -8,25 +8,25 @@ package net.sf.taverna.t2.workflowmodel.processor.service;
  * @author Tom Oinn
  * 
  */
-public class ServiceConfigurationException extends Exception {
+public class ActivityConfigurationException extends Exception {
 
 	private static final long serialVersionUID = -1000005633224821831L;
 
-	public ServiceConfigurationException() {
+	public ActivityConfigurationException() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServiceConfigurationException(String arg0) {
+	public ActivityConfigurationException(String arg0) {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServiceConfigurationException(Throwable arg0) {
+	public ActivityConfigurationException(Throwable arg0) {
 		super(arg0);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ServiceConfigurationException(String arg0, Throwable arg1) {
+	public ActivityConfigurationException(String arg0, Throwable arg1) {
 		super(arg0, arg1);
 		// TODO Auto-generated constructor stub
 	}

@@ -8,12 +8,12 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.impl.CreateProcessorInputPortEdit;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DummyInvokerLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceConfigurationException;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -25,7 +25,7 @@ public class ProcessorSerializationTest extends TestCase {
 			ArtifactNotFoundException, ArtifactStateException,
 			ClassNotFoundException, InstantiationException,
 			IllegalAccessException, JDOMException, IOException,
-			ServiceConfigurationException {
+			ActivityConfigurationException {
 
 		ProcessorImpl p = new ProcessorImpl();
 		DispatchStackImpl stack = p.getDispatchStack();

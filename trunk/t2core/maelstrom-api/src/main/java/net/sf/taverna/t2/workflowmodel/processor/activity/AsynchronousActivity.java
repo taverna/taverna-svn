@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * @author Tom Oinn
  * 
  */
-public interface AsynchronousService<T> extends Service<T> {
+public interface AsynchronousActivity<T> extends Activity<T> {
 
 	/**
 	 * Invoke the service in an asynchronous manner. The service uses the
@@ -25,6 +25,6 @@ public interface AsynchronousService<T> extends Service<T> {
 	 * events back to the dispatch stack.
 	 */
 	public void executeAsynch(Map<String, EntityIdentifier> data,
-			AsynchronousServiceCallback callback);
+			AsynchronousActivityCallback callback);
 
 }

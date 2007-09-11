@@ -15,12 +15,12 @@ import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
-import net.sf.taverna.t2.workflowmodel.processor.service.Job;
-import net.sf.taverna.t2.workflowmodel.processor.service.ServiceAnnotationContainer;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -49,7 +49,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 * 
 	 * @return list of services to be used by jobs in this dispatch stack
 	 */
-	protected abstract List<? extends ServiceAnnotationContainer> getServices();
+	protected abstract List<? extends ActivityAnnotationContainer> getServices();
 
 	/**
 	 * Called when an event (Completion or Job) hits the top of the dispatch

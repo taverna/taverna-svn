@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,8 +30,8 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * @param <ConfigType>
  *            type of configuration object to be used to hold config information
  */
-public abstract class AbstractService<ConfigType> extends
-		AbstractAnnotatedThing implements Service<ConfigType> {
+public abstract class AbstractActivity<ConfigType> extends
+		AbstractAnnotatedThing implements Activity<ConfigType> {
 
 	protected Map<String, String> inputPortMapping = new HashMap<String, String>();
 
@@ -42,7 +42,7 @@ public abstract class AbstractService<ConfigType> extends
 	protected Set<InputPort> inputPorts = new HashSet<InputPort>();
 
 	public abstract void configure(ConfigType conf)
-			throws ServiceConfigurationException;
+			throws ActivityConfigurationException;
 
 	public abstract ConfigType getConfiguration();
 
@@ -63,11 +63,11 @@ public abstract class AbstractService<ConfigType> extends
 	}
 
 	protected void addInput(String portName, int portDepth) {
-		inputPorts.add(new ServiceInputPort(portName, portDepth));
+		inputPorts.add(new ActivityInputPort(portName, portDepth));
 	}
 
 	protected void addOutput(String portName, int portDepth, int granularDepth) {
-		outputPorts.add(new ServiceOutputPort(portName, portDepth,
+		outputPorts.add(new ActivityOutputPort(portName, portDepth,
 				granularDepth));
 	}
 

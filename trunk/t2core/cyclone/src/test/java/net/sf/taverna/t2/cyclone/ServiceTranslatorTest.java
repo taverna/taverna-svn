@@ -6,7 +6,7 @@ import net.sf.taverna.t2.cyclone.translators.BeanshellServiceTranslator;
 import net.sf.taverna.t2.cyclone.translators.ServiceTranslator;
 import net.sf.taverna.t2.cyclone.translators.ServiceTranslatorFactory;
 import net.sf.taverna.t2.cyclone.translators.ServiceTranslatorNotFoundException;
-import net.sf.taverna.t2.workflowmodel.processor.service.Service;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -41,7 +41,7 @@ public class ServiceTranslatorTest extends TranslatorTestHelper {
 		ServiceTranslator<?> translator = ServiceTranslatorFactory
 				.getTranslator(p.getClass());
 
-		Service<?> s = translator.doTranslation(p);
+		Activity<?> s = translator.doTranslation(p);
 
 		assertEquals(BeanshellService.class, s.getClass());
 	}

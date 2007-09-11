@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.service;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import net.sf.taverna.t2.annotation.Annotated;
 
@@ -15,7 +15,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * @author Tom Oinn
  * 
  */
-public interface ServiceAnnotationContainer extends Annotated {
+public interface ActivityAnnotationContainer extends Annotated {
 
 	/**
 	 * Each service annotation container wraps up a single instance of the
@@ -23,6 +23,6 @@ public interface ServiceAnnotationContainer extends Annotated {
 	 * 
 	 * @return the service to which these annotations are applied
 	 */
-	Service<?> getService();
+	Activity<?> getService();
 
 }
