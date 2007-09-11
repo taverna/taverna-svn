@@ -39,7 +39,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 /**
  * 
  * Contains static methods concerned with legacy Processor construction and XML
- * handling for the various configurable types such as Service and
+ * handling for the various configurable types such as Activity and
  * DispatchLayer.
  * 
  * @author Tom Oinn
@@ -48,38 +48,38 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 public class Tools {
 
 	/**
-	 * Construct a new Processor with a single Service and overall processor
-	 * inputs and outputs mapped to the service inputs and outputs. This is
+	 * Construct a new Processor with a single Activity and overall processor
+	 * inputs and outputs mapped to the activity inputs and outputs. This is
 	 * intended to be equivalent to the processor creation in Taverna1 where the
-	 * concepts of Processor and Service was somewhat confused; it also inserts
+	 * concepts of Processor and Activity were somewhat confused; it also inserts
 	 * retry, parallelize and failover layers configured as a Taverna1 process
 	 * would be.
 	 * <p>
-	 * Modifies the given service object, adding the mappings for input and
+	 * Modifies the given acivity object, adding the mappings for input and
 	 * output port names (these will all be fooport->fooport but they're still
 	 * needed)
 	 * 
-	 * @param service
+	 * @param activity the Activity to use to build the new processor around
 	 * @return
 	 */
-	public static ProcessorImpl buildFromActivity(Activity<?> service)
+	public static ProcessorImpl buildFromActivity(Activity<?> activity)
 			throws EditException {
 		ProcessorImpl result = new ProcessorImpl();
 		// Add the Service to the processor
-		result.serviceList.add(new ServiceAnnotationContainerImpl(service));
+		result.serviceList.add(new ServiceAnnotationContainerImpl(activity));
 		// Create processor inputs and outputs corresponding to service inputs
 		// and outputs and set the mappings in the Service object.
-		service.getInputPortMapping().clear();
-		service.getOutputPortMapping().clear();
-		for (InputPort ip : service.getInputPorts()) {
+		activity.getInputPortMapping().clear();
+		activity.getOutputPortMapping().clear();
+		for (InputPort ip : activity.getInputPorts()) {
 			new CreateProcessorInputPortEdit(result, ip.getName(), ip
 					.getDepth()).doEdit();
-			service.getInputPortMapping().put(ip.getName(), ip.getName());
+			activity.getInputPortMapping().put(ip.getName(), ip.getName());
 		}
-		for (OutputPort op : service.getOutputPorts()) {
+		for (OutputPort op : activity.getOutputPorts()) {
 			new CreateProcessorOutputPortEdit(result, op.getName(), op
 					.getDepth(), op.getGranularDepth()).doEdit();
-			service.getOutputPortMapping().put(op.getName(), op.getName());
+			activity.getOutputPortMapping().put(op.getName(), op.getName());
 		}
 		DispatchStackImpl stack = result.dispatchStack;
 		// Top level parallelize layer
@@ -253,29 +253,29 @@ public class Tools {
 		String className = e.getChild("class").getTextTrim();
 		Class<? extends Activity> c = (Class<? extends Activity>) cl
 				.loadClass(className);
-		Activity<Object> service = c.newInstance();
+		Activity<Object> activity = c.newInstance();
 
 		Element ipElement = e.getChild("inputMap");
 		for (Element mapElement : (List<Element>) (ipElement.getChildren("map"))) {
 			String processorInputName = mapElement.getAttributeValue("from");
-			String serviceInputName = mapElement.getAttributeValue("to");
-			service.getInputPortMapping().put(processorInputName,
-					serviceInputName);
+			String activityInputName = mapElement.getAttributeValue("to");
+			activity.getInputPortMapping().put(processorInputName,
+					activityInputName);
 		}
 
 		Element opElement = e.getChild("outputMap");
 		for (Element mapElement : (List<Element>) (opElement.getChildren("map"))) {
-			String serviceOutputName = mapElement.getAttributeValue("from");
+			String activityOutputName = mapElement.getAttributeValue("from");
 			String processorOutputName = mapElement.getAttributeValue("to");
-			service.getOutputPortMapping().put(serviceOutputName,
+			activity.getOutputPortMapping().put(activityOutputName,
 					processorOutputName);
 		}
 
 		// Handle the configuration of the service
 		Element configElement = e.getChild("java");
 		Object configObject = createBean(configElement, cl);
-		service.configure(configObject);
-		return service;
+		activity.configure(configObject);
+		return activity;
 	}
 
 	/**
@@ -426,47 +426,47 @@ public class Tools {
 	 * implementation. Relies on the XMLEncoder based serialization of the
 	 * configuration bean to store config data.
 	 * 
-	 * @param s
+	 * @param a
 	 * @return
 	 * @throws JDOMException
 	 * @throws IOException
 	 */
-	public static Element activityAsXML(Activity<?> s) throws JDOMException,
+	public static Element activityAsXML(Activity<?> a) throws JDOMException,
 			IOException {
 		Element e = new Element("service");
 
-		ClassLoader cl = s.getClass().getClassLoader();
+		ClassLoader cl = a.getClass().getClassLoader();
 		if (cl instanceof LocalArtifactClassLoader) {
 			e.addContent(ravenElement((LocalArtifactClassLoader) cl));
 		}
 		Element classNameElement = new Element("class");
-		classNameElement.setText(s.getClass().getName());
+		classNameElement.setText(a.getClass().getName());
 		e.addContent(classNameElement);
 
 		// Write out the mappings (processor input -> service input, service
 		// output -> processor output)
 		Element ipElement = new Element("inputMap");
-		for (String processorInputName : s.getInputPortMapping().keySet()) {
+		for (String processorInputName : a.getInputPortMapping().keySet()) {
 			Element mapElement = new Element("map");
 			mapElement.setAttribute("from", processorInputName);
-			mapElement.setAttribute("to", s.getInputPortMapping().get(
+			mapElement.setAttribute("to", a.getInputPortMapping().get(
 					processorInputName));
 			ipElement.addContent(mapElement);
 		}
 		e.addContent(ipElement);
 
 		Element opElement = new Element("outputMap");
-		for (String serviceOutputName : s.getOutputPortMapping().keySet()) {
+		for (String activityOutputName : a.getOutputPortMapping().keySet()) {
 			Element mapElement = new Element("map");
-			mapElement.setAttribute("from", serviceOutputName);
-			mapElement.setAttribute("to", s.getOutputPortMapping().get(
-					serviceOutputName));
+			mapElement.setAttribute("from", activityOutputName);
+			mapElement.setAttribute("to", a.getOutputPortMapping().get(
+					activityOutputName));
 			opElement.addContent(mapElement);
 		}
 		e.addContent(opElement);
 
 		// Get element for configuration
-		Object o = s.getConfiguration();
+		Object o = a.getConfiguration();
 		Element configElement = beanAsElement(o);
 		e.addContent(configElement);
 
