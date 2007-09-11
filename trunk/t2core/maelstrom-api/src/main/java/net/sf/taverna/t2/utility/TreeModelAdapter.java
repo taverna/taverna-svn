@@ -19,16 +19,17 @@ public final class TreeModelAdapter {
 
 	private class TypedListenerPair {
 		@SuppressWarnings("unchecked")
+		TypedTreeModelListener typedListener;
+		
+		TreeModelListener untypedListener;
+		
+		@SuppressWarnings("unchecked")
 		TypedListenerPair(TypedTreeModelListener typedListener,
 				TreeModelListener untypedListener) {
 			this.typedListener = typedListener;
 			this.untypedListener = untypedListener;
 		}
 
-		@SuppressWarnings("unchecked")
-		TypedTreeModelListener typedListener;
-
-		TreeModelListener untypedListener;
 	}
 
 	private static Set<TypedListenerPair> mapping = new HashSet<TypedListenerPair>();
