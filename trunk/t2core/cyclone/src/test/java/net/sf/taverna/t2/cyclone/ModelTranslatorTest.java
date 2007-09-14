@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-07 16:39:32 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-09-14 13:21:02 $
+ *               by   $Author: davidwithers $
  * Created on Sep 7, 2007
  *****************************************************************/
 package net.sf.taverna.t2.cyclone;
@@ -64,7 +64,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 
 	/**
 	 * Test method for
-	 * {@link net.sf.taverna.t2.cyclone.ModelTranslator#doTranslation(org.embl.ebi.escience.scufl.ScuflModel)}.
+	 * {@link net.sf.taverna.t2.cyclone.WorkflowModelTranslator#doTranslation(org.embl.ebi.escience.scufl.ScuflModel)}.
 	 * 
 	 * @throws IOException
 	 * @throws XScuflFormatException

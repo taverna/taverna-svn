@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cyclone.translators.ServiceTranslator;
-import net.sf.taverna.t2.cyclone.translators.ServiceTranslatorFactory;
-import net.sf.taverna.t2.cyclone.translators.ServiceTranslatorNotFoundException;
+import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
+import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorFactory;
+import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorNotFoundException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -28,7 +28,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  * @author Stuart Owen
  *
  */
-public class ModelTranslator {
+public class WorkflowModelTranslator {
 
 	private static Edits edits = new EditsImpl();
 
@@ -58,24 +58,24 @@ public class ModelTranslator {
 		for (org.embl.ebi.escience.scufl.Processor t1Processor : scuflModel
 				.getProcessors()) {
 			try {
-				ServiceTranslator<?> translator = ServiceTranslatorFactory
+				ActivityTranslator<?> translator = ActivityTranslatorFactory
 						.getTranslator(t1Processor.getClass());
-				Activity<?> service = translator.doTranslation(t1Processor);
+				Activity<?> activity = translator.doTranslation(t1Processor);
 				Edit<Processor> addProcessorEdit = edits
-						.createProcessorFromService(dataflow, service);
+						.createProcessorFromService(dataflow, activity);
 				try {
 					Processor t2Processor = addProcessorEdit.doEdit();
 					processorMap.put(t1Processor, t2Processor);
 
-					createInputPorts(service, t2Processor);
+					createInputPorts(activity, t2Processor);
 
-					createOutputPorts(service, t2Processor);
+					createOutputPorts(activity, t2Processor);
 
 				} catch (EditException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			} catch (ServiceTranslatorNotFoundException e) {
+			} catch (ActivityTranslatorNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -83,13 +83,13 @@ public class ModelTranslator {
 	}
 
 	/**
-	 * @param service
+	 * @param activity
 	 * @param t2Processor
 	 * @throws EditException
 	 */
-	private static void createOutputPorts(Activity<?> service,
+	private static void createOutputPorts(Activity<?> activity,
 			Processor t2Processor) throws EditException {
-		Set<OutputPort> outputPorts = service.getOutputPorts();
+		Set<OutputPort> outputPorts = activity.getOutputPorts();
 		for (OutputPort outputPort : outputPorts) {
 			Edit<Processor> addOutputPortEdit = edits
 					.getCreateProcessorOutputPortEdit(t2Processor, outputPort
@@ -100,13 +100,13 @@ public class ModelTranslator {
 	}
 
 	/**
-	 * @param service
+	 * @param activity
 	 * @param t2Processor
 	 * @throws EditException
 	 */
-	private static void createInputPorts(Activity<?> service,
+	private static void createInputPorts(Activity<?> activity,
 			Processor t2Processor) throws EditException {
-		Set<InputPort> inputPorts = service.getInputPorts();
+		Set<InputPort> inputPorts = activity.getInputPorts();
 		for (InputPort inputPort : inputPorts) {
 			Edit<Processor> addInputPortEdit = edits
 					.getCreateProcessorInputPortEdit(t2Processor, inputPort
