@@ -25,36 +25,36 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-14 13:21:02 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-09-17 09:29:26 $
+ *               by   $Author: sowen70 $
  * Created on Sep 7, 2007
  *****************************************************************/
 package net.sf.taverna.t2.cyclone;
 
-//import static org.junit.Assert.assertTrue;
-//
+import static org.junit.Assert.assertTrue; //
 import java.io.IOException;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import net.sf.taverna.t2.workflowmodel.Dataflow;
-//import net.sf.taverna.t2.workflowmodel.Datalink;
-//import net.sf.taverna.t2.workflowmodel.Port;
-//import net.sf.taverna.t2.workflowmodel.Processor;
-//
+import java.util.Arrays;
+import java.util.List;
+
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Port;
+import net.sf.taverna.t2.workflowmodel.Processor;
+
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.MalformedNameException;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
-//import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.junit.Test;
+
 /**
  * @author David Withers
  * @author Stuart Owen
@@ -84,28 +84,43 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 			MalformedNameException, ConcurrencyConstraintCreationException,
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
 			IOException {
-//		ScuflModel model = loadScufl("translation-test.xml");
-//		Dataflow dataflow = ModelTranslator.doTranslation(model);
-//		
-//		List<String> processorNames = Arrays.asList("processor_a", "processor_b");
-//		List<String> portNames = Arrays.asList("input_1", "input_1", "input_2", "output_1", "output_1", "output_2");
-//
-//		for (Processor processor : dataflow.getProcessors()) {
-//			assertTrue(processorNames.remove(processor.getLocalName()));
-//			for (Port inputPort : processor.getInputPorts()) {
-//				assertTrue(portNames.remove(inputPort.getName()));
-//			}
-//			for (Port outputPort : processor.getOutputPorts()) {
-//				assertTrue(portNames.remove(outputPort.getName()));
-//			}
-//		}
-//		assertTrue(portNames.isEmpty());
-//		assertTrue(processorNames.isEmpty());
-//		
-//		for (Datalink datalink : dataflow.getLinks()) {
-//			datalink.getSource();
-//		}
-//		
+
+		boolean runTest = false; // this will be removed once the test is
+									// working. It currently relies on skeleton
+									// code being implemented. This flag allows
+									// code to be committed during this process
+									// without the need to keep
+									// commenting/uncommenting this test.
+
+		if (runTest) {
+
+			ScuflModel model = loadScufl("translation-test.xml");
+			Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+
+			List<String> processorNames = Arrays.asList("processor_a",
+					"processor_b");
+			List<String> portNames = Arrays.asList("input_1", "input_1",
+					"input_2", "output_1", "output_1", "output_2");
+
+			for (Processor processor : dataflow.getProcessors()) {
+				assertTrue(processorNames.remove(processor.getLocalName()));
+				for (Port inputPort : processor.getInputPorts()) {
+					assertTrue(portNames.remove(inputPort.getName()));
+				}
+				for (Port outputPort : processor.getOutputPorts()) {
+					assertTrue(portNames.remove(outputPort.getName()));
+				}
+			}
+			assertTrue(portNames.isEmpty());
+			assertTrue(processorNames.isEmpty());
+
+			for (Datalink datalink : dataflow.getLinks()) {
+				datalink.getSource();
+			}
+		}
+
+		return;
+
 	}
 
 }
