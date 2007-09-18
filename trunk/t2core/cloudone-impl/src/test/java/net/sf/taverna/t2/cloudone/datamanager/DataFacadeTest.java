@@ -104,6 +104,16 @@ public class DataFacadeTest {
 	}
 	
 	@Test
+	public void registerBigString() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException, IOException, RetrievalException, NotFoundException {
+		String str = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzx"
+				+ "cvbnmqwertyuiopasdfghjklzxcvbnmqwertyuioipasdfghjklzxcvbnmq";
+		EntityIdentifier entity = facade.register(str);
+		InputStream stream = (InputStream) facade.resolve(entity);
+		String newString = IOUtils.toString(stream);
+		assertEquals(str, newString);
+	}
+	
+	@Test
 	public void registerStream() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException,
