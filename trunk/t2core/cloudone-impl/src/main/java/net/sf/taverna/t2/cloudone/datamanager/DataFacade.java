@@ -159,8 +159,13 @@ public class DataFacade {
 			String str = (String) obj;
 			if (str.length() > dManager.getMaxIDLength()) {
 				//TODO: turn it into blob and store
+				BlobStore blobStore = dManager.getBlobStore();
+				BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(str.getBytes("utf8"));
+				Set<ReferenceScheme> blobSet = Collections.singleton((ReferenceScheme)blobRef);
+				return dManager.registerDocument(blobSet);
+			} else {
+				return Literal.buildLiteral((String) obj);
 			}
-			return Literal.buildLiteral((String) obj);
 		} else if (obj instanceof byte[]) {
 			BlobStore blobStore = dManager.getBlobStore();
 			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore.storeFromBytes((byte[])obj);

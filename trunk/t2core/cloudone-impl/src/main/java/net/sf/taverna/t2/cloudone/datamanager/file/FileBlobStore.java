@@ -104,12 +104,23 @@ public class FileBlobStore implements BlobStore {
 	private File fileById(String namespace, String id) {
 		File nsDir = new File(path, namespace);
 		File typeDir = new File(nsDir, "blob");
-		typeDir.mkdirs();
-		if (! typeDir.isDirectory()) {
-			throw new IllegalStateException("Invalid directory" + typeDir);
-		}
+		//typeDir.mkdirs();
+//		if (! typeDir.isDirectory()) {
+//			throw new IllegalStateException("Invalid directory" + typeDir);
+//		}
 		String fileName = id + ".blob";
-		return new File(typeDir, fileName);
+		return new File(parentDirectory(typeDir, id), fileName);
+		//return new File(typeDir, fileName);
+	}
+	
+	private File parentDirectory(File typeDir, String id) {
+		String newName = id.substring(0, 2);
+		File dirs = new File (typeDir, newName);
+		dirs.mkdirs();
+		if (! dirs.isDirectory()) {
+			throw new IllegalStateException("Invalid directory" + dirs);
+		}
+		return dirs;
 	}
 	
 	private File fileByReference(BlobReferenceScheme<?> reference) {
