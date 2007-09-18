@@ -26,6 +26,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * the action of a custom dispatch stack layer (which you will also provide)
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  * 
  * @param <ConfigType>
  *            type of configuration object to be used to hold config information
@@ -80,6 +81,33 @@ public abstract class AbstractActivity<ConfigType> extends
 	 */
 	protected void addOutput(String portName, int portDepth) {
 		addOutput(portName, portDepth, portDepth);
+	}
+	
+	/**
+	 * <p>
+	 * Simplifies configuring the Activity input and output ports if its
+	 * ConfigType is an implementation of {@link ActivityConfigurationBean}
+	 * </p>
+	 * <p>
+	 * Its quite reasonable that the ConfigType does not implement this interface,
+	 * in which case configuring the ports will have to take place in that Activities specific
+	 * implementation of configure.
+	 * </p> 
+	 * @param configBean
+	 */
+	protected void configurePorts(ActivityConfigurationBean configBean) {
+		for (int i=0;i<configBean.getInputPortNames().size();i++) {
+			String name = configBean.getInputPortNames().get(i);
+			int depth = configBean.getInputPortDepth().get(i);
+			addInput(name, depth);
+		}
+		
+		for (int i=0;i<configBean.getOutputPortNames().size();i++) {
+			String name = configBean.getOutputPortNames().get(i);
+			int depth = configBean.getOutputPortDepth().get(i);
+			int granularDepth = configBean.getOutputPortGranularDepth().get(i);
+			addOutput(name, depth, granularDepth);
+		}
 	}
 
 }

@@ -1,32 +1,34 @@
 package net.sf.taverna.t2.cyclone;
 
 import static org.junit.Assert.assertEquals;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivity;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivityTranslator;
 import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
 import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorFactory;
 import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorNotFoundException;
+import net.sf.taverna.t2.cyclone.translators.BeanshellActivity;
+import net.sf.taverna.t2.cyclone.translators.BeanshellActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 import org.junit.Test;
 
-public class ActivityTranslatorTest extends TranslatorTestHelper {
+public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 
 	@Test
 	public void testActivityTranslatorFactory() throws Exception {
-		Class<? extends Processor> c = BeanshellProcessor.class;
+		Processor processor = new BeanshellProcessor(null,"beanshell","",new String[]{},new String[]{});
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
-				.getTranslator(c);
+				.getTranslator(processor);
 		assertEquals(BeanshellActivityTranslator.class, translator.getClass());
 	}
 
 	@Test(expected = ActivityTranslatorNotFoundException.class)
 	public void testUnknownActivityTranslator() throws Exception {
-		Class<? extends Processor> c = Processor.class;
-		ActivityTranslatorFactory.getTranslator(c);
+		Processor p = new DummyProcessor(); 
+		ActivityTranslatorFactory.getTranslator(p);
 	}
 
 	@Test
@@ -39,10 +41,17 @@ public class ActivityTranslatorTest extends TranslatorTestHelper {
 		assertEquals("beanshell", p.getName());
 
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
-				.getTranslator(p.getClass());
+				.getTranslator(p);
 
 		Activity<?> s = translator.doTranslation(p);
 
 		assertEquals(BeanshellActivity.class, s.getClass());
 	}
+	
+	@SuppressWarnings("serial")
+	private class DummyProcessor extends BeanshellProcessor {
+		public DummyProcessor() throws ProcessorCreationException, DuplicateProcessorNameException {
+			super(null,"beanshell","",new String[]{},new String[]{});
+		}
+	};
 }

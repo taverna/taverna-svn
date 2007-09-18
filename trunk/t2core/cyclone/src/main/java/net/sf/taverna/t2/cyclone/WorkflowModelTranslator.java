@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -59,7 +60,7 @@ public class WorkflowModelTranslator {
 				.getProcessors()) {
 			try {
 				ActivityTranslator<?> translator = ActivityTranslatorFactory
-						.getTranslator(t1Processor.getClass());
+						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
 				Edit<Processor> addProcessorEdit = edits
 						.createProcessorFromService(dataflow, activity);
@@ -76,6 +77,9 @@ public class WorkflowModelTranslator {
 					e.printStackTrace();
 				}
 			} catch (ActivityTranslatorNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ActivityConfigurationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

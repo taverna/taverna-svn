@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-17 09:29:26 $
+ * Last modified on   $Date: 2007-09-18 08:29:26 $
  *               by   $Author: sowen70 $
  * Created on Sep 7, 2007
  *****************************************************************/
@@ -93,7 +93,8 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 									// commenting/uncommenting this test.
 
 		if (runTest) {
-
+			System.setProperty("raven.eclipse", "true");
+			setUpRavenRepository();
 			ScuflModel model = loadScufl("translation-test.xml");
 			Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
 
@@ -118,9 +119,5 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 				datalink.getSource();
 			}
 		}
-
-		return;
-
 	}
-
 }

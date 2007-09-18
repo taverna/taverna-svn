@@ -25,16 +25,20 @@ public class ActivityTranslatorFactory {
 		map.put(BeanshellProcessor.class, new BeanshellActivityTranslator());
 	}
 	/**
+	 * <p>
 	 * Given a particular Processor class it returns an appropriate ActivityTranslator
+	 * </p>
 	 * 
 	 * @param processorClass - the class of the Processor requiring a ActivityTranslator
 	 * @return an appropriate ActivityTranslator
 	 * @throws ActivityTranslatorNotFoundException 
 	 */
-	public static ActivityTranslator<?> getTranslator(Class<? extends Processor> processorClass) throws ActivityTranslatorNotFoundException {
-		ActivityTranslator<?> result = map.get(processorClass);
+	public static ActivityTranslator<?> getTranslator(Processor processor) throws ActivityTranslatorNotFoundException {
 		
-		if (result == null) throw new ActivityTranslatorNotFoundException("Unable to find Activity Translator for:"+processorClass);
+		//FIXME: Use LocalArtifactClassLoader to determine the Artifact for the Processor. Then use Raven to get the corresponding Activity class mapped to that version of the Processor.
+		ActivityTranslator<?> result = map.get(processor.getClass());
+		
+		if (result == null) throw new ActivityTranslatorNotFoundException("Unable to find Activity Translator for:"+processor.getClass());
 		return result;
 	}
 }

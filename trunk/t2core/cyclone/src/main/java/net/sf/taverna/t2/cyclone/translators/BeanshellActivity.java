@@ -3,18 +3,28 @@ package net.sf.taverna.t2.cyclone.translators;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 //FIXME: this doesn't belong in this package. It should be moved to a separate module
-public class BeanshellActivity extends AbstractActivity<BeanshellConfigurationType> {
+/**
+ * <p>
+ * A semi-dummy Activity relating to Beanshell functionality. Eventually this class
+ * will not exist as part of t2core but will be part of a Beanshell activity artifact in its own right.
+ * </p>
+ * 
+ * @author Stuart Owen
+ */
+public class BeanshellActivity extends AbstractActivity<BeanshellActivityConfigurationBean> {
+
+	private BeanshellActivityConfigurationBean configurationBean;
 
 	@Override
-	public void configure(BeanshellConfigurationType conf)
+	public void configure(BeanshellActivityConfigurationBean configurationBeans)
 			throws ActivityConfigurationException {
-		// TODO Auto-generated method stub	
+		this.configurationBean=configurationBeans;
+		configurePorts(configurationBeans);	
+		
 	}
 
 	@Override
-	public BeanshellConfigurationType getConfiguration() {
-		// TODO Auto-generated method stub
-		return null;
+	public BeanshellActivityConfigurationBean getConfiguration() {
+		return configurationBean;
 	}
-
 }
