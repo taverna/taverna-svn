@@ -27,5 +27,4 @@ public interface ActivityTranslator<ConfigurationType> {
 	 * @throws ActivityConfigurationException
 	 */
 	public Activity<ConfigurationType> doTranslation(Processor processor) throws ActivityConfigurationException;
-	
 }

@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.annotation;
 
+import net.sf.taverna.t2.workflowmodel.Port;
+
 /**
  * A single MIME type, intended to be used to annotate an input or output port
  * within the workflow to denote the type within that system of data produced or
@@ -8,6 +10,7 @@ package net.sf.taverna.t2.annotation;
  * @author Tom Oinn
  * 
  */
+@AppliesTo(workflowObjectType={Port.class})
 public interface MimeType extends WorkflowAnnotation {
 
 	/**

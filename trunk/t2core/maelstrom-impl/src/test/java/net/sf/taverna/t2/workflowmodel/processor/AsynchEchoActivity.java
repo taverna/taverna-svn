@@ -1,8 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
@@ -17,8 +19,8 @@ public class AsynchEchoActivity extends
 	
 	@Override
 	public void configure(EchoConfig conf) throws ActivityConfigurationException {
-		addInput("input",0);
-		addOutput("output",0,0);
+		addInput("input",0, new HashSet<WorkflowAnnotation>());
+		addOutput("output",0,0, new HashSet<WorkflowAnnotation>());
 		this.config = conf;
 	}
 

@@ -2,12 +2,13 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.MimeType;
+
 /**
  * <p>
- * Defines a configuration type that relates directly to an {@link Activity} and in particular defines its
+ * Defines a configuration type that relates directly to an {@link Activity} and in particular defines details its
  * input and output ports.<br>
- * It is not enforced that an Activities configuration type should implement this interface,
- * but doing so allows the use of generic methods to set up the properties common to all activities. 
+ * An Activity that has its ports implicitly defined may define a ConfigType that implements this interface, but this is not enforced. 
  * </p>
  * <p>
  * The properties need to be accessible through matching getters and setters, to conform to being a Java Bean for the purposes
@@ -15,13 +16,13 @@ import java.util.List;
  * a given port by their position in each list. 
  * </p>
  * <p>
- * The abstract class {@link AbstractServiceConfigurationBean} facilitates in implementing this interfaces.
+ * The abstract class {@link ActivityPortDefinitionBeanImpl} facilitates in implementing this interface.
  * </p>
  * 
  * @author Stuart Owen
  *
  */
-public interface ActivityConfigurationBean {
+public interface ActivityPortDefinitionBean {
 
 	public List<String> getInputPortNames();
 	
@@ -43,4 +44,11 @@ public interface ActivityConfigurationBean {
 	
 	public void setOutputPortGranularDepth(List<Integer> outputGranularDepth);
 	
+	public List<MimeType> getOutputPortMimeTypes();
+	
+	public void setOutputPortMimeTypes(List<MimeType> mimeTypes);
+	
+	public List<MimeType> getInputPortMimeTypes();
+	
+	public void setInputPortMimeTypes(List<MimeType> mimeType);
 }

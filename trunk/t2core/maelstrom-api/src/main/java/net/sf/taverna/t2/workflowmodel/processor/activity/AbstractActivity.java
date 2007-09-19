@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.annotation.MimeType;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -63,13 +65,13 @@ public abstract class AbstractActivity<ConfigType> extends
 		return outputPorts;
 	}
 
-	protected void addInput(String portName, int portDepth) {
-		inputPorts.add(new ActivityInputPort(portName, portDepth));
+	protected void addInput(String portName, int portDepth, Set<WorkflowAnnotation> annotations) {
+		inputPorts.add(new ActivityInputPort(portName, portDepth,annotations));
 	}
 
-	protected void addOutput(String portName, int portDepth, int granularDepth) {
+	protected void addOutput(String portName, int portDepth, int granularDepth, Set<WorkflowAnnotation> annotations) {
 		outputPorts.add(new ActivityOutputPort(portName, portDepth,
-				granularDepth));
+				granularDepth,annotations));
 	}
 
 	/**
@@ -79,34 +81,40 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param portName
 	 * @param portDepth
 	 */
-	protected void addOutput(String portName, int portDepth) {
-		addOutput(portName, portDepth, portDepth);
+	protected void addOutput(String portName, int portDepth,Set<WorkflowAnnotation> annotations) {
+		addOutput(portName, portDepth, portDepth, annotations);
 	}
 	
 	/**
 	 * <p>
 	 * Simplifies configuring the Activity input and output ports if its
-	 * ConfigType is an implementation of {@link ActivityConfigurationBean}
+	 * ConfigType is an implementation of {@link ActivityPortDefinitionBean}
 	 * </p>
 	 * <p>
-	 * Its quite reasonable that the ConfigType does not implement this interface,
-	 * in which case configuring the ports will have to take place in that Activities specific
-	 * implementation of configure.
+	 * For an Activity that has ports that are defined dynamically it is natural that is
+	 * ConfigType will not implement this interface. 
 	 * </p> 
 	 * @param configBean
 	 */
-	protected void configurePorts(ActivityConfigurationBean configBean) {
+	protected void configurePorts(ActivityPortDefinitionBean configBean) {
 		for (int i=0;i<configBean.getInputPortNames().size();i++) {
+			
 			String name = configBean.getInputPortNames().get(i);
 			int depth = configBean.getInputPortDepth().get(i);
-			addInput(name, depth);
+			Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
+			MimeType mimeType = configBean.getInputPortMimeTypes().get(i);
+			annotations.add(mimeType);
+			addInput(name, depth, annotations);
 		}
 		
 		for (int i=0;i<configBean.getOutputPortNames().size();i++) {
 			String name = configBean.getOutputPortNames().get(i);
 			int depth = configBean.getOutputPortDepth().get(i);
 			int granularDepth = configBean.getOutputPortGranularDepth().get(i);
-			addOutput(name, depth, granularDepth);
+			Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
+			MimeType mimeType = configBean.getOutputPortMimeTypes().get(i);
+			annotations.add(mimeType);
+			addOutput(name, depth, granularDepth, annotations);
 		}
 	}
 
