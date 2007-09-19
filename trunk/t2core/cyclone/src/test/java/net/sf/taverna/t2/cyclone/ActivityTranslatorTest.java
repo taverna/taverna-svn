@@ -14,7 +14,7 @@ import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AbstractActivityTranslatorTest {
+public class ActivityTranslatorTest {
 
 	private ActivityTranslator<BeanshellActivityConfigurationBean> translator;
 

@@ -2,9 +2,8 @@ package net.sf.taverna.t2.cyclone.translators;
 
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.MimeType;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortDefinitionBeanImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortsDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortsDefinitionBeanImpl;
 
 /**
  * An configuration bean specific to a Beanshell activity. In particular it provides details
@@ -12,10 +11,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortDefin
  * 
  * @author Stuart Owen
  */
-public class BeanshellActivityConfigurationBean implements ActivityPortDefinitionBean {
+public class BeanshellActivityConfigurationBean implements ActivityPortsDefinitionBean {
 
 	private String script;
-	private ActivityPortDefinitionBean portDefinitionBean = new ActivityPortDefinitionBeanImpl();
+	private ActivityPortsDefinitionBean portDefinitionBean = new ActivityPortsDefinitionBeanImpl();
 
 	/**
 	 * @return the Beanshell script
@@ -35,7 +34,7 @@ public class BeanshellActivityConfigurationBean implements ActivityPortDefinitio
 		return portDefinitionBean.getInputPortDepth();
 	}
 
-	public List<MimeType> getInputPortMimeTypes() {
+	public List<List<String>> getInputPortMimeTypes() {
 		return portDefinitionBean.getInputPortMimeTypes();
 	}
 
@@ -51,7 +50,7 @@ public class BeanshellActivityConfigurationBean implements ActivityPortDefinitio
 		return portDefinitionBean.getOutputPortGranularDepth();
 	}
 
-	public List<MimeType> getOutputPortMimeTypes() {
+	public List<List<String>> getOutputPortMimeTypes() {
 		return portDefinitionBean.getOutputPortMimeTypes();
 	}
 
@@ -63,7 +62,7 @@ public class BeanshellActivityConfigurationBean implements ActivityPortDefinitio
 		portDefinitionBean.setInputPortDepth(inputDepth);
 	}
 
-	public void setInputPortMimeTypes(List<MimeType> mimeType) {
+	public void setInputPortMimeTypes(List<List<String>> mimeType) {
 		portDefinitionBean.setInputPortMimeTypes(mimeType);
 	}
 
@@ -79,11 +78,13 @@ public class BeanshellActivityConfigurationBean implements ActivityPortDefinitio
 		portDefinitionBean.setOutputPortGranularDepth(outputGranularDepth);
 	}
 
-	public void setOutputPortMimeTypes(List<MimeType> mimeTypes) {
+	public void setOutputPortMimeTypes(List<List<String>> mimeTypes) {
 		portDefinitionBean.setOutputPortMimeTypes(mimeTypes);
 	}
 
 	public void setOutputPortNames(List<String> outputNames) {
 		portDefinitionBean.setOutputPortNames(outputNames);
-	}	
+	}
+
+	
 }

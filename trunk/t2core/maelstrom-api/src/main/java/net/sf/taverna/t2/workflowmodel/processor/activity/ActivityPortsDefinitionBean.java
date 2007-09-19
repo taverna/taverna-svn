@@ -2,8 +2,6 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.MimeType;
-
 /**
  * <p>
  * Defines a configuration type that relates directly to an {@link Activity} and in particular defines details its
@@ -15,14 +13,11 @@ import net.sf.taverna.t2.annotation.MimeType;
  * of serialization to and from XML. For this reason the properties are stored as Lists, and the name,depth and, in the case of output port granularityDepth, correspond to
  * a given port by their position in each list. 
  * </p>
- * <p>
- * The abstract class {@link ActivityPortDefinitionBeanImpl} facilitates in implementing this interface.
- * </p>
  * 
  * @author Stuart Owen
  *
  */
-public interface ActivityPortDefinitionBean {
+public interface ActivityPortsDefinitionBean {
 
 	public List<String> getInputPortNames();
 	
@@ -44,11 +39,11 @@ public interface ActivityPortDefinitionBean {
 	
 	public void setOutputPortGranularDepth(List<Integer> outputGranularDepth);
 	
-	public List<MimeType> getOutputPortMimeTypes();
+	public List<List<String>> getOutputPortMimeTypes();
 	
-	public void setOutputPortMimeTypes(List<MimeType> mimeTypes);
+	public void setOutputPortMimeTypes(List<List<String>> mimeTypes);
 	
-	public List<MimeType> getInputPortMimeTypes();
+	public List<List<String>> getInputPortMimeTypes();
 	
-	public void setInputPortMimeTypes(List<MimeType> mimeType);
+	public void setInputPortMimeTypes(List<List<String>> mimeType);
 }

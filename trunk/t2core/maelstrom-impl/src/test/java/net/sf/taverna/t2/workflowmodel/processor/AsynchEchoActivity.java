@@ -1,15 +1,16 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 public class AsynchEchoActivity extends
 		AbstractAsynchronousActivity<EchoConfig> implements
@@ -17,10 +18,17 @@ public class AsynchEchoActivity extends
 
 	private EchoConfig config;
 	
+	
+	
+	@Override
+	protected ActivityPortBuilder getPortBuilder() {
+		return ActivityPortBuilderImpl.getInstance();
+	}
+
 	@Override
 	public void configure(EchoConfig conf) throws ActivityConfigurationException {
-		addInput("input",0, new HashSet<WorkflowAnnotation>());
-		addOutput("output",0,0, new HashSet<WorkflowAnnotation>());
+		addInput("input",0, new ArrayList<String>());
+		addOutput("output",0,0, new ArrayList<String>());
 		this.config = conf;
 	}
 

@@ -2,6 +2,8 @@ package net.sf.taverna.t2.cyclone.translators;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
+import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 //FIXME: this doesn't belong in this package. It should be moved to a separate module
 /**
  * <p>
@@ -14,6 +16,11 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 public class BeanshellActivity extends AbstractActivity<BeanshellActivityConfigurationBean> {
 
 	private BeanshellActivityConfigurationBean configurationBean;
+	
+	@Override
+	protected ActivityPortBuilder getPortBuilder() {
+		return ActivityPortBuilderImpl.getInstance();
+	}
 
 	@Override
 	public void configure(BeanshellActivityConfigurationBean configurationBeans)

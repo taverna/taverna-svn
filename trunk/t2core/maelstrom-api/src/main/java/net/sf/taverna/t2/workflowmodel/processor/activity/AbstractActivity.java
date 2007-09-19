@@ -2,11 +2,10 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.MimeType;
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -48,6 +47,8 @@ public abstract class AbstractActivity<ConfigType> extends
 			throws ActivityConfigurationException;
 
 	public abstract ConfigType getConfiguration();
+	
+	protected abstract ActivityPortBuilder getPortBuilder();
 
 	public final Map<String, String> getInputPortMapping() {
 		return this.inputPortMapping;
@@ -65,13 +66,13 @@ public abstract class AbstractActivity<ConfigType> extends
 		return outputPorts;
 	}
 
-	protected void addInput(String portName, int portDepth, Set<WorkflowAnnotation> annotations) {
-		inputPorts.add(new ActivityInputPort(portName, portDepth,annotations));
+	protected void addInput(String portName, int portDepth, List<String>mimeTypes) {
+		inputPorts.add(getPortBuilder().buildInputPort(portName, portDepth,mimeTypes));
 	}
 
-	protected void addOutput(String portName, int portDepth, int granularDepth, Set<WorkflowAnnotation> annotations) {
-		outputPorts.add(new ActivityOutputPort(portName, portDepth,
-				granularDepth,annotations));
+	protected void addOutput(String portName, int portDepth, int granularDepth, List<String>mimeTypes) {
+		outputPorts.add(getPortBuilder().buildOutputPort(portName, portDepth,
+				granularDepth,mimeTypes));
 	}
 
 	/**
@@ -81,14 +82,14 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param portName
 	 * @param portDepth
 	 */
-	protected void addOutput(String portName, int portDepth,Set<WorkflowAnnotation> annotations) {
-		addOutput(portName, portDepth, portDepth, annotations);
+	protected void addOutput(String portName, int portDepth,List<String> mimeTypes) {
+		addOutput(portName, portDepth, portDepth, mimeTypes);
 	}
 	
 	/**
 	 * <p>
 	 * Simplifies configuring the Activity input and output ports if its
-	 * ConfigType is an implementation of {@link ActivityPortDefinitionBean}
+	 * ConfigType is an implementation of {@link ActivityPortsDefinitionBean}
 	 * </p>
 	 * <p>
 	 * For an Activity that has ports that are defined dynamically it is natural that is
@@ -96,25 +97,18 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * </p> 
 	 * @param configBean
 	 */
-	protected void configurePorts(ActivityPortDefinitionBean configBean) {
+	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
 		for (int i=0;i<configBean.getInputPortNames().size();i++) {
-			
 			String name = configBean.getInputPortNames().get(i);
 			int depth = configBean.getInputPortDepth().get(i);
-			Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
-			MimeType mimeType = configBean.getInputPortMimeTypes().get(i);
-			annotations.add(mimeType);
-			addInput(name, depth, annotations);
+			addInput(name, depth, configBean.getInputPortMimeTypes().get(i));
 		}
 		
 		for (int i=0;i<configBean.getOutputPortNames().size();i++) {
 			String name = configBean.getOutputPortNames().get(i);
 			int depth = configBean.getOutputPortDepth().get(i);
 			int granularDepth = configBean.getOutputPortGranularDepth().get(i);
-			Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
-			MimeType mimeType = configBean.getOutputPortMimeTypes().get(i);
-			annotations.add(mimeType);
-			addOutput(name, depth, granularDepth, annotations);
+			addOutput(name, depth, granularDepth, configBean.getOutputPortMimeTypes().get(i));
 		}
 	}
 

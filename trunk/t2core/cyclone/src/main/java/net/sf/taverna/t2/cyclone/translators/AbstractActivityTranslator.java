@@ -1,13 +1,12 @@
 package net.sf.taverna.t2.cyclone.translators;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.MimeType;
-import net.sf.taverna.t2.annotation.impl.MimeTypeImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortsDefinitionBean;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -25,8 +24,8 @@ import org.embl.ebi.escience.scufl.Processor;
  * </p>
  * <p>
  * In particular, if an Activity configuration type is an implementation of
- * {@link ActivityPortDefinitionBean} then
- * {@link AbstractActivityTranslator#populateConfigurationBeanPortDetails(Processor, ActivityPortDefinitionBean)}
+ * {@link ActivityPortsDefinitionBean} then
+ * {@link AbstractActivityTranslator#populateConfigurationBeanPortDetails(Processor, ActivityPortsDefinitionBean)}
  * can be useful for setting up the input and output ports.
  * </p>
  * 
@@ -64,7 +63,7 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 
 	/**
 	 * If the configuration type for an Activity implements
-	 * {@link ActivityPortDefinitionBean} then this helper method is available to
+	 * {@link ActivityPortsDefinitionBean} then this helper method is available to
 	 * transfer input and output port details from the processor to the
 	 * configuration type.
 	 * 
@@ -75,21 +74,21 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 * @param configBean
 	 */
 	protected void populateConfigurationBeanPortDetails(Processor processor,
-			ActivityPortDefinitionBean configBean) {
+			ActivityPortsDefinitionBean configBean) {
 		List<String> inputPortNames = new ArrayList<String>();
 		List<Integer> inputPortDepth = new ArrayList<Integer>();
-		List<MimeType> inputPortMimeTypes = new ArrayList<MimeType>();
+		List<List<String>> inputPortMimeTypes = new ArrayList<List<String>>();
 
 		List<String> outputPortNames = new ArrayList<String>();
 		List<Integer> outputPortDepth = new ArrayList<Integer>();
 		List<Integer> outputPortGranularDepth = new ArrayList<Integer>();
-		List<MimeType> outputPortMimeTypes = new ArrayList<MimeType>();
+		List<List<String>> outputPortMimeTypes = new ArrayList<List<String>>();
 
 		for (InputPort inputPort : processor.getInputPorts()) {
 			inputPortNames.add(inputPort.getName());
 			inputPortDepth.add(determineDepthFromSyntacticType(inputPort
 					.getSyntacticType()));
-			inputPortMimeTypes.add(new MimeTypeImpl(inputPort.getSyntacticType()));
+			inputPortMimeTypes.add(Arrays.asList(inputPort.getSyntacticType()));
 		}
 
 		for (OutputPort outPort : processor.getOutputPorts()) {
@@ -100,7 +99,7 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 			// TODO: check correct default value for granular depth. Setting
 			// this to the same as depth will prevent streaming.
 			outputPortGranularDepth.add(0);
-			outputPortMimeTypes.add(new MimeTypeImpl(outPort.getSyntacticType()));
+			outputPortMimeTypes.add(Arrays.asList(outPort.getSyntacticType()));
 
 		}
 

@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.activity;
+package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
 import java.util.Set;
 
@@ -12,13 +12,13 @@ import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
  * @author Tom Oinn
  * 
  */
-public class ActivityOutputPort extends AbstractOutputPort {
+public class ActivityOutputPortImpl extends AbstractOutputPort {
 
-	public ActivityOutputPort(String portName, int portDepth, int granularDepth) {
+	public ActivityOutputPortImpl(String portName, int portDepth, int granularDepth) {
 		super(portName, portDepth, granularDepth);
 	}
 	
-	public ActivityOutputPort(String portName,int portDepth,int granularDepth,Set<WorkflowAnnotation> annotations) {
+	public ActivityOutputPortImpl(String portName,int portDepth,int granularDepth,Set<WorkflowAnnotation> annotations) {
 		this(portName,portDepth,granularDepth);
 		this.annotations.addAll(annotations);
 	}
