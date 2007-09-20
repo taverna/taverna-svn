@@ -1,8 +1,11 @@
 package net.sf.taverna.t2.cyclone;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.tree.MutableTreeNode;
 
 import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
 import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorFactory;
@@ -19,9 +22,25 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DotNode;
+import org.embl.ebi.escience.scufl.IterationStrategy;
+import org.embl.ebi.escience.scufl.LeafNode;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
@@ -39,6 +58,10 @@ public class WorkflowModelTranslator {
 
 		Dataflow dataflow = edits.createDataflow();
 
+		createInputs(scuflModel, dataflow);
+
+		createOutputs(scuflModel, dataflow);
+
 		createProcessors(scuflModel, processorMap, dataflow);
 
 		connectDataLinks(scuflModel, processorMap);
@@ -46,6 +69,32 @@ public class WorkflowModelTranslator {
 		connectConditions(scuflModel, processorMap);
 
 		return dataflow;
+	}
+
+	private static void createInputs(ScuflModel scuflModel, Dataflow dataflow) {
+		for (Port sourcePort : scuflModel.getWorkflowSourcePorts()) {
+			try {
+				// TODO check granular depth value
+				edits.getCreateDataflowInputPortEdit(dataflow,
+						sourcePort.getName(), getPortDepth(sourcePort), 0)
+						.doEdit();
+			} catch (EditException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void createOutputs(ScuflModel scuflModel, Dataflow dataflow) {
+		for (Port sinkPort : scuflModel.getWorkflowSinkPorts()) {
+			try {
+				edits.getCreateDataflowOutputPortEdit(dataflow,
+						sinkPort.getName()).doEdit();
+			} catch (EditException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -63,7 +112,7 @@ public class WorkflowModelTranslator {
 						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
 				Edit<Processor> addProcessorEdit = edits
-						.createProcessorFromActivity(dataflow, activity);
+						.createProcessor(dataflow);
 				try {
 					Processor t2Processor = addProcessorEdit.doEdit();
 					processorMap.put(t1Processor, t2Processor);
@@ -71,6 +120,9 @@ public class WorkflowModelTranslator {
 					createInputPorts(activity, t2Processor);
 
 					createOutputPorts(activity, t2Processor);
+
+					addDispatchLayers(t1Processor, t2Processor
+							.getDispatchStack());
 
 				} catch (EditException e) {
 					// TODO Auto-generated catch block
@@ -84,6 +136,68 @@ public class WorkflowModelTranslator {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private static void setIterationStrategy(
+			org.embl.ebi.escience.scufl.Processor t1Processor,
+			IterationStrategyStackImpl iterationStrategyStack) {
+		IterationStrategy t1IterationStrategy = t1Processor
+				.getIterationStrategy();
+		IterationStrategyImpl t2IterationStrategy = new IterationStrategyImpl();
+		if (t1IterationStrategy == null) {
+			t1IterationStrategy = new IterationStrategy(t1Processor);
+		}
+		addIterationNode((MutableTreeNode) t1IterationStrategy.getTreeModel()
+				.getRoot(), t2IterationStrategy, t2IterationStrategy
+				.getTerminal());
+
+		iterationStrategyStack.clear();
+		iterationStrategyStack.addStrategy(t2IterationStrategy);
+	}
+
+	private static void addIterationNode(MutableTreeNode node,
+			IterationStrategyImpl t2IterationStrategy,
+			AbstractIterationStrategyNode parent) {
+		if (node instanceof LeafNode) {
+			String nodeName = (String) ((LeafNode) node).getUserObject();
+			NamedInputPortNode inputPortNode = new NamedInputPortNode(nodeName,
+					0);
+			inputPortNode.setParent(parent);
+			t2IterationStrategy.addInput(inputPortNode);
+		} else {
+			AbstractIterationStrategyNode strategyNode = null;
+			if (node instanceof DotNode) {
+				strategyNode = new DotProduct();
+			} else {
+				strategyNode = new CrossProduct();
+			}
+			strategyNode.setParent(parent);
+			for (Enumeration<?> en = node.children(); en.hasMoreElements();) {
+				addIterationNode((MutableTreeNode) en.nextElement(),
+						t2IterationStrategy, strategyNode);
+			}
+		}
+	}
+
+	private static void addDispatchLayers(
+			org.embl.ebi.escience.scufl.Processor t1Processor,
+			DispatchStack dispatchStack) throws EditException {
+		int maxJobs = t1Processor.getWorkers();
+		int maxRetries = t1Processor.getRetries();
+		long backoffFactor = (long) t1Processor.getBackoff();
+		int initialDelay = t1Processor.getRetryDelay();
+		int maxDelay = (int) (initialDelay * (backoffFactor ^ maxRetries));
+
+		DispatchLayer<?> parallelize = new Parallelize(maxJobs);
+		DispatchLayer<?> failover = new Failover();
+		DispatchLayer<?> retry = new Retry(maxRetries, initialDelay, maxDelay,
+				backoffFactor);
+		DispatchLayer<?> invoke = new Invoke();
+
+		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, 0).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, failover, 1).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, retry, 2).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, invoke, 3).doEdit();
 	}
 
 	/**
@@ -100,6 +214,8 @@ public class WorkflowModelTranslator {
 							.getName(), outputPort.getDepth(), outputPort
 							.getGranularDepth());
 			addOutputPortEdit.doEdit();
+			activity.getOutputPortMapping().put(outputPort.getName(),
+					outputPort.getName());
 		}
 	}
 
@@ -116,6 +232,8 @@ public class WorkflowModelTranslator {
 					.getCreateProcessorInputPortEdit(t2Processor, inputPort
 							.getName(), inputPort.getDepth());
 			addInputPortEdit.doEdit();
+			activity.getInputPortMapping().put(inputPort.getName(),
+					inputPort.getName());
 		}
 	}
 
@@ -149,6 +267,7 @@ public class WorkflowModelTranslator {
 	private static void connectDataLinks(ScuflModel scuflModel,
 			Map<org.embl.ebi.escience.scufl.Processor, Processor> processorMap) {
 		for (DataConstraint dataConstraint : scuflModel.getDataConstraints()) {
+			// TODO add dataflow inputs
 			Processor sourceProcessor = processorMap.get(dataConstraint
 					.getSource().getProcessor());
 			String portName = dataConstraint.getSource().getName();
@@ -173,12 +292,13 @@ public class WorkflowModelTranslator {
 		}
 	}
 
-	// private static int getPortDepth(Port port) {
-	// String syntacticType = port.getSyntacticType();
-	// if (syntacticType == null) {
-	// return 0;
-	// } else {
-	// return syntacticType.split("l(").length - 1;
-	// }
-	// }
+	private static int getPortDepth(Port port) {
+		String syntacticType = port.getSyntacticType();
+		if (syntacticType == null) {
+			return 0;
+		} else {
+			return syntacticType.split("l(").length - 1;
+		}
+	}
+
 }
