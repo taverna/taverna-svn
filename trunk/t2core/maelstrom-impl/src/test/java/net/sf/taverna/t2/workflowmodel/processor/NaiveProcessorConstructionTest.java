@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -37,7 +38,7 @@ public class NaiveProcessorConstructionTest extends TestCase {
 		activity.configure(new EchoConfig("blah"));
 		ProcessorImpl p = Tools.buildFromActivity(activity);
 
-		ProcessorImpl p2 = new ProcessorImpl();
+		ProcessorImpl p2 = (ProcessorImpl)new EditsImpl().createProcessor("a_processor");
 		p2.configureFromElement(p.asXML());
 		XMLOutputter xo = new XMLOutputter();
 		assertTrue(xo.outputString(p.asXML()).equals(

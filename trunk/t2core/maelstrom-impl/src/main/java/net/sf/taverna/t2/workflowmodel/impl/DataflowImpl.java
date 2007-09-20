@@ -27,7 +27,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
 public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		Dataflow {
 
-	private List<ProcessorImpl> processors;
+	List<ProcessorImpl> processors;
 	private String name;
 	private static int nameIndex = 0;
 	private List<DataflowInputPortImpl> inputs;
@@ -45,6 +45,23 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		this.outputs = new ArrayList<DataflowOutputPortImpl>();
 	}
 
+	/**
+	 * Adds a processor on the DataFlow. 
+	 * @param processor the ProcessorImpl to be added to the Dataflow
+	 * @return
+	 * @throws NamingException if a processor already exists with the same local name
+	 */
+	protected synchronized void addProcessor(ProcessorImpl processor) throws NamingException {
+		for (Processor existingProcessor : processors.toArray(new Processor[]{})) {
+			if (existingProcessor.getLocalName().equals(processor.getLocalName())) throw new NamingException("There already is a processor named:"+processor.getLocalName());
+		}
+		processors.add(processor);
+	}
+	
+	protected synchronized void removeProcessor(Processor processor) {
+		processors.remove(processor);
+	}
+	
 	/**
 	 * Build a new dataflow input port, the granular depth is set for the input
 	 * port so it can be copied onto the internal output port

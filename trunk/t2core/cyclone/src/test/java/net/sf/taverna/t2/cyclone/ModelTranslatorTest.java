@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-18 08:29:26 $
+ * Last modified on   $Date: 2007-09-20 15:57:18 $
  *               by   $Author: sowen70 $
  * Created on Sep 7, 2007
  *****************************************************************/
@@ -90,7 +90,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 									// code being implemented. This flag allows
 									// code to be committed during this process
 									// without the need to keep
-									// commenting/uncommenting this test.
+									// commenting/un-commenting this test.
 
 		if (runTest) {
 			System.setProperty("raven.eclipse", "true");

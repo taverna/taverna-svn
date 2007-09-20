@@ -111,10 +111,11 @@ public class WorkflowModelTranslator {
 				ActivityTranslator<?> translator = ActivityTranslatorFactory
 						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
-				Edit<Processor> addProcessorEdit = edits
-						.createProcessor(dataflow);
+				Processor t2Processor = edits.createProcessor(t1Processor.getName());
+				Edit<Dataflow> addProcessorEdit = edits.getAddProcessorEdit(dataflow, t2Processor);
 				try {
-					Processor t2Processor = addProcessorEdit.doEdit();
+					addProcessorEdit.doEdit();
+					
 					processorMap.put(t1Processor, t2Processor);
 
 					createInputPorts(activity, t2Processor);
@@ -297,7 +298,7 @@ public class WorkflowModelTranslator {
 		if (syntacticType == null) {
 			return 0;
 		} else {
-			return syntacticType.split("l(").length - 1;
+			return syntacticType.split("l\\(").length - 1;
 		}
 	}
 

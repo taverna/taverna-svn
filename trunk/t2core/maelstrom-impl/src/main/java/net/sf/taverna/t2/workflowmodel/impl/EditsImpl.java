@@ -23,9 +23,8 @@ public class EditsImpl implements Edits {
 		return new DataflowImpl();
 	}
 
-	public Edit<Processor> createProcessor(Dataflow dataflow) {
-		// TODO Auto-generated method stub
-		return null;
+	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow, Processor processor) {
+		return new AddProcessorEdit(dataflow,processor);
 	}
 
 	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
@@ -97,6 +96,12 @@ public class EditsImpl implements Edits {
 
 	public <TargetType extends Annotated> Edit<TargetType> getReplaceAnnotationEdit(WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation, TargetType objectToAnnotate) {
 		return new ReplaceAnnotationEdit<TargetType>(objectToAnnotate, oldAnnotation, newAnnotation);
+	}
+
+	public Processor createProcessor(String name) {
+		ProcessorImpl processor = new ProcessorImpl();
+		processor.setName(name);
+		return processor;
 	}
 
 }

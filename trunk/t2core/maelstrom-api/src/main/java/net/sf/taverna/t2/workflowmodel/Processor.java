@@ -126,5 +126,4 @@ public interface Processor extends NamedWorkflowEntity, Annotated {
 	 *             iteration mismatch
 	 */
 	public boolean doTypeCheck() throws IterationTypeMismatchException;
-	
 }

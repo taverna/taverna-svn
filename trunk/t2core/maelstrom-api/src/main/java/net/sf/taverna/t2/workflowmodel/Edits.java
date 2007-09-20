@@ -28,15 +28,23 @@ public interface Edits {
 	 * @return
 	 */
 	public Dataflow createDataflow();
+	
+	/**
+	 * Builds a new instance of a Processor with the given name
+	 * 
+	 * @param the local name for the processor.
+	 */
+	public Processor createProcessor(String name);
 
 	/**
-	 * Build a new Processor with no ports, iteration system, activities or
-	 * dispatch stack and add it to the specified Dataflow
+	 * Provides an edit object responsible for adding a Processor to a Dataflow
 	 * 
 	 * @param dataflow
 	 *            the dataflow to add this processor to
+	 * @param processor 
+	 * 			  the processor to be added to the dataflow
 	 */
-	public Edit<Processor> createProcessor(Dataflow dataflow);
+	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow, Processor processor);
 
 	/**
 	 * Create a new processor in the specified dataflow configured as a default

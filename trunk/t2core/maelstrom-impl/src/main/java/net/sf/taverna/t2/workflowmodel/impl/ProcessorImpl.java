@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
@@ -18,9 +19,9 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
@@ -34,6 +35,7 @@ import org.jdom.JDOMException;
  * Implementation of Processor
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
  * 
  */
 public final class ProcessorImpl extends AbstractMutableAnnotatedThing
@@ -62,13 +64,17 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 	public transient int resultWrappingDepth = -1;
 
 	/**
+	 * <p>
 	 * Create a new processor implementation with default blank iteration
-	 * strategy and dispatch stack
-	 * 
+	 * strategy and dispatch stack.
+	 * </p>
+	 * <p>
+	 * This constructor is protected to enforce that an instance can only be created via the {@link EditsImpl#createProcessor(String)} method.
+	 * </p>
 	 */
 
 	@SuppressWarnings("unchecked")
-	public ProcessorImpl() {
+	protected ProcessorImpl() {
 
 		// Set a default name
 		name = "UnnamedProcessor" + (pNameCounter++);

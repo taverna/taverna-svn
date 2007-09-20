@@ -29,7 +29,7 @@ public class ActivityTranslatorFactory {
 	 * Given a particular Processor class it returns an appropriate ActivityTranslator
 	 * </p>
 	 * 
-	 * @param processorClass - the class of the Processor requiring an ActivityTranslator
+	 * @param processor - the Processor requiring an ActivityTranslator
 	 * @return an appropriate ActivityTranslator
 	 * @throws ActivityTranslatorNotFoundException 
 	 */

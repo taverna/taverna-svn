@@ -7,6 +7,7 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.impl.CreateProcessorInputPortEdit;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
@@ -27,7 +28,7 @@ public class ProcessorSerializationTest extends TestCase {
 			IllegalAccessException, JDOMException, IOException,
 			ActivityConfigurationException {
 
-		ProcessorImpl p = new ProcessorImpl();
+		ProcessorImpl p = (ProcessorImpl)new EditsImpl().createProcessor("a_processor");
 		DispatchStackImpl stack = p.getDispatchStack();
 		new AddDispatchLayerEdit(stack, new Parallelize(), 0).doEdit();
 		new AddDispatchLayerEdit(stack, new Retry(2, 50, 2000, 1), 1).doEdit();
@@ -37,7 +38,7 @@ public class ProcessorSerializationTest extends TestCase {
 
 		Element e = p.asXML();
 
-		ProcessorImpl p2 = new ProcessorImpl();
+		ProcessorImpl p2 = (ProcessorImpl)new EditsImpl().createProcessor("a_processor");
 		p2.configureFromElement(e);
 		Element e2 = p2.asXML();
 
