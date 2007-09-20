@@ -80,6 +80,10 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 		return Collections.unmodifiableList(this.strategies);
 	}
 
+	public void clear() {
+		strategies.clear();		
+	}
+	
 	public void receiveData(String inputPortName, String owningProcess,
 			int[] indexArray, EntityIdentifier dataReference) {
 		if (!strategies.isEmpty()) {
