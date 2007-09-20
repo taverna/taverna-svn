@@ -38,22 +38,31 @@
 
           <entry>The location that Taverna settings, logging and libraries are
           stored. By default when using Windows this is "Documents and
-          Settings\Application Data\Taverna", using Linux "$HOME/.taverna",
-          and using the Mac "$HOME/Library/Application Support/Taverna".
-          General configuration files are stored in $taverna.home/conf ; log
-          files are stored in $taverna.home/log; details about installed
-          plugins and plugin sites are stored in $taverna.home/plugins</entry>
+          Settings\Application
+          Data\Taverna-&lt;<emphasis>version</emphasis>&gt;", using Linux
+          "$HOME/.taverna-&lt;<emphasis>version</emphasis>&gt;", and using the
+          Mac "$HOME/Library/Application
+          Support/Taverna-&lt;<emphasis>version</emphasis>&gt;", where
+          &lt;<emphasis>version</emphasis>&gt; is the Taverna download version, e.g:
+          $HOME/.taverna-1.6.1. This allows different versions to be
+          configured independantly.General configuration files are stored in
+          $taverna.home/conf ; log files are stored in $taverna.home/log;
+          details about installed plugins and plugin sites are stored in
+          $taverna.home/plugins.</entry>
         </row>
-        
+
         <row>
           <entry>taverna.startup</entry>
 
           <entry>String, e.g. C:/taverna-home/</entry>
 
-          <entry>If not already defined, this defaults to the location of the bootstrap jar file used to
-          startup Taverna. This property is used to allow default properties and plugins to be defined. By default properties in
-          $taverna.startup/conf, and plugins defined in $taverna.startup/plugins, are used. Similar files in $taverna.home will override these default settings
-          so that users can customise their settings in a multi-user environment.</entry>
+          <entry>If not already defined, this defaults to the location of the
+          bootstrap jar file used to startup Taverna. This property is used to
+          allow default properties and plugins to be defined. By default
+          properties in $taverna.startup/conf, and plugins defined in
+          $taverna.startup/plugins, are used. Similar files in $taverna.home
+          will override these default settings so that users can customise
+          their settings in a multi-user environment.</entry>
         </row>
 
         <row>
@@ -85,19 +94,26 @@
 
           <entry>URL, or a space seperated list of URLs</entry>
 
-          <entry>If defined this forces this particular profile to be used immediately. Using a single profile
-          means that no update options are available. Setting this property overrides raven.profilelist. If a list is provided, the first successful URL is used.</entry>
+          <entry>If defined this forces this particular profile to be used
+          immediately. Using a single profile means that no update options are
+          available. Setting this property overrides raven.profilelist. If a
+          list is provided, the first successful URL is used.</entry>
         </row>
-        
+
         <row>
           <entry>raven.profilelist</entry>
 
           <entry>URL</entry>
 
-          <entry>This defines the location of the XML that defines a list of profiles available. On first run, a local copy
-          of the lowest version of the profile available in the list is used, and continues to be used until an update becomes available and is selected.
-          An update becomes available when a higher version than the current version becomes defined in the list. Updating the version is not automatic, but requires a request from the user.
-          This property is overridden if a raven.profile property is explicity defined. If a list is provided, the first successful URL is used.</entry>
+          <entry>This defines the location of the XML that defines a list of
+          profiles available. On first run, a local copy of the lowest version
+          of the profile available in the list is used, and continues to be
+          used until an update becomes available and is selected. An update
+          becomes available when a higher version than the current version
+          becomes defined in the list. Updating the version is not automatic,
+          but requires a request from the user. This property is overridden if
+          a raven.profile property is explicity defined. If a list is
+          provided, the first successful URL is used.</entry>
         </row>
 
         <row>
