@@ -55,6 +55,16 @@ public class EditsImpl implements Edits {
 		return new CreateProcessorOutputPortEdit(processor, portName, portDepth, granularDepth);
 	}
 
+	public Edit<Dataflow> getCreateDataflowInputPortEdit(Dataflow dataflow,
+			String portName, int portDepth, int granularDepth) {
+		return new CreateDataflowInputPortEdit(dataflow, portName, portDepth, granularDepth);
+	}
+
+	public Edit<Dataflow> getCreateDataflowOutputPortEdit(Dataflow dataflow,
+			String portName) {
+		return new CreateDataflowOutputPortEdit(dataflow, portName);
+	}
+
 	public Edit<DispatchStack> getDeleteDispatchLayerEdit(DispatchStack stack,
 			DispatchLayer<?> layer) {
 		return new DeleteDispatchLayerEdit(stack, layer);

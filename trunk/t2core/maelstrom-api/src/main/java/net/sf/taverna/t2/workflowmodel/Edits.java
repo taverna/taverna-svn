@@ -139,6 +139,33 @@ public interface Edits {
 			int granularDepth);
 
 	/**
+	 * Add an input port to a dataflow.
+	 * 
+	 * @param dataflow
+	 *            dataflow to add the port to
+	 * @param portName
+	 *            name of the port, unique in the dataflow
+	 * @param portDepth
+	 *            the conceptual depth of collections consumed by this input
+	 *            port
+	 * @param granularDepth
+	 *            granular depth to copy to the internal output port
+	 */
+	public Edit<Dataflow> getCreateDataflowInputPortEdit(Dataflow dataflow,
+			String portName, int portDepth, int granularDepth);
+
+	/**
+	 * Add an output port to a dataflow.
+	 * 
+	 * @param dataflow
+	 *            dataflow to add the port to
+	 * @param portName
+	 *            name of the port, unique in the dataflow
+	 */
+	public Edit<Dataflow> getCreateDataflowOutputPortEdit(Dataflow dataflow,
+			String portName);
+
+	/**
 	 * Rename a processor
 	 * 
 	 * @param processor
