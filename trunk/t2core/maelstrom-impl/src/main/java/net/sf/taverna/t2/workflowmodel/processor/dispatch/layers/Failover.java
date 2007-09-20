@@ -10,11 +10,11 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
 
 /**
- * Failure handling dispatch layer, consumes job events with multiple services
- * and emits the same job but with only the first service. On failures the job
- * is resent to the layer below with a new service list containing the second in
+ * Failure handling dispatch layer, consumes job events with multiple activities
+ * and emits the same job but with only the first activity. On failures the job
+ * is resent to the layer below with a new activity list containing the second in
  * the original list and so on. If a failure is received and there are no
- * further services to use the job fails and the failure is sent back up to the
+ * further activities to use the job fails and the failure is sent back up to the
  * layer above. * <table>
  * <tr>
  * <th>DispatchMessageType</th>
@@ -62,19 +62,19 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 	@Override
 	protected JobState getStateObject(Job j,
-			List<? extends ActivityAnnotationContainer> services) {
-		return new FailoverState(j, services);
+			List<? extends ActivityAnnotationContainer> activities) {
+		return new FailoverState(j, activities);
 	}
 
 	/**
 	 * Receive a job from the layer above, store it in the state map then relay
-	 * it to the layer below with a modified service list containing only the
-	 * service at index 0
+	 * it to the layer below with a modified activity list containing only the
+	 * activity at index 0
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receiveJob(Job job,
-			List<? extends ActivityAnnotationContainer> services) {
+			List<? extends ActivityAnnotationContainer> activities) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
@@ -84,30 +84,30 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 				stateMap.put(job.getOwningProcess(), stateList);
 			}
 		}
-		stateList.add(getStateObject(job, services));
-		List<ActivityAnnotationContainer> newServiceList = new ArrayList<ActivityAnnotationContainer>();
-		newServiceList.add(services.get(0));
-		getBelow().receiveJob(job, newServiceList);
+		stateList.add(getStateObject(job, activities));
+		List<ActivityAnnotationContainer> newActivityList = new ArrayList<ActivityAnnotationContainer>();
+		newActivityList.add(activities.get(0));
+		getBelow().receiveJob(job, newActivityList);
 
 	}
 
 	class FailoverState extends JobState {
 
-		int currentServiceIndex = 0;
+		int currentActivityIndex = 0;
 
-		public FailoverState(Job j, List<? extends ActivityAnnotationContainer> services) {
-			super(j, services);
+		public FailoverState(Job j, List<? extends ActivityAnnotationContainer> activities) {
+			super(j, activities);
 		}
 
 		@SuppressWarnings("unchecked")
 		public boolean handleError() {
-			currentServiceIndex++;
-			if (currentServiceIndex == services.size()) {
+			currentActivityIndex++;
+			if (currentActivityIndex == activities.size()) {
 				return false;
 			} else {
-				List<ActivityAnnotationContainer> newServiceList = new ArrayList<ActivityAnnotationContainer>();
-				newServiceList.add(services.get(currentServiceIndex));
-				getBelow().receiveJob(job, newServiceList);
+				List<ActivityAnnotationContainer> newActivityList = new ArrayList<ActivityAnnotationContainer>();
+				newActivityList.add(activities.get(currentActivityIndex));
+				getBelow().receiveJob(job, newActivityList);
 				return true;
 			}
 		}

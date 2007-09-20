@@ -29,7 +29,7 @@ import org.jdom.JDOMException;
  * The dispatch stack is responsible for consuming a queue of jobs from the
  * iteration strategy and dispatching those jobs through a stack based control
  * flow to an appropriate invocation target. Conceptually the queue and
- * description of services enter the stack at the top, travel down to an
+ * description of activities enter the stack at the top, travel down to an
  * invocation layer at the bottom from which results, errors and completion
  * events rise back up to the top layer. Dispatch stack layers are stored as an
  * ordered list with index 0 being the top of the stack.
@@ -44,12 +44,12 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	private List<DispatchLayer<?>> dispatchLayers = new ArrayList<DispatchLayer<?>>();
 
 	/**
-	 * Override to return the list of services to be used by this dispatch
+	 * Override to return the list of activities to be used by this dispatch
 	 * stack.
 	 * 
-	 * @return list of services to be used by jobs in this dispatch stack
+	 * @return list of activities to be used by jobs in this dispatch stack
 	 */
-	protected abstract List<? extends ActivityAnnotationContainer> getServices();
+	protected abstract List<? extends ActivityAnnotationContainer> getActivities();
 
 	/**
 	 * Called when an event (Completion or Job) hits the top of the dispatch
@@ -196,7 +196,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 				// dispatch layer
 				if (conditionsSatisfied(enclosingProcess)) {
 					dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
-							 getServices());
+							 getActivities());
 				}
 			} else {
 				queue = queues.get(e.getOwningProcess());
@@ -222,7 +222,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	 * queue for that owning process identifier should be pushed through to the
 	 * dispatch mechanism. As the queue itself will not have been pushed through
 	 * at this point this just consists of messaging the first layer with the
-	 * queue and service set.
+	 * queue and activity set.
 	 * 
 	 * @param owningProcess
 	 */
@@ -236,7 +236,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 					// and
 					// a queue exists for it.
 					dispatchLayers.get(0).receiveJobQueue(owningProcess,
-							queues.get(owningProcess), getServices());
+							queues.get(owningProcess), getActivities());
 				} else {
 					// Do nothing, if the conditions are satisfied before any
 					// jobs
@@ -250,10 +250,9 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.workflowmodel.processor.service.dispatch.DispatchStack#getLayers()
+	
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack#getLayers()
 	 */
 	public List<DispatchLayer<?>> getLayers() {
 		return Collections.unmodifiableList(this.dispatchLayers);
@@ -278,7 +277,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 	/**
 	 * Return the layer above (lower index!) the specified layer, or a reference
 	 * to the internal top layer dispatch layer if there is no layer above the
-	 * specified one. Remember - input data and services go down, results,
+	 * specified one. Remember - input data and activities go down, results,
 	 * errors and completion events bubble back up the dispatch stack.
 	 * <p>
 	 * The top layer within the dispatch stack is always invisible and is held

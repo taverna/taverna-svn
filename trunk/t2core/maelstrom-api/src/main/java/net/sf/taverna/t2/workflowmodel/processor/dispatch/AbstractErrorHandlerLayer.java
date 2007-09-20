@@ -58,7 +58,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * errors coming back up based on that state model.
 	 * <p>
 	 * Many subclasses will in fact rewrite the JOB message, for example the
-	 * failover behaviour relies on a rewrite of the service set.
+	 * failover behaviour relies on a rewrite of the activity set.
 	 * <p>
 	 * This also sets the property that the layer can actively produce new JOB
 	 * events as failure management layers by default will react to failure
@@ -80,13 +80,13 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 
 	/**
 	 * Generate an appropriate state object from the specified job and list of
-	 * services. The state object is a concrete subclass of JobState.
+	 * activities. The state object is a concrete subclass of JobState.
 	 * 
 	 * @param j
-	 * @param services
+	 * @param activities
 	 * @return
 	 */
-	protected abstract JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> services);
+	protected abstract JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> activities);
 
 	/**
 	 * Abstract superclass of all state models for pending failure handlers.
@@ -100,11 +100,11 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	protected abstract class JobState {
 		protected Job job;
 
-		protected List<? extends ActivityAnnotationContainer> services;
+		protected List<? extends ActivityAnnotationContainer> activities;
 
-		protected JobState(Job job, List<? extends ActivityAnnotationContainer> services2) {
+		protected JobState(Job job, List<? extends ActivityAnnotationContainer> activities) {
 			this.job = job;
-			this.services = services2;
+			this.activities = activities;
 		}
 
 		/**
@@ -130,7 +130,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services) {
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
@@ -140,8 +140,8 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 				stateMap.put(job.getOwningProcess(), stateList);
 			}
 		}
-		stateList.add(getStateObject(job, services));
-		getBelow().receiveJob(job, services);
+		stateList.add(getStateObject(job, activities));
+		getBelow().receiveJob(job, activities);
 	}
 
 	/**

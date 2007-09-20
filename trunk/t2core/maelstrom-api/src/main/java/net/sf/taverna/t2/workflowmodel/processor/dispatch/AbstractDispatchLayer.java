@@ -122,21 +122,21 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services) {
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
 		checkValid(DispatchMessageType.JOB);
 		DispatchLayer<?> below = dispatchStack.layerBelow(this);
 		if (below != null) {
-			below.receiveJob(job, services);
+			below.receiveJob(job, activities);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> services) {
+			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> activities) {
 		checkValid(DispatchMessageType.JOBQUEUE);
 		DispatchLayer below = dispatchStack.layerBelow(this);
 		if (below != null) {
-			below.receiveJobQueue(owningProcess, queue, services);
+			below.receiveJobQueue(owningProcess, queue, activities);
 		}
 
 	}

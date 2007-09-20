@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
+import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -26,12 +26,12 @@ public class DispatchStackTestWithParallelize extends TestCase {
 
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		
-		private List<ServiceAnnotationContainerImpl> services;
+		private List<ActivityAnnotationContainerImpl> activities;
 		
-		public BasicDispatchStackImpl(List<? extends Activity<?>> servicelist) {
-			this.services = new ArrayList<ServiceAnnotationContainerImpl>();
-			for (Activity<?> s : servicelist) {
-				services.add(new ServiceAnnotationContainerImpl(s));
+		public BasicDispatchStackImpl(List<? extends Activity<?>> activityList) {
+			this.activities = new ArrayList<ActivityAnnotationContainerImpl>();
+			for (Activity<?> s : activityList) {
+				activities.add(new ActivityAnnotationContainerImpl(s));
 			}		
 		}
 
@@ -41,8 +41,8 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		}
 
 		@Override
-		protected List<? extends ActivityAnnotationContainer> getServices() {
-			return this.services;
+		protected List<? extends ActivityAnnotationContainer> getActivities() {
+			return this.activities;
 		}
 
 		@Override

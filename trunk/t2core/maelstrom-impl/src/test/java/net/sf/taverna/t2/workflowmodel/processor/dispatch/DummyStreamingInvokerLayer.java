@@ -22,7 +22,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationCont
  */
 public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services) {
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
 		final Job j = job;
 		new Thread(new Runnable() {
 			public void run() {

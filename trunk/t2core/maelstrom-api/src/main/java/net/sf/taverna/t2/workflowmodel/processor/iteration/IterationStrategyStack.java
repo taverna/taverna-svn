@@ -32,7 +32,7 @@ public interface IterationStrategyStack {
 	 * set of named inputs and their cardinalities. This depth is the length of
 	 * the index array which will be added to any output data, so the resultant
 	 * output of each port in the owning processor is the depth of that port as
-	 * defined by the service plus this value.
+	 * defined by the activity plus this value.
 	 * 
 	 * @param inputDepths
 	 * @return

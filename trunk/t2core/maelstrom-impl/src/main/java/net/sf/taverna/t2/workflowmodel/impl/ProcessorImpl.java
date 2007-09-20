@@ -9,7 +9,7 @@ import java.util.Map;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
-import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
+import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -47,7 +47,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 
 	protected List<ProcessorOutputPortImpl> outputPorts = new ArrayList<ProcessorOutputPortImpl>();
 
-	protected List<ServiceAnnotationContainerImpl> serviceList = new ArrayList<ServiceAnnotationContainerImpl>();
+	protected List<ActivityAnnotationContainerImpl> activityList = new ArrayList<ActivityAnnotationContainerImpl>();
 
 	protected AbstractCrystalizer crystalizer;
 
@@ -115,8 +115,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 			}
 
 			@Override
-			protected List<? extends ActivityAnnotationContainer> getServices() {
-				return ProcessorImpl.this.getServiceList();
+			protected List<? extends ActivityAnnotationContainer> getActivities() {
+				return ProcessorImpl.this.getActivityList();
 			}
 
 			/**
@@ -237,17 +237,17 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		e.addContent(opElement);
 		e.addContent(iterationStack.asXML());
 		e.addContent(dispatchStack.asXML());
-		Element servicesElement = new Element("services");
-		for (ServiceAnnotationContainerImpl saci : serviceList) {
-			Element containerElement = new Element("servicecontainer");
-			// Add service detail element
-			Element serviceElement = Tools.activityAsXML(saci.getService());
-			containerElement.addContent(serviceElement);
-			// Add annotations on service container objects
+		Element activitesElement = new Element("activities");
+		for (ActivityAnnotationContainerImpl saci : activityList) {
+			Element containerElement = new Element("activitycontainer");
+			// Add activity detail element
+			Element activityElement = Tools.activityAsXML(saci.getActivity());
+			containerElement.addContent(activityElement);
+			// Add annotations on activity container objects
 			Tools.injectAnnotations(containerElement, saci);
-			servicesElement.addContent(containerElement);
+			activitesElement.addContent(containerElement);
 		}
-		e.addContent(servicesElement);
+		e.addContent(activitesElement);
 		return e;
 	}
 
@@ -285,14 +285,14 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		}
 		dispatchStack.configureFromElement(e.getChild("dispatch"));
 		iterationStack.configureFromElement(e.getChild("iteration"));
-		serviceList.clear();
-		for (Element serviceElement : (List<Element>) e.getChild("services")
-				.getChildren("servicecontainer")) {
-			ServiceAnnotationContainerImpl sac = new ServiceAnnotationContainerImpl(
-					Tools.buildActivity(serviceElement.getChild("service")));
-			// Pick up annotations on service container
-			Tools.populateAnnotationsFromParent(serviceElement, sac);
-			serviceList.add(sac);
+		activityList.clear();
+		for (Element activityElement : (List<Element>) e.getChild("activities")
+				.getChildren("activitycontainer")) {
+			ActivityAnnotationContainerImpl sac = new ActivityAnnotationContainerImpl(
+					Tools.buildActivity(activityElement.getChild("activity")));
+			// Pick up annotations on activity container
+			Tools.populateAnnotationsFromParent(activityElement, sac);
+			activityList.add(sac);
 		}
 	}
 
@@ -360,8 +360,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		return Collections.unmodifiableList(outputPorts);
 	}
 
-	public List<? extends ActivityAnnotationContainer> getServiceList() {
-		return Collections.unmodifiableList(serviceList);
+	public List<? extends ActivityAnnotationContainer> getActivityList() {
+		return Collections.unmodifiableList(activityList);
 	}
 
 	protected void setName(String newName) {

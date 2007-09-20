@@ -37,10 +37,10 @@ public class ProcessorLevelInvocationTest extends TestCase {
 			IOException, ActivityConfigurationException,
 			MalformedIdentifierException {
 
-		// Create a processor from the simple echo service
-		AsynchEchoActivity service = new AsynchEchoActivity();
-		service.configure(new EchoConfig("blah"));
-		processor = Tools.buildFromActivity(service);
+		// Create a processor from the simple echo activity
+		AsynchEchoActivity activity = new AsynchEchoActivity();
+		activity.configure(new EchoConfig("blah"));
+		processor = Tools.buildFromActivity(activity);
 
 		// Set up data manager
 		ContextManager.baseManager = this.dManager;

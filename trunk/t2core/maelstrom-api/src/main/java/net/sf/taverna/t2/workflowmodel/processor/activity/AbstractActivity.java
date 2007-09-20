@@ -11,26 +11,26 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 /**
- * Convenience abstract superclass for generic Service instances. Paramaterized
- * on the configuration type used by the Service implementation - when this
- * object is serialized the getConfiguration method is used to store specific
- * details of the service, this is then used immediately after a call to the
- * default constructor when deserializing from XML on a workflow load.
+ * Convenience abstract superclass for generic Activity instances. Parameterised
+ * on the configuration type used by the Activity implementation - when this
+ * object is serialised the getConfiguration method is used to store specific
+ * details of the activity, this is then used immediately after a call to the
+ * default constructor when deserialising from XML on a workflow load.
  * <p>
  * This class holds port sets and mappings, and returns references directly to
  * them rather than copies thereof.
  * <p>
- * If you're writing an abstract service (one that cannot be directly invoked)
+ * If you're writing an abstract activity (one that cannot be directly invoked)
  * you should extend this class for convenience. This can be useful when you
  * wish to specify some kind of abstract definition of a process which will be
- * bound at workflow invocation time to a particular concrete service through
+ * bound at workflow invocation time to a particular concrete activity through
  * the action of a custom dispatch stack layer (which you will also provide)
  * 
  * @author Tom Oinn
  * @author Stuart Owen
  * 
  * @param <ConfigType>
- *            type of configuration object to be used to hold config information
+ *            type of configuration object to be used to hold configuration information
  */
 public abstract class AbstractActivity<ConfigType> extends
 		AbstractAnnotatedThing implements Activity<ConfigType> {

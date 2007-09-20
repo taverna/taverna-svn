@@ -30,7 +30,7 @@ public interface Edits {
 	public Dataflow createDataflow();
 
 	/**
-	 * Build a new Processor with no ports, iteration system, services or
+	 * Build a new Processor with no ports, iteration system, activities or
 	 * dispatch stack and add it to the specified Dataflow
 	 * 
 	 * @param dataflow
@@ -40,18 +40,18 @@ public interface Edits {
 
 	/**
 	 * Create a new processor in the specified dataflow configured as a default
-	 * Taverna 1 style service with output and input ports matching those of the
-	 * service instance supplied, a default cross product iteration strategy and
+	 * Taverna 1 style activity with output and input ports matching those of the
+	 * Activity instance supplied, a default cross product iteration strategy and
 	 * a dispatch stack consisting of a parallelize, failover, retry and invoke
 	 * layer set.
 	 * 
 	 * @param dataflow
 	 *            the dataflow to add this processor to
-	 * @param service
-	 *            a single service to build the processor around
+	 * @param activity
+	 *            a single activity to build the processor around
 	 */
-	public Edit<Processor> createProcessorFromService(Dataflow dataflow,
-			Activity<?> service);
+	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
+			Activity<?> activity);
 
 	/**
 	 * Connect the output port of the specified processor to a target input
@@ -95,15 +95,15 @@ public interface Edits {
 			DispatchLayer<?> layer);
 
 	/**
-	 * Add a service implementation to the set of services within a Processor
+	 * Add an Activity implementation to the set of activities within a Processor
 	 * 
 	 * @param processor
-	 *            processor to add the service to
-	 * @param service
-	 *            service to add
+	 *            Processor to add the activity to
+	 * @param activity
+	 *            Activity to add
 	 */
-	public Edit<Processor> getAddServiceEdit(Processor processor,
-			Activity<?> service);
+	public Edit<Processor> getAddActivityEdit(Processor processor,
+			Activity<?> activity);
 
 	/**
 	 * Build a new input port on a processor, creating matching ports in the

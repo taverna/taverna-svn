@@ -28,8 +28,8 @@ public class EditsImpl implements Edits {
 		return null;
 	}
 
-	public Edit<Processor> createProcessorFromService(Dataflow dataflow,
-			Activity<?> service) {
+	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
+			Activity<?> activity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -39,9 +39,9 @@ public class EditsImpl implements Edits {
 		return new AddDispatchLayerEdit(stack, layer, position);
 	}
 
-	public Edit<Processor> getAddServiceEdit(Processor processor,
-			Activity<?> service) {
-		return new AddServiceEdit(processor, service);
+	public Edit<Processor> getAddActivityEdit(Processor processor,
+			Activity<?> activity) {
+		return new AddActivityEdit(processor, activity);
 	}
 
 	public Edit<Processor> getCreateProcessorInputPortEdit(Processor processor,

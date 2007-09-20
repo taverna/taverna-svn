@@ -6,7 +6,7 @@ import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 
 /**
- * An output port on a Service instance, used as a bean to hold port name, depth
+ * An output port on an Activity instance, used as a bean to hold port name, depth
  * and granular depth properties.
  * 
  * @author Tom Oinn

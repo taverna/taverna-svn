@@ -11,25 +11,25 @@ public enum DispatchMessageType {
 
 	/**
 	 * A reference to a queue of Job objects waiting to be used as input along
-	 * with a list of services to process them.
+	 * with a list of activities to process them.
 	 */
 	JOBQUEUE,
 
 	/**
-	 * A Job object and list of services to be used to process the data in the
+	 * A Job object and list of activities to be used to process the data in the
 	 * Job. The Job will have been previously extracted from the JobQueue
 	 */
 	JOB,
 
 	/**
-	 * A Job object containing the result of a single service invocation.
+	 * A Job object containing the result of a single activity invocation.
 	 */
 	RESULT,
 
 	/**
 	 * A (possibly partial) completion event from the layer below. This is only
-	 * going to be used when the service invocation is capable of streaming
-	 * partial data back up through the dispatch stack before the service has
+	 * going to be used when the activity invocation is capable of streaming
+	 * partial data back up through the dispatch stack before the activity has
 	 * completed. Not all dispatch stack layers are compatible with this mode of
 	 * operation, for example retry and recursion do not play well here!
 	 */

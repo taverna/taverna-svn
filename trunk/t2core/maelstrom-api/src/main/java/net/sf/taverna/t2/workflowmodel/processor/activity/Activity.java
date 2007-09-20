@@ -7,10 +7,10 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 /**
- * Defines a single abstract or concrete invokable service. Each Processor
+ * Defines a single abstract or concrete invokable activity. Each Processor
  * contains at least one of these and may contain many, similarly the dispatch
- * stack may create new Service instances from e.g. dynamic lookup or resolution
- * of an abstract service to a concrete service or set of services.
+ * stack may create new Activity instances from e.g. dynamic lookup or resolution
+ * of an abstract activity to a concrete activity or set of activities.
  * 
  * @author Tom Oinn
  * 
@@ -18,45 +18,45 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 public interface Activity<ConfigurationType> {
 
 	/**
-	 * Each Service implementation stores configuration within a bean of type
+	 * Each Activity implementation stores configuration within a bean of type
 	 * ConfigurationType, this method returns the configuration. This is used by
-	 * the automatic serialization framework to store the service definition in
+	 * the automatic serialisation framework to store the activity definition in
 	 * the workflow XML.
 	 */
 	public ConfigurationType getConfiguration();
 
 	/**
-	 * When the Service implementation is built from the workflow definition XML
+	 * When the Activity implementation is built from the workflow definition XML
 	 * the object is first constructed with a default constructor then this
 	 * method is called, passing in the configuration bean returned by
 	 * getConfiguration()
 	 * 
 	 * @throws ActivityConfigurationException
-	 *             if a problem occurs when configuring the service
+	 *             if a problem occurs when configuring the activity
 	 */
 	public void configure(ConfigurationType conf)
 			throws ActivityConfigurationException;
 
 	/**
-	 * A Service contains a set of named input ports. Names must be unique
+	 * An Activity contains a set of named input ports. Names must be unique
 	 * within this set.
 	 * 
-	 * @return the set of input ports for this service
+	 * @return the set of input ports for this activity
 	 */
 	public Set<InputPort> getInputPorts();
 
 	/**
-	 * A processor may have different input port names to the service or
-	 * services it contains. This map is keyed on the processor input port names
-	 * with the corresponding value being the service port name.
+	 * A processor may have different input port names to the activity or
+	 * activities it contains. This map is keyed on the processor input port names
+	 * with the corresponding value being the activity port name.
 	 * 
-	 * @return mapping from processor input port names to service input port
+	 * @return mapping from processor input port names to activity input port
 	 *         names
 	 */
 	public Map<String, String> getInputPortMapping();
 
 	/**
-	 * A Service contains a set of named output ports. As with input ports names
+	 * An Activity contains a set of named output ports. As with input ports names
 	 * must be unique within the set.
 	 * 
 	 * @return
@@ -64,12 +64,12 @@ public interface Activity<ConfigurationType> {
 	public Set<OutputPort> getOutputPorts();
 
 	/**
-	 * Outputs of the service may be named differently to those of the
-	 * processor. This map is keyed on service output port name with each
+	 * Outputs of the activity may be named differently to those of the
+	 * processor. This map is keyed on an activity output port name with each
 	 * corresponding value being the processor output port name to which the
-	 * service output is bound.
+	 * activity output is bound.
 	 * 
-	 * @return mapping from service output port name to processor output port
+	 * @return mapping from activity output port name to processor output port
 	 *         name
 	 */
 	public Map<String, String> getOutputPortMapping();

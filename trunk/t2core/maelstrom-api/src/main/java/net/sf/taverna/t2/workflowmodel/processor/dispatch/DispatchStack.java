@@ -8,7 +8,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * The dispatch stack is responsible for consuming a queue of jobs from the
  * iteration strategy and dispatching those jobs through a stack based control
  * flow to an appropriate invocation target. Conceptually the queue and
- * description of services enter the stack at the top, travel down to an
+ * description of activities enter the stack at the top, travel down to an
  * invocation layer at the bottom from which results, errors and completion
  * events rise back up to the top layer. Dispatch stack layers are stored as an
  * ordered list with index 0 being the top of the stack.
@@ -30,7 +30,7 @@ public interface DispatchStack extends Annotated {
 	/**
 	 * Return the layer above (lower index!) the specified layer, or a reference
 	 * to the internal top layer dispatch layer if there is no layer above the
-	 * specified one. Remember - input data and services go down, results,
+	 * specified one. Remember - input data and activities go down, results,
 	 * errors and completion events bubble back up the dispatch stack.
 	 * <p>
 	 * The top layer within the dispatch stack is always invisible and is held

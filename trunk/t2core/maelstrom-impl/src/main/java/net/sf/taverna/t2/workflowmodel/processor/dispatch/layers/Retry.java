@@ -45,8 +45,8 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 
 		int currentRetryCount = 0;
 
-		public RetryState(Job job, List<? extends ActivityAnnotationContainer> services) {
-			super(job, services);
+		public RetryState(Job job, List<? extends ActivityAnnotationContainer> activities) {
+			super(job, activities);
 		}
 
 		/**
@@ -69,7 +69,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 				@Override
 				public void run() {
 					currentRetryCount++;
-					getBelow().receiveJob(job, services);
+					getBelow().receiveJob(job, activities);
 				}
 
 			};
@@ -80,8 +80,8 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 	}
 
 	@Override
-	protected JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> services) {
-		return new RetryState(j, services);
+	protected JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> activities) {
+		return new RetryState(j, activities);
 	}
 
 	public void configure(RetryConfig config) {

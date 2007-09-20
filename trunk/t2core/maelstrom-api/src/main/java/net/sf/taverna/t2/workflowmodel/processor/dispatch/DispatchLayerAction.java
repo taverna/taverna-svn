@@ -29,7 +29,7 @@ public enum DispatchLayerAction {
 	/**
 	 * The layer intercepts and alters the message before passing it onto the
 	 * next layer in the sequence. An example of this would be abstract to
-	 * concrete binding altering the service set on the way downstream. This
+	 * concrete binding altering the activity set on the way downstream. This
 	 * value should only be used if the message is altered, if the routing is
 	 * changed i.e. an error message being discarded in a retry layer the ACT
 	 * value is applicable.

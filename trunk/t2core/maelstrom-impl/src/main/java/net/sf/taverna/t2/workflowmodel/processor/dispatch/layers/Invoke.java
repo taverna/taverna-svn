@@ -20,14 +20,14 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
 
 /**
- * Context free invoker layer, does not pass index arrays of jobs into service
+ * Context free invoker layer, does not pass index arrays of jobs into activity
  * instances.
  * <p>
- * This layer will invoke the first invokable service in the service list, so
+ * This layer will invoke the first invokable activity in the activity list, so
  * any sane dispatch stack will have narrowed this down to a single item list by
  * this point, i.e. by the insertion of a failover layer.
  * <p>
- * Currently only handles services implementing AsynchronousService. <table>
+ * Currently only handles activities implementing {@link AsynchronousActivity}. <table>
  * <tr>
  * <th>DispatchMessageType</th>
  * <th>DispatchLayerAction</th>
@@ -82,24 +82,24 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 	@Override
 	/**
-	 * Receive a job from the layer above and pick the first concrete service
-	 * from the list to invoke. Invoke this service, creating a callback which
+	 * Receive a job from the layer above and pick the first concrete activity
+	 * from the list to invoke. Invoke this activity, creating a callback which
 	 * will wrap up the result messages in the appropriate collection depth
-	 * before sending them on (in general services are not aware of their
+	 * before sending them on (in general activities are not aware of their
 	 * invocation context and should not be responsible for providing correct
 	 * index arrays for results)
 	 * <p>
-	 * This layer will invoke the first invokable service in the service list,
+	 * This layer will invoke the first invokable activity in the activity list,
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, List<? extends ActivityAnnotationContainer> annotatedServices) {
-		for (ActivityAnnotationContainer sac : annotatedServices) {
-			Activity<?> s = sac.getService();
+	public void receiveJob(final Job job, List<? extends ActivityAnnotationContainer> annotatedActivities) {
+		for (ActivityAnnotationContainer sac : annotatedActivities) {
+			Activity<?> s = sac.getActivity();
 			if (s instanceof AsynchronousActivity) {
 
-				// The service is an AsynchronousService so we invoke it with an
-				// AsynchronousServiceCallback object containing appropriate
+				// The activity is an AsynchronousActivity so we invoke it with an
+				// AsynchronousActivityCallback object containing appropriate
 				// callback methods to push results, completions and failures
 				// back to the invocation layer.
 				final AsynchronousActivity<?> as = (AsynchronousActivity<?>) s;
@@ -111,19 +111,19 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						.getOwningProcess());
 
 				// Create a Map of EntityIdentifiers named appropriately given
-				// the service mapping
+				// the activity mapping
 				Map<String, EntityIdentifier> inputData = new HashMap<String, EntityIdentifier>();
 				for (String inputName : job.getData().keySet()) {
-					String serviceInputName = as.getInputPortMapping().get(
+					String activityInputName = as.getInputPortMapping().get(
 							inputName);
-					if (serviceInputName != null) {
-						inputData.put(serviceInputName, job.getData().get(
+					if (activityInputName != null) {
+						inputData.put(activityInputName, job.getData().get(
 								inputName));
 					}
 				}
 
 				// Create a callback object to receive events, completions and
-				// failure notifications from the service
+				// failure notifications from the activity
 				AsynchronousActivityCallback callback = new AsynchronousActivityCallback() {
 
 					private boolean sentJob = false;
@@ -186,8 +186,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					public void receiveResult(
 							Map<String, EntityIdentifier> data, int[] index) {
 
-						// Construct a new result map using the service mapping
-						// (service output name to processor output name)
+						// Construct a new result map using the activity mapping
+						// (activity output name to processor output name)
 						Map<String, EntityIdentifier> resultMap = new HashMap<String, EntityIdentifier>();
 						for (String outputName : data.keySet()) {
 							String processorOutputName = as

@@ -14,7 +14,7 @@ import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
 
 /**
- * Tests the processor factory along with service serialization logic
+ * Tests the processor factory along with activity serialisation logic
  * 
  * @author Tom Oinn
  * 
@@ -23,9 +23,9 @@ public class NaiveProcessorConstructionTest extends TestCase {
 
 	public void testProcessorFactory() throws EditException, JDOMException,
 			IOException, ActivityConfigurationException {
-		AsynchEchoActivity service = new AsynchEchoActivity();
-		service.configure(new EchoConfig("blah"));
-		Tools.buildFromActivity(service);
+		AsynchEchoActivity activity = new AsynchEchoActivity();
+		activity.configure(new EchoConfig("blah"));
+		Tools.buildFromActivity(activity);
 	}
 
 	public void testRoundTripSerializationFromFactory()
@@ -33,9 +33,9 @@ public class NaiveProcessorConstructionTest extends TestCase {
 			IOException, ArtifactNotFoundException, ArtifactStateException,
 			ClassNotFoundException, InstantiationException,
 			IllegalAccessException {
-		AsynchEchoActivity service = new AsynchEchoActivity();
-		service.configure(new EchoConfig("blah"));
-		ProcessorImpl p = Tools.buildFromActivity(service);
+		AsynchEchoActivity activity = new AsynchEchoActivity();
+		activity.configure(new EchoConfig("blah"));
+		ProcessorImpl p = Tools.buildFromActivity(activity);
 
 		ProcessorImpl p2 = new ProcessorImpl();
 		p2.configureFromElement(p.asXML());

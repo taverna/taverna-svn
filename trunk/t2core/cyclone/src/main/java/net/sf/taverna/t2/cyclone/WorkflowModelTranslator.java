@@ -63,7 +63,7 @@ public class WorkflowModelTranslator {
 						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
 				Edit<Processor> addProcessorEdit = edits
-						.createProcessorFromService(dataflow, activity);
+						.createProcessorFromActivity(dataflow, activity);
 				try {
 					Processor t2Processor = addProcessorEdit.doEdit();
 					processorMap.put(t1Processor, t2Processor);

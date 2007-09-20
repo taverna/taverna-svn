@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 /**
- * Thrown when attempting to configure a Service instance with an invalid
+ * Thrown when attempting to configure an Activity instance with an invalid
  * configuration. Causes may include actual configuration errors, unavailable
- * services etc.
+ * activities etc.
  * 
  * @author Tom Oinn
  * 

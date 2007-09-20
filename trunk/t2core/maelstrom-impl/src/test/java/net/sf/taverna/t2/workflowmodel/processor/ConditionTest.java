@@ -31,9 +31,9 @@ public class ConditionTest extends TestCase {
 
 	private Processor createProcessor() throws ActivityConfigurationException,
 			EditException {
-		AsynchEchoActivity service = new AsynchEchoActivity();
-		service.configure(new EchoConfig("blah"));
-		Processor processor = Tools.buildFromActivity(service);
+		AsynchEchoActivity activity = new AsynchEchoActivity();
+		activity.configure(new EchoConfig("blah"));
+		Processor processor = Tools.buildFromActivity(activity);
 		return processor;
 	}
 

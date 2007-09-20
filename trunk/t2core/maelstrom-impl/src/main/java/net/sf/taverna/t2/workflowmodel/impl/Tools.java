@@ -22,7 +22,7 @@ import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
-import net.sf.taverna.t2.annotation.impl.ServiceAnnotationContainerImpl;
+import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -55,7 +55,7 @@ public class Tools {
 	 * retry, parallelize and failover layers configured as a Taverna1 process
 	 * would be.
 	 * <p>
-	 * Modifies the given acivity object, adding the mappings for input and
+	 * Modifies the given activity object, adding the mappings for input and
 	 * output port names (these will all be fooport->fooport but they're still
 	 * needed)
 	 * 
@@ -65,10 +65,10 @@ public class Tools {
 	public static ProcessorImpl buildFromActivity(Activity<?> activity)
 			throws EditException {
 		ProcessorImpl result = new ProcessorImpl();
-		// Add the Service to the processor
-		result.serviceList.add(new ServiceAnnotationContainerImpl(activity));
-		// Create processor inputs and outputs corresponding to service inputs
-		// and outputs and set the mappings in the Service object.
+		// Add the Activity to the processor
+		result.activityList.add(new ActivityAnnotationContainerImpl(activity));
+		// Create processor inputs and outputs corresponding to activity inputs
+		// and outputs and set the mappings in the Activity object.
 		activity.getInputPortMapping().clear();
 		activity.getOutputPortMapping().clear();
 		for (InputPort ip : activity.getInputPorts()) {
@@ -196,7 +196,7 @@ public class Tools {
 					cl = getRavenLoader(ravenElement);
 				} catch (Exception ex) {
 					System.out
-							.println("Exception loading raven classloader for Service instance");
+							.println("Exception loading raven classloader for Activity instance");
 					ex.printStackTrace();
 					// TODO - handle this properly, either by logging correctly
 					// or
@@ -218,9 +218,9 @@ public class Tools {
 	}
 
 	/**
-	 * Build a Service instance from the specified &lt;service&gt; JDOM Element
+	 * Build an Activity instance from the specified &lt;activity&gt; JDOM Element
 	 * using reflection to assemble the configuration bean and configure the new
-	 * Service object. If the &lt;service&gt; has a &lt;raven&gt; child element
+	 * Activity object. If the &lt;activity&gt; has a &lt;raven&gt; child element
 	 * the metadata in that element will be used to locate an appropriate
 	 * ArtifactClassLoader, if absent the ClassLoader used will be the one used
 	 * to load this utility class.
@@ -243,7 +243,7 @@ public class Tools {
 				cl = getRavenLoader(ravenElement);
 			} catch (Exception ex) {
 				System.out
-						.println("Exception loading raven classloader for Service instance");
+						.println("Exception loading raven classloader for Activity instance");
 				ex.printStackTrace();
 				// TODO - handle this properly, either by logging correctly or
 				// by going back to the repository and attempting to fetch the
@@ -271,7 +271,7 @@ public class Tools {
 					processorOutputName);
 		}
 
-		// Handle the configuration of the service
+		// Handle the configuration of the activity
 		Element configElement = e.getChild("java");
 		Object configObject = createBean(configElement, cl);
 		activity.configure(configObject);
@@ -280,7 +280,7 @@ public class Tools {
 
 	/**
 	 * Use the XMLDecoder to build an arbitrary java bean from the &lt;java&gt;
-	 * JDOM Element object. Uses the supplied ClassLoader to accomodate systems
+	 * JDOM Element object. Uses the supplied ClassLoader to accommodate systems
 	 * such as Raven
 	 * 
 	 * @param e
@@ -401,7 +401,7 @@ public class Tools {
 				cl = getRavenLoader(ravenElement);
 			} catch (Exception ex) {
 				System.out
-						.println("Exception loading raven classloader for Service instance");
+						.println("Exception loading raven classloader for Activity instance");
 				ex.printStackTrace();
 				// TODO - handle this properly, either by logging correctly or
 				// by going back to the repository and attempting to fetch the
@@ -422,9 +422,9 @@ public class Tools {
 	}
 
 	/**
-	 * Return a JDOM &lt;service&gt; Element corresponding to the given Service
-	 * implementation. Relies on the XMLEncoder based serialization of the
-	 * configuration bean to store config data.
+	 * Return a JDOM &lt;activity&gt; Element corresponding to the given Activity
+	 * implementation. Relies on the XMLEncoder based serialisation of the
+	 * configuration bean to store configuration data.
 	 * 
 	 * @param a
 	 * @return
@@ -433,7 +433,7 @@ public class Tools {
 	 */
 	public static Element activityAsXML(Activity<?> a) throws JDOMException,
 			IOException {
-		Element e = new Element("service");
+		Element e = new Element("activity");
 
 		ClassLoader cl = a.getClass().getClassLoader();
 		if (cl instanceof LocalArtifactClassLoader) {
@@ -443,7 +443,7 @@ public class Tools {
 		classNameElement.setText(a.getClass().getName());
 		e.addContent(classNameElement);
 
-		// Write out the mappings (processor input -> service input, service
+		// Write out the mappings (processor input -> activity input, activity
 		// output -> processor output)
 		Element ipElement = new Element("inputMap");
 		for (String processorInputName : a.getInputPortMapping().keySet()) {

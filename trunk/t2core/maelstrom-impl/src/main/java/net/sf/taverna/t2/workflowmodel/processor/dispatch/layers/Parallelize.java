@@ -89,8 +89,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> services) {
-		StateModel model = new StateModel(owningProcess, queue, services,
+			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> activities) {
+		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
 		stateMap.put(owningProcess, model);
 		model.fillFromQueue();
@@ -100,7 +100,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		return DispatchLayerAction.FORBIDDEN;
 	}
 
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> services) {
+	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -119,7 +119,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	/**
-	 * Only going to receive this if the service invocation was streaming, in
+	 * Only going to receive this if the activity invocation was streaming, in
 	 * which case we need to handle all completion events and pass them up the
 	 * stack.
 	 */
@@ -143,12 +143,12 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private BlockingQueue<Event> queue;
 
-		private List<? extends ActivityAnnotationContainer> services;
+		private List<? extends ActivityAnnotationContainer> activities;
 
 		public StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends ActivityAnnotationContainer> services, int maxJobs) {
+				List<? extends ActivityAnnotationContainer> activities, int maxJobs) {
 			this.queue = queue;
-			this.services = services;
+			this.activities = activities;
 			this.maximumJobs = maxJobs;
 		}
 
@@ -169,7 +169,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 			}
 			if (e instanceof Job) {
 				activeJobs++;
-				getBelow().receiveJob((Job) e, services);
+				getBelow().receiveJob((Job) e, activities);
 			}
 		}
 

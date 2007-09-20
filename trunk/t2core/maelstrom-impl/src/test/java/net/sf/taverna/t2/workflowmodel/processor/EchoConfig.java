@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
 /**
- * Trivial property class to configure the echo service. As the echo service
+ * Trivial property class to configure the echo activity. As the echo activity
  * actually has no configuration whatsoever I've put some dummy properties
  * in here to test the serialization framework.
  * 
