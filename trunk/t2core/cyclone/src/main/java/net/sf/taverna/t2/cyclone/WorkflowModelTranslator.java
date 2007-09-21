@@ -23,7 +23,6 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.DatalinkImpl;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -51,7 +50,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 /**
  * @author David Withers
  * @author Stuart Owen
- *
+ * 
  */
 public class WorkflowModelTranslator {
 
@@ -109,9 +108,9 @@ public class WorkflowModelTranslator {
 			try {
 				edits.getCreateDataflowOutputPortEdit(dataflow,
 						sinkPort.getName()).doEdit();
-				for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
-					if (inputPort.getName().equals(sinkPort.getName())) {
-						inputMap.put(sinkPort.getProcessor(), inputPort);
+				for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
+					if (outputPort.getName().equals(sinkPort.getName())) {
+						outputMap.put(sinkPort.getProcessor(), outputPort);
 						break;
 					}
 				}
@@ -134,11 +133,14 @@ public class WorkflowModelTranslator {
 						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
 
-				Processor t2Processor = edits.createProcessor(t1Processor.getName());
+				Processor t2Processor = edits.createProcessor(t1Processor
+						.getName());
 				processorMap.put(t1Processor, t2Processor);
 
-				Edit<Processor> addActivityEdit = edits.getAddActivityEdit(t2Processor, activity);
-				Edit<Dataflow> addProcessorEdit = edits.getAddProcessorEdit(dataflow, t2Processor);
+				Edit<Processor> addActivityEdit = edits.getAddActivityEdit(
+						t2Processor, activity);
+				Edit<Dataflow> addProcessorEdit = edits.getAddProcessorEdit(
+						dataflow, t2Processor);
 				try {
 					addActivityEdit.doEdit();
 					addProcessorEdit.doEdit();
@@ -214,9 +216,9 @@ public class WorkflowModelTranslator {
 			DispatchStack dispatchStack) throws EditException {
 		int maxJobs = t1Processor.getWorkers();
 		int maxRetries = t1Processor.getRetries();
-		long backoffFactor = (long) t1Processor.getBackoff();
+		float backoffFactor = (float) t1Processor.getBackoff();
 		int initialDelay = t1Processor.getRetryDelay();
-		int maxDelay = (int) (initialDelay * (backoffFactor ^ maxRetries));
+		int maxDelay = (int) (initialDelay * (Math.pow(backoffFactor, maxRetries)));
 
 		DispatchLayer<?> parallelize = new Parallelize(maxJobs);
 		DispatchLayer<?> failover = new Failover();
@@ -293,25 +295,28 @@ public class WorkflowModelTranslator {
 	 */
 	private void connectDataLinks(ScuflModel scuflModel) {
 		for (DataConstraint dataConstraint : scuflModel.getDataConstraints()) {
-			org.embl.ebi.escience.scufl.Processor source = dataConstraint.getSource().getProcessor();
-			org.embl.ebi.escience.scufl.Processor sink = dataConstraint.getSink().getProcessor();
+			org.embl.ebi.escience.scufl.Processor source = dataConstraint
+					.getSource().getProcessor();
+			org.embl.ebi.escience.scufl.Processor sink = dataConstraint
+					.getSink().getProcessor();
 			String sourceName = dataConstraint.getSource().getName();
 			String sinkName = dataConstraint.getSink().getName();
-			
+
 			EventForwardingOutputPort sourcePort = null;
 			EventHandlingInputPort sinkPort = null;
 			if (inputMap.containsKey(source)) {
 				sourcePort = inputMap.get(source).getInternalOutputPort();
 			} else if (processorMap.containsKey(source)) {
-				sourcePort = findOutputPort(processorMap.get(source), sourceName);
-			}			
+				sourcePort = findOutputPort(processorMap.get(source),
+						sourceName);
+			}
 			if (processorMap.containsKey(sink)) {
 				sinkPort = findInputPort(processorMap.get(sink), sinkName);
 			} else if (outputMap.containsKey(sink)) {
 				sinkPort = outputMap.get(sink).getInternalInputPort();
 			}
 			if (sourcePort != null && sinkPort != null) {
-				Datalink datalink = edits.createDatalink(sourcePort, sinkPort);		
+				Datalink datalink = edits.createDatalink(sourcePort, sinkPort);
 				try {
 					edits.getConnectDatalinkEdit(datalink).doEdit();
 				} catch (EditException e) {

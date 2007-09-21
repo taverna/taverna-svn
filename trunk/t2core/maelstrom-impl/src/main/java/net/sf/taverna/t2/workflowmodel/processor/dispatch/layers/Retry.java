@@ -16,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLa
  * <li>maxRetries = 0 (int)</li>
  * <li>initialDelay = 1000 (milliseconds)</li>
  * <li>maxDelay = 2000 (milliseconds)</li>
- * <li>backoffFactor = 1.0 (long)</li>
+ * <li>backoffFactor = 1.0 (float)</li>
  * </ul>
  * 
  * @author Tom Oinn
@@ -33,7 +33,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 	}
 
 	public Retry(int maxRetries, int initialDelay, int maxDelay,
-			long backoffFactor) {
+			float backoffFactor) {
 		super();
 		this.config.setMaxRetries(maxRetries);
 		this.config.setInitialDelay(initialDelay);
@@ -60,7 +60,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 			if (currentRetryCount == config.getMaxRetries()) {
 				return false;
 			}
-			int delay = (int) (config.getInitialDelay() * (config.getBackoffFactor() ^ currentRetryCount));
+			int delay = (int) (config.getInitialDelay() * (Math.pow(config.getBackoffFactor(), currentRetryCount)));
 			if (delay > config.getMaxDelay()) {
 				delay = config.getMaxDelay();
 			}

@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 public class RetryConfig {
 
-	private long backoffFactor = (long) 1.0;
+	private float backoffFactor = 1f;
 	private int initialDelay = 1000;
 	private int maxDelay = 2000;
 	private int maxRetries = 0;
@@ -14,7 +14,7 @@ public class RetryConfig {
 	 * 
 	 * @return
 	 */
-	public long getBackoffFactor() {
+	public float getBackoffFactor() {
 		return this.backoffFactor;
 	}
 
@@ -47,7 +47,7 @@ public class RetryConfig {
 		return this.maxRetries;
 	}
 
-	public void setBackoffFactor(long factor) {
+	public void setBackoffFactor(float factor) {
 		this.backoffFactor = factor;
 	}
 
