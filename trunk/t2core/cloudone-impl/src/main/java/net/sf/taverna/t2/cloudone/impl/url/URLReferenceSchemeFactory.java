@@ -20,4 +20,21 @@ import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
  */
 public class URLReferenceSchemeFactory extends AbstractReferenceSchemeFactory<URLReferenceScheme> {
 
+	private static URLReferenceSchemeFactory urlRefSchemeFactory;
+	
+	protected URLReferenceSchemeFactory() {
+		super();
+	}
+	
+	public static URLReferenceSchemeFactory getInstance() {
+		if (urlRefSchemeFactory==null) {
+			urlRefSchemeFactory = new URLReferenceSchemeFactory();
+		} 
+		return urlRefSchemeFactory;
+	}
+	
+	private URLReferenceScheme getReferenceScheme() {
+		URLReferenceScheme ref = new URLReferenceScheme();
+		return ref;
+	}
 }
