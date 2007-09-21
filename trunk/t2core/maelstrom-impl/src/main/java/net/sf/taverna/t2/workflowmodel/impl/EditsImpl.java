@@ -6,8 +6,10 @@ import net.sf.taverna.t2.annotation.impl.AddAnnotationEdit;
 import net.sf.taverna.t2.annotation.impl.RemoveAnnotationEdit;
 import net.sf.taverna.t2.annotation.impl.ReplaceAnnotationEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -21,6 +23,11 @@ public class EditsImpl implements Edits {
 
 	public Dataflow createDataflow() {
 		return new DataflowImpl();
+	}
+
+	public Datalink createDatalink(EventForwardingOutputPort source,
+			EventHandlingInputPort sink) {
+		return new DatalinkImpl(source, sink);
 	}
 
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow, Processor processor) {
@@ -78,6 +85,10 @@ public class EditsImpl implements Edits {
 		return new ConnectProcessorOutputEdit(processor, outputPortName, targetPort);
 	}
 
+	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink) {
+		return new ConnectDatalinkEdit(datalink);	
+	}
+	
 	public Edit<OrderedPair<Processor>> getCreateConditionEdit(Processor control, Processor target) {
 		return new CreateConditionEdit(control, target);
 	}

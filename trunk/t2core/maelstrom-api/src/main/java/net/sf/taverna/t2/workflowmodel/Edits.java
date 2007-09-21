@@ -37,6 +37,16 @@ public interface Edits {
 	public Processor createProcessor(String name);
 
 	/**
+	 * Builds a new Datalink with the given source and sink ports
+	 * 
+	 * @param source the source port
+	 * @param sink the sink port
+	 * @return a new Datalink instance
+	 */
+	public Datalink createDatalink(EventForwardingOutputPort source,
+			EventHandlingInputPort sink);
+
+	/**
 	 * Provides an edit object responsible for adding a Processor to a Dataflow
 	 * 
 	 * @param dataflow
@@ -77,6 +87,14 @@ public interface Edits {
 	 */
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort);
+
+	/**
+	 * Connect a datalink to its source and sink.
+	 * 
+	 * @param datalink the datalink to connect
+	 * @return a datalink edit
+	 */
+	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
 
 	/**
 	 * Add a new layer to the specified dispath stack

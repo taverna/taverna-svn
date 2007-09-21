@@ -5,6 +5,9 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
+ * Abstraction of an edit acting on a Dataflow instance. Handles the check to
+ * see that the Dataflow supplied is really a DataflowImpl.
+ * 
  * @author David Withers
  *
  */
