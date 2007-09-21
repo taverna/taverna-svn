@@ -31,7 +31,7 @@ public abstract class AbstractReferenceSchemeFactory<RS extends ReferenceScheme>
 		String className = this.getClass().getCanonicalName();
 		Scanner scanner = new Scanner(this.getClass().getClassLoader()
 				.getResourceAsStream(
-						"/META-INF/referencescheme/" + className + ".text"));
+						"META-INF/referenceschemes/" + className + ".text"));
 		while (scanner.hasNextLine()) {
 			String[] line = scanner.nextLine().split("\\s*=\\s*");
 			String contextname = line[0];
