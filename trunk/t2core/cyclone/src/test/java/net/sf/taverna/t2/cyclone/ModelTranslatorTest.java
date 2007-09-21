@@ -1,47 +1,35 @@
-/*
- * Copyright (C) 2003 The University of Manchester 
- *
- * Modifications to the initial code base are copyright of their
- * respective authors, or their employers as appropriate.  Authorship
- * of the modifications may be determined from the ChangeLog placed at
- * the end of this file.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA.
- *
- ****************************************************************
- * Source code information
- * -----------------------
- * Filename           $RCSfile: ModelTranslatorTest.java,v $
- * Revision           $Revision: 1.6 $
- * Release status     $State: Exp $
- * Last modified on   $Date: 2007-09-20 15:57:18 $
- *               by   $Author: sowen70 $
- * Created on Sep 7, 2007
- *****************************************************************/
 package net.sf.taverna.t2.cyclone;
 
-import static org.junit.Assert.assertTrue; //
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.InputPort;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
@@ -85,39 +73,146 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
 			IOException {
 
-		boolean runTest = false; // this will be removed once the test is
-									// working. It currently relies on skeleton
-									// code being implemented. This flag allows
-									// code to be committed during this process
-									// without the need to keep
-									// commenting/un-commenting this test.
+		System.setProperty("raven.eclipse", "true");
+		setUpRavenRepository();
+		ScuflModel model = loadScufl("translation-test.xml");
+		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
 
-		if (runTest) {
-			System.setProperty("raven.eclipse", "true");
-			setUpRavenRepository();
-			ScuflModel model = loadScufl("translation-test.xml");
-			Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+		List<String> processorNames = new ArrayList<String>();
+		processorNames.addAll(Arrays.asList("processor_a", "processor_b"));
 
-			List<String> processorNames = Arrays.asList("processor_a",
-					"processor_b");
-			List<String> portNames = Arrays.asList("input_1", "input_1",
-					"input_2", "output_1", "output_1", "output_2");
+		List<String> inputNames = new ArrayList<String>();
+		inputNames.addAll(Arrays.asList("input"));
 
-			for (Processor processor : dataflow.getProcessors()) {
-				assertTrue(processorNames.remove(processor.getLocalName()));
-				for (Port inputPort : processor.getInputPorts()) {
-					assertTrue(portNames.remove(inputPort.getName()));
-				}
-				for (Port outputPort : processor.getOutputPorts()) {
-					assertTrue(portNames.remove(outputPort.getName()));
-				}
+		List<String> outputNames = new ArrayList<String>();
+		outputNames.addAll(Arrays.asList("output"));
+
+		List<String> portNameList = Arrays.asList("input_1", "input_2",
+				"input_3", "output_1", "output_2", "output_3");
+		List<String> portNames = new ArrayList<String>(portNameList);
+		List<String> activityPortNames = new ArrayList<String>(portNameList);
+
+		Map<String, String> datalinkMap = new HashMap<String, String>();
+		datalinkMap.put("input", "input_1");
+		datalinkMap.put("output_1", "input_2");
+		datalinkMap.put("output_2", "input_3");
+		datalinkMap.put("output_3", "output");
+
+		for (DataflowInputPort input : dataflow.getInputPorts()) {
+			assertTrue(inputNames.remove(input.getName()));
+			assertEquals(input.getName(), input.getInternalOutputPort()
+					.getName());
+			assertTrue(input.getInternalOutputPort().getOutgoingLinks().size() > 0);
+		}
+		for (DataflowOutputPort output : dataflow.getOutputPorts()) {
+			assertTrue(outputNames.remove(output.getName()));
+			assertEquals(output.getName(), output.getInternalInputPort()
+					.getName());
+			assertNotNull(output.getInternalInputPort().getIncomingLink());
+		}
+		for (Processor processor : dataflow.getProcessors()) {
+			assertTrue(processorNames.remove(processor.getLocalName()));
+			for (Port inputPort : processor.getInputPorts()) {
+				assertTrue(portNames.remove(inputPort.getName()));
 			}
-			assertTrue(portNames.isEmpty());
-			assertTrue(processorNames.isEmpty());
+			for (Port outputPort : processor.getOutputPorts()) {
+				assertTrue(portNames.remove(outputPort.getName()));
+			}
 
-			for (Datalink datalink : dataflow.getLinks()) {
-				datalink.getSource();
+			assertEquals(1, processor.getActivityList().size());
+			Activity<?> activity = processor.getActivityList().get(0)
+					.getActivity();
+			assertNotNull(processor.getLocalName(), activity);
+			Map<String, String> inputPortMap = activity.getInputPortMapping();
+			Map<String, String> outputPortMap = activity.getOutputPortMapping();
+			for (InputPort inputPort : activity.getInputPorts()) {
+				assertTrue(activityPortNames.remove(inputPort.getName()));
+				assertTrue(inputPortMap.containsKey(inputPort.getName()));
+				assertEquals(inputPort.getName(), inputPortMap.get(inputPort
+						.getName()));
+			}
+			for (OutputPort outputPort : activity.getOutputPorts()) {
+				assertTrue(activityPortNames.remove(outputPort.getName()));
+				assertTrue(outputPortMap.containsKey(outputPort.getName()));
+				assertEquals(outputPort.getName(), outputPortMap.get(outputPort
+						.getName()));
+			}
+
+			List<? extends Condition> conditions = processor
+					.getPreconditionList();
+			if (processor.getLocalName().equals("processor_b")) {
+				assertEquals(1, conditions.size());
+				assertEquals("processor_a", conditions.get(0).getControl()
+						.getLocalName());
+				assertEquals("processor_b", conditions.get(0).getTarget()
+						.getLocalName());
+			} else {
+				assertEquals(0, conditions.size());
+			}
+
+			IterationStrategyStackImpl iterationStrategies = (IterationStrategyStackImpl) processor
+					.getIterationStrategy();
+			assertEquals(1, iterationStrategies.getStrategies().size());
+			if (processor.getLocalName().equals("processor_a")) {
+				AbstractIterationStrategyNode terminal = (AbstractIterationStrategyNode) iterationStrategies.getStrategies().get(0).getTerminal();
+				assertEquals(1, terminal.getChildCount());
+				assertTrue(terminal.getChildAt(0) instanceof NamedInputPortNode);
+				assertEquals("input_1", ((NamedInputPortNode) terminal.getChildAt(0)).getPortName());
+			} else if (processor.getLocalName().equals("processor_b")) {
+				AbstractIterationStrategyNode terminal = (AbstractIterationStrategyNode) iterationStrategies.getStrategies().get(0).getTerminal();
+				assertEquals(1, terminal.getChildCount());
+				assertTrue(terminal.getChildAt(0) instanceof CrossProduct);
+				assertEquals(2, ((CrossProduct) terminal.getChildAt(0)).getChildCount());
+				assertTrue(terminal.getChildAt(0).getChildAt(0) instanceof NamedInputPortNode);
+				assertTrue(terminal.getChildAt(0).getChildAt(1) instanceof NamedInputPortNode);
+				assertEquals("input_2", ((NamedInputPortNode) terminal.getChildAt(0).getChildAt(0)).getPortName());
+				assertEquals("input_3", ((NamedInputPortNode) terminal.getChildAt(0).getChildAt(1)).getPortName());
+			}
+
+			List<DispatchLayer<?>> dispatchLayers = processor
+					.getDispatchStack().getLayers();
+			assertEquals(4, dispatchLayers.size());
+			assertTrue(dispatchLayers.get(0) instanceof Parallelize);
+			assertTrue(dispatchLayers.get(1) instanceof Failover);
+			assertTrue(dispatchLayers.get(2) instanceof Retry);
+			assertTrue(dispatchLayers.get(3) instanceof Invoke);
+			if (processor.getLocalName().equals("processor_a")) {
+				assertEquals(1, ((Parallelize) dispatchLayers.get(0))
+						.getConfiguration().getMaximumJobs());
+				assertEquals(0, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getMaxRetries());
+				assertEquals(0, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getInitialDelay());
+				assertEquals(0, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getMaxDelay());
+				assertEquals(1, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getBackoffFactor(), 0);
+			} else if (processor.getLocalName().equals("processor_b")) {
+				assertEquals(4, ((Parallelize) dispatchLayers.get(0))
+						.getConfiguration().getMaximumJobs());
+				assertEquals(2, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getMaxRetries());
+				assertEquals(1000, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getInitialDelay());
+				assertEquals(2250, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getMaxDelay());
+				assertEquals(1.5, ((Retry) dispatchLayers.get(2))
+						.getConfiguration().getBackoffFactor(), 0);
 			}
 		}
+		assertTrue(portNames.isEmpty());
+		assertTrue(processorNames.isEmpty());
+		assertTrue(inputNames.isEmpty());
+		assertTrue(outputNames.isEmpty());
+		assertTrue(activityPortNames.isEmpty());
+
+		List<? extends Datalink> datalinks = dataflow.getLinks();
+		assertEquals(4, datalinks.size());
+		for (Datalink datalink : datalinks) {
+			assertTrue(datalinkMap.containsKey(datalink.getSource().getName()));
+			assertEquals(datalink.getSink().getName(), datalinkMap.get(datalink
+					.getSource().getName()));
+		}
+
 	}
 }
