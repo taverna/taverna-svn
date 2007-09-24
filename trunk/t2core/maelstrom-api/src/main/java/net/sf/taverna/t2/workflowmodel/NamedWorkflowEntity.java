@@ -7,7 +7,7 @@ package net.sf.taverna.t2.workflowmodel;
  * Global names are not defined outside of the context of a given instance of a
  * workflow as the same workflow may be re-used in multiple other workflows,
  * there is therefore no single parent defined for some entities and the
- * approach of traversing the heirarchy to build a fully qualified name cannot
+ * approach of traversing the hierarchy to build a fully qualified name cannot
  * be applied. A given instance can be treated this way but this depends on
  * dataflow rather than inherent workflow structure.
  * <p>

@@ -36,7 +36,7 @@ public interface Merge extends NamedWorkflowEntity {
 
 	/**
 	 * The Merge object has a single output port through which modified events
-	 * are emited as described in the javadoc for getInputPorts
+	 * are emitted as described in the javadoc for getInputPorts
 	 * 
 	 * @return OutputPort for this Merge object
 	 */
