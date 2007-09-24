@@ -55,23 +55,18 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	 * {@link net.sf.taverna.t2.cyclone.WorkflowModelTranslator#doTranslation(org.embl.ebi.escience.scufl.ScuflModel)}.
 	 * 
 	 * @throws IOException
-	 * @throws XScuflFormatException
-	 * @throws DuplicateConcurrencyConstraintNameException
-	 * @throws ConcurrencyConstraintCreationException
-	 * @throws MalformedNameException
-	 * @throws DuplicateProcessorNameException
-	 * @throws DataConstraintCreationException
-	 * @throws ProcessorCreationException
-	 * @throws UnknownPortException
-	 * @throws UnknownProcessorException
+	 * @throws XScuflFormatException 
+	 * @throws DuplicateConcurrencyConstraintNameException 
+	 * @throws ConcurrencyConstraintCreationException 
+	 * @throws MalformedNameException 
+	 * @throws DuplicateProcessorNameException 
+	 * @throws DataConstraintCreationException 
+	 * @throws ProcessorCreationException 
+	 * @throws UnknownPortException 
+	 * @throws UnknownProcessorException 
 	 */
 	@Test
-	public void testDoTranslation() throws UnknownProcessorException,
-			UnknownPortException, ProcessorCreationException,
-			DataConstraintCreationException, DuplicateProcessorNameException,
-			MalformedNameException, ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
-			IOException {
+	public void testDoTranslation() throws WorkflowTranslationException, IOException, UnknownProcessorException, UnknownPortException, ProcessorCreationException, DataConstraintCreationException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException {
 
 		System.setProperty("raven.eclipse", "true");
 		setUpRavenRepository();

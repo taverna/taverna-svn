@@ -65,58 +65,60 @@ public class WorkflowModelTranslator {
 	private WorkflowModelTranslator() {
 	}
 
-	public static Dataflow doTranslation(ScuflModel scuflModel) {
+	public static Dataflow doTranslation(ScuflModel scuflModel) throws WorkflowTranslationException {
 		WorkflowModelTranslator translator = new WorkflowModelTranslator();
 
 		Dataflow dataflow = translator.edits.createDataflow();
 
-		translator.createInputs(scuflModel, dataflow);
+		try {
+			translator.createInputs(scuflModel, dataflow);
+			
+			translator.createOutputs(scuflModel, dataflow);
 
-		translator.createOutputs(scuflModel, dataflow);
+			translator.createProcessors(scuflModel, dataflow);
 
-		translator.createProcessors(scuflModel, dataflow);
+			translator.connectDataLinks(scuflModel);
 
-		translator.connectDataLinks(scuflModel);
-
-		translator.connectConditions(scuflModel);
+			translator.connectConditions(scuflModel);
+			
+		} catch (EditException e) {
+			throw new WorkflowTranslationException("An error occurred trying to edit the target Dataflow whilst doing a T1 workflow translation.",e);
+		} catch (ActivityConfigurationException e) {
+			throw new WorkflowTranslationException("An error occurred whilst trying to configure an Activity whilst doing a T1 workflow translation.",e);
+		} catch (ActivityTranslatorNotFoundException e) {
+			throw new WorkflowTranslationException("An error occurred whilst trying to find a T2 ActivityTranslator for a T1 processor",e);
+		}
 
 		return dataflow;
 	}
 
-	private void createInputs(ScuflModel scuflModel, Dataflow dataflow) {
+	private void createInputs(ScuflModel scuflModel, Dataflow dataflow) throws EditException {
 		for (Port sourcePort : scuflModel.getWorkflowSourcePorts()) {
-			try {
-				// TODO check granular depth value
-				edits.getCreateDataflowInputPortEdit(dataflow,
-						sourcePort.getName(), getPortDepth(sourcePort), 0)
-						.doEdit();
-				for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
-					if (inputPort.getName().equals(sourcePort.getName())) {
-						inputMap.put(sourcePort.getProcessor(), inputPort);
-						break;
-					}
-				}
-			} catch (EditException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			
+		// TODO check granular depth value
+		edits.getCreateDataflowInputPortEdit(dataflow,
+				sourcePort.getName(), getPortDepth(sourcePort), 0)
+				.doEdit();
+		for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
+			if (inputPort.getName().equals(sourcePort.getName())) {
+				inputMap.put(sourcePort.getProcessor(), inputPort);
+				break;
 			}
+		}
+			
 		}
 	}
 
-	private void createOutputs(ScuflModel scuflModel, Dataflow dataflow) {
+	private void createOutputs(ScuflModel scuflModel, Dataflow dataflow) throws EditException {
 		for (Port sinkPort : scuflModel.getWorkflowSinkPorts()) {
-			try {
-				edits.getCreateDataflowOutputPortEdit(dataflow,
-						sinkPort.getName()).doEdit();
-				for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
-					if (outputPort.getName().equals(sinkPort.getName())) {
-						outputMap.put(sinkPort.getProcessor(), outputPort);
-						break;
-					}
+			
+			edits.getCreateDataflowOutputPortEdit(dataflow,
+					sinkPort.getName()).doEdit();
+			for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
+				if (outputPort.getName().equals(sinkPort.getName())) {
+					outputMap.put(sinkPort.getProcessor(), outputPort);
+					break;
 				}
-			} catch (EditException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -124,11 +126,14 @@ public class WorkflowModelTranslator {
 	/**
 	 * @param scuflModel
 	 * @param dataflow
+	 * @throws ActivityConfigurationException 
+	 * @throws EditException 
+	 * @throws ActivityTranslatorNotFoundException 
 	 */
-	private void createProcessors(ScuflModel scuflModel, Dataflow dataflow) {
+	private void createProcessors(ScuflModel scuflModel, Dataflow dataflow) throws ActivityConfigurationException, EditException, ActivityTranslatorNotFoundException {
 		for (org.embl.ebi.escience.scufl.Processor t1Processor : scuflModel
 				.getProcessors()) {
-			try {
+			
 				ActivityTranslator<?> translator = ActivityTranslatorFactory
 						.getTranslator(t1Processor);
 				Activity<?> activity = translator.doTranslation(t1Processor);
@@ -141,7 +146,7 @@ public class WorkflowModelTranslator {
 						t2Processor, activity);
 				Edit<Dataflow> addProcessorEdit = edits.getAddProcessorEdit(
 						dataflow, t2Processor);
-				try {
+				
 					addActivityEdit.doEdit();
 					addProcessorEdit.doEdit();
 
@@ -154,19 +159,7 @@ public class WorkflowModelTranslator {
 
 					setIterationStrategy(t1Processor,
 							(IterationStrategyStackImpl) t2Processor
-									.getIterationStrategy());
-
-				} catch (EditException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} catch (ActivityTranslatorNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (ActivityConfigurationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+									.getIterationStrategy());	
 		}
 	}
 
@@ -271,8 +264,9 @@ public class WorkflowModelTranslator {
 
 	/**
 	 * @param scuflModel
+	 * @throws EditException 
 	 */
-	private void connectConditions(ScuflModel scuflModel) {
+	private void connectConditions(ScuflModel scuflModel) throws EditException {
 		for (ConcurrencyConstraint concurrencyConstraint : scuflModel
 				.getConcurrencyConstraints()) {
 			Processor controlProcessor = processorMap.get(concurrencyConstraint
@@ -281,19 +275,17 @@ public class WorkflowModelTranslator {
 					.getTargetProcessor());
 			Edit<OrderedPair<Processor>> addConditionEdit = edits
 					.getCreateConditionEdit(controlProcessor, targetProcessor);
-			try {
-				addConditionEdit.doEdit();
-			} catch (EditException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
+			addConditionEdit.doEdit();
 		}
 	}
 
 	/**
 	 * @param scuflModel
+	 * @throws EditException 
+	 * @throws WorkflowTranslationException 
 	 */
-	private void connectDataLinks(ScuflModel scuflModel) {
+	private void connectDataLinks(ScuflModel scuflModel) throws EditException, WorkflowTranslationException {
 		for (DataConstraint dataConstraint : scuflModel.getDataConstraints()) {
 			org.embl.ebi.escience.scufl.Processor source = dataConstraint
 					.getSource().getProcessor();
@@ -317,14 +309,16 @@ public class WorkflowModelTranslator {
 			}
 			if (sourcePort != null && sinkPort != null) {
 				Datalink datalink = edits.createDatalink(sourcePort, sinkPort);
-				try {
-					edits.getConnectDatalinkEdit(datalink).doEdit();
-				} catch (EditException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
+				edits.getConnectDatalinkEdit(datalink).doEdit();
+				
 			} else {
-				// TODO throw translation exception
+				if (sourcePort == null) {
+					throw new WorkflowTranslationException("The Taverna 1 sourcePort is NULL for the data constraint:"+dataConstraint);
+				}
+				else {
+					throw new WorkflowTranslationException("The Taverna 1 sinkPort is NULL for the data constraint:"+dataConstraint);
+				}
 			}
 		}
 	}
