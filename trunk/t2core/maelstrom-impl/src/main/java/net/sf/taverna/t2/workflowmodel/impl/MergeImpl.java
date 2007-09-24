@@ -52,7 +52,7 @@ public class MergeImpl implements Merge {
 			}
 			i++;
 		}
-		return -1;
+		return -1; //FIXME: as the javadoc states, this is a bad thing!
 	}
 
 	protected void receiveEvent(Event e, String portName) {
