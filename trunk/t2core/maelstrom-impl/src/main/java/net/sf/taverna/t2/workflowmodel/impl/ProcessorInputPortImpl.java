@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
@@ -9,7 +11,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
  * a ProcessorImpl. If the filter level is undefined this input port will always
  * throw workflow structure exceptions when you push data into it. This port
  * must be linked to a crystalizer or something which offers the same
- * operational contract, it requires a full heirarchy of data tokens (i.e. if
+ * operational contract, it requires a full hierarchy of data tokens (i.e. if
  * you push something in with an index you must at some point subsequent to that
  * push at least a single list in with the empty index)
  * 
@@ -17,7 +19,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
  * 
  */
 public class ProcessorInputPortImpl extends AbstractFilteringInputPort implements
-		ProcessorInputPort {
+		ProcessorInputPort,MutableAnnotated {
 
 	private ProcessorImpl parent;
 
@@ -43,6 +45,14 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 	
 	public Processor getProcessor() {
 		return this.parent;
+	}
+	
+	public void addAnnotation(WorkflowAnnotation newAnnotation) {
+		annotations.add(newAnnotation);
+	}
+
+	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
+		annotations.remove(annotationToRemove);
 	}
 
 }

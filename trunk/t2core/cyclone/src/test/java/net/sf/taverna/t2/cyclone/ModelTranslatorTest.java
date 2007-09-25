@@ -1,8 +1,11 @@
 package net.sf.taverna.t2.cyclone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,10 +19,15 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
+import net.sf.taverna.t2.workflowmodel.Merge;
+import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.impl.MergeInputPortImpl;
+import net.sf.taverna.t2.workflowmodel.impl.MergeOutputPortImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
@@ -54,24 +62,16 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	 * Test method for
 	 * {@link net.sf.taverna.t2.cyclone.WorkflowModelTranslator#doTranslation(org.embl.ebi.escience.scufl.ScuflModel)}.
 	 * 
-	 * @throws IOException
-	 * @throws XScuflFormatException 
-	 * @throws DuplicateConcurrencyConstraintNameException 
-	 * @throws ConcurrencyConstraintCreationException 
-	 * @throws MalformedNameException 
-	 * @throws DuplicateProcessorNameException 
-	 * @throws DataConstraintCreationException 
-	 * @throws ProcessorCreationException 
-	 * @throws UnknownPortException 
-	 * @throws UnknownProcessorException 
+	 * <p>
+	 * A general all encompassing test of the translation processes.
+	 * </p>
+	 * 
+	 * @throws Exception
 	 */
 	@Test
-	public void testDoTranslation() throws WorkflowTranslationException, IOException, UnknownProcessorException, UnknownPortException, ProcessorCreationException, DataConstraintCreationException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException {
+	public void testDoTranslation() throws Exception {
 
-		System.setProperty("raven.eclipse", "true");
-		setUpRavenRepository();
-		ScuflModel model = loadScufl("translation-test.xml");
-		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+		Dataflow dataflow = translateScuflFile("translation-test.xml");
 
 		List<String> processorNames = new ArrayList<String>();
 		processorNames.addAll(Arrays.asList("processor_a", "processor_b"));
@@ -209,5 +209,150 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 					.getSource().getName()));
 		}
 
+	}
+
+	private Dataflow translateScuflFile(String filename) throws IOException,
+			UnknownProcessorException, UnknownPortException,
+			ProcessorCreationException, DataConstraintCreationException,
+			DuplicateProcessorNameException, MalformedNameException,
+			ConcurrencyConstraintCreationException,
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			WorkflowTranslationException {
+		System.setProperty("raven.eclipse", "true");
+		setUpRavenRepository();
+		ScuflModel model = loadScufl(filename);
+		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+		return dataflow;
+	}
+	
+	@Test
+	public void testDataflowPortLinks() throws Exception {
+		Dataflow dataflow = translateScuflFile("translation-test-workflow-ports.xml");
+		DataflowInputPort workflowInput_1=null;
+		DataflowInputPort workflowInput_2=null;
+		DataflowOutputPort workflowOutput_1=null;
+		DataflowOutputPort workflowOutput_2=null;
+		
+		for (DataflowInputPort port : dataflow.getInputPorts()) {
+			if (port.getName().equals("workflow_input_1")) {
+				workflowInput_1=port;
+			}
+			else if (port.getName().equals("workflow_input_2")) {
+				workflowInput_2=port;
+			}
+		}
+		assertNotNull("No input to dataflow called workflow_input_1 found",workflowInput_1);
+		assertNotNull("No input to dataflow called workflow_input_2 found",workflowInput_2);
+		
+		for (DataflowOutputPort port : dataflow.getOutputPorts()) {
+			if (port.getName().equals("workflow_output_1")) {
+				workflowOutput_1=port;
+			}
+			else if (port.getName().equals("workflow_output_2")) {
+				workflowOutput_2=port;
+			}
+		}
+		assertNotNull("No output to dataflow called workflow_output_1 found",workflowOutput_1);
+		assertNotNull("No output to dataflow called workflow_output_2 found",workflowOutput_2);
+		
+		assertEquals(1,workflowInput_1.getInternalOutputPort().getOutgoingLinks().size());
+		assertEquals(1,workflowInput_2.getInternalOutputPort().getOutgoingLinks().size());
+		
+		Datalink link;
+		link=(Datalink)workflowInput_1.getInternalOutputPort().getOutgoingLinks().toArray()[0];
+		assertEquals("input_1",link.getSink().getName());
+		
+		link=(Datalink)workflowInput_2.getInternalOutputPort().getOutgoingLinks().toArray()[0];
+		assertEquals("input_2",link.getSink().getName());
+		
+		assertEquals("output_1",workflowOutput_1.getInternalInputPort().getIncomingLink().getSource().getName());
+		assertEquals("output_2",workflowOutput_2.getInternalInputPort().getIncomingLink().getSource().getName());
+	}
+	
+	@Test
+	public void testMerge() throws Exception {
+		Dataflow dataflow = translateScuflFile("translation-test-merge.xml");
+		
+		//quick sanity check that it loaded correctly:
+		assertEquals(3,dataflow.getInputPorts().size());
+		assertEquals(1,dataflow.getOutputPorts().size());
+		assertEquals(1,dataflow.getProcessors().size());
+		Processor processor = dataflow.getProcessors().get(0);
+		assertEquals("a_processor",processor.getLocalName());
+		assertEquals(2,processor.getInputPorts().size());
+		
+		EventHandlingInputPort inputPort_1=null;
+		EventHandlingInputPort inputPort_2=null;
+		for (EventHandlingInputPort input : processor.getInputPorts()) {
+			if (input.getName().equals("input_1")) {
+				inputPort_1=input;
+			}
+			else if (input.getName().equals("input_2")) {
+				inputPort_2=input;
+			}
+			else {
+				fail("Input port found with unexpected name:"+input.getName());
+			}
+		}
+		assertNotNull("input_1 was not found",inputPort_1);
+		assertNotNull("input_2 was not found",inputPort_2);
+		//test input_1 supports a merge.
+		List<? extends Datalink> links = dataflow.getLinks();
+		assertEquals(5,links.size());
+		DataflowInputPort workflowIn1=null;
+		DataflowInputPort workflowIn2=null;
+		for (DataflowInputPort port : dataflow.getInputPorts()) {
+			if (port.getName().equals("workflow_input_1")) {
+				workflowIn1=port;
+			}
+			else if (port.getName().equals("workflow_input_2")) {
+				workflowIn2=port;
+			}
+		}
+		assertNotNull("No workflow input named workflow_input_1 found",workflowIn1);
+		assertNotNull("No workflow input named workflow_input_2 found",workflowIn2);
+		
+		assertEquals(1,workflowIn1.getInternalOutputPort().getOutgoingLinks().size());
+		assertEquals(1,workflowIn2.getInternalOutputPort().getOutgoingLinks().size());
+		
+		Datalink input1link=(Datalink)workflowIn1.getInternalOutputPort().getOutgoingLinks().toArray()[0];
+		Datalink input2link=(Datalink)workflowIn1.getInternalOutputPort().getOutgoingLinks().toArray()[0];
+		
+		assertTrue(input1link.getSink() instanceof MergeInputPortImpl);
+		assertTrue(input2link.getSink() instanceof MergeInputPortImpl);
+		
+		MergeInputPortImpl mergeInput1=(MergeInputPortImpl)input1link.getSink();
+		MergeInputPortImpl mergeInput2=(MergeInputPortImpl)input2link.getSink();
+		
+		assertTrue(inputPort_1.getIncomingLink().getSource() instanceof MergeOutputPort);
+		
+		MergeOutputPort mergeOutput = (MergeOutputPort)inputPort_1.getIncomingLink().getSource();
+		
+		Merge merge = mergeInput1.getMergeInstance();
+		
+		assertSame(merge, mergeInput2.getMergeInstance());
+		assertSame(merge,mergeOutput.getMerge());
+		
+		//test that input_2 doesn't.
+		assertFalse(inputPort_2.getIncomingLink().getSource() instanceof MergeOutputPortImpl);
+	}
+	
+	@Test
+	public void testDefaultValues()  throws Exception {
+		Dataflow dataflow = translateScuflFile("translation-test-defaults.xml");
+		
+		//quick sanity check that it loaded correctly:
+		assertEquals(0,dataflow.getInputPorts().size());
+		assertEquals(1,dataflow.getOutputPorts().size());
+		assertEquals(1,dataflow.getProcessors().size());
+		Processor processor = dataflow.getProcessors().get(0);
+		assertEquals("a_processor",processor.getLocalName());
+		assertEquals(1,processor.getInputPorts().size());
+		
+		InputPort inputPort = processor.getInputPorts().get(0);
+		
+		assertEquals("input",inputPort.getName());
+		
+		//TODO:test that the default value on input is 'DEFAULT'
 	}
 }

@@ -18,7 +18,7 @@ public interface MergeInputPort extends EventHandlingInputPort {
 	 * If this is a workflow data token and the first such received under a
 	 * given owning process ID the implementing method also must also store the
 	 * cardinality, i.e. length of index array + depth of token. Subsequent
-	 * events are matched to this, if they have inequal cardinality the parent
+	 * events are matched to this, if they have unequal cardinality the parent
 	 * Merge operation will throw a WorkflowStructureException as the merge
 	 * would result in a collection which violated the constraints defined by
 	 * the Taverna 2 data model.

@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel;
 import net.sf.taverna.t2.invocation.Event;
 
 /**
- * Input port capable of receiving and reacing to workflow events.
+ * Input port capable of receiving and reacting to workflow events.
  * 
  * @author Tom Oinn
  * 

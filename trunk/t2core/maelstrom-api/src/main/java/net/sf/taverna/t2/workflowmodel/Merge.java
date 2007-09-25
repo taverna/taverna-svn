@@ -23,7 +23,7 @@ public interface Merge extends NamedWorkflowEntity {
 	/**
 	 * The Merge object contains an ordered list of InputPort objects. Data and
 	 * completion events arriving at an input port have the index of that input
-	 * within the list prepended to their index array, effictlvey placing them
+	 * within the list prepended to their index array, effectively placing them
 	 * in a virtual collection the top level of which corresponds to the various
 	 * input ports defined within the Merge node. When final completion events
 	 * from all input ports are received the Merge object registers the top

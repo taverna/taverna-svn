@@ -10,6 +10,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.NamingException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
@@ -323,6 +324,14 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 				Datalink dl = pip.getIncomingLink();
 				if (dl != null) {
 					result.add(dl);
+					
+					//if the source is from a Merge, then gather the merge input links
+					if (dl.getSource() instanceof MergeOutputPortImpl) {
+						MergeOutputPortImpl mergeOutput = (MergeOutputPortImpl) dl.getSource();
+						for (MergeInputPort inputPort : mergeOutput.getMerge().getInputPorts()) {
+							result.add(inputPort.getIncomingLink());
+						}
+					}
 				}
 			}
 		}
@@ -334,8 +343,7 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 				result.add(dl);
 			}
 		}
-		// TODO - when Merge is implemented we'll need to handle merge inputs
-		// here as well
+		
 		return result;
 	}
 

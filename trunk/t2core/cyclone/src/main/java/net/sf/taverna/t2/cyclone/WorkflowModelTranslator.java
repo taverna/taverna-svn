@@ -20,6 +20,8 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
+import net.sf.taverna.t2.workflowmodel.Merge;
+import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -58,9 +60,9 @@ public class WorkflowModelTranslator {
 
 	private Map<org.embl.ebi.escience.scufl.Processor, Processor> processorMap = new HashMap<org.embl.ebi.escience.scufl.Processor, Processor>();
 
-	private Map<org.embl.ebi.escience.scufl.Processor, DataflowInputPort> inputMap = new HashMap<org.embl.ebi.escience.scufl.Processor, DataflowInputPort>();
+	private Map<org.embl.ebi.escience.scufl.Port, DataflowInputPort> inputMap = new HashMap<org.embl.ebi.escience.scufl.Port, DataflowInputPort>();
 
-	private Map<org.embl.ebi.escience.scufl.Processor, DataflowOutputPort> outputMap = new HashMap<org.embl.ebi.escience.scufl.Processor, DataflowOutputPort>();
+	private Map<org.embl.ebi.escience.scufl.Port, DataflowOutputPort> outputMap = new HashMap<org.embl.ebi.escience.scufl.Port, DataflowOutputPort>();
 
 	private WorkflowModelTranslator() {
 	}
@@ -101,7 +103,7 @@ public class WorkflowModelTranslator {
 				.doEdit();
 		for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
 			if (inputPort.getName().equals(sourcePort.getName())) {
-				inputMap.put(sourcePort.getProcessor(), inputPort);
+				inputMap.put(sourcePort, inputPort);
 				break;
 			}
 		}
@@ -116,7 +118,7 @@ public class WorkflowModelTranslator {
 					sinkPort.getName()).doEdit();
 			for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
 				if (outputPort.getName().equals(sinkPort.getName())) {
-					outputMap.put(sinkPort.getProcessor(), outputPort);
+					outputMap.put(sinkPort, outputPort);
 					break;
 				}
 			}
@@ -287,30 +289,41 @@ public class WorkflowModelTranslator {
 	 */
 	private void connectDataLinks(ScuflModel scuflModel) throws EditException, WorkflowTranslationException {
 		for (DataConstraint dataConstraint : scuflModel.getDataConstraints()) {
-			org.embl.ebi.escience.scufl.Processor source = dataConstraint
+			org.embl.ebi.escience.scufl.InputPort scuflSinkPort = (org.embl.ebi.escience.scufl.InputPort)dataConstraint.getSink();
+			org.embl.ebi.escience.scufl.OutputPort scuflSourcePort = (org.embl.ebi.escience.scufl.OutputPort)dataConstraint.getSource();
+			boolean isMerge=false;
+			if (scuflSinkPort.getMergeMode()==org.embl.ebi.escience.scufl.InputPort.MERGE) {
+				isMerge=true;
+			}
+			
+			org.embl.ebi.escience.scufl.Processor sourceProcessor = dataConstraint
 					.getSource().getProcessor();
-			org.embl.ebi.escience.scufl.Processor sink = dataConstraint
+			org.embl.ebi.escience.scufl.Processor sinkProcessor = dataConstraint
 					.getSink().getProcessor();
 			String sourceName = dataConstraint.getSource().getName();
 			String sinkName = dataConstraint.getSink().getName();
 
 			EventForwardingOutputPort sourcePort = null;
 			EventHandlingInputPort sinkPort = null;
-			if (inputMap.containsKey(source)) {
-				sourcePort = inputMap.get(source).getInternalOutputPort();
-			} else if (processorMap.containsKey(source)) {
-				sourcePort = findOutputPort(processorMap.get(source),
+			if (inputMap.containsKey(scuflSourcePort)) {
+				sourcePort = inputMap.get(scuflSourcePort).getInternalOutputPort();
+			} else if (processorMap.containsKey(sourceProcessor)) {
+				sourcePort = findOutputPort(processorMap.get(sourceProcessor),
 						sourceName);
 			}
-			if (processorMap.containsKey(sink)) {
-				sinkPort = findInputPort(processorMap.get(sink), sinkName);
-			} else if (outputMap.containsKey(sink)) {
-				sinkPort = outputMap.get(sink).getInternalInputPort();
+			if (processorMap.containsKey(sinkProcessor)) {
+				sinkPort = findInputPort(processorMap.get(sinkProcessor), sinkName);
+			} else if (outputMap.containsKey(scuflSinkPort)) {
+				sinkPort = outputMap.get(scuflSinkPort).getInternalInputPort();
 			}
 			if (sourcePort != null && sinkPort != null) {
-				Datalink datalink = edits.createDatalink(sourcePort, sinkPort);
-				
-				edits.getConnectDatalinkEdit(datalink).doEdit();
+				if (!isMerge) {
+					Datalink datalink = edits.createDatalink(sourcePort, sinkPort);
+					edits.getConnectDatalinkEdit(datalink).doEdit();
+				}
+				else {
+					addMergedDatalink(sourcePort, sinkPort);
+				}
 				
 			} else {
 				if (sourcePort == null) {
@@ -321,6 +334,23 @@ public class WorkflowModelTranslator {
 				}
 			}
 		}
+	}
+	
+	private void addMergedDatalink(EventForwardingOutputPort sourcePort, EventHandlingInputPort sinkPort) throws EditException, WorkflowTranslationException {
+		Merge merge=null;
+		if (sinkPort.getIncomingLink()==null) { 
+			merge=edits.createMerge(sinkPort);
+		}
+		else {
+			if (sinkPort.getIncomingLink().getSource() instanceof MergeOutputPort) {
+				merge = ((MergeOutputPort)sinkPort.getIncomingLink().getSource()).getMerge();
+			}
+			else {
+				//FIXME: what to do when a Taverna 1 workflow has 2 inputs to a single port that isn't a merge?? For now throw an exception
+				throw new WorkflowTranslationException("Unable to translate a workflow that has multiple un-merged inputs to a single port.");
+			}
+		}
+		edits.getConnectMergedDatalinkEdit(merge, sourcePort, sinkPort).doEdit();
 	}
 
 	private EventHandlingInputPort findInputPort(Processor processor,

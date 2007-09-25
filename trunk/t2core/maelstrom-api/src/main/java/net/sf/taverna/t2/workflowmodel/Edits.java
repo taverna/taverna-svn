@@ -18,6 +18,8 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
  * construct and manipulate the workflow model.
  * 
  * @author Tom Oinn
+ * @author Stuart Owen
+ * @author David Withers
  * 
  */
 public interface Edits {
@@ -95,9 +97,31 @@ public interface Edits {
 	 * @return a datalink edit
 	 */
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
+	
+	/**
+	 * Creates and returns an instance of an Edit<Merge> that is responsible for generating the links to an from 
+	 * the Merge instance to link together the source and sink port via the merge instance.
+	 * 
+	 * @return a new instance of Edit<Merge> constructed from the provided parameters.
+	 * 
+	 * @param merge a Merge instance
+	 * @param sourcePort the source port from which a link is to be created.
+	 * @param sinkPort the sink port to which the link is to be created.
+	 * 
+	 * @see Merge
+	 */
+	public Edit<Merge> getConnectMergedDatalinkEdit(Merge merge,EventForwardingOutputPort sourcePort, EventHandlingInputPort sinkPort);
+	
+	/**
+	 * @param sinkPort
+	 * @return an instance of Merge, using the sink port to generate the Merge name.
+	 * 
+	 * @see Merge
+	 */
+	public Merge createMerge(EventHandlingInputPort sinkPort);
 
 	/**
-	 * Add a new layer to the specified dispath stack
+	 * Add a new layer to the specified dispatch stack
 	 * 
 	 * @param stack
 	 *            Stack to add to
@@ -155,9 +179,9 @@ public interface Edits {
 	 *            name of the output port, unique within the set of processor
 	 *            output ports
 	 * @param portDepth
-	 *            conceptual depth of collections emited from this port
+	 *            conceptual depth of collections emitted from this port
 	 * @param granularDepth
-	 *            granular depth, lowest collection depth that can be emited
+	 *            granular depth, lowest collection depth that can be emitted
 	 *            within a stream
 	 */
 	public Edit<Processor> getCreateProcessorOutputPortEdit(

@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.invocation.Completion;
@@ -13,7 +14,7 @@ import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 
 public class MergeImpl implements Merge {
 
-	private List<MergeInputPortImpl> inputs;
+	private List<MergeInputPortImpl> inputs = new ArrayList<MergeInputPortImpl>();
 
 	private String name;
 	
@@ -22,11 +23,29 @@ public class MergeImpl implements Merge {
 	public MergeImpl(String mergeName) {
 		super();
 		this.name = mergeName;
-		this.output = new BasicEventForwardingOutputPort("merged", 0, 0);
+		this.output = new MergeOutputPortImpl(this,"merged", 0, 0);
 	}
 
 	public String getLocalName() {
 		return this.name;
+	}
+	
+	/**
+	 * Adds a new input port to the internal list of ports.
+	 * 
+	 * @param inputPort the MergeInputPortImpl
+	 */
+	public void addInputPort(MergeInputPortImpl inputPort) {
+		inputs.add(inputPort);
+	}
+	
+	/**
+	 * Removes an input port from the internal list of ports.
+	 * 
+	 * @param inputPort
+	 */
+	public void removeInputPort(MergeInputPortImpl inputPort) {
+		inputs.remove(inputPort);
 	}
 	
 	public List<? extends MergeInputPort> getInputPorts() {

@@ -1,11 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.AbstractPort;
-import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 
-public class MergeInputPortImpl extends AbstractPort implements MergeInputPort {
+public class MergeInputPortImpl extends AbstractEventHandlingInputPort implements MergeInputPort {
 
 	private MergeImpl parent;
 	
@@ -18,10 +17,8 @@ public class MergeInputPortImpl extends AbstractPort implements MergeInputPort {
 		parent.receiveEvent(e, this.name);
 	}
 
-	public Datalink getIncomingLink() {
-		// TODO Auto-generated method stub
-		return null;
+	public Merge getMergeInstance() {
+		return parent;
 	}
-
 
 }

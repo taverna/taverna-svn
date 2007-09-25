@@ -11,6 +11,7 @@ import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -89,6 +90,27 @@ public class EditsImpl implements Edits {
 		return new ConnectDatalinkEdit(datalink);	
 	}
 	
+	/**
+	 * Creates a MergeImpl instance, using the sinkPort to generate its name, which is the name of the port appended with 'Merge'.
+	 */
+	public Merge createMerge(EventHandlingInputPort sinkPort) {
+		String mergeName = sinkPort.getName()+"Merge";
+		return new MergeImpl(mergeName);
+	}
+
+	/**
+	 * @return a new instance of ConnectMergedDatalinkEdit constructed from the provided parameters.
+	 * 
+	 * @param merge a Merge instance
+	 * @param sourcePort the source port from which a link is to be created.
+	 * @param sinkPort the sink port to which the link is to be created.
+	 */
+	public Edit<Merge> getConnectMergedDatalinkEdit(Merge merge,
+			EventForwardingOutputPort sourcePort,
+			EventHandlingInputPort sinkPort) {
+		return new ConnectMergedDatalinkEdit(merge,sourcePort,sinkPort);
+	}
+
 	public Edit<OrderedPair<Processor>> getCreateConditionEdit(Processor control, Processor target) {
 		return new CreateConditionEdit(control, target);
 	}
