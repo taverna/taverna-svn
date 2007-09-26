@@ -1,19 +1,14 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jdom.JDOMException;
-import org.jdom.output.XMLOutputter;
-
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
