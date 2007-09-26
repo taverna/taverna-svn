@@ -28,14 +28,14 @@ public abstract class ActivityPortDefinitionBean {
 	}
 	
 	/**
-	 * @return the cardinal depth of the port
+	 * @return the depth of the port
 	 */
 	public int getDepth() {
 		return depth;
 	}
 	
 	/**
-	 * @param depth the cardinal depth of the port
+	 * @param the depth of the port
 	 */
 	public void setDepth(int depth) {
 		this.depth = depth;

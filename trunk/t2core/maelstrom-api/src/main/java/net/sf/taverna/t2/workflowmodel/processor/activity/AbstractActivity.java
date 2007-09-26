@@ -52,12 +52,23 @@ public abstract class AbstractActivity<ConfigType> extends
 
 	public abstract ConfigType getConfiguration();
 	
+	/**
+	 * Provides access to an implementation specific factory class responsible for building ports.
+	 * Since this method is abstract, the implementation of this AbstractActivity is responsible for
+	 * providing an instance of the builder.
+	 */
 	protected abstract ActivityPortBuilder getPortBuilder();
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getInputPortMapping()
+	 */
 	public final Map<String, String> getInputPortMapping() {
 		return this.inputPortMapping;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getInputPorts()
+	 */
 	public final Set<InputPort> getInputPorts() {
 		return inputPorts;
 	}
@@ -66,14 +77,31 @@ public abstract class AbstractActivity<ConfigType> extends
 		return this.outputPortMapping;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getOutputPorts()
+	 */
 	public final Set<OutputPort> getOutputPorts() {
 		return outputPorts;
 	}
 
+	/**
+	 * Creates and adds a new input port with the provided properties.
+	 * 
+	 * @param portName - the name of the port to be created.
+	 * @param portDepth - the depth of the port to be created.
+	 * @param mimeTypes - a list of String representations of the MIME type this port will accept as inputs.
+	 */
 	protected void addInput(String portName, int portDepth, List<String>mimeTypes) {
 		inputPorts.add(getPortBuilder().buildInputPort(portName, portDepth,mimeTypes));
 	}
 
+	/**
+	 * Creates and adds a new output port with the provided properties.
+	 * @param portName - the name of the port to be created.
+	 * @param portDepth - the depth of the port to be created
+	 * @param granularDepth - the granular depth of the port to be created
+	 * @param mimeTypes - a List of String representations of the MIME type this port will emit as outputs.
+	 */
 	protected void addOutput(String portName, int portDepth, int granularDepth, List<String>mimeTypes) {
 		outputPorts.add(getPortBuilder().buildOutputPort(portName, portDepth,
 				granularDepth,mimeTypes));
