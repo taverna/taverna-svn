@@ -19,18 +19,18 @@ public interface ActivityPortsDefinitionBean {
 	/**
 	 * @return a list of {@link ActivityInputPortDefinitionBean} that describes each input port
 	 */
-	public List<ActivityInputPortDefinitionBean>getInputPortDefinitions();
+	List<ActivityInputPortDefinitionBean>getInputPortDefinitions();
 	/**
 	 * @param portDefinitions, a list of {@link ActivityInputPortDefinitionBean} that describes each input port
 	 */
-	public void setInputPortDefinitions(List<ActivityInputPortDefinitionBean> portDefinitions);
+	void setInputPortDefinitions(List<ActivityInputPortDefinitionBean> portDefinitions);
 	
 	/**
 	 * @return a list of {@link ActivityOutputPortDefinitionBean} that describes each output port.
 	 */
-	public List<ActivityOutputPortDefinitionBean>getOutputPortDefinitions();
+	List<ActivityOutputPortDefinitionBean>getOutputPortDefinitions();
 	/**
 	 * @param portDefinitions, a list of {@link ActivityOutputPortDefinitionBean} that describes each output port
 	 */
-	public void setOutputPortDefinitions(List<ActivityOutputPortDefinitionBean> portDefinitions);
+	void setOutputPortDefinitions(List<ActivityOutputPortDefinitionBean> portDefinitions);
 }

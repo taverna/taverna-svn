@@ -6,6 +6,7 @@ package net.sf.taverna.t2.workflowmodel;
  * 
  * @see Merge
  * @see EventForwardingOutputPort
+ * 
  * @author Stuart Owen
  *
  */
@@ -14,5 +15,5 @@ public interface MergeOutputPort extends EventForwardingOutputPort {
 	/**
 	 * @return the Merge instance the port is associated with. 
 	 */
-	public Merge getMerge();
+	Merge getMerge();
 }

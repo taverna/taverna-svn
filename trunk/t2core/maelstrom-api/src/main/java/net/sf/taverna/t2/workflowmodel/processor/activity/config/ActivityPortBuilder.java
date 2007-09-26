@@ -27,7 +27,7 @@ public interface ActivityPortBuilder {
 	 * @param mimeTypes
 	 * @return
 	 */
-	public InputPort buildInputPort(String portName, int portDepth, List<String> mimeTypes);
+	InputPort buildInputPort(String portName, int portDepth, List<String> mimeTypes);
 	
 	/**
 	 * Builds an instance of an {@link OutputPort} for an Activity.
@@ -37,6 +37,6 @@ public interface ActivityPortBuilder {
 	 * @param mimeTypes
 	 * @return
 	 */
-	public OutputPort buildOutputPort(String portName, int portDepth, int portGranularDepth, List<String> mimeTypes);
+	OutputPort buildOutputPort(String portName, int portDepth, int portGranularDepth, List<String> mimeTypes);
 	
 }

@@ -6,6 +6,12 @@ import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 
+/**
+ * An ActivityTranslator specifically for translating Taverna 1 Beanshell Processors to a Taverna 2 Beanshell Activity
+ * 
+ * @see ActivityTranslator
+ * @author Stuart Owen
+ */
 public class BeanshellActivityTranslator extends AbstractActivityTranslator<BeanshellActivityConfigurationBean> {
 
 	@Override
@@ -19,7 +25,6 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
 		
-		//FIXME: what if we are casting to (or from) the wrong version of a BeanshellProcessor??
 		bean.setScript(((BeanshellProcessor)processor).getScript());
 		return bean;
 	}
