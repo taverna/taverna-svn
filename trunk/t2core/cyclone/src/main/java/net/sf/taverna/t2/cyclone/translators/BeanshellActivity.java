@@ -1,24 +1,17 @@
 package net.sf.taverna.t2.cyclone.translators;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import org.embl.ebi.escience.baclava.DataThing;
-import org.embl.ebi.escience.scufl.OutputPort;
-
-import bsh.Interpreter;
-
-import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
+import bsh.Interpreter;
 
 //FIXME: this doesn't belong in this package. It should be moved to a separate module
 /**
@@ -75,8 +68,8 @@ public class BeanshellActivity extends
 					// run
 					interpreter.eval(configurationBean.getScript());
 					// get and clear outputs
-					for (String output : configurationBean.getOutputPortNames()) {
-						Object value = interpreter.get(output);
+					for (ActivityOutputPortDefinitionBean outputBean : configurationBean.getOutputPortDefinitions()) {
+						Object value = interpreter.get(outputBean.getName());
 						if (value != null) {
 							dataManager.register(value);
 						}

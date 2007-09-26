@@ -8,7 +8,7 @@ import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.annotation.impl.MimeTypeImpl;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
 
 /**
  * <p>

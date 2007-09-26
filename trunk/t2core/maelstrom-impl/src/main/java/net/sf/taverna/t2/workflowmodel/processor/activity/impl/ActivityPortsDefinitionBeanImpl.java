@@ -1,15 +1,18 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortsDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
 /**
  * <p>
- * A helper that provides an implementation of {@link ActivityPortsDefinitionBean}. This may be used as a holder
- * when configuring an Activity that has its ports defined dynamically, or may be used through a delegation model
- * for an Activity that has its ports implicitly defined and uses ConfigType that implements ActivityPortDefinitionBean directly
+ * A helper that provides an implementation of {@link ActivityPortsDefinitionBean}. This may be used as a intermediate 
+ * when configuring an Activity that has its ports defined dynamically, or may be used directly as the implementation of ActivityPortDefinitionBean 
+ * for the ConfigType for an Activity that defines its ports explicitly.
  * </p>
  * <p>
  * Using this class simplifies configuring the Activity with the use of {@link AbstractActivity#configurePorts(ActivityPortsDefinitionBean)}
@@ -19,56 +22,37 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortsDefinitio
  */
 public class ActivityPortsDefinitionBeanImpl implements ActivityPortsDefinitionBean {
 
-	private List<String> inputPortNames;
-	private List<Integer> inputPortDepth;
-	private List<List<String>> inputPortMimeTypes;
+	private List<ActivityInputPortDefinitionBean> inputs = new ArrayList<ActivityInputPortDefinitionBean>();
+	private List<ActivityOutputPortDefinitionBean> outputs = new ArrayList<ActivityOutputPortDefinitionBean>();
 	
-	private List<String> outputPortNames;
 	
-	private List<Integer> outputPortDepth;
-	private List<Integer> outputPortGranularDepth;
-	private List<List<String>> outputPortMimeTypes;
-	
-	public List<String> getInputPortNames() {
-		return inputPortNames;
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean#getInputPortDefinitions()
+	 */
+	public List<ActivityInputPortDefinitionBean> getInputPortDefinitions() {
+		return inputs;
 	}
-	public void setInputPortNames(List<String> inputPortNames) {
-		this.inputPortNames = inputPortNames;
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean#getOutputPortDefinitions()
+	 */
+	public List<ActivityOutputPortDefinitionBean> getOutputPortDefinitions() {
+		return outputs;
 	}
-	public List<String> getOutputPortNames() {
-		return outputPortNames;
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean#setInputPortDefinitions(java.util.List)
+	 */
+	public void setInputPortDefinitions(
+			List<ActivityInputPortDefinitionBean> portDefinitions) {
+		inputs=portDefinitions;
 	}
-	public void setOutputPortNames(List<String> outputPortNames) {
-		this.outputPortNames = outputPortNames;
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean#setOutputPortDefinitions(java.util.List)
+	 */
+	public void setOutputPortDefinitions(
+			List<ActivityOutputPortDefinitionBean> portDefinitions) {
+		outputs=portDefinitions;
 	}
-	public List<Integer> getInputPortDepth() {
-		return inputPortDepth;
-	}
-	public void setInputPortDepth(List<Integer> inputDepth) {
-		this.inputPortDepth = inputDepth;
-	}
-	public List<Integer> getOutputPortDepth() {
-		return outputPortDepth;
-	}
-	public void setOutputPortDepth(List<Integer> outputPortDepth) {
-		this.outputPortDepth = outputPortDepth;
-	}
-	public List<Integer> getOutputPortGranularDepth() {
-		return outputPortGranularDepth;
-	}
-	public void setOutputPortGranularDepth(List<Integer> outputPortGranularDepth) {
-		this.outputPortGranularDepth = outputPortGranularDepth;
-	}
-	public List<List<String>> getInputPortMimeTypes() {
-		return inputPortMimeTypes;
-	}
-	public void setInputPortMimeTypes(List<List<String>> inputPortMimeType) {
-		this.inputPortMimeTypes = inputPortMimeType;
-	}
-	public List<List<String>> getOutputPortMimeTypes() {
-		return outputPortMimeTypes;
-	}
-	public void setOutputPortMimeTypes(List<List<String>> outputPortMimeType) {
-		this.outputPortMimeTypes = outputPortMimeType;
-	}	
 }

@@ -1,12 +1,13 @@
 package net.sf.taverna.t2.cyclone.translators;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortsDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
@@ -75,42 +76,37 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 */
 	protected void populateConfigurationBeanPortDetails(Processor processor,
 			ActivityPortsDefinitionBean configBean) {
-		List<String> inputPortNames = new ArrayList<String>();
-		List<Integer> inputPortDepth = new ArrayList<Integer>();
-		List<List<String>> inputPortMimeTypes = new ArrayList<List<String>>();
-
-		List<String> outputPortNames = new ArrayList<String>();
-		List<Integer> outputPortDepth = new ArrayList<Integer>();
-		List<Integer> outputPortGranularDepth = new ArrayList<Integer>();
-		List<List<String>> outputPortMimeTypes = new ArrayList<List<String>>();
+		List<ActivityInputPortDefinitionBean> inputDefinitions = new ArrayList<ActivityInputPortDefinitionBean>();
+		List<ActivityOutputPortDefinitionBean> outputDefinitions = new ArrayList<ActivityOutputPortDefinitionBean>();
 
 		for (InputPort inputPort : processor.getInputPorts()) {
-			inputPortNames.add(inputPort.getName());
-			inputPortDepth.add(determineDepthFromSyntacticType(inputPort
+			ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
+			bean.setName(inputPort.getName());
+			bean.setDepth(determineDepthFromSyntacticType(inputPort
 					.getSyntacticType()));
-			inputPortMimeTypes.add(Arrays.asList(inputPort.getSyntacticType()));
+			List<String> mimeTypes = new ArrayList<String>();
+			mimeTypes.add(inputPort.getSyntacticType());
+			bean.setMimeTypes(mimeTypes);
+			inputDefinitions.add(bean);
 		}
 
 		for (OutputPort outPort : processor.getOutputPorts()) {
-			outputPortNames.add(outPort.getName());
-			outputPortDepth.add(determineDepthFromSyntacticType(outPort
+			ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
+			bean.setName(outPort.getName());
+			bean.setDepth(determineDepthFromSyntacticType(outPort
 					.getSyntacticType()));
 
 			// TODO: check correct default value for granular depth. Setting
 			// this to the same as depth will prevent streaming.
-			outputPortGranularDepth.add(0);
-			outputPortMimeTypes.add(Arrays.asList(outPort.getSyntacticType()));
+			bean.setGranularDepth(0);
+			List<String> mimeTypes = new ArrayList<String>();
+			mimeTypes.add(outPort.getSyntacticType());
+			bean.setMimeTypes(mimeTypes);
+			outputDefinitions.add(bean);
 
 		}
-
-		configBean.setInputPortNames(inputPortNames);
-		configBean.setInputPortDepth(inputPortDepth);
-		configBean.setInputPortMimeTypes(inputPortMimeTypes);
-		
-		configBean.setOutputPortNames(outputPortNames);
-		configBean.setOutputPortDepth(outputPortDepth);
-		configBean.setOutputPortGranularDepth(outputPortGranularDepth);
-		configBean.setOutputPortMimeTypes(outputPortMimeTypes);
+		configBean.setInputPortDefinitions(inputDefinitions);
+		configBean.setOutputPortDefinitions(outputDefinitions);
 	}
 
 	/**

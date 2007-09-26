@@ -1,14 +1,23 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdom.JDOMException;
+import org.jdom.output.XMLOutputter;
+
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
 /**
  * Convenience abstract superclass for generic Activity instances. Parameterised
@@ -98,18 +107,15 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param configBean
 	 */
 	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
-		for (int i=0;i<configBean.getInputPortNames().size();i++) {
-			String name = configBean.getInputPortNames().get(i);
-			int depth = configBean.getInputPortDepth().get(i);
-			addInput(name, depth, configBean.getInputPortMimeTypes().get(i));
+		
+		for (ActivityInputPortDefinitionBean inputDef : configBean.getInputPortDefinitions()) {
+			addInput(inputDef.getName(), inputDef.getDepth(), inputDef.getMimeTypes());
 		}
 		
-		for (int i=0;i<configBean.getOutputPortNames().size();i++) {
-			String name = configBean.getOutputPortNames().get(i);
-			int depth = configBean.getOutputPortDepth().get(i);
-			int granularDepth = configBean.getOutputPortGranularDepth().get(i);
-			addOutput(name, depth, granularDepth, configBean.getOutputPortMimeTypes().get(i));
+		for (ActivityOutputPortDefinitionBean outputDef : configBean.getOutputPortDefinitions()) {
+			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef.getGranularDepth(),outputDef.getMimeTypes());
 		}
+		
 	}
 
 }

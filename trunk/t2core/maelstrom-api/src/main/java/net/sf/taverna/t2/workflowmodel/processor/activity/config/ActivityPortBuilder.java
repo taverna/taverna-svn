@@ -1,9 +1,11 @@
-package net.sf.taverna.t2.workflowmodel.processor.activity;
+package net.sf.taverna.t2.workflowmodel.processor.activity.config;
 
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * <p>
