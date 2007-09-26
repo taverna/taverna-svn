@@ -29,7 +29,7 @@ public class ConnectMergedDatalinkEditTest {
 		merge = new MergeImpl("the merge");
 		ProcessorImpl p1 = new ProcessorImpl();
 		ProcessorImpl p2 = new ProcessorImpl();
-		sourcePort=new ProcessorOutputPortImpl("source_port",0,0,p1);
+		sourcePort=new ProcessorOutputPortImpl(p1,"source_port",0,0);
 		sinkPort=new ProcessorInputPortImpl(p2,"sink_port",0);
 	}
 	
@@ -60,7 +60,7 @@ public class ConnectMergedDatalinkEditTest {
 		assertSame(sinkPort.getIncomingLink().getSource(),merge.getOutputPort());
 		
 		ProcessorImpl p3=new ProcessorImpl();
-		ProcessorOutputPortImpl sourcePort2=new ProcessorOutputPortImpl("source_port2",0,0,p3);
+		ProcessorOutputPortImpl sourcePort2=new ProcessorOutputPortImpl(p3,"source_port2",0,0);
 		
 		Edit<Merge> theEdit2 = new ConnectMergedDatalinkEdit(merge,sourcePort2,sinkPort);
 		theEdit2.doEdit();
@@ -90,7 +90,7 @@ public class ConnectMergedDatalinkEditTest {
 		Edit<Merge> theEdit = new ConnectMergedDatalinkEdit(merge,sourcePort,sinkPort);
 		theEdit.doEdit();
 		ProcessorImpl p3=new ProcessorImpl();
-		ProcessorOutputPortImpl sourcePort2=new ProcessorOutputPortImpl("source_port2",0,0,p3);
+		ProcessorOutputPortImpl sourcePort2=new ProcessorOutputPortImpl(p3,"source_port2",0,0);
 		Edit<Merge> theEdit2 = new ConnectMergedDatalinkEdit(merge,sourcePort2,sinkPort);
 		theEdit2.doEdit();
 		theEdit2.undo();

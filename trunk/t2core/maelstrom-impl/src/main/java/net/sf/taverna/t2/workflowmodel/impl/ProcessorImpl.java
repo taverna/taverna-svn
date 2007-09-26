@@ -280,11 +280,10 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		Element opElement = e.getChild("outputs");
 		for (Element portElement : (List<Element>) opElement
 				.getChildren("port")) {
-			ProcessorOutputPortImpl popi = new ProcessorOutputPortImpl(
+			ProcessorOutputPortImpl popi = new ProcessorOutputPortImpl(this,
 					portElement.getAttributeValue("name"), Integer
 							.parseInt(portElement.getAttributeValue("depth")),
-					Integer.parseInt(portElement.getAttributeValue("grain")),
-					this);
+					Integer.parseInt(portElement.getAttributeValue("grain")));
 			// Pick up annotations on output port
 			Tools.populateAnnotationsFromParent(portElement, popi);
 			outputPorts.add(popi);

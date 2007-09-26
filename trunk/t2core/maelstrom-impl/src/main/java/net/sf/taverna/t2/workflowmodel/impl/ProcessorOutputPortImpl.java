@@ -11,14 +11,15 @@ import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
  * instances.
  * 
  * @author Tom Oinn
+ * @Stuart Owen
  * 
  */
 public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort implements ProcessorOutputPort{
 
 	private ProcessorImpl parent = null;
 	
-	protected ProcessorOutputPortImpl(String portName, int portDepth,
-			int granularDepth, ProcessorImpl parent) {
+	protected ProcessorOutputPortImpl(ProcessorImpl parent,String portName, int portDepth,
+			int granularDepth) {
 		super(portName, portDepth, granularDepth);
 		this.parent = parent;
 	}
