@@ -44,8 +44,6 @@ public class URLLocationalContextTest {
 
 	private FileDataManager fileDataManager;
 
-	private FileDataManager fileDataManager2;
-
 	private DataPeer dataPeer;
 
 	private Set<LocationalContext> contextSet;
