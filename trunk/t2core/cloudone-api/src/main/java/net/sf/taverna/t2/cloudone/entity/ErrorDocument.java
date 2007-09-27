@@ -9,10 +9,13 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 
 /**
  * Represents a single error document within the data manager. The error
- * document contains a Throwable and a message, either of which may be null.
+ * document contains a {@link Throwable} and a message, either of which may be
+ * <code>null</code>, but not both.
  *
  * @author Tom Oinn
  * @author Matthew Pocock
+ * @author Ian Dunlop
+ * @author Stian Soiland
  *
  */
 public class ErrorDocument implements
@@ -25,12 +28,29 @@ public class ErrorDocument implements
 
 	private String stackTrace;
 
+	/**
+	 * Construct an ErrorDocument that is to be configured from
+	 * {@link #setFromBean(ErrorDocumentBean)}.
+	 *
+	 */
 	public ErrorDocument() {
 		identifier = null;
 		message = null;
 		cause = null;
 	}
 
+	/**
+	 * Construct an ErrorDocument from an identifier, message and/or cause.
+	 * Either of <code>message</code> and <code>cause</code> can be
+	 * <code>null</code>, but not both.
+	 *
+	 * @param identifier
+	 *            The identifier as created by the {@link net.sf.taverna.t2.cloudone.DataManager}
+	 * @param message
+	 *            The optional error message
+	 * @param cause
+	 *            The optional cause as a {@link Throwable}
+	 */
 	public ErrorDocument(final ErrorDocumentIdentifier identifier,
 			final String message, final Throwable cause) {
 		if (message == null && cause == null) {
@@ -42,6 +62,16 @@ public class ErrorDocument implements
 		this.cause = cause;
 	}
 
+	/**
+	 * Check equality with another object. Two {@link ErrorDocument}s are
+	 * considered equal if they have the same {@link #getIdentifier()}.
+	 *
+	 * @param obj
+	 *            The object to check equality against
+	 * @return true if and only if <code>obj</code> is an
+	 *         {@link ErrorDocument} and it's {@link #getIdentifier()} equals
+	 *         the identifier of this ErrorDocument.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -54,16 +84,24 @@ public class ErrorDocument implements
 			return false;
 		}
 		final ErrorDocument other = (ErrorDocument) obj;
-		if (identifier == null) {
-			if (other.identifier != null) {
+		if (getIdentifier() == null) {
+			if (other.getIdentifier() != null) {
 				return false;
 			}
-		} else if (!identifier.equals(other.identifier)) {
+		} else if (!getIdentifier().equals(other.getIdentifier())) {
 			return false;
 		}
 		return true;
 	}
 
+	/**
+	 * Get as a serialisable {@link ErrorDocumentBean}. Note that
+	 * {@link #getCause()} will not be serialised, although it's
+	 * {@link #getStackTrace()} will.
+	 *
+	 * @return A serialisable {@link ErrorDocumentBean} configured from this
+	 *         ErrorDocument.
+	 */
 	public ErrorDocumentBean getAsBean() {
 		ErrorDocumentBean bean = new ErrorDocumentBean();
 		bean.setIdentifier(identifier.getAsBean());
@@ -100,14 +138,27 @@ public class ErrorDocument implements
 		return stackTrace;
 	}
 
+	/**
+	 * Calculate the hashcode. The hashcode is the same as of the
+	 * {@link #getIdentifier()}.
+	 *
+	 * @return The calculated hashcode
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((identifier == null) ? 0 : identifier.hashCode());
-		return result;
+		return getIdentifier().hashCode();
 	}
 
+	/**
+	 * Initialise from an {@link ErrorDocumentBean}. This method can only be
+	 * called once and only if the empty constructor {@link #ErrorDocument()}
+	 * was used.
+	 *
+	 * @see #getAsBean()
+	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
+	 * @param bean
+	 *            The {@link ErrorDocumentBean} from where to initialise
+	 */
 	public void setFromBean(ErrorDocumentBean bean) {
 		if (identifier != null) {
 			throw new IllegalStateException("Already initialised");
