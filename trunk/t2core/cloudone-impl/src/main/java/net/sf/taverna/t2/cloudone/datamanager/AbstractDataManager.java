@@ -109,12 +109,24 @@ public abstract class AbstractDataManager implements DataManager {
 		return Collections.singletonList(namespace);
 	}
 
-	protected DataDocumentIdentifier nextDataIdentifier() {
+	/**
+	 * Generate a new {@link DataDocumentIdentifier} in the current namespace.
+	 *
+	 * @return The new {@link DataDocumentIdentifier}.
+	 */
+	public DataDocumentIdentifier nextDataIdentifier() {
 		String id = generateId(IDType.Data);
 		return new DataDocumentIdentifier(id);
 	}
 
-	protected ErrorDocumentIdentifier nextErrorIdentifier(int depth,
+	/**
+	 * Generate a new {@link ErrorDocumentIdentifier} in the current namespace.
+	 *
+	 * @param depth The depth of the error document
+	 * @param implicitDepth The implicit depth of the error document
+	 * @return The new {@link ErrorDocumentIdentifier}.
+	 */
+	public ErrorDocumentIdentifier nextErrorIdentifier(int depth,
 			int implicitDepth) throws IllegalArgumentException {
 		if (depth < 0 || implicitDepth < 0) {
 			throw new IllegalArgumentException(
@@ -125,7 +137,13 @@ public abstract class AbstractDataManager implements DataManager {
 		return new ErrorDocumentIdentifier(id);
 	}
 
-	protected EntityListIdentifier nextListIdentifier(int depth)
+	/**
+	 * Generate a new {@link EntityListIdentifier} in the current namespace.
+	 *
+	 * @param depth The depth of the list
+	 * @return The new {@link EntityListIdentifier}.
+	 */
+	public EntityListIdentifier nextListIdentifier(int depth)
 			throws IllegalArgumentException {
 		if (depth < 1) {
 			throw new IllegalArgumentException("Depth must be at least 1");
@@ -134,6 +152,10 @@ public abstract class AbstractDataManager implements DataManager {
 		return new EntityListIdentifier(id);
 	}
 
+
+	/**
+	 * @see DataManager#registerDocument(Set)
+	 */
 	public DataDocumentIdentifier registerDocument(
 			final Set<ReferenceScheme> references) throws StorageException {
 		final DataDocumentIdentifier id = nextDataIdentifier();
@@ -142,6 +164,9 @@ public abstract class AbstractDataManager implements DataManager {
 		return id;
 	}
 
+	/**
+	 * @see DataManager#registerEmptyList(int)
+	 */
 	public EntityListIdentifier registerEmptyList(int depth)
 			throws StorageException {
 		EntityListIdentifier id = nextListIdentifier(depth);
@@ -151,11 +176,17 @@ public abstract class AbstractDataManager implements DataManager {
 		return id;
 	}
 
+	/**
+	 * @see DataManager#registerError(int, int, String)
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg) throws StorageException {
 		return registerError(depth, implicitDepth, msg, null);
 	}
 
+	/**
+	 * @see DataManager#registerError(int, int, String, Throwable)
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg, Throwable throwable) throws StorageException {
 		final ErrorDocumentIdentifier id = nextErrorIdentifier(depth,
@@ -165,11 +196,17 @@ public abstract class AbstractDataManager implements DataManager {
 		return id;
 	}
 
+	/**
+	 * @see DataManager#registerError(int, int, Throwable)
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			Throwable throwable) throws StorageException {
 		return registerError(depth, implicitDepth, null, throwable);
 	}
 
+	/**
+	 * @see DataManager#registerList(EntityIdentifier[])
+	 */
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
 			throws StorageException {
 		if (identifiers.length == 0) {
@@ -182,6 +219,9 @@ public abstract class AbstractDataManager implements DataManager {
 		return id;
 	}
 
+	/**
+	 * @see DataManager#traverse(EntityIdentifier, int)
+	 */
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
 			throws RetrievalException {
