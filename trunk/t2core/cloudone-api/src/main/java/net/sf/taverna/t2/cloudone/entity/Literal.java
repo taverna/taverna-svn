@@ -12,9 +12,10 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * etc to avoid the overhead of going through the reference framework for
  * everything.
  * <p>
- * This class is both an EntityIdentifier and an Entity, attempts to resolve it
- * through the DataManager or get its identity through the Entity interface will
- * both return self.
+ * This class is both an {@link EntityIdentifier} and an {@link Entity},
+ * attempts to resolve it through the
+ * {@link net.sf.taverna.t2.cloudone.DataManager} or get its identity through
+ * the {@link Entity} interface will both return self.
  *
  * @author Tom Oinn
  *
@@ -22,79 +23,122 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 public class Literal extends EntityIdentifier implements
 		Entity<Literal, String> {
 
-	private static String prefix = "urn:t2data:literal://";
+	private static final String ENCODING = "UTF-8";
+	private static final String LITERAL = ".literal/";
+	private static final String LONG = "long";
+	private static final String DOUBLE = "double";
+	private static final String FLOAT = "float";
+	private static final String BOOLEAN = "boolean";
+	private static final String INT = "int";
+	private static final String STRING = "string";
+	private static final String PREFIX = "urn:t2data:literal://";
 
 	/**
-	 * Build a new Boolean literal
+	 * Build a new boolean literal.
 	 *
 	 * @param value
-	 * @return
+	 *            The boolean value
+	 * @return A boolean Literal
 	 */
 	public static Literal buildLiteral(Boolean value) {
-		return new Literal(prefix + "boolean.literal/" + value.booleanValue());
+		return new Literal(PREFIX + BOOLEAN + LITERAL + value.booleanValue());
 	}
 
 	/**
-	 * Build a new Double literal
+	 * Build a new double literal.
 	 *
 	 * @param value
-	 * @return
+	 *            The double value
+	 * @return A double Literal
 	 */
 	public static Literal buildLiteral(Double value) {
-		return new Literal(prefix + "double.literal/" + value.doubleValue());
+		return new Literal(PREFIX + DOUBLE + LITERAL + value.doubleValue());
 	}
 
 	/**
-	 * Build a new Float literal
+	 * Build a new Float literal.
 	 *
 	 * @param value
-	 * @return
+	 *            The float value
+	 * @return A float Literal
 	 */
 	public static Literal buildLiteral(Float value) {
-		return new Literal(prefix + "float.literal/" + value.floatValue());
+		return new Literal(PREFIX + FLOAT + LITERAL + value.floatValue());
 	}
 
 	/**
-	 * Build a new Integer literal
+	 * Build a new Integer literal.
 	 *
 	 * @param value
-	 * @return
+	 *            The integer value
+	 * @return An integer Literal
 	 */
 	public static Literal buildLiteral(Integer value) {
-		return new Literal(prefix + "int.literal/" + value.intValue());
+		return new Literal(PREFIX + INT + LITERAL + value.intValue());
 	}
 
 	/**
-	 * Build a new Long literal
+	 * Build a new Long literal.
 	 *
 	 * @param value
-	 * @return
+	 *            The Long value
+	 * @return A Long Literal
 	 */
 	public static Literal buildLiteral(Long value) {
-		return new Literal(prefix + "long.literal/" + value.longValue());
+		return new Literal(PREFIX + LONG + LITERAL + value.longValue());
 	}
 
 	/**
-	 * Build a new String literal, the string is URL encoded using UTF-8
+	 * Build a new String literal. The string is URL encoded using UTF-8.
+	 * Although there is no upper limit to the length of an URL, URLs should
+	 * generally not be longer than say 250 characters. Use a
+	 * {@link net.sf.taverna.t2.cloudone.BlobStore} to store larger strings.
+	 * {@link net.sf.taverna.t2.cloudone.datamanager.DataFacade#register(Object)}
+	 * will do this automatically depending on
+	 * {@link import net.sf.taverna.t2.cloudone.DataManager#getMaxIDLength()}.
 	 *
 	 * @param value
-	 * @return
+	 *            A string
+	 * @return A String Literal.
 	 */
 	public static Literal buildLiteral(String value) {
 		try {
-			return new Literal(prefix + "string.literal/"
-					+ URLEncoder.encode(value, "UTF-8"));
+			return new Literal(PREFIX + STRING + LITERAL
+					+ URLEncoder.encode(value, ENCODING));
 		} catch (UnsupportedEncodingException e) {
 			throw new Error("Unexpected exception", e);
 		}
 	}
 
+	/**
+	 * The URI for this Literal. Parsed by {@link #getValue()}.
+	 *
+	 */
 	private String value;
 
+	/**
+	 * Construct a Literal from an identifier string. Note that to create a
+	 * Literal representing a string, use the static
+	 * {@link #buildLiteral(String)}.
+	 *
+	 * @param id
+	 *            The literal identifier
+	 * @throws MalformedIdentifierException
+	 *             If the identifier was not a valid Literal identifier
+	 */
 	public Literal(String id) throws MalformedIdentifierException {
 		super(id);
 	}
 
+	/**
+	 * Check equality against an object.
+	 *
+	 * @param obj
+	 *            Object to check against.
+	 * @return true if and only if <code>obj</code> is a {@link Literal} and
+	 *         it's value is the same as the value of this Literal.
+	 *
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -141,23 +185,22 @@ public class Literal extends EntityIdentifier implements
 	public Object getValue() {
 		Object result = null;
 		String namespace = getNamespace();
-
-		if (namespace.startsWith("string")) {
+		if (namespace.startsWith(STRING)) {
 			try {
-				result = URLDecoder.decode(value, "UTF-8");
+				result = URLDecoder.decode(value, ENCODING);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException("Did not support encoding "
+						+ ENCODING, e);
 			}
-		} else if (namespace.startsWith("int")) {
+		} else if (namespace.startsWith(INT)) {
 			result = Integer.parseInt(value);
-		} else if (namespace.startsWith("boolean")) {
+		} else if (namespace.startsWith(BOOLEAN)) {
 			result = Boolean.parseBoolean(value);
-		} else if (namespace.startsWith("float")) {
+		} else if (namespace.startsWith(FLOAT)) {
 			result = Float.parseFloat(value);
-		} else if (namespace.startsWith("double")) {
+		} else if (namespace.startsWith(DOUBLE)) {
 			result = Double.parseDouble(value);
-		} else if (namespace.startsWith("long")) {
+		} else if (namespace.startsWith(LONG)) {
 			result = Long.parseLong(value);
 		}
 		return result;
@@ -171,29 +214,31 @@ public class Literal extends EntityIdentifier implements
 	public Class<?> getValueType() {
 		String namespace = getNamespace();
 
-		if (namespace.startsWith("string")) {
+		if (namespace.startsWith(STRING)) {
 			return String.class;
-		} else if (namespace.startsWith("int")) {
+		} else if (namespace.startsWith(INT)) {
 			return Integer.class;
-		} else if (namespace.startsWith("boolean")) {
+		} else if (namespace.startsWith(BOOLEAN)) {
 			return Boolean.class;
-		} else if (namespace.startsWith("float")) {
+		} else if (namespace.startsWith(FLOAT)) {
 			return Float.class;
-		} else if (namespace.startsWith("double")) {
+		} else if (namespace.startsWith(DOUBLE)) {
 			return Double.class;
-		} else if (namespace.startsWith("long")) {
+		} else if (namespace.startsWith(LONG)) {
 			return Long.class;
 		}
 
 		return Object.class;
 	}
 
+	/**
+	 * Calculate the hashcode. The hashcode is based on the URI in
+	 * {@link #getName()}.
+	 *
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return value.hashCode();
 	}
 
 	@Override
