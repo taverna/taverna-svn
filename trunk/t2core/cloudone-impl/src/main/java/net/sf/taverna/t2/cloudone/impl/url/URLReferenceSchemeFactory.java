@@ -13,28 +13,25 @@ import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
  * 'name' tokens are free strings, subnet and mask are specified as in IPv4 i.e.
  * in the form a.b.c.d where a,b,c,d are decimal numbers in the range 0-255
  * inclusive.
- * 
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
-public class URLReferenceSchemeFactory extends AbstractReferenceSchemeFactory<URLReferenceScheme> {
+public class URLReferenceSchemeFactory extends
+		AbstractReferenceSchemeFactory<URLReferenceScheme> {
 
 	private static URLReferenceSchemeFactory urlRefSchemeFactory;
-	
+
 	public static URLReferenceSchemeFactory getInstance() {
-		if (urlRefSchemeFactory==null) {
+		if (urlRefSchemeFactory == null) {
 			urlRefSchemeFactory = new URLReferenceSchemeFactory();
-		} 
+		}
 		return urlRefSchemeFactory;
 	}
-	
+
 	protected URLReferenceSchemeFactory() {
 		super();
 	}
-	
-	private URLReferenceScheme getReferenceScheme() {
-		URLReferenceScheme ref = new URLReferenceScheme();
-		return ref;
-	}
+
 }
