@@ -29,10 +29,10 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * locational contexts, subclasses only need to implement
  * {@link #storeEntity(Entity)}, {@link #retrieveEntity(EntityIdentifier)} and
  * {@link #generateId(IDType)}.
- * 
+ *
  * @author Ian Dunlop
  * @author Stian Soiland
- * 
+ *
  */
 public abstract class AbstractDataManager implements DataManager {
 
@@ -47,6 +47,17 @@ public abstract class AbstractDataManager implements DataManager {
 
 	private String namespace;
 
+	/**
+	 * Construct an AbstractDataManager with a given namespace and a set of
+	 * contexts.
+	 *
+	 * @param namespace
+	 *            Unique namespace that will be the
+	 *            {@link #getCurrentNamespace()}
+	 * @param contexts
+	 *            A {@link Set} of {@link LocationalContext}s this datamanager
+	 *            can handle
+	 */
 	public AbstractDataManager(String namespace, Set<LocationalContext> contexts) {
 		if (!EntityIdentifier.isValidName(namespace)) {
 			throw new MalformedIdentifierException("Invalid namespace: "
@@ -56,6 +67,11 @@ public abstract class AbstractDataManager implements DataManager {
 		this.contexts = contexts;
 	}
 
+	/**
+	 * The current namespace. Identifiers created with
+	 * {@link #nextDataIdentifier()} etc. will use this namespace.
+	 *
+	 */
 	public String getCurrentNamespace() {
 		return namespace;
 	}
@@ -82,7 +98,7 @@ public abstract class AbstractDataManager implements DataManager {
 			throw new NotFoundException("No entity found with id : " + id);
 		}
 		// we know this is type-safe because we control what goes into the store
-		return (Entity<EI, ?>) ent;
+		return ent;
 	}
 
 	public Set<LocationalContext> getLocationalContexts() {
@@ -93,12 +109,12 @@ public abstract class AbstractDataManager implements DataManager {
 		return Collections.singletonList(namespace);
 	}
 
-	public DataDocumentIdentifier nextDataIdentifier() {
+	protected DataDocumentIdentifier nextDataIdentifier() {
 		String id = generateId(IDType.Data);
 		return new DataDocumentIdentifier(id);
 	}
 
-	public ErrorDocumentIdentifier nextErrorIdentifier(int depth,
+	protected ErrorDocumentIdentifier nextErrorIdentifier(int depth,
 			int implicitDepth) throws IllegalArgumentException {
 		if (depth < 0 || implicitDepth < 0) {
 			throw new IllegalArgumentException(
@@ -109,7 +125,7 @@ public abstract class AbstractDataManager implements DataManager {
 		return new ErrorDocumentIdentifier(id);
 	}
 
-	public EntityListIdentifier nextListIdentifier(int depth)
+	protected EntityListIdentifier nextListIdentifier(int depth)
 			throws IllegalArgumentException {
 		if (depth < 1) {
 			throw new IllegalArgumentException("Depth must be at least 1");
@@ -220,7 +236,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Retrieve the entity.
-	 * 
+	 *
 	 * @param <ID>
 	 *            The type of {@link EntityIdentifier}
 	 * @param id
@@ -234,7 +250,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Store the entity.
-	 * 
+	 *
 	 * @param <Bean>
 	 *            Bean that can be serialised
 	 * @param entity
