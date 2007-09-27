@@ -113,6 +113,10 @@ public class FileBlobStore implements BlobStore {
 		//return new File(typeDir, fileName);
 	}
 	
+	private File fileByReference(BlobReferenceScheme<?> reference) {
+		return fileById(reference.getNamespace(), reference.getId());
+	}
+	
 	private File parentDirectory(File typeDir, String id) {
 		String newName = id.substring(0, 2);
 		File dirs = new File (typeDir, newName);
@@ -121,10 +125,6 @@ public class FileBlobStore implements BlobStore {
 			throw new IllegalStateException("Invalid directory" + dirs);
 		}
 		return dirs;
-	}
-	
-	private File fileByReference(BlobReferenceScheme<?> reference) {
-		return fileById(reference.getNamespace(), reference.getId());
 	}
 
 

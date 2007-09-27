@@ -36,13 +36,21 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  */
 public abstract class AbstractDataManager implements DataManager {
 
+	private static int[] addIndex(int[] current, int head) {
+		int[] result = new int[current.length + 1];
+		System.arraycopy(current, 0, result, 0, current.length);
+		result[current.length] = head;
+		return result;
+	}
+
 	private Set<LocationalContext> contexts;
 
 	private String namespace;
 
 	public AbstractDataManager(String namespace, Set<LocationalContext> contexts) {
-		if(! EntityIdentifier.isValidName(namespace)) {
-			throw new MalformedIdentifierException("Invalid namespace: " + namespace);
+		if (!EntityIdentifier.isValidName(namespace)) {
+			throw new MalformedIdentifierException("Invalid namespace: "
+					+ namespace);
 		}
 		this.namespace = namespace;
 		this.contexts = contexts;
@@ -111,8 +119,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	public DataDocumentIdentifier registerDocument(
-			final Set<ReferenceScheme> references)
-			throws StorageException {
+			final Set<ReferenceScheme> references) throws StorageException {
 		final DataDocumentIdentifier id = nextDataIdentifier();
 		DataDocument d = new DataDocumentImpl(id, references);
 		storeEntity(d);
@@ -192,7 +199,8 @@ public abstract class AbstractDataManager implements DataManager {
 					throw new AssertionError(
 							"Should never be trying to drill inside a data document identifier");
 				case Error:
-					newSet.add(new ContextualizedIdentifier(
+					newSet
+							.add(new ContextualizedIdentifier(
 									((ErrorDocumentIdentifier) ci.getDataRef())
 											.drill(),
 									addIndex(ci.getIndex(), 0)));
@@ -213,10 +221,13 @@ public abstract class AbstractDataManager implements DataManager {
 	/**
 	 * Retrieve the entity.
 	 * 
-	 * @param <ID> The type of {@link EntityIdentifier}
-	 * @param id The identifier for the entity
+	 * @param <ID>
+	 *            The type of {@link EntityIdentifier}
+	 * @param id
+	 *            The identifier for the entity
 	 * @return The retrieved {@link Entity}
-	 * @throws RetrievalException If the entity could not be retrieved
+	 * @throws RetrievalException
+	 *             If the entity could not be retrieved
 	 */
 	protected abstract <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(
 			ID id) throws RetrievalException;
@@ -224,18 +235,14 @@ public abstract class AbstractDataManager implements DataManager {
 	/**
 	 * Store the entity.
 	 * 
-	 * @param <Bean> Bean that can be serialised
-	 * @param entity Entity to store
-	 * @throws StorageException If the entity could not be stored
+	 * @param <Bean>
+	 *            Bean that can be serialised
+	 * @param entity
+	 *            Entity to store
+	 * @throws StorageException
+	 *             If the entity could not be stored
 	 */
 	protected abstract <Bean> void storeEntity(Entity<?, Bean> entity)
 			throws StorageException;
-
-	private static int[] addIndex(int[] current, int head) {
-		int[] result = new int[current.length + 1];
-		System.arraycopy(current, 0, result, 0, current.length);
-		result[current.length] = head;
-		return result;
-	}
 
 }

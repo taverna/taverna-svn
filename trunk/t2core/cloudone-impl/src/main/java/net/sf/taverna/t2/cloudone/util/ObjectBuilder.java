@@ -36,7 +36,7 @@ public class ObjectBuilder {
 	 * @throws NotFoundException
 	 */
 	public static Object buildObject(DataManager dManager, EntityIdentifier id)
-			throws NotFoundException, RetrievalException{
+			throws NotFoundException, RetrievalException {
 		Object result = null;
 		if (id instanceof Literal) {
 			result = ((Literal) id).getValue();

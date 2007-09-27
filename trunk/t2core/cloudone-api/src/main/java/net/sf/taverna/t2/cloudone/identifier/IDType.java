@@ -16,5 +16,5 @@ public enum IDType {
 	private IDType(String uripart) {
 		this.uripart = uripart;
 	}
-	
+
 }

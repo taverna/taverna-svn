@@ -26,9 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the Data Manager. Creates Empty Lists,
- * data documents,  Lists of Empty Lists and Lists of Data
- * Documents and registers them all.
+ * Tests the Data Manager. Creates Empty Lists, data documents, Lists of Empty
+ * Lists and Lists of Data Documents and registers them all.
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
@@ -36,29 +35,14 @@ import org.junit.Test;
  */
 public abstract class AbstractDataManagerTest {
 
-	protected static final String TEST_NS = "testNS";
-
 	private static final int SMALL_LIST_SIZE = 3;
+
+	protected static final String TEST_NS = "testNS";
 
 	protected AbstractDataManager dManager;
 
-	@Before
-	public abstract void setDataManager();
-
 	public AbstractDataManagerTest() {
 		super();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void addZeroEmptyList() throws StorageException {
-		dManager.registerEmptyList(0);
-	}
-
-	@Test
-	public void addEmptyList() throws StorageException {
-		int depth = 1;
-		EntityListIdentifier list = dManager.registerEmptyList(depth);
-		assertEquals(depth, list.getDepth());
 	}
 
 	@Test
@@ -69,13 +53,91 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
+	public void addDocumentToList() throws NotFoundException, StorageException,
+			RetrievalException {
+		DataDocumentIdentifier[] ids = new DataDocumentIdentifier[SMALL_LIST_SIZE];
+		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
+			Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+			DataDocumentIdentifier docId = dManager
+					.registerDocument(references);
+			ids[i] = docId;
+			if (i > 0) {
+				// always fresh
+				assertFalse(ids[i - 1].equals(ids[i]));
+			}
+		}
+		EntityListIdentifier listID = dManager.registerList(ids);
+		EntityList entityList = (EntityList) dManager.getEntity(listID);
+
+		assertEquals(SMALL_LIST_SIZE, entityList.size());
+		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
+			assertEquals(ids[i], entityList.get(i));
+		}
+	}
+
+	@Test
+	public void addEmptyList() throws StorageException {
+		int depth = 1;
+		EntityListIdentifier list = dManager.registerEmptyList(depth);
+		assertEquals(depth, list.getDepth());
+	}
+
+	@Test
+	public void addTwoEmptyLists() throws StorageException {
+		int depth = 1;
+		EntityListIdentifier list0 = dManager.registerEmptyList(depth);
+		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
+		assertFalse(list0.equals(list1));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void addZeroEmptyList() throws StorageException {
+		dManager.registerEmptyList(0);
+	}
+
+	@Test
+	public void currentNamespace() {
+		assertEquals(TEST_NS, dManager.getCurrentNamespace());
+	}
+
+	@Test
 	public void emptyListNamespace() throws StorageException {
 		EntityListIdentifier list = dManager.registerEmptyList(1);
 		assertEquals(dManager.getCurrentNamespace(), list.getNamespace());
 	}
 
 	@Test
-	public void getEmptyList() throws NotFoundException, StorageException, RetrievalException {
+	public void generateIdData() {
+		String dataId = dManager.generateId(IDType.Data);
+		String dataId2 = dManager.generateId(IDType.Data);
+		assertFalse("Not unique identifiers", dataId.equals(dataId2));
+
+		String dataPrefix = "urn:t2data:ddoc://" + TEST_NS + "/";
+		assertTrue(dataId.startsWith(dataPrefix));
+	}
+
+	@Test
+	public void generateIdError() {
+		String id = dManager.generateId(IDType.Error);
+		String prefix = "urn:t2data:error://" + TEST_NS + "/";
+		assertTrue(id.startsWith(prefix));
+	}
+
+	@Test
+	public void generateIdList() {
+		String id = dManager.generateId(IDType.List);
+		String prefix = "urn:t2data:list://" + TEST_NS + "/";
+		assertTrue(id.startsWith(prefix));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void generateIdLiteral() {
+		dManager.generateId(IDType.Literal);
+	}
+
+	@Test
+	public void getEmptyList() throws NotFoundException, StorageException,
+			RetrievalException {
 		EntityListIdentifier listId = dManager.registerEmptyList(1);
 		Entity<EntityListIdentifier, ?> entity = dManager.getEntity(listId);
 		assertEquals("Didn't return same entity", entity, dManager
@@ -87,11 +149,38 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void addTwoEmptyLists() throws StorageException {
-		int depth = 1;
-		EntityListIdentifier list0 = dManager.registerEmptyList(depth);
-		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
-		assertFalse(list0.equals(list1));
+	public void getListOfDuplicateLists() throws NotFoundException,
+			StorageException, RetrievalException {
+		EntityListIdentifier[] ids = createDuplicateEmptyLists();
+		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
+			assertEquals(ids[0], ids[i]);
+		}
+		EntityListIdentifier listOfListsId = dManager.registerList(ids);
+		Entity<EntityListIdentifier, ?> entity = dManager
+				.getEntity(listOfListsId);
+		EntityList entityList = (EntityList) entity;
+		assertEquals(SMALL_LIST_SIZE, entityList.size());
+		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
+			assertEquals(ids[0], entityList.get(i));
+		}
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void getListOfLists() throws NotFoundException, StorageException,
+			RetrievalException {
+		EntityListIdentifier[] ids = createEmptyLists();
+		EntityListIdentifier listOfListsId = dManager.registerList(ids);
+		Entity<EntityListIdentifier, ?> entity = dManager
+				.getEntity(listOfListsId);
+		assertTrue("Didn't return EntityList", entity instanceof EntityList);
+		EntityList entityList = (EntityList) entity;
+		assertEquals(listOfListsId, entityList.getIdentifier());
+		assertEquals(SMALL_LIST_SIZE, entityList.size());
+		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
+			assertEquals(ids[i], entityList.get(i));
+		}
+		// Should throw ArrayIndexOutOfBoundsException
+		entityList.get(SMALL_LIST_SIZE);
 	}
 
 	@Test(expected = NotFoundException.class)
@@ -103,21 +192,60 @@ public abstract class AbstractDataManagerTest {
 	}
 
 	@Test
-	public void registerListOfLists() throws StorageException {
-		EntityListIdentifier[] ids = createEmptyLists();
-		EntityListIdentifier listOfLists = dManager.registerList(ids);
-		assertEquals(2, listOfLists.getDepth());
+	public void locationalContexts() {
+		// This shouldn't really be empty, but when this is implemented, this
+		// test should be updated
+		assertTrue("Locational contexts was not empty", dManager
+				.getLocationalContexts().isEmpty());
 	}
 
 	@Test
-	public void registerLiteral() throws NotFoundException, RetrievalException {
-		Literal lit = Literal.buildLiteral(3.14);
-		Entity<Literal, ?> ent = dManager.getEntity(lit);
-		assertSame("Literal was not its own entity", lit, ent);
+	public void managedNamespaces() {
+		List<String> namespaces = dManager.getManagedNamespaces();
+		assertTrue("Did not contain current namespace", namespaces
+				.contains(dManager.getCurrentNamespace()));
+		// If the implementation supports multiple namespaces, update this test
+		assertEquals("Unexpectde size of managed namespaces", 1, namespaces
+				.size());
 	}
 
 	@Test
-	public void registerError() throws NotFoundException, StorageException, RetrievalException {
+	public void nextDataIdentifier() {
+		DataDocumentIdentifier dataId = dManager.nextDataIdentifier();
+		assertEquals(TEST_NS, dataId.getNamespace());
+	}
+
+	@Test
+	public void nextErrorIdentifier() {
+		ErrorDocumentIdentifier errorId = dManager.nextErrorIdentifier(2, 3);
+		assertEquals(TEST_NS, errorId.getNamespace());
+		assertEquals(2, errorId.getDepth());
+		assertEquals(3, errorId.getImplicitDepth());
+
+	}
+
+	@Test
+	public void nextListIdentifier() {
+		EntityListIdentifier listId = dManager.nextListIdentifier(2);
+		assertEquals(TEST_NS, listId.getNamespace());
+		assertEquals(2, listId.getDepth());
+	}
+
+	@Test
+	public void registerDocument() throws NotFoundException, StorageException,
+			RetrievalException {
+		// not sure what a reference scheme is so empty one will have to do
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		DataDocument doc = (DataDocument) dManager.getEntity(docId);
+		assertEquals(docId, doc.getIdentifier());
+		assertTrue("Reference schemes no longer empty", doc
+				.getReferenceSchemes().isEmpty());
+	}
+
+	@Test
+	public void registerError() throws NotFoundException, StorageException,
+			RetrievalException {
 		Throwable ex = new IllegalArgumentException("Did not work",
 				new NullPointerException("No no"));
 
@@ -148,104 +276,42 @@ public abstract class AbstractDataManagerTest {
 
 		assertNull(err2.getMessage());
 		// Exceptions are not serialised
-		//assertEquals(ex, err2.getCause());
+		// assertEquals(ex, err2.getCause());
 		assertTrue(err2.getStackTrace().contains("No no"));
 
 		ErrorDocument err3 = (ErrorDocument) dManager.getEntity(errId3);
 		assertEquals(msg, err3.getMessage());
 		// Exceptions are not serialised
-		//assertEquals(ex, err3.getCause());
+		// assertEquals(ex, err3.getCause());
 		assertTrue(err3.getStackTrace().contains("No no"));
 
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
-	public void getListOfLists() throws NotFoundException, StorageException, RetrievalException {
+	@Test
+	public void registerListOfLists() throws StorageException {
 		EntityListIdentifier[] ids = createEmptyLists();
-		EntityListIdentifier listOfListsId = dManager.registerList(ids);
-		Entity<EntityListIdentifier, ?> entity = dManager
-				.getEntity(listOfListsId);
-		assertTrue("Didn't return EntityList", entity instanceof EntityList);
-		EntityList entityList = (EntityList) entity;
-		assertEquals(listOfListsId, entityList.getIdentifier());
-		assertEquals(SMALL_LIST_SIZE, entityList.size());
+		EntityListIdentifier listOfLists = dManager.registerList(ids);
+		assertEquals(2, listOfLists.getDepth());
+	}
+
+	@Test
+	public void registerLiteral() throws NotFoundException, RetrievalException {
+		Literal lit = Literal.buildLiteral(3.14);
+		Entity<Literal, ?> ent = dManager.getEntity(lit);
+		assertSame("Literal was not its own entity", lit, ent);
+	}
+
+	@Before
+	public abstract void setDataManager();
+
+	private EntityListIdentifier[] createDuplicateEmptyLists()
+			throws StorageException {
+		EntityListIdentifier[] ids = new EntityListIdentifier[SMALL_LIST_SIZE];
+		EntityListIdentifier list = dManager.registerEmptyList(1);
 		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			assertEquals(ids[i], entityList.get(i));
+			ids[i] = list;
 		}
-		// Should throw ArrayIndexOutOfBoundsException
-		entityList.get(SMALL_LIST_SIZE);
-	}
-
-	@Test
-	public void getListOfDuplicateLists() throws NotFoundException, StorageException, RetrievalException {
-		EntityListIdentifier[] ids = createDuplicateEmptyLists();
-		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			assertEquals(ids[0], ids[i]);
-		}
-		EntityListIdentifier listOfListsId = dManager.registerList(ids);
-		Entity<EntityListIdentifier, ?> entity = dManager
-				.getEntity(listOfListsId);
-		EntityList entityList = (EntityList) entity;
-		assertEquals(SMALL_LIST_SIZE, entityList.size());
-		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			assertEquals(ids[0], entityList.get(i));
-		}
-	}
-
-	@Test
-	public void registerDocument() throws NotFoundException, StorageException, RetrievalException {
-		// not sure what a reference scheme is so empty one will have to do
-		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-		DataDocumentIdentifier docId = dManager.registerDocument(references);
-		DataDocument doc = (DataDocument) dManager.getEntity(docId);
-		assertEquals(docId, doc.getIdentifier());
-		assertTrue("Reference schemes no longer empty", doc
-				.getReferenceSchemes().isEmpty());
-	}
-
-	@Test
-	public void addDocumentToList() throws NotFoundException, StorageException, RetrievalException {
-		DataDocumentIdentifier[] ids = new DataDocumentIdentifier[SMALL_LIST_SIZE];
-		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-			DataDocumentIdentifier docId = dManager
-					.registerDocument(references);
-			ids[i] = docId;
-			if (i > 0) {
-				// always fresh
-				assertFalse(ids[i - 1].equals(ids[i]));
-			}
-		}
-		EntityListIdentifier listID = dManager.registerList(ids);
-		EntityList entityList = (EntityList) dManager.getEntity(listID);
-
-		assertEquals(SMALL_LIST_SIZE, entityList.size());
-		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			assertEquals(ids[i], entityList.get(i));
-		}
-	}
-
-	@Test
-	public void currentNamespace() {
-		assertEquals(TEST_NS, dManager.getCurrentNamespace());
-	}
-
-	@Test
-	public void locationalContexts() {
-		// This shouldn't really be empty, but when this is implemented, this
-		// test should be updated
-		assertTrue("Locational contexts was not empty", dManager
-				.getLocationalContexts().isEmpty());
-	}
-
-	@Test
-	public void managedNamespaces() {
-		List<String> namespaces = dManager.getManagedNamespaces();
-		assertTrue("Did not contain current namespace", namespaces
-				.contains(dManager.getCurrentNamespace()));
-		// If the implementation supports multiple namespaces, update this test
-		assertEquals("Unexpectde size of managed namespaces", 1, namespaces
-				.size());
+		return ids;
 	}
 
 	private EntityListIdentifier[] createEmptyLists() throws StorageException {
@@ -256,69 +322,4 @@ public abstract class AbstractDataManagerTest {
 		return ids;
 	}
 
-	private EntityListIdentifier[] createDuplicateEmptyLists() throws StorageException {
-		EntityListIdentifier[] ids = new EntityListIdentifier[SMALL_LIST_SIZE];
-		EntityListIdentifier list = dManager.registerEmptyList(1);
-		for (int i = 0; i < SMALL_LIST_SIZE; i++) {
-			ids[i] = list;
-		}
-		return ids;
-	}
-
-	@Test
-	public void generateIdData() {
-		String dataId = dManager.generateId(IDType.Data);
-		String dataId2 = dManager.generateId(IDType.Data);
-		assertFalse("Not unique identifiers", dataId.equals(dataId2));
-
-		String dataPrefix = "urn:t2data:ddoc://" + TEST_NS + "/";
-		assertTrue(dataId.startsWith(dataPrefix));
-	}
-
-	
-	
-	@Test
-	public void generateIdError() {
-		String id = dManager.generateId(IDType.Error);
-		String prefix = "urn:t2data:error://" + TEST_NS + "/";
-		assertTrue(id.startsWith(prefix));
-	}
-
-	@Test
-	public void generateIdList() {
-		String id = dManager.generateId(IDType.List);
-		String prefix = "urn:t2data:list://" + TEST_NS + "/";
-		assertTrue(id.startsWith(prefix));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void generateIdLiteral() {
-		dManager.generateId(IDType.Literal);
-	}
-
-
-	@Test
-	public void nextDataIdentifier() {
-		DataDocumentIdentifier dataId = dManager.nextDataIdentifier();
-		assertEquals(TEST_NS, dataId.getNamespace());
-	}
-
-	@Test
-	public void nextErrorIdentifier() {
-		ErrorDocumentIdentifier errorId = dManager.nextErrorIdentifier(
-				2, 3);
-		assertEquals(TEST_NS, errorId.getNamespace());
-		assertEquals(2, errorId.getDepth());
-		assertEquals(3, errorId.getImplicitDepth());
-
-	}
-
-	@Test
-	public void nextListIdentifier() {
-		EntityListIdentifier listId = dManager.nextListIdentifier(2);
-		assertEquals(TEST_NS, listId.getNamespace());
-		assertEquals(2, listId.getDepth());
-	}
-
-	
 }

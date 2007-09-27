@@ -27,15 +27,6 @@ public class EntitySerialiserTest {
 			new HashSet<LocationalContext>());
 
 	@Test
-	public void serialiseSillyBean() throws JDOMException, IOException {
-		SillyBean silly = new SillyBean();
-		silly.setName("I'm silly");
-		Element elem = EntitySerialiser.toXML(silly);
-		SillyBean silly2 = (SillyBean) EntitySerialiser.fromXML(elem, SillyBean.class.getClassLoader());
-		assertEquals("I'm silly", silly2.getName());
-	}
-	
-	@Test
 	public void serialiseAsFile() throws IOException, JDOMException {
 		File file = File.createTempFile("test", ".xml");
 		file.deleteOnExit();
@@ -49,6 +40,15 @@ public class EntitySerialiserTest {
 		assertTrue("Serialised file too small", file.length() > 50);
 		assertTrue("Serialised file too big", file.length() < 1024);
 		SillyBean silly2 = (SillyBean) EntitySerialiser.fromXMLFile(file);
+		assertEquals("I'm silly", silly2.getName());
+	}
+	
+	@Test
+	public void serialiseSillyBean() throws JDOMException, IOException {
+		SillyBean silly = new SillyBean();
+		silly.setName("I'm silly");
+		Element elem = EntitySerialiser.toXML(silly);
+		SillyBean silly2 = (SillyBean) EntitySerialiser.fromXML(elem, SillyBean.class.getClassLoader());
 		assertEquals("I'm silly", silly2.getName());
 	}
 	

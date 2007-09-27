@@ -6,7 +6,6 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 /**
  * <p>
@@ -33,6 +32,23 @@ import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
  * 
  */
 public interface BlobStore {
+
+	public boolean hasBlob(BlobReferenceScheme<?> reference)
+			throws RetrievalException;
+
+	/**
+	 * Retrieve a blob as a byte[] array
+	 * 
+	 * @param reference
+	 * @return
+	 * @throws RetrievalException
+	 * @throws NotFoundException
+	 */
+	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException;
+
+	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException;
 
 	/**
 	 * Store byte[] array as a blob. The returned {@link BlobReferenceScheme}
@@ -67,22 +83,5 @@ public interface BlobStore {
 	 */
 	public BlobReferenceScheme<?> storeFromStream(InputStream stream)
 			throws StorageException;
-
-	/**
-	 * Retrieve a blob as a byte[] array
-	 * 
-	 * @param reference
-	 * @return
-	 * @throws RetrievalException
-	 * @throws NotFoundException
-	 */
-	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
-			throws RetrievalException, NotFoundException;
-
-	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
-			throws RetrievalException, NotFoundException;
-
-	public boolean hasBlob(BlobReferenceScheme<?> reference)
-			throws RetrievalException;
 
 }

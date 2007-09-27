@@ -25,7 +25,54 @@ import net.sf.taverna.t2.cloudone.bean.Beanable;
  * @author Matthew Pocock
  * 
  */
-public class URLReferenceScheme implements ReferenceScheme, Beanable<URLReferenceBean> {
+public class URLReferenceScheme implements ReferenceScheme,
+		Beanable<URLReferenceBean> {
+
+	private static String getMachineName(Set<LocationalContext> context) {
+		for (LocationalContext lc : context) {
+			if (lc.getContextType().equals("MachineName")) {
+				return lc.getValue("name");
+			}
+		}
+		return null;
+	}
+
+	private static byte[] mask(byte[] address, byte[] mask) {
+		byte[] masked = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			masked[i] = (byte) (address[i] & mask[i]);
+		}
+		return masked;
+	}
+
+	private static boolean matches(byte[] a, byte[] b) {
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Parse a dot seperated string into an array of bytes, assuming the address
+	 * looks something like '192.34.53.22'.
+	 * 
+	 * @param address
+	 * @return
+	 */
+	private static byte[] parseAddress(String address) {
+		String[] networkParts = address.split("\\.");
+		if (networkParts.length != 4) {
+			throw new IllegalArgumentException(
+					"Method must only be called with an address of the form '192.179.34.40'");
+		}
+		byte[] networkBytes = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			networkBytes[i] = Byte.parseByte(networkParts[i]);
+		}
+		return networkBytes;
+	}
 
 	private URL url;
 
@@ -47,6 +94,64 @@ public class URLReferenceScheme implements ReferenceScheme, Beanable<URLReferenc
 		} catch (IOException e) {
 			throw new DereferenceException(e);
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof URLReferenceScheme))
+			return false;
+		final URLReferenceScheme other = (URLReferenceScheme) obj;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.toExternalForm().equals(other.url.toExternalForm()))
+			return false;
+		return true;
+	}
+
+	public URLReferenceBean getAsBean() {
+		URLReferenceBean bean = new URLReferenceBean();
+		bean.setUrl(url.toExternalForm());
+		return bean;
+	}
+
+	public Date getExpiry() {
+		return null;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((url == null) ? 0 : url.toExternalForm().hashCode());
+		return result;
+	}
+
+	public boolean isImmediate() {
+		return false;
+	}
+
+	public void setFromBean(URLReferenceBean bean)
+			throws IllegalArgumentException {
+		String url = bean.getUrl();
+		if (this.url != null) {
+			throw new IllegalStateException("Already initialised");
+		}
+		try {
+			this.url = new URL(url);
+		} catch (MalformedURLException e) {
+			throw new IllegalArgumentException("Invalid URL " + url, e);
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "URLReferenceScheme: " + url;
 	}
 
 	/**
@@ -122,106 +227,4 @@ public class URLReferenceScheme implements ReferenceScheme, Beanable<URLReferenc
 		}
 	}
 
-	private static String getMachineName(Set<LocationalContext> context) {
-		for (LocationalContext lc : context) {
-			if (lc.getContextType().equals("MachineName")) {
-				return lc.getValue("name");
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Parse a dot seperated string into an array of bytes, assuming the address
-	 * looks something like '192.34.53.22'.
-	 * 
-	 * @param address
-	 * @return
-	 */
-	private static byte[] parseAddress(String address) {
-		String[] networkParts = address.split("\\.");
-		if (networkParts.length != 4) {
-			throw new IllegalArgumentException(
-					"Method must only be called with an address of the form '192.179.34.40'");
-		}
-		byte[] networkBytes = new byte[4];
-		for (int i = 0; i < 4; i++) {
-			networkBytes[i] = Byte.parseByte(networkParts[i]);
-		}
-		return networkBytes;
-	}
-
-	private static byte[] mask(byte[] address, byte[] mask) {
-		byte[] masked = new byte[4];
-		for (int i = 0; i < 4; i++) {
-			masked[i] = (byte) (address[i] & mask[i]);
-		}
-		return masked;
-	}
-
-	private static boolean matches(byte[] a, byte[] b) {
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] != b[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public Date getExpiry() {
-		return null;
-	}
-
-	public boolean isImmediate() {
-		return false;
-	}
-
-	public URLReferenceBean getAsBean() {
-		URLReferenceBean bean = new URLReferenceBean();
-		bean.setUrl(url.toExternalForm());
-		return bean;
-	}
-
-	public void setFromBean(URLReferenceBean bean) throws IllegalArgumentException {
-		String url = bean.getUrl();
-		if (this.url != null) {
-			throw new IllegalStateException("Already initialised");
-		}
-		try {
-			this.url = new URL(url);
-		} catch (MalformedURLException e) {
-			throw new IllegalArgumentException("Invalid URL " + url, e);
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((url == null) ? 0 : url.toExternalForm().hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof URLReferenceScheme))
-			return false;
-		final URLReferenceScheme other = (URLReferenceScheme) obj;
-		if (url == null) {
-			if (other.url != null)
-				return false;
-		} else if (!url.toExternalForm().equals(other.url.toExternalForm()))
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "URLReferenceScheme: "+ url;
-	}
-	
 }

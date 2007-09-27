@@ -31,10 +31,12 @@ import org.junit.Test;
  */
 public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 
-	@Before
-	public void setDataManager() {
-		dManager = new InMemoryDataManager(TEST_NS,
-					new HashSet<LocationalContext>());
+	@Test
+	public void checkDocumentCounter() throws NotFoundException, StorageException, RetrievalException {
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		assertEquals("urn:t2data:ddoc://" + TEST_NS + "/data0", docId
+				.toString());
 	}
 	@Test
 	public void checkListCounter() throws StorageException {
@@ -47,12 +49,10 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 				.toString());
 	}
 	
-	@Test
-	public void checkDocumentCounter() throws NotFoundException, StorageException, RetrievalException {
-		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-		DataDocumentIdentifier docId = dManager.registerDocument(references);
-		assertEquals("urn:t2data:ddoc://" + TEST_NS + "/data0", docId
-				.toString());
+	@Before
+	public void setDataManager() {
+		dManager = new InMemoryDataManager(TEST_NS,
+					new HashSet<LocationalContext>());
 	}
 	
 }

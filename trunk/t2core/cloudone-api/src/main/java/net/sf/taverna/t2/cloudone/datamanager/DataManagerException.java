@@ -5,10 +5,10 @@ import net.sf.taverna.t2.cloudone.DataManager;
 /**
  * Base class for Exceptions thrown by {@link DataManager} and
  * {@link DataFacade}
- * 
+ *
  * @author Stian Soiland
  * @author Ian Dunlop
- * 
+ *
  */
 public class DataManagerException extends Exception {
 
@@ -18,17 +18,16 @@ public class DataManagerException extends Exception {
 		super();
 	}
 
-	public DataManagerException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public DataManagerException(String message) {
 		super(message);
+	}
+
+	public DataManagerException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	public DataManagerException(Throwable cause) {
 		super(cause);
 	}
-
 
 }

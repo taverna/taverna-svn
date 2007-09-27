@@ -5,32 +5,12 @@ import net.sf.taverna.t2.cloudone.entity.Literal;
 /**
  * Static methods to construct new instances of EntityIdentifier subclasses
  * without exposing their constructors outside the API.
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  */
 public final class EntityIdentifiers {
-	protected EntityIdentifiers() {
-	}
-
-	public static EntityIdentifier parse(String id)
-			throws MalformedIdentifierException {
-		IDType type = findType(id);
-		if (type.equals(IDType.Data)) {
-			return parseDocumentIdentifier(id);
-		} else if (type.equals(IDType.Error)) {
-			return parseErrorIdentifier(id);
-		} else if (type.equals(IDType.List)) {
-			return parseListIdentifier(id);
-		} else if (type.equals(IDType.Literal)) {
-			return parseLiteralIdentifier(id);
-		} else {
-			throw new MalformedIdentifierException("Unknown identifier type '"
-					+ type + "' in " + id);
-		}
-	}
-
 	public static IDType findType(String id)
 			throws MalformedIdentifierException {
 		String[] split = id.split(":");
@@ -60,14 +40,21 @@ public final class EntityIdentifiers {
 		}
 	}
 
-	public static EntityListIdentifier parseListIdentifier(String id)
+	public static EntityIdentifier parse(String id)
 			throws MalformedIdentifierException {
-		return new EntityListIdentifier(id);
-	}
-
-	public static ErrorDocumentIdentifier parseErrorIdentifier(String id)
-			throws MalformedIdentifierException {
-		return new ErrorDocumentIdentifier(id);
+		IDType type = findType(id);
+		if (type.equals(IDType.Data)) {
+			return parseDocumentIdentifier(id);
+		} else if (type.equals(IDType.Error)) {
+			return parseErrorIdentifier(id);
+		} else if (type.equals(IDType.List)) {
+			return parseListIdentifier(id);
+		} else if (type.equals(IDType.Literal)) {
+			return parseLiteralIdentifier(id);
+		} else {
+			throw new MalformedIdentifierException("Unknown identifier type '"
+					+ type + "' in " + id);
+		}
 	}
 
 	public static DataDocumentIdentifier parseDocumentIdentifier(String id)
@@ -75,8 +62,21 @@ public final class EntityIdentifiers {
 		return new DataDocumentIdentifier(id);
 	}
 
+	public static ErrorDocumentIdentifier parseErrorIdentifier(String id)
+			throws MalformedIdentifierException {
+		return new ErrorDocumentIdentifier(id);
+	}
+
+	public static EntityListIdentifier parseListIdentifier(String id)
+			throws MalformedIdentifierException {
+		return new EntityListIdentifier(id);
+	}
+
 	private static Literal parseLiteralIdentifier(String id) {
 		return new Literal(id);
+	}
+
+	protected EntityIdentifiers() {
 	}
 
 }

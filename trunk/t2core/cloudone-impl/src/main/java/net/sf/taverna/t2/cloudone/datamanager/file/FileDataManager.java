@@ -72,11 +72,11 @@ import org.jdom.JDOMException;
  */
 public class FileDataManager extends AbstractDataManager {
 
+	private static final int MAX_ID_LENGTH = 80; // for debug reasons
+
 	private File path;
 
 	private FileBlobStore blobStore;
-	
-	private static final int MAX_ID_LENGTH = 80; //for debug reasons
 
 	public FileDataManager(String namespace, Set<LocationalContext> contexts,
 			File path) {
@@ -88,35 +88,81 @@ public class FileDataManager extends AbstractDataManager {
 		this.path = path;
 	}
 
+	public FileBlobStore getBlobStore() {
+		if (blobStore == null) {
+			blobStore = new FileBlobStore(getCurrentNamespace(), path);
+		}
+		return blobStore;
+	}
+
+	public int getMaxIDLength() {
+		return MAX_ID_LENGTH;
+	}
+
+	private File asPath(EntityIdentifier id) {
+		String ns = id.getNamespace();
+		String type = id.getType().uripart;
+		String name = id.getName() + ".xml";
+		if (!EntityIdentifier.isValidName(name)) {
+			// TODO: Should escape weird names instead of failing
+			// (typically entities coming over p2p)
+			throw new MalformedIdentifierException("Unsupported identifier "
+					+ id);
+		}
+
+		// /path/ns/type/name
+		File entityPath = new File(parentDirectory(ns, type, name), name);
+		// File entityPath = new File(typeDir(ns, type), name);
+
+		// TODO: File systems have a maximum number of files per directory, so
+		// should be for example:
+		// a3/
+		// a39a9aefae.txt
+		// a3f9g9a9a.txt
+		// (Even this would support maximum 256 * 32k entities)
+		return entityPath;
+	}
+
+	/**
+	 * Find directory for a given namespace
+	 * 
+	 * @param ns
+	 * @return
+	 */
+	private File namespaceDir(String ns) {
+		return new File(path, ns);
+	}
+
+	/**
+	 * Find the subdirectory for the start of the identifier name eg a3/
+	 * 
+	 * @param ns
+	 * @param type
+	 * @param name
+	 * @return
+	 */
+	private File parentDirectory(String ns, String type, String name) {
+		String parentName = name.substring(0, 2);
+		return new File(typeDir(ns, type), parentName);
+	}
+
+	/**
+	 * Find directory for a given type within a given namespace
+	 * 
+	 * @param ns
+	 * @param type
+	 * @return
+	 */
+	private File typeDir(String ns, String type) {
+		return new File(namespaceDir(ns), type);
+	}
+
 	protected String generateId(IDType type) {
 		if (type.equals(IDType.Literal)) {
 			throw new IllegalArgumentException("Can't generate IDs for Literal");
 		}
 		return "urn:t2data:" + type.uripart + "://" + getCurrentNamespace()
 				+ "/" + UUID.randomUUID();
-	}
-
-	@Override
-	protected <Bean> void storeEntity(Entity<?, Bean> entity)
-			throws StorageException {
-		File entityPath = asPath(entity.getIdentifier());
-		if (entityPath.exists()) {
-			// Should not happen with our generateId(), but could happen in
-			// a future p2p environment for external entities
-			throw new IllegalStateException("Already exists: "
-					+ entity.getIdentifier());
-		}
-		Bean bean = entity.getAsBean();
-		entityPath.getParentFile().mkdirs();
-		// TODO: Could serialise in a more portable and less space-hungry
-		// format
-		try {
-			EntitySerialiser.toXMLFile(bean, entityPath);
-		} catch (JDOMException e) {
-		} catch (IOException e) {
-			throw new StorageException("Could not store entity to"
-					+ entityPath, e);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -174,69 +220,27 @@ public class FileDataManager extends AbstractDataManager {
 		}
 	}
 
-	private File asPath(EntityIdentifier id) {
-		String ns = id.getNamespace();
-		String type = id.getType().uripart;
-		String name = id.getName() + ".xml";
-		if (! EntityIdentifier.isValidName(name)) {
-			// TODO: Should escape weird names instead of failing
-			// (typically entities coming over p2p)
-			throw new MalformedIdentifierException("Unsupported identifier " + id);
+	@Override
+	protected <Bean> void storeEntity(Entity<?, Bean> entity)
+			throws StorageException {
+		File entityPath = asPath(entity.getIdentifier());
+		if (entityPath.exists()) {
+			// Should not happen with our generateId(), but could happen in
+			// a future p2p environment for external entities
+			throw new IllegalStateException("Already exists: "
+					+ entity.getIdentifier());
 		}
-
-		// /path/ns/type/name
-		File entityPath = new File(parentDirectory(ns, type, name), name);
-		//File entityPath = new File(typeDir(ns, type), name);
-		
-		// TODO: File systems have a maximum number of files per directory, so should be for example:
-		// a3/
-		//   a39a9aefae.txt
-		//   a3f9g9a9a.txt
-		// (Even this would support maximum 256 * 32k entities)
-		return entityPath;
-	}
-	/**
-	 * Find the subdirectory for the start of the identifier name eg a3/
-	 * @param ns
-	 * @param type
-	 * @param name
-	 * @return
-	 */
-	private File parentDirectory(String ns, String type, String name) {
-		String parentName = name.substring(0, 2);
-		return new File(typeDir(ns,type), parentName);
-	}
-
-	/**
-	 * Find directory for a given type within a given namespace
-	 * 
-	 * @param ns
-	 * @param type
-	 * @return
-	 */
-	private File typeDir(String ns, String type) {
-		return new File(namespaceDir(ns), type);
-	}
-
-	/**
-	 * Find directory for a given namespace
-	 * 
-	 * @param ns
-	 * @return
-	 */
-	private File namespaceDir(String ns) {
-		return new File(path, ns);
-	}
-
-	public int getMaxIDLength() {
-		return MAX_ID_LENGTH;
-	}
-
-	public FileBlobStore getBlobStore() {
-		if (blobStore == null) {
-			blobStore = new FileBlobStore(getCurrentNamespace(), path);
+		Bean bean = entity.getAsBean();
+		entityPath.getParentFile().mkdirs();
+		// TODO: Could serialise in a more portable and less space-hungry
+		// format
+		try {
+			EntitySerialiser.toXMLFile(bean, entityPath);
+		} catch (JDOMException e) {
+		} catch (IOException e) {
+			throw new StorageException(
+					"Could not store entity to" + entityPath, e);
 		}
-		return blobStore;
 	}
 
 }

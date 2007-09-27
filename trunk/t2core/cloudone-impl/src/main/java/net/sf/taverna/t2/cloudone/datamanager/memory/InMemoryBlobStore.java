@@ -26,22 +26,6 @@ public class InMemoryBlobStore implements BlobStore{
 		namespace = UUID.randomUUID().toString();
 	}
 	
-	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) {
-		String id = UUID.randomUUID().toString();
-		blobs.put(id, bytes);
-		return new BlobReferenceSchemeImpl(namespace, id);
-	}
-	
-	public BlobReferenceScheme<?> storeFromStream(InputStream stream) throws StorageException {
-		byte[] bytes;
-		try {
-			bytes = IOUtils.toByteArray(stream);
-		} catch (IOException e) {
-			throw new StorageException("Could not read from stream", e);
-		}
-		return storeFromBytes(bytes);
-	}
-	
 	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		if (! reference.getNamespace().equals(namespace)) {
 			return false;
@@ -74,6 +58,22 @@ public class InMemoryBlobStore implements BlobStore{
 	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference) throws NotFoundException  {
 		byte[] bytes = retrieveAsBytes(reference);
 		return new ByteArrayInputStream(bytes);
+	}
+	
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) {
+		String id = UUID.randomUUID().toString();
+		blobs.put(id, bytes);
+		return new BlobReferenceSchemeImpl(namespace, id);
+	}
+	
+	public BlobReferenceScheme<?> storeFromStream(InputStream stream) throws StorageException {
+		byte[] bytes;
+		try {
+			bytes = IOUtils.toByteArray(stream);
+		} catch (IOException e) {
+			throw new StorageException("Could not read from stream", e);
+		}
+		return storeFromBytes(bytes);
 	}
 
 }

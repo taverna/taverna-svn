@@ -11,7 +11,7 @@ package net.sf.taverna.t2.cloudone;
 public interface LocationalContext {
 
 	public String getContextType();
-	
+
 	public String getValue(String... keyPath);
-	
+
 }

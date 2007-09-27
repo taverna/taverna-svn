@@ -30,36 +30,41 @@ public class DataFacadeTest {
 	protected AbstractDataManager dManager;
 	protected DataFacade facade;
 
-	@Before
-	public void setDataManager() {
-		// dManager = new FileDataManager("testNS",
-		// new HashSet<LocationalContext>(), new File("/tmp/fish"));
-		dManager = new InMemoryDataManager(TEST_NS,
-				new HashSet<LocationalContext>());
-		facade = new DataFacade(dManager);
+	@Test
+	public void registerBigString() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException, IOException, RetrievalException, NotFoundException {
+		String str = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzx"
+				+ "cvbnmqwertyuiopasdfghjklzxcvbnmqwertyuioipasdfghjklzxcvbnmq";
+		EntityIdentifier entity = facade.register(str);
+		InputStream stream = (InputStream) facade.resolve(entity);
+		String newString = IOUtils.toString(stream);
+		assertEquals(str, newString);
 	}
 
 	@Test
-	public void registerInteger() throws RetrievalException,
+	public void registerBoolean() throws RetrievalException,
 			NotFoundException, DataManagerException, IOException {
-		EntityIdentifier entity = facade.register(25);
-		assertEquals(25, facade.resolve(entity));
+		boolean bool = false;
+		EntityIdentifier entity = facade.register(bool);
+		assertEquals(bool, facade.resolve(entity));
 	}
 
 	@Test
-	public void registerFloat() throws RetrievalException,
-			NotFoundException, DataManagerException, IOException {
-		float number = (float) 13.37;
-		EntityIdentifier entity = facade.register(number);
-		assertEquals(number, facade.resolve(entity));
+	public void registerBytes() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException,
+			DereferenceException {
+		final byte[] bytes = "A test".getBytes("utf8");
+		DataDocumentIdentifier id = (DataDocumentIdentifier) facade.register(bytes);
+		InputStream resolvedStream = (InputStream) facade.resolve(id);
+		byte[] retrievedBytes = IOUtils.toByteArray(resolvedStream);
+		assertTrue("Retrieved bytes didn't match", Arrays.equals(bytes, retrievedBytes));
 	}
 
 	@Test
-	public void registerFloatInfinity() throws RetrievalException,
-			NotFoundException, DataManagerException, IOException {
-		float number = Float.NEGATIVE_INFINITY;
-		EntityIdentifier entity = facade.register(number);
-		assertEquals(number, facade.resolve(entity));
+	public void registerDeepEmptyList() throws DataManagerException, IOException {
+		List<List<Object>> deepEmptyList = new ArrayList<List<Object>>();
+		EntityIdentifier id = facade.register(deepEmptyList, 2);
+		assertEquals(2, id.getDepth());
 	}
 
 	@Test
@@ -79,68 +84,43 @@ public class DataFacadeTest {
 	}
 
 	@Test
-	public void registerBoolean() throws RetrievalException,
-			NotFoundException, DataManagerException, IOException {
-		boolean bool = false;
-		EntityIdentifier entity = facade.register(bool);
-		assertEquals(bool, facade.resolve(entity));
+	public void registerEmptyList() throws DataManagerException, IOException {
+		List<Object> deepEmptyList = new ArrayList<Object>();
+		// Note: Does not actually check the parameterised types, but the
+		// depth should match
+		EntityIdentifier id = facade.register(deepEmptyList, 1);
+		assertEquals(1, id.getDepth());
+	}
+
+	@Test(expected = EmptyListException.class)
+	public void registerEmptyListFails() throws DataManagerException, IOException {
+		List<Object> emptyList = new ArrayList<Object>();
+		facade.register(emptyList);
 	}
 
 	@Test
-	public void registerLong() throws RetrievalException,
+	public void registerFloat() throws RetrievalException,
 			NotFoundException, DataManagerException, IOException {
-		long number = Long.MIN_VALUE;
+		float number = (float) 13.37;
 		EntityIdentifier entity = facade.register(number);
 		assertEquals(number, facade.resolve(entity));
 	}
-
+	
 	@Test
-	public void registerString() throws RetrievalException,
-			NotFoundException, DataManagerException,
-			MalformedIdentifierException, UnsupportedEncodingException, IOException {
-		String str = "hello with some / weird\n" + " ! character% and º(x) = ¹";
-		EntityIdentifier entity = facade.register(str);
-		assertEquals(str, facade.resolve(entity));
+	public void registerFloatInfinity() throws RetrievalException,
+			NotFoundException, DataManagerException, IOException {
+		float number = Float.NEGATIVE_INFINITY;
+		EntityIdentifier entity = facade.register(number);
+		assertEquals(number, facade.resolve(entity));
 	}
 	
 	@Test
-	public void registerBigString() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException, IOException, RetrievalException, NotFoundException {
-		String str = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzx"
-				+ "cvbnmqwertyuiopasdfghjklzxcvbnmqwertyuioipasdfghjklzxcvbnmq";
-		EntityIdentifier entity = facade.register(str);
-		InputStream stream = (InputStream) facade.resolve(entity);
-		String newString = IOUtils.toString(stream);
-		assertEquals(str, newString);
+	public void registerInteger() throws RetrievalException,
+			NotFoundException, DataManagerException, IOException {
+		EntityIdentifier entity = facade.register(25);
+		assertEquals(25, facade.resolve(entity));
 	}
 	
-	@Test
-	public void registerStream() throws EmptyListException,
-			MalformedListException, UnsupportedObjectTypeException,
-			IOException, RetrievalException, NotFoundException,
-			DereferenceException {
-		final byte[] bytes = "A test".getBytes("utf8");
-		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-		DataDocumentIdentifier id = (DataDocumentIdentifier) facade.register(stream);
-		stream.close();
-		InputStream resolvedStream = (InputStream) facade.resolve(id);
-		assertNotSame(stream, resolvedStream);
-		byte[] retrievedBytes = IOUtils.toByteArray(resolvedStream);
-		assertTrue("Retrieved bytes didn't match", Arrays.equals(bytes, retrievedBytes));
-	}
-	
-	@Test
-	public void registerBytes() throws EmptyListException,
-			MalformedListException, UnsupportedObjectTypeException,
-			IOException, RetrievalException, NotFoundException,
-			DereferenceException {
-		final byte[] bytes = "A test".getBytes("utf8");
-		DataDocumentIdentifier id = (DataDocumentIdentifier) facade.register(bytes);
-		InputStream resolvedStream = (InputStream) facade.resolve(id);
-		byte[] retrievedBytes = IOUtils.toByteArray(resolvedStream);
-		assertTrue("Retrieved bytes didn't match", Arrays.equals(bytes, retrievedBytes));
-	}
-
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void registerList() throws RetrievalException,
@@ -159,6 +139,71 @@ public class DataFacadeTest {
 		assertNotSame(list, resolved);
 		assertEquals(Double.MIN_VALUE, resolved.get(2));
 		assertEquals("hello", resolved.get(5));
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void registerListOfEmptyListFirst() throws RetrievalException,
+			NotFoundException, DataManagerException, IOException {
+		List<Object> list1 = new ArrayList<Object>();
+		list1.add(25);
+		list1.add((float) 32.546);
+		list1.add(Double.MAX_VALUE);
+		list1.add(false);
+		list1.add(Long.MIN_VALUE);
+		list1.add("hello there");
+
+		List<Object> emptyList = new ArrayList<Object>();
+
+		List<List<Object>> bigList = new ArrayList<List<Object>>();
+		bigList.add(emptyList);
+		bigList.add(list1);
+
+		EntityIdentifier bigListId = facade.register(bigList);
+		assertEquals(2, bigListId.getDepth());
+		List<List<Object>> resolved = (List) facade.resolve(bigListId);
+		assertEquals(bigList, resolved);
+		assertNotSame(bigList, resolved);
+		assertTrue(resolved.get(0).isEmpty());
+		assertEquals(Long.MIN_VALUE, resolved.get(1).get(4));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void registerListOfHalfEmptyLists() throws RetrievalException,
+			NotFoundException, DataManagerException, IOException {
+
+		List<Object> list1 = new ArrayList<Object>();
+		list1.add(25);
+		list1.add((float) 32.546);
+		list1.add(Double.MAX_VALUE);
+		list1.add(false);
+		list1.add(Long.MIN_VALUE);
+		list1.add("hello there");
+
+		List<Object> emptyList = new ArrayList<Object>();
+
+		List<List<Object>> bigList = new ArrayList<List<Object>>();
+		bigList.add(list1);
+		bigList.add(emptyList);
+		EntityIdentifier bigListId = facade.register(bigList);
+		assertEquals(2, bigListId.getDepth());
+		List<List<Object>> resolved = (List) facade.resolve(bigListId);
+		assertEquals(bigList, resolved);
+		assertNotSame(bigList, resolved);
+		assertTrue(resolved.get(1).isEmpty());
+		assertEquals(Long.MIN_VALUE, resolved.get(0).get(4));
+	}
+
+	@Test(expected = EmptyListException.class)
+	public void registerListOfJustEmptyListsFails() throws DataManagerException, IOException{
+		List<Object> emptyList1 = new ArrayList<Object>();
+		List<Object> emptyList2 = new ArrayList<Object>();
+		List<List<Object>> bigList = new ArrayList<List<Object>>();
+		bigList.add(emptyList1);
+		bigList.add(emptyList2);
+		facade.register(bigList);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -193,90 +238,23 @@ public class DataFacadeTest {
 		assertEquals(Long.MIN_VALUE, resolved.get(1).get(4));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
-	public void registerListOfHalfEmptyLists() throws RetrievalException,
+	public void registerLiteralCorrectDepth() throws DataManagerException, IOException {
+		facade.register("I've got correct depth", 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void registerLiteralWrongDepthFails() throws DataManagerException, IOException {
+		// Literals can only have depth 0 and UNKNOWN_DEPTH
+		facade.register("I've messed up my depth", 1);
+	}
+
+	@Test
+	public void registerLong() throws RetrievalException,
 			NotFoundException, DataManagerException, IOException {
-
-		List<Object> list1 = new ArrayList<Object>();
-		list1.add(25);
-		list1.add((float) 32.546);
-		list1.add(Double.MAX_VALUE);
-		list1.add(false);
-		list1.add(Long.MIN_VALUE);
-		list1.add("hello there");
-
-		List<Object> emptyList = new ArrayList<Object>();
-
-		List<List<Object>> bigList = new ArrayList<List<Object>>();
-		bigList.add(list1);
-		bigList.add(emptyList);
-		EntityIdentifier bigListId = facade.register(bigList);
-		assertEquals(2, bigListId.getDepth());
-		List<List<Object>> resolved = (List) facade.resolve(bigListId);
-		assertEquals(bigList, resolved);
-		assertNotSame(bigList, resolved);
-		assertTrue(resolved.get(1).isEmpty());
-		assertEquals(Long.MIN_VALUE, resolved.get(0).get(4));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Test
-	public void registerListOfEmptyListFirst() throws RetrievalException,
-			NotFoundException, DataManagerException, IOException {
-		List<Object> list1 = new ArrayList<Object>();
-		list1.add(25);
-		list1.add((float) 32.546);
-		list1.add(Double.MAX_VALUE);
-		list1.add(false);
-		list1.add(Long.MIN_VALUE);
-		list1.add("hello there");
-
-		List<Object> emptyList = new ArrayList<Object>();
-
-		List<List<Object>> bigList = new ArrayList<List<Object>>();
-		bigList.add(emptyList);
-		bigList.add(list1);
-
-		EntityIdentifier bigListId = facade.register(bigList);
-		assertEquals(2, bigListId.getDepth());
-		List<List<Object>> resolved = (List) facade.resolve(bigListId);
-		assertEquals(bigList, resolved);
-		assertNotSame(bigList, resolved);
-		assertTrue(resolved.get(0).isEmpty());
-		assertEquals(Long.MIN_VALUE, resolved.get(1).get(4));
-	}
-
-	@Test(expected = EmptyListException.class)
-	public void registerListOfJustEmptyListsFails() throws DataManagerException, IOException{
-		List<Object> emptyList1 = new ArrayList<Object>();
-		List<Object> emptyList2 = new ArrayList<Object>();
-		List<List<Object>> bigList = new ArrayList<List<Object>>();
-		bigList.add(emptyList1);
-		bigList.add(emptyList2);
-		facade.register(bigList);
-	}
-
-	@Test(expected = EmptyListException.class)
-	public void registerEmptyListFails() throws DataManagerException, IOException {
-		List<Object> emptyList = new ArrayList<Object>();
-		facade.register(emptyList);
-	}
-
-	@Test
-	public void registerEmptyList() throws DataManagerException, IOException {
-		List<Object> deepEmptyList = new ArrayList<Object>();
-		// Note: Does not actually check the parameterised types, but the
-		// depth should match
-		EntityIdentifier id = facade.register(deepEmptyList, 1);
-		assertEquals(1, id.getDepth());
-	}
-
-	@Test
-	public void registerDeepEmptyList() throws DataManagerException, IOException {
-		List<List<Object>> deepEmptyList = new ArrayList<List<Object>>();
-		EntityIdentifier id = facade.register(deepEmptyList, 2);
-		assertEquals(2, id.getDepth());
+		long number = Long.MIN_VALUE;
+		EntityIdentifier entity = facade.register(number);
+		assertEquals(number, facade.resolve(entity));
 	}
 
 	@Test(expected = MalformedListException.class)
@@ -340,6 +318,30 @@ public class DataFacadeTest {
 		facade.register(deeperList);
 	}
 
+	@Test
+	public void registerStream() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException,
+			DereferenceException {
+		final byte[] bytes = "A test".getBytes("utf8");
+		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+		DataDocumentIdentifier id = (DataDocumentIdentifier) facade.register(stream);
+		stream.close();
+		InputStream resolvedStream = (InputStream) facade.resolve(id);
+		assertNotSame(stream, resolvedStream);
+		byte[] retrievedBytes = IOUtils.toByteArray(resolvedStream);
+		assertTrue("Retrieved bytes didn't match", Arrays.equals(bytes, retrievedBytes));
+	}
+
+	@Test
+	public void registerString() throws RetrievalException,
+			NotFoundException, DataManagerException,
+			MalformedIdentifierException, UnsupportedEncodingException, IOException {
+		String str = "hello with some / weird\n" + " ! character% and ï¿½(x) = ï¿½";
+		EntityIdentifier entity = facade.register(str);
+		assertEquals(str, facade.resolve(entity));
+	}
+
 	@Test(expected = MalformedListException.class)
 	public void registerTooShortDepthFails() throws DataManagerException, IOException {
 		List<Object> list = new ArrayList<Object>();
@@ -350,6 +352,11 @@ public class DataFacadeTest {
 		list.add(Long.MIN_VALUE);
 		list.add("hello there");
 		facade.register(list, 0);
+	}
+
+	@Test(expected=UnsupportedObjectTypeException.class)
+	public void registerUnsupportedObjectFails() throws DataManagerException, IOException {
+		facade.register(this);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -369,21 +376,14 @@ public class DataFacadeTest {
 		// deepList is depth 2, should fail with 3
 		facade.register(deepList, 3);
 	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void registerLiteralWrongDepthFails() throws DataManagerException, IOException {
-		// Literals can only have depth 0 and UNKNOWN_DEPTH
-		facade.register("I've messed up my depth", 1);
-	}
-
-	@Test
-	public void registerLiteralCorrectDepth() throws DataManagerException, IOException {
-		facade.register("I've got correct depth", 0);
-	}
 	
-	@Test(expected=UnsupportedObjectTypeException.class)
-	public void registerUnsupportedObjectFails() throws DataManagerException, IOException {
-		facade.register(this);
+	@Before
+	public void setDataManager() {
+		// dManager = new FileDataManager("testNS",
+		// new HashSet<LocationalContext>(), new File("/tmp/fish"));
+		dManager = new InMemoryDataManager(TEST_NS,
+				new HashSet<LocationalContext>());
+		facade = new DataFacade(dManager);
 	}
 
 }

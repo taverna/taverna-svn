@@ -16,13 +16,6 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 	private static File tmpDir;
 
 
-	@BeforeClass
-	public static void makeTmp() throws IOException {
-		tmpDir = File.createTempFile("test", "datamanager");
-		tmpDir.delete();
-		tmpDir.mkdir();
-	}
-	
 	@AfterClass
 	public static void deleteTmp() throws IOException {
 //		System.out.println("FileBlobStore dir " + tmpDir);
@@ -31,6 +24,13 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 		} catch (IOException ex) {
 			// OK
 		}
+	}
+	
+	@BeforeClass
+	public static void makeTmp() throws IOException {
+		tmpDir = File.createTempFile("test", "datamanager");
+		tmpDir.delete();
+		tmpDir.mkdir();
 	}
 
 	

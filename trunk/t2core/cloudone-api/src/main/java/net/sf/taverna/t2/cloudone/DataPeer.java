@@ -19,29 +19,6 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 public interface DataPeer {
 
 	/**
-	 * Each DataPeer is associated with exactly one DataManager
-	 */
-	public DataManager getDataManager();
-	
-	/**
-	 * Get the current namespace for this DataManager. New data documents and
-	 * lists registered with this manager will have this namespace in their
-	 * identifiers.
-	 * 
-	 * @return
-	 */
-	public String getCurrentNamespace();
-
-	/**
-	 * Get all namespaces for which this data manager is the authority. This
-	 * will always include at least the namespace returned by the
-	 * getCurrentNamespace method
-	 * 
-	 * @return
-	 */
-	public List<String> getManagedNamespaces();
-
-	/**
 	 * Return a potentially modified copy of the specified data document after
 	 * ensuring that all reference schemes within the specified document are
 	 * valid in the remote context
@@ -54,9 +31,32 @@ public interface DataPeer {
 			DataDocumentIdentifier identifier) throws NotFoundException;
 
 	/**
+	 * Get the current namespace for this DataManager. New data documents and
+	 * lists registered with this manager will have this namespace in their
+	 * identifiers.
+	 * 
+	 * @return
+	 */
+	public String getCurrentNamespace();
+
+	/**
+	 * Each DataPeer is associated with exactly one DataManager
+	 */
+	public DataManager getDataManager();
+
+	/**
 	 * Get the document which describes the locational context for this
 	 * DataManager instance.
 	 */
 	public Set<LocationalContext> getLocationalContexts();
+
+	/**
+	 * Get all namespaces for which this data manager is the authority. This
+	 * will always include at least the namespace returned by the
+	 * getCurrentNamespace method
+	 * 
+	 * @return
+	 */
+	public List<String> getManagedNamespaces();
 
 }

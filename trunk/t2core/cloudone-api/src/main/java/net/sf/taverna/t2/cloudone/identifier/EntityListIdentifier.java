@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-
 /**
  * An identifier for an EntityList. Naming of this gets a bit confusing as
  * really the EntityList is an EntityIdentifierList but that would have led to
@@ -23,8 +22,12 @@ public class EntityListIdentifier extends EntityIdentifier {
 
 	@Override
 	public int getDepth() {
-		// TODO Auto-generated method stub
 		return depth;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -47,12 +50,7 @@ public class EntityListIdentifier extends EntityIdentifier {
 			throw new MalformedIdentifierException(
 					"Depth of list must be at least 1 in " + identifierString);
 		}
-		this.name = parts[0];
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
+		name = parts[0];
 	}
 
 }

@@ -7,7 +7,6 @@ import java.util.Set;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
-import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
@@ -30,6 +29,16 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
  */
 public interface DataManager {
 
+	public BlobStore getBlobStore();
+
+	/**
+	 * Get the current namespace of the data manager. Entities registered with
+	 * this datamanager will be assigned identities within this namespace.
+	 * 
+	 * @return The current namespace
+	 */
+	public String getCurrentNamespace();
+
 	/**
 	 * Fetch the named entity by identifier.
 	 */
@@ -37,35 +46,34 @@ public interface DataManager {
 			throws NotFoundException, RetrievalException;
 
 	/**
-	 * Initiates a traversal of the specified data reference, traversing to
-	 * whatever level of depth is required such that all identifiers returned
-	 * within the iterator have the specified depth. The context (i.e. the index
-	 * path from the originally specified reference to each reference within the
-	 * iteration) is included through use of the ContextualizedIdentifier
-	 * wrapper class
+	 * Get the set of {@link LocationalContext}s this Data manager knows about.
 	 * 
-	 * @param identifier
-	 * @param desiredDepth
-	 * @return
-	 * @throws RetrievalException
-	 *             If an entity could not be retrieved
+	 * @return Set of {@link LocationalContext}
 	 */
-	public Iterator<ContextualizedIdentifier> traverse(
-			EntityIdentifier identifier, int desiredDepth)
-			throws RetrievalException;
+	public Set<LocationalContext> getLocationalContexts();
 
 	/**
-	 * Register a new list from an array of identifiers. Returns the identifier
-	 * of the new list, blocking until creation has finished and the list is
-	 * available for resolution.
-	 * <p>
-	 * We require a depth parameter explicitly stated here to cope with
-	 * registration of empty lists, something that Taverna 1 had huge issues
-	 * with. A list is allowed to be empty and has a conceptual depth even in
-	 * this case.
+	 * Get the list of managed namespaces this data manager can retrieve
+	 * entities from using {@link #getEntity(EntityIdentifier)}. This normally
+	 * includes {@link #getCurrentNamespace()}.
+	 * 
+	 * @return List of managed namespaces
 	 */
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
-			throws StorageException;
+	public List<String> getManagedNamespaces();
+
+	public int getMaxIDLength();
+
+	/**
+	 * Take a set of references, all of which must point to byte equivalent data
+	 * where resolvable, build, name and return a new DataDocument object
+	 * containing these references and named within the data manager's active
+	 * namespace
+	 * 
+	 * @param references
+	 * @return
+	 */
+	public DataDocumentIdentifier registerDocument(
+			Set<ReferenceScheme> references) throws StorageException;
 
 	/**
 	 * Register a new empty list. Returns the identifier of the new list,
@@ -81,18 +89,6 @@ public interface DataManager {
 			throws StorageException;
 
 	/**
-	 * Take a set of references, all of which must point to byte equivalent data
-	 * where resolvable, build, name and return a new DataDocument object
-	 * containing these references and named within the data manager's active
-	 * namespace
-	 * 
-	 * @param references
-	 * @return
-	 */
-	public DataDocumentIdentifier registerDocument(
-			Set<ReferenceScheme> references) throws StorageException;
-
-	/**
 	 * Register a single error with the data manager. An error has a depth, an
 	 * implicit depth, and an error message.
 	 * 
@@ -106,21 +102,6 @@ public interface DataManager {
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg) throws StorageException;
-
-	/**
-	 * Register a single error with the data manager. An error has a depth, an
-	 * implicit depth, and a Throwable cause.
-	 * 
-	 * @param depth
-	 * @param implicitDepth
-	 * @param throwable
-	 *            Cause for error
-	 * @return An {@link ErrorDocumentIdentifier}
-	 * @throws StorageException
-	 *             If the error document could not be stored
-	 */
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			Throwable throwable) throws StorageException;
 
 	/**
 	 * Register a single error with the data manager. An error has both a depth
@@ -141,31 +122,49 @@ public interface DataManager {
 			String msg, Throwable throwable) throws StorageException;
 
 	/**
-	 * Get the current namespace of the data manager. Entities registered with
-	 * this datamanager will be assigned identities within this namespace.
+	 * Register a single error with the data manager. An error has a depth, an
+	 * implicit depth, and a Throwable cause.
 	 * 
-	 * @return The current namespace
+	 * @param depth
+	 * @param implicitDepth
+	 * @param throwable
+	 *            Cause for error
+	 * @return An {@link ErrorDocumentIdentifier}
+	 * @throws StorageException
+	 *             If the error document could not be stored
 	 */
-	public String getCurrentNamespace();
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
+			Throwable throwable) throws StorageException;
 
 	/**
-	 * Get the set of {@link LocationalContext}s this Data manager knows about.
-	 * 
-	 * @return Set of {@link LocationalContext}
+	 * Register a new list from an array of identifiers. Returns the identifier
+	 * of the new list, blocking until creation has finished and the list is
+	 * available for resolution.
+	 * <p>
+	 * We require a depth parameter explicitly stated here to cope with
+	 * registration of empty lists, something that Taverna 1 had huge issues
+	 * with. A list is allowed to be empty and has a conceptual depth even in
+	 * this case.
 	 */
-	public Set<LocationalContext> getLocationalContexts();
+	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+			throws StorageException;
 
 	/**
-	 * Get the list of managed namespaces this data manager can retrieve
-	 * entities from using {@link #getEntity(EntityIdentifier)}. This normally
-	 * includes {@link #getCurrentNamespace()}.
+	 * Initiates a traversal of the specified data reference, traversing to
+	 * whatever level of depth is required such that all identifiers returned
+	 * within the iterator have the specified depth. The context (i.e. the index
+	 * path from the originally specified reference to each reference within the
+	 * iteration) is included through use of the ContextualizedIdentifier
+	 * wrapper class
 	 * 
-	 * @return List of managed namespaces
+	 * @param identifier
+	 * @param desiredDepth
+	 * @return
+	 * @throws RetrievalException
+	 *             If an entity could not be retrieved
 	 */
-	public List<String> getManagedNamespaces();
-
-	public int getMaxIDLength();
-
-	public BlobStore getBlobStore();
+	public Iterator<ContextualizedIdentifier> traverse(
+			EntityIdentifier identifier, int desiredDepth)
+			throws RetrievalException;
 
 }

@@ -26,9 +26,10 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 
 	private static File tmpDir;
 
-	private FileDataManager fileDataManager;
-
-	FileDataManager fileDataManager2;
+	@AfterClass
+	public static void deleteTmp() throws IOException {
+		FileUtils.deleteDirectory(tmpDir);
+	}
 
 	@BeforeClass
 	public static void makeTmp() throws IOException {
@@ -37,24 +38,9 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		tmpDir.mkdir();
 	}
 
-	@Override
-	@Before
-	public void setDataManager() {
-		fileDataManager = new FileDataManager(TEST_NS, Collections
-				.<LocationalContext> emptySet(), tmpDir);
-		dManager = fileDataManager;
-	}
+	private FileDataManager fileDataManager;
 
-	@Before
-	public void makeExtraDataManager() {
-		fileDataManager2 = new FileDataManager(TEST_NS, Collections
-				.<LocationalContext> emptySet(), tmpDir);
-	}
-
-	@AfterClass
-	public static void deleteTmp() throws IOException {
-		FileUtils.deleteDirectory(tmpDir);
-	}
+	FileDataManager fileDataManager2;
 
 	@Test
 	public void generateIdDataUUID() {
@@ -68,6 +54,11 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		assertEquals(4, uuid.version()); // random
 	}
 
+	@Before
+	public void makeExtraDataManager() {
+		fileDataManager2 = new FileDataManager(TEST_NS, Collections
+				.<LocationalContext> emptySet(), tmpDir);
+	}
 
 	@Test
 	public void nextDataIdentifierUUID() {
@@ -75,6 +66,7 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		UUID uuid = UUID.fromString(dataId.getName());
 		assertEquals(4, uuid.version()); // random
 	}
+
 
 	@Test
 	public void nextErrorIdentifierUUID() {
@@ -89,6 +81,14 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		EntityListIdentifier listId = fileDataManager.nextListIdentifier(2);
 		UUID uuid = UUID.fromString(listId.getName());
 		assertEquals(4, uuid.version()); // random
+	}
+
+	@Override
+	@Before
+	public void setDataManager() {
+		fileDataManager = new FileDataManager(TEST_NS, Collections
+				.<LocationalContext> emptySet(), tmpDir);
+		dManager = fileDataManager;
 	}
 
 }

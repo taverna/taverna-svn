@@ -27,16 +27,13 @@ public interface ReferenceScheme {
 			throws DereferenceException;
 
 	/**
-	 * Given a set of locational context specifiers will this reference scheme
-	 * instance be valid within the specified context? The current location is
-	 * specified by a DataPeer reference, implementations can use this to get
-	 * the current local context set.
+	 * If the reference is immediate this defines the date at which it will
+	 * become invalid. If the reference is not immediate this has no meaning and
+	 * may return null.
 	 * 
-	 * @param contextSet
-	 * @return
+	 * @return date at which an immediate reference becomes invalid.
 	 */
-	public boolean validInContext(Set<LocationalContext> contextSet,
-			DataPeer currentLocation);
+	public Date getExpiry();
 
 	/**
 	 * When a reference scheme is exported from a data peer there are some cases
@@ -53,12 +50,15 @@ public interface ReferenceScheme {
 	public boolean isImmediate();
 
 	/**
-	 * If the reference is immediate this defines the date at which it will
-	 * become invalid. If the reference is not immediate this has no meaning and
-	 * may return null.
+	 * Given a set of locational context specifiers will this reference scheme
+	 * instance be valid within the specified context? The current location is
+	 * specified by a DataPeer reference, implementations can use this to get
+	 * the current local context set.
 	 * 
-	 * @return date at which an immediate reference becomes invalid.
+	 * @param contextSet
+	 * @return
 	 */
-	public Date getExpiry();
+	public boolean validInContext(Set<LocationalContext> contextSet,
+			DataPeer currentLocation);
 
 }

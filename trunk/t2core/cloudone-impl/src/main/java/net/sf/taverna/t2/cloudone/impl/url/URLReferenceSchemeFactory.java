@@ -22,15 +22,15 @@ public class URLReferenceSchemeFactory extends AbstractReferenceSchemeFactory<UR
 
 	private static URLReferenceSchemeFactory urlRefSchemeFactory;
 	
-	protected URLReferenceSchemeFactory() {
-		super();
-	}
-	
 	public static URLReferenceSchemeFactory getInstance() {
 		if (urlRefSchemeFactory==null) {
 			urlRefSchemeFactory = new URLReferenceSchemeFactory();
 		} 
 		return urlRefSchemeFactory;
+	}
+	
+	protected URLReferenceSchemeFactory() {
+		super();
 	}
 	
 	private URLReferenceScheme getReferenceScheme() {

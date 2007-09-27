@@ -18,12 +18,12 @@ public class ListException extends DataManagerException {
 		super();
 	}
 
-	public ListException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public ListException(String message) {
 		super(message);
+	}
+
+	public ListException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	public ListException(Throwable cause) {

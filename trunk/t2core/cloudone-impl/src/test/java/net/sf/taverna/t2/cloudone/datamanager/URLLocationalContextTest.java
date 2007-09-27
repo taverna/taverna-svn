@@ -30,13 +30,10 @@ public class URLLocationalContextTest {
 
 	private static File tmpDir;
 
-	private FileDataManager fileDataManager;
-
-	private FileDataManager fileDataManager2;
-	
-	private DataPeer dataPeer;
-	
-	private Set<LocationalContext> contextSet;
+	@AfterClass
+	public static void deleteTmp() throws IOException {
+		FileUtils.deleteDirectory(tmpDir);
+	}
 
 	@BeforeClass
 	public static void makeTmp() throws IOException {
@@ -44,7 +41,37 @@ public class URLLocationalContextTest {
 		tmpDir.delete();
 		tmpDir.mkdir();
 	}
-	
+
+	private FileDataManager fileDataManager;
+
+	private FileDataManager fileDataManager2;
+
+	private DataPeer dataPeer;
+
+	private Set<LocationalContext> contextSet;
+
+	@Test
+	public void checkCurrentNamespace() {
+		assertTrue(dataPeer.getCurrentNamespace().equals(
+				fileDataManager.getCurrentNamespace()));
+	}
+
+	@Test
+	public void checkManagedNamespaces() {
+		assertTrue(dataPeer.getManagedNamespaces().equals(
+				fileDataManager.getManagedNamespaces()));
+	}
+
+	@Test
+	public void checkURLLocationalContextValid() throws IOException {
+
+		File newFile = File.createTempFile("test", ".txt");
+		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
+		URL fileURL = newFile.toURI().toURL();
+		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
+		assertTrue(urlRef.validInContext(contextSet, dataPeer));
+	}
+
 	@Before
 	public void createDataManager() {
 		Map<String, String> networkName = new HashMap<String, String>();
@@ -61,35 +88,11 @@ public class URLLocationalContextTest {
 		fileDataManager = new FileDataManager(TEST_NS, contextSet, tmpDir);
 		dataPeer = new DataPeerImpl(fileDataManager);
 	}
-	
-	@AfterClass
-	public static void deleteTmp() throws IOException {
-		FileUtils.deleteDirectory(tmpDir);
-	}
-	
+
 	@Test
 	public void URLRefSchemeFactoryTest() {
-		Map<String, Set<List<String>>> map = URLReferenceSchemeFactory.getInstance().getRequiredKeys();
+		Map<String, Set<List<String>>> map = URLReferenceSchemeFactory
+				.getInstance().getRequiredKeys();
 		assertTrue(map.containsKey("MachineName"));
-	}
-	
-	@Test
-	public void checkURLLocationalContextValid() throws IOException {
-		
-		File newFile = File.createTempFile("test", ".txt");
-		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
-		URL fileURL = newFile.toURI().toURL();
-		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
-		assertTrue(urlRef.validInContext(contextSet, dataPeer));
-	}
-	
-	@Test
-	public void checkManagedNamespaces() {
-		assertTrue(dataPeer.getManagedNamespaces().equals(fileDataManager.getManagedNamespaces()));
-	}
-	
-	@Test
-	public void checkCurrentNamespace() {
-		assertTrue(dataPeer.getCurrentNamespace().equals(fileDataManager.getCurrentNamespace()));
 	}
 }

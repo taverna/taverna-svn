@@ -20,12 +20,12 @@ public class NotFoundException extends Exception {
 		super(msg);
 	}
 
-	public NotFoundException(Throwable throwable) {
-		super(throwable);
-	}
-
 	public NotFoundException(String msg, Throwable throwable) {
 		super(msg, throwable);
+	}
+
+	public NotFoundException(Throwable throwable) {
+		super(throwable);
 	}
 
 }

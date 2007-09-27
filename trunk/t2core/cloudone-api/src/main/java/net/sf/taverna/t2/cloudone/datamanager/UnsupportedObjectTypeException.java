@@ -15,12 +15,12 @@ public class UnsupportedObjectTypeException extends DataManagerException {
 	public UnsupportedObjectTypeException() {
 	}
 
-	public UnsupportedObjectTypeException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public UnsupportedObjectTypeException(String message) {
 		super(message);
+	}
+
+	public UnsupportedObjectTypeException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	public UnsupportedObjectTypeException(Throwable cause) {

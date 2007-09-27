@@ -23,6 +23,30 @@ import org.jdom.output.XMLOutputter;
 
 public class EntitySerialiser {
 
+	public static Object fromXML(Element elem, ClassLoader cl) {
+		String configAsString = new XMLOutputter(Format.getRawFormat())
+				.outputString(elem);
+		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(
+				configAsString.getBytes()), null, null, cl);
+		Object configObject = decoder.readObject();
+		return configObject;
+	}
+
+	public static Object fromXMLFile(File file) throws JDOMException,
+			IOException {
+		BufferedInputStream stream = new BufferedInputStream(
+				new FileInputStream(file));
+		try {
+			XMLDecoder decoder = new XMLDecoder(stream);
+			Object obj = decoder.readObject();
+			decoder.close();
+			return obj;
+		} finally {
+			stream.close();
+		}
+
+	}
+
 	public static Element toXML(Object ent) throws JDOMException, IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		XMLEncoder xenc = new XMLEncoder(bos);
@@ -46,29 +70,5 @@ public class EntitySerialiser {
 		} finally {
 			stream.close();
 		}
-	}
-
-	public static Object fromXMLFile(File file) throws JDOMException,
-			IOException {
-		BufferedInputStream stream = new BufferedInputStream(
-				new FileInputStream(file));
-		try {
-			XMLDecoder decoder = new XMLDecoder(stream);
-			Object obj = decoder.readObject();
-			decoder.close();
-			return obj;
-		} finally {
-			stream.close();
-		}
-
-	}
-
-	public static Object fromXML(Element elem, ClassLoader cl) {
-		String configAsString = new XMLOutputter(Format.getRawFormat())
-				.outputString(elem);
-		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(
-				configAsString.getBytes()), null, null, cl);
-		Object configObject = decoder.readObject();
-		return configObject;
 	}
 }

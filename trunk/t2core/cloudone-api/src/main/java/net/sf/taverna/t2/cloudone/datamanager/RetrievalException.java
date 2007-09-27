@@ -21,12 +21,12 @@ public class RetrievalException extends RuntimeException {
 		super(message);
 	}
 
-	public RetrievalException(Throwable cause) {
-		super(cause);
-	}
-
 	public RetrievalException(String message, Throwable cause) {
 		super(message, cause);
+	}
+
+	public RetrievalException(Throwable cause) {
+		super(cause);
 	}
 
 }

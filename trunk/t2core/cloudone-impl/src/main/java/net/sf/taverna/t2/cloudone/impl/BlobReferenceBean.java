@@ -13,20 +13,20 @@ public class BlobReferenceBean extends ReferenceBean {
 		return id;
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
 	public String getNamespace() {
 		return namespace;
-	}
-
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
 	}
 
 	@Override
 	public String getType() {
 		return TYPE;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 }

@@ -31,12 +31,87 @@ public abstract class AbstractBlobStoreTest {
 	protected static final String TEST_NS = "testNS";
 
 	protected BlobStore blobStore;
-	
+
 	protected DataManager dManager;
+
+	@Test
+	public void registerBlobAndDereference() throws DereferenceException,
+			IOException, RetrievalException, NotFoundException {
+		byte[] bytes = makeByteArray();
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) dManager
+				.getBlobStore().storeFromBytes(bytes);
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		references.add(ref);
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+
+		// Retrieve it again going through the dManager
+		DataDocument retrieved = (DataDocument) dManager.getEntity(docId);
+		final Set<ReferenceScheme> retrievedReferences = retrieved
+				.getReferenceSchemes();
+		assertFalse("Did not contain reference scheme", retrievedReferences
+				.isEmpty());
+		assertEquals("Too many reference schemes", 1, retrievedReferences
+				.size());
+		ReferenceScheme retrievedRef = retrievedReferences.iterator().next();
+
+		InputStream stream = retrievedRef.dereference(dManager);
+		byte[] retrievedBytes = IOUtils.toByteArray(stream);
+		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
+				retrievedBytes));
+	}
 
 	@Before
 	public abstract void setDataManagerAndBlobStore();
-	
+
+	@Test
+	public void storeBytesRetrieveBytes() throws RetrievalException,
+			NotFoundException {
+		byte[] bytes = makeByteArray();
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
+		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
+				retrievedBytes));
+	}
+
+	@Test
+	public void storeBytesRetrieveStream() throws DereferenceException,
+			RetrievalException, NotFoundException, IOException {
+		byte[] bytes = makeByteArray();
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		InputStream stream = blobStore.retrieveAsStream(ref);
+		byte[] retrievedBytes = IOUtils.toByteArray(stream);
+		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
+				retrievedBytes));
+	}
+
+	@Test
+	public void storeInputStreamRetrieveBytes() throws RetrievalException,
+			NotFoundException {
+		byte[] bytes = makeByteArray();
+		InputStream inStream = new ByteArrayInputStream(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromStream(inStream);
+		assertNotNull(ref);
+		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
+		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
+				retrievedBytes));
+	}
+
+	@Test
+	public void storeInputStreamRetrieveStream() throws IOException,
+			RetrievalException, NotFoundException {
+		byte[] bytes = makeByteArray();
+		InputStream inStream = new ByteArrayInputStream(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromStream(inStream);
+		assertNotNull(ref);
+		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
+		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
+				retrievedBytes));
+	}
+
 	private byte[] makeByteArray() {
 		byte[] bytes;
 		try {
@@ -48,68 +123,5 @@ public abstract class AbstractBlobStoreTest {
 		assertEquals(113, bytes[0]); // "q"
 		assertEquals(112, bytes[9]); // "p"
 		return bytes;
-	}
-
-	@Test
-	public void storeBytesRetrieveBytes() throws RetrievalException, NotFoundException {
-		byte[] bytes = makeByteArray();
-		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(bytes);
-		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
-		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
-				retrievedBytes));
-	}
-
-	@Test
-	public void storeInputStreamRetrieveBytes() throws  RetrievalException, NotFoundException {
-		byte[] bytes = makeByteArray();
-		InputStream inStream = new ByteArrayInputStream(bytes);
-		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromStream(inStream);
-		assertNotNull(ref);
-		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);		
-		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
-				retrievedBytes));
-	}
-
-	@Test
-	public void storeBytesRetrieveStream() throws 
-			DereferenceException, RetrievalException, NotFoundException, IOException {
-		byte[] bytes = makeByteArray();
-		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(bytes);
-		InputStream stream = blobStore.retrieveAsStream(ref);
-		byte[] retrievedBytes = IOUtils.toByteArray(stream);
-		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
-				retrievedBytes));
-	}
-
-	@Test
-	public void storeInputStreamRetrieveStream() throws IOException, RetrievalException, NotFoundException {
-		byte[] bytes = makeByteArray();
-		InputStream inStream = new ByteArrayInputStream(bytes);
-		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore.storeFromStream(inStream);
-		assertNotNull(ref);
-		byte[] retrievedBytes = blobStore.retrieveAsBytes(ref);
-		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
-				retrievedBytes));
-	}
-
-	@Test
-	public void registerBlobAndDereference() throws DereferenceException, IOException, RetrievalException, NotFoundException {
-		byte[] bytes = makeByteArray();
-		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) dManager.getBlobStore().storeFromBytes(bytes);
-		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-		references.add(ref);
-		DataDocumentIdentifier docId = dManager.registerDocument(references);
-		
-		// Retrieve it again going through the dManager
-		DataDocument retrieved = (DataDocument) dManager.getEntity(docId);
-		final Set<ReferenceScheme> retrievedReferences = retrieved.getReferenceSchemes();
-		assertFalse("Did not contain reference scheme", retrievedReferences.isEmpty());
-		assertEquals("Too many reference schemes", 1, retrievedReferences.size());
-		ReferenceScheme retrievedRef = retrievedReferences.iterator().next();
-		
-		InputStream stream = retrievedRef.dereference(dManager);
-		byte[] retrievedBytes = IOUtils.toByteArray(stream);
-		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
-				retrievedBytes));
 	}
 }

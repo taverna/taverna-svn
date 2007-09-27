@@ -22,13 +22,13 @@ import net.sf.taverna.t2.cloudone.identifier.IDType;
  */
 public class InMemoryDataManager extends AbstractDataManager {
 
+	private static final int MAX_ID_LENGTH = 80;  //for debug reasons
+	
 	private Map<EntityIdentifier, Entity<? extends EntityIdentifier, ?>> contents;
 	
 	private InMemoryBlobStore blobStore;
 	
 	private int counter = 0;
-	
-	private static final int MAX_ID_LENGTH = 80;  //for debug reasons
 
 	public InMemoryDataManager(String namespace, Set<LocationalContext> contexts) {
 		super(namespace, contexts);
@@ -36,6 +36,14 @@ public class InMemoryDataManager extends AbstractDataManager {
 		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier, ?>>();
 	}
 
+	public InMemoryBlobStore getBlobStore() {
+		return blobStore;
+	}
+
+	public int getMaxIDLength() {
+		return MAX_ID_LENGTH;
+	}
+	
 	@Override
 	protected String generateId(IDType type) {
 		if (type.equals(IDType.Literal)) {
@@ -50,18 +58,10 @@ public class InMemoryDataManager extends AbstractDataManager {
 	protected <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id) {
 		return (Entity<ID, ?>) contents.get(id);
 	}
-	
+
 	@Override
 	protected <Bean> void storeEntity(Entity<?, Bean> entity) {
 		contents.put(entity.getIdentifier(), entity);
-	}
-
-	public int getMaxIDLength() {
-		return MAX_ID_LENGTH;
-	}
-
-	public InMemoryBlobStore getBlobStore() {
-		return blobStore;
 	}
 
 

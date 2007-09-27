@@ -2,11 +2,11 @@ package net.sf.taverna.t2.cloudone.bean;
 
 public class SillyBean {
 
+	private String name;
+	
 	public SillyBean() {
 		name = "";
 	}
-	
-	private String name;
 
 	public String getName() {
 		return name;

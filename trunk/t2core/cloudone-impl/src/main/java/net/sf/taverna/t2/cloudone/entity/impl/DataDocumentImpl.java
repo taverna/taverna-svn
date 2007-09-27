@@ -35,22 +35,6 @@ public class DataDocumentImpl implements DataDocument {
 		this.referenceSchemes = references;
 	}
 
-	public Set<ReferenceScheme> getReferenceSchemes() {
-		return referenceSchemes;
-	}
-
-	public DataDocumentIdentifier getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(DataDocumentIdentifier identifier) {
-		this.identifier = identifier;
-	}
-
-	public void setReferenceSchemes(Set<ReferenceScheme> referenceSchemes) {
-		this.referenceSchemes = referenceSchemes;
-	}
-
 	@SuppressWarnings("unchecked")
 	public DataDocumentBean getAsBean() {
 		DataDocumentBean bean = new DataDocumentBean();
@@ -76,6 +60,14 @@ public class DataDocumentImpl implements DataDocument {
 		return bean;
 	}
 
+	public DataDocumentIdentifier getIdentifier() {
+		return identifier;
+	}
+
+	public Set<ReferenceScheme> getReferenceSchemes() {
+		return referenceSchemes;
+	}
+
 	public void setFromBean(DataDocumentBean bean) {
 		if (identifier != null || ! referenceSchemes.isEmpty()) {
 			throw new IllegalStateException("Can't initialise twice");
@@ -98,5 +90,13 @@ public class DataDocumentImpl implements DataDocument {
 				continue;
 			}
  		}
+	}
+
+	public void setIdentifier(DataDocumentIdentifier identifier) {
+		this.identifier = identifier;
+	}
+
+	public void setReferenceSchemes(Set<ReferenceScheme> referenceSchemes) {
+		this.referenceSchemes = referenceSchemes;
 	}
 }

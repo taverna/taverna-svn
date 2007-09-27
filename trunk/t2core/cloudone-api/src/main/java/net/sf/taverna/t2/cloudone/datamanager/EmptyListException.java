@@ -1,13 +1,12 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
-
 /**
  * Thrown on attempt to register an empty list or a list containing only empty
  * lists (recursively).
- * 
+ *
  * @author Stian Soiland
  * @author Ian Dunlop
- * 
+ *
  */
 public class EmptyListException extends ListException {
 
@@ -17,12 +16,12 @@ public class EmptyListException extends ListException {
 		super();
 	}
 
-	public EmptyListException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public EmptyListException(String message) {
 		super(message);
+	}
+
+	public EmptyListException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	public EmptyListException(Throwable cause) {

@@ -50,6 +50,28 @@ public class BlobReferenceSchemeImpl implements
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof BlobReferenceSchemeImpl))
+			return false;
+		final BlobReferenceSchemeImpl other = (BlobReferenceSchemeImpl) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (namespace == null) {
+			if (other.namespace != null)
+				return false;
+		} else if (!namespace.equals(other.namespace))
+			return false;
+		return true;
+	}
+
 	public BlobReferenceBean getAsBean() {
 		BlobReferenceBean bean = new BlobReferenceBean();
 		bean.setNamespace(getNamespace());
@@ -76,6 +98,16 @@ public class BlobReferenceSchemeImpl implements
 		return namespace;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result
+				+ ((namespace == null) ? 0 : namespace.hashCode());
+		return result;
+	}
+
 	public boolean isImmediate() {
 		// TODO Auto-generated method stub
 		return false;
@@ -90,12 +122,6 @@ public class BlobReferenceSchemeImpl implements
 		this.namespace = bean.getNamespace();
 	}
 
-	public boolean validInContext(Set<LocationalContext> contextSet,
-			DataPeer currentLocation) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#toString()
 	 */
@@ -104,36 +130,10 @@ public class BlobReferenceSchemeImpl implements
 		return "Blob " + getNamespace() + " " + getId();
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result
-				+ ((namespace == null) ? 0 : namespace.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof BlobReferenceSchemeImpl))
-			return false;
-		final BlobReferenceSchemeImpl other = (BlobReferenceSchemeImpl) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (namespace == null) {
-			if (other.namespace != null)
-				return false;
-		} else if (!namespace.equals(other.namespace))
-			return false;
-		return true;
+	public boolean validInContext(Set<LocationalContext> contextSet,
+			DataPeer currentLocation) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
