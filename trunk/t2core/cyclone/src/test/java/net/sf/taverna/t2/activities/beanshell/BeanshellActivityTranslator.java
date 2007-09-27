@@ -1,14 +1,15 @@
-package net.sf.taverna.t2.cyclone.activity;
+package net.sf.taverna.t2.activities.beanshell;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 
+import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 
 /**
- * An ActivityTranslator specifically for translating Taverna 1 Beanshell Processors to a Taverna 2 Beanshell Activity
- * 
+ * An dummy ActivityTranslator for testing.
  * @see ActivityTranslator
  * @author Stuart Owen
  */

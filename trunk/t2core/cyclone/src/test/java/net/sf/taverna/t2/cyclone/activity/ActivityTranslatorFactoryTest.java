@@ -5,8 +5,6 @@ import net.sf.taverna.t2.cyclone.TranslatorTestHelper;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorFactory;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorNotFoundException;
-import net.sf.taverna.t2.cyclone.activity.BeanshellActivity;
-import net.sf.taverna.t2.cyclone.activity.BeanshellActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -23,7 +21,7 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 		Processor processor = new BeanshellProcessor(null,"beanshell","",new String[]{},new String[]{});
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
 				.getTranslator(processor);
-		assertEquals(BeanshellActivityTranslator.class, translator.getClass());
+		assertEquals("net.sf.taverna.t2.activities.beanshell.BeanshellActivityTranslator", translator.getClass().getName());
 	}
 
 	@Test(expected = ActivityTranslatorNotFoundException.class)
@@ -46,7 +44,7 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 
 		Activity<?> s = translator.doTranslation(p);
 
-		assertEquals(BeanshellActivity.class, s.getClass());
+		assertEquals("net.sf.taverna.t2.activities.beanshell.BeanshellActivity", s.getClass().getName());
 	}
 	
 	@SuppressWarnings("serial")

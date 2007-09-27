@@ -1,7 +1,9 @@
-package net.sf.taverna.t2.cyclone.activity;
+package net.sf.taverna.t2.activities.beanshell;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import bsh.Interpreter;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -11,12 +13,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
-import bsh.Interpreter;
 
-//FIXME: this doesn't belong in this package. It should be moved to a separate module
 /**
  * <p>
- * A semi-dummy Activity relating to Beanshell functionality. Eventually this
+ * A dummy Activity relating to Beanshell functionality. Eventually this
  * class will not exist as part of t2core but will be part of a Beanshell
  * activity artifact in its own right.
  * </p>

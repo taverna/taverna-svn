@@ -3,10 +3,9 @@ package net.sf.taverna.t2.cyclone.activity;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * <p>
@@ -19,10 +18,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  *
  */
 public class ActivityTranslatorFactory {
-	private static Map<Class<? extends Processor>,ActivityTranslator<?>> map = new HashMap<Class<? extends Processor>, ActivityTranslator<?>>();
+	private static Map<String,String> map = new HashMap<String,String>();
 	
 	static {
-		map.put(BeanshellProcessor.class, new BeanshellActivityTranslator());
+		map.put("org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor", "net.sf.taverna.t2.activities.beanshell.BeanshellActivityTranslator");
 	}
 	/**
 	 * <p>
@@ -36,7 +35,20 @@ public class ActivityTranslatorFactory {
 	public static ActivityTranslator<?> getTranslator(Processor processor) throws ActivityTranslatorNotFoundException {
 		
 		//FIXME: Use LocalArtifactClassLoader to determine the Artifact for the Processor. Then use Raven to get the corresponding Activity class mapped to that version of the Processor.
-		ActivityTranslator<?> result = map.get(processor.getClass());
+		String classname=map.get(processor.getClass().getName());
+		if (classname==null) {
+			throw new ActivityTranslatorNotFoundException("Unable to find activity translator for:"+processor.getClass().getName());
+		}
+		ActivityTranslator<?> result;
+		try {
+			result = (ActivityTranslator<?>)Class.forName(classname).newInstance();
+		} catch (InstantiationException e) {
+			throw new ActivityTranslatorNotFoundException("Unable to create an instance of the translator",e);
+		} catch (IllegalAccessException e) {
+			throw new ActivityTranslatorNotFoundException("Illegal access when trying to create the translator",e);
+		} catch (ClassNotFoundException e) {
+			throw new ActivityTranslatorNotFoundException("Unable to find the translator class",e);
+		}
 		
 		if (result == null) throw new ActivityTranslatorNotFoundException("Unable to find Activity Translator for:"+processor.getClass());
 		return result;

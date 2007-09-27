@@ -1,10 +1,9 @@
-package net.sf.taverna.t2.cyclone.activity;
+package net.sf.taverna.t2.activities.beanshell;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.impl.ActivityPortsDefinitionBeanImpl;
 
 /**
- * An configuration bean specific to a Beanshell activity. In particular it provides details
- * about the Beanshell script.
+ * An dummy configuration bean specific to a Beanshell activity for testing
  * 
  * @author Stuart Owen
  */
