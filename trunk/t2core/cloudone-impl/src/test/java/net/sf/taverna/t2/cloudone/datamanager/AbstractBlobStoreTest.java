@@ -112,6 +112,27 @@ public abstract class AbstractBlobStoreTest {
 				retrievedBytes));
 	}
 
+	@Test
+	public void hasBlob() {
+		BlobReferenceSchemeImpl notExists = new BlobReferenceSchemeImpl(
+				TEST_NS, "notExists");
+		assertFalse(blobStore.hasBlob(notExists));
+		byte[] bytes = makeByteArray();
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		assertTrue(blobStore.hasBlob(ref));
+	}
+
+	@Test
+	public void size() throws RetrievalException, NotFoundException {
+		BlobReferenceSchemeImpl notExists = new BlobReferenceSchemeImpl(
+				TEST_NS, "notExists");
+		byte[] bytes = makeByteArray();
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		assertEquals(10, blobStore.sizeOfBlob(ref));
+	}
+
 	private byte[] makeByteArray() {
 		byte[] bytes;
 		try {

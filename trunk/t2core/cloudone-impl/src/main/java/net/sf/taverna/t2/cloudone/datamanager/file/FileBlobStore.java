@@ -25,11 +25,11 @@ import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 
 public class FileBlobStore implements BlobStore {
-	
+
 	private File path;
-	
+
 	private String namespace;
-	
+
 	public FileBlobStore(String namespace, File path) {
 		if(! EntityIdentifier.isValidName(namespace)) {
 			throw new MalformedIdentifierException("Invalid namespace: " + namespace);
@@ -48,7 +48,6 @@ public class FileBlobStore implements BlobStore {
 
 	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference) throws NotFoundException {
 		InputStream stream = retrieveAsStream(reference);
-	
 		try {
 			return IOUtils.toByteArray(retrieveAsStream(reference));
 		} catch (IOException e) {
@@ -70,7 +69,7 @@ public class FileBlobStore implements BlobStore {
 
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) throws StorageException {
 		String id = UUID.randomUUID().toString();
-		File file = fileById(namespace, id);		
+		File file = fileById(namespace, id);
 		try {
 			FileUtils.writeByteArrayToFile(file, bytes);
 		} catch (IOException e) {
@@ -89,15 +88,15 @@ public class FileBlobStore implements BlobStore {
 		} catch (FileNotFoundException e) {
 			throw new StorageException("Could not open for writing: " + file, e);
 		}
-		
+
 		try {
 			IOUtils.copy(inStream, outStream);
 		} catch (IOException e) {
 			throw new StorageException("Could not read from stream or write to: " + file, e);
 		} finally {
-			IOUtils.closeQuietly(outStream);		
+			IOUtils.closeQuietly(outStream);
 		}
-		
+
 		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 
@@ -112,11 +111,11 @@ public class FileBlobStore implements BlobStore {
 		return new File(parentDirectory(typeDir, id), fileName);
 		//return new File(typeDir, fileName);
 	}
-	
+
 	private File fileByReference(BlobReferenceScheme<?> reference) {
 		return fileById(reference.getNamespace(), reference.getId());
 	}
-	
+
 	private File parentDirectory(File typeDir, String id) {
 		String newName = id.substring(0, 2);
 		File dirs = new File (typeDir, newName);
@@ -125,6 +124,15 @@ public class FileBlobStore implements BlobStore {
 			throw new IllegalStateException("Invalid directory" + dirs);
 		}
 		return dirs;
+	}
+
+	public long sizeOfBlob(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException {
+		File blobFile = fileByReference(reference);
+		if (!blobFile.isFile()) {
+			throw new NotFoundException("Can't find  " + reference);
+		}
+		return blobFile.length();
 	}
 
 

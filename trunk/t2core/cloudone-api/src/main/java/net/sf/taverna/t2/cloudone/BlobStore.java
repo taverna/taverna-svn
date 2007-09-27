@@ -22,31 +22,76 @@ import net.sf.taverna.t2.cloudone.entity.DataDocument;
  * Data can be stored either from a byte[] array using
  * {@link #storeFromBytes(byte[])}, or from an already open {@link InputStream}
  * using {@link #storeFromStream(InputStream)}, such as opened from a file or
- * URL. Similary, data can be retrieved as an {@link InputStream} using
+ * URL. Similarly, data can be retrieved as an {@link InputStream} using
  * {@link #retrieveAsStream(BlobReferenceScheme)} or a byte[] array using
  * {@link #retrieveAsBytes(BlobReferenceScheme)}.
  * </p>
- * 
+ *
  * @author Ian Dunlop
  * @author Stian Soiland
- * 
+ *
  */
 public interface BlobStore {
 
+	/**
+	 * Check if the BlobStore has a given blob, as referenced from a
+	 * {@link BlobReferenceScheme}. If the result is true, the reference can be
+	 * used with {@link #retrieveAsBytes(BlobReferenceScheme)} and
+	 * {@link #retrieveAsStream(BlobReferenceScheme)}.
+	 *
+	 * @param reference
+	 *            {@link BlobReferenceScheme} referring to the blob
+	 * @return true if the BlobStore has the blob
+	 * @throws RetrievalException
+	 *             If the {@link BlobStore}'s index could not be read
+	 */
 	public boolean hasBlob(BlobReferenceScheme<?> reference)
 			throws RetrievalException;
 
 	/**
-	 * Retrieve a blob as a byte[] array
-	 * 
-	 * @param reference
-	 * @return
+	 * Get size of blob as number of bytes.
+	 *
+	 * @param reference {@link BlobReferenceScheme} referring to the blob
+	 * @return Size of blob as number of bytes, or <code>-1</code> if size is
+	 *         unknown.
 	 * @throws RetrievalException
+	 *             If the {@link BlobStore}'s index could not be read
 	 * @throws NotFoundException
+	 *             If the blob didn't exist in BlobStore
+	 */
+	public long sizeOfBlob(BlobReferenceScheme<?> reference)
+	throws RetrievalException, NotFoundException;
+
+	/**
+	 * Retrieve a blob as a byte[] array.
+	 * <p>
+	 * This method should only be called on blobs which size will fit in memory,
+	 * otherwise use {@link #retrieveAsStream(BlobReferenceScheme)}. Check size
+	 * with {@link #sizeOfBlob(BlobReferenceScheme)}.
+	 *
+	 * @param reference
+	 *            {@link BlobReferenceScheme} referring to the blob
+	 * @return Initialised and populated byte[] array containing blob
+	 * @throws RetrievalException
+	 *             If the {@link BlobStore}'s index could not be read
+	 * @throws NotFoundException
+	 *             If the blob didn't exist in BlobStore
 	 */
 	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException;
-
+	/**
+	 * Retrieve a blob as an {@link InputStream}. Normally used instead of
+	 * {@link #retrieveAsBytes(BlobReferenceScheme)}, in particular if the blob
+	 * is too large to fit in memory.
+	 *
+	 * @param reference
+	 *            {@link BlobReferenceScheme} referring to the blob
+	 * @return {@link InputStream} that reads from the blob
+	 * @throws RetrievalException
+	 *             If the {@link BlobStore}'s index could not be read
+	 * @throws NotFoundException
+	 *             If the blob didn't exist in BlobStore
+	 */
 	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException;
 
@@ -55,7 +100,7 @@ public interface BlobStore {
 	 * can be used to retrieve the blob using
 	 * {@link #retrieveAsBytes(BlobReferenceScheme)} or
 	 * {@link #retrieveAsStream(BlobReferenceScheme)}
-	 * 
+	 *
 	 * @param bytes
 	 *            The bytes to store
 	 * @return A {@link BlobReferenceScheme} referencing the stored blob
@@ -72,7 +117,7 @@ public interface BlobStore {
 	 * {@link #retrieveAsBytes(BlobReferenceScheme)} or
 	 * {@link #retrieveAsStream(BlobReferenceScheme)}. The stream is not closed
 	 * after storing.
-	 * 
+	 *
 	 * @param stream
 	 *            The stream from where to read the data
 	 * @return A {@link BlobReferenceScheme} referencing the stored blob

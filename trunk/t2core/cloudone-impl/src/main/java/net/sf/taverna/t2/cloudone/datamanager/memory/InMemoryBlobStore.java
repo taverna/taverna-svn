@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
@@ -16,33 +17,33 @@ import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import org.apache.commons.io.IOUtils;
 
 public class InMemoryBlobStore implements BlobStore{
-	
+
 	private Map<String, byte[]> blobs = new HashMap<String, byte[]>();
-	
+
 	private String namespace;
-	
+
 	public InMemoryBlobStore() {
 		// Always a new namespace
 		namespace = UUID.randomUUID().toString();
 	}
-	
+
 	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		if (! reference.getNamespace().equals(namespace)) {
 			return false;
 		}
 		return blobs.containsKey(reference.getId());
 	}
-	
+
 	/**
 	 * Retrieve blob as a byte[] array, or <code>null</code> if this store
 	 * does not contain the blob.
-	 * 
+	 *
 	 * @param reference
 	 *            A reference to a blob, previously stored using
 	 *            {@link #storeFromBytes(byte[])} or
 	 *            {@link #storeFromStream(InputStream)}
 	 * @return byte[] array or <code>null</code>
-	 * @throws NotFoundException 
+	 * @throws NotFoundException
 	 */
 	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference) throws NotFoundException {
 		if (! reference.getNamespace().equals(namespace)) {
@@ -54,18 +55,18 @@ public class InMemoryBlobStore implements BlobStore{
 		}
 		return bytes;
 	}
-	
+
 	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference) throws NotFoundException  {
 		byte[] bytes = retrieveAsBytes(reference);
 		return new ByteArrayInputStream(bytes);
 	}
-	
+
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) {
 		String id = UUID.randomUUID().toString();
 		blobs.put(id, bytes);
 		return new BlobReferenceSchemeImpl(namespace, id);
 	}
-	
+
 	public BlobReferenceScheme<?> storeFromStream(InputStream stream) throws StorageException {
 		byte[] bytes;
 		try {
@@ -74,6 +75,12 @@ public class InMemoryBlobStore implements BlobStore{
 			throw new StorageException("Could not read from stream", e);
 		}
 		return storeFromBytes(bytes);
+	}
+
+	public long sizeOfBlob(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException {
+		byte[] bytes = retrieveAsBytes(reference);
+		return bytes.length;
 	}
 
 }
