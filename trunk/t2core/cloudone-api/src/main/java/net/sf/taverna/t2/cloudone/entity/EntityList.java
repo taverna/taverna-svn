@@ -14,21 +14,22 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 /**
  * A named list of entity identifiers. Represents a single list within the data
  * manager system.
- * 
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
-public class EntityList implements Entity<EntityListIdentifier, EntityListBean>, List<EntityIdentifier> {
-	
+public class EntityList implements
+		Entity<EntityListIdentifier, EntityListBean>, List<EntityIdentifier> {
+
+	private EntityListIdentifier identifier;
+
+	private final List<EntityIdentifier> list;
+
 	public EntityList() {
 		identifier = null;
 		list = new ArrayList<EntityIdentifier>();
 	}
-	
-	private EntityListIdentifier identifier;
-
-	private final List<EntityIdentifier> list;
 
 	public EntityList(final EntityListIdentifier identifier,
 			final List<EntityIdentifier> list) {
@@ -40,26 +41,37 @@ public class EntityList implements Entity<EntityListIdentifier, EntityListBean>,
 		this.list = list;
 	}
 
-	public EntityListIdentifier getIdentifier() {
-		return identifier;
-	}
-
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean add(EntityIdentifier o) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public void add(int index, EntityIdentifier element) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean addAll(Collection<? extends EntityIdentifier> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean addAll(int index, Collection<? extends EntityIdentifier> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public void clear() {
 		throw new UnsupportedOperationException();
 	}
@@ -72,16 +84,56 @@ public class EntityList implements Entity<EntityListIdentifier, EntityListBean>,
 		return list.containsAll(c);
 	}
 
-	public boolean equals(Object o) {
-		return list.equals(o);
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final EntityList other = (EntityList) obj;
+		if (identifier == null) {
+			if (other.identifier != null) {
+				return false;
+			}
+		} else if (!identifier.equals(other.identifier)) {
+			return false;
+		}
+		return true;
 	}
 
 	public EntityIdentifier get(int index) {
 		return list.get(index);
 	}
 
+	public EntityListBean getAsBean() {
+		EntityListBean bean = new EntityListBean();
+		bean.setIdentifier(identifier.getAsBean());
+
+		List<String> content = new ArrayList<String>();
+		for (EntityIdentifier child : list) {
+			content.add(child.getAsBean());
+		}
+		bean.setContent(content);
+
+		return bean;
+	}
+
+	public EntityListIdentifier getIdentifier() {
+		return identifier;
+	}
+
+	@Override
 	public int hashCode() {
-		return list.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((identifier == null) ? 0 : identifier.hashCode());
+		return result;
 	}
 
 	public int indexOf(Object o) {
@@ -108,24 +160,51 @@ public class EntityList implements Entity<EntityListIdentifier, EntityListBean>,
 		return list.listIterator(index);
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public EntityIdentifier remove(int index) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Unsupported {@link List} operation.
+	 */
 	public EntityIdentifier set(int index, EntityIdentifier element) {
 		throw new UnsupportedOperationException();
+	}
+
+	public void setFromBean(EntityListBean bean) {
+		if (identifier != null || !list.isEmpty()) {
+			throw new IllegalStateException(
+					"Can't run setFromBean() on initialised EntityList");
+		}
+		identifier = (EntityListIdentifier) EntityIdentifiers.parse(bean
+				.getIdentifier());
+		for (String id : bean.getContent()) {
+			list.add(EntityIdentifiers.parse(id));
+		}
 	}
 
 	public int size() {
@@ -142,29 +221,6 @@ public class EntityList implements Entity<EntityListIdentifier, EntityListBean>,
 
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
-	}
-
-	public EntityListBean getAsBean() {
-		EntityListBean bean = new EntityListBean();
-		bean.setIdentifier(identifier.getAsBean());
-		
-		List<String> content = new ArrayList<String>();
-		for (EntityIdentifier child : list) {
-			content.add(child.getAsBean());
-		}
-		bean.setContent(content);
-		
-		return bean;
-	}
-
-	public void setFromBean(EntityListBean bean) {
-		if (identifier != null || ! list.isEmpty()) {
-			throw new IllegalStateException("Can't run setFromBean() on initialised EntityList");
-		}
-		identifier = (EntityListIdentifier) EntityIdentifiers.parse(bean.getIdentifier());
-		for (String id : bean.getContent()) {
-			list.add(EntityIdentifiers.parse(id));
-		}
 	}
 
 }

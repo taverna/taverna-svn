@@ -15,48 +15,18 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * This class is both an EntityIdentifier and an Entity, attempts to resolve it
  * through the DataManager or get its identity through the Entity interface will
  * both return self.
- * 
+ *
  * @author Tom Oinn
- * 
+ *
  */
 public class Literal extends EntityIdentifier implements
 		Entity<Literal, String> {
 
 	private static String prefix = "urn:t2data:literal://";
 
-	private String value;
-
-	public Literal(String id) throws MalformedIdentifierException {
-		super(id);
-	}
-
-	@Override
-	public int getDepth() {
-		return 0;
-	}
-
-	@Override
-	public String getName() {
-		return value;
-	}
-
-	@Override
-	protected void validate(String identifierString) {
-		if (identifierString.contains("/")) {
-			throw new MalformedIdentifierException(
-					"Document name can not contain a slash (/) character in "
-							+ identifierString);
-		}
-		this.value = identifierString;
-	}
-
-	public Literal getIdentifier() {
-		return this;
-	}
-
 	/**
 	 * Build a new Boolean literal
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -66,7 +36,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Double literal
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -76,7 +46,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Float literal
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -86,7 +56,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Integer literal
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -96,7 +66,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Long literal
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -106,7 +76,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new String literal, the string is URL encoded using UTF-8
-	 * 
+	 *
 	 * @param value
 	 * @return
 	 */
@@ -119,11 +89,53 @@ public class Literal extends EntityIdentifier implements
 		}
 	}
 
+	private String value;
+
+	public Literal(String id) throws MalformedIdentifierException {
+		super(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Literal other = (Literal) obj;
+		if (value == null) {
+			if (other.value != null) {
+				return false;
+			}
+		} else if (!value.equals(other.value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public int getDepth() {
+		return 0;
+	}
+
+	public Literal getIdentifier() {
+		return this;
+	}
+
+	@Override
+	public String getName() {
+		return value;
+	}
+
 	/**
 	 * Return the value which this literal represents. Strings are decoded using
 	 * the UTF-8 encoding; boolean, int, float, double and long are returned as
 	 * their respective object wrapper types.
-	 * 
+	 *
 	 * @return underlying value for this literal
 	 */
 	public Object getValue() {
@@ -153,7 +165,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Get the type of object this literal represents.
-	 * 
+	 *
 	 * @return the Class of the object that would be returned by getValue()
 	 */
 	public Class<?> getValueType() {
@@ -174,6 +186,24 @@ public class Literal extends EntityIdentifier implements
 		}
 
 		return Object.class;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	protected void validate(String identifierString) {
+		if (identifierString.contains("/")) {
+			throw new MalformedIdentifierException(
+					"Document name can not contain a slash (/) character in "
+							+ identifierString);
+		}
+		value = identifierString;
 	}
 
 }
