@@ -95,7 +95,7 @@ public abstract class AbstractDataManager implements DataManager {
 		}
 		Entity ent = retrieveEntity(id);
 		if (ent == null) {
-			throw new NotFoundException("No entity found with id : " + id);
+			throw new NotFoundException(id);
 		}
 		// we know this is type-safe because we control what goes into the store
 		return ent;

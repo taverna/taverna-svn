@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
@@ -29,23 +30,23 @@ import org.jdom.JDOMException;
 /**
  * File based {@link DataManager}. Entities are stored in a directory
  * structure:
- * 
+ *
  * <pre>
  * 	namespace1/
  * 		ddoc/
  *      65/
  * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.xml
- * 		97/	
+ * 		97/
  * 			973ab8eb-0a5a-49d9-a7cc-d5f7f64f29b1.xml
  * 		error/
  * 		9e/
  * 			9e190835-ea2e-45ae-a28d-20ac781e2ede.xml
- * 		6f/	
+ * 		6f/
  * 			6f02c8ac-04a3-4d45-8a35-45a59cd2da83.xml
  * 		list/
  * 		25/
  * 			2549b0a5-d70a-4630-9345-ca33b045b4cd.xml
- * 		52/	
+ * 		52/
  * 			523d00b6-0294-455e-8638-1c0a3962e7cd.xml
  * 	namespace2/
  * 		ddoc/
@@ -55,7 +56,7 @@ import org.jdom.JDOMException;
  * 		0b/
  * 			0b8f4572-49d7-25d5-160a-a8049df690a4.blob
  * </pre>
- * 
+ *
  * <p>
  * The {@link UUID} is set in {@link EntityIdentifier#getName()}, and the
  * entities are separated into different directories depending on their type.
@@ -65,10 +66,10 @@ import org.jdom.JDOMException;
  * {@link Beanable#getAsBean()}, are serialised by {@link EntitySerialiser}.
  * On deserialisation the entities are reconstructed from their bean.
  * </p>
- * 
+ *
  * @author Ian Dunlop
  * @author Stian Soiland
- * 
+ *
  */
 public class FileDataManager extends AbstractDataManager {
 
@@ -78,6 +79,18 @@ public class FileDataManager extends AbstractDataManager {
 
 	private FileBlobStore blobStore;
 
+	/**
+	 * Construct a FileDataManager for a given namespace.
+	 *
+	 * @param namespace
+	 *            The namespace of assigned identifiers
+	 * @param contexts
+	 *            Contexts this {@link DataManager} understands. (Currently
+	 *            ignored)
+	 * @param path
+	 *            The root of the repository where the FileDataManager can store
+	 *            its data
+	 */
 	public FileDataManager(String namespace, Set<LocationalContext> contexts,
 			File path) {
 		super(namespace, contexts);
@@ -88,6 +101,10 @@ public class FileDataManager extends AbstractDataManager {
 		this.path = path;
 	}
 
+	/**
+	 * Get a {@link BlobStore} with the same file-based store as this
+	 * FileDataManager.
+	 */
 	public FileBlobStore getBlobStore() {
 		if (blobStore == null) {
 			blobStore = new FileBlobStore(getCurrentNamespace(), path);
@@ -124,31 +141,36 @@ public class FileDataManager extends AbstractDataManager {
 	}
 
 	/**
-	 * Find directory for a given namespace
-	 * 
-	 * @param ns
-	 * @return
+	 * Find directory for a given namespace.
+	 *
+	 * @param namespace
+	 *            Namespace which directory to find
+	 * @return Directory for namespace
 	 */
-	private File namespaceDir(String ns) {
-		return new File(path, ns);
+	private File namespaceDir(String namespace) {
+		return new File(path, namespace);
 	}
 
 	/**
-	 * Find the subdirectory for the start of the identifier name eg a3/
-	 * 
-	 * @param ns
+	 * Find the subdirectory for the start of the identifier name. For instance
+	 * eg with name "651375b7-8ce1-4d05-95ed-7b4912a50d0c" would find "a3/"
+	 *
+	 * @param namespace
+	 *            Namespace containing identifier
 	 * @param type
+	 *            Type of identifier
 	 * @param name
-	 * @return
+	 *            Name of identifier (normally an UUID)
+	 * @return Directory for identifier
 	 */
-	private File parentDirectory(String ns, String type, String name) {
+	private File parentDirectory(String namespace, String type, String name) {
 		String parentName = name.substring(0, 2);
-		return new File(typeDir(ns, type), parentName);
+		return new File(typeDir(namespace, type), parentName);
 	}
 
 	/**
-	 * Find directory for a given type within a given namespace
-	 * 
+	 * Find directory for a given type within a given namespace.
+	 *
 	 * @param ns
 	 * @param type
 	 * @return
@@ -157,6 +179,7 @@ public class FileDataManager extends AbstractDataManager {
 		return new File(namespaceDir(ns), type);
 	}
 
+	@Override
 	protected String generateId(IDType type) {
 		if (type.equals(IDType.Literal)) {
 			throw new IllegalArgumentException("Can't generate IDs for Literal");

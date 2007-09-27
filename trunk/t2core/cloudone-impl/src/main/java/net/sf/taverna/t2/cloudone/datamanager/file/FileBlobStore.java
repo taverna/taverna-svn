@@ -11,9 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
@@ -21,32 +19,68 @@ import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
+/**
+ * File-based {@link BlobStore}. This store is very similar to a
+ * {@link FileDataManager}, they can even share the directory structure.
+ * Each blob is simply stored as a separate file.
+ * <pre>
+ * 	namespace1/
+ * 		blob/
+ * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.blob
+ * 			4d056513-75b7-8ce1-4d05-95ed7b4912a5.blob
+ * </pre>
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class FileBlobStore implements BlobStore {
 
 	private File path;
 
 	private String namespace;
 
+	/**
+	 * Construct a FileBlobStore with a given <code>namespace</code> which can
+	 * store and retrieve from a directory structure below the given
+	 * <code>path</code>.
+	 * <p>
+	 * The {@link FileBlobStore} can retrieve from other namespaces as long
+	 * as the blobs are present in the <code>path</code>, but stored blobs
+	 * will be stored under and assigned the given namespace.
+	 *
+	 * @param namespace Namespace of blobstore
+	 * @param path Path to repository where to store blobs
+	 */
 	public FileBlobStore(String namespace, File path) {
-		if(! EntityIdentifier.isValidName(namespace)) {
-			throw new MalformedIdentifierException("Invalid namespace: " + namespace);
+		if (!EntityIdentifier.isValidName(namespace)) {
+			throw new MalformedIdentifierException("Invalid namespace: "
+					+ namespace);
 		}
 		this.namespace = namespace;
 		path.mkdirs();
-		if (! path.isDirectory()) {
+		if (!path.isDirectory()) {
 			throw new IllegalArgumentException("Invalid directory " + path);
 		}
 		this.path = path;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		return fileByReference(reference).isFile();
 	}
 
-	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference) throws NotFoundException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
+			throws NotFoundException {
 		InputStream stream = retrieveAsStream(reference);
 		try {
 			return IOUtils.toByteArray(retrieveAsStream(reference));
@@ -58,16 +92,36 @@ public class FileBlobStore implements BlobStore {
 		}
 	}
 
-	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference) throws NotFoundException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
+			throws NotFoundException {
 		File file = fileByReference(reference);
 		try {
 			return new BufferedInputStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
-			throw new NotFoundException("Can't find  " + reference);
+			throw new NotFoundException(reference);
 		}
 	}
 
-	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) throws StorageException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public long sizeOfBlob(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException {
+		File blobFile = fileByReference(reference);
+		if (!blobFile.isFile()) {
+			throw new NotFoundException(reference);
+		}
+		return blobFile.length();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes)
+			throws StorageException {
 		String id = UUID.randomUUID().toString();
 		File file = fileById(namespace, id);
 		try {
@@ -78,6 +132,9 @@ public class FileBlobStore implements BlobStore {
 		return new BlobReferenceSchemeImpl(namespace, id);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromStream(InputStream inStream)
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
@@ -92,7 +149,8 @@ public class FileBlobStore implements BlobStore {
 		try {
 			IOUtils.copy(inStream, outStream);
 		} catch (IOException e) {
-			throw new StorageException("Could not read from stream or write to: " + file, e);
+			throw new StorageException(
+					"Could not read from stream or write to: " + file, e);
 		} finally {
 			IOUtils.closeQuietly(outStream);
 		}
@@ -103,13 +161,13 @@ public class FileBlobStore implements BlobStore {
 	private File fileById(String namespace, String id) {
 		File nsDir = new File(path, namespace);
 		File typeDir = new File(nsDir, "blob");
-		//typeDir.mkdirs();
-//		if (! typeDir.isDirectory()) {
-//			throw new IllegalStateException("Invalid directory" + typeDir);
-//		}
+		// typeDir.mkdirs();
+		// if (! typeDir.isDirectory()) {
+		// throw new IllegalStateException("Invalid directory" + typeDir);
+		// }
 		String fileName = id + ".blob";
 		return new File(parentDirectory(typeDir, id), fileName);
-		//return new File(typeDir, fileName);
+		// return new File(typeDir, fileName);
 	}
 
 	private File fileByReference(BlobReferenceScheme<?> reference) {
@@ -118,22 +176,12 @@ public class FileBlobStore implements BlobStore {
 
 	private File parentDirectory(File typeDir, String id) {
 		String newName = id.substring(0, 2);
-		File dirs = new File (typeDir, newName);
+		File dirs = new File(typeDir, newName);
 		dirs.mkdirs();
-		if (! dirs.isDirectory()) {
+		if (!dirs.isDirectory()) {
 			throw new IllegalStateException("Invalid directory" + dirs);
 		}
 		return dirs;
 	}
-
-	public long sizeOfBlob(BlobReferenceScheme<?> reference)
-			throws RetrievalException, NotFoundException {
-		File blobFile = fileByReference(reference);
-		if (!blobFile.isFile()) {
-			throw new NotFoundException("Can't find  " + reference);
-		}
-		return blobFile.length();
-	}
-
 
 }
