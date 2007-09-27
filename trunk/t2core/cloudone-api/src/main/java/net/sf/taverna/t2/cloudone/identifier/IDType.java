@@ -3,9 +3,11 @@ package net.sf.taverna.t2.cloudone.identifier;
 /**
  * Enumeration of the three possible types of reference: data documents, error
  * documents and named lists.
- * 
+ *
  * @author Tom Oinn
- * 
+ * @author Stian Soiland
+ * @author Ian Dunlop
+ *
  */
 public enum IDType {
 
