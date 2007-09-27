@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
@@ -75,8 +74,9 @@ public interface DataManager {
 
 	/**
 	 * Get the maximum length in bytes of an (URL encoded) identifier. This is
-	 * mainly used by {@link DataFacade} when determening to store a
-	 * {@link String} as a {@link Literal} or using a {@link BlobStore}.
+	 * mainly used by {@link net.sf.taverna.t2.cloudone.datamanager.DataFacade}
+	 * when determening to store a {@link String} as a {@link Literal} or using
+	 * a {@link BlobStore}.
 	 *
 	 * @return
 	 */
