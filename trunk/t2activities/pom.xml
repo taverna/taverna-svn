@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf.taverna.t2</groupId>
+  <artifactId>activities</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <name>Taverna 2 Activities</name>
+  <description>A collection of Taverna 2 Activities. These are the core activities required to cover the functionality of Taverna 1.</description>
+  <packaging>pom</packaging>
+  <modules>
+  	<module>beanshell-activity</module>
+  </modules>
+  <licenses>
+		<license>
+			<name>GNU Lesser General Public License</name>
+			<url>http://www.gnu.org/licenses/lgpl.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId>
+				<configuration>
+					<jdk>1.5</jdk>
+					<targetPercentage>50%</targetPercentage>
+					<failOnViolation>false</failOnViolation>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>pre-site</phase>
+						<goals>
+							<goal>instrument</goal>
+							<goal>aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clover-plugin</artifactId>
+				<configuration>
+					<generatePdf>true</generatePdf>
+					<generateXml>true</generateXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<minmemory>128m</minmemory>
+					<maxmemory>512</maxmemory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jxr-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository
+			</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<site>
+			<id>website</id>
+			<url>${siteurl}</url>
+		</site>
+	</distributionManagement>
+</project>
+
