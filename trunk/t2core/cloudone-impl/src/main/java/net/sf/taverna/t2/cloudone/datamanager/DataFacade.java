@@ -36,21 +36,26 @@ import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
  * {@link #register(Object)}, {@link #resolve(EntityIdentifier)} would return a
  * reconstructed <code>List&lt;String&gt;</code>.
  * </p>
- * 
+ *
  * @author Ian Dunlop
  * @author Stian Soiland
- * 
+ *
  */
 public class DataFacade {
 
 	public static final int UNKNOWN_DEPTH = -1;
 	private DataManager dManager;
 
+	/**
+	 * Construct a DataFacade facading the specified {@link DataManager}.
+	 *
+	 * @param manager The {@link DataManager} to facade.
+	 */
 	public DataFacade(DataManager manager) {
 		if (manager == null) {
 			throw new NullPointerException("Data Manager cannot be null");
 		}
-		this.dManager = manager;
+		dManager = manager;
 	}
 
 	/**
@@ -62,11 +67,9 @@ public class DataFacade {
 	 * {@link EmptyListException} if the object is a list and it's either empty
 	 * or all of it's children are empty lists.
 	 * </p>
-	 * 
+	 *
 	 * @param obj
 	 *            Supported object as defined by {@link #register(Object, int)}
-	 * @param depth
-	 *            Number of levels in the parent List
 	 * @return EntityIdentifier of the Object passed in
 	 * @throws EmptyListException
 	 *             If attempting to register an empty list (or a list containing
@@ -79,7 +82,7 @@ public class DataFacade {
 	 *             If the object, or an object within the list is not supported
 	 * @throws IOException
 	 * @see #register(Object, int) for list of supported object types
-	 * 
+	 *
 	 */
 	public EntityIdentifier register(Object obj) throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException, IOException {
@@ -110,7 +113,7 @@ public class DataFacade {
 	 * </ul>
 	 * <p>
 	 * Attempts to registering an unsupported object type will throw an
-	 * 
+	 *
 	 * @param obj
 	 *            A supported object
 	 * @param depth
@@ -158,35 +161,40 @@ public class DataFacade {
 		} else if (obj instanceof String) {
 			String str = (String) obj;
 			if (str.length() > dManager.getMaxIDLength()) {
-				//TODO: turn it into blob and store
+				// TODO: turn it into blob and store
 				BlobStore blobStore = dManager.getBlobStore();
-				BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore.storeFromBytes(str.getBytes("utf8"));
-				Set<ReferenceScheme> blobSet = Collections.singleton((ReferenceScheme)blobRef);
+				BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
+						.storeFromBytes(str.getBytes("utf8"));
+				Set<ReferenceScheme> blobSet = Collections
+						.singleton((ReferenceScheme) blobRef);
 				return dManager.registerDocument(blobSet);
 			} else {
 				return Literal.buildLiteral((String) obj);
 			}
 		} else if (obj instanceof byte[]) {
 			BlobStore blobStore = dManager.getBlobStore();
-			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore.storeFromBytes((byte[])obj);
-			Set<ReferenceScheme> blobSet = Collections.singleton((ReferenceScheme)blobRef);
+			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
+					.storeFromBytes((byte[]) obj);
+			Set<ReferenceScheme> blobSet = Collections
+					.singleton((ReferenceScheme) blobRef);
 			return dManager.registerDocument(blobSet);
 		} else if (obj instanceof InputStream) {
 			BlobStore blobStore = dManager.getBlobStore();
-			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore.storeFromStream((InputStream)obj); 
-			Set<ReferenceScheme> blobSet = Collections.singleton((ReferenceScheme)blobRef);
+			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
+					.storeFromStream((InputStream) obj);
+			Set<ReferenceScheme> blobSet = Collections
+					.singleton((ReferenceScheme) blobRef);
 			return dManager.registerDocument(blobSet);
-		}
-		else {
-			throw new UnsupportedObjectTypeException("Can't register unsupported "
-					+ obj.getClass());
+		} else {
+			throw new UnsupportedObjectTypeException(
+					"Can't register unsupported " + obj.getClass());
 		}
 	}
 
 	/**
 	 * Resolve identifier and return referenced entity, literal or a list of
 	 * entities.
-	 * 
+	 *
 	 * @param entityId
 	 *            Identifier of the entity
 	 * @return Entity, literal or list of entities/literals
@@ -197,8 +205,8 @@ public class DataFacade {
 	 * @throws IllegalArgumentException
 	 *             If the entity type is not yet supported by {@link DataFacade}
 	 */
-	public Object resolve(EntityIdentifier entityId)
-			throws RetrievalException, NotFoundException {
+	public Object resolve(EntityIdentifier entityId) throws RetrievalException,
+			NotFoundException {
 		Entity<?, ?> ent = dManager.getEntity(entityId);
 		if (ent instanceof Literal) {
 			return ((Literal) ent).getValue();
@@ -213,7 +221,7 @@ public class DataFacade {
 			DataDocument doc = (DataDocument) ent;
 			for (ReferenceScheme ref : doc.getReferenceSchemes()) {
 				// TODO: Check if valid in context
-			//	if (ref.validInContext(contextSet, currentLocation)) {
+				// if (ref.validInContext(contextSet, currentLocation)) {
 				try {
 					return ref.dereference(dManager);
 				} catch (DereferenceException e) {
@@ -224,7 +232,7 @@ public class DataFacade {
 			}
 			throw new RetrievalException(
 					"No dereferencable reference schemes found for " + entityId);
-			
+
 		} else {
 			// TODO: Support the other types
 			throw new IllegalArgumentException("Type " + entityId.getType()
@@ -236,7 +244,7 @@ public class DataFacade {
 	 * Used internally by the DataFacade to register List Objects. These can be
 	 * Lists of Lists of Lists etc. Checks that they conform to the protocol of
 	 * each child having the same depth.
-	 * 
+	 *
 	 * @param list
 	 *            Objects of the list
 	 * @param listDepth
@@ -250,10 +258,11 @@ public class DataFacade {
 	 *             If the list or any of it's sublists are malformed
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private EntityIdentifier registerList(List<Object> list, int listDepth)
-			throws EmptyListException, MalformedListException, UnsupportedObjectTypeException, IOException {
+			throws EmptyListException, MalformedListException,
+			UnsupportedObjectTypeException, IOException {
 		if (listDepth == 0) {
 			throw new MalformedListException("Can't register list of 0 depth");
 		}
