@@ -5,7 +5,6 @@ import java.io.InputStream;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
-import net.sf.taverna.t2.cloudone.entity.DataDocument;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import net.sf.taverna.t2.cloudone.entity.DataDocument;
  * A BlobStore complements the {@link DataManager}, and notably provided by
  * {@link DataManager#getBlobStore()}, for storing raw data. The data is stored
  * in a blob store, and given a {@link BlobReferenceScheme} that can later by
- * registered as a {@link DataDocument} using
+ * registered as a {@link net.sf.taverna.t2.cloudone.entity.DataDocument} using
  * {@link DataManager#registerDocument(java.util.Set)}.
  * </p>
  * <p>

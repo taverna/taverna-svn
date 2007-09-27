@@ -1,14 +1,13 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
+import net.sf.taverna.t2.cloudone.entity.EntityList;
+
 /**
- * An identifier for an EntityList. Naming of this gets a bit confusing as
- * really the EntityList is an EntityIdentifierList but that would have led to
- * this class being called EntityIdentifierListIdentifier and there are limits
- * to the sadism of the API designers.
- * 
+ * An identifier for an {@link EntityList}.
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
 public class EntityListIdentifier extends EntityIdentifier {
 
@@ -16,6 +15,14 @@ public class EntityListIdentifier extends EntityIdentifier {
 
 	private String name;
 
+	/**
+	 * Construct an EntityListIdentifier from an identifier string.
+	 *
+	 * @param id
+	 *            The identifier string
+	 * @throws MalformedIdentifierException
+	 *             If the identifier was not a valid EntityListIdentifier
+	 */
 	public EntityListIdentifier(String id) throws MalformedIdentifierException {
 		super(id);
 	}

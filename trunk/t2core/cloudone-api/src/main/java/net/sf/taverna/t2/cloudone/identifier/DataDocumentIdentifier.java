@@ -14,6 +14,14 @@ package net.sf.taverna.t2.cloudone.identifier;
 public class DataDocumentIdentifier extends EntityIdentifier {
 	private String name;
 
+	/**
+	 * Construct a DataDocumentIdentifier from a given URI.
+	 *
+	 * @param id
+	 *            The identifying URI
+	 * @throws MalformedIdentifierException
+	 *             If the identifier was not a valid DataDocumentIdentifier
+	 */
 	public DataDocumentIdentifier(String id)
 			throws MalformedIdentifierException {
 		super(id);
