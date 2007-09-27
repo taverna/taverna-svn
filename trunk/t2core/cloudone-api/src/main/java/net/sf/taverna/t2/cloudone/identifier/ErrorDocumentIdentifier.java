@@ -1,12 +1,11 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-
 /**
  * Identifier for a single ErrorDocument
  * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  */
 public class ErrorDocumentIdentifier extends EntityIdentifier {
 
@@ -48,6 +47,11 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 	}
 
 	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
 	protected void validate(String identifierString)
 			throws MalformedIdentifierException {
 		String[] parts = identifierString.split("/");
@@ -57,7 +61,7 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 							+ identifierString);
 		}
 		try {
-			this.depth = Integer.parseInt(parts[1]);
+			depth = Integer.parseInt(parts[1]);
 		} catch (NumberFormatException nfe) {
 			throw new MalformedIdentifierException(
 					"Depth of error must be specified as decimal integer in "
@@ -69,7 +73,7 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 							+ identifierString);
 		}
 		try {
-			this.implicitDepth = Integer.parseInt(parts[2]);
+			implicitDepth = Integer.parseInt(parts[2]);
 		} catch (NumberFormatException nfe) {
 			throw new MalformedIdentifierException(
 					"Implicit depth of error must be specified as decimal integer in "
@@ -81,12 +85,7 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 							+ identifierString);
 		}
 
-		this.name = parts[0];
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
+		name = parts[0];
 	}
 
 }
