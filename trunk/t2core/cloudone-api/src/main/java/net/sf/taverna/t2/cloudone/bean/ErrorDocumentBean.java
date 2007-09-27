@@ -1,28 +1,41 @@
 package net.sf.taverna.t2.cloudone.bean;
 
+import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
+
+/**
+ * Bean for serialising {@link ErrorDocument}. An ErrorDocument is serialised
+ * as a String identifier from {@link #getIdentifier()}, an optional message in
+ * {@link #getMessage()} and optional stack trace in {@link #getStackTrace()}.
+ *
+ * @see Beanable
+ * @see ErrorDocument
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class ErrorDocumentBean {
-	private String id;
+	private String identifier;
 	private String message;
 	private String stackTrace;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+	public String getIdentifier() {
+		return identifier;
 	}
 
 	public String getMessage() {
 		return message;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 	public String getStackTrace() {
 		return stackTrace;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	public void setStackTrace(String stackTrace) {
