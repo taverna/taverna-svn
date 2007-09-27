@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.cloudone.bean;
 
-import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
-
 /**
  * Abstract bean for serialising references, such as from
  * {@link DataDocumentBean}.
@@ -20,8 +18,9 @@ public abstract class ReferenceBean {
 	/**
 	 * Get the type of reference scheme, for instance
 	 * {@link net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean#TYPE}. This
-	 * is used by {@link DataDocumentImpl#setFromBean(DataDocumentBean)} to
-	 * determine the correct reference scheme to instantiate.
+	 * is used by
+	 * {@link net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl#setFromBean(DataDocumentBean)}
+	 * to determine the correct reference scheme to instantiate.
 	 *
 	 * @return The type identifier of reference scheme
 	 */
