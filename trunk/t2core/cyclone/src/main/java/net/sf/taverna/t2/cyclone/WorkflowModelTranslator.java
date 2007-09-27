@@ -7,9 +7,9 @@ import java.util.Set;
 
 import javax.swing.tree.MutableTreeNode;
 
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorFactory;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorNotFoundException;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorFactory;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorNotFoundException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -50,12 +50,19 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 /**
+ * <p>
+ * The WorkflowModelTranslator encapsulates all the steps involved in translating a Taverna 1 ScuflModel instance to
+ * an equivalent Taverna 2 Dataflow instance.
+ * </p>
+ * <p>
+ * The translation is carried out by a call to the method {@link WorkflowModelTranslator#doTranslation(ScuflModel)}.
+ * </p>
  * @author David Withers
  * @author Stuart Owen
  * 
  */
 public class WorkflowModelTranslator {
-
+	
 	private Edits edits = new EditsImpl();
 
 	private Map<org.embl.ebi.escience.scufl.Processor, Processor> processorMap = new HashMap<org.embl.ebi.escience.scufl.Processor, Processor>();
@@ -67,6 +74,13 @@ public class WorkflowModelTranslator {
 	private WorkflowModelTranslator() {
 	}
 
+	/**
+	 * Main entry point for translating a Taverna 1 ScuflModel instance to an equivalent Taverna 2 Dataflow instance.
+	 * 
+	 * @param scuflModel an instance of a Taverna 1 ScuflModel
+	 * @return
+	 * @throws WorkflowTranslationException if a problem occurs translating the ScuflModel. The root cause will provide more specific details.
+	 */
 	public static Dataflow doTranslation(ScuflModel scuflModel) throws WorkflowTranslationException {
 		WorkflowModelTranslator translator = new WorkflowModelTranslator();
 

@@ -21,7 +21,7 @@ public abstract class ActivityPortDefinitionBean {
 	}
 	
 	/**
-	 * @param name, the port name
+	 * @param name the port name
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -35,7 +35,7 @@ public abstract class ActivityPortDefinitionBean {
 	}
 	
 	/**
-	 * @param the depth of the port
+	 * @param depth the depth of the port
 	 */
 	public void setDepth(int depth) {
 		this.depth = depth;

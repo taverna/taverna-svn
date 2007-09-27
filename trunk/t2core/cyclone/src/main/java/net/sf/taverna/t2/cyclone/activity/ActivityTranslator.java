@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cyclone.translators;
+package net.sf.taverna.t2.cyclone.activity;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;

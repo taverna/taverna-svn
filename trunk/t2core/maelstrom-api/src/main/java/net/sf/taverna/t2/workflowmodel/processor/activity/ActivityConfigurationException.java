@@ -12,23 +12,26 @@ public class ActivityConfigurationException extends Exception {
 
 	private static final long serialVersionUID = -1000005633224821831L;
 
-	public ActivityConfigurationException() {
-		// TODO Auto-generated constructor stub
+	/**
+	 * @param msg a message describing the reason for the exception.
+	 */
+	public ActivityConfigurationException(String msg) {
+		super(msg);
 	}
 
-	public ActivityConfigurationException(String arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
+	/**
+	 * @param cause a previous exception that caused this ActivityConfigurationException to be thrown.
+	 */
+	public ActivityConfigurationException(Throwable cause) {
+		super(cause);
 	}
 
-	public ActivityConfigurationException(Throwable arg0) {
-		super(arg0);
-		// TODO Auto-generated constructor stub
-	}
-
-	public ActivityConfigurationException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-		// TODO Auto-generated constructor stub
+	/**
+	 * @param msg a message describing the reason for the exception.
+	 * @param cause a previous exception that caused this ActivityConfigurationException to be thrown.
+	 */
+	public ActivityConfigurationException(String msg, Throwable cause) {
+		super(msg, cause);
 	}
 
 }

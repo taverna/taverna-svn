@@ -1,6 +1,6 @@
-package net.sf.taverna.t2.cyclone.translators;
+package net.sf.taverna.t2.cyclone.activity;
 
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortsDefinitionBeanImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.impl.ActivityPortsDefinitionBeanImpl;
 
 /**
  * An configuration bean specific to a Beanshell activity. In particular it provides details
@@ -20,7 +20,7 @@ public class BeanshellActivityConfigurationBean extends ActivityPortsDefinitionB
 	}
 
 	/**
-	 * @param the Beanshell script
+	 * @param script the Beanshell script
 	 */
 	public void setScript(String script) {
 		this.script = script;

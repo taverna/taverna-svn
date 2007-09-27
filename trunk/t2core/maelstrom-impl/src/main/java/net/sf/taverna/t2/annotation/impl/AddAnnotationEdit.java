@@ -6,6 +6,8 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 
 /**
  * Add a new WorkflowAnnotation to an instance of MutableAnnotated
+ * 
+ * @param <TargetType> The Annotated type that the annotation will be applied to.
  * @author Tom
  *
  */

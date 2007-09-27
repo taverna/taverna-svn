@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
+package net.sf.taverna.t2.workflowmodel.processor.activity.config.impl;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,9 @@
-package net.sf.taverna.t2.workflowmodel.processor.activity.config;
+package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
  * <p>
@@ -25,7 +23,7 @@ public interface ActivityPortBuilder {
 	 * @param portName
 	 * @param portDepth
 	 * @param mimeTypes
-	 * @return
+	 * @return an instance of InputPort
 	 */
 	InputPort buildInputPort(String portName, int portDepth, List<String> mimeTypes);
 	
@@ -35,7 +33,7 @@ public interface ActivityPortBuilder {
 	 * @param portDepth
 	 * @param portGranularDepth
 	 * @param mimeTypes
-	 * @return
+	 * @return an instance of OutputPort
 	 */
 	OutputPort buildOutputPort(String portName, int portDepth, int portGranularDepth, List<String> mimeTypes);
 	

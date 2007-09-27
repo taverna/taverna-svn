@@ -7,9 +7,9 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 public class AsynchEchoActivity extends

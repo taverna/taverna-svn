@@ -11,7 +11,6 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
 /**
@@ -47,9 +46,15 @@ public abstract class AbstractActivity<ConfigType> extends
 
 	protected Set<InputPort> inputPorts = new HashSet<InputPort>();
 
+	/**
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#configure(java.lang.Object)
+	 */
 	public abstract void configure(ConfigType conf)
 			throws ActivityConfigurationException;
 
+	/**
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getConfiguration()
+	 */
 	public abstract ConfigType getConfiguration();
 	
 	/**
@@ -73,6 +78,9 @@ public abstract class AbstractActivity<ConfigType> extends
 		return inputPorts;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getOutputPortMapping()
+	 */
 	public final Map<String, String> getOutputPortMapping() {
 		return this.outputPortMapping;
 	}

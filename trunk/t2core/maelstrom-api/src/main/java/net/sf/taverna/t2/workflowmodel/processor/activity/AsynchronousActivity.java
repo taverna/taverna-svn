@@ -14,10 +14,11 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * any data events the callback will insert a data event containing empty
  * collections of the appropriate depth.
  * 
+ * @param <ConfigurationType> the ConfigurationType associated with the Activity.
  * @author Tom Oinn
  * 
  */
-public interface AsynchronousActivity<T> extends Activity<T> {
+public interface AsynchronousActivity<ConfigurationType> extends Activity<ConfigurationType> {
 
 	/**
 	 * Invoke the activity in an asynchronous manner. The activity uses the

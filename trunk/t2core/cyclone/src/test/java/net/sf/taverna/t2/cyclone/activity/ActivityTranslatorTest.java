@@ -1,12 +1,12 @@
-package net.sf.taverna.t2.cyclone;
+package net.sf.taverna.t2.cyclone.activity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import net.sf.taverna.t2.annotation.MimeType;
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.cyclone.activity.BeanshellActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 

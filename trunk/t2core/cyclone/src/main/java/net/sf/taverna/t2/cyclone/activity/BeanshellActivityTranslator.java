@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cyclone.translators;
+package net.sf.taverna.t2.cyclone.activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;

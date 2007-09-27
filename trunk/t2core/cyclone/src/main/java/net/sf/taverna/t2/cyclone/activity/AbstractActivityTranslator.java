@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cyclone.translators;
+package net.sf.taverna.t2.cyclone.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,15 @@ import org.embl.ebi.escience.scufl.Processor;
 public abstract class AbstractActivityTranslator<ConfigurationType> implements
 		ActivityTranslator<ConfigurationType> {
 
+	/**
+	 * <p>
+	 * The entry point for carrying out a translation from a Taverna 1 Processor to a Taverna 2 Activity.<br>
+	 * </p>
+	 * 
+	 * @param processor
+	 * @return a translated Activity
+	 * @throws ActivityConfigurationException
+	 */
 	public Activity<ConfigurationType> doTranslation(Processor processor)
 			throws ActivityConfigurationException {
 

@@ -20,6 +20,11 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
+/**
+ * A helper class to support tests for the {@link WorkflowModelTranslator}
+ * @author Stuart Owen
+ *
+ */
 public class TranslatorTestHelper {
 	
 	protected void setUpRavenRepository() throws IOException {
@@ -30,7 +35,13 @@ public class TranslatorTestHelper {
 		TavernaSPIRegistry.setRepository(tempRepository);
 	}
 
-	protected ScuflModel loadScufl(String resourceName) throws UnknownProcessorException, UnknownPortException, ProcessorCreationException, DataConstraintCreationException, DuplicateProcessorNameException, MalformedNameException, ConcurrencyConstraintCreationException, DuplicateConcurrencyConstraintNameException, XScuflFormatException, IOException {
+	protected ScuflModel loadScufl(String resourceName)
+			throws UnknownProcessorException, UnknownPortException,
+			ProcessorCreationException, DataConstraintCreationException,
+			DuplicateProcessorNameException, MalformedNameException,
+			ConcurrencyConstraintCreationException,
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			IOException {
 		ScuflModel model = new ScuflModel();
 		InputStream inStream = TranslatorTestHelper.class.getResourceAsStream("/"+resourceName);
 		XScuflParser.populate(inStream,model,null);

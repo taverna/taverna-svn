@@ -1,11 +1,12 @@
-package net.sf.taverna.t2.cyclone;
+package net.sf.taverna.t2.cyclone.activity;
 
 import static org.junit.Assert.assertEquals;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslator;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorFactory;
-import net.sf.taverna.t2.cyclone.translators.ActivityTranslatorNotFoundException;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivity;
-import net.sf.taverna.t2.cyclone.translators.BeanshellActivityTranslator;
+import net.sf.taverna.t2.cyclone.TranslatorTestHelper;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorFactory;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorNotFoundException;
+import net.sf.taverna.t2.cyclone.activity.BeanshellActivity;
+import net.sf.taverna.t2.cyclone.activity.BeanshellActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;

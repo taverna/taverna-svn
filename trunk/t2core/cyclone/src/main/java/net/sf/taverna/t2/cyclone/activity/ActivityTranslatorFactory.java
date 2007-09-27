@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cyclone.translators;
+package net.sf.taverna.t2.cyclone.activity;
 
 import java.util.HashMap;
 import java.util.Map;

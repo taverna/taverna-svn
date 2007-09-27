@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * stack may create new Activity instances from e.g. dynamic lookup or resolution
  * of an abstract activity to a concrete activity or set of activities.
  * 
+ * @param <ConfigurationType> the ConfigurationType associated with the Activity. This is an arbitrary java class that provides details on how the Activity is configured..
  * @author Tom Oinn
  * 
  */

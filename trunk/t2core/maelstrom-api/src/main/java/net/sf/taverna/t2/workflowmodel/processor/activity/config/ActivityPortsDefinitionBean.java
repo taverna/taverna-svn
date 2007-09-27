@@ -21,7 +21,7 @@ public interface ActivityPortsDefinitionBean {
 	 */
 	List<ActivityInputPortDefinitionBean>getInputPortDefinitions();
 	/**
-	 * @param portDefinitions, a list of {@link ActivityInputPortDefinitionBean} that describes each input port
+	 * @param portDefinitions a list of {@link ActivityInputPortDefinitionBean} that describes each input port
 	 */
 	void setInputPortDefinitions(List<ActivityInputPortDefinitionBean> portDefinitions);
 	
@@ -30,7 +30,7 @@ public interface ActivityPortsDefinitionBean {
 	 */
 	List<ActivityOutputPortDefinitionBean>getOutputPortDefinitions();
 	/**
-	 * @param portDefinitions, a list of {@link ActivityOutputPortDefinitionBean} that describes each output port
+	 * @param portDefinitions a list of {@link ActivityOutputPortDefinitionBean} that describes each output port
 	 */
 	void setOutputPortDefinitions(List<ActivityOutputPortDefinitionBean> portDefinitions);
 }
