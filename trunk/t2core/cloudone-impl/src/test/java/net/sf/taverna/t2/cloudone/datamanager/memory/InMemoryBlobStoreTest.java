@@ -5,7 +5,14 @@ import java.util.HashSet;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractBlobStoreTest;
 
-public class InMemoryblobStoreTest extends AbstractBlobStoreTest {
+/**
+ * Test {@link InMemoryBlobStore} using the tests of {@link AbstractBlobStoreTest}.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
+public class InMemoryBlobStoreTest extends AbstractBlobStoreTest {
 
 	@Override
 	public void setDataManagerAndBlobStore() {
