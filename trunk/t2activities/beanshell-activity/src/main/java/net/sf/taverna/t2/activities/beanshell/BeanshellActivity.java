@@ -29,7 +29,7 @@ public class BeanshellActivity extends
 	@Override
 	protected ActivityPortBuilder getPortBuilder() {
 		return ActivityPortBuilderImpl.getInstance();
-	}
+	} 
 
 	@Override
 	public void configure(BeanshellActivityConfigurationBean configurationBeans)

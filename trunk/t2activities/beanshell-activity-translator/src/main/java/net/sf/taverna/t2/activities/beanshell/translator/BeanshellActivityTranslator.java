@@ -1,11 +1,12 @@
-package net.sf.taverna.t2.activities.beanshell;
+package net.sf.taverna.t2.activities.beanshell.translator;
 
-import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
-
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 
 /**
@@ -27,7 +28,8 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
 		
-		bean.setScript(((BeanshellProcessor)processor).getScript());
+		//TODO: use introspection to avoid direct version dependency
+		//bean.setScript(((BeanshellProcessor)processor).getScript());
 		return bean;
 	}
 

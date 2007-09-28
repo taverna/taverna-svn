@@ -9,6 +9,7 @@
   <packaging>pom</packaging>
   <modules>
   	<module>beanshell-activity</module>
+  	<module>beanshell-activity-translator</module>
   </modules>
   <licenses>
 		<license>
