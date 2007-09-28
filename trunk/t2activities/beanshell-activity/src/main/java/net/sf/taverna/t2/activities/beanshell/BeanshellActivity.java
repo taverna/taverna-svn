@@ -15,7 +15,7 @@ import bsh.Interpreter;
 
 /**
  * <p>
- * An Activity providing to Beanshell functionality.
+ * An Activity providing Beanshell functionality.
  * </p>
  * 
  * @author David Withers
@@ -25,6 +25,15 @@ public class BeanshellActivity extends
 		AbstractAsynchronousActivity<BeanshellActivityConfigurationBean> {
 
 	private BeanshellActivityConfigurationBean configurationBean;
+
+	private Interpreter interpreter;
+
+	public BeanshellActivity() {
+		// TODO do we need an interpreter per activity or per execution? 
+		interpreter = new Interpreter();
+		// TODO decide how to get the beanshell's class loader
+		// interpreter.setClassLoader(classLoader);
+	}
 
 	@Override
 	protected ActivityPortBuilder getPortBuilder() {
@@ -51,33 +60,34 @@ public class BeanshellActivity extends
 			public void run() {
 				DataFacade dataManager = new DataFacade(callback
 						.getLocalDataManager());
-				Interpreter interpreter = new Interpreter();
-				// interpreter.setClassLoader(classLoader);
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
 				try {
-					// set inputs
-					for (String inputName : data.keySet()) {
-						Object input = dataManager.resolve(data.get(inputName));
-						interpreter.set(inputName, input);
-					}
-					// run
-					interpreter.eval(configurationBean.getScript());
-					// get and clear outputs
-					for (ActivityOutputPortDefinitionBean outputBean : configurationBean.getOutputPortDefinitions()) {
-						Object value = interpreter.get(outputBean.getName());
-						if (value != null) {
-							dataManager.register(value);
+					synchronized (interpreter) {
+						// set inputs
+						for (String inputName : data.keySet()) {
+							Object input = dataManager.resolve(data
+									.get(inputName));
+							interpreter.set(inputName, input);
 						}
-						// interpreter.unset(output);
+						// run
+						interpreter.eval(configurationBean.getScript());
+						// get and clear outputs
+						for (ActivityOutputPortDefinitionBean outputBean : configurationBean
+								.getOutputPortDefinitions()) {
+							Object value = interpreter
+									.get(outputBean.getName());
+							if (value != null) {
+								dataManager.register(value);
+							}
+							interpreter.unset(outputBean.getName());
+						}
+						// clear inputs
+						for (String inputName : data.keySet()) {
+							interpreter.unset(inputName);
+						}
 					}
-					// clear inputs
-					// inputs = workflowInputMap.keySet().iterator();
-					// while (inputs.hasNext()) {
-					// String inputname = (String) inputs.next();
-					// interpreter.unset(inputname);
-					// }
 					callback.receiveResult(outputData, new int[0]);
 				} catch (Exception ex) {
 					callback.fail("", ex);
