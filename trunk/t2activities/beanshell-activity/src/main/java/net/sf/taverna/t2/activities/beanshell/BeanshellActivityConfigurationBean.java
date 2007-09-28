@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.activities.beanshell;
 
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.impl.ActivityPortsDefinitionBeanImpl;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;
 
 /**
  * An configuration bean specific to a Beanshell activity. In particular it provides details
@@ -8,7 +8,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.impl.ActivityPo
  * 
  * @author Stuart Owen
  */
-public class BeanshellActivityConfigurationBean extends ActivityPortsDefinitionBeanImpl {
+public class BeanshellActivityConfigurationBean extends ActivityPortsDefinitionBean {
 
 	private String script;
 
