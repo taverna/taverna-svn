@@ -30,14 +30,14 @@ public class ActivityPortsDefinitionBean {
 	}
 
 	/**
-	 * @param portDefinitions a list of {@link ActivityInputPortDefinitionBean} that describes each input port
+	 * @return a list of {@link ActivityOutputPortDefinitionBean} that describes each output port.
 	 */
 	public List<ActivityOutputPortDefinitionBean> getOutputPortDefinitions() {
 		return outputs;
 	}
 
 	/**
-	 * @return a list of {@link ActivityOutputPortDefinitionBean} that describes each output port.
+	 * @param portDefinitions a list of {@link ActivityInputPortDefinitionBean} that describes each input port
 	 */
 	public void setInputPortDefinitions(
 			List<ActivityInputPortDefinitionBean> portDefinitions) {
