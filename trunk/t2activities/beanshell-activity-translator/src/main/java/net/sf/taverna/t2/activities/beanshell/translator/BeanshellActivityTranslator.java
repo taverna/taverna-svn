@@ -1,8 +1,12 @@
 package net.sf.taverna.t2.activities.beanshell.translator;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -24,13 +28,29 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 
 	@Override
 	protected BeanshellActivityConfigurationBean createConfigType(
-			Processor processor) {
+			Processor processor) throws ActivityTranslationException {
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
 		
-		//TODO: use introspection to avoid direct version dependency
-		//bean.setScript(((BeanshellProcessor)processor).getScript());
+		bean.setScript(determineScript(processor));
 		return bean;
+	}
+	
+	private String determineScript(Processor processor) throws ActivityTranslationException {
+		try {
+			Method m=processor.getClass().getMethod("getScript", new Class[]{});
+			return (String)m.invoke(processor, new Object[]{});
+		} catch (SecurityException e) {
+			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getString through introspection",e);
+		} catch (NoSuchMethodException e) {
+			throw new ActivityTranslationException("The processor does not have the method getScript, an therefore does not conform to being a Beanshell processor",e);
+		} catch (IllegalArgumentException e) {
+			throw new ActivityTranslationException("The method getScript on the beanshell processor had unexpected arguments",e);
+		} catch (IllegalAccessException e) {
+			throw new ActivityTranslationException("Unable to access the method getScript on the Beanshell processor",e);
+		} catch (InvocationTargetException e) {
+			throw new ActivityTranslationException("An error occurred invoking the method getScript on the Beanshell processor",e);
+		}
 	}
 
 }
