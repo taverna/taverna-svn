@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Factory for reference provides
- * mandatory keys for reference scheme validation.
- * 
+ * Factory for reference provides mandatory keys for reference scheme
+ * validation.
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
- * @param <RS>
+ *
+ * @param <RS> {@link ReferenceScheme} subclass
  */
 public interface ReferenceSchemeFactorySPI<RS extends ReferenceScheme> {
 
@@ -22,8 +22,8 @@ public interface ReferenceSchemeFactorySPI<RS extends ReferenceScheme> {
 	 * strings, each list is interpreted as a path into a configuration tree -
 	 * where this list is a single string this is equivalent to a flat
 	 * properties file style configuration document.
-	 * 
-	 * @return
+	 *
+	 * @return Required keys
 	 */
 	public Map<String, Set<List<String>>> getRequiredKeys();
 }

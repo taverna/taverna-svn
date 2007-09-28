@@ -11,51 +11,57 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
  * Interface defining methods used by the DataPeerContainer. This interface
  * should only ever be accessed from an instance of PeerContainer to handle a
  * message received by that container.
- * 
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
 public interface DataPeer {
 
 	/**
-	 * Return a potentially modified copy of the specified data document after
-	 * ensuring that all reference schemes within the specified document are
-	 * valid in the remote context
-	 * 
-	 * @param remoteContext
-	 * @return
+	 * Export data document. Return a potentially modified copy of the specified
+	 * data document after ensuring that all reference schemes within the
+	 * specified document are valid in the remote context.
+	 *
+	 * @param remoteContexts
+	 *            Contexts within which reference schemes should be valid
+	 * @param identifier
+	 *            Data document identifier
+	 * @return A potentially modified copy of the specified data document
 	 */
 	public DataDocument exportDataDocument(
-			Set<LocationalContext> remoteContext,
+			Set<LocationalContext> remoteContexts,
 			DataDocumentIdentifier identifier) throws NotFoundException;
 
 	/**
 	 * Get the current namespace for this DataManager. New data documents and
 	 * lists registered with this manager will have this namespace in their
 	 * identifiers.
-	 * 
-	 * @return
+	 *
+	 * @return Current namespace
 	 */
 	public String getCurrentNamespace();
 
 	/**
-	 * Each DataPeer is associated with exactly one DataManager
+	 * Get the associated {@link DataManager}.
+	 *
+	 * @return The associated {@link DataManager}
 	 */
 	public DataManager getDataManager();
 
 	/**
-	 * Get the document which describes the locational context for this
-	 * DataManager instance.
+	 * Get the set of locational contexts for this DataManager instance.
+	 *
+	 * @return A {@link Set} of {@link LocationalContext}s
 	 */
 	public Set<LocationalContext> getLocationalContexts();
 
 	/**
-	 * Get all namespaces for which this data manager is the authority. This
-	 * will always include at least the namespace returned by the
-	 * getCurrentNamespace method
-	 * 
-	 * @return
+	 * Get all namespaces for which the associated data manager is the
+	 * authority. This will always include at least the namespace returned by
+	 * the {@link #getCurrentNamespace()}.
+	 *
+	 * @return A {@link List} of namespaces
 	 */
 	public List<String> getManagedNamespaces();
 

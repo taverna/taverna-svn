@@ -36,7 +36,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 	/**
 	 * Constructor for immediate population using
-	 * {@link #setFromBean(String)}
+	 * {@link #setFromBean(String)}.
 	 *
 	 */
 	public EntityIdentifier() {

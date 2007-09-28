@@ -6,22 +6,24 @@ package net.sf.taverna.t2.cloudone;
  * containers (and their peers implicitly) and the creation of peer proxy
  * objects to be used for peer to peer communication in the form of data export
  * and namespace migration.
- * 
+ *
  * TODO - interface needs to be written
- * 
+ *
  * @author Tom Oinn
  * @author Matthew Pocock
- * 
+ *
  */
 public interface PeerContainer {
 
 	/**
-	 * Discovery request, called by implementation of DataPeer on its enclosing
-	 * container when trying to resolve an entity identifier in a namespace not
-	 * managed by the data peer's data manager.
-	 * 
-	 * @param namespace
-	 * @return
+	 * Get proxy for accessing given namespace.
+	 * <p>
+	 * Discovery request, called by implementation of {@link DataPeer} on its
+	 * enclosing container when trying to resolve an entity identifier in a
+	 * namespace not managed by the data peer's data manager.
+	 *
+	 * @param namespace Namespace to proxy
+	 * @return A {@link PeerProxy} that can access namespace
 	 */
 	public PeerProxy getProxyForNamespace(String namespace);
 
