@@ -38,8 +38,8 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 	
 	private String determineScript(Processor processor) throws ActivityTranslationException {
 		try {
-			Method m=processor.getClass().getMethod("getScript", new Class[]{});
-			return (String)m.invoke(processor, new Object[]{});
+			Method m=processor.getClass().getMethod("getScript");
+			return (String)m.invoke(processor);
 		} catch (SecurityException e) {
 			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getString through introspection",e);
 		} catch (NoSuchMethodException e) {
