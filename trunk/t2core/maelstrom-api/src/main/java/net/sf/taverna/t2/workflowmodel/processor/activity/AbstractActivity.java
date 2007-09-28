@@ -62,6 +62,8 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * Since this method is abstract, the implementation of this AbstractActivity is responsible for
 	 * providing an instance of the builder.
 	 */
+	//FIXME: this approach doesn't work as intended, since the Activity implementation ends up with a dependency on maelstrom-impl.
+	//There are easy ways round this but non particularly elegant. Passing the PortBuilder to configure leads to the port builder being passed around all over the place.
 	protected abstract ActivityPortBuilder getPortBuilder();
 
 	/* (non-Javadoc)
