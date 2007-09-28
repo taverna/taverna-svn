@@ -36,7 +36,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 	/**
 	 * Constructor for immediate population using
-	 * {@link #setFromBean(EntityIdentifierBean)}.
+	 * {@link #setFromBean(String)}
 	 *
 	 */
 	public EntityIdentifier() {
@@ -100,7 +100,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	public abstract String getName();
 
 	/**
-	 * Get the namespace allocated by the creating {@link import net.sf.taverna.t2.cloudone.DataManager}.
+	 * Get the namespace allocated by the creating {@link net.sf.taverna.t2.cloudone.DataManager}.
 	 *
 	 * @return The namespace
 	 */
@@ -111,7 +111,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	/**
 	 * Get the type of this identifier.
 	 *
-	 * @return
+	 * @return {@link IDType type} of identifier
 	 */
 	public IDType getType() {
 		return type;
