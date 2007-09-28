@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.swing.tree.MutableTreeNode;
 
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorFactory;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorNotFoundException;
@@ -103,6 +104,8 @@ public class WorkflowModelTranslator {
 			throw new WorkflowTranslationException("An error occurred whilst trying to configure an Activity whilst doing a T1 workflow translation.",e);
 		} catch (ActivityTranslatorNotFoundException e) {
 			throw new WorkflowTranslationException("An error occurred whilst trying to find a T2 ActivityTranslator for a T1 processor",e);
+		} catch (ActivityTranslationException e) {
+			throw new WorkflowTranslationException("An error occurred whilst translating T1 processor into a T2 activity",e);
 		}
 
 		return dataflow;
@@ -146,7 +149,7 @@ public class WorkflowModelTranslator {
 	 * @throws EditException 
 	 * @throws ActivityTranslatorNotFoundException 
 	 */
-	private void createProcessors(ScuflModel scuflModel, Dataflow dataflow) throws ActivityConfigurationException, EditException, ActivityTranslatorNotFoundException {
+	private void createProcessors(ScuflModel scuflModel, Dataflow dataflow) throws ActivityTranslationException,ActivityConfigurationException, EditException, ActivityTranslatorNotFoundException {
 		for (org.embl.ebi.escience.scufl.Processor t1Processor : scuflModel
 				.getProcessors()) {
 			

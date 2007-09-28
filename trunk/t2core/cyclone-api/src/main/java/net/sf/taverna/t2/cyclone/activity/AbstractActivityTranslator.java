@@ -44,10 +44,11 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 * 
 	 * @param processor
 	 * @return a translated Activity
+	 * @throws ActivityTranslationException
 	 * @throws ActivityConfigurationException
 	 */
 	public Activity<ConfigurationType> doTranslation(Processor processor)
-			throws ActivityConfigurationException {
+			throws ActivityTranslationException,ActivityConfigurationException {
 
 		Activity<ConfigurationType> activity = createUnconfiguredActivity();
 		ConfigurationType configType = createConfigType(processor);
@@ -68,8 +69,9 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 	 * 
 	 * @param processor
 	 * @return the configuration type.
+	 * @throws ActivityTranslationException
 	 */
-	protected abstract ConfigurationType createConfigType(Processor processor);
+	protected abstract ConfigurationType createConfigType(Processor processor) throws ActivityTranslationException;
 
 	/**
 	 * If the configuration type for an Activity implements
