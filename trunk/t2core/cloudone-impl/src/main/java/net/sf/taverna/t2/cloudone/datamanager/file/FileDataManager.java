@@ -23,7 +23,7 @@ import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
+import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.jdom.JDOMException;
 
@@ -63,7 +63,7 @@ import org.jdom.JDOMException;
  * </p>
  * <p>
  * Entities themselves, or more correctly, their beans as returned by
- * {@link Beanable#getAsBean()}, are serialised by {@link EntitySerialiser}.
+ * {@link Beanable#getAsBean()}, are serialised by {@link BeanSerialiser}.
  * On deserialisation the entities are reconstructed from their bean.
  * </p>
  *
@@ -198,7 +198,7 @@ public class FileDataManager extends AbstractDataManager {
 		}
 		Object bean;
 		try {
-			bean = EntitySerialiser.fromXMLFile(entityPath);
+			bean = BeanSerialiser.fromXMLFile(entityPath);
 		} catch (JDOMException e) {
 			e.printStackTrace();
 			return null;
@@ -258,7 +258,7 @@ public class FileDataManager extends AbstractDataManager {
 		// TODO: Could serialise in a more portable and less space-hungry
 		// format
 		try {
-			EntitySerialiser.toXMLFile(bean, entityPath);
+			BeanSerialiser.toXMLFile(bean, entityPath);
 		} catch (JDOMException e) {
 		} catch (IOException e) {
 			throw new StorageException(
