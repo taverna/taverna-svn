@@ -9,11 +9,20 @@ import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
+import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
+/**
+ * A {@link BlobReferenceScheme} that is {@link Beanable} as a
+ * {@link BlobReferenceBean}.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class BlobReferenceSchemeImpl implements
 		BlobReferenceScheme<BlobReferenceBean> {
 
@@ -22,8 +31,8 @@ public class BlobReferenceSchemeImpl implements
 	private String namespace;
 
 	public BlobReferenceSchemeImpl() {
-		this.id = null;
-		this.namespace = null;
+		id = null;
+		namespace = null;
 	}
 
 	public BlobReferenceSchemeImpl(String namespace, String id) {
@@ -52,23 +61,30 @@ public class BlobReferenceSchemeImpl implements
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (!(obj instanceof BlobReferenceSchemeImpl))
+		}
+		if (!(obj instanceof BlobReferenceSchemeImpl)) {
 			return false;
+		}
 		final BlobReferenceSchemeImpl other = (BlobReferenceSchemeImpl) obj;
 		if (id == null) {
-			if (other.id != null)
+			if (other.id != null) {
 				return false;
-		} else if (!id.equals(other.id))
+			}
+		} else if (!id.equals(other.id)) {
 			return false;
+		}
 		if (namespace == null) {
-			if (other.namespace != null)
+			if (other.namespace != null) {
 				return false;
-		} else if (!namespace.equals(other.namespace))
+			}
+		} else if (!namespace.equals(other.namespace)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -80,20 +96,13 @@ public class BlobReferenceSchemeImpl implements
 	}
 
 	public Date getExpiry() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#getId()
-	 */
 	public String getId() {
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#getNamespace()
-	 */
 	public String getNamespace() {
 		return namespace;
 	}
@@ -109,7 +118,6 @@ public class BlobReferenceSchemeImpl implements
 	}
 
 	public boolean isImmediate() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -118,13 +126,10 @@ public class BlobReferenceSchemeImpl implements
 		if (id != null) {
 			throw new IllegalStateException("Can't initialise twice");
 		}
-		this.id = bean.getId();
-		this.namespace = bean.getNamespace();
+		id = bean.getId();
+		namespace = bean.getNamespace();
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeInterface#toString()
-	 */
 	@Override
 	public String toString() {
 		return "Blob " + getNamespace() + " " + getId();
@@ -132,8 +137,7 @@ public class BlobReferenceSchemeImpl implements
 
 	public boolean validInContext(Set<LocationalContext> contextSet,
 			DataPeer currentLocation) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }
