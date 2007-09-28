@@ -42,6 +42,13 @@ import org.jdom.JDOMException;
 import org.jdom.output.XMLOutputter;
 import org.junit.Test;
 
+/**
+ * Test bean serialisation of {@link Beanable}s using {@link EntitySerialiser}.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class BeanTest {
 
 	InMemoryDataManager dManager = new InMemoryDataManager("dataNS",
@@ -290,7 +297,7 @@ public class BeanTest {
 
 	/**
 	 * Serialise and deserialise using {@link EntitySerialiser}
-	 * 
+	 *
 	 * @param bean
 	 *            Bean to be serialised
 	 * @return The deserialised bean
