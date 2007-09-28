@@ -19,10 +19,19 @@ import org.jdom.JDOMException;
 import org.junit.Test;
 
 
-public class EntitySerialiserTest {
-	
-	private ClassLoader classLoader = EntitySerialiserTest.class.getClassLoader();
-	
+/**
+ * Test {@link BeanSerialiser} by serialising simple objects.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
+public class BeanSerialiserTest {
+
+	private static final String SILLY = "I'm silly";
+
+	private ClassLoader classLoader = BeanSerialiserTest.class.getClassLoader();
+
 	InMemoryDataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
 
@@ -33,38 +42,38 @@ public class EntitySerialiserTest {
 		file.delete();
 		assertFalse(file.exists());
 		SillyBean silly = new SillyBean();
-		silly.setName("I'm silly");
-		EntitySerialiser.toXMLFile(silly, file);
+		silly.setName(SILLY);
+		BeanSerialiser.toXMLFile(silly, file);
 		assertTrue(file.exists());
 		// Should be somewhere between 50 (it's XML) and 1024 :-)
 		assertTrue("Serialised file too small", file.length() > 50);
 		assertTrue("Serialised file too big", file.length() < 1024);
-		SillyBean silly2 = (SillyBean) EntitySerialiser.fromXMLFile(file);
-		assertEquals("I'm silly", silly2.getName());
+		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXMLFile(file);
+		assertEquals(SILLY, silly2.getName());
 	}
-	
+
 	@Test
 	public void serialiseSillyBean() throws JDOMException, IOException {
 		SillyBean silly = new SillyBean();
-		silly.setName("I'm silly");
-		Element elem = EntitySerialiser.toXML(silly);
-		SillyBean silly2 = (SillyBean) EntitySerialiser.fromXML(elem, SillyBean.class.getClassLoader());
-		assertEquals("I'm silly", silly2.getName());
+		silly.setName(SILLY);
+		Element elem = BeanSerialiser.toXML(silly);
+		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXML(elem, SillyBean.class.getClassLoader());
+		assertEquals(SILLY, silly2.getName());
 	}
-	
-	
-	
+
+
+
 	@Test
 	public void serialiseURLRefScheme() throws JDOMException, IOException {
 		URLReferenceScheme urlRef = new URLReferenceScheme();
 		URLReferenceBean bean = new URLReferenceBean();
 		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
-		Element elem = EntitySerialiser.toXML(urlRef.getAsBean());
-		URLReferenceBean retrievedBean = (URLReferenceBean) EntitySerialiser
+		Element elem = BeanSerialiser.toXML(urlRef.getAsBean());
+		URLReferenceBean retrievedBean = (URLReferenceBean) BeanSerialiser
 				.fromXML(elem, classLoader);
 		assertEquals(bean.getUrl(), retrievedBean.getUrl());
 	}
-	
+
 
 }

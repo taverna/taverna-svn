@@ -172,7 +172,7 @@ public class Tools {
 	 * Get the &lt;java&gt; element from the {@link XMLEncoder} for the given
 	 * bean as a JDOM {@link Element}.
 	 *
-	 * @see net.sf.taverna.t2.cloudone.util.EntitySerialiser
+	 * @see net.sf.taverna.t2.cloudone.util.BeanSerialiser
 	 * @param obj
 	 *            Object to serialise
 	 * @return &lt;java&gt; element for serialised bean
@@ -395,7 +395,7 @@ public class Tools {
 	 * Return the &lt;annotation&gt; element for a specified {@link Annotated}
 	 * entity.
 	 *
-	 * @see net.sf.taverna.t2.cloudone.util.EntitySerialiser
+	 * @see net.sf.taverna.t2.cloudone.util.BeanSerialiser
 	 * @param annotated
 	 *            the workflow entity to serialise annotations for
 	 * @return a JDOM {@link Element} object containing the annotations

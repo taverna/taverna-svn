@@ -33,7 +33,7 @@ import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
-import net.sf.taverna.t2.cloudone.util.EntitySerialiser;
+import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -43,7 +43,7 @@ import org.jdom.output.XMLOutputter;
 import org.junit.Test;
 
 /**
- * Test bean serialisation of {@link Beanable}s using {@link EntitySerialiser}.
+ * Test bean serialisation of {@link Beanable}s using {@link BeanSerialiser}.
  *
  * @author Ian Dunlop
  * @author Stian Soiland
@@ -296,7 +296,7 @@ public class BeanTest {
 	}
 
 	/**
-	 * Serialise and deserialise using {@link EntitySerialiser}
+	 * Serialise and deserialise using {@link BeanSerialiser}.
 	 *
 	 * @param bean
 	 *            Bean to be serialised
@@ -306,12 +306,8 @@ public class BeanTest {
 	private <Bean> Bean serialised(Bean bean) {
 		ClassLoader cl = bean.getClass().getClassLoader();
 		Element elem;
-		try {
-			elem = EntitySerialiser.toXML(bean);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return (Bean) EntitySerialiser.fromXML(elem, cl);
+		elem = BeanSerialiser.toXML(bean);
+		return (Bean) BeanSerialiser.fromXML(elem, cl);
 	}
 
 }
