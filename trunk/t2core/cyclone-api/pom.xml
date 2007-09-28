@@ -2,9 +2,9 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>cyclone</artifactId>
+	<artifactId>cyclone-api</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>Cyclone</name>
+	<name>Cyclone API</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
@@ -13,26 +13,14 @@
 	<description>Translator between Taverna 1 ScuflModel instances and Taverna 2 Dataflow instances</description>
 	<dependencies>
 		<dependency>
-			<groupId>uk.org.mygrid.taverna.scufl</groupId>
-			<artifactId>scufl-model</artifactId>
-			<version>1.6.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>maelstrom-impl</artifactId>
+			<artifactId>maelstrom-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-beanshell-processor</artifactId>
-			<version>1.6.0.0</version>
-			<scope>test</scope>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-model</artifactId>
+			<version>1.6.1.0</version>
 		</dependency>
 	</dependencies>
 </project>

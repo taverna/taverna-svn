@@ -11,7 +11,8 @@
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
-		<module>cyclone</module>
+		<module>cyclone-api</module>
+		<module>cyclone-impl</module>
 	</modules>
 	<licenses>
 		<license>
