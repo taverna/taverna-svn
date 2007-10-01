@@ -10,6 +10,8 @@ import net.sf.taverna.t2.workflowmodel.Port;
  * @author Tom Oinn
  * 
  */
+
+//TODO Should this be a proper MimeType rather than a String
 @AppliesTo(workflowObjectType={Port.class})
 public interface MimeType extends WorkflowAnnotation {
 
