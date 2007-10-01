@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryXMLHandler.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 22:49:58 $
+ * Last modified on   $Date: 2007-10-01 12:11:27 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -66,6 +66,8 @@ public class QueryXMLHandler {
 
 	public static final String VERSION_ATTRIBUTE = "softwareVersion";
 	
+	public static final String FORMATTER_ATTRIBUTE = "formatter";
+	
 	public static final String REQUEST_ID_ATTRIBUTE = "requestId";
 
 	public static final String SCHEMA_ATTRIBUTE = "virtualSchemaName";
@@ -93,6 +95,10 @@ public class QueryXMLHandler {
 		String softwareVersion = query.getSoftwareVersion();
 		if (softwareVersion != null) {
 			queryElement.setAttribute(VERSION_ATTRIBUTE, softwareVersion);			
+		}
+		String formatter = query.getFormatter();
+		if (formatter != null) {
+			queryElement.setAttribute(FORMATTER_ATTRIBUTE, formatter);			
 		}
 		String requestId = query.getRequestId();
 		if (requestId != null) {
@@ -228,8 +234,10 @@ public class QueryXMLHandler {
 		String virtualSchema = element.getAttributeValue(SCHEMA_ATTRIBUTE);
 		int count = Integer.parseInt(element.getAttributeValue(COUNT_ATTRIBUTE));
 		String version = element.getAttributeValue(VERSION_ATTRIBUTE);
+		String formatter = element.getAttributeValue(FORMATTER_ATTRIBUTE);
 		String requestId = element.getAttributeValue(REQUEST_ID_ATTRIBUTE);
 		Query query = new Query(virtualSchema, count, version, requestId);
+		query.setFormatter(formatter);
 		String uniqueRows = element.getAttributeValue(UNIQUE_ROWS_ATTRIBUTE);
 		if (uniqueRows != null) {
 			query.setUniqueRows(Integer.parseInt(uniqueRows));

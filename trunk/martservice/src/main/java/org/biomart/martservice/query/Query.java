@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Query.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 22:49:58 $
+ * Last modified on   $Date: 2007-10-01 12:11:26 $
  *               by   $Author: davidwithers $
  * Created on 03-Apr-2006
  *****************************************************************/
@@ -56,6 +56,8 @@ public class Query {
 	private int uniqueRows;
 
 	private String softwareVersion;
+	
+	private String formatter;
 
 	private String requestId;
 
@@ -149,6 +151,7 @@ public class Query {
 		setCount(query.count);
 		setUniqueRows(query.uniqueRows);
 		setSoftwareVersion(query.softwareVersion);
+		setFormatter(query.formatter);
 		setRequestId(query.requestId);
 		List datasets = query.getDatasets();
 		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
@@ -237,6 +240,24 @@ public class Query {
 	 */
 	public void setSoftwareVersion(String softwareVersion) {
 		this.softwareVersion = softwareVersion;
+	}
+
+	/**
+	 * Returns the formatter.
+	 * 
+	 * @return the formatter
+	 */
+	public String getFormatter() {
+		return formatter;
+	}
+
+	/**
+	 * Sets the formatter.
+	 * 
+	 * @param formatter the new formatter
+	 */
+	public void setFormatter(String formatter) {
+		this.formatter = formatter;
 	}
 
 	/**

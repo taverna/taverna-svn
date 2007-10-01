@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-21 22:49:58 $
+ * Last modified on   $Date: 2007-10-01 12:11:30 $
  *               by   $Author: davidwithers $
  * Created on 03-May-2006
  *****************************************************************/
@@ -57,9 +57,13 @@ public class QueryTest extends TestCase {
 	private Dataset dataset;
 
 	private String virtualSchemaName;
+	
+	private String softwareVersion;
+	
+	private String formatter;
 
 	private Query query;
-
+	
 	/*
 	 * @see TestCase#setUp()
 	 */
@@ -81,6 +85,11 @@ public class QueryTest extends TestCase {
 		dataset.addFilter(filter);
 
 		virtualSchemaName = "default";
+		
+		softwareVersion = "software version";
+		
+		formatter = "page formatter";
+		
 		query = new Query(virtualSchemaName);
 	}
 
@@ -112,6 +121,8 @@ public class QueryTest extends TestCase {
 		query.addLink(link);
 		query.setCount(1);
 		query.setUniqueRows(1);
+		query.setSoftwareVersion(softwareVersion);
+		query.setFormatter(formatter);
 		Query copy = new Query(query);
 		assertEquals(copy.getDatasets().size(), 1);
 		assertEquals(copy.getAttributes().size(), 1);
@@ -119,6 +130,8 @@ public class QueryTest extends TestCase {
 		assertEquals(copy.getLinks().size(), 1);
 		assertEquals(copy.getCount(), 1);
 		assertEquals(copy.getUniqueRows(), 1);
+		assertEquals(copy.getSoftwareVersion(), softwareVersion);
+		assertEquals(copy.getFormatter(), formatter);
 	}
 
 	/*
@@ -169,6 +182,54 @@ public class QueryTest extends TestCase {
 	public final void testSetUniqueRows() {
 		query.setUniqueRows(1);
 		assertEquals("uniqueRows should be '1'", query.getUniqueRows(), 1);
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.getSoftwareVersion()'
+	 */
+	public final void testGetSoftwareVersion() {
+		assertNull("softwareVersion should be null", query.getSoftwareVersion());
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.setSoftwareVersion(String)'
+	 */
+	public final void testSetSoftwareVersion() {
+		String newSoftwareVersion = "new software version";
+		query.setSoftwareVersion(newSoftwareVersion);
+		assertEquals("softwareVersion should be '" + newSoftwareVersion + "'", query.getSoftwareVersion(), newSoftwareVersion);
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.getFormatter()'
+	 */
+	public final void testGetFormatter() {
+		assertNull("formatter should be null", query.getFormatter());
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.setFormatter(String)'
+	 */
+	public final void testSetFormatter() {
+		String newFormatter = "new formatter";
+		query.setFormatter(newFormatter);
+		assertEquals("formatter should be '" + newFormatter + "'", query.getFormatter(), newFormatter);
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.getRequestId()'
+	 */
+	public final void testGetRequestId() {
+		assertNull("requestId should be null", query.getRequestId());
+	}
+
+	/*
+	 * Test method for 'org.biomart.martservice.query.Query.setnewRequestId(String)'
+	 */
+	public final void testSetRequestId() {
+		String newRequestId = "new RequestId";
+		query.setRequestId(newRequestId);
+		assertEquals("requestId should be '" + newRequestId + "'", query.getRequestId(), newRequestId);
 	}
 
 	/*
