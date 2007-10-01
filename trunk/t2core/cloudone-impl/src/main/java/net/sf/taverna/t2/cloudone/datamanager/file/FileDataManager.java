@@ -198,7 +198,7 @@ public class FileDataManager extends AbstractDataManager {
 		}
 		Object bean;
 		try {
-			bean = BeanSerialiser.fromXMLFile(entityPath);
+			bean = BeanSerialiser.fromXMLFile(entityPath, getClass().getClassLoader());
 		} catch (JDOMException e) {
 			e.printStackTrace();
 			return null;
@@ -259,7 +259,6 @@ public class FileDataManager extends AbstractDataManager {
 		// format
 		try {
 			BeanSerialiser.toXMLFile(bean, entityPath);
-		} catch (JDOMException e) {
 		} catch (IOException e) {
 			throw new StorageException(
 					"Could not store entity to" + entityPath, e);

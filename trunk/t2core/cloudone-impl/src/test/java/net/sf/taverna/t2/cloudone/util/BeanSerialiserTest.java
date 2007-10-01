@@ -48,7 +48,7 @@ public class BeanSerialiserTest {
 		// Should be somewhere between 50 (it's XML) and 1024 :-)
 		assertTrue("Serialised file too small", file.length() > 50);
 		assertTrue("Serialised file too big", file.length() < 1024);
-		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXMLFile(file);
+		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXMLFile(file, getClass().getClassLoader());
 		assertEquals(SILLY, silly2.getName());
 	}
 
