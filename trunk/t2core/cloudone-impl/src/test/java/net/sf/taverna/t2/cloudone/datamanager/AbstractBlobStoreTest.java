@@ -17,6 +17,8 @@ import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.datamanager.file.FileBlobStoreTest;
+import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryBlobStoreTest;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
@@ -25,6 +27,14 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Abstract test case for testing any {@link BlobStore}. Used by
+ * {@link FileBlobStoreTest} and {@link InMemoryBlobStoreTest}.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public abstract class AbstractBlobStoreTest {
 
 	protected static final String TEST_STRING = "qwertyuiop";

@@ -22,6 +22,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Test {@link FileDataManager} using the tests of
+ * {@link AbstractDataManagerTest} in addition to testing that generated IDs are
+ * UUIDs.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class FileDataManagerTest extends AbstractDataManagerTest {
 
 	private static File tmpDir;

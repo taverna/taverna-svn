@@ -26,12 +26,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the Data Manager. Creates Empty Lists, data documents, Lists of Empty
- * Lists and Lists of Data Documents and registers them all.
- * 
+ * Test the Data Manager. Creates Empty Lists, data documents, Lists of Empty
+ * Lists and Lists of Data Documents and registers them all. Used by
+ *
  * @author Ian Dunlop
  * @author Stian Soiland
- * 
+ *
  */
 public abstract class AbstractDataManagerTest {
 

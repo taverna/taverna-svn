@@ -11,10 +11,16 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+/**
+ * Test {@link FileBlobStore} using the tests of {@link AbstractBlobStoreTest}.
+ *
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ *
+ */
 public class FileBlobStoreTest extends AbstractBlobStoreTest {
 
 	private static File tmpDir;
-
 
 	@AfterClass
 	public static void deleteTmp() throws IOException {
@@ -25,7 +31,7 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 			// OK
 		}
 	}
-	
+
 	@BeforeClass
 	public static void makeTmp() throws IOException {
 		tmpDir = File.createTempFile("test", "datamanager");
@@ -33,12 +39,12 @@ public class FileBlobStoreTest extends AbstractBlobStoreTest {
 		tmpDir.mkdir();
 	}
 
-	
+
 	@Override
 	public void setDataManagerAndBlobStore() {
 		dManager = new FileDataManager(TEST_NS, Collections
 				.<LocationalContext> emptySet(), tmpDir);
 		blobStore = dManager.getBlobStore();
 	}
-	
+
 }
