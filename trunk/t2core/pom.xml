@@ -80,6 +80,14 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                                <name>java.awt.headless</name>
+                                <value>true</value>
+                        </property>
+                    </systemProperties>
+                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
