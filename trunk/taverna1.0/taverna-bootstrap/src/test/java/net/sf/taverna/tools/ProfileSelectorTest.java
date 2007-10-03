@@ -16,7 +16,7 @@ public class ProfileSelectorTest extends TestCase {
 	File dir;
 	File confdir;
 
-	public static final String PROFILE_BASE_URL = "http://www.cs.man.ac.uk/~sowen/tests/testprofiles/";
+	public static final String PROFILE_BASE_URL = "http://www.mygrid.org.uk/taverna-tests/testprofiles/";
 	private Properties properties;
 	@Override
 	protected void setUp() throws Exception {

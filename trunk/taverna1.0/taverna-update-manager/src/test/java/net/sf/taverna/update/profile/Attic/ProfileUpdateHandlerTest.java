@@ -13,7 +13,7 @@ import net.sf.taverna.tools.ProfileSelector;
 
 public class ProfileUpdateHandlerTest extends TestCase {
 	
-	public static final String PROFILE_BASE_URL = "http://www.cs.man.ac.uk/~sowen/tests/testprofiles/";
+	public static final String PROFILE_BASE_URL = "http://www.mygrid.org.uk/taverna-tests/testprofiles/";
 	private static final String PROFILE_LIST=PROFILE_BASE_URL+"taverna-1.5.2-profiles.xml";
 
 	File dir;

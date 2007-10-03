@@ -28,7 +28,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput fileurl The complete path to the FASTA file.
  * @tavoutput results An XML formatted sequence.

@@ -18,7 +18,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This class translates a DNA sequence into a protein sequence.
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput dna_seq A raw DNA sequence
  * @tavoutput prot_seq A raw protein sequence

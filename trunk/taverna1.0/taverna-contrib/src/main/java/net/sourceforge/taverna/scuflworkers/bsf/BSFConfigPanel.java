@@ -73,7 +73,7 @@ import bsh.Interpreter;
 /**
  * A JPanel that can configure the beanshell processor type
  * 
- * Last edited by: $Author: stain $
+ * Last edited by: $Author: sowen70 $
  * 
  * @author mfortner
  */

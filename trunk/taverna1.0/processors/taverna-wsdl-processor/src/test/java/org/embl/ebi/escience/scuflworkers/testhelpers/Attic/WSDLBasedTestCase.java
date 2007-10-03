@@ -13,7 +13,7 @@ import junit.framework.TestCase;
  */
 
 public abstract class WSDLBasedTestCase extends TestCase {
-	protected final String TESTWSDL_BASE="http://www.cs.man.ac.uk/~sowen/tests/testwsdls/";
+	protected final String TESTWSDL_BASE="http://www.mygrid.org.uk/taverna-tests/testwsdls/";
 	
 	protected WSDLBasedProcessor createProcessor(String wsdl, String operation) throws ProcessorCreationException, DuplicateProcessorNameException {
 		WSDLBasedProcessor processor = new WSDLBasedProcessor(null, "test",

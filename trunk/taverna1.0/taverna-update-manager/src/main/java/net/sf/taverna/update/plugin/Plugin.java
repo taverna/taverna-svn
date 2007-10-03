@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-29 13:11:11 $
+ * Last modified on   $Date: 2007-10-03 12:10:52 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/

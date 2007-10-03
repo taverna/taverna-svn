@@ -25,7 +25,7 @@ import org.jgraph.graph.GraphModel;
  * update as the graph changes.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class RowLayout extends ModelSpanningTree
 {

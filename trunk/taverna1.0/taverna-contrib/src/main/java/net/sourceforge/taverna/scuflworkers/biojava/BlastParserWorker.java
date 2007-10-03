@@ -23,7 +23,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * the results.
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput fileUrl
  * @tavinput strict

@@ -13,7 +13,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * This processor fetches a protein sequence in FASTA format.
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput id a protein accession
  * @tavoutput outputText a FASTA-formatted sequence

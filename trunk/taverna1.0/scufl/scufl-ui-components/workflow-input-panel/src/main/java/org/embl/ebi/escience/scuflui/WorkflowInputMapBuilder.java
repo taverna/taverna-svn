@@ -100,7 +100,7 @@ import org.jdom.output.XMLOutputter;
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
  * @author Stian Soiland
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class WorkflowInputMapBuilder extends JPanel implements
         WorkflowModelViewSPI, ScuflModelEventListener {

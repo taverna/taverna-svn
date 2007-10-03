@@ -25,7 +25,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
  * A panel for display the ResultTable. It also has a 
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ResultTablePanel extends JPanel implements ResultTable.TableSelectionListener
 {

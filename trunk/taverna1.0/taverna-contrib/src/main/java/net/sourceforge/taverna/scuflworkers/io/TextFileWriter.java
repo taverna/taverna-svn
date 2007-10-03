@@ -17,7 +17,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * "outputFile" parameter. Note that the outputMap is always empty.
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput outputFile A fully qualified path to the text file you want to
  *           create.

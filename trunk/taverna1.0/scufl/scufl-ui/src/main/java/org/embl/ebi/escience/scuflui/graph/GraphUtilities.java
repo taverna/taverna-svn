@@ -15,7 +15,7 @@ import org.jgraph.graph.GraphModel;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class GraphUtilities
 {

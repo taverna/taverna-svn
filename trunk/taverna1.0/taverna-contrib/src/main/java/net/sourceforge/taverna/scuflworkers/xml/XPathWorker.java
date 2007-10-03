@@ -26,7 +26,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * returns a nodelist containing the nodes that match the XPath expression.
  * 
  * @author mfortner
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
  * @tavinput xpath The XPath expression used to extract data from the document.
  * @tavinput xml-text The XML text to be processed.

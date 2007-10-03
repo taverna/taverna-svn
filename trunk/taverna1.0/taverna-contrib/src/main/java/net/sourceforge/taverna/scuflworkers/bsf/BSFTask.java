@@ -26,7 +26,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 /**
  * A task to invoke a BSFProcessor
  * 
- * Last edited by: $Author: stain $
+ * Last edited by: $Author: sowen70 $
  * 
  * @author mfortner
  * @author Stian Soiland

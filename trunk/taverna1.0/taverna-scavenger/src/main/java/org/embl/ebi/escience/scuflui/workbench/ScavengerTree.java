@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ScavengerTree.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:09:58 $
+ * Last modified on   $Date: 2007-10-03 12:10:53 $
  *               by   $Author: sowen70 $
  * Created on 03-Jul-2006
  *****************************************************************/

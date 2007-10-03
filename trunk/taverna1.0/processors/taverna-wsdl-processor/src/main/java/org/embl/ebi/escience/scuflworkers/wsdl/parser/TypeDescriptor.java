@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-11 15:34:16 $
+ * Last modified on   $Date: 2007-10-03 12:10:51 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/

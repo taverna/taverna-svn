@@ -13,7 +13,7 @@ import org.apache.commons.vfs.FileSystemManager;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class AbstractRepository implements Repository {
 	protected FileSystemManager fsManager = null;

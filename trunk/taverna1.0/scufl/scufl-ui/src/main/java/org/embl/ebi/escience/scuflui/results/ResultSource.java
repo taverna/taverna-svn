@@ -17,7 +17,7 @@ import org.embl.ebi.escience.scufl.Processor;
  * output port of a processor, or an input to thr workflow.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see ResultThing
  */
 public class ResultSource

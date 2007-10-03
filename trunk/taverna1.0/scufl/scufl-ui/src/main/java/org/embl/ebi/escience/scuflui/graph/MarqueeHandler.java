@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {

@@ -29,7 +29,7 @@ import com.sun.rowset.WebRowSetImpl;
  * the results.
  * 
  * @author mfortner
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
  * @tavinput url The jdbc database URL.
  * @tavinput driver A fully qualified driver classname.

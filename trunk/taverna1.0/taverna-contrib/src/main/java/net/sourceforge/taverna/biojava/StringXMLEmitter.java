@@ -13,7 +13,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StringXMLEmitter extends DefaultHandler {
 

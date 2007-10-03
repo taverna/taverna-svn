@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 public class LocalRepository implements Repository {
 	
 	//the version of raven to used as the artifact for the faked classloader used during initialisation.
-	private final String RAVEN_VERSION="1.5.2-SNAPSHOT";
+	private final String RAVEN_VERSION="1.6-SNAPSHOT";
 
 	private static Log logger = Log.getLogger(LocalRepository.class);
 

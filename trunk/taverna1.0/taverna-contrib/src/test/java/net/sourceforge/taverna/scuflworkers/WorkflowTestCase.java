@@ -24,7 +24,7 @@ import uk.ac.soton.itinnovation.freefluo.util.clazz.ClassUtils;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class WorkflowTestCase extends TestCase {
 	

@@ -34,7 +34,7 @@ import org.embl.ebi.escience.baclava.DataThing;
  * Last edited by $Author: sowen70 $
  * 
  * @author Mark
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NCBIXSLTStreamProcessor extends NCBIXMLStreamProcessor {
 	

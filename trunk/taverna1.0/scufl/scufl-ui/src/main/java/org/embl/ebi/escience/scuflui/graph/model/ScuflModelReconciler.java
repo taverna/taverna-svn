@@ -18,7 +18,7 @@ import org.jgraph.event.GraphModelEvent;
  * having waited for further changes for the configured duration of time.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflModelReconciler implements ScuflModelEventListener
 {

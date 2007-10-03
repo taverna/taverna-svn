@@ -5,7 +5,7 @@
 	<artifactId>taverna</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna</name>
-	<version>1.5.2-SNAPSHOT</version>
+	<version>1.6-SNAPSHOT</version>
 	<issueManagement>
 		<system>jira</system>
 		<url>http://www.mygrid.org.uk/jira/</url>
@@ -145,7 +145,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>true</skip>
+					<skip>false</skip>
 					<systemProperties>
 						<property>
 							<name>java.awt.headless</name>
