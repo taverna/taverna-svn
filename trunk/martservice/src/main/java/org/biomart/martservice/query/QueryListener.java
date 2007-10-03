@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryListener.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:09 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 03-Apr-2006
  *****************************************************************/
@@ -80,5 +80,29 @@ public interface QueryListener {
 	 *            the <code>Filter</code> whose value has changed.
 	 */
 	public void filterChanged(Filter filter, Dataset dataset);
+
+	/**
+	 * Invoked when a formatter is added to a <code>Query</code>.
+	 * 
+	 * @param formatter
+	 *            the formatter added.
+	 */
+	public void formatterAdded(String formatter);
+
+	/**
+	 * Invoked when a formatter is removed from a <code>Query</code>.
+	 * 
+	 * @param formatter
+	 *            the formatter removed.
+	 */
+	public void formatterRemoved(String formatter);
+
+	/**
+	 * Invoked when the value of the formatter is changed.
+	 * 
+	 * @param filter
+	 *            the new value of the formatter.
+	 */
+	public void formatterChanged(String formatter);
 
 }

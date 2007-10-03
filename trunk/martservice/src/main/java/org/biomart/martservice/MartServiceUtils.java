@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-27 12:16:21 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -54,6 +54,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
@@ -80,6 +81,8 @@ public class MartServiceUtils {
 	private static Logger logger = Logger.getLogger(MartServiceUtils.class);
 
 	private static HttpClient httpClient;
+	
+	private static String lineSeparator = System.getProperty("line.separator");
 
 	public static final String QUERY_ATTRIBUTE = "query";
 
@@ -329,9 +332,9 @@ public class MartServiceUtils {
 	 * @throws MartServiceException
 	 *             if the Biomat webservice returns an error or is unavailable
 	 */
-	public static List[] getResults(String martServiceLocation,
+	public static Object[] getResults(String martServiceLocation,
 			String requestId, Query query) throws MartServiceException {
-		List[] results = new List[0];
+		Object[] results = new Object[0];
 		// int attributes = query.getAttributes().size();
 		int attributes = getAttributeCount(query.getAttributes());
 		boolean count = query.getCount() == 1;
@@ -350,10 +353,14 @@ public class MartServiceUtils {
 
 			try {
 				InputStream in = executeMethod(method, martServiceLocation);
-				results = tabSeparatedReaderToResults(
-						new InputStreamReader(in), count ? 1 : attributes);
-				if (!count) {
-					results = reassembleAttributeLists(results, query);
+				if (query.getFormatter() == null) {
+					results = tabSeparatedReaderToResults(
+							new InputStreamReader(in), count ? 1 : attributes);
+					if (!count) {
+						results = reassembleAttributeLists(results, query);
+					}
+				} else {
+					results = readResult(in, query.getFormatter());
 				}
 				in.close();
 			} catch (IOException e) {
@@ -368,7 +375,7 @@ public class MartServiceUtils {
 
 		return results;
 	}
-
+	
 	private static int getAttributeCount(List attributeList) {
 		int result = 0;
 		for (Iterator iterator = attributeList.iterator(); iterator
@@ -386,18 +393,16 @@ public class MartServiceUtils {
 		return result;
 	}
 
-	private static List[] reassembleAttributeLists(List[] lists, Query query) {
+	private static Object[] reassembleAttributeLists(Object[] lists, Query query) {
 		int index = 0;
-		List result = new ArrayList();
-		for (Iterator iterator = query.getAttributes().iterator(); iterator
-				.hasNext();) {
-			Attribute attribute = (Attribute) iterator.next();
+		List<Object> result = new ArrayList<Object>();
+		for (Attribute attribute : query.getAttributes()) {
 			if (attribute.getAttributes() == null) {
 				result.add(lists[index]);
 				index++;
 			} else {
 				String[] attributes = attribute.getAttributes().split(",");
-				List list = new ArrayList();
+				List<Object> list = new ArrayList<Object>();
 				for (int i = 0; i < attributes.length; i++) {
 					list.add(lists[index]);
 					index++;
@@ -405,7 +410,7 @@ public class MartServiceUtils {
 				result.add(list);
 			}
 		}
-		return (List[]) result.toArray(new List[result.size()]);
+		return result.toArray();
 	}
 
 	public static Query splitAttributeLists(Query query) {
@@ -430,6 +435,41 @@ public class MartServiceUtils {
 		return result;
 	}
 
+	public static String getMimeTypeForFormatter(String formatter) {
+		String mimeType = "'text/plain'";
+		if ("ADF".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("AXT".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("AXTPLUS".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("CSV".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("FASTA".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("FASTACDNA".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("GFF".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("HTML".equals(formatter)) {
+			mimeType = "'text/html'";
+		} else if ("MAF".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("MFA".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("MFASTA".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("TSV".equals(formatter)) {
+			mimeType = "'text/tab-separeted-values'";
+		} else if ("TXT".equals(formatter)) {
+			mimeType = "'text/plain'";
+		} else if ("XLS".equals(formatter)) {
+			mimeType = "'application/excel'";
+		}
+		
+		return mimeType;
+	}
+	
 	private static List[] tabSeparatedReaderToResults(Reader reader,
 			int resultsCount) throws IOException {
 		List[] results = new List[resultsCount];
@@ -448,6 +488,17 @@ public class MartServiceUtils {
 		return results;
 	}
 
+	private static Object[] readResult(InputStream inputStream, String formatter) throws IOException {
+		Object[] result = new Object[1];
+		
+		if (getMimeTypeForFormatter(formatter).contains("application/")) {
+			result[0] = IOUtils.toByteArray(inputStream);
+		} else {
+			result[0] = IOUtils.toString(inputStream);
+		}
+		return result;
+	}
+	
 	private static MartDataset[] tabSeparatedReaderToDatasets(Reader reader,
 			MartURLLocation martURLLocation) throws IOException {
 		List datasetList = new ArrayList();
@@ -592,10 +643,10 @@ public class MartServiceUtils {
 			String martServiceLocation, Exception cause) {
 		StringBuffer errorMessage = new StringBuffer();
 		errorMessage.append("Error posting to " + martServiceLocation
-				+ System.getProperty("line.separator"));
+				+ lineSeparator);
 		if (cause == null) {
 			errorMessage.append(" " + method.getStatusLine()
-					+ System.getProperty("line.separator"));
+					+ lineSeparator);
 		}
 		if (method instanceof PostMethod) {
 			PostMethod postMethod = (PostMethod) method;
@@ -603,7 +654,7 @@ public class MartServiceUtils {
 			for (int i = 0; i < data.length; i++) {
 				errorMessage.append(" " + data[i].getName() + " = "
 						+ data[i].getValue()
-						+ System.getProperty("line.separator"));
+						+ lineSeparator);
 			}
 
 		} else {

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Query.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-01 12:11:26 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 03-Apr-2006
  *****************************************************************/
@@ -36,7 +36,6 @@ package org.biomart.martservice.query;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,15 +60,15 @@ public class Query {
 
 	private String requestId;
 
-	private List datasets = new ArrayList();
+	private List<Dataset> datasets = new ArrayList<Dataset>();
 
-	private Map datasetMap = new HashMap();
+	private Map<String, Dataset> datasetMap = new HashMap<String, Dataset>();
 
-	private Set links = new HashSet();
+	private Set<Link> links = new HashSet<Link>();
 
-	private Map linkSourceMap = new HashMap();
+	private Map<String, Link> linkSourceMap = new HashMap<String, Link>();
 
-	private List listeners = new ArrayList();
+	private List<QueryListener> listeners = new ArrayList<QueryListener>();
 
 	/**
 	 * Constructs an instance of a <code>Query</code> with the specified
@@ -153,14 +152,10 @@ public class Query {
 		setSoftwareVersion(query.softwareVersion);
 		setFormatter(query.formatter);
 		setRequestId(query.requestId);
-		List datasets = query.getDatasets();
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
+		for (Dataset dataset : query.getDatasets()) {
 			addDataset(new Dataset(dataset));
 		}
-		Set links = query.getLinks();
-		for (Iterator iter = links.iterator(); iter.hasNext();) {
-			Link link = (Link) iter.next();
+		for (Link link : query.getLinks()) {
 			addLink(new Link(link));
 		}
 	}
@@ -257,7 +252,21 @@ public class Query {
 	 * @param formatter the new formatter
 	 */
 	public void setFormatter(String formatter) {
-		this.formatter = formatter;
+		if (this.formatter == null) {
+			if (formatter != null) {
+				this.formatter = formatter;
+				fireFormatterAdded(formatter);
+			}
+		} else if (!this.formatter.equals(formatter)) {
+			if (formatter == null) {
+				String removedFormatter = this.formatter;
+				this.formatter = formatter;
+				fireFormatterRemoved(removedFormatter);
+			} else {
+				this.formatter = formatter;
+				fireFormatterChanged(formatter);
+			}
+		}
 	}
 
 	/**
@@ -324,8 +333,7 @@ public class Query {
 	 * Removes all the Datasets from the Query.
 	 */
 	public void removeAllDatasets() {
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
+		for (Dataset dataset : datasets) {
 			dataset.setContainingQuery(null);
 		}
 		datasets.clear();
@@ -337,8 +345,8 @@ public class Query {
 	 * 
 	 * @return the Datasets that this Query contains.
 	 */
-	public List getDatasets() {
-		return new ArrayList(datasets);
+	public List<Dataset> getDatasets() {
+		return new ArrayList<Dataset>(datasets);
 	}
 
 	/**
@@ -396,8 +404,8 @@ public class Query {
 	 * 
 	 * @return the Links that this Query contains.
 	 */
-	public Set getLinks() {
-		return new HashSet(links);
+	public Set<Link> getLinks() {
+		return new HashSet<Link>(links);
 	}
 
 	/**
@@ -431,11 +439,10 @@ public class Query {
 	 *            the target of the link
 	 * @return a Link with the given target
 	 */
-	public Set getLinks(String target) {
-		Set result = new HashSet();
-		Set links = getLinks();
-		for (Iterator iter = links.iterator(); iter.hasNext();) {
-			Link link = (Link) iter.next();
+	public Set<Link> getLinks(String target) {
+		Set<Link> result = new HashSet<Link>();
+		Set<Link> links = getLinks();
+		for (Link link: links) {
 			if (link.getTarget().equals(target)) {
 				result.add(link);
 			}
@@ -448,10 +455,9 @@ public class Query {
 	 * 
 	 * @return all the Attributes from all the Datasets in this Query.
 	 */
-	public List getAttributes() {
-		List attributes = new ArrayList();
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
+	public List<Attribute> getAttributes() {
+		List<Attribute> attributes = new ArrayList<Attribute>();
+		for (Dataset dataset : datasets) {
 			attributes.addAll(dataset.getAttributes());
 		}
 		return attributes;
@@ -462,13 +468,12 @@ public class Query {
 	 * 
 	 * @return all the Filters from all the Datasets in this Query.
 	 */
-	public List getFilters() {
-		List attributes = new ArrayList();
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
-			attributes.addAll(dataset.getFilters());
+	public List<Filter> getFilters() {
+		List<Filter> filters = new ArrayList<Filter>();
+		for (Dataset dataset : datasets) {
+			filters.addAll(dataset.getFilters());
 		}
-		return attributes;
+		return filters;
 	}
 
 	/**
@@ -500,37 +505,50 @@ public class Query {
 	}
 
 	void fireAttributeAdded(Attribute attribute, Dataset dataset) {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-			QueryListener listener = (QueryListener) iter.next();
+		for (QueryListener listener : listeners) {
 			listener.attributeAdded(attribute, dataset);
 		}
 	}
 
 	void fireAttributeRemoved(Attribute attribute, Dataset dataset) {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-			QueryListener listener = (QueryListener) iter.next();
+		for (QueryListener listener : listeners) {
 			listener.attributeRemoved(attribute, dataset);
 		}
 	}
 
 	void fireFilterAdded(Filter filter, Dataset dataset) {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-			QueryListener listener = (QueryListener) iter.next();
+		for (QueryListener listener : listeners) {
 			listener.filterAdded(filter, dataset);
 		}
 	}
 
 	void fireFilterRemoved(Filter filter, Dataset dataset) {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-			QueryListener listener = (QueryListener) iter.next();
+		for (QueryListener listener : listeners) {
 			listener.filterRemoved(filter, dataset);
 		}
 	}
 
 	void fireFilterChanged(Filter filter, Dataset dataset) {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-			QueryListener listener = (QueryListener) iter.next();
+		for (QueryListener listener : listeners) {
 			listener.filterChanged(filter, dataset);
+		}
+	}
+
+	void fireFormatterAdded(String formatter) {
+		for (QueryListener listener : listeners) {
+			listener.formatterAdded(formatter);
+		}
+	}
+
+	void fireFormatterRemoved(String formatter) {
+		for (QueryListener listener : listeners) {
+			listener.formatterRemoved(formatter);
+		}
+	}
+
+	void fireFormatterChanged(String formatter) {
+		for (QueryListener listener : listeners) {
+			listener.formatterChanged(formatter);
 		}
 	}
 

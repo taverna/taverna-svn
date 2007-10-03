@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryConfigUtils.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:15 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 30-Mar-2006
  *****************************************************************/
@@ -51,6 +51,7 @@ import org.biomart.martservice.MartService;
 import org.biomart.martservice.MartServiceException;
 import org.biomart.martservice.config.ui.QueryComponent;
 import org.ensembl.mart.lib.config.AttributeDescription;
+import org.ensembl.mart.lib.config.AttributePage;
 import org.ensembl.mart.lib.config.BaseNamedConfigurationObject;
 import org.ensembl.mart.lib.config.DatasetConfig;
 import org.ensembl.mart.lib.config.FilterDescription;
@@ -65,7 +66,7 @@ public abstract class QueryConfigUtils {
 	public static final String LINE_END = System.getProperty("line.separator");
 
 	private static int DISPLAY_WIDTH = 35;
-
+	
 	public static String splitSentence(String sentence) {
 		return splitSentence(sentence, DISPLAY_WIDTH);
 	}
@@ -108,6 +109,16 @@ public abstract class QueryConfigUtils {
 		}
 	}
 
+	public static List getOutputFormats(AttributePage attributePage) {
+		List outputFormats = new ArrayList();
+		
+		String[] formats = attributePage.getOutFormats().split(",");
+		for (int i = 0; i < formats.length; i++) {
+			outputFormats.add(formats[i]);
+		}
+		return outputFormats;
+	}
+	
 	/**
 	 * Returns true if filterDescription has no options.
 	 * 

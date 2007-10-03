@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryConfigController.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-15 09:12:34 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 27-Mar-2006
  *****************************************************************/
@@ -375,6 +375,18 @@ public class QueryConfigController {
 		public void filterChanged(Filter filter, Dataset dataset) {
 			logger.finer("Filter Changed " + filter.getQualifiedName() + " "
 					+ filter.getValue());
+		}
+
+		public void formatterAdded(String formatter) {
+			logger.finer("Formatter Added " + formatter);
+		}
+
+		public void formatterRemoved(String formatter) {
+			logger.finer("Formatter Removed " + formatter);
+		}
+
+		public void formatterChanged(String formatter) {
+			logger.finer("Formatter Changed to " + formatter);
 		}
 
 	}

@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Dataset.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:10 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 21-Apr-2006
  *****************************************************************/
 package org.biomart.martservice.query;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,9 +44,9 @@ import java.util.List;
 public class Dataset {
 	private String name;
 
-	private List attributes = new ArrayList();
+	private List<Attribute> attributes = new ArrayList<Attribute>();
 
-	private List filters = new ArrayList();
+	private List<Filter> filters = new ArrayList<Filter>();
 
 	private Query containingQuery;
 
@@ -71,14 +70,10 @@ public class Dataset {
 	 */
 	public Dataset(Dataset dataset) {
 		setName(dataset.getName());
-		List attributeList = dataset.getAttributes();
-		for (Iterator iter = attributeList.iterator(); iter.hasNext();) {
-			Attribute attribute = (Attribute) iter.next();
+		for (Attribute attribute : dataset.getAttributes()) {
 			addAttribute(new Attribute(attribute));
 		}
-		List filterList = dataset.getFilters();
-		for (Iterator iter = filterList.iterator(); iter.hasNext();) {
-			Filter filter = (Filter) iter.next();
+		for (Filter filter : dataset.getFilters()) {
 			addFilter(new Filter(filter));
 		}
 	}
@@ -107,8 +102,8 @@ public class Dataset {
 	 * 
 	 * @return a List of the Attributes in this dataset
 	 */
-	public List getAttributes() {
-		return new ArrayList(attributes);
+	public List<Attribute> getAttributes() {
+		return new ArrayList<Attribute>(attributes);
 	}
 
 	/**
@@ -192,8 +187,8 @@ public class Dataset {
 	 * Removes all the Attributes from this dataset.
 	 */
 	public void removeAllAttributes() {
-		for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {
-			removeAttribute((Attribute) iter.next());
+		for (Attribute attribute : getAttributes()) {
+			removeAttribute(attribute);
 		}
 	}
 
@@ -202,8 +197,8 @@ public class Dataset {
 	 * 
 	 * @return a List of the Filters in this dataset
 	 */
-	public List getFilters() {
-		return new ArrayList(filters);
+	public List<Filter> getFilters() {
+		return new ArrayList<Filter>(filters);
 	}
 
 	/**
@@ -287,8 +282,8 @@ public class Dataset {
 	 * Removes all the filters from the dataset.
 	 */
 	public void removeAllFilters() {
-		for (Iterator iter = getFilters().iterator(); iter.hasNext();) {
-			removeFilter((Filter) iter.next());
+		for (Filter filter : getFilters()) {
+			removeFilter(filter);
 		}
 	}
 

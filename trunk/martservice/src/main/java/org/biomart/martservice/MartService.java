@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartService.java,v $errors/failure.html
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-27 12:16:21 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -441,7 +441,7 @@ public class MartService {
 	 * @throws MartServiceException
 	 *             if the MartService returns an error or is unavailable
 	 */
-	public List[] executeQuery(Query query) throws MartServiceException {
+	public Object[] executeQuery(Query query) throws MartServiceException {
 //		System.out.println(MartServiceUtils.queryToXML(query));
 		return MartServiceUtils.getResults(location, requestId, query);
 	}

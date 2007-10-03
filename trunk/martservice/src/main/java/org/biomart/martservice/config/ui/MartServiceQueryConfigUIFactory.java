@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-27 12:50:51 $
+ * Last modified on   $Date: 2007-10-03 15:57:30 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -44,8 +44,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -55,6 +53,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,7 +86,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -162,24 +160,34 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 	private List componentRegister = new ArrayList();
 
+	private int datasetNumber;
+
 	public MartServiceQueryConfigUIFactory(MartService martService,
 			QueryConfigController controller, MartDataset martDataset)
 			throws MartServiceException {
+		this(martService, controller, martDataset, 1);
+	}
+
+	public MartServiceQueryConfigUIFactory(MartService martService,
+			QueryConfigController controller, MartDataset martDataset,
+			int datasetNumber) throws MartServiceException {
 		this.martService = martService;
 		this.controller = controller;
 		this.martDataset = martDataset;
+		this.datasetNumber = datasetNumber;
 		version = getConfigStyle();
 	}
 
 	private String getConfigStyle() {
 		String configStyle = "0.5";
-		String version = controller.getMartQuery().getQuery().getSoftwareVersion();
+		String version = controller.getMartQuery().getQuery()
+				.getSoftwareVersion();
 		if (version == null || "0.4".equals(version)) {
 			configStyle = "0.4";
-		} 
+		}
 		return configStyle;
 	}
-	
+
 	/**
 	 * Returns the martDataset.
 	 * 
@@ -214,12 +222,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		final SummaryPanel summaryPanel = new SummaryPanel();
 
 		final JButton countButton = new JButton("Count");
-//		countButton.setBackground(Color.BLACK);
-//		countButton.setForeground(Color.WHITE);
 		countButton.setFont(countButton.getFont().deriveFont(Font.BOLD));
-//		countButton.setBorder(new CompoundBorder(new LineBorder(Color.WHITE, 1), new EmptyBorder(5, 5, 5, 5)));
 		countButton.setOpaque(false);
-		// countButton.setRolloverEnabled(true);
 		countButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -260,18 +264,19 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		final JCheckBox uniqueCheckBox = new JCheckBox("Unique results only");
 		uniqueCheckBox.setBackground(Color.BLACK);
 		uniqueCheckBox.setForeground(Color.WHITE);
-		uniqueCheckBox.setSelected(controller.getMartQuery().getQuery().getUniqueRows() == 1);
-		
+		uniqueCheckBox.setSelected(controller.getMartQuery().getQuery()
+				.getUniqueRows() == 1);
+
 		uniqueCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					controller.getMartQuery().getQuery().setUniqueRows(1);
-				} else if (e.getStateChange() == ItemEvent.DESELECTED){
+				} else if (e.getStateChange() == ItemEvent.DESELECTED) {
 					controller.getMartQuery().getQuery().setUniqueRows(0);
 				}
 			}
 		});
-		
+
 		JPanel buttonPanel = new JPanel(new BorderLayout());
 		buttonPanel.setBackground(Color.BLACK);
 		buttonPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -377,15 +382,80 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			Object data) throws MartServiceException {
 		final JComponent box = createVerticalBox(backgroundColor);
 
+		final JComboBox formatList = new JComboBox();
+		formatList.setBackground(backgroundColor);
+
+		if (datasetNumber == 1) {
+			formatList.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						controller.getMartQuery().getQuery().setFormatter(
+								(String) e.getItem());
+					}
+				}
+			});
+
+			ButtonGroup outputButtons = new ButtonGroup();
+			JRadioButton multipleOutput = new JRadioButton(
+					"Multiple outputs (one per attribute)");
+			multipleOutput.setBackground(backgroundColor);
+			JRadioButton singleOutput = new JRadioButton(
+					"Single output formatted as");
+			singleOutput.setBackground(backgroundColor);
+			outputButtons.add(multipleOutput);
+			outputButtons.add(singleOutput);
+			if (controller.getMartQuery().getQuery().getFormatter() == null) {
+				multipleOutput.setSelected(true);
+				formatList.setEnabled(false);
+			} else {
+				singleOutput.setSelected(true);
+				formatList.setEnabled(true);
+			}
+
+			singleOutput.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						controller.getMartQuery().getQuery().setFormatter(
+								(String) formatList.getSelectedItem());
+						formatList.setEnabled(true);
+					} else if (e.getStateChange() == ItemEvent.DESELECTED) {
+						controller.getMartQuery().getQuery().setFormatter(null);
+						formatList.setEnabled(false);
+					}
+				}
+			});
+
+			JPanel multipleOutputBox = new JPanel(new MinimalLayout());
+			multipleOutputBox.setBackground(componentBackgroundColor);
+			multipleOutputBox.add(multipleOutput);
+
+			JComponent formatBox = createHorizontalBox(backgroundColor);
+			formatBox.add(singleOutput);
+			formatBox.add(Box.createHorizontalStrut(10));
+			formatBox.add(formatList);
+			formatBox.add(Box.createHorizontalGlue());
+
+			JComponent outputBox = createVerticalBox(backgroundColor);
+			outputBox.setBorder(new CompoundBorder(new LineBorder(borderColor,
+					1), new EmptyBorder(10, 10, 10, 10)));
+			outputBox.add(multipleOutputBox);
+			outputBox.add(formatBox);
+
+			box.add(Box.createVerticalStrut(2));
+			box.add(outputBox);
+
+		}
+
 		if (attributePages.length > 1) {
 			ButtonGroup buttonGroup = new ButtonGroup();
-			final Map componentMap = new HashMap();
+			final Map<String, Component> componentMap = new HashMap<String, Component>();
+			final Map<String, List<String>> formatMap = new HashMap<String, List<String>>();
 
 			final JComponent buttonBox = new JPanel(new GridLayout(0, 2));
 			buttonBox.setBorder(new CompoundBorder(new LineBorder(borderColor,
 					1), new EmptyBorder(10, 10, 10, 10)));
 			buttonBox.setBackground(backgroundColor);
-			box.add(buttonBox);
+			box.add(buttonBox, 0);
 
 			final JComponent pagePanel = new JPanel(new BorderLayout());
 			pagePanel.setBackground(backgroundColor);
@@ -399,48 +469,41 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 				public void itemStateChanged(ItemEvent e) {
 					JRadioButton button = (JRadioButton) e.getItem();
 					if (button != null) {
-						Component selectedComponent = (Component) componentMap
-								.get(button.getActionCommand());
+						Component selectedComponent = componentMap.get(button
+								.getActionCommand());
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 							boolean switchPage = true;
 							if (lastSelectedComponent != null) {
-								Map selected = new HashMap();
+								Map<String, AttributeComponent> selected = new HashMap<String, AttributeComponent>();
 								// find all attributes on the last page that
 								// were selected
-								List oldChildren = getAttributeComponents(lastSelectedComponent);
-								for (Iterator iter = oldChildren.iterator(); iter
-										.hasNext();) {
-									AttributeComponent attributeComponent = (AttributeComponent) iter
-											.next();
+								List<AttributeComponent> oldChildren = getAttributeComponents(lastSelectedComponent);
+								for (AttributeComponent attributeComponent : oldChildren) {
 									if (attributeComponent.isSelected()) {
 										selected.put(attributeComponent
 												.getQualifiedName(),
 												attributeComponent);
 									}
 								}
-								// remove attibutes that are already selected on
+								// remove attributes that are already selected
+								// on
 								// the new page
-								List newChildren = getAttributeComponents(selectedComponent);
-								for (Iterator iter = newChildren.iterator(); iter
-										.hasNext();) {
-									AttributeComponent attributeComponent = (AttributeComponent) iter
-											.next();
+								List<AttributeComponent> newChildren = getAttributeComponents(selectedComponent);
+								for (AttributeComponent attributeComponent : newChildren) {
 									if (attributeComponent.isSelected()) {
 										selected.remove(attributeComponent
 												.getQualifiedName());
 									}
 								}
-								Collection stillSelected = selected.values();
+								Collection<AttributeComponent> stillSelected = selected
+										.values();
 								if (stillSelected.size() > 0) {
-									List attributeNames = new ArrayList();
-									for (Iterator iter = stillSelected
-											.iterator(); iter.hasNext();) {
-										AttributeComponent component = (AttributeComponent) iter
-												.next();
+									List<String> attributeNames = new ArrayList<String>();
+									for (AttributeComponent component : stillSelected) {
 										attributeNames.add(component
 												.getButton().getText());
 									}
-									List message = new ArrayList();
+									List<Object> message = new ArrayList<Object>();
 									message
 											.add("The "
 													+ button.getText()
@@ -460,10 +523,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 								if (switchPage) {
 									// deselect any attributes on the old page
 									// that are not on the new page
-									for (Iterator iter = stillSelected
-											.iterator(); iter.hasNext();) {
-										AttributeComponent attributeComponent = (AttributeComponent) iter
-												.next();
+									for (AttributeComponent attributeComponent : stillSelected) {
 										attributeComponent.setSelected(false);
 									}
 								}
@@ -471,6 +531,28 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 							if (switchPage) {
 								pagePanel.add(selectedComponent,
 										BorderLayout.NORTH);
+								if (datasetNumber == 1) {
+									List<String> formats = formatMap.get(button
+											.getActionCommand());
+									formatList
+											.setModel(new DefaultComboBoxModel(
+													formats.toArray()));
+									String formatter = controller
+											.getMartQuery().getQuery()
+											.getFormatter();
+									if (formatter != null) {
+										formatList.getModel().setSelectedItem(
+												null);
+										if (formats.contains(formatter)) {
+											formatList.getModel()
+													.setSelectedItem(formatter);
+										} else if (formats.size() > 0) {
+											formatList.getModel()
+													.setSelectedItem(
+															formats.get(0));
+										}
+									}
+								}
 							} else {
 								lastSelectedButton.setSelected(true);
 							}
@@ -506,6 +588,9 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					buttonBox.add(button);
 					componentMap.put(attributePages[i].getInternalName(),
 							component);
+					formatMap.put(attributePages[i].getInternalName(), Arrays
+							.asList(attributePages[i].getOutFormats()
+									.toUpperCase().split(",")));
 					attributePageNameToComponent.put(attributePages[i]
 							.getInternalName(), component);
 					attributePageNameToButton.put(attributePages[i]
@@ -514,7 +599,24 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			}
 
 		} else if (attributePages.length == 1) {
+			if (datasetNumber == 1) {
+				List<String> formats = Arrays.asList(attributePages[0]
+						.getOutFormats().toUpperCase().split(","));
+				formatList
+						.setModel(new DefaultComboBoxModel(formats.toArray()));
+				String formatter = controller.getMartQuery().getQuery()
+						.getFormatter();
+				if (formatter != null) {
+					formatList.getModel().setSelectedItem(null);
+					if (formats.contains(formatter)) {
+						formatList.getModel().setSelectedItem(formatter);
+					} else if (formats.size() > 0) {
+						formatList.getModel().setSelectedItem(formats.get(0));
+					}
+				}
+			}
 			box.add(getAttributePageUI(attributePages[0], data));
+
 		} else {
 			box.add(new JLabel("No attributes available"));
 		}
@@ -539,6 +641,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 		AttributeGroup[] attributeGroups = (AttributeGroup[]) attributePage
 				.getAttributeGroups().toArray(new AttributeGroup[0]);
+
 		box.add(getAttributeGroupsUI(attributeGroups, data));
 
 		return box;
@@ -1415,13 +1518,12 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		}.start();
 	}
 
-	private List getAttributeComponents(Component component) {
-		List attributeComponents = new ArrayList();
+	private List<AttributeComponent> getAttributeComponents(Component component) {
+		List<AttributeComponent> attributeComponents = new ArrayList<AttributeComponent>();
 		if (component instanceof AttributeComponent) {
-			attributeComponents.add(component);
+			attributeComponents.add((AttributeComponent) component);
 		} else if (component instanceof ExpandableBox) {
-			Component[] children = ((ExpandableBox) component)
-					.getComponents();
+			Component[] children = ((ExpandableBox) component).getComponents();
 			for (int i = 0; i < children.length; i++) {
 				attributeComponents.addAll(getAttributeComponents(children[i]));
 			}
@@ -1434,15 +1536,15 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		return attributeComponents;
 	}
 
-	private List getSelectedAttributeComponents(Component component) {
-		List attributeComponents = new ArrayList();
+	private List<AttributeComponent> getSelectedAttributeComponents(
+			Component component) {
+		List<AttributeComponent> attributeComponents = new ArrayList<AttributeComponent>();
 		if (component instanceof AttributeComponent) {
 			if (((AttributeComponent) component).isSelected()) {
-				attributeComponents.add(component);
+				attributeComponents.add((AttributeComponent) component);
 			}
 		} else if (component instanceof ExpandableBox) {
-			Component[] children = ((ExpandableBox) component)
-					.getComponents();
+			Component[] children = ((ExpandableBox) component).getComponents();
 			for (int i = 0; i < children.length; i++) {
 				attributeComponents
 						.addAll(getSelectedAttributeComponents(children[i]));
@@ -1507,8 +1609,9 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			box.setBorder(new CompoundBorder(new LineBorder(borderColor, 1),
 					new EmptyBorder(10, 10, 10, 10)));
 		} else {
-			box.setBorder(new CompoundBorder(new SideBorder06(SwingConstants.TOP,
-					borderColor), new EmptyBorder(5, 10, 0, 10)));
+			box.setBorder(new CompoundBorder(new SideBorder06(
+					SwingConstants.TOP, borderColor), new EmptyBorder(5, 10, 0,
+					10)));
 		}
 		if (titleComponent != null) {
 			JComponent labelBox = createHorizontalBox(componentBackgroundColor);
@@ -1528,19 +1631,25 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			countQuery.removeAllDatasets();
 			countQuery.addDataset(new Dataset(datasetName));
 			countQuery.setCount(1);
+			countQuery.setFormatter(null);
 
-			List[] results = martService.executeQuery(countQuery);
-			if (results.length == 1 && results[0].size() >= 1) {
-				total = (String) results[0].get(0);
-				// test for biomart's 'let add a random blank line'
-				// thing
-				if ("".equals(total) && results[0].size() > 1) {
-					total = (String) results[0].get(1);
-				}
-				try {
-					Integer.parseInt(total);
-				} catch (NumberFormatException e) {
-					total = "?";
+			Object[] results = martService.executeQuery(countQuery);
+			if (results.length == 1) {
+				if (results[0] instanceof List) {
+					List result = (List) results[0];
+					if (result.size() >= 1) {
+						total = (String) result.get(0);
+						// test for biomart's 'let add a random blank line'
+						// thing
+						if ("".equals(total) && result.size() > 1) {
+							total = (String) result.get(1);
+						}
+						try {
+							Integer.parseInt(total);
+						} catch (NumberFormatException e) {
+							total = "?";
+						}
+					}
 				}
 			}
 			Dataset dataset = query.getDataset(datasetName);
@@ -1549,17 +1658,22 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 				countQuery.removeAllDatasets();
 				countQuery.addDataset(countDataset);
 				results = martService.executeQuery(countQuery);
-				if (results.length == 1 && results[0].size() >= 1) {
-					count = (String) results[0].get(0);
-					// test for biomart's 'let add a random blank
-					// line' thing
-					if ("".equals(count) && results[0].size() > 1) {
-						count = (String) results[0].get(1);
-					}
-					try {
-						Integer.parseInt(count);
-					} catch (NumberFormatException e) {
-						count = "";
+				if (results.length == 1) {
+					if (results[0] instanceof List) {
+						List result = (List) results[0];
+						if (result.size() >= 1) {
+							count = (String) result.get(0);
+							// test for biomart's 'let add a random blank
+							// line' thing
+							if ("".equals(count) && result.size() > 1) {
+								count = (String) result.get(1);
+							}
+							try {
+								Integer.parseInt(count);
+							} catch (NumberFormatException e) {
+								count = "";
+							}
+						}
 					}
 				}
 			} else {
@@ -1742,11 +1856,12 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		public void setOptions(Option[] options) {
 			clearOptions();
 			for (int i = 0; i < options.length; i++) {
-				if (options[i].getHidden() == null || !options[i].getHidden().equals("true")) {
+				if (options[i].getHidden() == null
+						|| !options[i].getHidden().equals("true")) {
 					optionMap.put(options[i].getValue(), options[i]);
 					optionList.add(options[i]);
 					String displayName = options[i].getDisplayName();
-					if(displayName != null) {
+					if (displayName != null) {
 						comboBoxModel.addElement(QueryConfigUtils
 								.truncateName(displayName));
 					}
@@ -2413,7 +2528,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 								QueryConfigController newController = new QueryConfigController(
 										newQuery);
 								factory = new MartServiceQueryConfigUIFactory(
-										martService, newController, dataset);
+										martService, newController, dataset, 2);
 								sumaryPanel.setLinkedDataset(dataset, factory);
 
 								attributePanel.removeAll();
@@ -2633,35 +2748,35 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			constraints.weighty = 1.0;
 			constraints.fill = GridBagConstraints.HORIZONTAL;
 			constraints.gridwidth = 2;
-//			constraints.insets = new Insets(20, 0, 20, 0);
+			// constraints.insets = new Insets(20, 0, 20, 0);
 			constraints.anchor = GridBagConstraints.NORTH;
 			add(line, constraints);
 
-//			constraints.weightx = 0.0;
-//			constraints.fill = GridBagConstraints.NONE;
-//			constraints.gridwidth = 1;
-//			constraints.insets = new Insets(0, 0, 0, 0);
-//
-//			Component line2 = new JPanel();
-//			line2.setPreferredSize(new Dimension(0, 4));
-//			line2.setBackground(borderColor);
-//
-//			constraints.gridx = 0;
-//			constraints.gridy = 3;
-//			constraints.weightx = 1.0;
-//			constraints.weighty = 1.0;
-//			constraints.fill = GridBagConstraints.HORIZONTAL;
-//			constraints.anchor = GridBagConstraints.NORTHWEST;
-//			constraints.gridwidth = 2;
-//			constraints.insets = new Insets(20, 0, 20, 0);
-//			add(line2, constraints);
+			// constraints.weightx = 0.0;
+			// constraints.fill = GridBagConstraints.NONE;
+			// constraints.gridwidth = 1;
+			// constraints.insets = new Insets(0, 0, 0, 0);
+			//
+			// Component line2 = new JPanel();
+			// line2.setPreferredSize(new Dimension(0, 4));
+			// line2.setBackground(borderColor);
+			//
+			// constraints.gridx = 0;
+			// constraints.gridy = 3;
+			// constraints.weightx = 1.0;
+			// constraints.weighty = 1.0;
+			// constraints.fill = GridBagConstraints.HORIZONTAL;
+			// constraints.anchor = GridBagConstraints.NORTHWEST;
+			// constraints.gridwidth = 2;
+			// constraints.insets = new Insets(20, 0, 20, 0);
+			// add(line2, constraints);
 
 		}
 
 	}
 
 	class SummaryPanel extends JPanel {
-		//private Color color = new Color(255, 248, 231);
+		// private Color color = new Color(255, 248, 231);
 		private Color color = new Color(229, 229, 229);
 
 		private JLabel dataset1Label;
@@ -2730,7 +2845,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			add(getAttributes1Button(), constraints);
 			constraints.insets = new Insets(0, 15, 0, 5);
 			add(getAttributes1List(), constraints);
-//			constraints.insets = new Insets(5, 15, 0, 5);
+			// constraints.insets = new Insets(5, 15, 0, 5);
 
 			Component line = new JPanel();
 			line.setPreferredSize(new Dimension(0, 1));
@@ -2878,8 +2993,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (dataset1Button == null) {
 				dataset1Button = new JButton("Dataset");
 				dataset1Button.setFont(getFont().deriveFont(Font.BOLD));
-//				dataset1Button.setBackground(color);
-//				dataset1Button.setBorder(null);
+				// dataset1Button.setBackground(color);
+				// dataset1Button.setBorder(null);
 				dataset1Button.setOpaque(false);
 			}
 
@@ -2890,8 +3005,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (dataset2Button == null) {
 				dataset2Button = new JButton("Dataset");
 				dataset2Button.setFont(getFont().deriveFont(Font.BOLD));
-//				dataset2Button.setBackground(color);
-//				dataset2Button.setBorder(null);
+				// dataset2Button.setBackground(color);
+				// dataset2Button.setBorder(null);
 				dataset2Button.setOpaque(false);
 			}
 
@@ -2902,8 +3017,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (attributes1Button == null) {
 				attributes1Button = new JButton("Attributes");
 				attributes1Button.setFont(getFont().deriveFont(Font.BOLD));
-//				attributes1Button.setBackground(color);
-//				attributes1Button.setBorder(null);
+				// attributes1Button.setBackground(color);
+				// attributes1Button.setBorder(null);
 				attributes1Button.setOpaque(false);
 			}
 			return attributes1Button;
@@ -2913,8 +3028,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (attributes2Button == null) {
 				attributes2Button = new JButton("Attributes");
 				attributes2Button.setFont(getFont().deriveFont(Font.BOLD));
-//				attributes2Button.setBackground(color);
-//				attributes2Button.setBorder(null);
+				// attributes2Button.setBackground(color);
+				// attributes2Button.setBorder(null);
 				attributes2Button.setOpaque(false);
 			}
 			return attributes2Button;
@@ -2924,8 +3039,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (filters1Button == null) {
 				filters1Button = new JButton("Filters");
 				filters1Button.setFont(getFont().deriveFont(Font.BOLD));
-//				filters1Button.setBackground(color);
-//				filters1Button.setBorder(null);
+				// filters1Button.setBackground(color);
+				// filters1Button.setBorder(null);
 				filters1Button.setOpaque(false);
 			}
 			return filters1Button;
@@ -2935,8 +3050,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (filters2Button == null) {
 				filters2Button = new JButton("Filters");
 				filters2Button.setFont(getFont().deriveFont(Font.BOLD));
-//				filters2Button.setBackground(color);
-//				filters2Button.setBorder(null);
+				// filters2Button.setBackground(color);
+				// filters2Button.setBorder(null);
 				filters2Button.setOpaque(false);
 			}
 			return filters2Button;
@@ -3096,6 +3211,15 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					getDataset2CountLabel().setText("");
 				}
 			}
+
+			public void formatterChanged(String formatter) {
+			}
+
+			public void formatterAdded(String formatter) {
+			}
+
+			public void formatterRemoved(String formatter) {
+			}
 		}
 
 		class QueryListModel extends AbstractListModel {
@@ -3157,6 +3281,16 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 						int index = filters.indexOf(filter);
 						fireContentsChanged(this, index, index);
 					}
+				}
+
+				public void formatterChanged(String formatter) {
+				}
+
+				public void formatterAdded(String formatter) {
+
+				}
+
+				public void formatterRemoved(String formatter) {
 				}
 
 			};
