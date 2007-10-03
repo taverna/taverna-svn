@@ -60,7 +60,7 @@ public class ArtifactImplTest {
 	@Test
 	@SuppressWarnings("null")
 	public void testExclusionDependencies() throws MalformedURLException, InterruptedException, ArtifactStateException {
-		r.addRemoteRepository(new URL(LoaderTest.MAVEN_SATEH_REPOSITORY));
+		r.addRemoteRepository(new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest","1.5.1");
@@ -94,7 +94,7 @@ public class ArtifactImplTest {
 	
 	@Test
 	public void testDependenciesWithPropertiesInterpolation() throws MalformedURLException, InterruptedException, ArtifactStateException {
-		r.addRemoteRepository(new URL(LoaderTest.MAVEN_SATEH_REPOSITORY));
+		r.addRemoteRepository(new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
 		r.addRemoteRepository(testRepos);
 		BasicArtifact exclusionTest = new BasicArtifact("raventest",
 				"exclusiontest","1.6.0");

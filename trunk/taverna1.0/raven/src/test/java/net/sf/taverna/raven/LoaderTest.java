@@ -22,7 +22,6 @@ import net.sf.taverna.raven.repository.RepositoryListener;
 
 public class LoaderTest extends TestCase {
 
-	public static final String MAVEN_SATEH_REPOSITORY = "http://maven.sateh.com/repository/";
 	public static final String MAVEN_TOM_REPOSITORY = "http://www.ebi.ac.uk/~tmo/repository/";
 	public static final String MAVEN_MYGRID_REPOSITORY = "http://www.mygrid.org.uk/maven/repository/";
 	public static final String MAVEN_MYGRID_SNAPSHOT_REPOSITORY = "http://www.mygrid.org.uk/maven/snapshot-repository/";
@@ -111,7 +110,7 @@ public class LoaderTest extends TestCase {
 		String ravenVersion = "1.5.1";
 		URL[] remoteRepositories = new URL[]{
 				new URL(repositoryLocation), 
-				new URL(MAVEN_SATEH_REPOSITORY)};
+				new URL(MAVEN_MYGRID_PROXY_REPOSITORY)};
 		String groupID = "uk.org.mygrid.taverna";
 		String artifactID = "taverna-workbench";
 		String version = "1.5.1";
@@ -167,7 +166,7 @@ public class LoaderTest extends TestCase {
     // Parameters for the Raven loader call
     URL[] remoteRepositories = new URL[]{
             new URL(repositoryLocation),
-            new URL(MAVEN_SATEH_REPOSITORY) };
+            new URL(MAVEN_MYGRID_PROXY_REPOSITORY) };
     String groupID = "uk.org.mygrid.taverna";
     String artifactID = "taverna-workbench";
     String version = "1.5.1";
@@ -231,7 +230,7 @@ public class LoaderTest extends TestCase {
 				"1.5.1",
 				dir,
 				new URL[]{new URL(repositoryLocation), 
-				          new URL(MAVEN_SATEH_REPOSITORY)},
+				          new URL(MAVEN_MYGRID_PROXY_REPOSITORY)},
         "uk.org.mygrid.taverna", "taverna-workbench", "1.5.1",
         "org.embl.ebi.escience.scuflui.workbench.Workbench",
         null, 10000

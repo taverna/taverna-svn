@@ -38,7 +38,7 @@ public class LocalRepositoryTest {
 	
 	public LocalRepositoryTest() throws MalformedURLException {
 		super();
-		mavenMirror = new URL(LoaderTest.MAVEN_SATEH_REPOSITORY);
+		mavenMirror = new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY);
 	}
 	
 	/*
