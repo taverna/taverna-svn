@@ -145,7 +145,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<skip>false</skip>
+					<skip>true</skip>
 					<systemProperties>
 						<property>
 							<name>java.awt.headless</name>
@@ -363,7 +363,7 @@
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
 			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
 			</url>
 		</repository>
 		<!-- use the following if you ARE using a snapshot version. -->
@@ -371,7 +371,7 @@
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
 			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
 			</url>
 		</snapshotRepository>
 		<site>
