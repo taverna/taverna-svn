@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartTask.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2006-07-10 14:07:43 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-10-03 16:33:37 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
@@ -41,6 +41,7 @@ import java.util.Map;
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.config.QueryConfigUtils;
 import org.biomart.martservice.query.Attribute;
+import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.Query;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -73,11 +74,11 @@ public class BiomartTask implements ProcessorTaskWorker {
 	}
 
 	/*
-     * (non-Javadoc)
-     * 
-     * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
-     *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
-     */
+	 * (non-Javadoc)
+	 * 
+	 * @see org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker#execute(java.util.Map,
+	 *      uk.ac.soton.itinnovation.taverna.enactor.entities.ProcessorTask)
+	 */
 	public Map execute(Map inputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
 		try {
@@ -88,9 +89,8 @@ public class BiomartTask implements ProcessorTaskWorker {
 			Query query = new Query(biomartQuery.getQuery());
 
 			// Configure any filters
-			List filters = query.getFilters();
-			for (Iterator iter = filters.iterator(); iter.hasNext();) {
-				Filter filter = (Filter) iter.next();
+			List<Filter> filters = query.getFilters();
+			for (Filter filter : filters) {
 				String name = filter.getQualifiedName();
 				if (inputMap.containsKey(name + "_filter")) {
 					DataThing filterThing = (DataThing) inputMap.get(name
@@ -106,15 +106,21 @@ public class BiomartTask implements ProcessorTaskWorker {
 			}
 
 			Map results = new HashMap();
-			List[] resultList = biomartQuery.getMartService().executeQuery(
+			Object[] resultList = biomartQuery.getMartService().executeQuery(
 					query);
-			// shouldn't need to reorder attributes for MartJ 0.5
-			List attributes = biomartQuery.getAttributesInLinkOrder();
-			assert resultList.length == attributes.size();
-			for (int i = 0; i < resultList.length; i++) {
-				Attribute attribute = (Attribute) attributes.get(i);
-				results.put(attribute.getQualifiedName(), new DataThing(
-						resultList[i]));
+			if (biomartQuery.getQuery().getFormatter() == null) {
+				// shouldn't need to reorder attributes for MartJ 0.5
+				List attributes = biomartQuery.getAttributesInLinkOrder();
+				assert resultList.length == attributes.size();
+				for (int i = 0; i < resultList.length; i++) {
+					Attribute attribute = (Attribute) attributes.get(i);
+					results.put(attribute.getQualifiedName(), new DataThing(
+							resultList[i]));
+				}
+			} else {
+				assert resultList.length == 1;
+				Dataset dataset = biomartQuery.getQuery().getDatasets().get(0);
+				results.put(dataset.getName(), new DataThing(resultList[0]));
 			}
 
 			return results;

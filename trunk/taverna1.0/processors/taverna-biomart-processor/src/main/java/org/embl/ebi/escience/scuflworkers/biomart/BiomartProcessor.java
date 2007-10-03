@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 17:06:26 $
+ * Last modified on   $Date: 2007-10-03 16:33:37 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -41,6 +41,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.biomart.martservice.MartQuery;
+import org.biomart.martservice.MartServiceUtils;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
@@ -65,7 +66,8 @@ import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
  * @author David Withers
  * @author Stuart Owen
  */
-public class BiomartProcessor extends Processor implements HTMLSummarisableProcessor {
+public class BiomartProcessor extends Processor implements
+		HTMLSummarisableProcessor {
 	private MartQuery query;
 
 	private QueryListener queryListener;
@@ -76,7 +78,8 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 	 * @throws ProcessorCreationException
 	 * @throws DuplicateProcessorNameException
 	 */
-	public BiomartProcessor(ScuflModel model, String processorName, MartQuery query) throws ProcessorCreationException,
+	public BiomartProcessor(ScuflModel model, String processorName,
+			MartQuery query) throws ProcessorCreationException,
 			DuplicateProcessorNameException {
 		super(model, processorName);
 		setDescription(query.getMartDataset().getDisplayName());
@@ -87,7 +90,8 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 			buildOutputPortsFromQuery();
 			buildInputPortsFromQuery();
 		} catch (Exception ex) {
-			ProcessorCreationException pce = new ProcessorCreationException("Can't build output ports");
+			ProcessorCreationException pce = new ProcessorCreationException(
+					"Can't build output ports");
 			pce.initCause(ex);
 			throw pce;
 		}
@@ -115,6 +119,17 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 				pingModel();
 			}
 
+			public void formatterAdded(String formatter) {
+				updateOutputs();
+			}
+
+			public void formatterRemoved(String formatter) {
+				updateOutputs();
+			}
+
+			public void formatterChanged(String formatter) {
+			}
+			
 			private void updateInputs() {
 				try {
 					buildInputPortsFromQuery();
@@ -155,7 +170,8 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 		fireModelEvent(new MinorScuflModelEvent(this, "Filter values changed"));
 	}
 
-	private void buildInputPortsFromQuery() throws PortCreationException, DuplicatePortNameException {
+	private void buildInputPortsFromQuery() throws PortCreationException,
+			DuplicatePortNameException {
 		List filters = query.getQuery().getFilters();
 		Set<String> filterNames = new HashSet<String>();
 		// Create new input ports corresponding to filters
@@ -186,23 +202,38 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 		}
 	}
 
-	private void buildOutputPortsFromQuery() throws PortCreationException, DuplicatePortNameException {
-		List attributes = query.getQuery().getAttributes();
+	private void buildOutputPortsFromQuery() throws PortCreationException,
+			DuplicatePortNameException {
+		List<Attribute> attributes = query.getQuery().getAttributes();
 		Set<String> attributeNames = new HashSet<String>();
-		// Create new output ports corresponding to attributes
-		for (Iterator iter = attributes.iterator(); iter.hasNext();) {
-			Attribute attribute = (Attribute) iter.next();
-			String name = attribute.getQualifiedName();
+		String formatter = query.getQuery().getFormatter();
+		if (formatter == null) {
+			// Create new output ports corresponding to attributes
+			for (Attribute attribute : attributes) {
+				String name = attribute.getQualifiedName();
+				attributeNames.add(name);
+				try {
+					locatePort(name);
+				} catch (UnknownPortException upe) {
+					Port newPort = new OutputPort(this, name);
+					if (attribute.getAttributes() != null) {
+						newPort.setSyntacticType("l(l('text/plain'))");
+					} else {
+						newPort.setSyntacticType("l('text/plain')");
+					}
+					addPort(newPort);
+				}
+			}
+		} else if (attributes.size() > 0) {
+			// create one port using the dataset name
+			Attribute attribute = attributes.get(0);
+			String name = attribute.getContainingDataset().getName();
 			attributeNames.add(name);
 			try {
 				locatePort(name);
 			} catch (UnknownPortException upe) {
 				Port newPort = new OutputPort(this, name);
-				if (attribute.getAttributes() != null) {
-					newPort.setSyntacticType("l(l('text/plain'))");
-				} else {
-					newPort.setSyntacticType("l('text/plain')");
-				}
+			    newPort.setSyntacticType(MartServiceUtils.getMimeTypeForFormatter(formatter));
 				addPort(newPort);
 			}
 		}
@@ -217,7 +248,8 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 		}
 	}
 
-	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors, Map<String, Processor> names) {
+	public String getHTMLSummary(List<HTMLSummarisableProcessor> processors,
+			Map<String, Processor> names) {
 		StringBuffer sb = new StringBuffer();
 		for (HTMLSummarisableProcessor p : processors) {
 			sb.append("<tr><td bgcolor=\"d1eeed\" rowspan=\"2\">Biomart</td>");
@@ -225,8 +257,10 @@ public class BiomartProcessor extends Processor implements HTMLSummarisableProce
 			sb.append("<td bgcolor=\"d1eeed\">Dataset Name</td>");
 			sb.append("<td bgcolor=\"d1eeed\">Processor</td>");
 			sb.append("</tr>");
-			sb.append("<tr><td>" + bp.getQuery().getMartService().getLocation() + "</td>");
-			sb.append("<td>" + WorkflowSummaryAsHTML.nameFor(names, bp) + "</td></tr>");
+			sb.append("<tr><td>" + bp.getQuery().getMartService().getLocation()
+					+ "</td>");
+			sb.append("<td>" + WorkflowSummaryAsHTML.nameFor(names, bp)
+					+ "</td></tr>");
 		}
 		return sb.toString();
 	}
