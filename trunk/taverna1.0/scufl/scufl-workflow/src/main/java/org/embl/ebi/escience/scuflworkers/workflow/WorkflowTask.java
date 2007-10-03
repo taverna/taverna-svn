@@ -24,9 +24,9 @@
 // Created for Project : MYGRID
 // Dependencies :
 //
-// Last commit info : $Author: stain $
-// $Date: 2007-09-11 15:14:13 $
-// $Revision: 1.7 $
+// Last commit info : $Author: sowen70 $
+// $Date: 2007-10-03 15:51:29 $
+// $Revision: 1.8 $
 //
 // /////////////////////////////////////////////////////////////////////////////////////
 
@@ -123,6 +123,10 @@ public class WorkflowTask implements ProcessorTaskWorker, EnactorWorkflowTask {
 						        "execute() called while still running nested workflow");
 					}
 					running = true;
+					if (workflowInstance!=null) {
+						//required due to a retry
+						workflowInstance.destroy();
+					}
 					workflowInstance = wfInstance;
 				}
 				WorkflowEventDispatcher.DISPATCHER
