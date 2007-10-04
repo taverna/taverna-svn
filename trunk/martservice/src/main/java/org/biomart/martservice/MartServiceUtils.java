@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 15:57:30 $
+ * Last modified on   $Date: 2007-10-04 14:17:19 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -80,8 +80,6 @@ import org.xml.sax.InputSource;
 public class MartServiceUtils {
 	private static Logger logger = Logger.getLogger(MartServiceUtils.class);
 
-	private static HttpClient httpClient;
-	
 	private static String lineSeparator = System.getProperty("line.separator");
 
 	public static final String QUERY_ATTRIBUTE = "query";
@@ -118,17 +116,17 @@ public class MartServiceUtils {
 	 *            the URL of the Biomart webservice
 	 * @return a MartRegistry
 	 * @throws MartServiceException
-	 *             if the Biomat webservice returns an error or is unavailable
+	 *             if the Biomart webservice returns an error or is unavailable
 	 */
 	public static MartRegistry getRegistry(String martServiceLocation,
 			String requestId) throws MartServiceException {
-		List data = new ArrayList();
+		List<NameValuePair> data = new ArrayList<NameValuePair>();
 		data.add(new NameValuePair(TYPE_ATTRIBUTE, REGISTRY_VALUE));
 		if (requestId != null) {
 			data.add(new NameValuePair(REQUEST_ID_ATTRIBUTE, requestId));
 		}
 		HttpMethod method = new GetMethod(martServiceLocation);
-		method.setQueryString((NameValuePair[]) data
+		method.setQueryString(data
 				.toArray(new NameValuePair[data.size()]));
 		try {
 			InputStream in = executeMethod(method, martServiceLocation);
@@ -154,7 +152,7 @@ public class MartServiceUtils {
 			String requestId, MartURLLocation mart) throws MartServiceException {
 		String errorMessage = "Error getting version from " + martServiceLocation;
 
-		List data = new ArrayList();
+		List<NameValuePair> data = new ArrayList<NameValuePair>();
 		data.add(new NameValuePair(TYPE_ATTRIBUTE, VERSION_VALUE));
 		if (mart.getVirtualSchema() != null) {
 			data.add(new NameValuePair(SCHEMA_ATTRIBUTE, mart
@@ -168,7 +166,7 @@ public class MartServiceUtils {
 			data.add(new NameValuePair(REQUEST_ID_ATTRIBUTE, requestId));
 		}
 		HttpMethod method = new GetMethod(martServiceLocation);
-		method.setQueryString((NameValuePair[]) data
+		method.setQueryString(data
 				.toArray(new NameValuePair[data.size()]));
 		try {
 			InputStream in = executeMethod(method, martServiceLocation);
@@ -207,11 +205,11 @@ public class MartServiceUtils {
 	 *            the mart to get datasets from
 	 * @return an array of MartDataset
 	 * @throws MartServiceException
-	 *             if the Biomat webservice returns an error or is unavailable
+	 *             if the Biomart webservice returns an error or is unavailable
 	 */
 	public static MartDataset[] getDatasets(String martServiceLocation,
 			String requestId, MartURLLocation mart) throws MartServiceException {
-		List data = new ArrayList();
+		List<NameValuePair> data = new ArrayList<NameValuePair>();
 		data.add(new NameValuePair(TYPE_ATTRIBUTE, DATASETS_VALUE));
 		if (mart.getVirtualSchema() != null) {
 			data.add(new NameValuePair(SCHEMA_ATTRIBUTE, mart
@@ -227,7 +225,7 @@ public class MartServiceUtils {
 			data.add(new NameValuePair(REQUEST_ID_ATTRIBUTE, requestId));
 		}
 		HttpMethod method = new GetMethod(martServiceLocation);
-		method.setQueryString((NameValuePair[]) data
+		method.setQueryString(data
 				.toArray(new NameValuePair[data.size()]));
 		try {
 			InputStream in = executeMethod(method, martServiceLocation);
@@ -255,15 +253,15 @@ public class MartServiceUtils {
 	 *            the dataset to get the configuration for
 	 * @return a DatasetConfig
 	 * @throws MartServiceException
-	 *             if the Biomat webservice returns an error or is unavailable
+	 *             if the Biomart webservice returns an error or is unavailable
 	 */
 	public static DatasetConfig getDatasetConfig(String martServiceLocation,
 			String requestId, MartDataset dataset) throws MartServiceException {
-		List data = new ArrayList();
+		List<NameValuePair> data = new ArrayList<NameValuePair>();
+		data.add(new NameValuePair(TYPE_ATTRIBUTE, CONFIGURATION_VALUE));
 		MartURLLocation mart = dataset.getMartURLLocation();
 		// if the dataset has a location specify the virtual schema to uniquely
 		// identify the dataset
-		data.add(new NameValuePair(TYPE_ATTRIBUTE, CONFIGURATION_VALUE));
 		if (mart != null && mart.getVirtualSchema() != null) {
 			data.add(new NameValuePair(SCHEMA_ATTRIBUTE, mart
 					.getVirtualSchema()));
@@ -282,7 +280,7 @@ public class MartServiceUtils {
 			data.add(new NameValuePair(REQUEST_ID_ATTRIBUTE, requestId));
 		}
 		HttpMethod method = new GetMethod(martServiceLocation);
-		method.setQueryString((NameValuePair[]) data
+		method.setQueryString(data
 				.toArray(new NameValuePair[data.size()]));
 
 		try {
@@ -327,10 +325,10 @@ public class MartServiceUtils {
 	 * @param martServiceLocation
 	 *            the URL of the Biomart webservice
 	 * @param query
-	 *            the query to send tho the webservice
+	 *            the query to send to the webservice
 	 * @return an array of List of String
 	 * @throws MartServiceException
-	 *             if the Biomat webservice returns an error or is unavailable
+	 *             if the Biomart webservice returns an error or is unavailable
 	 */
 	public static Object[] getResults(String martServiceLocation,
 			String requestId, Query query) throws MartServiceException {
@@ -376,6 +374,14 @@ public class MartServiceUtils {
 		return results;
 	}
 	
+//	private static String getLocation(MartURLLocation martUrlLocation) {
+//		StringBuffer location = new StringBuffer("http://");
+//		location.append(martUrlLocation.getHost());
+//		location.append(":" + martUrlLocation.getPort());
+//		location.append(martUrlLocation.getPath());
+//		return location.toString();
+//	}
+	
 	private static int getAttributeCount(List attributeList) {
 		int result = 0;
 		for (Iterator iterator = attributeList.iterator(); iterator
@@ -415,13 +421,10 @@ public class MartServiceUtils {
 
 	public static Query splitAttributeLists(Query query) {
 		Query result = new Query(query);
-		for (Iterator iter = result.getDatasets().iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
-			List attributeList = dataset.getAttributes();
+		for (Dataset dataset : result.getDatasets()) {
+			List<Attribute> attributeList = dataset.getAttributes();
 			dataset.removeAllAttributes();
-			for (Iterator iterator = attributeList.iterator(); iterator
-					.hasNext();) {
-				Attribute attribute = (Attribute) iterator.next();
+			for (Attribute attribute : attributeList) {
 				if (attribute.getAttributes() == null) {
 					dataset.addAttribute(attribute);
 				} else {
@@ -470,11 +473,11 @@ public class MartServiceUtils {
 		return mimeType;
 	}
 	
-	private static List[] tabSeparatedReaderToResults(Reader reader,
+	private static List<String>[] tabSeparatedReaderToResults(Reader reader,
 			int resultsCount) throws IOException {
-		List[] results = new List[resultsCount];
+		List<String>[] results = new List[resultsCount];
 		for (int i = 0; i < results.length; i++) {
-			results[i] = new ArrayList();
+			results[i] = new ArrayList<String>();
 		}
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		String line = bufferedReader.readLine();
@@ -501,7 +504,7 @@ public class MartServiceUtils {
 	
 	private static MartDataset[] tabSeparatedReaderToDatasets(Reader reader,
 			MartURLLocation martURLLocation) throws IOException {
-		List datasetList = new ArrayList();
+		List<MartDataset> datasetList = new ArrayList<MartDataset>();
 		BufferedReader bufferedReader = new BufferedReader(reader);
 		String line = bufferedReader.readLine();
 		while (line != null) {
@@ -541,8 +544,7 @@ public class MartServiceUtils {
 			}
 			line = bufferedReader.readLine();
 		}
-		return (MartDataset[]) datasetList.toArray(new MartDataset[datasetList
-				.size()]);
+		return datasetList.toArray(new MartDataset[datasetList.size()]);
 	}
 
 	/**

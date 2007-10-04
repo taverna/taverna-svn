@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartDataset.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:04 $
+ * Last modified on   $Date: 2007-10-04 14:17:19 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -41,7 +41,7 @@ import java.util.Comparator;
  * @author David Withers
  */
 public class MartDataset {
-	private static final Comparator displayComparator = new MartDatasetComparator();
+	private static final Comparator<MartDataset> displayComparator = new MartDatasetComparator();
 
 	private String type;
 
@@ -312,7 +312,7 @@ public class MartDataset {
 	 * 
 	 * @return the display comparator
 	 */
-	public static Comparator getDisplayComparator() {
+	public static Comparator<MartDataset> getDisplayComparator() {
 		return displayComparator;
 	}
 
@@ -323,21 +323,20 @@ public class MartDataset {
  * 
  * @author David Withers
  */
-class MartDatasetComparator implements Comparator {
+class MartDatasetComparator implements Comparator<MartDataset> {
 
 	/**
 	 * Compares two MartDatasets based on their display names.
 	 * 
-	 * @param o1
-	 *            the first object to be compared
-	 * @param o2
-	 *            the second object to be compared
+	 * @param martDataset1
+	 *            the first MartDataset to be compared
+	 * @param martDataset2
+	 *            the second MartDataset to be compared
 	 * @return a negative integer, zero, or a positive integer as the first
 	 *         argument is less than, equal to, or greater than the second
 	 */
-	public int compare(Object o1, Object o2) {
-		return ((MartDataset) o1).getDisplayName().compareTo(
-				((MartDataset) o2).getDisplayName());
+	public int compare(MartDataset martDataset1, MartDataset martDataset2) {
+		return martDataset1.getDisplayName().compareTo(martDataset2.getDisplayName());
 	}
 
 }
