@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceXMLHandlerTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:14 $
+ * Last modified on   $Date: 2007-10-04 14:16:00 $
  *               by   $Author: davidwithers $
  * Created on 02-Jun-2006
  *****************************************************************/
@@ -91,7 +91,8 @@ public class MartServiceXMLHandlerTest extends TestCase {
 		martUrlLocation.setServerVirtualSchema("server-virtual-schema");
 		martUrlLocation.setVirtualSchema("virtual-schema");
 		martUrlLocation.setVisible(false);
-		martUrlLocationXML = "<MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" virtualSchema=\"virtual-schema\" visible=\"0\" />";
+		martUrlLocation.setRedirect(true);
+		martUrlLocationXML = "<MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" virtualSchema=\"virtual-schema\" visible=\"0\" redirect=\"1\" />";
 		martDataset = new MartDataset();
 		martDataset.setDisplayName("dataset-display-name");
 		martDataset.setInitialBatchSize(1);
@@ -102,11 +103,11 @@ public class MartServiceXMLHandlerTest extends TestCase {
 		martDataset.setVisible(true);
 		martDataset.setInterface("interface");
 		martDataset.setModified("modified");
-		martDatasetXML = "<MartDataset xmlns=\"test-namespace\" displayName=\"dataset-display-name\" name=\"dataset-name\" type=\"type\" initialBatchSize=\"1\" maximumBatchSize=\"2\" visible=\"true\" interface=\"interface\" modified=\"modified\"><MartURLLocation default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" virtualSchema=\"virtual-schema\" visible=\"0\" /></MartDataset>";
+		martDatasetXML = "<MartDataset xmlns=\"test-namespace\" displayName=\"dataset-display-name\" name=\"dataset-name\" type=\"type\" initialBatchSize=\"1\" maximumBatchSize=\"2\" visible=\"true\" interface=\"interface\" modified=\"modified\"><MartURLLocation default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" virtualSchema=\"virtual-schema\" visible=\"0\" redirect=\"1\" /></MartDataset>";
 		martRegistry = new MartRegistry();
 		martRegistry.addMartURLLocation(martUrlLocation);
-		martRegistryXML = "<MartRegistry xmlns=\"test-namespace\" ><virtualSchema xmlns=\"test-namespace\" name=\"virtual-schema\" visible=\"0\"><MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" visible=\"0\" /></virtualSchema></MartRegistry>";
-		martRegistryXML2 = "<MartRegistry xmlns=\"test-namespace\" ><virtualSchema xmlns=\"test-namespace\" name=\"default\" visible=\"0\"><MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" visible=\"0\" /></virtualSchema></MartRegistry>";
+		martRegistryXML = "<MartRegistry xmlns=\"test-namespace\" ><virtualSchema xmlns=\"test-namespace\" name=\"virtual-schema\" visible=\"0\"><MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" visible=\"0\" redirect=\"1\" /></virtualSchema></MartRegistry>";
+		martRegistryXML2 = "<MartRegistry xmlns=\"test-namespace\" ><virtualSchema xmlns=\"test-namespace\" name=\"default\" visible=\"0\"><MartURLLocation xmlns=\"test-namespace\" default=\"1\" displayName=\"location-display-name\" host=\"host\" name=\"location-name\" port=\"42\" serverVirtualSchema=\"server-virtual-schema\" visible=\"0\" redirect=\"1\" /></virtualSchema></MartRegistry>";
 	}
 
 	/*

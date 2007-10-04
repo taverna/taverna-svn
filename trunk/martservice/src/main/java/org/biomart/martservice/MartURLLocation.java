@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartURLLocation.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:05 $
+ * Last modified on   $Date: 2007-10-04 14:15:59 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -67,6 +67,8 @@ public class MartURLLocation implements MartLocation {
 	private String virtualSchema;
 
 	private boolean visible;
+
+	private boolean redirect;
 
 	/**
 	 * Returns the database.
@@ -274,6 +276,8 @@ public class MartURLLocation implements MartLocation {
 	}
 
 	/**
+	 * Returns true if the location is visible.
+	 * 
 	 * @return Returns the visible.
 	 */
 	public boolean isVisible() {
@@ -286,6 +290,22 @@ public class MartURLLocation implements MartLocation {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	/**
+	 * Returns true if this location is redirected.
+	 * 
+	 * @return the redirect
+	 */
+	public boolean isRedirect() {
+		return redirect;
+	}
+
+	/**
+	 * @param redirect the redirect to set
+	 */
+	public void setRedirect(boolean redirect) {
+		this.redirect = redirect;
 	}
 
 	/*
@@ -306,30 +326,35 @@ public class MartURLLocation implements MartLocation {
 		return getDisplayName();
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+	@Override
 	public int hashCode() {
-		final int PRIME = 31;
+		final int prime = 31;
 		int result = 1;
-		result = PRIME * result + ((database == null) ? 0 : database.hashCode());
-		result = PRIME * result + (defaultValue ? 1231 : 1237);
-		result = PRIME * result + ((displayName == null) ? 0 : displayName.hashCode());
-		result = PRIME * result + ((host == null) ? 0 : host.hashCode());
-		result = PRIME * result + ((includeDatasets == null) ? 0 : includeDatasets.hashCode());
-		result = PRIME * result + ((martUser == null) ? 0 : martUser.hashCode());
-		result = PRIME * result + ((name == null) ? 0 : name.hashCode());
-		result = PRIME * result + ((path == null) ? 0 : path.hashCode());
-		result = PRIME * result + port;
-		result = PRIME * result + ((serverVirtualSchema == null) ? 0 : serverVirtualSchema.hashCode());
-		result = PRIME * result + ((virtualSchema == null) ? 0 : virtualSchema.hashCode());
-		result = PRIME * result + (visible ? 1231 : 1237);
+		result = prime * result
+				+ ((database == null) ? 0 : database.hashCode());
+		result = prime * result + (defaultValue ? 1231 : 1237);
+		result = prime * result
+				+ ((displayName == null) ? 0 : displayName.hashCode());
+		result = prime * result + ((host == null) ? 0 : host.hashCode());
+		result = prime * result
+				+ ((includeDatasets == null) ? 0 : includeDatasets.hashCode());
+		result = prime * result
+				+ ((martUser == null) ? 0 : martUser.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		result = prime * result + port;
+		result = prime * result + (redirect ? 1231 : 1237);
+		result = prime
+				* result
+				+ ((serverVirtualSchema == null) ? 0 : serverVirtualSchema
+						.hashCode());
+		result = prime * result
+				+ ((virtualSchema == null) ? 0 : virtualSchema.hashCode());
+		result = prime * result + (visible ? 1231 : 1237);
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -376,6 +401,8 @@ public class MartURLLocation implements MartLocation {
 		} else if (!path.equals(other.path))
 			return false;
 		if (port != other.port)
+			return false;
+		if (redirect != other.redirect)
 			return false;
 		if (serverVirtualSchema == null) {
 			if (other.serverVirtualSchema != null)

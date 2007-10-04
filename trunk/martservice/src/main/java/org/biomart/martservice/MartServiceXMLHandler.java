@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceXMLHandler.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-15 09:12:34 $
+ * Last modified on   $Date: 2007-10-04 14:15:59 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -96,6 +96,8 @@ public class MartServiceXMLHandler {
 	public static final String SERVER_VIRTUAL_SCHEMA_ATTRIBUTE = "serverVirtualSchema";
 
 	public static final String VISIBLE_ATTRIBUTE = "visible";
+
+	public static final String REDIRECT_ATTRIBUTE = "redirect";
 
 	public static final String INTERFACE_ATTRIBUTE = "interface";
 
@@ -277,6 +279,8 @@ public class MartServiceXMLHandler {
 		}
 		element.setAttribute(VISIBLE_ATTRIBUTE, location.isVisible() ? "1"
 				: "0");
+		element.setAttribute(REDIRECT_ATTRIBUTE, location.isRedirect() ? "1"
+				: "0");
 		return element;
 	}
 
@@ -308,6 +312,8 @@ public class MartServiceXMLHandler {
 				.getAttributeValue(VIRTUAL_SCHEMA_ATTRIBUTE));
 		location.setVisible("1".equals(element
 				.getAttributeValue(VISIBLE_ATTRIBUTE)));
+		location.setRedirect("1".equals(element
+				.getAttributeValue(REDIRECT_ATTRIBUTE)));
 		return location;
 	}
 
