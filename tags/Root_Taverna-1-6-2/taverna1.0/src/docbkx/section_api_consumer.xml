@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="api_consumer">
+  <title>API Consumer</title>
+
+  <para>The <firstterm>API Consumer</firstterm> allows the selection of
+  subsets of Java APIs which may then be imported into Taverna's workbench
+  software and used as components within workflows in that environment. This
+  tool is intended for API developers rather than end users, it produces an
+  XML API definition file which Taverna imports - it is this file that you can
+  distribute alongside or within your API to 'Taverna enable' it. If you
+  simply want to use parts of an existing API, it is probably easier to do
+  this using <link linkend="beanshell_dependencies">beanshells with
+  dependencies</link>. As always, also consider exposing the API as a proper
+  web service that will be accessible for Taverna users without requring any
+  installation.</para>
+
+  <para>To prepare an API for consumption by the API consumer, you will need
+  to download the API Consumer tool. Users of the prepared API will only need
+  to download your JAR files and the generated description XML, but to produce
+  that description you will need to use the tool.</para>
+
+  <section id="apic_prerequisites">
+    <title>Prerequisites</title>
+
+    <para>The API Consumer is a Java Doclet and uses Ant to launch, you must
+    therefore have a Java JDK and <literal>ant</literal> installed and
+    available on the path. In addition the <literal>tools.jar</literal> file
+    from the JDK must be available on the classpath, you can copy it into the
+    <literal>jre/lib/ext</literal> directory within your JDK installation with
+    no unpleasant side effects.</para>
+  </section>
+
+  <section id="apic_setup">
+    <title>Setup</title>
+
+    <para>We assume you have downloaded and unpacked the API consumer
+    tool.</para>
+
+    <para>Before running the API Consumer you need to place the
+    <emphasis>source files</emphasis> of the API in question within the
+    <literal>target</literal> directory and any supporting libraries required
+    in the <literal>lib</literal> directory. The reason the tool requires the
+    source code is mainly to be able to resolve doclet annotations and
+    parameter names of methods.</para>
+
+    <para>Adding supporting libraries is particularly important - if your API
+    includes methods which consume or return a type that isn't available to
+    the API Consumer the definitions it generates will be invalid. For
+    example, if your API contains a method <literal>void foo(MagicClass
+    bar)</literal> and the <literal>MagicClass</literal> is in some random
+    package in a third party <literal>jar</literal> file that you haven't
+    included there's no way for the doclet to know the fully qualified
+    classname of <literal>MagicClass</literal>. As Taverna's plugin requires
+    full classnames this will result in an API that can't be invoked from the
+    workflow. You can normally trap these issues by watching for the standard
+    javadoc warning messages in the console.</para>
+  </section>
+
+  <section id="apic_usage">
+    <title>Usage</title>
+
+    <para>Once your source and any supporting files are present as described
+    above you can either call ant directly (just type <literal>ant</literal>
+    on the command line while in the API consumer directory) or, on Windows
+    machines, by running the <literal>runme.bat</literal> file. The API
+    consumer itself will be built from source and applied to the
+    <literal>target</literal> source files, after some slight delay for this
+    process (longer for very complex APIs) you should see a screen such as the
+    following:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_initialwindow.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The tree on the left hand side of the window shows the available
+    classes (including inner classes where present) along with a search box -
+    the right hand side currently shows nothing. Selecting a class from the
+    tree produces a display like the following, this should be clearly similar
+    to the information produced by the standard javadoc tool:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_summarydisplay.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>In the case of large APIs the search box can be used to display a
+    subset of the complete class tree - enter a pattern to match and hit
+    return in this text box and the tree will be expanded to show all matching
+    nodes. To return to the view with all nodes expanded clear the text in
+    this box and hit return.</para>
+  </section>
+
+  <section id="apic_adding_methods">
+    <title>Adding methods to API definition</title>
+
+    <para>The next step is to select methods to add to the API definition -
+    these methods (static, instance or constructors) will appear as components
+    within Taverna's workbench when the definition file is imported.</para>
+
+    <para><emphasis role="bold">Using Graphical Interface</emphasis></para>
+
+    <para>Methods can be manually added by choosing the class, opening the
+    <guibutton>Methods</guibutton> tab and either selecting individual methods
+    or using the <guibutton>Select all</guibutton> and <guibutton>Clear
+    all</guibutton> buttons:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_methods.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para><emphasis role="bold">Using JavaDoc tags</emphasis></para>
+
+    <para>For APIs under your direct control there is an alternative based on
+    JavaDoc tags. By adding the tag '@taverna.consume' to either classes or
+    individual methods you can automatically have these methods selected in
+    the API consumer when it first scans the source files. In the case of the
+    tag at a class or interface level all constructors and methods will be
+    selected.</para>
+  </section>
+
+  <section id="apic_metadata">
+    <title>API level metadata.</title>
+
+    <para>To aid use of your exported API you can select the <guibutton>API
+    Description</guibutton> tab and use it to provide a name and description
+    for the entire API subset:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_description.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+  </section>
+
+  <section id="apic_api_definitions">
+    <title>Saving the API definition file.</title>
+
+    <para>To save the API definition select in the menu
+    <guimenu>File</guimenu> -&gt; <guimenuitem>Save as XML</guimenuitem>. This
+    should bring up a standard save dialogue, choose a filename and save. This
+    is the <firstterm>definition file</firstterm> that is then to be imported
+    into Taverna's scavenger panel.</para>
+  </section>
+
+  <section>
+    <title>Using the API consumer processor from Taverna</title>
+
+    <para>In theory, everything you need to distribute to your workflow
+    designers will be the API compiled and packaged as a
+    <literal>jar</literal> file, in addition to any dependency
+    <literal>jar</literal> files. To import the API consumer definition file
+    into Taverna, right click on <guilabel>Available Processors</guilabel> in
+    the <guilabel>Scavenger panel</guilabel>. Select <guimenuitem>Add new API
+    Consumer...</guimenuitem> and select the previously saved definition file,
+    say my_api.xml. A new branch should be added to the scavenger panel,
+    showing the class names and methods you previously ticked off in the
+    <emphasis>API consumer tool</emphasis>.</para>
+
+    <screenshot>
+      <screeninfo>An API consumer added to the Scavenger panel</screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_scavenger.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>In this lightweight example, our exposed API only has a constructor
+    and a single method. Using the API consumer you have to build up the calls
+    to the API as part of your workflow, so as <literal>sayHello()</literal>
+    is a method on the <literal>HelloWorld</literal> instance, we first have
+    to call the constructor, and then call the method on the returned object.
+    We'll add both API consumer processors to the workflow. Each parameter of
+    the method is exposed as an input port, and the return value is shown as
+    an output port. In our example, our methods don't take any parameters
+    except the implicit object reference <literal>this</literal>, which we'll
+    have to provide by connecting the <literal>object</literal> output of the
+    constructor <literal>HelloWorld</literal> to the <literal>object</literal>
+    input of the method <literal>sayHello</literal>.</para>
+
+    <screenshot>
+      <screeninfo>Connecting object references from constructor to
+      methods</screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/apic_connecting.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>As a convenience, methods also return the very same object in the
+    output port <literal>object</literal>, so that methods that needs to be
+    run in a particular sequence can be chained to pass their object
+    reference, in effect preventing execution of the second method before the
+    first method is returning it's result and object reference. Note that the
+    Java objects can only be passed to other API consumer processors (and only
+    if they are <literal>serializable</literal>), if you want any useful
+    inputs and outputs to interact with your workflow you need to use basic
+    types such as <literal>String</literal>, in our example sayHello() returns
+    a <literal>String</literal> that is connected to the workflow output
+    <literal>msg</literal>. Static methods don't need the
+    <literal>object</literal> reference, and hence don't need the constructor
+    call, unless you need to pass an instantiated object as a normal
+    argument.</para>
+
+    <para>Before you can run the workflow you also need to install the
+    required <literal>jar</literal> files and specify the dependencies in the
+    workflow. This functionality is very similar to how to use <link
+    linkend="beanshell_dependencies">dependencies for beanshell</link>, so
+    this section won't go in detail. We refer to the beanshell section <link
+    linkend="beanshell_dependencies">Depending on third-party libraries</link>
+    for more information. Right click on the processor and select
+    <guimenuitem>Configure dependencies</guimenuitem>. The default <link
+    linkend="beanshell_dependencies_cl">classloader sharing</link> is
+    <guimenuitem>Shared for whole workflow</guimenuitem>, so you only need to
+    tick of the dependency <literal>jar</literal> files on one of the
+    processors, like the constructor.</para>
+
+    <para>Users who receive your workflow will need to install the same
+    required <literal>jar</literal> files to run it, but they only need the
+    API consumer definition file if they are to build similar
+    workflows.</para>
+
+    <para>Note that if your API is using JNI, or one of it's dependencies uses
+    JNI, which is a native library with binding for Java, you need to take
+    some special considerations, as explained in the section <link
+    linkend="beanshell_dependencies_jni">JNI-based native libraries</link>. In
+    particular, you need to select the <guimenuitem>System
+    classloader</guimenuitem> sharing for all your processors and modify the
+    Taverna startup scripts.</para>
+  </section>
+
+  <section>
+    <title>A word of advice</title>
+
+    <para>Depending on the complexity of your API, building workflows in this
+    way can turn out to be a very cumbersome way to do graphical Java
+    programming in a workflow. In many cases, writing a tiny <link
+    linkend="beanshell_processor">beanshell</link> script using the same <link
+    linkend="beanshell_dependencies">dependency mechanism</link> can give you
+    most of the benefits in a smaller amount of time. By splitting the
+    beanscript into several processors you can achieve the explicitly you need
+    to explain the workflow. However, the API consumer gives you one major
+    advantage, the workflow designer don't need to know much about Java, and
+    she will see a browsable structure of your API in the scavenger panel,
+    just like the bundled services. The workflow designer
+    <emphasis>does</emphasis> need to know how to use your API though, but if
+    you have explicitly designed it to be easy to use from Taverna that
+    barrier can be lowered significantly.</para>
+
+    <para>An API that is useful for many people could also be wrapped as a
+    WSDL web service using tools such as Axis and exposed on the Internet
+    through a container such as Tomcat, which would make it usable for any
+    Taverna workbench without requiring installation of your JAR files and
+    definition files.</para>
+  </section>
+</section>

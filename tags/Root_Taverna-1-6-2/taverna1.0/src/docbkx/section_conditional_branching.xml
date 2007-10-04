@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="conditional_branching">
+  <title>Conditional branching</title>
+
+  <para>Conditional branching is the term used to describe the set of
+  operations such as '<emphasis>if &lt;condition&gt; do &lt;something&gt; else
+  do &lt;something else&gt;</emphasis>' and the various case and switch
+  statements in conventional imperative languages such as C, PERL and Java.
+  Taverna's language representation differs in some crucial ways from these
+  languages so the representation of conditionals is different, the
+  functionality, however, is equivalent.</para>
+
+  <para>Conditionals are driven by the control links within the workflow. As a
+  process can only run when all upstream links, data and control, are
+  satisfied it is possible to construct workflows where only a subset of the
+  available downstream processors can run and where the others are left in the
+  scheduled state. Effectively those chosen to run are in the 'true' branch of
+  the conditional and those left scheduled in the '<emphasis>false</emphasis>'
+  branch.</para>
+
+  <para>In a workflow without any conditional structures it is recommended to
+  avoid having the case where more than one output feeds into a single input.
+  The behaviour in this case is to accept the first available input, removing
+  any other data links in the process. If the workflow system did not remove
+  the alternative links the processor would never run, these links would be
+  detected and the processor would wait until they had all been satisfied -
+  obviously if the processor upstream has been left in a scheduled state the
+  link will never be used and the workflow will stall.</para>
+
+  <para>As an example consider the following workflow (held in the examples
+  directory as '<emphasis>ConditionalBranchChoice.xml</emphasis>'):</para>
+
+  <para>The single input to this workflow is a string containing the value
+  '<emphasis>true</emphasis>' or the value '<emphasis>false</emphasis>'. The
+  two processors '<emphasis role="bold">foo</emphasis>' and '<emphasis
+  role="bold">bar</emphasis>' are string constants which emit the
+  stereotypical example string values, and the last processor is a list echo
+  operation - this is used because we need some kind of operation which can
+  accept the outputs of '<emphasis role="bold">foo</emphasis>' and '<emphasis
+  role="bold">bar</emphasis>' and relay them to a workflow output. If the
+  input is the string 'true' the following occurs:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>1.The value '<emphasis>true</emphasis>' is fed to the first two
+      processors, '<emphasis role="bold">fail_if_false</emphasis>' and
+      '<emphasis role="bold">fail_if_true</emphasis>'</para>
+    </listitem>
+
+    <listitem>
+      <para>2.The processor '<emphasis role="bold">fail_if_false</emphasis>'
+      completes and does nothing.</para>
+    </listitem>
+
+    <listitem>
+      <para>3.The processor '<emphasis role="bold">fail_if_true</emphasis>'
+      fails and does nothing.</para>
+    </listitem>
+
+    <listitem>
+      <para>4.As '<emphasis role="bold">bar</emphasis>' is linked to
+      '<emphasis role="bold">fail_if_true</emphasis>' by a control link (shown
+      in gray in the diagram) it never starts - although it is not actually
+      cancelled as the diagram would suggest the effect is equivalent as it is
+      never invoked.</para>
+    </listitem>
+
+    <listitem>
+      <para>5.'<emphasis role="bold">foo</emphasis>', however, now has all
+      control and data links satisfied and runs.</para>
+    </listitem>
+
+    <listitem>
+      <para>6.The single input inputlist in the '<emphasis
+      role="bold">Echo_list</emphasis>' processor now has a value, it
+      disconnects the data link from '<emphasis role="bold">bar</emphasis>'
+      and, as it now has all data and control links satisfied, runs, copying
+      the input value to the outputlist.</para>
+    </listitem>
+
+    <listitem>
+      <para>7.The workflow returns the value
+      '<emphasis>foo</emphasis>'.</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>Were the input '<emphasis>false</emphasis>' the rightmost case in the
+  diagrams above would occur. Note that there is no inherent restriction on
+  the number of branches - if the input were instead a beanshell script with
+  four outputs it could be used to control four branches or any combination
+  thereof. In this sense the conditional structures available in Taverna are
+  somewhat more expressive than those in conventional imperative
+  language</para>
+
+  <table id="conditional_branching_scenarios">
+    <title></title>
+
+    <tgroup cols="3">
+      <tbody>
+        <row>
+          <entry align="center"><inlinegraphic
+          fileref="images/branching_workflow_original.png" /></entry>
+
+          <entry align="center"><inlinegraphic
+          fileref="images/branching_workflow_true.png" /></entry>
+
+          <entry align="center"><inlinegraphic
+          fileref="images/branching_workflow_false.png" /></entry>
+        </row>
+
+        <row>
+          <entry align="center"><emphasis>Original Workflow</emphasis></entry>
+
+          <entry align="center"><emphasis>Input = 'true'</emphasis></entry>
+
+          <entry align="center"><emphasis>Input = 'false'</emphasis></entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+</section>
