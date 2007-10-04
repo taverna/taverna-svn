@@ -1,0 +1,34 @@
+<assembly>
+  <id>omii-client</id>
+  <formats>
+    <format>dir</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <includeSiteDirectory>true</includeSiteDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/workbench</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+      	<exclude>broken-examples/</exclude>
+      </excludes>
+    </fileSet>
+    <!-- contrib examples -->
+    <fileSet>
+      <directory>taverna-contrib/examples</directory>
+      <outputDirectory>examples</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <moduleSets>
+    <moduleSet>
+      <includes>
+        <include>uk.org.mygrid.taverna:taverna-bootstrap</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/</outputDirectory>
+		<includeDependencies>true</includeDependencies>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
+</assembly>
