@@ -3,7 +3,7 @@
   <groupId>org.biomart</groupId>
   <artifactId>martservice</artifactId>
   <name>MartService</name>
-  <version>0.6.1</version>
+  <version>0.6.1-SNAPSHOT</version>
   <description>Biomart webservice API</description>
   <build>
     <plugins>
@@ -116,7 +116,7 @@
     <snapshotRepository>
       <id>mygrid-snapshot-repository</id>
       <name>myGrid Snapshot Repository</name>
-      <url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository</url>
+      <url>scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
