@@ -613,7 +613,7 @@ public class ScuflModel implements Serializable {
 				if (notifyThread != null) {
 					return;
 				}
-				notifyThread = new NotifyThread(pendingEvents, listeners);
+				notifyThread = new NotifyThread(pendingEvents, listeners,getDescription().getTitle());
 				logger.debug("Started notify thread " + notifyThread);
 			}
 		}
@@ -769,8 +769,8 @@ class NotifyThread extends Thread {
 	List<ScuflModelEventListener> listeners;
 
 	protected NotifyThread(List<ScuflModelEvent> pendingEvents,
-		List<ScuflModelEventListener> listeners) {
-		super("ScuflModelNotifyThread");
+		List<ScuflModelEventListener> listeners,String title) {
+		super("ScuflModelNotifyThread:"+title);
 		// We'll keep references to the events and listeners, but not the
 		// ScuflModel. That way, its destructor has a chance to stop us.
 		this.pendingEvents = pendingEvents;
