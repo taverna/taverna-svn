@@ -17,7 +17,8 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/enable_logbook_plugin.png" />
+        <imagedata fileref="images/logbook_enable_plugin.png" scale=""
+                   scalefit="" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -33,7 +34,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_mysql.png" />
+        <imagedata fileref="images/logbook_mysql.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -47,7 +48,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_databases.png" />
+        <imagedata fileref="images/logbook_databases.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -60,7 +61,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_database_fail.png" />
+        <imagedata fileref="images/logbook_database_fail.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -79,7 +80,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_clean.png" />
+        <imagedata fileref="images/logbook_clean.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -96,7 +97,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_logged_results.png" />
+        <imagedata fileref="images/logbook_logged_results.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -108,7 +109,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_all_enabled.png" />
+        <imagedata fileref="images/logbook_all_enabled.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -121,7 +122,7 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_nested_workflow.png" />
+        <imagedata fileref="images/logbook_nested_workflow.png" scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
@@ -134,7 +135,8 @@
 
     <mediaobject>
       <imageobject>
-        <imagedata fileref="images/logbook_explore_nested_workflow.png" />
+        <imagedata fileref="images/logbook_explore_nested_workflow.png"
+                   scalefit="1" />
       </imageobject>
     </mediaobject>
   </screenshot>
