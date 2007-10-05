@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="logbook">
+  <title>Taverna LogBook</title>
+
+  <para>The Taverna Log Book (formerly known as the Taverna Provenance Plugin)
+  is a plugin for Taverna that allows users to automatically log their
+  experiments in a database and browse, reload, rerun and maintain past
+  workflows.</para>
+
+  <para>To enable the Log Book use the new Plugin Manager in the Tools
+  menu:</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_enable_plugin.png" scale=""
+                   scalefit="" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>At the moment, in order to use the Log Book<emphasis role="bold">
+  users require access to a MySQL database</emphasis>. (We are working on
+  different implementations, both to improve scalability and, possibly, to
+  avoid the need to access a database.) When you first switch to the Log Book
+  perspective you will be prompted for the database details:</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_mysql.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>Note that you actually need two databases, one for data and one for
+  metadata. The user interface allows you to reuse the same host, username and
+  password across the two databases.</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_databases.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>It will also attempt to create the databases for you if they do not
+  exist and if you have appropriate access rights.</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_database_fail.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>To activate the changes restart Taverna.</para>
+
+  <para>After this, running a workflow in Taverna is automatically logged and
+  can be browsed through the LogBook perspective (<ulink
+  url="http://www.mygrid.org.uk/wiki/Mygrid/LogBook">http://www.mygrid.org.uk/wiki/Mygrid/LogBook</ulink>).
+  Use the <emphasis role="bold">Refresh</emphasis> button to view the latest
+  runs. (Note there is a delay between running and being able to browse the
+  complete log.)</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_clean.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>The level of detail recorded is configurable via a Log Levels menu in
+  the top left corner of the Settings tab. (Because of scalability issues, we
+  recommend to use the <emphasis>Workflow inputs</emphasis> and
+  <emphasis>outputs</emphasis> level of logging for most workflows, to avoid
+  slowing down browsing.) For instance, this is the log of a run where only
+  inputs and outputs are logged</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_logged_results.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>While here is the log of a run with full logging enabled.</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_all_enabled.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>And here is full logging for a workflow containing a nested
+  workflow:</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_nested_workflow.png" scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>The nested workflow run can be explored by right-clicking (ctrl-click
+  on macs) on it.</para>
+
+  <screenshot>
+    <screeninfo></screeninfo>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="images/logbook_explore_nested_workflow.png"
+                   scalefit="1" />
+      </imageobject>
+    </mediaobject>
+  </screenshot>
+
+  <para>In general, right-clicking on the process runs pops-up a menu offering
+  to add the process to the workflow or export the metadata to a file (as
+  RDF). Selecting more than one process run allows to add all the selected
+  processes to the workflow while maintaining the links.</para>
+
+  <section id="logbook_wiki">
+    <title>LogBook Wiki</title>
+
+    <para>Further information about LogBook can be found within the LogBook
+    Wiki page: <ulink
+    url="http://www.mygrid.org.uk/wiki/Mygrid/LogBook">http://www.mygrid.org.uk/wiki/Mygrid/LogBook</ulink></para>
+  </section>
+</section>
