@@ -9,7 +9,7 @@
   <groupId>uk.org.mygrid.taverna</groupId>
   <artifactId>archetypes</artifactId>
   <packaging>pom</packaging>
-  <name>Processors</name>
+  <name>Archetypes</name>
   <version>1.6.2.0</version>
   <modules>
     <module>archetype-localworker</module>
