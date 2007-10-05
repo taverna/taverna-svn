@@ -3,7 +3,7 @@
   <groupId>uk.org.mygrid.feta</groupId>
   <artifactId>feta-engine</artifactId>
   <name>Feta Engine</name>
-  <version>1.1.1</version>
+  <version>1.1.4</version>
   <issueManagement>
     <system>jira</system>
     <url>http://www.mygrid.org.uk/jira</url>
