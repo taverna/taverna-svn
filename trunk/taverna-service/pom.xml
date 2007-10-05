@@ -4,7 +4,7 @@
 	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>remotetaverna</artifactId>
 	<packaging>pom</packaging>
-	<version>0.4.3</version>
+	<version>0.4.4</version>
 	<name>Remote Taverna execution</name>
 	<description>Remote Taverna execution service</description>
 	<issueManagement>
@@ -110,6 +110,29 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
+   		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<repositories>
@@ -198,7 +221,7 @@
 			<id>mygrid-repository</id>
 			<name>myGrid repository</name>
 			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
 			</url>
 		</repository>
 		<!-- use the following if you ARE using a snapshot version. -->
@@ -206,7 +229,7 @@
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot repository</name>
 			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
 			</url>
 		</snapshotRepository>
 		<site>
