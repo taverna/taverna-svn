@@ -10,4 +10,4 @@ REM set ARGS=%ARGS% -Dtaverna.repository=<directory>
 
 REM NB: Proxy configuration settings have now been reverted to being in conf/mygrid.properties
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.6-SNAPSHOT.jar" %*
+java %ARGS% -jar "%~dp0\taverna-bootstrap-1.6.2.0.jar" %*

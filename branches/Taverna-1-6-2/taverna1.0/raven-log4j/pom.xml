@@ -2,13 +2,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.raven</groupId>
   <artifactId>raven-log4j</artifactId>
   <name>Raven log4j support</name>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6.2.0</version>
   <licenses>
     <license>
       <name>GNU Lesser General Public License</name>
@@ -24,7 +24,7 @@
   	<dependency>
       <groupId>uk.org.mygrid.taverna.raven</groupId>
       <artifactId>raven</artifactId>
-      <version>1.6-SNAPSHOT</version>
+      <version>1.6.2.0</version>
     </dependency>
     <dependency>
     	<groupId>log4j</groupId>

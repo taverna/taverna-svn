@@ -3,13 +3,13 @@
   <parent>
     <artifactId>taverna</artifactId>
     <groupId>uk.org.mygrid.taverna</groupId>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.6.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.taverna.raven</groupId>
   <artifactId>raven</artifactId>
   <name>Raven</name>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6.2.0</version>
   <dependencies> 
     <dependency>
       <groupId>junit</groupId>
