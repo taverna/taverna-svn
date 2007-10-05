@@ -63,10 +63,9 @@
     configuration before they are of any use within the workflow. The
     configuration section is accessible from the ' Configure biomart query...
     ' option in the right click context menu for the Biomart processor. When
-    selected this will (after a brief pause while the configuration metadata
-    is retrieved from the Biomart service) show the query configuration panel.
-    The example below shows the initial configuration screen for the data
-    source based on Homo Sapiens genomic data in Ensembl:</para>
+    selected this will show the query configuration panel. The example below
+    shows the initial configuration screen for the data source based on Homo
+    Sapiens genomic data in Ensembl:</para>
 
     <screenshot>
       <screeninfo></screeninfo>
@@ -291,8 +290,10 @@
             </mediaobject>
           </screenshot>
 
-          <para>NB Switching between modes will cause output ports (and any
-          links connected to them) to be removed from the workflow.</para>
+          <note>
+            <para>Switching between modes will cause output ports (and any
+            links connected to them) to be removed from the workflow.</para>
+          </note>
         </listitem>
       </itemizedlist>
     </section>
