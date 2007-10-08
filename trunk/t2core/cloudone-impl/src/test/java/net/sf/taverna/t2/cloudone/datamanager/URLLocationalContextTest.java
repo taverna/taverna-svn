@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
@@ -24,6 +25,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * Tests the {@link LocationalContext} aspects of the {@link DataManager},
+ * {@link DataPeer} and {@link URLReferenceSchemeFactory}.  
+ * 
+ * @author Ian
+ * 
+ */
 public class URLLocationalContextTest {
 
 	private static final String TEST_NS = "TestNS";

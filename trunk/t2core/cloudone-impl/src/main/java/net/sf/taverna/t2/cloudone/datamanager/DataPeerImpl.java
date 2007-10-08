@@ -9,6 +9,14 @@ import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
+/**
+ * Simple implementation of a {@link DataPeer} designed to allow tests of
+ * {@link LocationalContext}. No actual peering is carried out in this
+ * implementation
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class DataPeerImpl implements DataPeer {
 
 	private DataManager dataManager;
@@ -16,6 +24,7 @@ public class DataPeerImpl implements DataPeer {
 	public DataPeerImpl(DataManager dataManager) {
 		this.dataManager = dataManager;
 	}
+	
 	public DataDocument exportDataDocument(
 			Set<LocationalContext> remoteContext,
 			DataDocumentIdentifier identifier) throws NotFoundException {

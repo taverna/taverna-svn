@@ -1,9 +1,15 @@
 package net.sf.taverna.t2.cloudone.impl.url;
 
+import java.net.URL;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.LocationalContext;
-
+import net.sf.taverna.t2.cloudone.entity.Entity;
+/**
+ * Defines the LocationalContext for an {@link Entity} in terms of {@link URL}
+ * @author Ian Dunlop
+ *
+ */
 public class URLLocationalContext implements LocationalContext {
 
 	private Map<String, String> map;
