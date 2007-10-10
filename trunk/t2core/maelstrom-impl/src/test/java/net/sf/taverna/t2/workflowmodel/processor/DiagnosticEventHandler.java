@@ -8,7 +8,7 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 
-class DiagnosticEventHandler extends AbstractAnnotatedThing implements EventHandlingInputPort {
+public class DiagnosticEventHandler extends AbstractAnnotatedThing implements EventHandlingInputPort {
 
 	protected int eventCount = 0;
 
