@@ -13,6 +13,8 @@
 		<module>tsunami-api</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
+		<module>gridsam-activity</module>
+		<module>ogsadai-activity</module>
 	</modules>
 	<licenses>
 		<license>
@@ -80,14 +82,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemProperties>
-                        <property>
-                                <name>java.awt.headless</name>
-                                <value>true</value>
-                        </property>
-                    </systemProperties>
-                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
