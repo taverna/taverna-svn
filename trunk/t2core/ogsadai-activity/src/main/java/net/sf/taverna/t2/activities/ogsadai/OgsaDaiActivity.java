@@ -37,8 +37,8 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 	public void configure(OgsaDaiActivityConfiguration conf) throws ActivityConfigurationException {
 		List<String>mimeTypes = new ArrayList<String>();
 		mimeTypes.add("'text/plain'");
-		getPortBuilder().buildInputPort("SQLExpression",0, mimeTypes);
-		getPortBuilder().buildOutputPort("DataURL", 0, 0, new ArrayList<String>());
+		addInput("SQLExpression",0, mimeTypes);
+		addOutput("DataURL", 0, 0, new ArrayList<String>());
 	}
 
 	@Override
