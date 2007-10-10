@@ -13,8 +13,8 @@
 		<module>tsunami-api</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
-		<module>gridsam-activity</module>
-		<module>ogsadai-activity</module>
+		<!--<module>gridsam-activity</module>
+		--><module>ogsadai-activity</module>
 	</modules>
 	<licenses>
 		<license>
