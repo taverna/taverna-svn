@@ -11,20 +11,25 @@
   <name>OGSA-DAI Activity</name>
   <version>0.1-SNAPSHOT</version>
   <repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>ogsadai-repository</id>
-			<name>OgsaDai Repository</name>
-			<url>http://www.cs.man.ac.uk/~sowen/maven/repository</url>
-		</repository>
-	</repositories>
+    <repository>
+      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>ogsadai-repository</id>
+      <name>OgsaDai Repository</name>
+      <url>http://www.cs.man.ac.uk/~sowen/maven/repository</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>net.sf.taverna.t2</groupId>
       <artifactId>maelstrom-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.taverna.t2</groupId>
+      <artifactId>maelstrom-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -60,6 +65,16 @@
     <dependency>
       <groupId>ogsadai</groupId>
       <artifactId>ogsadai-core</artifactId>
+      <version>3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>ogsadai</groupId>
+      <artifactId>addressing</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>backport-util-concurrent</groupId>
+      <artifactId>backport-util-concurrent</artifactId>
       <version>3.0</version>
     </dependency>
   </dependencies>
