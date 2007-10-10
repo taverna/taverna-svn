@@ -227,4 +227,8 @@ public class URLReferenceScheme implements ReferenceScheme,
 		}
 	}
 
+	public URL getUrl() {
+		return url;
+	}
+
 }
