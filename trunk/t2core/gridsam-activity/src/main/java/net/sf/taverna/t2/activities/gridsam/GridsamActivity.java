@@ -1,26 +1,14 @@
 package net.sf.taverna.t2.activities.gridsam;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-import org.icenigrid.gridsam.client.common.ClientSideJobManager;
-import org.icenigrid.gridsam.core.JobInstance;
-import org.icenigrid.gridsam.core.JobStage;
-import org.icenigrid.gridsam.core.JobState;
-import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
-
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
-import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
@@ -29,6 +17,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
+
+import org.icenigrid.gridsam.client.common.ClientSideJobManager;
+import org.icenigrid.gridsam.core.JobInstance;
+import org.icenigrid.gridsam.core.JobStage;
+import org.icenigrid.gridsam.core.JobState;
+import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
 
 public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 

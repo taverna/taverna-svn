@@ -2,6 +2,7 @@ package net.sf.taverna.t2.activities.gridsam;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Collections;
@@ -13,10 +14,22 @@ import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
+import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
+import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.processor.AsynchEchoActivity;
+import net.sf.taverna.t2.workflowmodel.processor.EchoConfig;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 import org.apache.commons.io.IOUtils;
@@ -24,6 +37,7 @@ import org.icenigrid.gridsam.client.common.ClientSideJobManager;
 import org.icenigrid.gridsam.core.JobInstance;
 import org.icenigrid.gridsam.core.JobStage;
 import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
+import org.jdom.JDOMException;
 import org.junit.Test;
 
 public class GridsamTest {
@@ -119,11 +133,18 @@ public class GridsamTest {
 	
 	public static final String JOB_MANAGER = "https://172.24.2.34:18443/gridsam/services/gridsam?wsdl";
 
+	public InMemoryDataManager dataManager;	
+	public void makeDataManager() {
+		dataManager = new InMemoryDataManager(
+				"namespace", Collections.EMPTY_SET);
+	}
+	
+
 	@Test
 	public void testGridsam() throws Exception {
 		ClientSideJobManager jobmgr = new ClientSideJobManager(JOB_MANAGER);
 		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(JSDL
-				.replace(IN_URI_KEY, "http://wwdfdfw.soton.ac.uk/"));
+				.replace(IN_URI_KEY, "http://www.soton.ac.uk/"));
 		JobInstance job = jobmgr.submitJob(jobdef);
 		String jobId = job.getID();
 
@@ -146,8 +167,7 @@ public class GridsamTest {
 
 	@Test
 	public void testActivity() throws Exception {
-		final InMemoryDataManager dataManager = new InMemoryDataManager(
-				"namespace", Collections.EMPTY_SET);
+
 
 		ReferenceScheme referenceScheme = new URLReferenceScheme(new URL(
 				"http://www.soton.ac.uk/"));
@@ -186,4 +206,9 @@ public class GridsamTest {
 		assertEquals("224 inputfile.txt\n", IOUtils.toString(stream));
 	}
 
+	
+
+	
+	
+	
 }
