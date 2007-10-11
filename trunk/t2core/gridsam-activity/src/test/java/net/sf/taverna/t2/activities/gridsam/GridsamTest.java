@@ -96,8 +96,10 @@ public class GridsamTest {
 	@Test
 	public void testGridsam() throws Exception {
 		ClientSideJobManager jobmgr = new ClientSideJobManager(GridsamActivity.JOB_MANAGER);
-		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(GridsamActivity.JSDL
-				.replace(GridsamActivity.IN_URI_KEY, "http://www.soton.ac.uk/"));
+		String jsdl = GridsamActivity.JSDL
+				.replace(GridsamActivity.IN_URI_KEY, "http://www.soton.ac.uk/");
+		//System.out.println(jsdl);
+		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(jsdl);
 		JobInstance job = jobmgr.submitJob(jobdef);
 		String jobId = job.getID();
 

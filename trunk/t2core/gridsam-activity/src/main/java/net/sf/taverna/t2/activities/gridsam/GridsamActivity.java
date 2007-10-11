@@ -29,6 +29,9 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 
 	public static final String OUT_URI = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/test.txt";
 
+	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
+//	public static final String JOB_MANAGER = "http://doesnotexists/";
+
 	public static final String IN_URI_KEY = "$$$";
 
 	public static final String JSDL = "<JobDefinition xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl\">  "
@@ -46,7 +49,7 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 			+ "            <FileName>inputfile.txt</FileName>"
 			+ "            <CreationFlag>overwrite</CreationFlag>"
 			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
-			+ "            <Source>" + "                <URI>"
+			+ "            <Source>" + "                " + "<URI>"
 			+ IN_URI_KEY
 			+ "</URI>"
 			+ "            </Source>"
@@ -71,8 +74,6 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 			+ "        </DataStaging>"
 			+ "    </JobDescription>" + "</JobDefinition>";
 
-
-	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
 
 
 	public GridsamActivity() {
