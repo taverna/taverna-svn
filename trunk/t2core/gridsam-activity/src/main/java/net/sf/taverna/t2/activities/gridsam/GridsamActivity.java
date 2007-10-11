@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
@@ -26,13 +27,17 @@ import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
 
 public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 
+	public static int counter = new Random().nextInt();
 
-	public static final String OUT_URI = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/test.txt";
+	public static final String OUT_URI_BASE = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/";
 
 	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
 //	public static final String JOB_MANAGER = "http://doesnotexists/";
 
-	public static final String IN_URI_KEY = "$$$";
+	public static final String IN_URI_KEY = "$in$";
+
+	public static final String OUT_URI_KEY = "$out$";
+
 
 	public static final String JSDL = "<JobDefinition xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl\">  "
 			+ "   <JobDescription>"
@@ -68,7 +73,7 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
 			+ "            <Target>"
 			+ "                <URI>"
-			+ OUT_URI
+			+ OUT_URI_KEY
 			+ "</URI>"
 			+ "            </Target>"
 			+ "        </DataStaging>"
@@ -107,9 +112,10 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 
 					ClientSideJobManager jobmgr = new ClientSideJobManager(
 							JOB_MANAGER);
+					String out_uri = makeOutURI();
 					JobDefinitionDocument jobdef = JobDefinitionDocument.Factory
 							.parse(JSDL.replace(
-									IN_URI_KEY, url.toString()));
+									IN_URI_KEY, url.toString()).replace(OUT_URI_KEY, out_uri));
 					JobInstance job = jobmgr.submitJob(jobdef);
 					String jobId = job.getID();
 
@@ -134,7 +140,7 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 					}
 
 					ReferenceScheme referenceScheme = new URLReferenceScheme(
-							new URL(OUT_URI));
+							new URL(out_uri));
 					DataDocumentIdentifier ref = dataManager
 							.registerDocument(Collections
 									.singleton(referenceScheme));
@@ -148,7 +154,15 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 					e.printStackTrace();
 				}
 			}
+
+
 		});
+	}
+
+	public static String makeOutURI() {
+		String uri = OUT_URI_BASE + "gridsam" + counter++ + ".txt";
+		System.out.println("Making URI " + uri);
+		return uri;
 	}
 
 	@Override

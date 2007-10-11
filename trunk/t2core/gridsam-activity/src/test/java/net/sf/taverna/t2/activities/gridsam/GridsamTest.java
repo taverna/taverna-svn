@@ -96,8 +96,10 @@ public class GridsamTest {
 	@Test
 	public void testGridsam() throws Exception {
 		ClientSideJobManager jobmgr = new ClientSideJobManager(GridsamActivity.JOB_MANAGER);
+		String outURI = GridsamActivity.makeOutURI();
 		String jsdl = GridsamActivity.JSDL
 				.replace(GridsamActivity.IN_URI_KEY, "http://www.soton.ac.uk/");
+		jsdl = jsdl.replace(GridsamActivity.OUT_URI_KEY, outURI);
 		//System.out.println(jsdl);
 		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(jsdl);
 		JobInstance job = jobmgr.submitJob(jobdef);
@@ -114,7 +116,7 @@ public class GridsamTest {
 			}
 		}
 		assertTrue(done);
-		URL outURL = new URL(GridsamActivity.OUT_URI);
+		URL outURL = new URL(outURI);
 		InputStream stream = outURL.openStream();
 		// Assumes www.soton.ac.uk is 224 lines long
 		assertEquals("224 inputfile.txt\n", IOUtils.toString(stream));
@@ -122,7 +124,7 @@ public class GridsamTest {
 
 	@Test
 	public void testActivity() throws Exception {
-
+		String outURI = GridsamActivity.makeOutURI();
 
 		ReferenceScheme referenceScheme = new URLReferenceScheme(new URL(
 				"http://www.soton.ac.uk/"));
@@ -153,10 +155,9 @@ public class GridsamTest {
 			break;
 		}
 		assertNotNull(url);
-		assertEquals(GridsamActivity.OUT_URI, url.toString());
+		assertTrue(url.toString().startsWith(GridsamActivity.OUT_URI_KEY));
 		// Check content
-		URL outURL = new URL(GridsamActivity.OUT_URI);
-		InputStream stream = outURL.openStream();
+		InputStream stream = url.openStream();
 		// Assumes www.soton.ac.uk is 224 lines long
 		assertEquals("224 inputfile.txt\n", IOUtils.toString(stream));
 	}
