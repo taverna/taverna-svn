@@ -81,70 +81,23 @@ public class GridsamTest {
 		}
 
 		public void requestRun(Runnable runMe) {
-			this.thread = new Thread(runMe);
+			thread = new Thread(runMe);
 			thread.start();
 		}
 	}
 
-	public static final String OUT_URI = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/test.txt";
-
-	public static final String IN_URI_KEY = "$$$";
-
-	public static final String JSDL = "<JobDefinition xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl\">  "
-			+ "   <JobDescription>"
-			+ "      <Application>"
-			+ " <POSIXApplication xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl-posix\">"
-			+ "<Executable>/usr/bin/wc</Executable> "
-			+ "<Argument>-l</Argument> "
-			+ "<Argument>inputfile.txt</Argument> "
-			+ "<Output>stdout.txt</Output> "
-			+ "<Error>error.txt</Error> "
-			+ "</POSIXApplication>"
-			+ "        </Application>"
-			+ "        <DataStaging>"
-			+ "            <FileName>inputfile.txt</FileName>"
-			+ "            <CreationFlag>overwrite</CreationFlag>"
-			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
-			+ "            <Source>" + "                <URI>"
-			+ IN_URI_KEY
-			+ "</URI>"
-			+ "            </Source>"
-			+ "        </DataStaging>"
-			+ "        <DataStaging>"
-			+ "            <FileName>error.txt</FileName>"
-			+ "            <CreationFlag>overwrite</CreationFlag>"
-			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
-			+ "            <Target>"
-			+ "                <URI>ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/error.txt</URI>"
-			+ "            </Target>"
-			+ "        </DataStaging>"
-			+ "        <DataStaging>"
-			+ "            <FileName>stdout.txt</FileName>"
-			+ "            <CreationFlag>overwrite</CreationFlag>"
-			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
-			+ "            <Target>"
-			+ "                <URI>"
-			+ OUT_URI
-			+ "</URI>"
-			+ "            </Target>"
-			+ "        </DataStaging>"
-			+ "    </JobDescription>" + "</JobDefinition>";
-
-	
-	public static final String JOB_MANAGER = "https://172.24.2.34:18443/gridsam/services/gridsam?wsdl";
-
-	public InMemoryDataManager dataManager;	
+	public InMemoryDataManager dataManager;
 	public void makeDataManager() {
 		dataManager = new InMemoryDataManager(
 				"namespace", Collections.EMPTY_SET);
 	}
-	
+
 
 	@Test
 	public void testGridsam() throws Exception {
-		ClientSideJobManager jobmgr = new ClientSideJobManager(JOB_MANAGER);
-		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(JSDL
-				.replace(IN_URI_KEY, "http://www.soton.ac.uk/"));
+		ClientSideJobManager jobmgr = new ClientSideJobManager(GridsamActivity.JOB_MANAGER);
+		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(GridsamActivity.JSDL
+				.replace(GridsamActivity.IN_URI_KEY, "http://www.soton.ac.uk/"));
 		JobInstance job = jobmgr.submitJob(jobdef);
 		String jobId = job.getID();
 
@@ -159,7 +112,7 @@ public class GridsamTest {
 			}
 		}
 		assertTrue(done);
-		URL outURL = new URL(OUT_URI);
+		URL outURL = new URL(GridsamActivity.OUT_URI);
 		InputStream stream = outURL.openStream();
 		// Assumes www.soton.ac.uk is 224 lines long
 		assertEquals("224 inputfile.txt\n", IOUtils.toString(stream));
@@ -198,17 +151,17 @@ public class GridsamTest {
 			break;
 		}
 		assertNotNull(url);
-		assertEquals(OUT_URI, url.toString());
+		assertEquals(GridsamActivity.OUT_URI, url.toString());
 		// Check content
-		URL outURL = new URL(OUT_URI);
+		URL outURL = new URL(GridsamActivity.OUT_URI);
 		InputStream stream = outURL.openStream();
 		// Assumes www.soton.ac.uk is 224 lines long
 		assertEquals("224 inputfile.txt\n", IOUtils.toString(stream));
 	}
 
-	
 
-	
-	
-	
+
+
+
+
 }

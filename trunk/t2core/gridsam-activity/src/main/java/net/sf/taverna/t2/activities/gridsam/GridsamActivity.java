@@ -26,6 +26,55 @@ import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
 
 public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 
+
+	public static final String OUT_URI = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/test.txt";
+
+	public static final String IN_URI_KEY = "$$$";
+
+	public static final String JSDL = "<JobDefinition xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl\">  "
+			+ "   <JobDescription>"
+			+ "      <Application>"
+			+ " <POSIXApplication xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl-posix\">"
+			+ "<Executable>/usr/bin/wc</Executable> "
+			+ "<Argument>-l</Argument> "
+			+ "<Argument>inputfile.txt</Argument> "
+			+ "<Output>stdout.txt</Output> "
+			+ "<Error>error.txt</Error> "
+			+ "</POSIXApplication>"
+			+ "        </Application>"
+			+ "        <DataStaging>"
+			+ "            <FileName>inputfile.txt</FileName>"
+			+ "            <CreationFlag>overwrite</CreationFlag>"
+			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
+			+ "            <Source>" + "                <URI>"
+			+ IN_URI_KEY
+			+ "</URI>"
+			+ "            </Source>"
+			+ "        </DataStaging>"
+			+ "        <DataStaging>"
+			+ "            <FileName>error.txt</FileName>"
+			+ "            <CreationFlag>overwrite</CreationFlag>"
+			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
+			+ "            <Target>"
+			+ "                <URI>ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/error.txt</URI>"
+			+ "            </Target>"
+			+ "        </DataStaging>"
+			+ "        <DataStaging>"
+			+ "            <FileName>stdout.txt</FileName>"
+			+ "            <CreationFlag>overwrite</CreationFlag>"
+			+ "            <DeleteOnTermination>true</DeleteOnTermination>"
+			+ "            <Target>"
+			+ "                <URI>"
+			+ OUT_URI
+			+ "</URI>"
+			+ "            </Target>"
+			+ "        </DataStaging>"
+			+ "    </JobDescription>" + "</JobDefinition>";
+
+
+	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
+
+
 	public GridsamActivity() {
 		// TODO Auto-generated constructor stub
 	}
@@ -56,10 +105,10 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 					}
 
 					ClientSideJobManager jobmgr = new ClientSideJobManager(
-							GridsamTest.JOB_MANAGER);
+							JOB_MANAGER);
 					JobDefinitionDocument jobdef = JobDefinitionDocument.Factory
-							.parse(GridsamTest.JSDL.replace(
-									GridsamTest.IN_URI_KEY, url.toString()));
+							.parse(JSDL.replace(
+									IN_URI_KEY, url.toString()));
 					JobInstance job = jobmgr.submitJob(jobdef);
 					String jobId = job.getID();
 
@@ -84,7 +133,7 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 					}
 
 					ReferenceScheme referenceScheme = new URLReferenceScheme(
-							new URL(GridsamTest.OUT_URI));
+							new URL(OUT_URI));
 					DataDocumentIdentifier ref = dataManager
 							.registerDocument(Collections
 									.singleton(referenceScheme));
