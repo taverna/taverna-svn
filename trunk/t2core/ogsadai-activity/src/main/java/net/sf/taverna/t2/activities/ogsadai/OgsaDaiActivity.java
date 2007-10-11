@@ -94,7 +94,7 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 			throws Exception
 	{
 		ServerProxy server = new ServerProxy();
-		String baseURL = "http://test.ogsadai.org.uk:8080/dai/services";
+		String baseURL = "http://test.ogsadai.org.uk:8080/dai/services/";
 		server.setDefaultBaseServicesURL(new URL(baseURL));
 		ResourceID drerID = new ResourceID("DataRequestExecutionResource");
 		DataRequestExecutionResource drer = server
