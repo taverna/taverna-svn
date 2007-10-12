@@ -11,7 +11,7 @@ import net.sf.taverna.t2.workflowmodel.EditException;
  */
 public class CreateDataflowOutputPortEdit extends AbstractDataflowEdit {
 
-	String newPortName;
+	private String newPortName;
 
 	public CreateDataflowOutputPortEdit(Dataflow dataflow, String portName) {
 		super(dataflow);
