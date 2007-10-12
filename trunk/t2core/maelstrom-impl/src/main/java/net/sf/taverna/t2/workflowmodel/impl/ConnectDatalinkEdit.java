@@ -8,7 +8,7 @@ import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 /**
  * Connect a datalink to its source and sink.
  * 
- * @author Tom Oinn
+ * @author David Withers
  * 
  */
 public class ConnectDatalinkEdit extends AbstractDatalinkEdit {
