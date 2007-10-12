@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>activities</artifactId>
+		<groupId>net.sf.taverna.t2</groupId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>beanshell-activity</artifactId>
-	<version>0.1-SNAPSHOT</version>
 	<name>Taverna 2 Beanshell Activity.</name>
-	<parent>
-		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>activities</artifactId>
-		<version>0.1-SNAPSHOT</version>
-	</parent>
+	<version>0.1-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.beanshell</groupId>
@@ -26,5 +28,18 @@
 			<artifactId>cloudone-impl</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>activity-test-utils</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>
+

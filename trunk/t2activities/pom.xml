@@ -8,6 +8,7 @@
   <description>A collection of Taverna 2 Activities. These are the core activities required to cover the functionality of Taverna 1.</description>
   <packaging>pom</packaging>
   <modules>
+  	<module>activity-test-utils</module>
   	<module>beanshell-activity</module>
   	<module>beanshell-activity-translator</module>
   </modules>
