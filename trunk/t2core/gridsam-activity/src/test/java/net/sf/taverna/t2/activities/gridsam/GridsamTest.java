@@ -38,6 +38,7 @@ import org.icenigrid.gridsam.core.JobInstance;
 import org.icenigrid.gridsam.core.JobStage;
 import org.icenigrid.schema.jsdl.y2005.m11.JobDefinitionDocument;
 import org.jdom.JDOMException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class GridsamTest {
@@ -87,14 +88,25 @@ public class GridsamTest {
 	}
 
 	public InMemoryDataManager dataManager;
+
+	@Before
 	public void makeDataManager() {
 		dataManager = new InMemoryDataManager(
 				"namespace", Collections.EMPTY_SET);
+
+	}
+
+	@Before
+	public void resetClientConfig() {
+		System.getProperties().remove("axis.ClientConfigFile");
 	}
 
 
 	@Test
 	public void testGridsam() throws Exception {
+		System.setProperty("axis.ClientConfigFile", "/gridsam-client-config.wsdd");
+
+		System.out.println("client-config.wsdd: " + getClass().getResource("/client-config.wsdd"));
 		ClientSideJobManager jobmgr = new ClientSideJobManager(GridsamActivity.JOB_MANAGER);
 		String outURI = GridsamActivity.makeOutURI();
 		String jsdl = GridsamActivity.JSDL
@@ -104,6 +116,7 @@ public class GridsamTest {
 		JobDefinitionDocument jobdef = JobDefinitionDocument.Factory.parse(jsdl);
 		JobInstance job = jobmgr.submitJob(jobdef);
 		String jobId = job.getID();
+
 
 		boolean done = false;
 		while (!done) {
@@ -155,7 +168,6 @@ public class GridsamTest {
 			break;
 		}
 		assertNotNull(url);
-		assertTrue(url.toString().startsWith(GridsamActivity.OUT_URI_KEY));
 		// Check content
 		InputStream stream = url.openStream();
 		// Assumes www.soton.ac.uk is 224 lines long

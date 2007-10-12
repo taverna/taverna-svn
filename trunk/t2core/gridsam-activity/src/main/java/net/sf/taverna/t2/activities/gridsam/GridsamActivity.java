@@ -31,13 +31,13 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 
 	public static final String OUT_URI_BASE = "ftp://gridsam.lesc.doc.ic.ac.uk:45521/public/";
 
-	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
+//	public static final String JOB_MANAGER = "https://rpc268.cs.man.ac.uk:18443/gridsam/services/gridsam?wsdl";
+	public static final String JOB_MANAGER = "http://rpc268.cs.man.ac.uk:18080/gridsam/services/gridsam?wsdl";
 //	public static final String JOB_MANAGER = "http://doesnotexists/";
 
 	public static final String IN_URI_KEY = "$in$";
 
 	public static final String OUT_URI_KEY = "$out$";
-
 
 	public static final String JSDL = "<JobDefinition xmlns=\"http://schemas.ggf.org/jsdl/2005/11/jsdl\">  "
 			+ "   <JobDescription>"
@@ -92,6 +92,8 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 		callback.requestRun(new Runnable() {
 			public void run() {
 
+				System.setProperty("axis.ClientConfigFile", "/gridsam-client-config.wsdd");
+
 				try {
 					DataManager dataManager = callback.getLocalDataManager();
 					EntityIdentifier entId = data.get("inputPort");
@@ -113,9 +115,11 @@ public class GridsamActivity extends AbstractAsynchronousActivity<Object> {
 					ClientSideJobManager jobmgr = new ClientSideJobManager(
 							JOB_MANAGER);
 					String out_uri = makeOutURI();
+					String jsdl = JSDL.replace(
+							IN_URI_KEY, url.toString()).replace(OUT_URI_KEY, out_uri);
 					JobDefinitionDocument jobdef = JobDefinitionDocument.Factory
-							.parse(JSDL.replace(
-									IN_URI_KEY, url.toString()).replace(OUT_URI_KEY, out_uri));
+							.parse(jsdl);
+					System.out.println(jsdl);
 					JobInstance job = jobmgr.submitJob(jobdef);
 					String jobId = job.getID();
 

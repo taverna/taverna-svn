@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
+
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -43,8 +45,8 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 
 	@Override
 	public void executeAsynch(
-			final Map<String, EntityIdentifier> data, 
-			final AsynchronousActivityCallback callback) 
+			final Map<String, EntityIdentifier> data,
+			final AsynchronousActivityCallback callback)
 	{
 		callback.requestRun(new Runnable()
 		{
@@ -62,7 +64,7 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 					Map<String, EntityIdentifier> output = new HashMap<String, EntityIdentifier>();
 					output.put("DataURL", docid);
 					callback.receiveResult(output, new int[0]);
-					
+
 				} catch (RetrievalException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -71,12 +73,12 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 					e.printStackTrace();
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					callback.fail("OGSA-DAI call failed: " 
+					callback.fail("OGSA-DAI call failed: "
 							+ e.getClass().getName() + ", " + e.getMessage());
 				}
 			}
 
-			
+
 		});
 	}
 
@@ -93,6 +95,8 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 	private static String getDataURL(String sqlExpression)
 			throws Exception
 	{
+
+		System.setProperty("axis.ClientConfigFile", "/ogsadai-client-config.wsdd");
 		ServerProxy server = new ServerProxy();
 		String baseURL = "http://test.ogsadai.org.uk:8080/dai/services/";
 		server.setDefaultBaseServicesURL(new URL(baseURL));
@@ -125,12 +129,12 @@ public class OgsaDaiActivity extends AbstractAsynchronousActivity<OgsaDaiActivit
 		pipeline.add(write);
 		drer.execute(pipeline, RequestExecutionType.ASYNCHRONOUS);
 		String dataURL = baseURL + "Omii?resourceId=" + dataSource.toString();
+		System.out.println("data is " + dataURL);
 		return dataURL;
 	}
 
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception	{
 		System.out.println(getDataURL("select * from littleblackbook where id<10"));
 	}
-	
+
 }
