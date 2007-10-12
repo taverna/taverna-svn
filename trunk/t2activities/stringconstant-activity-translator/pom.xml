@@ -2,9 +2,9 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>beanshell-activity-translator</artifactId>
+	<artifactId>stringconstant-activity-translator</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>Taverna 2 Beanshell Activity Translator.</name>
+	<name>Taverna 2 StringConstant Activity Translator.</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>activities</artifactId>
@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>beanshell-activity</artifactId>
+			<artifactId>stringconstant-activity</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -35,7 +35,7 @@
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-beanshell-processor</artifactId>
+			<artifactId>taverna-stringconstant-processor</artifactId>
 			<version>1.6.2.0</version>
 			<scope>test</scope>
 		</dependency>
