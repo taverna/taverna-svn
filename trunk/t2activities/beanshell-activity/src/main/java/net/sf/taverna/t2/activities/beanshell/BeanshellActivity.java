@@ -42,15 +42,16 @@ public class BeanshellActivity extends
 	@Override
 	protected ActivityPortBuilder getPortBuilder() {
 		//FIXME: remove this dependency on the maelstrom-impl. This is currently the only link between the 2. 
-		//There are easy ways to do this, but non of them particularly elegant. Passing the builder to configure involves passing it around all over the place.
+		//There are easy ways to do this, but non of them particularly elegant. 
+		//Passing the builder to configure involves passing it around all over the place.
 		return ActivityPortBuilderImpl.getInstance();
 	} 
 
 	@Override
-	public void configure(BeanshellActivityConfigurationBean configurationBeans)
+	public void configure(BeanshellActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
-		this.configurationBean = configurationBeans;
-		configurePorts(configurationBeans);
+		this.configurationBean = configurationBean;
+		configurePorts(configurationBean);
 	}
 
 	@Override
