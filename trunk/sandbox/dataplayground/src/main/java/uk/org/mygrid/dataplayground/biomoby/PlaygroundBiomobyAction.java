@@ -258,7 +258,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 								JMenuItem item = new JMenuItem("Add Datatype - " + selectedObject
 										+ " to the Playground?");
 								item
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 								item.addActionListener(new ActionListener() {
 									// private boolean added = false;
 
@@ -296,7 +296,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 								// Create and add a menu item for service details
 								JMenuItem details = new JMenuItem("Find out about " + selectedObject);
 								details
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 								details.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										Dimension loc = new Dimension(100, 100);
@@ -340,7 +340,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 								JMenuItem item = new JMenuItem("Add Datatype - " + selectedObject
 										+ " to the Playground?");
 								item
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 								item.addActionListener(new ActionListener() {
 									// private boolean added = false;
 
@@ -380,7 +380,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 								// Create and add a menu item for service details
 								JMenuItem details = new JMenuItem("Find out about " + selectedObject);
 								details
-										.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+										.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 								details.addActionListener(new ActionListener() {
 									public void actionPerformed(ActionEvent ae) {
 										Dimension loc = new Dimension(100, 100);
@@ -442,7 +442,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 									JMenuItem item = new JMenuItem("Find Services that Consume "
 											+ selectedObject + " - brief search");
 									item
-											.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+											.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 									final String potentialCollectionString = path.getParentPath()
 											.getLastPathComponent().toString();
 									final boolean isCollection = potentialCollectionString
@@ -562,7 +562,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 									JMenuItem item2 = new JMenuItem("Find Services that Consume "
 											+ selectedObject + " - semantic search");
 									item2
-											.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Search24.gif"));
+											.setIcon(getIcon("org/biomoby/client/taverna/plugin/Search24.gif"));
 									item2.addActionListener(new ActionListener() {
 										public void actionPerformed(ActionEvent ae) {
 											// you would like to search for

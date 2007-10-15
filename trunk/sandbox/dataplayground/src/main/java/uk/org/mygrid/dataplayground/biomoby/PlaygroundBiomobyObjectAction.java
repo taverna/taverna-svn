@@ -224,7 +224,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 									JMenuItem item = new JMenuItem("Add service - " + selectedService
 											+ " to the Playground?");
 									item
-											.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Add24.gif"));
+											.setIcon(getIcon("org/biomoby/client/taverna/plugin/Add24.gif"));
 									item.addActionListener(new ActionListener() {
 										public void actionPerformed(ActionEvent ae) {
 											String defaultName = selectedService;
@@ -291,7 +291,7 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 									JMenuItem details = new JMenuItem("Find out about "
 											+ selectedService);
 									details
-											.setIcon(getIcon("org/biomoby/client/ui/graphical/applets/img/toolbarButtonGraphics/general/Information24.gif"));
+											.setIcon(getIcon("org/biomoby/client/taverna/plugin/Information24.gif"));
 									details.addActionListener(new ActionListener() {
 										public void actionPerformed(ActionEvent ae) {
 											Dimension loc = new Dimension(100, 100);
