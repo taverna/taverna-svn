@@ -56,8 +56,6 @@ public class ActivityInvoker {
 			EntityIdentifier id = callback.data.get(outputName);
 			if (id != null) {
 				results.put(outputName, dataFacade.resolve(id));
-			} else {
-				results.put(outputName, null);
 			}
 		}
 
