@@ -11,6 +11,8 @@
   	<module>activity-test-utils</module>
   	<module>beanshell-activity</module>
   	<module>beanshell-activity-translator</module>
+  	<module>biomart-activity</module>
+  	<module>biomart-activity-translator</module>
   	<module>stringconstant-activity</module>
   	<module>stringconstant-activity-translator</module>
   </modules>
@@ -49,29 +51,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
 	</build>
 	<reporting>
