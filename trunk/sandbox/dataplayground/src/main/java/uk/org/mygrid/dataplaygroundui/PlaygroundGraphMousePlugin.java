@@ -187,7 +187,7 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin impleme
             			playgroundInputPanel.setData((PlaygroundDataThing)vertex);
             			playgroundRendererPanel.select((PlaygroundDataThing)vertex);
             			
-            		   if((e.getModifiers() & MouseEvent.CTRL_MASK) != 0){
+            		   if((e.getModifiers() & MouseEvent.ALT_MASK) != 0){
             			   dragging = true;
             			    startVertex = vertex;
             			    down = e.getPoint();
@@ -203,7 +203,7 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin impleme
             		//	System.out.println("hello 2");
             			startVertex = vertex;
             			down = e.getPoint();
-            				 if((e.getModifiers() & MouseEvent.CTRL_MASK) != 0){
+            				 if((e.getModifiers() & MouseEvent.ALT_MASK) != 0){
             				 dragging = true;
              			    startVertex = vertex;
              			    down = e.getPoint();
