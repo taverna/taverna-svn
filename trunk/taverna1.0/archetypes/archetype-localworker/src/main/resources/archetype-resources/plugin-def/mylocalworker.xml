@@ -14,6 +14,6 @@
 			version="${version}" />
 	</profile>
 	<taverna>
-		<version>1.5.2</version>
+		<version>1.6.2</version>
 	</taverna>
 </plugin>

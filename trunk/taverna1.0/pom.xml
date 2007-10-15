@@ -169,6 +169,29 @@
 					</descriptors>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 	<profiles>
@@ -358,7 +381,6 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<distributionManagement>
-		<!-- use the following if you're not using a snapshot version. -->
 		<repository>
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
@@ -366,7 +388,6 @@
 				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
 			</url>
 		</repository>
-		<!-- use the following if you ARE using a snapshot version. -->
 		<snapshotRepository>
 			<id>mygrid-snapshot-repository</id>
 			<name>myGrid Snapshot Repository</name>
