@@ -15,7 +15,7 @@ public class PlaygroundPortObject extends PlaygroundObject {
 	boolean invisible;
 	
 	//Holds the playground object mapped to this port , could be a PlaygroundDataThing or PlaygroundDataObject 
-	PlaygroundObject mappedObject;
+	PlaygroundObject mappedObject = null;
 	
 	public PlaygroundPortObject(Port p){
 		
@@ -39,7 +39,7 @@ public class PlaygroundPortObject extends PlaygroundObject {
 		if(i.hasNext())
 			return (PlaygroundObject)i.next();
 		
-		return null;
+		return mappedObject;
 	}
 
 	public void setMappedObject(PlaygroundObject mappedObject) {
