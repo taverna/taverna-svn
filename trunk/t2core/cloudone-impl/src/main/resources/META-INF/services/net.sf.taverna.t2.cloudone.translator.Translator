@@ -1,0 +1,5 @@
+# A comment
+
+# and a blank line
+   net.sf.taverna.t2.cloudone.translator.AnyToBlobTranslator 
+net.sf.taverna.t2.cloudone.translator.AnyToURLTranslator #Êand something afterwards
