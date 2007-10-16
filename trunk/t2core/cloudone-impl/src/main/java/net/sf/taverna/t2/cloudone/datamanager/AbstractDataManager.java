@@ -29,10 +29,10 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * locational contexts, subclasses only need to implement
  * {@link #storeEntity(Entity)}, {@link #retrieveEntity(EntityIdentifier)} and
  * {@link #generateId(IDType)}.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public abstract class AbstractDataManager implements DataManager {
 
@@ -50,7 +50,7 @@ public abstract class AbstractDataManager implements DataManager {
 	/**
 	 * Construct an AbstractDataManager with a given namespace and a set of
 	 * contexts.
-	 *
+	 * 
 	 * @param namespace
 	 *            Unique namespace that will be the
 	 *            {@link #getCurrentNamespace()}
@@ -70,7 +70,7 @@ public abstract class AbstractDataManager implements DataManager {
 	/**
 	 * The current namespace. Identifiers created with
 	 * {@link #nextDataIdentifier()} etc. will use this namespace.
-	 *
+	 * 
 	 */
 	public String getCurrentNamespace() {
 		return namespace;
@@ -111,7 +111,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Generate a new {@link DataDocumentIdentifier} in the current namespace.
-	 *
+	 * 
 	 * @return The new {@link DataDocumentIdentifier}.
 	 */
 	public DataDocumentIdentifier nextDataIdentifier() {
@@ -121,9 +121,11 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Generate a new {@link ErrorDocumentIdentifier} in the current namespace.
-	 *
-	 * @param depth The depth of the error document
-	 * @param implicitDepth The implicit depth of the error document
+	 * 
+	 * @param depth
+	 *            The depth of the error document
+	 * @param implicitDepth
+	 *            The implicit depth of the error document
 	 * @return The new {@link ErrorDocumentIdentifier}.
 	 */
 	public ErrorDocumentIdentifier nextErrorIdentifier(int depth,
@@ -139,8 +141,9 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Generate a new {@link EntityListIdentifier} in the current namespace.
-	 *
-	 * @param depth The depth of the list
+	 * 
+	 * @param depth
+	 *            The depth of the list
 	 * @return The new {@link EntityListIdentifier}.
 	 */
 	public EntityListIdentifier nextListIdentifier(int depth)
@@ -152,6 +155,15 @@ public abstract class AbstractDataManager implements DataManager {
 		return new EntityListIdentifier(id);
 	}
 
+	/**
+	 * @see DataManager#registerDocument(ReferenceScheme...)
+	 */
+	public DataDocumentIdentifier registerDocument(
+			ReferenceScheme... references) throws StorageException {
+		HashSet<ReferenceScheme> referenceSet = new HashSet<ReferenceScheme>(
+				Arrays.asList(references));
+		return registerDocument(referenceSet);
+	}
 
 	/**
 	 * @see DataManager#registerDocument(Set)
@@ -276,7 +288,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Retrieve the entity.
-	 *
+	 * 
 	 * @param <ID>
 	 *            The type of {@link EntityIdentifier}
 	 * @param id
@@ -290,7 +302,7 @@ public abstract class AbstractDataManager implements DataManager {
 
 	/**
 	 * Store the entity.
-	 *
+	 * 
 	 * @param <Bean>
 	 *            Bean that can be serialised
 	 * @param entity
