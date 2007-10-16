@@ -13,7 +13,7 @@ public class TranslatorRegistrySPITest {
 	SPIRegistry<Translator> registry = TranslatorRegistry.getInstance();
 	
 	@Test
-	public void findStuff() {
+	public void getInstances() {
 		List<Translator> instances = registry.getInstances();
 		assertEquals(2, instances.size());
 		assertTrue(instances.get(0) instanceof AnyToBlobTranslator);
