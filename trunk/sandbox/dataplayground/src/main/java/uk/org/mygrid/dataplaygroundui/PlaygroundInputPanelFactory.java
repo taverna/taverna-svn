@@ -8,7 +8,7 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 public class PlaygroundInputPanelFactory implements UIComponentFactorySPI {
 
 	public String getName() {
-		
+
 		return "Data Input";
 	}
 

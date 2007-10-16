@@ -11,18 +11,18 @@ public class PlaygroundVertexPredicate implements Predicate {
 	public boolean evaluate(Object object) {
 
 		if (object instanceof PlaygroundDataObject) {
-			return !((PlaygroundDataObject)object).isHidden();
+			return !((PlaygroundDataObject) object).isHidden();
 		}
 		if (object instanceof PlaygroundPortObject) {
-			return !((PlaygroundPortObject)object).isHidden();
+			return !((PlaygroundPortObject) object).isHidden();
 		}
 
 		if (object instanceof PlaygroundDataThing) {
-			return !((PlaygroundDataThing)object).isHidden();
+			return !((PlaygroundDataThing) object).isHidden();
 		}
 
-	return true;
-	
+		return true;
+
 	}
 
 }

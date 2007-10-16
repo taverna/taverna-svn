@@ -8,19 +8,20 @@ import org.embl.ebi.escience.scufl.Port;
 public class PlaygroundPortObject extends PlaygroundObject {
 
 	Port port;
-	
-	//	set if this vertex is supposed to be hidden in the graph visualisation;
+
+	// set if this vertex is supposed to be hidden in the graph visualisation;
 	boolean hidden;
-	//set if we never want to see this port object in the visualisation;
+	// set if we never want to see this port object in the visualisation;
 	boolean invisible;
-	
-	//Holds the playground object mapped to this port , could be a PlaygroundDataThing or PlaygroundDataObject 
+
+	// Holds the playground object mapped to this port , could be a
+	// PlaygroundDataThing or PlaygroundDataObject
 	PlaygroundObject mappedObject = null;
-	
-	public PlaygroundPortObject(Port p){
-		
-		 port = p;
-		 setName(p.getName());
+
+	public PlaygroundPortObject(Port p) {
+
+		port = p;
+		setName(p.getName());
 	}
 
 	public Port getPort() {
@@ -31,21 +32,22 @@ public class PlaygroundPortObject extends PlaygroundObject {
 		port = p;
 	}
 
+	@SuppressWarnings("unchecked")
 	public PlaygroundObject getMappedObject() {
-		
+
 		Set predecessors = getPredecessors();
 		Iterator i = predecessors.iterator();
-		
-		if(i.hasNext())
-			return (PlaygroundObject)i.next();
-		
+
+		if (i.hasNext())
+			return (PlaygroundObject) i.next();
+
 		return mappedObject;
 	}
 
 	public void setMappedObject(PlaygroundObject mappedObject) {
 		this.mappedObject = mappedObject;
 	}
-	
+
 	public String toString() {
 
 		return getName();
@@ -67,8 +69,4 @@ public class PlaygroundPortObject extends PlaygroundObject {
 		this.invisible = invisible;
 	}
 
-	
-	
-	
-	
 }

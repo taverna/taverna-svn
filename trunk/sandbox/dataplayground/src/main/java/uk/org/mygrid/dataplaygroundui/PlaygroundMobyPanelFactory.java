@@ -7,7 +7,7 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class PlaygroundMobyPanelFactory implements UIComponentFactorySPI {
 
-	public String getName() {		
+	public String getName() {
 		return "Moby Panel";
 	}
 

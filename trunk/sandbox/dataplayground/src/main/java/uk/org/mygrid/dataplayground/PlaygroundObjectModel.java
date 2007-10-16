@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import org.biomoby.client.taverna.plugin.BiomobyObjectProcessor;
 import org.biomoby.client.taverna.plugin.BiomobyProcessor;
 import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessor;
@@ -19,38 +17,23 @@ import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.PortCreationException;
-import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.ScuflModelEvent;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.enactor.WorkflowSubmissionException;
 import org.embl.ebi.escience.scufl.tools.WorkflowLauncher;
 import org.embl.ebi.escience.scufl.view.XScuflView;
 
-import com.sun.media.sound.DataPusher;
-
 import uk.ac.soton.itinnovation.freefluo.main.InvalidInputException;
-
-import edu.uci.ics.jung.graph.ArchetypeGraph;
 import edu.uci.ics.jung.graph.Edge;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.Vertex;
 import edu.uci.ics.jung.graph.impl.DirectedSparseEdge;
 import edu.uci.ics.jung.graph.impl.SparseGraph;
-import edu.uci.ics.jung.graph.impl.SparseVertex;
-import edu.uci.ics.jung.graph.impl.UndirectedSparseEdge;
-import edu.uci.ics.jung.random.generators.SimpleRandomGenerator;
-import edu.uci.ics.jung.utils.TestGraphs;
 
 public class PlaygroundObjectModel {
 
 	private Graph graph;
-
-	// When deleting nodes simply move them to another graph maintaining their
-	// structure allowing
-	// for easy undo
-	private Graph recycleBin = new SparseGraph();
 
 	// holds the workflow currently being recorded
 	private static ScuflModel recordedWorkflow = new ScuflModel();
@@ -61,11 +44,8 @@ public class PlaygroundObjectModel {
 
 	private static Map<PlaygroundDataObject, MobyParseDatatypeProcessor> recordedParserMap = new HashMap<PlaygroundDataObject, MobyParseDatatypeProcessor>();
 
-	private static Map<PlaygroundPortObject, Port> recordedParserPortMap = new HashMap<PlaygroundPortObject, Port>();
-
 	public PlaygroundObjectModel() {
 		graph = new SparseGraph();
-
 	}
 
 	/**
@@ -74,10 +54,8 @@ public class PlaygroundObjectModel {
 	 * @param newProcessor
 	 */
 	public Vertex addProcessor(BiomobyProcessor newProcessor) {
-
 		Vertex v = graph.addVertex(new PlaygroundProcessorObject(newProcessor));
 		return v;
-
 	}
 
 	public Vertex addDataObject(BiomobyObjectProcessor newProcessor) {
@@ -92,24 +70,18 @@ public class PlaygroundObjectModel {
 
 	public void addDataComponent(PlaygroundDataObject parent,
 			PlaygroundDataObject component) {
-
 		graph.addVertex(component);
 		Edge e = new DirectedSparseEdge(component, parent);
 		graph.addEdge(e);
-
 	}
 
 	public Vertex addDataThing(PlaygroundDataThing pdt) {
-
 		Vertex v = graph.addVertex(pdt);
 		return v;
-
 	}
 
 	public void mapObjects(PlaygroundObject start, PlaygroundObject end) {
-
 		graph.addEdge(new DirectedSparseEdge(start, end));
-
 	}
 
 	public Graph getGraph() {
@@ -117,11 +89,9 @@ public class PlaygroundObjectModel {
 	}
 
 	public void addPort(PlaygroundObject parent, PlaygroundPortObject port) {
-
 		graph.addVertex(port);
 		Edge e = new DirectedSparseEdge(port, parent);
 		graph.addEdge(e);
-
 	}
 
 	public void addPortDataThing(PlaygroundPortObject parent,
@@ -129,10 +99,9 @@ public class PlaygroundObjectModel {
 		graph.addVertex(thing);
 		Edge e = new DirectedSparseEdge(thing, parent);
 		graph.addEdge(e);
-
 	}
 
-	// Handels the Creation of the workflow to produce the new Data Object and
+	// Handles the Creation of the workflow to produce the new Data Object and
 	// if we are in recording mode also constructs the recordedWorkflow in
 	// parallel
 
@@ -140,7 +109,7 @@ public class PlaygroundObjectModel {
 	public static synchronized ArrayList<PlaygroundObject> run(
 			PlaygroundProcessorObject processorObject, boolean recording) {
 
-		// the ScuflModel for this workflow
+		// the ScuflModel for the temporary workflow
 		ScuflModel model = new ScuflModel();
 		// A Map generated with the inputs(DataThings) to this workflow
 		HashMap<String, DataThing> inputMap = new HashMap<String, DataThing>();
@@ -150,7 +119,6 @@ public class PlaygroundObjectModel {
 		HashMap<PlaygroundObject, ArrayList<String>> resultMap = new HashMap<PlaygroundObject, ArrayList<String>>();
 
 		try {
-
 			model.addProcessor(processorObject.getProcessor());
 
 			if (recording) {
@@ -178,8 +146,8 @@ public class PlaygroundObjectModel {
 					// create an output port for the recorded workflow mapped to
 					// the output ports from
 
-					if (!(p.getName().contains("Collection") && !p
-							.getName().contains("As Simples"))) {
+					if (!(p.getName().contains("Collection") && !p.getName()
+							.contains("As Simples"))) {
 
 						InputPort outPort = new InputPort(recordedWorkflow
 								.getWorkflowSinkProcessor(), p.getName());
@@ -309,7 +277,6 @@ public class PlaygroundObjectModel {
 				HashMap<String, PlaygroundPortObject> portObjects = (HashMap) pdo
 						.getInputPortObjects();
 
-				
 				for (Iterator j = portNames.iterator(); j.hasNext();) {
 
 					String portName = (String) j.next();
@@ -317,10 +284,8 @@ public class PlaygroundObjectModel {
 					String portNameArticle = portName.substring(portName
 							.lastIndexOf("_"));
 					PlaygroundDataThing playgroundDataThing = new PlaygroundDataThing(
-							(DataThing) workflowResultMap
-									.get(portName), portName
-									.substring(portName
-											.lastIndexOf("_")));
+							(DataThing) workflowResultMap.get(portName),
+							portName.substring(portName.lastIndexOf("_")));
 					if (portNameArticle.contains(new StringBuffer("namespace"))) {
 
 						PlaygroundPortObject portObject = (PlaygroundPortObject) portObjects
@@ -339,19 +304,15 @@ public class PlaygroundObjectModel {
 									.lastIndexOf("'"));
 							String articleName = halfway.substring(halfway
 									.lastIndexOf("'") + 1);
-							componentsByArticleName
-									.get(articleName)
-									.getInputPortObjects()
-									.get("id")
-									.setMappedObject(
-											playgroundDataThing);
+							componentsByArticleName.get(articleName)
+									.getInputPortObjects().get("id")
+									.setMappedObject(playgroundDataThing);
 
 						} else {
 							// we are looking at top level object
 							PlaygroundPortObject portObject = (PlaygroundPortObject) portObjects
 									.get("id");
-							portObject
-									.setMappedObject(playgroundDataThing);
+							portObject.setMappedObject(playgroundDataThing);
 							playgroundObjects.add(playgroundDataThing);
 						}
 
@@ -367,12 +328,9 @@ public class PlaygroundObjectModel {
 									.lastIndexOf("'"));
 							String articleName = halfway.substring(halfway
 									.lastIndexOf("'") + 1);
-							componentsByArticleName
-									.get(articleName)
-									.getInputPortObjects()
-									.get("namespace")
-									.setMappedObject(
-											playgroundDataThing);
+							componentsByArticleName.get(articleName)
+									.getInputPortObjects().get("namespace")
+									.setMappedObject(playgroundDataThing);
 
 						}
 
@@ -397,18 +355,14 @@ public class PlaygroundObjectModel {
 									.lastIndexOf("'") + 1);
 							System.out
 									.println("article name =  " + articleName);
-							componentsByArticleName
-									.get(articleName)
-									.getInputPortObjects()
-									.get("value")
-									.setMappedObject(
-											playgroundDataThing);
+							componentsByArticleName.get(articleName)
+									.getInputPortObjects().get("value")
+									.setMappedObject(playgroundDataThing);
 						} else {
 
 							PlaygroundPortObject portObject = (PlaygroundPortObject) portObjects
 									.get("value");
-							portObject
-									.setMappedObject(playgroundDataThing);
+							portObject.setMappedObject(playgroundDataThing);
 
 						}
 
@@ -417,7 +371,7 @@ public class PlaygroundObjectModel {
 				}// end for resultMap
 
 			}
-			//return playgroundObjects;
+			// return playgroundObjects;
 			return new ArrayList<PlaygroundObject>(resultMap.keySet());
 
 		} catch (PortCreationException e) {
@@ -557,9 +511,7 @@ public class PlaygroundObjectModel {
 		// else we need to add the data components to the workflow and
 		// map them to the input ports on the parent dataObject
 
-		for (Iterator i = dataComponents.iterator(); i.hasNext();) {
-
-			PlaygroundDataObject child = (PlaygroundDataObject) i.next();
+		for (PlaygroundDataObject child : dataComponents) {
 			BiomobyObjectProcessor childProcessor = child.getProcessor();
 			System.out.println("adding ...dataComponent "
 					+ childProcessor.getName());
@@ -581,12 +533,10 @@ public class PlaygroundObjectModel {
 
 		// if( dataObject.getDataType().equals("Object")){
 
-		ArrayList<PlaygroundPortObject> inputPortObjects = new ArrayList(
+		ArrayList<PlaygroundPortObject> inputPortObjects = new ArrayList<PlaygroundPortObject>(
 				dataObject.getInputPortObjects().values());
 
-		for (Iterator i = inputPortObjects.iterator(); i.hasNext();) {
-
-			PlaygroundPortObject portObject = (PlaygroundPortObject) i.next();
+		for (PlaygroundPortObject portObject : inputPortObjects) {
 			Port port = portObject.getPort();
 			PlaygroundObject playgroundObject = portObject.getMappedObject();
 

@@ -10,61 +10,56 @@ package uk.org.mygrid.dataplayground.biomoby;
 	 * This file is a component of the Taverna project, and is licensed under the
 	 * GNU LGPL. Copyright Edward Kawas, The BioMoby Project
 	 */
-	import java.awt.BorderLayout;
-	import java.awt.Component;
-	import java.awt.Dimension;
-	import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
-	import java.awt.event.MouseEvent;
-	import java.awt.event.MouseListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
-	import java.net.URL;
+import java.net.URL;
 import java.util.Map;
 
-	import javax.swing.ImageIcon;
-	import javax.swing.JComponent;
-	import javax.swing.JLabel;
-	import javax.swing.JMenuItem;
-	import javax.swing.JOptionPane;
-	import javax.swing.JPanel;
-	import javax.swing.JPopupMenu;
-	import javax.swing.JProgressBar;
-	import javax.swing.JScrollPane;
-	import javax.swing.JSeparator;
-	import javax.swing.JTree;
-	import javax.swing.ToolTipManager;
-	import javax.swing.tree.DefaultMutableTreeNode;
-	import javax.swing.tree.TreePath;
-	import javax.swing.tree.TreeSelectionModel;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
-	import org.biomoby.client.CentralImpl;
+import org.biomoby.client.CentralImpl;
 import org.biomoby.client.taverna.plugin.BioMobyServiceTreeCustomRenderer;
 import org.biomoby.client.taverna.plugin.BiomobyObjectProcessor;
 import org.biomoby.client.taverna.plugin.BiomobyObjectProcessorFactory;
 import org.biomoby.client.taverna.plugin.BiomobyProcessor;
 import org.biomoby.client.taverna.plugin.MobyObjectTreeNode;
 import org.biomoby.client.taverna.plugin.MobyPanel;
-import org.biomoby.client.taverna.plugin.MobyParseDatatypeProcessor;
 import org.biomoby.client.taverna.plugin.MobyServiceTreeNode;
-import org.biomoby.client.taverna.plugin.PopupThread;
-	import org.biomoby.shared.Central;
-	import org.biomoby.shared.MobyData;
-	import org.biomoby.shared.MobyDataType;
-	import org.biomoby.shared.MobyException;
-	import org.biomoby.shared.MobyNamespace;
-	import org.biomoby.shared.MobyPrimaryDataSet;
-	import org.biomoby.shared.MobyPrimaryDataSimple;
-	import org.biomoby.shared.NoSuccessException;
-	import org.embl.ebi.escience.scufl.DataConstraint;
-	import org.embl.ebi.escience.scufl.DataConstraintCreationException;
-	import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-	import org.embl.ebi.escience.scufl.Port;
-	import org.embl.ebi.escience.scufl.Processor;
-	import org.embl.ebi.escience.scufl.ProcessorCreationException;
-	import org.embl.ebi.escience.scufl.ScuflModel;
-	import org.embl.ebi.escience.scufl.UnknownPortException;
-	import org.embl.ebi.escience.scuflui.actions.AbstractProcessorAction;
-	import org.embl.ebi.escience.scuflui.shared.UIUtils;
+import org.biomoby.shared.Central;
+import org.biomoby.shared.MobyData;
+import org.biomoby.shared.MobyDataType;
+import org.biomoby.shared.MobyException;
+import org.biomoby.shared.MobyNamespace;
+import org.biomoby.shared.MobyPrimaryDataSet;
+import org.biomoby.shared.MobyPrimaryDataSimple;
+import org.biomoby.shared.NoSuccessException;
+import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
+import org.embl.ebi.escience.scufl.Port;
+import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scufl.ProcessorCreationException;
+import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.actions.AbstractProcessorAction;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
@@ -74,7 +69,6 @@ import uk.org.mygrid.dataplaygroundui.PlaygroundPanel;
 
 		JProgressBar progressBar = new JProgressBar();
 		private PlaygroundPanel playgroundPanel;
-		private static Map<String,MobyObjectTreeNode> newTags;
 		/*
 		 * (non-Javadoc)
 		 * 

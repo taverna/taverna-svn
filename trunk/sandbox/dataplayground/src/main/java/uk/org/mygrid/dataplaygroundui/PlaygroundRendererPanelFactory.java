@@ -8,7 +8,7 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 public class PlaygroundRendererPanelFactory implements UIComponentFactorySPI {
 
 	public String getName() {
-		
+
 		return "Data Viewer";
 	}
 
@@ -18,9 +18,9 @@ public class PlaygroundRendererPanelFactory implements UIComponentFactorySPI {
 	}
 
 	public UIComponentSPI getComponent() {
-		
-	return PlaygroundRendererPanel.getInstance();
-	
+
+		return PlaygroundRendererPanel.getInstance();
+
 	}
 
 }

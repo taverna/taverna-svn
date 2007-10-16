@@ -7,12 +7,9 @@ import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import org.biomoby.client.taverna.plugin.BiomobyAction;
 import org.biomoby.client.taverna.plugin.BiomobyObjectProcessor;
 import org.biomoby.client.taverna.plugin.BiomobyProcessor;
 import org.embl.ebi.escience.scufl.Processor;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.shared.UIUtils;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 import uk.org.mygrid.dataplayground.biomoby.PlaygroundBiomobyAction;
@@ -23,17 +20,18 @@ public class PlaygroundMobyPanel extends JPanel implements UIComponentSPI {
 
 	private static PlaygroundMobyPanel instance;
 
-
 	public PlaygroundMobyPanel() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
-	public void Set(Processor p){
-		
-		if(p instanceof BiomobyObjectProcessor){
-			PlaygroundBiomobyObjectAction action = new PlaygroundBiomobyObjectAction(false);
-			PlaygroundPopupThread popupthread = new PlaygroundPopupThread((BiomobyObjectProcessor)p,action);
+
+	public void Set(Processor p) {
+
+		if (p instanceof BiomobyObjectProcessor) {
+			PlaygroundBiomobyObjectAction action = new PlaygroundBiomobyObjectAction(
+					false);
+			PlaygroundPopupThread popupthread = new PlaygroundPopupThread(
+					(BiomobyObjectProcessor) p, action);
 			popupthread.start();
 			System.out.println("Thread started");
 			while (popupthread.isAlive()) {
@@ -45,48 +43,34 @@ public class PlaygroundMobyPanel extends JPanel implements UIComponentSPI {
 				}
 			}
 
-			
 			Component c = popupthread.getComponent();
-			
-	
+
 			this.removeAll();
 			this.setSize(new Dimension(450, 450));
 			c.setSize(new Dimension(450, 450));
 			this.setLayout(new BorderLayout());
-			this.add(c,BorderLayout.CENTER);
-			
-			
-		}else if(p instanceof BiomobyProcessor){
-		
-			
-		PlaygroundBiomobyAction bma = new PlaygroundBiomobyAction();
-		Component c = bma.getComponent(p);
-		this.removeAll();
-		this.setSize(new Dimension(450, 450));
-		c.setSize(new Dimension(450, 450));
-		this.setLayout(new BorderLayout());
-		this.add(c,BorderLayout.CENTER);
-		
-		
-		
+			this.add(c, BorderLayout.CENTER);
+
+		} else if (p instanceof BiomobyProcessor) {
+			PlaygroundBiomobyAction bma = new PlaygroundBiomobyAction();
+			Component c = bma.getComponent(p);
+			this.removeAll();
+			this.setSize(new Dimension(450, 450));
+			c.setSize(new Dimension(450, 450));
+			this.setLayout(new BorderLayout());
+			this.add(c, BorderLayout.CENTER);
 		}
-		
-		
-		
+
 	}
-	
-	
+
 	public static UIComponentSPI getInstance() {
 		if (instance == null) {
-
 			instance = new PlaygroundMobyPanel();
-
 		}
 		return instance;
 	}
-	
+
 	public String getName() {
-		
 		return "Moby Panel";
 	}
 
@@ -104,7 +88,5 @@ public class PlaygroundMobyPanel extends JPanel implements UIComponentSPI {
 		// TODO Auto-generated method stub
 
 	}
-
-
 
 }
