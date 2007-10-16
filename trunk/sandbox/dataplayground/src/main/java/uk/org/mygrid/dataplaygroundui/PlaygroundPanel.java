@@ -62,9 +62,16 @@ import edu.uci.ics.jung.visualization.control.PluggableGraphMouse;
 public class PlaygroundPanel extends JPanel implements UIComponentSPI,
 		WorkflowModelViewSPI, DropTargetListener {
 
-	private VisualizationViewer vv;
-
 	private static PlaygroundPanel instance;
+
+	public static UIComponentSPI getInstance() {
+		if (instance == null) {
+			instance = new PlaygroundPanel(new PlaygroundObjectModel());
+		}
+		return instance;
+	}
+
+	private VisualizationViewer vv;
 
 	private AbstractLayout layout;
 
@@ -92,6 +99,194 @@ public class PlaygroundPanel extends JPanel implements UIComponentSPI,
 
 	public PlaygroundPanel(PlaygroundObjectModel playgroundModel) {
 		init(playgroundModel);
+	}
+
+	public void addData(Point2D point, BiomobyObjectProcessor d) {
+
+		Vertex v = playgroundModel.addDataObject(d);
+		vertexLocations.setLocation(v, vv.inverseTransform(point));
+		ArrayList<PlaygroundDataObject> components = ((PlaygroundDataObject) v)
+				.getDataComponents();
+		((FRLayout) layout).update();
+		vv.repaint();
+
+		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
+				.iterator(); iterator.hasNext();) {
+			layout.lockVertex((Vertex) iterator.next());
+		}
+
+		addComponents((PlaygroundDataObject) v, components);
+
+		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
+				.iterator(); iterator.hasNext();) {
+			layout.unlockVertex((Vertex) iterator.next());
+		}
+
+		((FRLayout) layout).update();
+		vv.repaint();
+
+		this.repaint();
+
+	}
+
+	public void addDataObject(Point2D point, PlaygroundDataObject v) {
+
+		playgroundModel.addDataObject(v);
+		vertexLocations.setLocation(v, vv.inverseTransform(point));
+		ArrayList<PlaygroundDataObject> components = ((PlaygroundDataObject) v)
+				.getDataComponents();
+		((FRLayout) layout).update();
+		vv.repaint();
+
+		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
+				.iterator(); iterator.hasNext();) {
+			layout.lockVertex((Vertex) iterator.next());
+		}
+
+		addComponents((PlaygroundDataObject) v, components);
+
+		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
+				.iterator(); iterator.hasNext();) {
+			layout.unlockVertex((Vertex) iterator.next());
+		}
+
+		((FRLayout) layout).update();
+		vv.repaint();
+
+		this.repaint();
+
+	}
+
+	public void addProcessor(Point2D point, BiomobyProcessor p) {
+
+		Vertex v = playgroundModel.addProcessor(p);
+		vertexLocations.setLocation(v, vv.inverseTransform(point));
+
+		addPorts((PlaygroundObject) v);
+
+		((FRLayout) layout).update();
+
+		vv.repaint();
+
+		this.repaint();
+
+	}
+
+	public void addResults(ArrayList<PlaygroundObject> results, Point2D point) {
+
+		for (Iterator i = results.iterator(); i.hasNext();) {
+
+			PlaygroundDataObject newObject = (PlaygroundDataObject) i.next();
+			addDataObject(point, newObject);
+
+		}
+
+	}
+
+	public void attachToModel(ScuflModel arg0) {
+		System.out.println("Attaching to model!");
+		tavernaModel = arg0;
+
+	}
+
+	public void detachFromModel() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragEnter(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragExit(DropTargetEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragOver(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void drop(DropTargetDropEvent e) {
+		try {
+			Point a = vv.getMousePosition(true);
+			DataFlavor f = SpecFragmentTransferable.factorySpecFragmentFlavor;
+			Transferable t = e.getTransferable();
+
+			if (e.isDataFlavorSupported(f)) {
+
+				// We Have something of type factorySpecFragmentFlavor;
+				FactorySpecFragment fsf = (FactorySpecFragment) t
+						.getTransferData(f);
+
+				Point point = e.getLocation();
+				int x = (int) point.getX();
+				int y = (int) point.getY();
+
+				ScuflModel scuflModel = new ScuflModel();
+				String validName = scuflModel.getValidProcessorName(fsf
+						.getFactoryNodeName());
+				Element wrapperElement = new Element("wrapper");
+				wrapperElement.addContent(fsf.getElement());
+
+				Processor newProcessor = ProcessorHelper.loadProcessorFromXML(
+						wrapperElement, scuflModel, validName);
+
+				if (newProcessor instanceof BiomobyProcessor) {
+
+					addProcessor(a, (BiomobyProcessor) newProcessor);
+
+				} else if (newProcessor instanceof BiomobyObjectProcessor) {
+
+					addData(a, (BiomobyObjectProcessor) newProcessor);
+				}
+			}
+			e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+			// System.out.print("Accepted. Number of Verticies = "
+			// + playgroundModel.getGraph().numVertices());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			e.rejectDrop();
+		}
+	}
+
+	public void dropActionChanged(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public ImageIcon getIcon() {
+		URL iconURL = PlaygroundPanel.class.getResource("user-desktop.gif");
+		// System.out.println("url = " + iconURL);
+		if (iconURL == null) {
+			return null;
+		} else {
+			return new ImageIcon(iconURL);
+		}
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "Data Playground";
+	}
+
+	public PlaygroundObjectModel getPlaygroundModel() {
+		return playgroundModel;
+	}
+
+	public boolean isRecording() {
+		return recording;
+	}
+
+	public void onDisplay() {
+
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+
 	}
 
 	private void init(PlaygroundObjectModel playgroundModel) {
@@ -174,164 +369,6 @@ public class PlaygroundPanel extends JPanel implements UIComponentSPI,
 		this.setLayout(new BorderLayout());
 		this.add(toolbar, BorderLayout.PAGE_START);
 		this.add(vv, BorderLayout.CENTER);
-	}
-
-	public ImageIcon getIcon() {
-		URL iconURL = PlaygroundPanel.class.getResource("user-desktop.gif");
-		// System.out.println("url = " + iconURL);
-		if (iconURL == null) {
-			return null;
-		} else {
-			return new ImageIcon(iconURL);
-		}
-	}
-
-	public String getName() {
-		// TODO Auto-generated method stub
-		return "Data Playground";
-	}
-
-	public void onDisplay() {
-
-	}
-
-	public void onDispose() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static UIComponentSPI getInstance() {
-		if (instance == null) {
-
-			instance = new PlaygroundPanel(new PlaygroundObjectModel());
-
-		}
-		return instance;
-	}
-
-	public void drop(DropTargetDropEvent e) {
-		try {
-			Point a = vv.getMousePosition(true);
-			DataFlavor f = SpecFragmentTransferable.factorySpecFragmentFlavor;
-			Transferable t = e.getTransferable();
-
-			if (e.isDataFlavorSupported(f)) {
-
-				// We Have something of type factorySpecFragmentFlavor;
-				FactorySpecFragment fsf = (FactorySpecFragment) t
-						.getTransferData(f);
-
-				Point point = e.getLocation();
-				int x = (int) point.getX();
-				int y = (int) point.getY();
-
-				ScuflModel scuflModel = new ScuflModel();
-				String validName = scuflModel.getValidProcessorName(fsf
-						.getFactoryNodeName());
-				Element wrapperElement = new Element("wrapper");
-				wrapperElement.addContent(fsf.getElement());
-
-				Processor newProcessor = ProcessorHelper.loadProcessorFromXML(
-						wrapperElement, scuflModel, validName);
-
-				if (newProcessor instanceof BiomobyProcessor) {
-
-					addProcessor(a, (BiomobyProcessor) newProcessor);
-
-				} else if (newProcessor instanceof BiomobyObjectProcessor) {
-
-					addData(a, (BiomobyObjectProcessor) newProcessor);
-				}
-			}
-			e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-			// System.out.print("Accepted. Number of Verticies = "
-			// + playgroundModel.getGraph().numVertices());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			e.rejectDrop();
-		}
-	}
-
-	public void addResults(ArrayList<PlaygroundObject> results, Point2D point) {
-
-		for (Iterator i = results.iterator(); i.hasNext();) {
-
-			PlaygroundDataObject newObject = (PlaygroundDataObject) i.next();
-			addDataObject(point, newObject);
-
-		}
-
-	}
-
-	public void addProcessor(Point2D point, BiomobyProcessor p) {
-
-		Vertex v = playgroundModel.addProcessor(p);
-		vertexLocations.setLocation(v, vv.inverseTransform(point));
-
-		addPorts((PlaygroundObject) v);
-
-		((FRLayout) layout).update();
-
-		vv.repaint();
-
-		this.repaint();
-
-	}
-
-	public void addData(Point2D point, BiomobyObjectProcessor d) {
-
-		Vertex v = playgroundModel.addDataObject(d);
-		vertexLocations.setLocation(v, vv.inverseTransform(point));
-		ArrayList<PlaygroundDataObject> components = ((PlaygroundDataObject) v)
-				.getDataComponents();
-		((FRLayout) layout).update();
-		vv.repaint();
-
-		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
-				.iterator(); iterator.hasNext();) {
-			layout.lockVertex((Vertex) iterator.next());
-		}
-
-		addComponents((PlaygroundDataObject) v, components);
-
-		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
-				.iterator(); iterator.hasNext();) {
-			layout.unlockVertex((Vertex) iterator.next());
-		}
-
-		((FRLayout) layout).update();
-		vv.repaint();
-
-		this.repaint();
-
-	}
-
-	public void addDataObject(Point2D point, PlaygroundDataObject v) {
-
-		playgroundModel.addDataObject(v);
-		vertexLocations.setLocation(v, vv.inverseTransform(point));
-		ArrayList<PlaygroundDataObject> components = ((PlaygroundDataObject) v)
-				.getDataComponents();
-		((FRLayout) layout).update();
-		vv.repaint();
-
-		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
-				.iterator(); iterator.hasNext();) {
-			layout.lockVertex((Vertex) iterator.next());
-		}
-
-		addComponents((PlaygroundDataObject) v, components);
-
-		for (Iterator iterator = vv.getGraphLayout().getGraph().getVertices()
-				.iterator(); iterator.hasNext();) {
-			layout.unlockVertex((Vertex) iterator.next());
-		}
-
-		((FRLayout) layout).update();
-		vv.repaint();
-
-		this.repaint();
-
 	}
 
 	// recursive method to add components of BioMobyDataobjects
@@ -424,30 +461,6 @@ public class PlaygroundPanel extends JPanel implements UIComponentSPI,
 
 	}
 
-	public void dragEnter(DropTargetDragEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void dragOver(DropTargetDragEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void dropActionChanged(DropTargetDragEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void dragExit(DropTargetEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public PlaygroundObjectModel getPlaygroundModel() {
-		return playgroundModel;
-	}
-
 	public class RecordAction extends AbstractAction {
 
 		ImageIcon off;
@@ -520,20 +533,4 @@ public class PlaygroundPanel extends JPanel implements UIComponentSPI,
 
 		}
 	}
-
-	public void attachToModel(ScuflModel arg0) {
-		System.out.println("Attaching to model!");
-		tavernaModel = arg0;
-
-	}
-
-	public void detachFromModel() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public boolean isRecording() {
-		return recording;
-	}
-
 }

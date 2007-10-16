@@ -24,14 +24,6 @@ public class PlaygroundPortObject extends PlaygroundObject {
 		setName(p.getName());
 	}
 
-	public Port getPort() {
-		return port;
-	}
-
-	public void setP(Port p) {
-		port = p;
-	}
-
 	@SuppressWarnings("unchecked")
 	public PlaygroundObject getMappedObject() {
 
@@ -44,29 +36,37 @@ public class PlaygroundPortObject extends PlaygroundObject {
 		return mappedObject;
 	}
 
-	public void setMappedObject(PlaygroundObject mappedObject) {
-		this.mappedObject = mappedObject;
-	}
-
-	public String toString() {
-
-		return getName();
+	public Port getPort() {
+		return port;
 	}
 
 	public boolean isHidden() {
 		return hidden;
 	}
 
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
-	}
-
 	public boolean isInvisible() {
 		return invisible;
 	}
 
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
 	public void setInvisible(boolean invisible) {
 		this.invisible = invisible;
+	}
+
+	public void setMappedObject(PlaygroundObject mappedObject) {
+		this.mappedObject = mappedObject;
+	}
+
+	public void setP(Port p) {
+		port = p;
+	}
+
+	public String toString() {
+
+		return getName();
 	}
 
 }

@@ -39,12 +39,12 @@ public class PlaygroundDataThing extends PlaygroundObject {
 		}
 	}
 
-	public String toString() {
-		return getName();
-	}
-
 	public DataThing getDataThing() {
 		return dataThing;
+	}
+
+	public boolean isHidden() {
+		return hidden;
 	}
 
 	public void setDataThing(DataThing dataThing) {
@@ -52,11 +52,11 @@ public class PlaygroundDataThing extends PlaygroundObject {
 		// setName(dataThing.toString());
 	}
 
-	public boolean isHidden() {
-		return hidden;
-	}
-
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
+	}
+
+	public String toString() {
+		return getName();
 	}
 }

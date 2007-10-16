@@ -84,10 +84,33 @@ public class PlaygroundProcessorObject extends PlaygroundObject {
 
 	}
 
-	public Processor getProcessor() {
+	public Map<String, DataThing> addComponentsToModel(ScuflModel model,
+			PlaygroundDataObject parent) {
 
-		return p;
+		BiomobyObjectProcessor processor = parent.getProcessor();
+		ArrayList<PlaygroundDataObject> dataComponents = parent
+				.getDataComponents();
 
+		for (PlaygroundDataObject child : dataComponents) {
+			BiomobyObjectProcessor childProcessor = child.getProcessor();
+			try {
+
+				model.addDataConstraint(new DataConstraint(model,
+						childProcessor.locatePort("mobyData"), processor
+								.locatePort(child.getName())));
+				if (child.getDataComponents().size() > 0) {
+					addComponentsToModel(model, child);
+				} else {
+					// create input and add to map the dataThing & input port
+					// mapping
+				}
+			} catch (DataConstraintCreationException e) {
+				e.printStackTrace();
+			} catch (UnknownPortException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	public void addInputType(BiomobyObjectProcessor o) {
@@ -107,15 +130,6 @@ public class PlaygroundProcessorObject extends PlaygroundObject {
 			e.printStackTrace();
 		}
 	}
-
-	public String toString() {
-
-		return getName();
-	}
-
-	// returns true if we were sucessful or false otherwise n.b. a "sucessful"
-	// workflow run may not
-	// mean that we have a valid output
 
 	public boolean combine(Vertex v) {
 
@@ -188,57 +202,36 @@ public class PlaygroundProcessorObject extends PlaygroundObject {
 		 * p.getName().equals("value")) { // model.addDataConstraint(new
 		 * DataConstraint(model,newInput,p)); // } // }
 		 * 
-		 * 
 		 *  } catch (DuplicatePortNameException e) { // TODO Auto-generated
 		 * catch block e.printStackTrace(); return false; } catch
 		 * (PortCreationException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); return false; } catch
 		 * (DataConstraintCreationException e) { // TODO Auto-generated catch
-		 * block e.printStackTrace(); return false; } } }
-		 *  }
+		 * block e.printStackTrace(); return false; } } } }
 		 */
 		return true;
+	}
+
+	// returns true if we were sucessful or false otherwise n.b. a "sucessful"
+	// workflow run may not
+	// mean that we have a valid output
+
+	public ArrayList<PlaygroundPortObject> getInputPortObjects() {
+		return inputPortObjects;
 	}
 
 	// adds the DataObjects components to the model and returns the input map
 	// required
 	// for this part of the generated workflow
 
-	public Map<String, DataThing> addComponentsToModel(ScuflModel model,
-			PlaygroundDataObject parent) {
-
-		BiomobyObjectProcessor processor = parent.getProcessor();
-		ArrayList<PlaygroundDataObject> dataComponents = parent
-				.getDataComponents();
-
-		for (PlaygroundDataObject child : dataComponents) {
-			BiomobyObjectProcessor childProcessor = child.getProcessor();
-			try {
-
-				model.addDataConstraint(new DataConstraint(model,
-						childProcessor.locatePort("mobyData"), processor
-								.locatePort(child.getName())));
-				if (child.getDataComponents().size() > 0) {
-					addComponentsToModel(model, child);
-				} else {
-					// create input and add to map the dataThing & input port
-					// mapping
-				}
-			} catch (DataConstraintCreationException e) {
-				e.printStackTrace();
-			} catch (UnknownPortException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
-
-	public ArrayList<PlaygroundPortObject> getInputPortObjects() {
-		return inputPortObjects;
-	}
-
 	public ArrayList<PlaygroundPortObject> getOutputPortObjects() {
 		return outputPortObjects;
+	}
+
+	public Processor getProcessor() {
+
+		return p;
+
 	}
 
 	public boolean isRunning() {
@@ -247,6 +240,11 @@ public class PlaygroundProcessorObject extends PlaygroundObject {
 
 	public void setRunning(boolean running) {
 		this.running = running;
+	}
+
+	public String toString() {
+
+		return getName();
 	}
 
 }

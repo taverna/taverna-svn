@@ -20,9 +20,35 @@ public class PlaygroundMobyPanel extends JPanel implements UIComponentSPI {
 
 	private static PlaygroundMobyPanel instance;
 
+	public static UIComponentSPI getInstance() {
+		if (instance == null) {
+			instance = new PlaygroundMobyPanel();
+		}
+		return instance;
+	}
+
 	public PlaygroundMobyPanel() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public ImageIcon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getName() {
+		return "Moby Panel";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+
 	}
 
 	public void Set(Processor p) {
@@ -60,32 +86,6 @@ public class PlaygroundMobyPanel extends JPanel implements UIComponentSPI {
 			this.setLayout(new BorderLayout());
 			this.add(c, BorderLayout.CENTER);
 		}
-
-	}
-
-	public static UIComponentSPI getInstance() {
-		if (instance == null) {
-			instance = new PlaygroundMobyPanel();
-		}
-		return instance;
-	}
-
-	public String getName() {
-		return "Moby Panel";
-	}
-
-	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onDisplay() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onDispose() {
-		// TODO Auto-generated method stub
 
 	}
 

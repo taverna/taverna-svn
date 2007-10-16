@@ -29,10 +29,10 @@ import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
 public class PlaygroundPopupGraphMousePlugin extends
 		AbstractPopupGraphMousePlugin {
 
+	private PlaygroundMobyPanel playgroundMobyPanel;
 	SettableVertexLocationFunction vl;
 	PlaygroundRendererPanel prp;
 	PlaygroundPanel pp;
-	private PlaygroundMobyPanel playgroundMobyPanel;
 
 	public PlaygroundPopupGraphMousePlugin(SettableVertexLocationFunction vl,
 			PlaygroundPanel pp) {

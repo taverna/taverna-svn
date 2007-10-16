@@ -11,12 +11,12 @@ public abstract class PlaygroundObject extends DirectedSparseVertex {
 		super();
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public Boolean getInteresting() {
 		return interesting;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setInteresting(Boolean interesting) {

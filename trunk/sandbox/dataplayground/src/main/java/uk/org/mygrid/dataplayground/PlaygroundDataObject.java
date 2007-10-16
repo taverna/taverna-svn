@@ -106,6 +106,93 @@ public class PlaygroundDataObject extends PlaygroundObject {
 		}
 	}
 
+	public void collapse() {
+		ArrayList<PlaygroundPortObject> portObjects = new ArrayList<PlaygroundPortObject>(
+				getInputPortObjects().values());
+		for (PlaygroundPortObject portObject : portObjects) {
+			portObject.setHidden(!portObject.isHidden());
+			if (portObject.getMappedObject() != null) {
+				PlaygroundDataThing mappedThing = ((PlaygroundDataThing) portObject
+						.getMappedObject());
+				mappedThing.setHidden(!mappedThing.isHidden());
+			}
+		}
+		HashMap<String, PlaygroundDataObject> components = (HashMap<String, PlaygroundDataObject>) getAllComponents();
+		for (PlaygroundDataObject pdo : components.values()) {
+			pdo.setHidden(!pdo.isHidden());
+			// if(pdo.getInputPortObjects().values().size() > 0){
+
+			ArrayList<PlaygroundPortObject> componentPortObjects = new ArrayList<PlaygroundPortObject>(
+					pdo.getInputPortObjects().values());
+			for (PlaygroundPortObject portObject : componentPortObjects) {
+				portObject.setHidden(!portObject.isHidden());
+				if (portObject.getMappedObject() != null) {
+					PlaygroundDataThing mappedThing = ((PlaygroundDataThing) portObject
+							.getMappedObject());
+					mappedThing.setHidden(!mappedThing.isHidden());
+				}
+			}
+		}
+		collapsed = !collapsed;
+	}
+
+	/**
+	 * 
+	 * @return A map of ArticleName->PlaygroundDataObject
+	 */
+	public Map<String, PlaygroundDataObject> getAllComponents() {
+		HashMap<String, PlaygroundDataObject> result = new HashMap<String, PlaygroundDataObject>();
+		for (PlaygroundDataObject pdo : dataComponents) {
+			result.put(pdo.getArticleName(), pdo);
+			result.putAll(pdo.getAllComponents());
+		}
+		return result;
+	}
+
+	public String getArticleName() {
+		return articleName;
+	}
+
+	public ArrayList<PlaygroundDataObject> getDataComponents() {
+		return dataComponents;
+	}
+
+	public String getDataType() {
+		return dataType;
+	}
+
+	public Map<String, PlaygroundPortObject> getInputPortObjects() {
+		return inputPortObjects;
+	}
+
+	public HashMap<PlaygroundObject, Port> getPortMappings() {
+		return portMappings;
+	}
+
+	public BiomobyObjectProcessor getProcessor() {
+		return biomobyProcessor;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setArticleName(String articleName) {
+		this.articleName = articleName;
+	}
+
+	public void setDataType(String dataType) {
+		this.dataType = dataType;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	public String toString() {
+		return getName();
+	}
+
 	private void createDataComponents() {
 		if (!(biomobyProcessor instanceof BiomobyObjectProcessor)) {
 			return;
@@ -157,93 +244,6 @@ public class PlaygroundDataObject extends PlaygroundObject {
 			}
 
 		}
-	}
-
-	public BiomobyObjectProcessor getProcessor() {
-		return biomobyProcessor;
-	}
-
-	public ArrayList<PlaygroundDataObject> getDataComponents() {
-		return dataComponents;
-	}
-
-	/**
-	 * 
-	 * @return A map of ArticleName->PlaygroundDataObject
-	 */
-	public Map<String, PlaygroundDataObject> getAllComponents() {
-		HashMap<String, PlaygroundDataObject> result = new HashMap<String, PlaygroundDataObject>();
-		for (PlaygroundDataObject pdo : dataComponents) {
-			result.put(pdo.getArticleName(), pdo);
-			result.putAll(pdo.getAllComponents());
-		}
-		return result;
-	}
-
-	public void collapse() {
-		ArrayList<PlaygroundPortObject> portObjects = new ArrayList<PlaygroundPortObject>(
-				getInputPortObjects().values());
-		for (PlaygroundPortObject portObject : portObjects) {
-			portObject.setHidden(!portObject.isHidden());
-			if (portObject.getMappedObject() != null) {
-				PlaygroundDataThing mappedThing = ((PlaygroundDataThing) portObject
-						.getMappedObject());
-				mappedThing.setHidden(!mappedThing.isHidden());
-			}
-		}
-		HashMap<String, PlaygroundDataObject> components = (HashMap<String, PlaygroundDataObject>) getAllComponents();
-		for (PlaygroundDataObject pdo : components.values()) {
-			pdo.setHidden(!pdo.isHidden());
-			// if(pdo.getInputPortObjects().values().size() > 0){
-
-			ArrayList<PlaygroundPortObject> componentPortObjects = new ArrayList<PlaygroundPortObject>(
-					pdo.getInputPortObjects().values());
-			for (PlaygroundPortObject portObject : componentPortObjects) {
-				portObject.setHidden(!portObject.isHidden());
-				if (portObject.getMappedObject() != null) {
-					PlaygroundDataThing mappedThing = ((PlaygroundDataThing) portObject
-							.getMappedObject());
-					mappedThing.setHidden(!mappedThing.isHidden());
-				}
-			}
-		}
-		collapsed = !collapsed;
-	}
-
-	public String toString() {
-		return getName();
-	}
-
-	public String getDataType() {
-		return dataType;
-	}
-
-	public void setDataType(String dataType) {
-		this.dataType = dataType;
-	}
-
-	public Map<String, PlaygroundPortObject> getInputPortObjects() {
-		return inputPortObjects;
-	}
-
-	public HashMap<PlaygroundObject, Port> getPortMappings() {
-		return portMappings;
-	}
-
-	public String getArticleName() {
-		return articleName;
-	}
-
-	public void setArticleName(String articleName) {
-		this.articleName = articleName;
-	}
-
-	public boolean isHidden() {
-		return hidden;
-	}
-
-	public void setHidden(boolean hidden) {
-		this.hidden = hidden;
 	}
 
 }

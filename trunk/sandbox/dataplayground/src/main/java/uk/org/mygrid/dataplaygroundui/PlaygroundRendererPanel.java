@@ -16,7 +16,16 @@ import uk.org.mygrid.dataplayground.PlaygroundDataThing;
 public class PlaygroundRendererPanel extends JPanel implements UIComponentSPI {
 
 	private static PlaygroundRendererPanel instance;
+
+	public static UIComponentSPI getInstance() {
+		if (instance == null) {
+			instance = new PlaygroundRendererPanel();
+		}
+		return instance;
+	}
+
 	private HashMap<PlaygroundDataThing, ResultItemPanel> playgroundDataResultPanels;
+
 	private JTabbedPane tabbedPane;
 
 	public PlaygroundRendererPanel() {
@@ -38,6 +47,21 @@ public class PlaygroundRendererPanel extends JPanel implements UIComponentSPI {
 			tabbedPane.add(d.getName(), r);
 
 		}
+	}
+
+	public ImageIcon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+
 	}
 
 	public void remove(PlaygroundDataThing d) {
@@ -72,28 +96,6 @@ public class PlaygroundRendererPanel extends JPanel implements UIComponentSPI {
 		if (playgroundDataResultPanels.containsKey(d)) {
 			tabbedPane.setSelectedComponent(playgroundDataResultPanels.get(d));
 		}
-	}
-
-	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onDisplay() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onDispose() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static UIComponentSPI getInstance() {
-		if (instance == null) {
-			instance = new PlaygroundRendererPanel();
-		}
-		return instance;
 	}
 
 }

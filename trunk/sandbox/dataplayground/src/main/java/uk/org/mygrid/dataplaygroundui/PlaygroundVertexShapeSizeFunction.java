@@ -18,25 +18,7 @@ public class PlaygroundVertexShapeSizeFunction extends
 		setSizeFunction(this);
 	}
 
-	public int getSize(Vertex v) {
-
-		if (v instanceof PlaygroundProcessorObject)
-			return 25;
-
-		if (v instanceof PlaygroundPortObject)
-			return 11;
-
-		if (v instanceof PlaygroundDataObject)
-			return 20;
-
-		if (v instanceof PlaygroundDataThing)
-			return 18;
-
-		return 20;
-	}
-
 	public Shape getShape(Vertex v) {
-
 		if (v instanceof PlaygroundProcessorObject)
 			return factory.getRoundRectangle(v);
 
@@ -50,6 +32,22 @@ public class PlaygroundVertexShapeSizeFunction extends
 			return factory.getRegularPolygon(v, 3);
 
 		return factory.getEllipse(v);
+	}
+
+	public int getSize(Vertex v) {
+		if (v instanceof PlaygroundProcessorObject)
+			return 25;
+
+		if (v instanceof PlaygroundPortObject)
+			return 11;
+
+		if (v instanceof PlaygroundDataObject)
+			return 20;
+
+		if (v instanceof PlaygroundDataThing)
+			return 18;
+
+		return 20;
 	}
 
 }

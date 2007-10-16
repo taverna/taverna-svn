@@ -37,11 +37,14 @@ import edu.uci.ics.jung.visualization.control.AbstractGraphMousePlugin;
 public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 		implements MouseListener, MouseMotionListener, KeyListener {
 
+	private PlaygroundInputPanel playgroundInputPanel;
+	private PlaygroundRendererPanel playgroundRendererPanel;
+	private PlaygroundMobyPanel playgroundMobyPanel;
+	
 	SettableVertexLocationFunction vertexLocations;
 	Vertex startVertex;
 	Vertex highlightedVertex;
 	Point2D down;
-
 	CubicCurve2D rawEdge = new CubicCurve2D.Float();
 	Shape edgeShape;
 	Shape rawArrowShape;
@@ -50,9 +53,9 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 	Paintable arrowPaintable;
 	boolean dragging = false;
 
-	private PlaygroundInputPanel playgroundInputPanel;
-	private PlaygroundRendererPanel playgroundRendererPanel;
-	private PlaygroundMobyPanel playgroundMobyPanel;
+	public PlaygroundGraphMousePlugin() {
+		this(MouseEvent.BUTTON1_MASK);
+	}
 
 	/**
 	 * Code based on EditingGraphMousePlugin from Jung graph library version
@@ -74,17 +77,64 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 				.getInstance();
 	}
 
-	public PlaygroundGraphMousePlugin() {
-		this(MouseEvent.BUTTON1_MASK);
-	}
-
-	public void setVertexLocations(
-			SettableVertexLocationFunction vertexLocations) {
-		this.vertexLocations = vertexLocations;
-	}
-
 	public boolean checkModifiers(MouseEvent e) {
 		return (e.getModifiers() & modifiers) != 0;
+	}
+
+	public void keyPressed(KeyEvent e) {
+
+		System.out.println("KeyCode = " + e.getKeyCode());
+
+		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+
+			VisualizationViewer vv = (VisualizationViewer) e.getSource();
+			Layout layout = vv.getGraphLayout();
+			Graph graph = layout.getGraph();
+			PickedState pS = vv.getPickedState();
+
+			Set pickedVerticies = pS.getPickedVertices();
+
+			for (Iterator i = pickedVerticies.iterator(); i.hasNext();) {
+
+				Vertex v = (Vertex) i.next();
+				pS.pick(v, false);
+				graph.removeVertex(v);
+
+			}
+		}
+
+	}
+
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void keyTyped(KeyEvent e) {
+
+		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+
+			VisualizationViewer vv = (VisualizationViewer) e.getSource();
+			Layout layout = vv.getGraphLayout();
+			Graph graph = layout.getGraph();
+			PickedState pS = vv.getPickedState();
+
+			Set pickedVerticies = pS.getPickedVertices();
+
+			for (Iterator i = pickedVerticies.iterator(); i.hasNext();) {
+
+				Vertex v = (Vertex) i.next();
+				pS.pick(v, false);
+				graph.removeVertex(v);
+
+			}
+		}
+
+	}
+
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 	public void mouseDragged(MouseEvent e) {
@@ -139,22 +189,17 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 		}
 	}
 
-	public void mouseMoved(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
 	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void mouseMoved(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
@@ -284,6 +329,26 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 
 	}
 
+	public void setVertexLocations(
+			SettableVertexLocationFunction vertexLocations) {
+		this.vertexLocations = vertexLocations;
+	}
+
+	private void transformArrowShape(Point2D down, Point2D out) {
+		float x1 = (float) down.getX();
+		float y1 = (float) down.getY();
+		float x2 = (float) out.getX();
+		float y2 = (float) out.getY();
+
+		AffineTransform xform = AffineTransform.getTranslateInstance(x2, y2);
+
+		float dx = x2 - x1;
+		float dy = y2 - y1;
+		float thetaRadians = (float) Math.atan2(dy, dx);
+		xform.rotate(thetaRadians);
+		arrowShape = xform.createTransformedShape(rawArrowShape);
+	}
+
 	/**
 	 * code extracted from PluggableRenderer to move an edge shape into an
 	 * arbitrary position
@@ -303,41 +368,6 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 		float dist = (float) Math.sqrt(dx * dx + dy * dy);
 		xform.scale(dist / rawEdge.getBounds().getWidth(), 1.0);
 		edgeShape = xform.createTransformedShape(rawEdge);
-	}
-
-	private void transformArrowShape(Point2D down, Point2D out) {
-		float x1 = (float) down.getX();
-		float y1 = (float) down.getY();
-		float x2 = (float) out.getX();
-		float y2 = (float) out.getY();
-
-		AffineTransform xform = AffineTransform.getTranslateInstance(x2, y2);
-
-		float dx = x2 - x1;
-		float dy = y2 - y1;
-		float thetaRadians = (float) Math.atan2(dy, dx);
-		xform.rotate(thetaRadians);
-		arrowShape = xform.createTransformedShape(rawArrowShape);
-	}
-
-	/**
-	 * code lifted from EditingGraphMouse Plugin Used for the edge creation
-	 * visual effect during mouse drag
-	 */
-	class EdgePaintable implements Paintable {
-
-		public void paint(Graphics g) {
-			if (edgeShape != null) {
-				Color oldColor = g.getColor();
-				g.setColor(Color.black);
-				((Graphics2D) g).draw(edgeShape);
-				g.setColor(oldColor);
-			}
-		}
-
-		public boolean useTransform() {
-			return false;
-		}
 	}
 
 	/**
@@ -360,55 +390,24 @@ public class PlaygroundGraphMousePlugin extends AbstractGraphMousePlugin
 		}
 	}
 
-	public void keyPressed(KeyEvent e) {
+	/**
+	 * code lifted from EditingGraphMouse Plugin Used for the edge creation
+	 * visual effect during mouse drag
+	 */
+	class EdgePaintable implements Paintable {
 
-		System.out.println("KeyCode = " + e.getKeyCode());
-
-		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-
-			VisualizationViewer vv = (VisualizationViewer) e.getSource();
-			Layout layout = vv.getGraphLayout();
-			Graph graph = layout.getGraph();
-			PickedState pS = vv.getPickedState();
-
-			Set pickedVerticies = pS.getPickedVertices();
-
-			for (Iterator i = pickedVerticies.iterator(); i.hasNext();) {
-
-				Vertex v = (Vertex) i.next();
-				pS.pick(v, false);
-				graph.removeVertex(v);
-
+		public void paint(Graphics g) {
+			if (edgeShape != null) {
+				Color oldColor = g.getColor();
+				g.setColor(Color.black);
+				((Graphics2D) g).draw(edgeShape);
+				g.setColor(oldColor);
 			}
 		}
 
-	}
-
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void keyTyped(KeyEvent e) {
-
-		if (e.getKeyCode() == KeyEvent.VK_DELETE) {
-
-			VisualizationViewer vv = (VisualizationViewer) e.getSource();
-			Layout layout = vv.getGraphLayout();
-			Graph graph = layout.getGraph();
-			PickedState pS = vv.getPickedState();
-
-			Set pickedVerticies = pS.getPickedVertices();
-
-			for (Iterator i = pickedVerticies.iterator(); i.hasNext();) {
-
-				Vertex v = (Vertex) i.next();
-				pS.pick(v, false);
-				graph.removeVertex(v);
-
-			}
+		public boolean useTransform() {
+			return false;
 		}
-
 	}
 
 }

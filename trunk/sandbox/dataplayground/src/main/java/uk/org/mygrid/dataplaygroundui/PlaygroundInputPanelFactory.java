@@ -7,9 +7,8 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class PlaygroundInputPanelFactory implements UIComponentFactorySPI {
 
-	public String getName() {
-
-		return "Data Input";
+	public UIComponentSPI getComponent() {
+		return PlaygroundInputPanel.getInstance();
 	}
 
 	public ImageIcon getIcon() {
@@ -17,8 +16,8 @@ public class PlaygroundInputPanelFactory implements UIComponentFactorySPI {
 		return null;
 	}
 
-	public UIComponentSPI getComponent() {
-		return PlaygroundInputPanel.getInstance();
+	public String getName() {
+		return "Data Input";
 	}
 
 }

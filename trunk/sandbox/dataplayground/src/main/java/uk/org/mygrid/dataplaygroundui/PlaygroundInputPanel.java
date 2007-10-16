@@ -27,10 +27,19 @@ import uk.org.mygrid.dataplayground.PlaygroundDataThing;
 public class PlaygroundInputPanel extends JPanel implements UIComponentSPI {
 
 	private static UIComponentSPI instance;
+
+	public static UIComponentSPI getInstance() {
+		if (instance == null) {
+			instance = new PlaygroundInputPanel();
+		}
+		return instance;
+	}
+
 	private WorkflowInputMapBuilder builder;
 	private ScuflModel model;
 	private PlaygroundDataThing datathing;
 	private ShadedLabel header;
+
 	private PlaygroundRendererPanel playgroundRendererPanel;
 
 	public PlaygroundInputPanel() {
@@ -90,6 +99,32 @@ public class PlaygroundInputPanel extends JPanel implements UIComponentSPI {
 
 	}
 
+	public ImageIcon getIcon() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getName() {
+
+		return "Data";
+	}
+
+	public void onDisplay() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void onDispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void reset() {
+
+		model.clear();
+		model.forceUpdate();
+	}
+
 	public void setData(PlaygroundDataThing d) {
 
 		this.datathing = d;
@@ -127,42 +162,5 @@ public class PlaygroundInputPanel extends JPanel implements UIComponentSPI {
 		}
 
 		this.repaint();
-
 	}
-
-	public void reset() {
-
-		model.clear();
-		model.forceUpdate();
-	}
-
-	public String getName() {
-
-		return "Data";
-	}
-
-	public ImageIcon getIcon() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void onDisplay() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void onDispose() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static UIComponentSPI getInstance() {
-		if (instance == null) {
-
-			instance = new PlaygroundInputPanel();
-
-		}
-		return instance;
-	}
-
 }

@@ -33,8 +33,6 @@ import edu.uci.ics.jung.graph.impl.SparseGraph;
 
 public class PlaygroundObjectModel {
 
-	private Graph graph;
-
 	// holds the workflow currently being recorded
 	private static ScuflModel recordedWorkflow = new ScuflModel();
 
@@ -44,66 +42,9 @@ public class PlaygroundObjectModel {
 
 	private static Map<PlaygroundDataObject, MobyParseDatatypeProcessor> recordedParserMap = new HashMap<PlaygroundDataObject, MobyParseDatatypeProcessor>();
 
-	public PlaygroundObjectModel() {
-		graph = new SparseGraph();
+	public static ScuflModel getRecordedWorkflow() {
+		return recordedWorkflow;
 	}
-
-	/**
-	 * Creates new Vertex for the specified processor and returns the Vertex
-	 * 
-	 * @param newProcessor
-	 */
-	public Vertex addProcessor(BiomobyProcessor newProcessor) {
-		Vertex v = graph.addVertex(new PlaygroundProcessorObject(newProcessor));
-		return v;
-	}
-
-	public Vertex addDataObject(BiomobyObjectProcessor newProcessor) {
-		Vertex v = graph.addVertex(new PlaygroundDataObject(newProcessor));
-		return v;
-	}
-
-	public Vertex addDataObject(PlaygroundDataObject pdo) {
-		Vertex v = graph.addVertex(pdo);
-		return v;
-	}
-
-	public void addDataComponent(PlaygroundDataObject parent,
-			PlaygroundDataObject component) {
-		graph.addVertex(component);
-		Edge e = new DirectedSparseEdge(component, parent);
-		graph.addEdge(e);
-	}
-
-	public Vertex addDataThing(PlaygroundDataThing pdt) {
-		Vertex v = graph.addVertex(pdt);
-		return v;
-	}
-
-	public void mapObjects(PlaygroundObject start, PlaygroundObject end) {
-		graph.addEdge(new DirectedSparseEdge(start, end));
-	}
-
-	public Graph getGraph() {
-		return graph;
-	}
-
-	public void addPort(PlaygroundObject parent, PlaygroundPortObject port) {
-		graph.addVertex(port);
-		Edge e = new DirectedSparseEdge(port, parent);
-		graph.addEdge(e);
-	}
-
-	public void addPortDataThing(PlaygroundPortObject parent,
-			PlaygroundDataThing thing) {
-		graph.addVertex(thing);
-		Edge e = new DirectedSparseEdge(thing, parent);
-		graph.addEdge(e);
-	}
-
-	// Handles the Creation of the workflow to produce the new Data Object and
-	// if we are in recording mode also constructs the recordedWorkflow in
-	// parallel
 
 	@SuppressWarnings("unchecked")
 	public static synchronized ArrayList<PlaygroundObject> run(
@@ -402,6 +343,79 @@ public class PlaygroundObjectModel {
 
 	}
 
+	private static void addComponentstoWorkflow(ScuflModel model,
+			PlaygroundDataObject dataObject, HashMap<String, DataThing> inputMap)
+			throws DataConstraintCreationException, UnknownPortException,
+			DuplicatePortNameException, PortCreationException {
+
+		ArrayList<PlaygroundDataObject> dataComponents = dataObject
+				.getDataComponents();
+
+		// if we have no dataComponents then we are at the end datatype and
+		// need to add an input if a dataThing is mapped to it
+		if (dataComponents.size() <= 0) {
+			addInputToWorkflow(model, dataObject, inputMap);
+		}
+
+		// else we need to add the data components to the workflow and
+		// map them to the input ports on the parent dataObject
+
+		for (PlaygroundDataObject child : dataComponents) {
+			BiomobyObjectProcessor childProcessor = child.getProcessor();
+			System.out.println("adding ...dataComponent "
+					+ childProcessor.getName());
+			model.addProcessor(childProcessor);
+			System.out.println("added dataComponent "
+					+ childProcessor.getName());
+			model.addDataConstraint(new DataConstraint(model, childProcessor
+					.locatePort("mobyData"), dataObject.getPortMappings().get(
+					child)));
+			addComponentstoWorkflow(model, child, inputMap);
+		}
+
+	}
+
+	private static void addInputToWorkflow(ScuflModel model,
+			PlaygroundDataObject dataObject, HashMap<String, DataThing> inputMap)
+			throws DataConstraintCreationException, DuplicatePortNameException,
+			PortCreationException {
+
+		// if( dataObject.getDataType().equals("Object")){
+
+		ArrayList<PlaygroundPortObject> inputPortObjects = new ArrayList<PlaygroundPortObject>(
+				dataObject.getInputPortObjects().values());
+
+		for (PlaygroundPortObject portObject : inputPortObjects) {
+			Port port = portObject.getPort();
+			PlaygroundObject playgroundObject = portObject.getMappedObject();
+
+			if (playgroundObject != null) {
+
+				if (playgroundObject instanceof PlaygroundDataThing) {
+
+					PlaygroundDataThing playgroundDataThing = (PlaygroundDataThing) playgroundObject;
+
+					OutputPort newInput = new OutputPort(model
+							.getWorkflowSourceProcessor(), dataObject
+							.getProcessor().getName()
+							+ "_" + playgroundDataThing.getName());
+
+					model.getWorkflowSourceProcessor().addPort(newInput);
+
+					model.addDataConstraint(new DataConstraint(model, newInput,
+							port));
+
+					// add this portName->datathing mapping to the inputMap
+					if (inputMap != null) {
+						inputMap.put(newInput.getName(), playgroundDataThing
+								.getDataThing());
+					}
+				}
+			}
+		}
+		// } //if object
+	}
+
 	private static void addParser(Port p, ScuflModel model,
 			BiomobyProcessor processor,
 			Map<PlaygroundObject, ArrayList<String>> resultMap,
@@ -494,77 +508,67 @@ public class PlaygroundObjectModel {
 
 	}
 
-	private static void addComponentstoWorkflow(ScuflModel model,
-			PlaygroundDataObject dataObject, HashMap<String, DataThing> inputMap)
-			throws DataConstraintCreationException, UnknownPortException,
-			DuplicatePortNameException, PortCreationException {
+	private Graph graph;
 
-		ArrayList<PlaygroundDataObject> dataComponents = dataObject
-				.getDataComponents();
-
-		// if we have no dataComponents then we are at the end datatype and
-		// need to add an input if a dataThing is mapped to it
-		if (dataComponents.size() <= 0) {
-			addInputToWorkflow(model, dataObject, inputMap);
-		}
-
-		// else we need to add the data components to the workflow and
-		// map them to the input ports on the parent dataObject
-
-		for (PlaygroundDataObject child : dataComponents) {
-			BiomobyObjectProcessor childProcessor = child.getProcessor();
-			System.out.println("adding ...dataComponent "
-					+ childProcessor.getName());
-			model.addProcessor(childProcessor);
-			System.out.println("added dataComponent "
-					+ childProcessor.getName());
-			model.addDataConstraint(new DataConstraint(model, childProcessor
-					.locatePort("mobyData"), dataObject.getPortMappings().get(
-					child)));
-			addComponentstoWorkflow(model, child, inputMap);
-		}
-
+	public PlaygroundObjectModel() {
+		graph = new SparseGraph();
 	}
 
-	private static void addInputToWorkflow(ScuflModel model,
-			PlaygroundDataObject dataObject, HashMap<String, DataThing> inputMap)
-			throws DataConstraintCreationException, DuplicatePortNameException,
-			PortCreationException {
+	public void addDataComponent(PlaygroundDataObject parent,
+			PlaygroundDataObject component) {
+		graph.addVertex(component);
+		Edge e = new DirectedSparseEdge(component, parent);
+		graph.addEdge(e);
+	}
 
-		// if( dataObject.getDataType().equals("Object")){
+	public Vertex addDataObject(BiomobyObjectProcessor newProcessor) {
+		Vertex v = graph.addVertex(new PlaygroundDataObject(newProcessor));
+		return v;
+	}
 
-		ArrayList<PlaygroundPortObject> inputPortObjects = new ArrayList<PlaygroundPortObject>(
-				dataObject.getInputPortObjects().values());
+	public Vertex addDataObject(PlaygroundDataObject pdo) {
+		Vertex v = graph.addVertex(pdo);
+		return v;
+	}
 
-		for (PlaygroundPortObject portObject : inputPortObjects) {
-			Port port = portObject.getPort();
-			PlaygroundObject playgroundObject = portObject.getMappedObject();
+	public Vertex addDataThing(PlaygroundDataThing pdt) {
+		Vertex v = graph.addVertex(pdt);
+		return v;
+	}
 
-			if (playgroundObject != null) {
+	// Handles the Creation of the workflow to produce the new Data Object and
+	// if we are in recording mode also constructs the recordedWorkflow in
+	// parallel
 
-				if (playgroundObject instanceof PlaygroundDataThing) {
+	public void addPort(PlaygroundObject parent, PlaygroundPortObject port) {
+		graph.addVertex(port);
+		Edge e = new DirectedSparseEdge(port, parent);
+		graph.addEdge(e);
+	}
 
-					PlaygroundDataThing playgroundDataThing = (PlaygroundDataThing) playgroundObject;
+	public void addPortDataThing(PlaygroundPortObject parent,
+			PlaygroundDataThing thing) {
+		graph.addVertex(thing);
+		Edge e = new DirectedSparseEdge(thing, parent);
+		graph.addEdge(e);
+	}
 
-					OutputPort newInput = new OutputPort(model
-							.getWorkflowSourceProcessor(), dataObject
-							.getProcessor().getName()
-							+ "_" + playgroundDataThing.getName());
+	/**
+	 * Creates new Vertex for the specified processor and returns the Vertex
+	 * 
+	 * @param newProcessor
+	 */
+	public Vertex addProcessor(BiomobyProcessor newProcessor) {
+		Vertex v = graph.addVertex(new PlaygroundProcessorObject(newProcessor));
+		return v;
+	}
 
-					model.getWorkflowSourceProcessor().addPort(newInput);
+	public Graph getGraph() {
+		return graph;
+	}
 
-					model.addDataConstraint(new DataConstraint(model, newInput,
-							port));
-
-					// add this portName->datathing mapping to the inputMap
-					if (inputMap != null) {
-						inputMap.put(newInput.getName(), playgroundDataThing
-								.getDataThing());
-					}
-				}
-			}
-		}
-		// } //if object
+	public void mapObjects(PlaygroundObject start, PlaygroundObject end) {
+		graph.addEdge(new DirectedSparseEdge(start, end));
 	}
 
 	// resets the state of the recording
@@ -572,10 +576,6 @@ public class PlaygroundObjectModel {
 
 		recordedWorkflow = new ScuflModel();
 		recordedMap = new HashMap<PlaygroundDataObject, Port>();
-	}
-
-	public static ScuflModel getRecordedWorkflow() {
-		return recordedWorkflow;
 	}
 
 }

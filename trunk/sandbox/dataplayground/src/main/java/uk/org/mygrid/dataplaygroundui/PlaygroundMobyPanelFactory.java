@@ -7,8 +7,8 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class PlaygroundMobyPanelFactory implements UIComponentFactorySPI {
 
-	public String getName() {
-		return "Moby Panel";
+	public UIComponentSPI getComponent() {
+		return PlaygroundMobyPanel.getInstance();
 	}
 
 	public ImageIcon getIcon() {
@@ -16,8 +16,8 @@ public class PlaygroundMobyPanelFactory implements UIComponentFactorySPI {
 		return null;
 	}
 
-	public UIComponentSPI getComponent() {
-		return PlaygroundMobyPanel.getInstance();
+	public String getName() {
+		return "Moby Panel";
 	}
 
 }
