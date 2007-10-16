@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.org.mygrid.dataplayground</groupId>
 	<artifactId>dataplayground</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4</version>
 	<name>Data playground</name>
 	<description>Data playground</description>
 	<issueManagement>
