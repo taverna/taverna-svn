@@ -87,11 +87,11 @@ public class RefSchemeTranslatorTest {
 		DataDocumentIdentifier id = makeString();
 		BlobReferenceScheme<?> originalRef = findBlobScheme(id);
 
-		TranslatorRunnable runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
 		runnable.run(); // run directly
 		assertTrue(runnable.isFinished());
 		assertNull(runnable.getException());
-		ReferenceScheme refScheme = runnable.getReferenceScheme();
+		ReferenceScheme refScheme = runnable.getResult();
 		assertNotNull(refScheme);
 		
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
@@ -108,11 +108,11 @@ public class RefSchemeTranslatorTest {
 		DataDocumentIdentifier id = makeString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
-		TranslatorRunnable runnable = translator.translateAsynch(id, URLReferenceScheme.class, BlobReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, URLReferenceScheme.class, BlobReferenceScheme.class);
 		runnable.run(); // run directly
 		assertTrue(runnable.isFinished());
 		assertNull(runnable.getException());
-		ReferenceScheme refScheme = runnable.getReferenceScheme();
+		ReferenceScheme refScheme = runnable.getResult();
 		assertNotNull(refScheme);
 		
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
@@ -132,9 +132,9 @@ public class RefSchemeTranslatorTest {
 		URLReferenceScheme urlRef = new URLReferenceScheme(tmpFile.toURI().toURL());
 		
 		DataDocumentIdentifier id = dManager.registerDocument(urlRef);
-		TranslatorRunnable runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
 		runnable.run(); // run directly
-		ReferenceScheme blobRef = runnable.getReferenceScheme();
+		ReferenceScheme blobRef = runnable.getResult();
 		
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
 				blobRef instanceof BlobReferenceScheme);
@@ -150,9 +150,9 @@ public class RefSchemeTranslatorTest {
 		DataDocumentIdentifier id = makeString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
-		TranslatorRunnable runnable = translator.translateAsynch(id, URLReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, URLReferenceScheme.class);
 		runnable.run(); // run directly
-		ReferenceScheme refScheme = runnable.getReferenceScheme();
+		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a URLReferenceScheme",
 				refScheme instanceof URLReferenceScheme);
 		assertEquals(LONG_STRING, 
@@ -164,9 +164,9 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeTwoFakeRefs();
-		TranslatorRunnable runnable = translator.translateAsynch(id, BlobReferenceScheme.class, URLReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class, URLReferenceScheme.class);
 		runnable.run(); // run directly
-		ReferenceScheme refScheme = runnable.getReferenceScheme();
+		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
 				refScheme instanceof BlobReferenceScheme<?>);
 		assertEquals("Didn't get original BlobReferenceScheme",
