@@ -40,13 +40,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.</groupId>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanshell-activity-translator</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.</groupId>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanshell-activity</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
