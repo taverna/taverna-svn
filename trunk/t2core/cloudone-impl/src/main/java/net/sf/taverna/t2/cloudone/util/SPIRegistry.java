@@ -7,11 +7,25 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Simple SPI lookup (using META-INF/services/interfaceName) to discover run time
+ * class implementations. Extend in other classes to use the SPI lookup.
+ * 
+ * @author Stian Soiland
+ * 
+ * @param <SPI>
+ *            The interface to discover
+ */
 public abstract class SPIRegistry<SPI> {
 
 	private Class<SPI> spi;
 	private ArrayList<SPI> instances;
 
+	/**
+	 * Construct the SPI for the given interface.
+	 * 
+	 * @param spi Interface to discover
+	 */
 	public SPIRegistry(Class<SPI> spi) {
 		this.spi = spi;
 	}
@@ -20,7 +34,13 @@ public abstract class SPIRegistry<SPI> {
 		instances = null;
 		getInstances();
 	}
-	
+
+	/**
+	 * Return instantiated implementations of the SPI.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public List<SPI> getInstances() {
 		if (instances != null) {
 			return instances;
@@ -59,9 +79,9 @@ public abstract class SPIRegistry<SPI> {
 					continue; // just blank line or comment
 				}
 //				System.out.println("SPI found class " + name);
-				Class spiClass;
+				Class<? extends SPI> spiClass;
 				try {
-					spiClass = cl.loadClass(name);
+					spiClass = (Class<? extends SPI>) cl.loadClass(name);
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -79,6 +99,9 @@ public abstract class SPIRegistry<SPI> {
 				} catch (IllegalAccessException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (ClassCastException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();	
 				}
 			}
 		}

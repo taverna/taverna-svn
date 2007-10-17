@@ -6,10 +6,26 @@ import java.util.List;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.util.SPIRegistry;
 
+/**
+ * SPI registry for {@link Translator}s. Used by
+ * {@link ReferenceSchemeTranslator}.
+ * {@link #getTranslators(ReferenceScheme, Class)} return a filtered list of
+ * translators using {@link Translator#canTranslate(ReferenceScheme, Class)}.
+ * 
+ * @author Stian Soiland
+ * @author Ian Dunlop
+ * 
+ */
+@SuppressWarnings("unchecked")
 public class TranslatorRegistry extends SPIRegistry<Translator> {
 
 	private static TranslatorRegistry instance = null;
 
+	/**
+	 * Get (create if necessary) the {@link TranslatorRegistry} singleton.
+	 * 
+	 * @return The {@link TranslatorRegistry} instance.
+	 */
 	public static TranslatorRegistry getInstance() {
 		if (instance == null) {
 			instance = new TranslatorRegistry();
@@ -36,9 +52,9 @@ public class TranslatorRegistry extends SPIRegistry<Translator> {
 	 *            {@link ReferenceScheme} class to translate to
 	 * @return A (possibly empty) list of {@link Translator}s
 	 */
-	public List<Translator> getTranslators(ReferenceScheme fromScheme,
-			Class<? extends ReferenceScheme> toType) {
-		List<Translator> translators = new ArrayList<Translator>();
+	public <Translated extends ReferenceScheme> List<Translator<Translated>> getTranslators(
+			ReferenceScheme fromScheme, Class<Translated> toType) {
+		List<Translator<Translated>> translators = new ArrayList<Translator<Translated>>();
 		for (Translator translator : getInstances()) {
 			if (translator.canTranslate(fromScheme, toType)) {
 				translators.add(translator);

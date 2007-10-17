@@ -16,18 +16,28 @@ import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 
-public class AnyToURLTranslator implements Translator {
-
+/**
+ * Translator for any type of {@link ReferenceScheme} to a file:/// based
+ * {@link URLReferenceScheme}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
+public class AnyToFileURLTranslator implements Translator<URLReferenceScheme> {
+	/**
+	 * Translate the {@link ReferenceScheme} to a {@link URLReferenceScheme}
+	 */
 	public URLReferenceScheme translate(DataManager dataManager,
-			ReferenceScheme ref, Class<? extends ReferenceScheme> type)
-			throws DereferenceException, TranslatorException {
+			ReferenceScheme ref) throws DereferenceException,
+			TranslatorException {
 		File translatedFile;
 		try {
 			translatedFile = File.createTempFile("translated", ".blob");
 		} catch (IOException e) {
 			throw new TranslatorException("Could not create temporary file", e);
 		}
-		
+
 		// Store content
 		OutputStream outStream;
 		try {
@@ -44,7 +54,7 @@ public class AnyToURLTranslator implements Translator {
 			throw new TranslatorException("Could not write " + ref + " to "
 					+ translatedFile, e);
 		}
-		
+
 		URL url;
 		try {
 			url = translatedFile.toURI().toURL();
@@ -56,6 +66,12 @@ public class AnyToURLTranslator implements Translator {
 		return new URLReferenceScheme(url);
 	}
 
+	/**
+	 * Check whether the specified {@link ReferenceScheme} can be translated to
+	 * a {@link ReferenceScheme}.
+	 * 
+	 * @return true if <code>toType</code> is an {@link URLReferenceScheme}
+	 */
 	public boolean canTranslate(ReferenceScheme fromScheme,
 			Class<? extends ReferenceScheme> toType) {
 		return toType.isAssignableFrom(URLReferenceScheme.class);

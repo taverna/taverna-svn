@@ -2,6 +2,14 @@ package net.sf.taverna.t2.cloudone.util;
 
 import net.sf.taverna.t2.cloudone.util.AsynchRunnable;
 
+/**
+ * Generic Asynchronous Runnable parameterised on the return type
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ * @param <ResultType> Return type
+ */
 public abstract class AbstractAsynchRunnable<ResultType> implements
 		AsynchRunnable<ResultType> {
 
@@ -29,6 +37,10 @@ public abstract class AbstractAsynchRunnable<ResultType> implements
 		this.result = result;
 	}
 
+	/**
+	 * Returns the result if the runnable has finished without failure,
+	 * otherwise throws an exception that it is still executing
+	 */
 	public ResultType getResult() {
 		if (!finished) {
 			throw new IllegalStateException("Not yet finished");
@@ -39,10 +51,16 @@ public abstract class AbstractAsynchRunnable<ResultType> implements
 		return result;
 	}
 
+	/**
+	 * Has the runnable finished or not
+	 */
 	public boolean isFinished() {
 		return finished;
 	}
 
+	/**
+	 * If the runnable failed then why
+	 */
 	public Exception getException() {
 		if (!finished) {
 			throw new IllegalStateException("Not yet finished");
