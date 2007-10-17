@@ -3,6 +3,7 @@
 	<name>t2activities</name>
 	<comment></comment>
 	<projects>
+		<project>t2core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

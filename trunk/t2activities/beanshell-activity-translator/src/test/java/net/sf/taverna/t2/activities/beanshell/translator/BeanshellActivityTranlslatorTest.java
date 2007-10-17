@@ -1,10 +1,10 @@
 package net.sf.taverna.t2.activities.beanshell.translator;
 
+import static org.junit.Assert.assertEquals;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
 
 public class BeanshellActivityTranlslatorTest {
 

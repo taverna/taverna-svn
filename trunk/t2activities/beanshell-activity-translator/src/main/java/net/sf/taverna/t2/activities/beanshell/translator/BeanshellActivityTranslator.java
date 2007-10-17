@@ -53,4 +53,8 @@ public class BeanshellActivityTranslator extends AbstractActivityTranslator<Bean
 		}
 	}
 
+	public boolean canHandle(Processor processor) {
+		return processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor");
+	}
+
 }

@@ -51,5 +51,9 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Biomar
 			throw new ActivityTranslationException("An error occurred invoking the method getQuery on the Biomart processor",e);
 		}
 	}
+	
+	public boolean canHandle(Processor processor) {
+		return processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor");
+	}
 
 }

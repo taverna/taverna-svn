@@ -49,5 +49,9 @@ public class StringConstantActivityTranslator extends AbstractActivityTranslator
 			throw new ActivityTranslationException("An error occurred invoking the method getStringValue on the StringConstant processor",e);
 		}
 	}
+	
+	public boolean canHandle(Processor processor) {
+		return processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor");
+	}
 
 }
