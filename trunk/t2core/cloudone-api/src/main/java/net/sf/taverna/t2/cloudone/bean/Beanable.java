@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.cloudone.bean;
 
 /**
- * Anything which you can serialise with
+ * Anything which you want to serialise with
  * {@link net.sf.taverna.t2.cloudone.util.BeanSerialiser} should implement
  * this interface. Expose required information as a bean from
  * {@link #getAsBean()}, which can later be set using
