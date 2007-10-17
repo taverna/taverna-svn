@@ -28,4 +28,6 @@ public interface ActivityTranslator<ConfigurationType> {
 	 * @throws ActivityConfigurationException
 	 */
 	Activity<ConfigurationType> doTranslation(Processor processor) throws ActivityTranslationException,ActivityConfigurationException;
+	
+	public boolean canHandle(Processor processor);
 }

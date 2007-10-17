@@ -18,10 +18,11 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 
 	@Test
 	public void testActivityTranslatorFactory() throws Exception {
+		System.setProperty("raven.eclipse", "true");
 		Processor processor = new BeanshellProcessor(null,"beanshell","",new String[]{},new String[]{});
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
 				.getTranslator(processor);
-		assertEquals("net.sf.taverna.t2.activities.beanshell.BeanshellActivityTranslator", translator.getClass().getName());
+		assertEquals("net.sf.taverna.t2.activities.beanshell.translator.BeanshellActivityTranslator", translator.getClass().getName());
 	}
 
 	@Test(expected = ActivityTranslatorNotFoundException.class)

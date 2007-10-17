@@ -1,8 +1,15 @@
 package net.sf.taverna.t2.cyclone.activity;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.spi.InstanceRegistry;
+import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
@@ -18,11 +25,10 @@ import org.embl.ebi.escience.scufl.Processor;
  *
  */
 public class ActivityTranslatorFactory {
-	private static Map<String,String> map = new HashMap<String,String>();
 	
-	static {
-		map.put("org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor", "net.sf.taverna.t2.activities.beanshell.BeanshellActivityTranslator");
-	}
+	private static InstanceRegistry<ActivityTranslator<?>> instanceRegistry = null;
+	
+	
 	/**
 	 * <p>
 	 * Given a particular Processor class it returns an appropriate ActivityTranslator
@@ -33,24 +39,45 @@ public class ActivityTranslatorFactory {
 	 * @throws ActivityTranslatorNotFoundException 
 	 */
 	public static ActivityTranslator<?> getTranslator(Processor processor) throws ActivityTranslatorNotFoundException {
-		
-		//FIXME: Use LocalArtifactClassLoader to determine the Artifact for the Processor. Then use Raven to get the corresponding Activity class mapped to that version of the Processor.
-		String classname=map.get(processor.getClass().getName());
-		if (classname==null) {
-			throw new ActivityTranslatorNotFoundException("Unable to find activity translator for:"+processor.getClass().getName());
+		ActivityTranslator<?> result=null;
+		List<ActivityTranslator<?>> translators = getTranslators();
+		for (ActivityTranslator<?> translator : translators) {
+			if (translator.canHandle(processor)) {
+				result=translator;
+				break;
+			}
 		}
-		ActivityTranslator<?> result;
-		try {
-			result = (ActivityTranslator<?>)Class.forName(classname).newInstance();
-		} catch (InstantiationException e) {
-			throw new ActivityTranslatorNotFoundException("Unable to create an instance of the translator",e);
-		} catch (IllegalAccessException e) {
-			throw new ActivityTranslatorNotFoundException("Illegal access when trying to create the translator",e);
-		} catch (ClassNotFoundException e) {
-			throw new ActivityTranslatorNotFoundException("Unable to find the translator class",e);
+	
+		if (result == null) {
+			throw new ActivityTranslatorNotFoundException("Unable to find Activity Translator for:"+processor.getClass());
 		}
-		
-		if (result == null) throw new ActivityTranslatorNotFoundException("Unable to find Activity Translator for:"+processor.getClass());
 		return result;
+	}
+	
+	private static List<ActivityTranslator<?>> getTranslators() {
+		return getRegistry().getInstances();
+	}
+	
+	private synchronized static InstanceRegistry<ActivityTranslator<?>> getRegistry() {
+		if (instanceRegistry==null) {
+			SpiRegistry registry = new SpiRegistry(getRepository(),ActivityTranslator.class.getName(),ActivityTranslatorFactory.class.getClassLoader());
+			instanceRegistry = new InstanceRegistry<ActivityTranslator<?>>(registry, new Object[0]);
+		}
+		return instanceRegistry;
+	}
+
+	private static Repository getRepository() {
+		//FIXME: How do we get the repository correctly?
+		File tmpDir=null;
+		try {
+			tmpDir = File.createTempFile("taverna", "raven");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		tmpDir.delete();
+		tmpDir.mkdir();
+		Repository tempRepository = LocalRepository.getRepository(tmpDir);
+		return tempRepository;
 	}
 }
