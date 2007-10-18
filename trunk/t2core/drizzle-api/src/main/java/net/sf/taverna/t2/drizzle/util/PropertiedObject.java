@@ -17,8 +17,8 @@ import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
  * 
  * @param <O>
  */
-public interface PropertiedObject<O> extends Beanable<PropertiedObjectBean>{
-	
+public interface PropertiedObject<O> extends Beanable<PropertiedObjectBean> {
+
 	/**
 	 * Add a listener to the PropertiedObject. The PropertiedObjectListener
 	 * listens for the addition or removal of a PropertyKey + PropertyValue
@@ -71,6 +71,14 @@ public interface PropertiedObject<O> extends Beanable<PropertiedObjectBean>{
 	void removeListener(final PropertiedObjectListener pol);
 
 	/**
+	 * Replay all the calls necessary to acquant a listener with the current
+	 * state of the PropertiedObject.
+	 * 
+	 * Note that the calls are not necessarily the same as created the state.
+	 */
+	void replayToListener(final PropertiedObjectListener pol);
+	
+	/**
 	 * Remove the PropertyKey and its associated PropertyValue from the
 	 * PropertiedObject. It is not an error if the PropertiedObject does not
 	 * have the specified PropertyKey.
@@ -81,7 +89,7 @@ public interface PropertiedObject<O> extends Beanable<PropertiedObjectBean>{
 	 * @param key
 	 */
 	void removeProperty(final PropertyKey key);
-	
+
 	/**
 	 * Set the object to which the PropertiedObject corresponds.
 	 * 

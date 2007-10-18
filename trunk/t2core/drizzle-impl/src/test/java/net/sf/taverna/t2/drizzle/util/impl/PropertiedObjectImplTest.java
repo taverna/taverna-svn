@@ -25,42 +25,43 @@ import org.junit.Test;
  */
 public final class PropertiedObjectImplTest {
 
-	private PropertiedObjectImpl<Object> testImpl;
+	private PropertiedObjectImpl<ExampleObject> testImpl;
 
-	private Object testObject;
+	private ExampleObject testObject;
 
 	private int addedCount;
 
 	private int changedCount;
 
 	private int removedCount;
-	
-	private int keyCount;
-	private int valueCount;
 
-	private PropertiedObjectListener createListener () {
-		return new PropertiedObjectListener ()
-			 {	
-					public void propertyAdded (Object o, PropertyKey key, PropertyValue value) {
-						addedCount++;
-					}
-					public void propertyRemoved (Object o, PropertyKey key, PropertyValue value) {
-						removedCount++;
-					}
-					public void propertyChanged (Object o, PropertyKey key, PropertyValue oldValue, PropertyValue newValue) {
-						changedCount++;
-					}
+	private PropertiedObjectListener createListener() {
+		return new PropertiedObjectListener() {
+			public void propertyAdded(Object o, PropertyKey key,
+					PropertyValue value) {
+				addedCount++;
+			}
+
+			public void propertyRemoved(Object o, PropertyKey key,
+					PropertyValue value) {
+				removedCount++;
+			}
+
+			public void propertyChanged(Object o, PropertyKey key,
+					PropertyValue oldValue, PropertyValue newValue) {
+				changedCount++;
+			}
 		};
 	}
-	
-	private PropertyKey createKey () {
+
+	private PropertyKey createKey() {
 		return new ExampleKey();
 	}
 
-	private PropertyValue createValue () {
+	private PropertyValue createValue() {
 		return new ExampleValue();
 	}
-	
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -83,10 +84,8 @@ public final class PropertiedObjectImplTest {
 		addedCount = 0;
 		changedCount = 0;
 		removedCount = 0;
-		keyCount = 0;
-		valueCount = 0;
-		testImpl = new PropertiedObjectImpl<Object>();
-		testObject = new Integer(7);
+		testImpl = new PropertiedObjectImpl<ExampleObject>();
+		testObject = new ExampleObject();
 	}
 
 	/**
@@ -103,7 +102,8 @@ public final class PropertiedObjectImplTest {
 	@Test
 	public void testPropertiedObjectImpl() {
 		assertNull(testImpl.getObject());
-		assertEquals(testImpl.getPropertyKeys().size(), 0);
+		assertEquals("testImpl.getPropertyKeys().size()", 0,
+				testImpl.getPropertyKeys().size());
 	}
 
 	/**
@@ -126,19 +126,19 @@ public final class PropertiedObjectImplTest {
 		PropertyValue testValue2 = createValue();
 
 		testImpl.setProperty(testKey, testValue1);
-		assertEquals(addedCount, 1);
-		assertEquals(changedCount, 0);
-		assertEquals(removedCount, 0);
+		assertEquals("addedCount", 1, addedCount);
+		assertEquals("changedCount", 0, changedCount);
+		assertEquals("removedCount", 0, removedCount);
 
 		testImpl.setProperty(testKey, testValue2);
-		assertEquals(addedCount, 1);
-		assertEquals(changedCount, 1);
-		assertEquals(removedCount, 0);
+		assertEquals("addedCount", 1, addedCount);
+		assertEquals("changedCount", 1, changedCount);
+		assertEquals("removedCount", 0, removedCount);
 
 		testImpl.removeProperty(testKey);
-		assertEquals(addedCount, 1);
-		assertEquals(changedCount, 1);
-		assertEquals(removedCount, 1);
+		assertEquals("addedCount", 1, addedCount);
+		assertEquals("changedCount", 1, changedCount);
+		assertEquals("removedCount", 1, removedCount);
 	}
 
 	/**
@@ -156,9 +156,11 @@ public final class PropertiedObjectImplTest {
 		}
 		PropertyKey testKey = createKey();
 		PropertyValue testValue1 = createValue();
-		assertFalse(testImpl.hasProperty(testKey));
+		assertFalse("testImpl.hasProperty(testKey)",
+				testImpl.hasProperty(testKey));
 		testImpl.setProperty(testKey, testValue1);
-		assertTrue(testImpl.hasProperty(testKey));
+		assertTrue("testImpl.hasProperty(testKey)",
+				testImpl.hasProperty(testKey));
 	}
 
 	/**
@@ -167,9 +169,9 @@ public final class PropertiedObjectImplTest {
 	 */
 	@Test
 	public void testGetObject() {
-		assertNull(testImpl.getObject());
+		assertNull("testImpl.getObject()", testImpl.getObject());
 		testImpl.setObject(testObject);
-		assertEquals(testImpl.getObject(), testObject);
+		assertEquals("testImpl.getObject()", testObject, testImpl.getObject());
 	}
 
 	/**
@@ -179,27 +181,32 @@ public final class PropertiedObjectImplTest {
 	@Test
 	public void testGetPropertyKeys() {
 		testImpl.setObject(testObject);
-		assertEquals(testImpl.getPropertyKeys().size(), 0);
+		assertEquals("testImpl.getPropertyKeys().size()", 0,
+				testImpl.getPropertyKeys().size());
 
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		testImpl.setProperty(testKey1, testValue1);
 		Set<PropertyKey> keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 1);
-		assertTrue(keys.contains(testKey1));
+		assertEquals("testImpl.getPropertyKeys().size()", 1, keys.size());
+		assertTrue("testImpl.getPropertyKeys().contains(testKey1)",
+				keys.contains(testKey1));
 
 		PropertyKey testKey2 = createKey();
 		PropertyValue testValue2 = createValue();
 		testImpl.setProperty(testKey2, testValue2);
 		keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 2);
-		assertTrue(keys.contains(testKey1));
-		assertTrue(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 2, keys.size());
+		assertTrue("testImpl.getPropertyKeys().contains(testKey1)",
+				keys.contains(testKey1));
+		assertTrue("testImpl.getPropertyKeys().contains(testKey2)",
+				keys.contains(testKey2));
 
 		testImpl.removeProperty(testKey1);
 		keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 1);
-		assertTrue(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 1, keys.size());
+		assertTrue("testImpl.getPropertyKeys().contains(testKey2)",
+				keys.contains(testKey2));
 	}
 
 	/**
@@ -220,9 +227,11 @@ public final class PropertiedObjectImplTest {
 		PropertyValue testValue2 = createValue();
 
 		testImpl.setProperty(testKey, testValue1);
-		assertEquals(testImpl.getPropertyValue(testKey), testValue1);
+		assertEquals("testImpl.getPropertyValue(testKey)", testValue1,
+				testImpl.getPropertyValue(testKey));
 		testImpl.setProperty(testKey, testValue2);
-		assertEquals(testImpl.getPropertyValue(testKey), testValue2);
+		assertEquals("testImpl.getPropertyValue(testKey)", testValue2,
+				testImpl.getPropertyValue(testKey));
 	}
 
 	/**
@@ -246,15 +255,15 @@ public final class PropertiedObjectImplTest {
 		PropertyValue testValue2 = createValue();
 
 		testImpl.setProperty(testKey, testValue1);
-		assertEquals(addedCount, 1);
-		assertEquals(changedCount, 0);
-		assertEquals(removedCount, 0);
+		assertEquals("addedCount", 1, addedCount);
+		assertEquals("changedCount", 0, changedCount);
+		assertEquals("removedCount", 0, removedCount);
 		testImpl.removeListener(testListener);
 		testImpl.setProperty(testKey, testValue2);
 		testImpl.removeProperty(testKey);
-		assertEquals(addedCount, 1);
-		assertEquals(changedCount, 0);
-		assertEquals(removedCount, 0);
+		assertEquals("addedCount", 1, addedCount);
+		assertEquals("changedCount", 0, changedCount);
+		assertEquals("removedCount", 0, removedCount);
 	}
 
 	/**
@@ -280,32 +289,38 @@ public final class PropertiedObjectImplTest {
 		PropertyValue testValue2 = createValue();
 		testImpl.setProperty(testKey2, testValue2);
 		Set<PropertyKey> keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 2);
-		assertTrue(keys.contains(testKey1));
-		assertTrue(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 2, keys.size());
+		assertTrue("testImpl.getPropertyKeys().contains(testKey1)",
+				keys.contains(testKey1));
+		assertTrue("testImpl.getPropertyKeys().contains(testKey2)",
+				keys.contains(testKey2));
 
 		testImpl.removeProperty(testKey1);
 		keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 1);
-		assertFalse(keys.contains(testKey1));
-		assertTrue(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 1, keys.size());
+		assertFalse("testImpl.getPropertyKeys().contains(testKey1)", keys.contains(testKey1));
+		assertTrue("testImpl.getPropertyKeys().contains(testKey2)", keys.contains(testKey2));
 
 		// Check removing twice does nothing
 		testImpl.removeProperty(testKey1);
 		keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 1);
-		assertFalse(keys.contains(testKey1));
-		assertTrue(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 1, keys.size());
+		assertFalse("testImpl.getPropertyKeys().contains(testKey1)",
+				keys.contains(testKey1));
+		assertTrue("testImpl.getPropertyKeys().contains(testKey2)",
+				keys.contains(testKey2));
 
 		testImpl.removeProperty(testKey2);
 		keys = testImpl.getPropertyKeys();
-		assertEquals(keys.size(), 0);
-		assertFalse(keys.contains(testKey1));
-		assertFalse(keys.contains(testKey2));
+		assertEquals("testImpl.getPropertyKeys().size()", 0, keys.size());
+		assertFalse("testImpl.getPropertyKeys().contains(testKey1)",
+				keys.contains(testKey1));
+		assertFalse("testImpl.getPropertyKeys().contains(testKey2)",
+				keys.contains(testKey2));
 
-		assertEquals(addedCount, 2);
-		assertEquals(changedCount, 0);
-		assertEquals(removedCount, 2);
+		assertEquals("addedCount", 2, addedCount);
+		assertEquals("changedCount", 0, changedCount);
+		assertEquals("removedCount", 2, removedCount);
 	}
 
 	/**
@@ -318,41 +333,48 @@ public final class PropertiedObjectImplTest {
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
-		testImpl.addListener (createListener());
+		testImpl.addListener(createListener());
 		PropertyKey testKey3 = createKey();
 		PropertyValue testValue3 = createValue();
-		
+
 		try {
-			testImpl.setProperty (null, testValue1);
-			fail ("NullPointerException shoould have been thrown for key");
-			
-			testImpl.setProperty (testKey1, null);
-			fail ("NullPointerException should have been thrown for value");
-			
-			testImpl.setProperty (null, null);
-			fail ("NullPointerException should have been thrown for key or value or both");
-		}
-		catch (NullPointerException e) {
-			//. This is expected
+			testImpl.setProperty(null, testValue1);
+			fail("NullPointerException shoould have been thrown for key");
+
+			testImpl.setProperty(testKey1, null);
+			fail("NullPointerException should have been thrown for value");
+
+			testImpl.setProperty(null, null);
+			fail("NullPointerException should have been thrown for key or value or both");
+		} catch (NullPointerException e) {
+			// . This is expected
 		}
 
-		testImpl.setProperty (testKey1, testValue1);
-		assertTrue (testImpl.hasProperty(testKey1));
-		assertEquals (testImpl.getPropertyValue(testKey1), testValue1);
-		
+		testImpl.setProperty(testKey1, testValue1);
+		assertTrue("testImpl.hasProperty(testKey1)",
+				testImpl.hasProperty(testKey1));
+		assertEquals("testImpl.getPropertyValue(testKey1)", testValue1,
+				testImpl.getPropertyValue(testKey1));
+
 		testImpl.setProperty(testKey1, testValue2);
-		assertTrue (testImpl.hasProperty(testKey1));
-		assertEquals (testImpl.getPropertyValue(testKey1), testValue2);
-		
+		assertTrue("testImpl.hasProperty(testKey1)",
+				testImpl.hasProperty(testKey1));
+		assertEquals("testImpl.getPropertyValue(testKey1)", testValue2,
+				testImpl.getPropertyValue(testKey1));
+
 		testImpl.setProperty(testKey3, testValue3);
-		assertTrue (testImpl.hasProperty(testKey1));
-		assertEquals (testImpl.getPropertyValue(testKey1), testValue2);
-		assertTrue (testImpl.hasProperty(testKey3));
-		assertEquals (testImpl.getPropertyValue(testKey3), testValue3);
-		
-		assertEquals (addedCount, 2);
-		assertEquals (changedCount, 1);
-		assertEquals (removedCount, 0);
+		assertTrue("testImpl.hasProperty(testKey1)",
+				testImpl.hasProperty(testKey1));
+		assertEquals("testImpl.getPropertyValue(testKey1)", testValue2,
+				testImpl.getPropertyValue(testKey1));
+		assertTrue("testImpl.hasProperty(testKey3)",
+				testImpl.hasProperty(testKey3));
+		assertEquals("testImpl.getPropertyValue(testKey3)", testValue3,
+				testImpl.getPropertyValue(testKey3));
+
+		assertEquals("addedCount", 2, addedCount);
+		assertEquals("changedCount", 1, changedCount);
+		assertEquals("removedCount", 0, removedCount);
 	}
 
 	/**
@@ -361,22 +383,28 @@ public final class PropertiedObjectImplTest {
 	 */
 	@Test
 	public void testGetAsBean() {
-		testImpl.setObject (testObject);
+		testImpl.setObject(testObject);
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyKey testKey2 = createKey();
 		PropertyValue testValue2 = createValue();
-		
-		testImpl.setProperty (testKey1, testValue1);
-		testImpl.setProperty (testKey2, testValue2);
-		
+
+		testImpl.setProperty(testKey1, testValue1);
+		testImpl.setProperty(testKey2, testValue2);
+
 		PropertiedObjectBean testBean = testImpl.getAsBean();
-		HashMap<PropertyKey, PropertyValue> beanedProperties = testBean.getProperties();
-		assertTrue (beanedProperties.containsKey(testKey1));
-		assertTrue (beanedProperties.containsKey(testKey2));
-		assertEquals (beanedProperties.size(), 2);
-		assertEquals (beanedProperties.get(testKey1), testValue1);
-		assertEquals (beanedProperties.get(testKey2), testValue2);
+		HashMap<PropertyKey, PropertyValue> beanedProperties = testBean
+				.getProperties();
+		assertTrue("beanedProperties.containsKey(testKey1)",
+				beanedProperties.containsKey(testKey1));
+		assertTrue("beanedProperties.containsKey(testKey2)",
+				beanedProperties.containsKey(testKey2));
+		assertEquals("beanedProperties.size()", 2,
+				beanedProperties.size());
+		assertEquals("beanedProperties.get(testKey1)", testValue1,
+				beanedProperties.get(testKey1));
+		assertEquals("beanedProperties.get(testKey2)", testValue2,
+				beanedProperties.get(testKey2));
 	}
 
 	/**
@@ -385,24 +413,29 @@ public final class PropertiedObjectImplTest {
 	 */
 	@Test
 	public void testSetFromBean() {
-		testImpl.setObject (testObject);
+		testImpl.setObject(testObject);
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyKey testKey2 = createKey();
 		PropertyValue testValue2 = createValue();
-		
-		testImpl.setProperty (testKey1, testValue1);
-		testImpl.setProperty (testKey2, testValue2);
-		
+
+		testImpl.setProperty(testKey1, testValue1);
+		testImpl.setProperty(testKey2, testValue2);
+
 		PropertiedObjectBean testBean = testImpl.getAsBean();
 
 		PropertiedObjectImpl backFromBean = new PropertiedObjectImpl();
-		backFromBean.setFromBean (testBean);
-		// The object is not tested as it is set in the context of a PropertiedObjectSet
-		assertTrue (backFromBean.hasProperty(testKey1));
-		assertTrue (backFromBean.hasProperty(testKey2));
-		assertEquals (backFromBean.getPropertyValue(testKey1), testValue1);
-		assertEquals (backFromBean.getPropertyValue(testKey2), testValue2);
+		backFromBean.setFromBean(testBean);
+		// The object is not tested as it is set in the context of a
+		// PropertiedObjectSet
+		assertTrue("backFromBean.hasProperty(testKey1)",
+				backFromBean.hasProperty(testKey1));
+		assertTrue("backFromBean.hasProperty(testKey2)",
+				backFromBean.hasProperty(testKey2));
+		assertEquals("backFromBean.getPropertyValue(testKey1)", testValue1,
+				backFromBean.getPropertyValue(testKey1));
+		assertEquals("backFromBean.getPropertyValue(testKey2)", testValue2,
+				backFromBean.getPropertyValue(testKey2));
 	}
 
 	/**
@@ -411,23 +444,21 @@ public final class PropertiedObjectImplTest {
 	 */
 	@Test
 	public void testSetObject() {
-		assertNull (testImpl.getObject());
+		assertNull(testImpl.getObject());
 		try {
-			testImpl.setObject (null);
-			fail ("NullPointerException should have been thrown for object");
-		}
-		catch (NullPointerException e) {
+			testImpl.setObject(null);
+			fail("NullPointerException should have been thrown for object");
+		} catch (NullPointerException e) {
 			// This is expected
 		}
 		testImpl.setObject(testObject);
-		assertEquals (testImpl.getObject(), testObject);
-		
+		assertEquals("testImpl.getObject()", testObject, testImpl.getObject());
+
 		// Setting the value twice should throw an exception
 		try {
 			testImpl.setObject(testObject);
-			fail ("IllegalStateException should have been thrown");
-		}
-		catch (IllegalStateException e) {
+			fail("IllegalStateException should have been thrown");
+		} catch (IllegalStateException e) {
 			// This is expected
 		}
 	}

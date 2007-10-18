@@ -4,8 +4,8 @@
 package net.sf.taverna.t2.drizzle.util.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
@@ -36,14 +36,14 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 * addition or removal of an object and its correspodning PropertiedObject
 	 * from the PropertiedObjectSetImpl.
 	 */
-	private TreeSet<PropertiedObjectSetListener> listeners;
+	private HashSet<PropertiedObjectSetListener> listeners;
 
 	/**
 	 * objectListeners contain the PropertiedObjectListeners that listen to all
 	 * changes in the properties of the PropertiedObjects within thr
 	 * PropertiedObjectSetImpl.
 	 */
-	private TreeSet<PropertiedObjectListener> objectListeners;
+	private HashSet<PropertiedObjectListener> objectListeners;
 
 	/**
 	 * Construct a PropertiedObjectSetImpl.
@@ -52,8 +52,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		super();
 
 		propertiedObjectMap = new HashMap<O, PropertiedObject<O>>();
-		listeners = new TreeSet<PropertiedObjectSetListener>();
-		objectListeners = new TreeSet<PropertiedObjectListener>();
+		listeners = new HashSet<PropertiedObjectSetListener>();
+		objectListeners = new HashSet<PropertiedObjectListener>();
 
 	}
 
@@ -141,7 +141,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getAllPropertyKeys()
 	 */
 	public Set<PropertyKey> getAllPropertyKeys() {
-		TreeSet<PropertyKey> result = new TreeSet<PropertyKey>();
+		HashSet<PropertyKey> result = new HashSet<PropertyKey>();
 		for (PropertiedObject po : getPropertiedObjects()) {
 			result.addAll(po.getPropertyKeys());
 		}
@@ -157,7 +157,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		if (key == null) {
 			throw new NullPointerException("key cannot be null");
 		}
-		Set<PropertyValue> result = new TreeSet<PropertyValue>();
+		Set<PropertyValue> result = new HashSet<PropertyValue>();
 		for (PropertiedObject po : getPropertiedObjects()) {
 			if (po.hasProperty(key)) {
 				result.add(po.getPropertyValue(key));
@@ -173,7 +173,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 */
 	public Set<O> getObjects() {
 		// Copy to be on the safe side
-		return new TreeSet<O>(propertiedObjectMap.keySet());
+		return new HashSet<O>(propertiedObjectMap.keySet());
 	}
 
 	/*
@@ -181,7 +181,10 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 * 
 	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getPropertiedObject(java.lang.Object)
 	 */
-	public PropertiedObject getPropertiedObject(final O object) {
+	public PropertiedObject<O> getPropertiedObject(final O object) {
+		if (object == null) {
+			throw new NullPointerException ("object cannot be null");
+		}
 		return propertiedObjectMap.get(object);
 	}
 
@@ -192,7 +195,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 */
 	public Set<PropertiedObject> getPropertiedObjects() {
 		// Copy to be on the safe side
-		return new TreeSet<PropertiedObject>(propertiedObjectMap.values());
+		return new HashSet<PropertiedObject>(propertiedObjectMap.values());
 	}
 
 	/**
@@ -323,10 +326,10 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
 	 */
-	public PropertiedObjectSetBean getAsBean() {
-		PropertiedObjectSetBean result = new PropertiedObjectSetBean();
-		HashMap<Object, PropertiedObjectBean> beanedPropertiedObjectMap =
-			new HashMap<Object, PropertiedObjectBean> ();
+	public PropertiedObjectSetBean<O> getAsBean() {
+		PropertiedObjectSetBean<O> result = new PropertiedObjectSetBean<O>();
+		HashMap<O, PropertiedObjectBean> beanedPropertiedObjectMap =
+			new HashMap<O, PropertiedObjectBean> ();
 		
 		for (O o : getObjects()) {
 			PropertiedObjectBean beanedPropertiedObject =
@@ -341,7 +344,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#setFromBean(java.lang.Object)
 	 */
-	public void setFromBean(PropertiedObjectSetBean bean) throws IllegalArgumentException {
+	public void setFromBean(PropertiedObjectSetBean<O> bean) throws IllegalArgumentException {
 		if ((propertiedObjectMap.size() != 0) || (listeners.size() != 0) ||
 				(objectListeners.size() != 0)) {
 			throw new IllegalStateException("Cannot initialise twice");
@@ -352,6 +355,27 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 			PropertiedObject po = this.addObject(object);
 			PropertiedObjectBean beanedPo = beanedPropertiedObjectMap.get(object);
 			po.setFromBean (beanedPo);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObjectSet#replayToListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectSetListener)
+	 */
+	public void replayToListener(PropertiedObjectSetListener posl) {
+		if (posl == null) {
+			throw new NullPointerException ("posl cannot be null");
+		}
+		for (O object : propertiedObjectMap.keySet()) {
+			posl.objectAdded(this, object);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObjectSet#replayToAllObjectsListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectListener)
+	 */
+	public void replayToAllObjectsListener(PropertiedObjectListener pol) {
+		for (PropertiedObject<O> po : propertiedObjectMap.values()) {
+			po.replayToListener(pol);
 		}
 	}
 

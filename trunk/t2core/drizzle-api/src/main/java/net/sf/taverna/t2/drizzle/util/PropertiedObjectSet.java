@@ -19,7 +19,8 @@ import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
  * 
  * @param <O>
  */
-public interface PropertiedObjectSet<O> extends Beanable<PropertiedObjectSetBean<O>>{
+public interface PropertiedObjectSet<O> extends
+		Beanable<PropertiedObjectSetBean<O>> {
 
 	/**
 	 * Add the specified PropertiedObjectListener to all PropertiedObjects
@@ -106,7 +107,7 @@ public interface PropertiedObjectSet<O> extends Beanable<PropertiedObjectSetBean
 	 * @param object
 	 * @return
 	 */
-	PropertiedObject getPropertiedObject(final O object);
+	PropertiedObject<O> getPropertiedObject(final O object);
 
 	/**
 	 * Return the Set of PropertiedObjects corresponding to objects within the
@@ -154,6 +155,22 @@ public interface PropertiedObjectSet<O> extends Beanable<PropertiedObjectSetBean
 	 * @param key
 	 */
 	void removeProperty(final O o, final PropertyKey key);
+
+	/**
+	 * Replay all the calls necessary to acquaint a listener with the current
+	 * state of the objects within the PropertiedObjectSet.
+	 * 
+	 * Note that the calls are not necessarily the same as created the state.
+	 */
+	void replayToAllObjectsListener(final PropertiedObjectListener pol);
+
+	/**
+	 * Replay all the calls necessary to acquant a listener with the current
+	 * state of the PropertiedObjectSet.
+	 * 
+	 * Note that the calls are not necessarily the same as created the state.
+	 */
+	void replayToListener(final PropertiedObjectSetListener posl);
 
 	/**
 	 * Set the PropertyValue associated with the PropertyKey for the

@@ -237,42 +237,65 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
 	 */
 	public PropertiedObjectBean getAsBean() {
 		PropertiedObjectBean result = new PropertiedObjectBean();
-		HashMap<PropertyKey, PropertyValue> beanedProperties =
-			(HashMap<PropertyKey, PropertyValue>) this.properties.clone();
+		HashMap<PropertyKey, PropertyValue> beanedProperties = (HashMap<PropertyKey, PropertyValue>) this.properties
+				.clone();
 
 		result.setProperties(beanedProperties);
 
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#setFromBean(java.lang.Object)
 	 */
 	public void setFromBean(PropertiedObjectBean bean)
 			throws IllegalArgumentException {
 		if ((properties.size() != 0) || (listeners.size() != 0)) {
-			throw new IllegalStateException ("Cannot initialize twice");
+			throw new IllegalStateException("Cannot initialize twice");
 		}
-		
-		this.properties = (HashMap<PropertyKey, PropertyValue>) bean.getProperties().clone();
+
+		this.properties = (HashMap<PropertyKey, PropertyValue>) bean
+				.getProperties().clone();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObject#setObject(java.lang.Object)
 	 */
 	public void setObject(O object) {
 		if (object == null) {
-			throw new NullPointerException ("object cannot be null");
+			throw new NullPointerException("object cannot be null");
 		}
 		if (this.object != null) {
-			throw new IllegalStateException ("Cannot initialize twice");
+			throw new IllegalStateException("Cannot initialize twice");
 		}
 		this.object = object;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObject#replayToListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectListener)
+	 */
+	public void replayToListener(PropertiedObjectListener pol) {
+		if (pol == null) {
+			throw new NullPointerException("pol cannot be null");
+		}
+
+		for (PropertyKey key : properties.keySet()) {
+			PropertyValue value = properties.get(key);
+			pol.propertyAdded(this.object, key, value);
+		}
 	}
 
 }
