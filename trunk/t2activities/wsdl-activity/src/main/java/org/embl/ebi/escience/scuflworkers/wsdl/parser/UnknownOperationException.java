@@ -4,7 +4,7 @@ package org.embl.ebi.escience.scuflworkers.wsdl.parser;
  * Exception thrown when a given service operation name cannot be found for that
  * WSDL
  * 
- * @author sowen
+ * @author Stuart Owen
  * 
  */
 

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 12:11:01 $
+ * Last modified on   $Date: 2007-10-18 13:26:22 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
@@ -74,6 +74,10 @@ public class TypeDescriptor {
 		}
 	}
 
+	public String getMimeType() {
+		return translateJavaType(determineClassType(this));
+	}
+	
 	public void setQname(QName qname) {
 		this.qname = qname;
 	}
@@ -94,6 +98,20 @@ public class TypeDescriptor {
 			this.name = name;
 		}
 	}
+	
+	/**
+     * @return the depth determined from the syntactic mime type of the original
+     *         port. i.e text/plain = 0, l('text/plain') = 1, l(l('text/plain')) =
+     *         2, ... etc.
+     */
+    public int getDepth() {
+    	String syntacticType=getMimeType();
+        if (syntacticType == null) {
+                return 0;
+        } else {
+                return syntacticType.split("l\\(").length - 1;
+        }
+    }
 
 	public boolean isOptional() {
 		return optional;
@@ -126,7 +144,7 @@ public class TypeDescriptor {
 	/**
 	 * Translate a java type into a taverna type string
 	 */
-	public static String translateJavaType(Class type) {
+	public static String translateJavaType(Class<?> type) {
 		if (type.equals(String[].class)) {
 			return "l('text/plain')";
 		} else if (type.equals(org.w3c.dom.Element.class)) {
@@ -142,46 +160,52 @@ public class TypeDescriptor {
 		}
 	}
 
-	public static void retrieveSignature(List params, String[] names,
-			Class[] types) {
+	public static void retrieveSignature(List<TypeDescriptor> params, String[] names,
+			Class<?>[] types) {
 		for (int i = 0; i < names.length; i++) {
 			TypeDescriptor descriptor = (TypeDescriptor) params.get(i);
 			names[i] = descriptor.getName();
-			String s = descriptor.getType().toLowerCase();
+			
+			types[i]=determineClassType(descriptor);
+		}
+	}
 
-			if (descriptor instanceof ArrayTypeDescriptor) {
-				if (((ArrayTypeDescriptor) descriptor).getElementType() instanceof BaseTypeDescriptor) {
-					types[i] = String[].class;
-				} else if (((ArrayTypeDescriptor) descriptor).isUnbounded()) {
-					types[i] = org.w3c.dom.Element[].class;
+	private static Class<?> determineClassType(TypeDescriptor descriptor) {
+		String s = descriptor.getType().toLowerCase();
+		Class<?> type;
+		if (descriptor instanceof ArrayTypeDescriptor) {
+			if (((ArrayTypeDescriptor) descriptor).getElementType() instanceof BaseTypeDescriptor) {
+				type = String[].class;
+			} else if (((ArrayTypeDescriptor) descriptor).isUnbounded()) {
+				type = org.w3c.dom.Element[].class;
+			}
+			else {
+				type = org.w3c.dom.Element.class;
+			}
+		} else {
+			if ("string".equals(s)) {
+				type = String.class;
+			} else if ("double".equals(s) || "decimal".equals(s)) {
+				type = Double.TYPE;
+			} else if ("float".equals(s)) {
+				type = Float.TYPE;
+			} else if ("int".equals(s) || "integer".equals(s)) {
+				type = Integer.TYPE;
+			} else if ("boolean".equals(s)) {
+				type = Boolean.TYPE;
+			} else if ("base64binary".equals(s)) {
+				type = byte[].class;
+			} else {
+				//treat any other basetype as a String.
+				if (descriptor instanceof BaseTypeDescriptor) {
+					type=String.class;
 				}
 				else {
-					types[i] = org.w3c.dom.Element.class;
-				}
-			} else {
-				if ("string".equals(s)) {
-					types[i] = String.class;
-				} else if ("double".equals(s) || "decimal".equals(s)) {
-					types[i] = Double.TYPE;
-				} else if ("float".equals(s)) {
-					types[i] = Float.TYPE;
-				} else if ("int".equals(s) || "integer".equals(s)) {
-					types[i] = Integer.TYPE;
-				} else if ("boolean".equals(s)) {
-					types[i] = Boolean.TYPE;
-				} else if ("base64binary".equals(s)) {
-					types[i] = byte[].class;
-				} else {
-					//treat any other basetype as a String.
-					if (descriptor instanceof BaseTypeDescriptor) {
-						types[i]=String.class;
-					}
-					else {
-						types[i] = org.w3c.dom.Element.class;
-					}
+					type = org.w3c.dom.Element.class;
 				}
 			}
 		}
+		return type;
 	}
 
 	/**
@@ -206,6 +230,7 @@ public class TypeDescriptor {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private static boolean testForCyclic(ComplexTypeDescriptor descriptor,
 			List<String> parents) {
 		boolean result = false;

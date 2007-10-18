@@ -9,7 +9,8 @@ import org.embl.ebi.escience.scufl.Processor;
  */
 public class DummyProcessor extends Processor {
     
-        public DummyProcessor() throws Exception {
+	private static final long serialVersionUID = -5485932399117581670L;
+		public DummyProcessor() throws Exception {
             super(null,"wsdl");
         }
         public Properties getProperties() {

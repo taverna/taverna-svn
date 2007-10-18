@@ -1,14 +1,16 @@
 package net.sf.taverna.t2.activities.wsdl.translator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityOutputPortImpl;
+
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *

@@ -14,7 +14,7 @@ public class ComplexTypeDescriptor extends TypeDescriptor {
 		return elements;
 	}
 
-	public void setElements(List elements) {
+	public void setElements(List<TypeDescriptor> elements) {
 		this.elements = elements;
 	}
 	

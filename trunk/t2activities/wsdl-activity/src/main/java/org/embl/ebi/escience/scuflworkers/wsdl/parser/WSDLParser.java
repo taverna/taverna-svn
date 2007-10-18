@@ -48,6 +48,7 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
  * 
  */
 
+@SuppressWarnings("unchecked")
 public class WSDLParser {
 	private String wsdlLocation;
 
