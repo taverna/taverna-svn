@@ -50,8 +50,6 @@ public class BiomartActivityTest {
 		assertTrue(outputs.containsKey("hsapiens_gene_ensembl.go_description"));
 		assertTrue(outputs.get("hsapiens_gene_ensembl.go_description") instanceof List);
 		assertTrue(((List<?>) outputs.get("hsapiens_gene_ensembl.go_description")).size() > 0);
-		System.out.println(outputs.get("hsapiens_gene_ensembl.chromosome_name"));
-		System.out.println(outputs.get("hsapiens_gene_ensembl.go_description"));
 	}
 
 	private MartQuery parseQuery(String resourceName) throws JDOMException, IOException {

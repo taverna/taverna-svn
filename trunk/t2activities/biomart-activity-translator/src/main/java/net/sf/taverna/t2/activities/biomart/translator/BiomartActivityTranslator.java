@@ -53,7 +53,7 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Biomar
 	}
 	
 	public boolean canHandle(Processor processor) {
-		return processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor");
+		return processor != null && processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor");
 	}
 
 }
