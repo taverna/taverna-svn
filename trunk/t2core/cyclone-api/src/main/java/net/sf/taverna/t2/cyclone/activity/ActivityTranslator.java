@@ -29,5 +29,12 @@ public interface ActivityTranslator<ConfigurationType> {
 	 */
 	Activity<ConfigurationType> doTranslation(Processor processor) throws ActivityTranslationException,ActivityConfigurationException;
 	
+	/**
+	 * Returns true if this ActivityTranslator can translate the specified Taverna 1 Processor.
+	 * 
+	 * @param processor
+	 * @return true if this ActivityTranslator can translate the specified Taverna 1 Processor
+	 */
 	public boolean canHandle(Processor processor);
+	
 }
