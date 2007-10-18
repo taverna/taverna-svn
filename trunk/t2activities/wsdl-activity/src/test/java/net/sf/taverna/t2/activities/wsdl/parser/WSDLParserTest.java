@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,6 +7,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import javax.wsdl.Operation;
+
+import net.sf.taverna.t2.activities.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.BaseTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.ComplexTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.junit.Test;
 

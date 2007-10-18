@@ -25,19 +25,24 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: TypeDescriptor.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 13:26:22 $
+ * Last modified on   $Date: 2007-10-18 13:37:07 $
  *               by   $Author: sowen70 $
  * Created on March-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+
+import net.sf.taverna.t2.activities.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.BaseTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.ComplexTypeDescriptor;
+
 
 /**
  * Base class for all descriptors for type

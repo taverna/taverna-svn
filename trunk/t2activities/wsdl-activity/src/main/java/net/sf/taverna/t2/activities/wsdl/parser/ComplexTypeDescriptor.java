@@ -1,7 +1,9 @@
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
 /**
  * A TypeDescriptor that specifically describes a complex type

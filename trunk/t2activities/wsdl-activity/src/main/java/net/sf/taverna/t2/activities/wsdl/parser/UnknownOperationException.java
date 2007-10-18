@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 /**
  * Exception thrown when a given service operation name cannot be found for that

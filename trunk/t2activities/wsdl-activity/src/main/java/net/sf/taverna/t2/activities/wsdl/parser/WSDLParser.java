@@ -1,4 +1,4 @@
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +36,11 @@ import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
+import net.sf.taverna.t2.activities.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.BaseTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.ComplexTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.UnknownOperationException;
 import org.xml.sax.SAXException;
 
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;

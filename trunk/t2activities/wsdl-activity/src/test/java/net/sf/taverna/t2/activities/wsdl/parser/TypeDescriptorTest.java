@@ -27,14 +27,19 @@
  * Filename           $RCSfile: TypeDescriptorTest.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 13:26:22 $
+ * Last modified on   $Date: 2007-10-18 13:37:10 $
  *               by   $Author: sowen70 $
  * Created on 17-May-2006
  *****************************************************************/
-package org.embl.ebi.escience.scuflworkers.wsdl.parser;
+package net.sf.taverna.t2.activities.wsdl.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.sf.taverna.t2.activities.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.BaseTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.ComplexTypeDescriptor;
+import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
 import junit.framework.TestCase;
 
