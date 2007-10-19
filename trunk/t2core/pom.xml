@@ -8,13 +8,14 @@
 	<modules>
 		<module>cloudone-api</module>
 		<module>cloudone-impl</module>
+		<module>cloudone-http</module>
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
 		<!--<module>gridsam-activity</module>
-		<module>ogsadai-activity</module>-->
+			<module>ogsadai-activity</module>-->
 	</modules>
 	<licenses>
 		<license>
@@ -109,6 +110,17 @@
 			<url>
 				http://www.mygrid.org.uk/maven/snapshot-repository
 			</url>
+		</repository>
+		<repository>
+			<id>restlet</id>
+			<name>Restlet repository</name>
+			<url>http://maven.restlet.org</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
 		</repository>
 	</repositories>
 	<distributionManagement>
