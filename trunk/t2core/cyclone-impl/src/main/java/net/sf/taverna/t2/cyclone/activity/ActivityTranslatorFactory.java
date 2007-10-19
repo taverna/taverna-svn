@@ -81,7 +81,7 @@ public class ActivityTranslatorFactory {
 	}
 
 	private static Repository getRepository() {
-		// FIXME: How do we get the repository correctly?
+		// FIXME: Need to get the repository from the LocalArtifactClassloader.
 		File tmpDir = null;
 		try {
 			tmpDir = File.createTempFile("taverna", "raven");
