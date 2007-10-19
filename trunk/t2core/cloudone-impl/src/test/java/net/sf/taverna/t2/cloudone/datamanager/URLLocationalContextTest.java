@@ -18,6 +18,7 @@ import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.impl.url.URLLocationalContext;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceSchemeFactory;
+import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
