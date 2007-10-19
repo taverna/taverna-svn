@@ -26,7 +26,7 @@
 					<programs>
 						<program>
 							<mainClass>
-								uk.org.mygrid.taverna.example.WorkflowLauncherWrapper
+								net.sf.taverna.example.WorkflowLauncherWrapper
 							</mainClass>
 							<name>runme</name>
 						</program>
