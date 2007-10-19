@@ -137,7 +137,7 @@
     the procedure for setting up Raven and invoking the
     <literal>WorkflowLauncher</literal>. This example can be downloaded from
     <ulink
-    url="http://www.mygrid.org.uk/usermanual1.6/workflowlauncher.zip">http://www.mygrid.org.uk/usermanual1.6/workflowlauncher.zip</ulink>
+    url="http://prdownloads.sourceforge.net/taverna/workflowlauncher-1.6.2.zip?download">http://prdownloads.sourceforge.net/taverna/workflowlauncher-1.6.2.zip?download</ulink>
     and is built using Maven. It is also available in the Taverna source tree
     under <emphasis>/examples/workflowlauncher</emphasis>, though note that
     this isn't always guarenteed to work due to the use of undeployed SNAPSHOT
