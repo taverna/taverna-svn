@@ -17,6 +17,8 @@ public interface PropertiedTreeModel<O> extends TypedTreeModel<PropertiedTreeNod
 	void setPropertyKeySettings(List<PropertyKeySetting> settingList);
 	
 	void setPropertiedGraphView(final PropertiedGraphView<O> propertiedGraphView);
+	void detachFromGraphView();
+	
 	void setFilter(final PropertiedObjectFilter<O> filter);
 	PropertiedObjectFilter<O> getFilter();
 	
