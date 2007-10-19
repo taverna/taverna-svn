@@ -22,56 +22,62 @@ import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.axis.message.SOAPBodyElement;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
 @SuppressWarnings("unchecked")
 public abstract class AbstractBodyBuilder implements BodyBuilder {
-	private static Logger logger = Logger.getLogger(AbstractBodyBuilder.class);
-	
+
 	private String style;
 	private WSDLParser parser;
 	private String operationName;
-	protected enum Style{DOCUMENT,RPC};
-	protected enum Use{LITERAL,ENCODED};
-	
+
+	protected enum Style {
+		DOCUMENT, RPC
+	};
+
+	protected enum Use {
+		LITERAL, ENCODED
+	};
+
 	protected Map<String, String> namespaceMappings;
 	protected List<TypeDescriptor> inputDescriptors;
-	
-	public AbstractBodyBuilder(String style,WSDLParser parser, String operationName,List<TypeDescriptor> inputDescriptors) {
-		this.style=style;
-		this.parser=parser;
-		this.operationName=operationName;
-		this.inputDescriptors=inputDescriptors;
+
+	public AbstractBodyBuilder(String style, WSDLParser parser,
+			String operationName, List<TypeDescriptor> inputDescriptors) {
+		this.style = style;
+		this.parser = parser;
+		this.operationName = operationName;
+		this.inputDescriptors = inputDescriptors;
 	}
-	
+
 	protected Style getStyle() {
-		if (style.equalsIgnoreCase("rpc")) return Style.RPC;
-		if (style.equalsIgnoreCase("document")) return Style.DOCUMENT;
-		logger.warn("Style is not recognised:"+style);
-		logger.warn("Defaulting to a Use of DOCUMENT");
-		return Style.DOCUMENT;
+		Style result = Style.DOCUMENT;
+		if (style.equalsIgnoreCase("rpc")) {
+			result = Style.RPC;
+		} else if (style.equalsIgnoreCase("document")) {
+			result = Style.DOCUMENT;
+		}
+		return result;
 	}
-	
+
 	protected abstract Use getUse();
-	
+
 	/**
 	 * 
 	 * @return the namespace for the operation
 	 */
 	private String getOperationNamespace() throws UnknownOperationException {
-		return parser.getOperationNamespaceURI(
-				operationName);
+		return parser.getOperationNamespaceURI(operationName);
 	}
-	
+
 	public SOAPBodyElement build(Map inputMap) throws WSDLException,
-	ParserConfigurationException, SOAPException, IOException,
-	SAXException, UnknownOperationException{
-		
-		List inputs = parser.getOperationInputParameters(
-				operationName);
+			ParserConfigurationException, SOAPException, IOException,
+			SAXException, UnknownOperationException {
+
+		List inputs = parser.getOperationInputParameters(operationName);
 
 		namespaceMappings = generateNamespaceMappings(inputs);
 		String operationNamespace = getOperationNamespace();
@@ -85,32 +91,31 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 			String inputName = descriptor.getName();
 			Object dataValue = inputMap.get(inputName);
 
-			body = createBodyElementForData(operationName, namespaceMappings, operationNamespace, body, descriptor, inputName, dataValue);
+			body = createBodyElementForData(operationName, namespaceMappings,
+					operationNamespace, body, descriptor, inputName, dataValue);
 		}
 
-		
-		
-		
-		
 		return body;
 	}
 
-	protected SOAPBodyElement createBodyElementForData(String operationName, Map<String, String> namespaceMappings, String operationNamespace, SOAPBodyElement body, TypeDescriptor descriptor, String inputName, Object dataValue) throws ParserConfigurationException, SAXException, IOException, UnknownOperationException, SOAPException {
-		if (dataValue == null)
-			logger.warn("No input named: '" + inputName
-					+ "' provided to invoke service: '" + operationName);
-		else {
+	protected SOAPBodyElement createBodyElementForData(String operationName,
+			Map<String, String> namespaceMappings, String operationNamespace,
+			SOAPBodyElement body, TypeDescriptor descriptor, String inputName,
+			Object dataValue) throws ParserConfigurationException,
+			SAXException, IOException, UnknownOperationException, SOAPException {
+		if (dataValue != null) {
 			String mimeType = getMimeTypeForInputName(inputName);
 			String typeName = descriptor.getType();
 
 			Element el = null;
 
 			if (descriptor instanceof ArrayTypeDescriptor) {
-				el = createElementForArrayType(namespaceMappings,
-						inputName, dataValue, descriptor, mimeType, typeName);
+				el = createElementForArrayType(namespaceMappings, inputName,
+						dataValue, descriptor, mimeType, typeName);
 
 			} else {
-				el = createSkeletonElementForSingleItem(namespaceMappings, descriptor, inputName, typeName);
+				el = createSkeletonElementForSingleItem(namespaceMappings,
+						descriptor, inputName, typeName);
 				populateElementWithObjectData(mimeType, el, dataValue);
 			}
 
@@ -119,10 +124,14 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 		return body;
 	}
 
-	protected abstract SOAPBodyElement addElementToBody(String operationNamespace, SOAPBodyElement body, Element el) throws SOAPException;
+	protected abstract SOAPBodyElement addElementToBody(
+			String operationNamespace, SOAPBodyElement body, Element el)
+			throws SOAPException;
 
-	protected abstract Element createSkeletonElementForSingleItem(Map<String, String> namespaceMappings, TypeDescriptor descriptor, String inputName, String typeName);
-	
+	protected abstract Element createSkeletonElementForSingleItem(
+			Map<String, String> namespaceMappings, TypeDescriptor descriptor,
+			String inputName, String typeName);
+
 	/**
 	 * generates an XML DOM Element for an array
 	 * 
@@ -143,7 +152,6 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 			String typeName) throws ParserConfigurationException, SAXException,
 			IOException, UnknownOperationException;
 
-	
 	/**
 	 * Populates a DOM XML Element with the contents of a List of dataValues
 	 * 
@@ -224,7 +232,8 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 	 */
 	protected String getMimeTypeForInputName(String inputName) {
 		for (TypeDescriptor desc : inputDescriptors) {
-			if (desc.getName().equals(inputName)) return desc.getMimeType();
+			if (desc.getName().equals(inputName))
+				return desc.getMimeType();
 		}
 		return "";
 	}
@@ -269,10 +278,11 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 	 * @param nsCount
 	 * @return
 	 */
-	protected int mapNamespace(TypeDescriptor descriptor, Map<String,String> namespaceMap,
-			int nsCount) {
+	protected int mapNamespace(TypeDescriptor descriptor,
+			Map<String, String> namespaceMap, int nsCount) {
 		String namespace = descriptor.getNamespaceURI();
-		if (namespace!=null && namespace.length()>0 && !namespaceMap.containsKey(namespace)) {
+		if (namespace != null && namespace.length() > 0
+				&& !namespaceMap.containsKey(namespace)) {
 			namespaceMap.put(namespace, "ns" + nsCount);
 			nsCount++;
 		}

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponsePrimitiveParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 18:07:31 $
+ * Last modified on   $Date: 2007-10-19 16:22:05 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -43,7 +43,6 @@ import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
 import org.apache.axis.message.RPCElement;
 import org.apache.axis.message.RPCParam;
-import org.apache.log4j.Logger;
 
 /**
  * SOAPResponseParser responsible for parsing soap responses that map to outputs
@@ -55,9 +54,6 @@ import org.apache.log4j.Logger;
  */
 @SuppressWarnings("unchecked")
 public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
-
-	private static Logger logger = Logger
-			.getLogger(SOAPResponsePrimitiveParser.class);
 
 	private List<String> outputNames;
 
@@ -76,16 +72,9 @@ public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 		Map result = new HashMap();
 		int c = 0;
 
-		if (response.size() > 1)
-			logger
-					.warn("More than one element to the response Vector when parsing for primitive types:"
-							+ response);
+		
 		RPCElement responseElement = (RPCElement) response.get(0);
 		List params = responseElement.getParams();
-
-		if (params.size() != outputNames.size())
-			logger
-					.error("Different number of output parameters to outputs expected.");
 
 		for (Iterator paramIterator = params.iterator(); paramIterator
 				.hasNext();) {
@@ -98,7 +87,7 @@ public class SOAPResponsePrimitiveParser implements SOAPResponseParser {
 			// outputs which is very rare, and is going to be documented as
 			// unrecommended for Taverna).
 			if (outputNames.contains(param.getName())) {
-				result.put(param.getName(), value);
+				result.put(param.getName(), ObjectConverter.convertObject(value));
 			} else {
 				result.put(outputNames.get(c), value);
 			}

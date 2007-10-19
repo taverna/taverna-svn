@@ -20,7 +20,6 @@ import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.utils.XMLUtils;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -36,8 +35,6 @@ import org.xml.sax.SAXException;
  */
 @SuppressWarnings("unchecked")
 public class LiteralBodyBuilder extends AbstractBodyBuilder {
-
-	private static Logger logger = Logger.getLogger(LiteralBodyBuilder.class);
 
 	public LiteralBodyBuilder(String style, WSDLParser parser, String operationName, List<TypeDescriptor> inputDescriptors) {
 		super(style, parser, operationName,inputDescriptors);
@@ -91,10 +88,6 @@ public class LiteralBodyBuilder extends AbstractBodyBuilder {
 				}
 
 				for (Node node : attributeNodesForRemoval) {
-					if (logger.isDebugEnabled())
-						logger.debug("Removing attribute from body: {"
-								+ el.getNamespaceURI() + "}"
-								+ el.getLocalName());
 					el.removeAttributeNS(node.getNamespaceURI(), node
 							.getLocalName());
 				}

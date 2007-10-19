@@ -10,6 +10,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import org.embl.ebi.escience.scufl.Processor;
 
 /**
+ * Translates a Taverna 1 WSDLBasedProcessor to an equivalent Taverna 2 WSDLActivity.
+ * <p>
+ * The new activity is configured based upon the wsdl and operation defined in the original processor.
+ * </p>
  *
  * @author Stuart Owen
  */
@@ -22,10 +26,16 @@ public class WSDLActivityTranslator extends AbstractActivityTranslator<WSDLActiv
         return bean;
     }
 
+    /**
+     * Returns true if the Processor is a WSDLBasedProcessor, otherwise returns false.
+     */
     public boolean canHandle(Processor processor) {
         return processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor");
     }
 
+    /**
+     * Creates a new instance an unconfigured Activity and returns it.
+     */
     protected Activity<WSDLActivityConfigurationBean> createUnconfiguredActivity() {
         return new WSDLActivity();
     }

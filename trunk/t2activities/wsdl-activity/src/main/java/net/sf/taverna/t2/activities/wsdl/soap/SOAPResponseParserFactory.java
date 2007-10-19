@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseParserFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 18:07:31 $
+ * Last modified on   $Date: 2007-10-19 16:22:05 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -64,8 +64,8 @@ public class SOAPResponseParserFactory {
 	 *            the type of the service - 'literal' or 'encoded'
 	 * @param style -
 	 *            the style of the service - 'document' or 'rpc'
-	 * @param outputPorts -
-	 *            the output ports for the processor associated with the service
+	 * @param outputDescriptors -
+	 *            the List of {@link TypeDescriptor}'s describing the service outputs
 	 * @return
 	 * @see SOAPResponseParser
 	 */

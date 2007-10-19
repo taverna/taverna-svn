@@ -165,6 +165,12 @@ public class WSDLParser {
 		return styleMap.get(getWSDLLocation());
 	}
 
+	/**
+	 * Provides the PortType for a given operation.
+	 * 
+	 * @param operationName the name of the operation the PortType is required for.
+	 * @return the PortType
+	 */
 	public PortType getPortType(String operationName) {
 		PortType result = null;
 		Map<String, PortType> portToOpMap = portTypeMap.get(getWSDLLocation());

@@ -25,31 +25,38 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 18:07:31 $
+ * Last modified on   $Date: 2007-10-19 16:22:05 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
 package net.sf.taverna.t2.activities.wsdl.soap;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.DataHandler;
 import javax.wsdl.Definition;
 import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPException;
 
 import net.sf.taverna.t2.activities.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.apache.axis.EngineConfiguration;
+import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.message.SOAPEnvelope;
-import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.WSIFOperation;
 import org.apache.wsif.WSIFPort;
@@ -57,6 +64,7 @@ import org.apache.wsif.WSIFService;
 import org.apache.wsif.WSIFServiceFactory;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFOperation_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
+
 
 /**
  * Invokes SOAP based webservices
@@ -66,8 +74,6 @@ import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
  */
 @SuppressWarnings("unchecked")
 public class WSDLSOAPInvoker {
-
-	private static Logger logger = Logger.getLogger(WSDLSOAPInvoker.class);
 
 	private WSDLParser parser;
 	private String operationName;
@@ -117,16 +123,14 @@ public class WSDLSOAPInvoker {
 		SOAPEnvelope responseEnv = call.invoke(requestEnv);
 
 		List response = responseEnv.getBodyElements();
-
-		logger.info("SOAP response was:" + response);
-
+		
 		SOAPResponseParser responseParser = SOAPResponseParserFactory.instance()
 				.create(response, getUse(), getStyle(),
 						this.parser.getOperationOutputParameters(operationName));
 		Map result = responseParser.parse(response);
 
-		//FIXME: need to handle attachments
-		//result.put("attachmentList", extractAttachmentsDataThing(call));
+		
+		result.put("attachmentList", extractAttachmentsDataThing(call));
 
 		return result;
 	}
@@ -141,21 +145,16 @@ public class WSDLSOAPInvoker {
 		String minutesStr = System.getProperty("taverna.wsdl.timeout");
 
 		if (minutesStr == null) {
-			logger
-					.warn("Missing property for taverna.wsdl.timeout. Using default of 5 minutes");
+			//using default of 5 minutes
 			return result;
 		}
 		try {
 			int minutes = Integer.parseInt(minutesStr.trim());
 			result = minutes * 1000 * 60;
 		} catch (NumberFormatException e) {
-			logger
-					.error(
-							"Error with number format for timeout setting taverna.wsdl.timeout",
-							e);
+			e.printStackTrace();
 			return result;
 		}
-		logger.info("Using a timout of " + result + "ms");
 		return result;
 	}
 
@@ -219,42 +218,34 @@ public class WSDLSOAPInvoker {
 	 * @throws SOAPException
 	 * @throws IOException
 	 */
-//	private DataThing extractAttachmentsDataThing(Call axisCall)
-//			throws SOAPException, IOException {
-//		List attachmentList = new ArrayList();
-//		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
-//				.hasNext();) {
-//			AttachmentPart ap = (AttachmentPart) i.next();
-//			logger.debug("Found attachment filename : "
-//					+ ap.getAttachmentFile());
-//			DataHandler dh = ap.getDataHandler();
-//			BufferedInputStream bis = new BufferedInputStream(dh
-//					.getInputStream());
-//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//			int c;
-//			while ((c = bis.read()) != -1) {
-//				bos.write(c);
-//			}
-//			bis.close();
-//			bos.close();
-//			String mimeType = dh.getContentType();
-//			if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*")
-//					|| mimeType.matches(".*audio.*")
-//					|| mimeType.matches(".*application/zip.*")) {
-//				attachmentList.add(bos.toByteArray());
-//			} else {
-//				attachmentList.add(new String(bos.toByteArray()));
-//			}
-//		}
-//		DataThing attachmentThing = DataThingFactory.bake(attachmentList);
-//		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
-//				.hasNext();) {
-//			String mimeType = ((AttachmentPart) i.next()).getDataHandler()
-//					.getContentType();
-//			attachmentThing.getMetadata().addMIMEType(mimeType);
-//		}
-//		return attachmentThing;
-//	}
+	private List extractAttachmentsDataThing(Call axisCall)
+			throws SOAPException, IOException {
+		List attachmentList = new ArrayList();
+		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
+				.hasNext();) {
+			AttachmentPart ap = (AttachmentPart) i.next();
+			DataHandler dh = ap.getDataHandler();
+			BufferedInputStream bis = new BufferedInputStream(dh
+					.getInputStream());
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			int c;
+			while ((c = bis.read()) != -1) {
+				bos.write(c);
+			}
+			bis.close();
+			bos.close();
+			String mimeType = dh.getContentType();
+			if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*")
+					|| mimeType.matches(".*audio.*")
+					|| mimeType.matches(".*application/zip.*")) {
+				attachmentList.add(bos.toByteArray());
+			} else {
+				attachmentList.add(new String(bos.toByteArray()));
+			}
+		}
+		
+		return attachmentList;
+	}
 }
 
 	

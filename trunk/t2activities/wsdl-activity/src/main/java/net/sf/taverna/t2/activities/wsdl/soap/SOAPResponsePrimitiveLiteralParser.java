@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -26,9 +25,6 @@ import org.w3c.dom.Node;
 public class SOAPResponsePrimitiveLiteralParser extends
 		SOAPResponseLiteralParser {
 
-	private static Logger logger = Logger
-			.getLogger(SOAPResponsePrimitiveLiteralParser.class);
-	
 	public SOAPResponsePrimitiveLiteralParser(List<TypeDescriptor> outputDescriptors) {
 		super(outputDescriptors);
 	}
@@ -39,17 +35,13 @@ public class SOAPResponsePrimitiveLiteralParser extends
 		Object dataValue = result.get(getOutputName());
 		if (dataValue!=null) {
 			String xml = dataValue.toString();
-			try {
-				DocumentBuilder builder = DocumentBuilderFactory.newInstance()
-				.newDocumentBuilder();
-				Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
 			
-				Node node = doc.getFirstChild();
-				result.put(getOutputName(), node.getFirstChild().getNodeValue());
-			}
-			catch(Exception e) {
-				logger.error("Exception unwrapping xml response",e);
-			}
+			DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+			.newDocumentBuilder();
+			Document doc = builder.parse(new ByteArrayInputStream(xml.getBytes()));
+		
+			Node node = doc.getFirstChild();
+			result.put(getOutputName(), node.getFirstChild().getNodeValue());
 		}
 		return result;
 	}

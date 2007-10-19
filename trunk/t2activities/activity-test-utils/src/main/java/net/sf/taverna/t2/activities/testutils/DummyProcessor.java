@@ -4,7 +4,8 @@ import java.util.Properties;
 import org.embl.ebi.escience.scufl.Processor;
 
 /**
- *
+ * A dummy Taverna 1 style Processor, to be used for testing purposes.
+ * 
  * @author Stuart Owen
  */
 public class DummyProcessor extends Processor {

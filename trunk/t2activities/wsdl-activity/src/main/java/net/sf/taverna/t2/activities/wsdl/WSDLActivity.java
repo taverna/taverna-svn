@@ -26,6 +26,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuild
 import org.xml.sax.SAXException;
 
 /**
+ * An asynchronous Activity that is concerned with WSDL based web-services.
+ * <p>
+ * The activity is configured according to the WSDL location and the operation.<br>
+ * The ports are defined dynamically according to the WSDL specification, and in addition an output<br>
+ * port <em>attachmentList</em> is added to represent any attachements that are returned by the webservice.
+ * </p>
  *
  * @author Stuart Owen
  */
@@ -37,6 +43,11 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
         return ActivityPortBuilderImpl.getInstance();
     }
 
+    /**
+     * Configures the activity according to the information passed by the configuration bean.<br>
+     * During this process the WSDL is parsed to determine the input and output ports.
+     * @param bean the {@link WSDLActivityConfigurationBean} configuration bean
+     */
     public void configure(WSDLActivityConfigurationBean bean) throws ActivityConfigurationException {
         this.configurationBean = bean;
         try {
@@ -47,6 +58,9 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
         } 
     }
 
+    /**
+     * @return a {@link WSDLActivityConfigurationBean} representing the WSDLActivity configuration
+     */
     public WSDLActivityConfigurationBean getConfiguration() {
         return configurationBean;
     }
@@ -71,8 +85,14 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
             mimeTypes.add(descriptor.getMimeType());
             addOutput(descriptor.getName(),descriptor.getDepth(),mimeTypes);
         }
+        
+        //add output for attachment list
+        addOutput("attachmentList",1,new ArrayList<String>());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void executeAsynch(final Map<String, EntityIdentifier> data,
 			final AsynchronousActivityCallback callback) {

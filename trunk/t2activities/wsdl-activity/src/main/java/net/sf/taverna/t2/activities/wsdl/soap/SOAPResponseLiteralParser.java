@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 18:07:31 $
+ * Last modified on   $Date: 2007-10-19 16:22:05 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -41,7 +41,6 @@ import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.utils.XMLUtils;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 /**
@@ -53,9 +52,6 @@ import org.w3c.dom.Element;
  */
 @SuppressWarnings("unchecked")
 public class SOAPResponseLiteralParser implements SOAPResponseParser {
-
-	private static Logger logger = Logger
-			.getLogger(SOAPResponseLiteralParser.class);
 
 	List<TypeDescriptor>outputDescriptors;
 
@@ -73,11 +69,6 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 	public Map parse(List response) throws Exception {
 		Map result = new HashMap();
 
-		if (response.size() > 1)
-			logger
-					.warn("Document style response unexpectedly contained more than one RPCElement, number of elements="
-							+ response.size());
-
 		if (response.size()>0) {
 			SOAPBodyElement rpcElement = (SOAPBodyElement) response.get(0);
 	
@@ -87,9 +78,6 @@ public class SOAPResponseLiteralParser implements SOAPResponseParser {
 			String xml = XMLUtils.ElementToString(dom);
 	
 			result.put(outputName, xml);
-		}
-		else {
-			logger.warn("The response recieved was empty");
 		}
 
 		return result;

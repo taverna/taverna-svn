@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedMultiRefParser.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-18 18:07:31 $
+ * Last modified on   $Date: 2007-10-19 16:22:05 $
  *               by   $Author: sowen70 $
  * Created on 05-May-2006
  *****************************************************************/
@@ -43,7 +43,6 @@ import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.utils.XMLUtils;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -62,10 +61,6 @@ import org.w3c.dom.Node;
 public class SOAPResponseEncodedMultiRefParser extends
 		SOAPResponseEncodedParser {
 
-	private static Logger logger = Logger
-			.getLogger(SOAPResponseEncodedMultiRefParser.class);
-
-	
 	private List resolvedReferences = new ArrayList();
 
 	private Map referenceMap;
@@ -104,9 +99,7 @@ public class SOAPResponseEncodedMultiRefParser extends
 				xml = XMLUtils.ElementToString((Element) outputNode);
 
 				result.put(outputName, xml);
-			} else {
-				logger.error("No element for output name: " + outputName);
-			}
+			} 
 
 		}
 

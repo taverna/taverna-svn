@@ -1,7 +1,10 @@
 package net.sf.taverna.t2.activities.wsdl;
 
 /**
- *
+ * A standard Java Bean that provides the details required to configure a WSDLActivity.
+ * <p>
+ * This contains details about the WSDL and the Operation that the WSDLActivity is intended to invoke.
+ * </p>
  * @author Stuart Owen
  */
 public class WSDLActivityConfigurationBean {
