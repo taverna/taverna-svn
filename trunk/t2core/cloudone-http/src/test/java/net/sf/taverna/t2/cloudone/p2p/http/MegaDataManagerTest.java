@@ -12,7 +12,6 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.p2p.HttpPeerContainer;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

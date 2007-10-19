@@ -16,7 +16,6 @@ import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
-import net.sf.taverna.t2.cloudone.p2p.HttpPeerContainer;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
