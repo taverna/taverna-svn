@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Simple SPI lookup (using META-INF/services/interfaceName) to discover run time
@@ -16,10 +18,11 @@ import java.util.Scanner;
  * @param <SPI>
  *            The interface to discover
  */
-public abstract class SPIRegistry<SPI> {
+public class SPIRegistry<SPI> {
 
 	private Class<SPI> spi;
 	private ArrayList<SPI> instances;
+	private Set<String> classNames;
 
 	/**
 	 * Construct the SPI for the given interface.
@@ -45,6 +48,7 @@ public abstract class SPIRegistry<SPI> {
 		if (instances != null) {
 			return instances;
 		}
+		classNames = new HashSet<String>();
 		instances = new ArrayList<SPI>();
 		// TODO: Support Raven class loaders
 		ClassLoader cl = getClass().getClassLoader();
@@ -78,6 +82,10 @@ public abstract class SPIRegistry<SPI> {
 				if (name.equals("")) {
 					continue; // just blank line or comment
 				}
+				if (classNames.contains(name)) {
+					System.out.println("Ignoring duplicate " + name);
+					continue;
+				}
 //				System.out.println("SPI found class " + name);
 				Class<? extends SPI> spiClass;
 				try {
@@ -103,6 +111,7 @@ public abstract class SPIRegistry<SPI> {
 					// TODO Auto-generated catch block
 					e.printStackTrace();	
 				}
+				classNames.add(name);
 			}
 		}
 		return instances;

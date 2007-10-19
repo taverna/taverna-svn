@@ -1,0 +1,39 @@
+
+# That was an empty line, this is a comment. These are the SPI implementations of 
+# net.sf.taverna.t2.cloudone.util.spi.DummySPI
+#  A line with spaces below
+            
+          #   A comment with lots    of   spaces
+
+net.sf.taverna.t2.cloudone.util.spi.FirstDummySPI
+
+        net.sf.taverna.t2.cloudone.util.spi.SecondDummySPI   # with indention and comment
+        
+# But not NotListedDummy, none of the lines below should be read
+#net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
+#  net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
+#  net.sf.taverna.t2.cloudone.util.spi.NotListedDummy net.sf.taverna.t2.cloudone.util.spi.NotListedDummy net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
+    #net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
+    #    net.sf.taverna.t2.cloudone.util.spi.NotListedDummy net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
+            
+            
+# Should not be loaded twice
+net.sf.taverna.t2.cloudone.util.spi.FirstDummySPI
+
+# The interface itself should be ignored
+net.sf.taverna.t2.cloudone.util.spi.DummySPI
+
+# A class that does not implement the interface
+net.sf.taverna.t2.cloudone.util.spi.NotImplementingDummySPI
+
+# A class that doesn't have a default constructor
+net.sf.taverna.t2.cloudone.util.spi.MissingConstructor
+
+# A class that does not exist
+net.sf.taverna.t2.cloudone.util.spi.DoesNotExist
+
+# A class name that is not valid
+net.sf.taverna.t2.cloudone.util.spi.NotListedDummy^£
+
+# A class name that is not valid (contain spaces and a valid, existing class that should not be loaded)
+net.sf.taverna.t2.cloudone.util.spi.DoesNotExist   net.sf.taverna.t2.cloudone.util.spi.NotListedDummy
