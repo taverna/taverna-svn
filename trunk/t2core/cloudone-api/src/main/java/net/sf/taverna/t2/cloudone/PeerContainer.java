@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.cloudone;
 
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+
 /**
  * Contains a single data peer and provides that peer with network awareness and
  * communication facilities. The container is responsible for discovery of other
@@ -24,14 +26,14 @@ public interface PeerContainer {
 	 *
 	 * @param namespace Namespace to proxy
 	 * @return A {@link PeerProxy} that can access namespace
+	 * @throws NotFoundException If no proxy can be found for given namespace
 	 */
-	public PeerProxy getProxyForNamespace(String namespace);
+	public PeerProxy getProxyForNamespace(String namespace) throws NotFoundException;
 
 	/**
-	 * Is the peer container connected to the network fabric? If not then
-	 * requests for proxy by namespace will only ever return the proxy for the
-	 * data peer hosted within the container (but will still return)
+	 * Is the peer container connected to the network fabric? 
 	 */
 	public boolean isConnected();
+	
 
 }
