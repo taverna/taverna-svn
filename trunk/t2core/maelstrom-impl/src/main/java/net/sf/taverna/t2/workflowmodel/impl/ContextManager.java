@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import net.sf.taverna.t2.cloudone.DataManager;
 
 /**
- * Provides access to heirarchical context on a per-process name basis. Any
+ * Provides access to hierarchical context on a per-process name basis. Any
  * object within the workflow system may request or push contextual information
  * informing workflow invocation such as security credentials here.
  * <p>

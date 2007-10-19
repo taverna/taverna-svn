@@ -15,7 +15,7 @@ public abstract class Event {
 
 	/**
 	 * The event has an owner, this is represented as a String object but the
-	 * ownership is heirarchical in nature. The String is a colon separated list
+	 * ownership is hierarchical in nature. The String is a colon separated list
 	 * of alphanumeric process identifiers, with identifiers being pushed onto
 	 * this list on entry to a process and popped off on exit.
 	 * 
