@@ -135,11 +135,14 @@
     linkend="executeworkflowprogram_source">sourcecode for an example
     wrapper</link> to <literal>WorkflowLauncher</literal> that demonstrates
     the procedure for setting up Raven and invoking the
-    <literal>WorkflowLauncher</literal>. This example can be found in the
-    directory <emphasis>examples/workflowlauncher</emphasis> within the main
-    <link linkend="getting_the_code">Taverna source code</link> and is built
-    using Maven. To make execution simple it makes use of the maven plugin
-    <literal>appassembler</literal>, so to build simply issue the
+    <literal>WorkflowLauncher</literal>. This example can be downloaded from
+    <ulink
+    url="http://www.mygrid.org.uk/usermanual1.6/workflowlauncher.zip">http://www.mygrid.org.uk/usermanual1.6/workflowlauncher.zip</ulink>
+    and is built using Maven. It is also available in the Taverna source tree
+    under <emphasis>/examples/workflowlauncher</emphasis>, though note that
+    this isn't always guarenteed to work due to the use of undeployed SNAPSHOT
+    artifact versions. To make execution simple it makes use of the maven
+    plugin <literal>appassembler</literal>, so to build simply issue the
     command:</para>
 
     <screen>mvn package appassembler:assemble</screen>
@@ -326,7 +329,7 @@ public class WorkflowLauncherWrapper {
      * This version has to match the version of the real dependency you have to
      * Taverna libraries on your classpath (ie. the pom.xml dependencies).
      */
-    public static final String TAVERNA_BASE_VERSION = "1.6.1.0";
+    public static final String TAVERNA_BASE_VERSION = "1.6.2.0";
 
     String workflowName;
 
@@ -417,12 +420,11 @@ public class WorkflowLauncherWrapper {
      * @throws IOException
      */
     protected Repository initialiseRepository() throws IOException {
+     
+        System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.6.2/taverna-1.6.2.0-profile.xml");
 
-        // these lines are necessary if working with Taverna 1.5.2 or earlier:
-        
-// System.setProperty("raven.profile",
-//  "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.1-profile.xml");
-// Bootstrap.properties = new Properties();
+        // this line is necessary if working with Taverna 1.5.2 or earlier:
+        // Bootstrap.properties = new Properties();
 
         Set&lt;Artifact&gt; systemArtifacts = buildSystemArtifactSet();
         Set&lt;Artifact&gt; externalArtifacts = buildExternalArtifactSet();
