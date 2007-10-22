@@ -31,7 +31,7 @@ public class TypedTreeModelEvent<NodeType> {
 	 * @param source
 	 * @param path
 	 */
-	public TypedTreeModelEvent(NodeType source, NodeType[] path) {
+	public TypedTreeModelEvent(Object source, NodeType[] path) {
 		this.path = new TreePath(path);
 		this.source = source;
 		this.childIndices = new int[0];
