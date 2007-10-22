@@ -132,6 +132,15 @@ public final class TestJTree extends JFrame {
 
 			@Override
 			public void run() {
+				testSet.addObject(service1);
+				expandAll(tree);
+			}
+			
+		}, 30000);
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
 				testSet.setProperty(service1, providerKey, ebiValue);
 				testSet.setProperty(service1, typeKey, wsdlValue);
 				testSet.setProperty(service1, domainKey, geneticsValue);
@@ -139,7 +148,7 @@ public final class TestJTree extends JFrame {
 				expandAll(tree);
 			}
 			
-		}, 30000);
+		}, 40000);
 	}
 
 	public static void main(String[] args) throws InterruptedException {
