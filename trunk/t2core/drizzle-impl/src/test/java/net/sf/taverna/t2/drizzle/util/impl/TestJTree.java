@@ -5,12 +5,16 @@ package net.sf.taverna.t2.drizzle.util.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import java.util.Timer;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphView;
@@ -26,31 +30,31 @@ import net.sf.taverna.t2.utility.TreeModelAdapter;
  * 
  */
 public final class TestJTree extends JFrame {
+	private PropertiedTreeModel<StringObject> testImpl = new PropertiedTreeModelImpl<StringObject>();
+	private PropertiedObjectSet<StringObject> testSet = new PropertiedObjectSetImpl<StringObject>();
+	private StringObject service1 = new StringObject("blast service");
+	private StringObject service2 = new StringObject("emma service");
+	private StringObject service3 = new StringObject("fetchPdb service");
+	private StringObject service4 = new StringObject("renderPdb service");
+
+	private PropertyKey domainKey = new StringKey("domain");
+	private PropertyKey nameKey = new StringKey("name");
+	private PropertyKey providerKey = new StringKey("provider");
+	private PropertyKey typeKey = new StringKey("type");
+
+	private PropertyValue ebiValue = new StringValue("ebi");
+	private PropertyValue manchesterValue = new StringValue("manchester");
+	private PropertyValue soaplabValue = new StringValue("soaplab");
+	private PropertyValue wsdlValue = new StringValue("wsdl");
+	private PropertyValue geneticsValue = new StringValue("genetics");
+	private PropertyValue structureValue = new StringValue("structure");
+	private PropertyValue blastValue = new StringValue("blast");
+	private PropertyValue emmaValue = new StringValue("emma");
+	private PropertyValue fetchPdbValue = new StringValue("fetchPdb");
+	private PropertyValue renderPdbValue = new StringValue("renderPdb");
 
 	public TreeModel createTree() {
-		PropertiedTreeModel<StringObject> testImpl = new PropertiedTreeModelImpl<StringObject>();
 		PropertiedGraphView<StringObject> graphView = new PropertiedGraphViewImpl<StringObject>();
-		PropertiedObjectSet<StringObject> testSet = new PropertiedObjectSetImpl<StringObject>();
-		StringObject service1 = new StringObject("blast service");
-		StringObject service2 = new StringObject("emma service");
-		StringObject service3 = new StringObject("fetchPdb service");
-		StringObject service4 = new StringObject("renderPdb service");
-
-		PropertyKey domainKey = new StringKey("domain");
-		PropertyKey nameKey = new StringKey("name");
-		PropertyKey providerKey = new StringKey("provider");
-		PropertyKey typeKey = new StringKey("type");
-
-		PropertyValue ebiValue = new StringValue("ebi");
-		PropertyValue manchesterValue = new StringValue("manchester");
-		PropertyValue soaplabValue = new StringValue("soaplab");
-		PropertyValue wsdlValue = new StringValue("wsdl");
-		PropertyValue geneticsValue = new StringValue("genetics");
-		PropertyValue structureValue = new StringValue("structure");
-		PropertyValue blastValue = new StringValue("blast");
-		PropertyValue emmaValue = new StringValue("emma");
-		PropertyValue fetchPdbValue = new StringValue("fetchPdb");
-		PropertyValue renderPdbValue = new StringValue("renderPdb");
 
 		testSet.setProperty(service1, providerKey, ebiValue);
 		testSet.setProperty(service1, typeKey, wsdlValue);
@@ -88,16 +92,44 @@ public final class TestJTree extends JFrame {
 		return untypedView;
 	}
 
-	public TestJTree() {
+	public TestJTree() throws InterruptedException {
 		TreeModel model = createTree();
 		Container content = getContentPane();
 		JTree tree = new JTree(model);
 		content.add(new JScrollPane(tree), BorderLayout.CENTER);
 		setSize(275, 300);
 		setVisible(true);
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				testSet.removeObject(service1);
+			}
+			
+		}, 10000);
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				testSet.setProperty(service2, typeKey, wsdlValue);
+			}
+			
+		}, 20000);
+		timer.schedule(new TimerTask() {
+
+			@Override
+			public void run() {
+				testSet.setProperty(service1, providerKey, ebiValue);
+				testSet.setProperty(service1, typeKey, wsdlValue);
+				testSet.setProperty(service1, domainKey, geneticsValue);
+				testSet.setProperty(service1, nameKey, blastValue);
+			}
+			
+		}, 30000);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		new TestJTree();
 	}
 }
