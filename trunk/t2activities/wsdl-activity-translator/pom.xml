@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
-			<version>1.6.1.0</version>
+			<version>1.6.2.0</version>
 		</dependency>
                 
 		<dependency>
