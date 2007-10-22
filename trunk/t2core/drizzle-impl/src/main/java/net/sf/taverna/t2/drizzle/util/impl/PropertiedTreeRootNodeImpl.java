@@ -19,4 +19,7 @@ public final class PropertiedTreeRootNodeImpl<O> extends PropertiedTreeNodeImpl<
 		// nothing to do
 	}
 
+	public String toString() {
+		return "root";
+	}
 }

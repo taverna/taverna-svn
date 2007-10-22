@@ -50,4 +50,17 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 		
 	}
 
+	public String toString() {
+		String keyString = "missing";
+		
+		if (key != null) {
+			keyString = key.toString();
+		}
+		String valueString = "missing";
+		if (value != null ) {
+			valueString = value.toString();
+		}
+		
+		return keyString + " = " +valueString;
+	}
 }

@@ -45,4 +45,8 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 	public O getObject() {
 		return this.object;
 	}
+	
+	public String toString() {
+		return this.object.toString();
+	}
 }
