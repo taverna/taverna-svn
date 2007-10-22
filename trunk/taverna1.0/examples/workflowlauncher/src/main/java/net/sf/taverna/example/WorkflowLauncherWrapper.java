@@ -256,10 +256,9 @@ public class WorkflowLauncherWrapper {
 	 */
 	protected Repository initialiseRepository() throws IOException {
 
-		// these lines are necessary if working with Taverna 1.5.2 or earlier:
+		System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.6.2/taverna-1.6.2.0-profile.xml");
 
-		// System.setProperty("raven.profile",
-		//   "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.1-profile.xml");
+		// this line is necessary if working with Taverna 1.5.2 or earlier:
 		// Bootstrap.properties = new Properties();
 
 		Set<Artifact> systemArtifacts = buildSystemArtifactSet();
