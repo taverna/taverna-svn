@@ -7,6 +7,7 @@ import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
 /**
  * Translator for any type of {@link ReferenceScheme} to a
@@ -16,9 +17,10 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
  * @author Ian Dunlop
  * 
  */
-public class AnyToBlobTranslator implements Translator<BlobReferenceScheme<?>> {
+//TODO: This does not build on Java 1.6 if parameterised type is BlobReferenceScheme<?>
+public class AnyToBlobTranslator implements Translator<BlobReferenceScheme> { 
 
-	public BlobReferenceScheme<?> translate(DataManager dataManager,
+	public BlobReferenceScheme<? extends ReferenceBean> translate(DataManager dataManager,
 			ReferenceScheme ref) throws DereferenceException,
 			TranslatorException {
 		BlobStore blobStore = dataManager.getBlobStore();
