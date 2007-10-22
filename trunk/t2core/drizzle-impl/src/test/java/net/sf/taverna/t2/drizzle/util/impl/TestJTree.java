@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import java.util.Timer;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphView;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
@@ -52,6 +53,8 @@ public final class TestJTree extends JFrame {
 	private PropertyValue emmaValue = new StringValue("emma");
 	private PropertyValue fetchPdbValue = new StringValue("fetchPdb");
 	private PropertyValue renderPdbValue = new StringValue("renderPdb");
+	
+	private JTree tree;
 
 	public TreeModel createTree() {
 		PropertiedGraphView<StringObject> graphView = new PropertiedGraphViewImpl<StringObject>();
@@ -92,19 +95,27 @@ public final class TestJTree extends JFrame {
 		return untypedView;
 	}
 
+	private void expandAll (JTree tree) {
+		for (int i = 0; i <= tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+	}
+	
 	public TestJTree() throws InterruptedException {
 		TreeModel model = createTree();
 		Container content = getContentPane();
-		JTree tree = new JTree(model);
+		tree = new JTree(model);
 		content.add(new JScrollPane(tree), BorderLayout.CENTER);
 		setSize(275, 300);
 		setVisible(true);
+		expandAll(tree);
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 
 			@Override
 			public void run() {
 				testSet.removeObject(service1);
+				expandAll(tree);
 			}
 			
 		}, 10000);
@@ -113,6 +124,7 @@ public final class TestJTree extends JFrame {
 			@Override
 			public void run() {
 				testSet.setProperty(service2, typeKey, wsdlValue);
+				expandAll(tree);
 			}
 			
 		}, 20000);
@@ -124,6 +136,7 @@ public final class TestJTree extends JFrame {
 				testSet.setProperty(service1, typeKey, wsdlValue);
 				testSet.setProperty(service1, domainKey, geneticsValue);
 				testSet.setProperty(service1, nameKey, blastValue);
+				expandAll(tree);
 			}
 			
 		}, 30000);
