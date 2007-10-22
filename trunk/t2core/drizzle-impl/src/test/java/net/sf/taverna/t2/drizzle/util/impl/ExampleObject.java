@@ -41,6 +41,6 @@ public class ExampleObject implements Comparable {
 	}
 	
 	public String toString() {
-		return Integer.toString(getI());
+		return "ExampleObject" + Integer.toString(getI());
 	}
 }
