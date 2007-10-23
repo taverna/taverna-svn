@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
 import org.apache.log4j.Logger;
 import org.restlet.Application;
@@ -99,7 +100,8 @@ public class CloudOneApplication extends Application {
 		}
 		// Expose data manager
 		component.getContext().getAttributes().put("dataManager", dataManager);
-		System.out.println("Registered " + dataManager.registerEmptyList(2));
+		EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
+		logger.debug("Registered " + emptyList);
 	}
 
 	public void stopServer() {
