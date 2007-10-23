@@ -11,16 +11,12 @@ import net.sf.taverna.t2.cloudone.datamanager.MegaDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MegaDataManagerTest {
-
-	private static CloudOneApplication cloudApp;
-
+public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 
 	@Test
 	public void megaDM() throws Exception {
@@ -42,18 +38,6 @@ public class MegaDataManagerTest {
 
 	}
 	
-	@BeforeClass
-	public static void startServer() {
-		cloudApp = new CloudOneApplication("localhost",
-				7381);
-		cloudApp.startServer();
-	}
-
-	@AfterClass
-	public static void stopServer() {
-		cloudApp.stopServer();
-	}
-
 	@Test
 	public void addPeer() throws RetrievalException, NotFoundException {
 
@@ -64,7 +48,8 @@ public class MegaDataManagerTest {
 				.registerEmptyList(2);
 		PeerContainer peer = new HttpPeerContainer();
 		megaDM.addPeer(peer);
-//		assertNotNull("Entity was null", megaDM.getEntity(emptyList1));
+		Entity<EntityListIdentifier, ?> entity = megaDM.getEntity(emptyList1);
+		assertNotNull("Entity was null", entity);
 	}
 
 }

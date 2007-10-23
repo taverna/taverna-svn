@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -13,6 +15,8 @@ import net.sf.taverna.t2.cloudone.PeerContainer;
 import net.sf.taverna.t2.cloudone.PeerProxy;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
+import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
@@ -22,23 +26,23 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class PeerContainerTest {
+public class PeerContainerTest extends AbstractCloudOneServerTest {
 	private static File tmpDir;
-	
+
 	@BeforeClass
 	public static void makeTmp() throws IOException {
 		tmpDir = File.createTempFile("test", "datamanager");
 		tmpDir.delete();
 		tmpDir.mkdir();
 	}
-	
+
 	@Test
 	public void peer() throws Exception {
-		String host = "localhost";
-		int port = 7381;
-		CloudOneApplication cloudApp = new CloudOneApplication(host, port);
-		PeerContainer container = new HttpPeerContainer(); // TODO: Create/get one
-		PeerProxy proxy = container.getProxyForNamespace("http2p_" + host + "_" + port);
+		PeerContainer container = new HttpPeerContainer(); 
+		PeerProxy proxy = container.getProxyForNamespace("http2p_" + HOST + "_"
+				+ PORT);
+		
+		// Add a DataDocument to cloudApp's data manager
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
@@ -47,9 +51,19 @@ public class PeerContainerTest {
 		references.add(urlRef);
 		DataManager dMan = cloudApp.getDataManager();
 		DataDocumentIdentifier docId = dMan.registerDocument(references);
-
-		// TODO: MAke it work
-		//proxy.export(docId); 
+		
+		// Retrieve the exported data document over the wire
+		Entity<?, ?> retrievedEntity = proxy.export(docId);
+		assertTrue("Returned entity was not a DataDocument",
+				retrievedEntity instanceof DataDocument);
+		DataDocument retrievedDoc = (DataDocument) retrievedEntity;
+		assertEquals(references, retrievedDoc.getReferenceSchemes());
+		ReferenceScheme ref = retrievedDoc.getReferenceSchemes().iterator()
+				.next();
+		assertTrue("Reference was not an URLReferenceScheme",
+				ref instanceof URLReferenceScheme);
+		assertEquals("URLReference was not " + fileURL, fileURL.toString(),
+				((URLReferenceScheme) ref).getUrl().toString());
 	}
-	
+
 }
