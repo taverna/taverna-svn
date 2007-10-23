@@ -18,13 +18,12 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.junit.Test;
 
-
 /**
  * Test {@link BeanSerialiser} by serialising simple objects.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class BeanSerialiserTest {
 
@@ -48,7 +47,8 @@ public class BeanSerialiserTest {
 		// Should be somewhere between 50 (it's XML) and 1024 :-)
 		assertTrue("Serialised file too small", file.length() > 50);
 		assertTrue("Serialised file too big", file.length() < 1024);
-		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXMLFile(file, getClass().getClassLoader());
+		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXMLFile(file,
+				getClass().getClassLoader());
 		assertEquals(SILLY, silly2.getName());
 	}
 
@@ -57,11 +57,10 @@ public class BeanSerialiserTest {
 		SillyBean silly = new SillyBean();
 		silly.setName(SILLY);
 		Element elem = BeanSerialiser.toXML(silly);
-		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXML(elem, SillyBean.class.getClassLoader());
+		SillyBean silly2 = (SillyBean) BeanSerialiser.fromXML(elem,
+				SillyBean.class.getClassLoader());
 		assertEquals(SILLY, silly2.getName());
 	}
-
-
 
 	@Test
 	public void serialiseURLRefScheme() throws JDOMException, IOException {
@@ -69,12 +68,11 @@ public class BeanSerialiserTest {
 		URLReferenceBean bean = new URLReferenceBean();
 		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
-		
+
 		Element elem = BeanSerialiser.beanableToXML(urlRef);
 		URLReferenceScheme retrievedUrlRef = (URLReferenceScheme) BeanSerialiser
-				.beanableFromXML(elem, classLoader);
+				.beanableFromXML(elem);
 		assertEquals(urlRef.getUrl(), retrievedUrlRef.getUrl());
 	}
-
 
 }

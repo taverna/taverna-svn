@@ -35,8 +35,9 @@ public class BeanSerialiser {
 
 	private static final String JAVA = "java";
 
-	private static BeanableRegistry beanableRegistry = BeanableRegistry.getInstance();
-	
+	private static BeanableRegistry beanableRegistry = BeanableRegistry
+			.getInstance();
+
 	private static final String CLASS_NAME = "className";
 	private static final String BEANABLE = "beanable";
 
@@ -154,18 +155,17 @@ public class BeanSerialiser {
 
 	public static Element beanableToXML(Beanable<?> beanable) {
 		Element elem = new Element(BEANABLE);
-		elem.setAttribute(CLASS_NAME, 
-				beanable.getClass().getCanonicalName());
+		elem.setAttribute(CLASS_NAME, beanable.getClass().getCanonicalName());
 		elem.addContent(toXML(beanable.getAsBean()));
 		return elem;
 	}
 
-	public static <Bean> Beanable<?> beanableFromXML(Element elem,
-			ClassLoader classLoader) {
+	public static <Bean> Beanable<?> beanableFromXML(Element elem) {
 		String className = elem.getAttributeValue(CLASS_NAME);
 		Beanable<Bean> beanable = beanableRegistry.getBeanable(className);
 		Element beanElem = elem.getChild(JAVA);
-		Bean bean = beanable.getBeanClass().cast(fromXML(beanElem, classLoader));
+		Bean bean = beanable.getBeanClass().cast(
+				fromXML(beanElem, beanable.getBeanClass().getClassLoader()));
 		beanable.setFromBean(bean);
 		return beanable;
 	}
