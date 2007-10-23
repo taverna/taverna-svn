@@ -28,7 +28,6 @@
 			<version>4.4</version>
 			<scope>test</scope>
 		</dependency>
-		<!--  Restlet -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -39,6 +38,8 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.0</version>
 		</dependency>
+		
+		<!--  Restlet -->
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
