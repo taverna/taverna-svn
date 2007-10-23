@@ -56,8 +56,12 @@ public class TranslatorRegistrySPITest {
 	public void getInstances() {
 		List<Translator> instances = registry.getInstances();
 		assertEquals(2, instances.size());
-		assertTrue(instances.get(0) instanceof AnyToBlobTranslator);
-		assertTrue(instances.get(1) instanceof AnyToFileURLTranslator);
+		if (instances.get(0) instanceof AnyToBlobTranslator) {
+			assertTrue(instances.get(1) instanceof AnyToFileURLTranslator);
+		} else {
+			assertTrue(instances.get(0) instanceof AnyToFileURLTranslator);
+			assertTrue(instances.get(1) instanceof AnyToBlobTranslator);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
