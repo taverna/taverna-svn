@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
+import org.apache.log4j.Logger;
 
 /**
  * Simple SPI lookup (using META-INF/services/interfaceName) to discover run
@@ -26,6 +26,7 @@ import net.sf.taverna.t2.cloudone.bean.Beanable;
  */
 public class SPIRegistry<SPI> {
 
+	private static Logger logger = Logger.getLogger(SPIRegistry.class);
 	private Class<SPI> spi;
 	private List<SPI> instances;
 	private Set<String> classNames;
@@ -50,23 +51,18 @@ public class SPIRegistry<SPI> {
 		synchronized (this) {
 			if (instances != null) {
 				return instances;
-			}			
+			}
 		}
-		
 		List<SPI> foundInstances = new ArrayList<SPI>();
-
 		for (Class<? extends SPI> spiClass : getClasses().values()) {
 			try {
 				foundInstances.add((SPI) spiClass.newInstance());
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not instantiate " + spiClass, e);
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not access " + spiClass, e);
 			} catch (ClassCastException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not cast " + spiClass + " to " + spi, e);
 			}
 		}
 		synchronized (this) {
@@ -91,13 +87,13 @@ public class SPIRegistry<SPI> {
 		// TODO: Support Raven class loaders
 		ClassLoader cl = getClassLoader();
 		Enumeration<URL> spiFiles;
+		String spiResource = "META-INF/services/"
+			+ spi.getCanonicalName();
 		try {
-			spiFiles = cl.getResources("META-INF/services/"
-					+ spi.getCanonicalName());
+			spiFiles = cl.getResources(spiResource);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return foundClassNames;
+			logger.warn("Could not find resource " + spiResource, e);
+			return foundClassNames; // empty
 		}
 		while (spiFiles.hasMoreElements()) {
 			URL spiFile = spiFiles.nextElement();
@@ -105,8 +101,7 @@ public class SPIRegistry<SPI> {
 			try {
 				scanner = new Scanner(spiFile.openStream());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not read " + spiFile, e);
 				continue;
 			}
 			while (scanner.hasNextLine()) {
@@ -119,11 +114,9 @@ public class SPIRegistry<SPI> {
 					continue; // just blank line or comment
 				}
 				if (foundClassNames.contains(name)) {
-					System.out.println("Ignoring duplicate " + name);
+					logger.warn("Ignoring duplicate SPI " + name);
 					continue;
 				}
-				// System.out.println("SPI found class " + name);
-
 				foundClassNames.add(name);
 			}
 		}
@@ -146,7 +139,7 @@ public class SPIRegistry<SPI> {
 		synchronized (this) {
 			if (classes != null) {
 				return classes;
-			}			
+			}
 		}
 		Map<String, Class<? extends SPI>> foundClasses = new HashMap<String, Class<? extends SPI>>();
 		ClassLoader cl = getClassLoader();
