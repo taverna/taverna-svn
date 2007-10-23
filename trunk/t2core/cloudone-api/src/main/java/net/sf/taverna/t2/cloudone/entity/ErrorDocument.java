@@ -62,6 +62,15 @@ public class ErrorDocument implements
 		this.cause = cause;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((identifier == null) ? 0 : identifier.hashCode());
+		return result;
+	}
+
 	/**
 	 * Check equality with another object. Two {@link ErrorDocument}s are
 	 * considered equal if they have the same {@link #getIdentifier()}.
@@ -74,23 +83,18 @@ public class ErrorDocument implements
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		final ErrorDocument other = (ErrorDocument) obj;
-		if (getIdentifier() == null) {
-			if (other.getIdentifier() != null) {
+		if (identifier == null) {
+			if (other.identifier != null)
 				return false;
-			}
-		} else if (!getIdentifier().equals(other.getIdentifier())) {
+		} else if (!identifier.equals(other.identifier))
 			return false;
-		}
 		return true;
 	}
 
@@ -138,16 +142,7 @@ public class ErrorDocument implements
 		return stackTrace;
 	}
 
-	/**
-	 * Calculate the hashcode. The hashcode is the same as of the
-	 * {@link #getIdentifier()}.
-	 *
-	 * @return The calculated hashcode
-	 */
-	@Override
-	public int hashCode() {
-		return getIdentifier().hashCode();
-	}
+
 
 	/**
 	 * Initialise from an {@link ErrorDocumentBean}. This method can only be

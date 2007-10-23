@@ -104,6 +104,16 @@ public class EntityList implements
 		return list.containsAll(c);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((identifier == null) ? 0 : identifier.hashCode());
+		result = prime * result + ((list == null) ? 0 : list.hashCode());
+		return result;
+	}
+
 	/**
 	 * Check equality against <code>obj</code>.
 	 *
@@ -114,23 +124,23 @@ public class EntityList implements
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if (this == obj)
 			return true;
-		}
-		if (obj == null) {
+		if (obj == null)
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (getClass() != obj.getClass())
 			return false;
-		}
 		final EntityList other = (EntityList) obj;
-		if (getIdentifier() == null) {
-			if (other.getIdentifier() != null) {
+		if (identifier == null) {
+			if (other.identifier != null)
 				return false;
-			}
-		} else if (!getIdentifier().equals(other.getIdentifier())) {
+		} else if (!identifier.equals(other.identifier))
 			return false;
-		}
+		if (list == null) {
+			if (other.list != null)
+				return false;
+		} else if (!list.equals(other.list))
+			return false;
 		return true;
 	}
 
@@ -162,16 +172,6 @@ public class EntityList implements
 	 */
 	public EntityListIdentifier getIdentifier() {
 		return identifier;
-	}
-
-	/**
-	 * Calculate the hashcode for this EntityList. The hashcode is based on
-	 * #getIdentifier().
-	 *
-	 */
-	@Override
-	public int hashCode() {
-		return getIdentifier().hashCode();
 	}
 
 	/**
