@@ -68,4 +68,8 @@ public class EntityListIdentifier extends EntityIdentifier {
 		name = parts[0];
 	}
 
+	public Class<String> getBeanClass() {
+		return String.class;
+	}
+
 }

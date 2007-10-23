@@ -140,4 +140,8 @@ public class BlobReferenceSchemeImpl implements
 		return true;
 	}
 
+	public Class<BlobReferenceBean> getBeanClass() {
+		return BlobReferenceBean.class;
+	}
+
 }

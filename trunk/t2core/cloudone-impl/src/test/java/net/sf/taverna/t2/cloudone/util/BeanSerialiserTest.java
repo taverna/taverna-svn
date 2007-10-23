@@ -69,10 +69,11 @@ public class BeanSerialiserTest {
 		URLReferenceBean bean = new URLReferenceBean();
 		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
-		Element elem = BeanSerialiser.toXML(urlRef.getAsBean());
-		URLReferenceBean retrievedBean = (URLReferenceBean) BeanSerialiser
-				.fromXML(elem, classLoader);
-		assertEquals(bean.getUrl(), retrievedBean.getUrl());
+		
+		Element elem = BeanSerialiser.beanableToXML(urlRef);
+		URLReferenceScheme retrievedUrlRef = (URLReferenceScheme) BeanSerialiser
+				.beanableFromXML(elem, classLoader);
+		assertEquals(urlRef.getUrl(), retrievedUrlRef.getUrl());
 	}
 
 

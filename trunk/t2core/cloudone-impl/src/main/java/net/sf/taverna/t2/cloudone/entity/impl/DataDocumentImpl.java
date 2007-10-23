@@ -99,4 +99,8 @@ public class DataDocumentImpl implements DataDocument {
 	public void setReferenceSchemes(Set<ReferenceScheme> referenceSchemes) {
 		this.referenceSchemes = referenceSchemes;
 	}
+
+	public Class<DataDocumentBean> getBeanClass() {
+		return DataDocumentBean.class;
+	}
 }

@@ -231,4 +231,8 @@ public class URLReferenceScheme implements ReferenceScheme,
 		return url;
 	}
 
+	public Class<URLReferenceBean> getBeanClass() {
+		return URLReferenceBean.class;
+	}
+
 }

@@ -53,4 +53,8 @@ public class DataDocumentIdentifier extends EntityIdentifier {
 		}
 		name = identifierString;
 	}
+
+	public Class<String> getBeanClass() {
+		return String.class;
+	}
 }

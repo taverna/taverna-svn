@@ -12,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 
+import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -24,16 +26,23 @@ import org.jdom.output.XMLOutputter;
  * XML. Code based on
  * {@link net.sf.taverna.t2.workflowmodel.impl.Tools#beanAsElement(Object)}.
  * Currently beans are serialised to XML using {@link XMLEncoder}.
- *
+ * 
  * @author Stian Soiland
  * @author Ian Dunlop
  */
 
 public class BeanSerialiser {
 
+	private static final String JAVA = "java";
+
+	private static BeanableRegistry beanableRegistry = BeanableRegistry.getInstance();
+	
+	private static final String CLASS_NAME = "className";
+	private static final String BEANABLE = "beanable";
+
 	/**
 	 * Deserialise bean from XML element.
-	 *
+	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #toXML(Object)
 	 * @param element
@@ -54,7 +63,7 @@ public class BeanSerialiser {
 
 	/**
 	 * Deserialise bean from XML file.
-	 *
+	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #toXML(Object)
 	 * @param file
@@ -83,7 +92,7 @@ public class BeanSerialiser {
 	 * Serialise bean as XML. The bean must conform to the {@link XMLEncoder}
 	 * serialisation rules. The bean can be deserialised using
 	 * {@link #fromXML(Element, ClassLoader)}.
-	 *
+	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #toXMLFile(Object, File)
 	 * @param bean
@@ -115,7 +124,7 @@ public class BeanSerialiser {
 	 * Serialise bean as XML and store in file. The bean must conform to the
 	 * {@link XMLEncoder} serialisation rules. The bean can be deserialised
 	 * using {@link #fromXMLFile(File, ClassLoader)}.
-	 *
+	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #toXMLFile(Object, File)
 	 * @param bean
@@ -141,5 +150,23 @@ public class BeanSerialiser {
 	 * Protected constructor, use static methods only.
 	 */
 	protected BeanSerialiser() {
+	}
+
+	public static Element beanableToXML(Beanable<?> beanable) {
+		Element elem = new Element(BEANABLE);
+		elem.setAttribute(CLASS_NAME, 
+				beanable.getClass().getCanonicalName());
+		elem.addContent(toXML(beanable.getAsBean()));
+		return elem;
+	}
+
+	public static <Bean> Beanable<?> beanableFromXML(Element elem,
+			ClassLoader classLoader) {
+		String className = elem.getAttributeValue(CLASS_NAME);
+		Beanable<Bean> beanable = beanableRegistry.getBeanable(className);
+		Element beanElem = elem.getChild(JAVA);
+		Bean bean = beanable.getBeanClass().cast(fromXML(beanElem, classLoader));
+		beanable.setFromBean(bean);
+		return beanable;
 	}
 }

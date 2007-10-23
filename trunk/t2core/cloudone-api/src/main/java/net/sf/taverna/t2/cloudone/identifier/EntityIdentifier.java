@@ -190,4 +190,8 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	protected abstract void validate(String identifierString)
 			throws MalformedIdentifierException;
 
+	public Class<String> getBeanClass() {
+		return String.class;
+	}
+
 }

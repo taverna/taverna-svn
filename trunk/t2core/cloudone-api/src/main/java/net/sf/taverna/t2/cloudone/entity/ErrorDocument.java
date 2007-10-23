@@ -164,4 +164,8 @@ public class ErrorDocument implements
 		stackTrace = bean.getStackTrace();
 	}
 
+	public Class<ErrorDocumentBean> getBeanClass() {
+		return ErrorDocumentBean.class;
+	}
+
 }

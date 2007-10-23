@@ -31,4 +31,11 @@ public interface Beanable<Bean> {
 	 *            Previously serialised bean
 	 */
 	public void setFromBean(Bean bean) throws IllegalArgumentException;
+	
+	/**
+	 * Get the class this Beanable expects in {@link #setFromBean(Object)}.
+	 * 
+	 * @return
+	 */
+	public Class<Bean> getBeanClass();
 }

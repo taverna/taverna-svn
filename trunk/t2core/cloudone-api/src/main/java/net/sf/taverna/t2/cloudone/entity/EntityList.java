@@ -297,4 +297,8 @@ public class EntityList implements
 		return list.toArray(a);
 	}
 
+	public Class<EntityListBean> getBeanClass() {
+		return EntityListBean.class;
+	}
+
 }
