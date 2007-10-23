@@ -18,6 +18,7 @@ import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
  * 
  */
 //TODO: This does not build on Java 1.6 if parameterised type is BlobReferenceScheme<?>
+@SuppressWarnings("unchecked")
 public class AnyToBlobTranslator implements Translator<BlobReferenceScheme> { 
 
 	public BlobReferenceScheme<? extends ReferenceBean> translate(DataManager dataManager,
