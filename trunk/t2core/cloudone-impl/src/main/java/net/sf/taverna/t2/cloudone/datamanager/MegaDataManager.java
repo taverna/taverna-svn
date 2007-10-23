@@ -12,6 +12,7 @@ import net.sf.taverna.t2.cloudone.PeerContainer;
 import net.sf.taverna.t2.cloudone.PeerProxy;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -55,6 +56,10 @@ public class MegaDataManager implements DataManager {
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
 			throws NotFoundException, RetrievalException {
 
+		if (identifier instanceof Literal) {
+			return (Entity<EI, ?>) identifier;
+		}
+		
 		if (dataManager.getManagedNamespaces().contains(
 				identifier.getNamespace())) {
 			try {
