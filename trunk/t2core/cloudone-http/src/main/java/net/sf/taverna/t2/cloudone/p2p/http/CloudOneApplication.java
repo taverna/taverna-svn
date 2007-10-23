@@ -1,15 +1,23 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.LocationalContext;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
+import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
+import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
 import org.apache.log4j.Logger;
@@ -100,8 +108,31 @@ public class CloudOneApplication extends Application {
 		}
 		// Expose data manager
 		component.getContext().getAttributes().put("dataManager", dataManager);
-		EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
-		logger.debug("Registered " + emptyList);
+		DataFacade facade = new DataFacade(dataManager);
+		List<String> list = new ArrayList<String>();
+		list.add("abcdefghi");
+		list.add("qwertyuiop");
+		List<List<String>> listOfList = new ArrayList<List<String>>();
+		listOfList.add(list);
+		EntityIdentifier listID = null;
+		try {
+			listID = facade.register(listOfList);
+		} catch (EmptyListException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedListException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedObjectTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
+		
+		logger.warn("Registered " + listID);
 	}
 
 	public void stopServer() {

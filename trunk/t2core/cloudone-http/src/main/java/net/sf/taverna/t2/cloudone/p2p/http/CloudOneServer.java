@@ -43,10 +43,8 @@ public class CloudOneServer {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter
 					.printHelp(
-							"tavernaservice \n"
-									+ "Run the Taverna job service. Clients (such as Taverna) "
-									+ "and workers (who execute workflows) will communicate with this service "
-									+ "using a RESTful HTTP API.", options);
+							"cloudoneserver \n"
+									+ "Run the CloudOne REST server.", options);
 			System.exit(0);
 		}
 
