@@ -17,13 +17,17 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.entity.EntityList;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class PeerContainerTest extends AbstractCloudOneServerTest {
@@ -38,10 +42,10 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 
 	@Test
 	public void peer() throws Exception {
-		PeerContainer container = new HttpPeerContainer(); 
+		PeerContainer container = new HttpPeerContainer();
 		PeerProxy proxy = container.getProxyForNamespace("http2p_" + HOST + "_"
 				+ PORT);
-		
+
 		// Add a DataDocument to cloudApp's data manager
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		File newFile = File.createTempFile("test", ".txt");
@@ -51,7 +55,7 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 		references.add(urlRef);
 		DataManager dMan = cloudApp.getDataManager();
 		DataDocumentIdentifier docId = dMan.registerDocument(references);
-		
+
 		// Retrieve the exported data document over the wire
 		Entity<?, ?> retrievedEntity = proxy.export(docId);
 		assertTrue("Returned entity was not a DataDocument",
@@ -64,6 +68,24 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 				ref instanceof URLReferenceScheme);
 		assertEquals("URLReference was not " + fileURL, fileURL.toString(),
 				((URLReferenceScheme) ref).getUrl().toString());
+	}
+
+	@Ignore("Hard coded identifier, requires server")
+	@Test
+	public void remoteEmptyList() throws Exception {
+		PeerContainer container = new HttpPeerContainer();
+		PeerProxy proxy = container.getProxyForNamespace("http2p_"
+				+ "nemesis.cs.man.ac.uk" + "_" + 7380);
+
+		EntityListIdentifier listId = EntityIdentifiers
+				.parseListIdentifier("urn:t2data:list://http2p_nemesis.cs.man.ac.uk_7380/f2c0db77-3562-442c-af69-8110efabeac5/2");
+
+		// Retrieve the exported data document over the wire
+		Entity<?, ?> retrievedEntity = proxy.export(listId);
+		assertTrue("Returned entity was not a EntityList",
+				retrievedEntity instanceof EntityList);
+		EntityList entList = (EntityList) retrievedEntity;
+		assertTrue("List was empty", entList.isEmpty());
 	}
 
 }

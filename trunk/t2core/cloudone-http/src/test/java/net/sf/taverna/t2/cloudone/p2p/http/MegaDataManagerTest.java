@@ -1,19 +1,24 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Collections;
+import java.util.List;
 
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.PeerContainer;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.MegaDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.Entity;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class MegaDataManagerTest extends AbstractCloudOneServerTest {
@@ -37,7 +42,7 @@ public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 		}
 
 	}
-	
+
 	@Test
 	public void addPeer() throws RetrievalException, NotFoundException {
 
@@ -50,6 +55,30 @@ public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 		megaDM.addPeer(peer);
 		Entity<EntityListIdentifier, ?> entity = megaDM.getEntity(emptyList1);
 		assertNotNull("Entity was null", entity);
+	}
+
+	@Ignore("Hard coded identifier, requires server")
+	@SuppressWarnings("unchecked")
+	@Test
+	public void getRemoteList() throws Exception {
+		InMemoryDataManager inMemoryDataManager = new InMemoryDataManager(
+				"fish", Collections.<LocationalContext> emptySet());
+		MegaDataManager megaDM = new MegaDataManager(inMemoryDataManager);
+		PeerContainer peer = new HttpPeerContainer();
+		megaDM.addPeer(peer);
+		
+		EntityListIdentifier listId = EntityIdentifiers
+				.parseListIdentifier("urn:t2data:list://http2p_nemesis.cs.man.ac.uk_7380/6831f2d7-d2e5-4c7f-ba30-e74312e11061/2");
+		
+		DataFacade facade = new DataFacade(megaDM);
+		Object resolved = facade.resolve(listId);
+		assertTrue("Resolved entity was not a list", resolved instanceof List);
+		List<List<String>> deepList = (List<List<String>>) resolved;
+		assertEquals(1, deepList.size());
+		List<String> resolvedList = deepList.get(0);
+		assertEquals(2, resolvedList.size());
+		assertEquals("abcdefghi", resolvedList.get(0));
+		assertEquals("qwertyuiop", resolvedList.get(1));
 	}
 
 }
