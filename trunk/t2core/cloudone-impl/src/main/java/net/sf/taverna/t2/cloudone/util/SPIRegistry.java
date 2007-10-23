@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone.util;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -161,6 +162,14 @@ public class SPIRegistry<SPI> {
 			if (!(spi.isAssignableFrom(spiClass))) {
 				System.err.println("Class " + spiClass + " did not implement "
 						+ spi);
+				continue;
+			}
+			if (spiClass.isInterface()) {
+				System.err.println(spiClass + " is an interface, not a class");
+				continue;
+			}
+			if (Modifier.isAbstract(spiClass.getModifiers())) {
+				System.err.println(spiClass + " is an abstract class");
 				continue;
 			}
 			foundClasses.put(className, spiClass);

@@ -20,7 +20,7 @@ net.sf.taverna.t2.cloudone.util.spi.FirstDummySPI
 # Should not be loaded twice
 net.sf.taverna.t2.cloudone.util.spi.FirstDummySPI
 
-# The interface itself should be ignored
+# Any interface should be ignored
 net.sf.taverna.t2.cloudone.util.spi.DummySPI
 
 # A class that does not implement the interface
@@ -29,8 +29,11 @@ net.sf.taverna.t2.cloudone.util.spi.NotImplementingDummySPI
 # A class that doesn't have a default constructor
 net.sf.taverna.t2.cloudone.util.spi.MissingConstructor
 
-# A class that does not exist
+# A class that does not exist
 net.sf.taverna.t2.cloudone.util.spi.DoesNotExist
+
+# An abstract class
+net.sf.taverna.t2.cloudone.util.spi.AbstractDummySPI
 
 # A class name that is not valid
 net.sf.taverna.t2.cloudone.util.spi.NotListedDummy^£
