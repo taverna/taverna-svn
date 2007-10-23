@@ -1,22 +1,28 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-
-
 /**
  * Identifier for a data document. The identifier is of the form :
  * <p>
  * urn:t2data:ddoc://&lt;namespace&gt;/&lt;name&gt;
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  */
 public class DataDocumentIdentifier extends EntityIdentifier {
 	private String name;
 
 	/**
+	 * Constructor for immediate population using {@link #setFromBean(String)}.
+	 * 
+	 */
+	public DataDocumentIdentifier() {
+		super();
+	}
+
+	/**
 	 * Construct a DataDocumentIdentifier from a given URI.
-	 *
+	 * 
 	 * @param id
 	 *            The identifying URI
 	 * @throws MalformedIdentifierException

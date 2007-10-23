@@ -117,6 +117,15 @@ public class Literal extends EntityIdentifier implements
 	private String value;
 
 	/**
+	 * Constructor for immediate population using
+	 * {@link #setFromBean(String)}.
+	 *
+	 */
+	public Literal() {
+		super();
+	}
+	
+	/**
 	 * Construct a Literal from an identifier string. Note that to create a
 	 * Literal representing a string, use the static
 	 * {@link #buildLiteral(String)}.

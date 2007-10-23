@@ -16,6 +16,14 @@ public class EntityListIdentifier extends EntityIdentifier {
 	private String name;
 
 	/**
+	 * Constructor for immediate population using {@link #setFromBean(String)}.
+	 * 
+	 */
+	public EntityListIdentifier() {
+		super();
+	}
+	
+	/**
 	 * Construct an EntityListIdentifier from an identifier string.
 	 *
 	 * @param id

@@ -3,10 +3,10 @@ package net.sf.taverna.t2.cloudone.identifier;
 /**
  * Identifier for a single
  * {@link net.sf.taverna.t2.cloudone.entity.ErrorDocument}.
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  */
 public class ErrorDocumentIdentifier extends EntityIdentifier {
 
@@ -17,8 +17,16 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 	private String name;
 
 	/**
+	 * Constructor for immediate population using {@link #setFromBean(String)}.
+	 * 
+	 */
+	public ErrorDocumentIdentifier() {
+		super();
+	}
+
+	/**
 	 * Construct an ErrorDocumentIdentifier from an identifier string.
-	 *
+	 * 
 	 * @param id
 	 *            The identifier string
 	 * @throws MalformedIdentifierException
@@ -33,7 +41,7 @@ public class ErrorDocumentIdentifier extends EntityIdentifier {
 	 * Create an {@link ErrorDocumentIdentifier} which {@link #getDepth()} is
 	 * one level less than this ErrorDocumentIdentifier. Its
 	 * {@link #getImplicitDepth()} is one level higher to reflect this drilling.
-	 *
+	 * 
 	 * @return An {@link ErrorDocumentIdentifier} that is one level higher than
 	 *         this
 	 */
