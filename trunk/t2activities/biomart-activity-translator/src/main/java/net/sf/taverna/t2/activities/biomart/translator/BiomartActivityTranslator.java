@@ -8,7 +8,6 @@ import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.biomart.martservice.MartQuery;
 import org.embl.ebi.escience.scufl.Processor;
@@ -23,7 +22,7 @@ import org.embl.ebi.escience.scufl.Processor;
 public class BiomartActivityTranslator extends AbstractActivityTranslator<BiomartActivityConfigurationBean> {
 
 	@Override
-	protected Activity<BiomartActivityConfigurationBean> createUnconfiguredActivity() {
+	protected BiomartActivity createUnconfiguredActivity() {
 		return new BiomartActivity();
 	}
 

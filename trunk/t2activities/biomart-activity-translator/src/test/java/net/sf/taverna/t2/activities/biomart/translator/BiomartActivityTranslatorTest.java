@@ -11,11 +11,11 @@ import java.util.Set;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivity;
 import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
+import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.TranslatorTestHelper;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -58,7 +58,7 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 
 	@Test
 	public void testCreateUnconfiguredActivity() {
-		Activity<?> activity = translator.createUnconfiguredActivity();
+		BiomartActivity activity = translator.createUnconfiguredActivity();
 		assertNotNull(activity);
 		assertNull(activity.getConfiguration());
 	}
@@ -73,8 +73,9 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 	}
 
 	@Test
-	public void testCanHandle() {
+	public void testCanHandle() throws Exception {
 		assertTrue(translator.canHandle(biomartProcessor));
+		assertFalse(translator.canHandle(new DummyProcessor()));
 		assertFalse(translator.canHandle(null));
 	}
 
@@ -84,11 +85,11 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 				.doTranslation(biomartProcessor);
 		assertEquals(biomartProcessor.getQuery(), activity.getConfiguration()
 				.getQuery());
-		assertEquals(3, activity.getInputPorts().size());
+		assertEquals(inputPortNames.size(), activity.getInputPorts().size());
 		for (InputPort port : activity.getInputPorts()) {
 			assertTrue(inputPortNames.remove(port.getName()));
 		}
-		assertEquals(2, activity.getOutputPorts().size());
+		assertEquals(outputPortNames.size(), activity.getOutputPorts().size());
 		for (OutputPort port : activity.getOutputPorts()) {
 			assertTrue(outputPortNames.remove(port.getName()));
 		}
