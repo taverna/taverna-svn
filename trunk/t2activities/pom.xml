@@ -13,6 +13,8 @@
   	<module>beanshell-activity-translator</module>
   	<module>biomart-activity</module>
   	<module>biomart-activity-translator</module>
+  	<module>soaplab-activity</module>
+  	<module>soaplab-activity-translator</module>
   	<module>stringconstant-activity</module>
   	<module>stringconstant-activity-translator</module>
   	<module>wsdl-activity</module>
