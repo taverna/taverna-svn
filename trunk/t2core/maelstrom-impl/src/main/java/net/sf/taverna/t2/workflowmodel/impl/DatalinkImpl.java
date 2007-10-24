@@ -41,5 +41,9 @@ public class DatalinkImpl extends AbstractMutableAnnotatedThing implements
 	public EventForwardingOutputPort getSource() {
 		return source;
 	}
+	
+	public String toString() {
+		return "link("+resolvedDepth+")"+source.getName()+":"+sink.getName();
+	}
 
 }
