@@ -109,7 +109,7 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 
 			// TODO: check correct default value for granular depth. Setting
 			// this to the same as depth will prevent streaming.
-			bean.setGranularDepth(0);
+			bean.setGranularDepth(bean.getDepth());
 			List<String> mimeTypes = new ArrayList<String>();
 			mimeTypes.add(outPort.getSyntacticType());
 			bean.setMimeTypes(mimeTypes);
