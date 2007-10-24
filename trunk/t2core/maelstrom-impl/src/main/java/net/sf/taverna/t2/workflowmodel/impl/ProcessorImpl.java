@@ -165,7 +165,8 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		Map<String, Integer> inputDepths = new HashMap<String, Integer>();
 		for (ProcessorInputPortImpl input : inputPorts) {
 			if (input.getIncomingLink() == null) {
-				return false;
+			//TODO This should not be commented out
+//				return false;
 			} else {
 				if (input.getIncomingLink().getResolvedDepth() == -1) {
 					// Incoming link hasn't been resolved yet, can't do this
@@ -322,15 +323,19 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 	private Map<String, ProcessorOutputPortImpl> outputPortNameCache = new HashMap<String, ProcessorOutputPortImpl>();
 
 	protected ProcessorOutputPortImpl getOutputPortWithName(String name) {
-		synchronized (outputPortNameCache) {
-			if (outputPortNameCache.isEmpty()) {
+//		synchronized (outputPortNameCache) {
+//			if (outputPortNameCache.isEmpty()) {
 				for (ProcessorOutputPortImpl p : outputPorts) {
 					String portName = p.getName();
-					outputPortNameCache.put(portName, p);
+					if (portName.equals(name)) {
+						return p;
+					}
+//					outputPortNameCache.put(portName, p);
 				}
-			}
-		}
-		return outputPortNameCache.get(name);
+				return null;
+//			}
+//		}
+//		return outputPortNameCache.get(name);
 	}
 
 	/* Implementations of Processor interface */
