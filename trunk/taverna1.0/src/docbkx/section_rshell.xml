@@ -123,16 +123,39 @@ Rserv started in daemon mode.
     <section>
       <title>Installing on Windows</title>
 
-      <para>At the moment, Taverna is only compatible with R-2.4.0 and the
-      corresponding <ulink
-      url="http://rosuda.org/Rserve/dist/rserve-win.html">Rserve
-      0.4-3</ulink>.</para>
+      <para><emphasis role="bold">Up to R-2.4.0 </emphasis></para>
 
-      <para>Download the binary Rserve.exe to the same directory as where
-      <emphasis role="bold">R.dll</emphasis> is located (by default C:\Program
-      files\R\R-2.4.0\bin). Start Rserve by double clicking on Rserve.exe
-      located in the bin directory. You can now use the Rserve processor in
-      Taverna.</para>
+      <para>Download the corresponding binary Rserve.exe from<ulink type=""
+      url="http://rosuda.org/Rserve/dist/rserve-win.html">
+      http://rosuda.org/Rserve/dist/rserve-win.html</ulink> in the same
+      directory where R.dll is located (by default C:\Program
+      files\R\R-2.4.0\bin). </para>
+
+      <para>Start Rserve by double clicking on Rserve.exe located in the bin
+      directory. </para>
+
+      <para>You can now use the R processor in Taverna. </para>
+
+      <para><emphasis role="bold">R-2.4.1 and later
+      version</emphasis><itemizedlist>
+          <listitem>
+            <para>Install Rserve: From R menu, select Packages  Install
+            package(s) (select a mirror)  Rserve.</para>
+          </listitem>
+
+          <listitem>
+            <para>Load Rserve: From R menu, select Packages  Load package 
+            Rserve </para>
+          </listitem>
+
+          <listitem>
+            <para>Start Rserve: From R workspace type: Rserve (port =
+            6311)</para>
+          </listitem>
+        </itemizedlist>You can now use the R processor in Taverna. </para>
+
+      <para>Note that you will need to start again step 2 and 3 anytime you
+      are starting Rserve. </para>
     </section>
   </section>
 
