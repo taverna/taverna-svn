@@ -10,6 +10,11 @@ package net.sf.taverna.t2.cloudone.identifier;
  */
 public class MalformedIdentifierException extends IllegalArgumentException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1536349476919336947L;
+
 	public MalformedIdentifierException(String message) {
 		super(message);
 	}

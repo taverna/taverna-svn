@@ -21,11 +21,9 @@ public class HttpPeerProxy implements PeerProxy {
 
 	private static Logger logger = Logger.getLogger(HttpPeerProxy.class);
 
-	private String namespace;
 	private String baseUrl;
 
 	public HttpPeerProxy(String namespace) {
-		this.namespace = namespace;
 		String[] splitted = namespace.split("http2p_", 2);
 		if (!(splitted.length == 2)) {
 			throw new IllegalArgumentException("Unsupported namespace "

@@ -89,7 +89,6 @@ public class TestAsynchRunnable {
 
 			@Override
 			protected String execute() throws Exception {
-				String nullString = null;
 				throw new NullPointerException();
 			}
 
@@ -106,7 +105,6 @@ public class TestAsynchRunnable {
 
 			@Override
 			protected String execute() throws Exception {
-				String nullString = null;
 				throw new NullPointerException();
 			}
 

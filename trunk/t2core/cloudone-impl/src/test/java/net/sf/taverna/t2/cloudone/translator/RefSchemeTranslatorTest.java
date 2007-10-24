@@ -1,8 +1,9 @@
 package net.sf.taverna.t2.cloudone.translator;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -85,6 +86,7 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeString();
+		@SuppressWarnings("unused")
 		BlobReferenceScheme<?> originalRef = findBlobScheme(id);
 
 		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
@@ -164,7 +166,8 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeTwoFakeRefs();
-		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class, URLReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id,
+				BlobReferenceScheme.class, URLReferenceScheme.class);
 		runnable.run(); // run directly
 		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a BlobReferenceScheme",

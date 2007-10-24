@@ -135,7 +135,7 @@ public abstract class AbstractBlobStoreTest {
 
 	@Test
 	public void size() throws RetrievalException, NotFoundException {
-		BlobReferenceSchemeImpl notExists = new BlobReferenceSchemeImpl(
+		new BlobReferenceSchemeImpl(
 				TEST_NS, "notExists");
 		byte[] bytes = makeByteArray();
 		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
