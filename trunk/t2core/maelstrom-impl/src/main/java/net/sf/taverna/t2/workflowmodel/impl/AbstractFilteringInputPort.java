@@ -5,7 +5,6 @@ import java.util.Iterator;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
@@ -28,16 +27,11 @@ public abstract class AbstractFilteringInputPort extends
 	public int getFilterDepth() {
 		return this.filterDepth;
 	}
-	
+
 	private int filterDepth;
 
-	public void receiveEvent(Event e) {
-		if (e instanceof WorkflowDataToken) {
-			receiveToken((WorkflowDataToken) e);
-		} else {
-			throw new WorkflowStructureException(
-					"Filtering input port only accepts WorkflowDataToken");
-		}
+	public void receiveEvent(WorkflowDataToken token) {
+		receiveToken(token);
 	}
 
 	public void pushToken(WorkflowDataToken dt, String owningProcess,

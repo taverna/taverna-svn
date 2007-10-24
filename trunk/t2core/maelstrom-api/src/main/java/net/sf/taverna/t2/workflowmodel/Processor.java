@@ -15,7 +15,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
  * @author Tom Oinn
  * 
  */
-public interface Processor extends NamedWorkflowEntity, Annotated {
+public interface Processor extends TokenProcessingEntity, Annotated {
 
 	/**
 	 * The iteration strategy is responsible for combining input data events
@@ -69,18 +69,17 @@ public interface Processor extends NamedWorkflowEntity, Annotated {
 	public DispatchStack getDispatchStack();
 
 	/**
-	 * A processor contains zero or more activities in an ordered list. To be any
-	 * use in a workflow the processor should contain at least one activity but
-	 * it's technically valid to have none! Activities may be abstract or concrete
-	 * where an abstract activity is one with no invocation mechanism, in these
-	 * cases additional logic must be added to the dispatch stack of the
-	 * containing processor to convert these to concrete invokable activities
-	 * during the workflow invocation.
+	 * A processor contains zero or more activities in an ordered list. To be
+	 * any use in a workflow the processor should contain at least one activity
+	 * but it's technically valid to have none! Activities may be abstract or
+	 * concrete where an abstract activity is one with no invocation mechanism,
+	 * in these cases additional logic must be added to the dispatch stack of
+	 * the containing processor to convert these to concrete invokable
+	 * activities during the workflow invocation.
 	 * 
 	 * @return list of Activity instances
 	 */
 	public List<? extends ActivityAnnotationContainer> getActivityList();
-
 
 	/**
 	 * A processor with no inputs cannot be driven by the supply of data tokens

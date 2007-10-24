@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -37,9 +37,9 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	 * Receive an input event, relay it through the internal output port to all
 	 * connected entities
 	 */
-	public void receiveEvent(Event e) {
+	public void receiveEvent(WorkflowDataToken t) {
 		for (Datalink dl : internalOutput.getOutgoingLinks()) {
-			dl.getSink().receiveEvent(e);
+			dl.getSink().receiveEvent(t);
 		}
 	}
 

@@ -18,7 +18,7 @@ import java.util.List;
  * @author Tom Oinn
  * 
  */
-public interface Merge extends NamedWorkflowEntity {
+public interface Merge extends TokenProcessingEntity {
 
 	/**
 	 * The Merge object contains an ordered list of InputPort objects. Data and

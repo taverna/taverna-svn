@@ -3,7 +3,7 @@
  */
 package net.sf.taverna.t2.workflowmodel.processor;
 
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
@@ -12,9 +12,9 @@ public class DiagnosticEventHandler extends AbstractAnnotatedThing implements Ev
 
 	protected int eventCount = 0;
 
-	public void receiveEvent(Event e) {
+	public void receiveEvent(WorkflowDataToken token) {
 		eventCount++;
-		System.out.println(e.toString());
+		System.out.println(token.toString());
 	}
 
 	public int getEventCount() {

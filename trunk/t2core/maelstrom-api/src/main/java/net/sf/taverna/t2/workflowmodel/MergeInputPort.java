@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel;
 
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 
 /**
  * Input port on a Merge object
@@ -28,6 +28,6 @@ public interface MergeInputPort extends EventHandlingInputPort {
 	 *            than an alteration of the index array by prefixing the index
 	 *            of this input port relative to the parent Merge object
 	 */
-	public void receiveEvent(Event e);
+	public void receiveEvent(WorkflowDataToken t);
 
 }

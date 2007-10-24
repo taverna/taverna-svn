@@ -11,7 +11,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * @author Tom Oinn
  * 
  */
-public interface Dataflow extends Annotated, NamedWorkflowEntity {
+public interface Dataflow extends Annotated, TokenProcessingEntity {
 
 	/**
 	 * A Dataflow consists of a set of named Processor instances. This method
@@ -30,6 +30,20 @@ public interface Dataflow extends Annotated, NamedWorkflowEntity {
 	 * @return list of dataflow input port instances
 	 */
 	public List<? extends DataflowInputPort> getInputPorts();
+
+	/**
+	 * Get all workflow entities with the specified type restriction, this
+	 * allows retrieval of Processor, Merge, a mix of the two or any other
+	 * future entity to be added to the workflow model without a significant
+	 * change in this part of the API.
+	 * 
+	 * @return an unmodifiable list of entities of the specified type
+	 * @param entityType
+	 *            a class of the type specified by the type variable T. All
+	 *            entities returned in the list can be cast to this type
+	 */
+	public <T extends NamedWorkflowEntity> List<? extends T> getEntities(
+			Class<T> entityType);
 
 	/**
 	 * Dataflows have a list of output ports. The output port in a dataflow is

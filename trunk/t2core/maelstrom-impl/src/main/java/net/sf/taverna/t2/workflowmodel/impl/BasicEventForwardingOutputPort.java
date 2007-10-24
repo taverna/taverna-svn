@@ -6,7 +6,7 @@ import java.util.Set;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
@@ -47,7 +47,7 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 	 * 
 	 * @param e
 	 */
-	public void sendEvent(Event e) {
+	public void sendEvent(WorkflowDataToken e) {
 		for (Datalink link : outgoingLinks) {
 			link.getSink().receiveEvent(e);
 		}

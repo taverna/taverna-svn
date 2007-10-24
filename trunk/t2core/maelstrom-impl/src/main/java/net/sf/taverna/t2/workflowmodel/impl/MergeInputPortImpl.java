@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 
@@ -13,8 +13,8 @@ public class MergeInputPortImpl extends AbstractEventHandlingInputPort implement
 		this.parent = merge;
 	}
 
-	public void receiveEvent(Event e) {
-		parent.receiveEvent(e, this.name);
+	public void receiveEvent(WorkflowDataToken t) {
+		parent.receiveEvent(t, this.name);
 	}
 
 	public Merge getMergeInstance() {

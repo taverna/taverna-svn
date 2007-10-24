@@ -3,14 +3,16 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
-import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
+import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.NamingException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
@@ -47,22 +49,30 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 	}
 
 	/**
-	 * Adds a processor on the DataFlow. 
-	 * @param processor the ProcessorImpl to be added to the Dataflow
+	 * Adds a processor on the DataFlow.
+	 * 
+	 * @param processor
+	 *            the ProcessorImpl to be added to the Dataflow
 	 * @return
-	 * @throws NamingException if a processor already exists with the same local name
+	 * @throws NamingException
+	 *             if a processor already exists with the same local name
 	 */
-	protected synchronized void addProcessor(ProcessorImpl processor) throws NamingException {
-		for (Processor existingProcessor : processors.toArray(new Processor[]{})) {
-			if (existingProcessor.getLocalName().equals(processor.getLocalName())) throw new NamingException("There already is a processor named:"+processor.getLocalName());
+	protected synchronized void addProcessor(ProcessorImpl processor)
+			throws NamingException {
+		for (Processor existingProcessor : processors
+				.toArray(new Processor[] {})) {
+			if (existingProcessor.getLocalName().equals(
+					processor.getLocalName()))
+				throw new NamingException("There already is a processor named:"
+						+ processor.getLocalName());
 		}
 		processors.add(processor);
 	}
-	
+
 	protected synchronized void removeProcessor(Processor processor) {
 		processors.remove(processor);
 	}
-	
+
 	/**
 	 * Build a new dataflow input port, the granular depth is set for the input
 	 * port so it can be copied onto the internal output port
@@ -324,11 +334,14 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 				Datalink dl = pip.getIncomingLink();
 				if (dl != null) {
 					result.add(dl);
-					
-					//if the source is from a Merge, then gather the merge input links
+
+					// if the source is from a Merge, then gather the merge
+					// input links
 					if (dl.getSource() instanceof MergeOutputPortImpl) {
-						MergeOutputPortImpl mergeOutput = (MergeOutputPortImpl) dl.getSource();
-						for (MergeInputPort inputPort : mergeOutput.getMerge().getInputPorts()) {
+						MergeOutputPortImpl mergeOutput = (MergeOutputPortImpl) dl
+								.getSource();
+						for (MergeInputPort inputPort : mergeOutput.getMerge()
+								.getInputPorts()) {
 							result.add(inputPort.getIncomingLink());
 						}
 					}
@@ -343,7 +356,7 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 				result.add(dl);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -488,6 +501,27 @@ public class DataflowImpl extends AbstractMutableAnnotatedThing implements
 		// output ports
 		return new DataflowValidationReportImpl(dataflowValid, failed,
 				unresolved, unresolvedOutputs);
+	}
+
+	/**
+	 * Gets all workflow entities of the specified type and returns as an
+	 * unmodifiable list of that type
+	 */
+	public <T extends NamedWorkflowEntity> List<? extends T> getEntities(
+			Class<T> entityType) {
+		List<T> result = new ArrayList<T>();
+		filterAndAdd(getProcessors(), result, entityType);
+		return Collections.unmodifiableList(result);
+	}
+
+	private <T extends NamedWorkflowEntity> void filterAndAdd(
+			Iterable<?> source, List<T> target, Class<T> type) {
+		for (Object o : source) {
+			if (type.isAssignableFrom(o.getClass())) {
+				T targetObject = type.cast(o);
+				target.add(targetObject);
+			}
+		}
 	}
 
 }

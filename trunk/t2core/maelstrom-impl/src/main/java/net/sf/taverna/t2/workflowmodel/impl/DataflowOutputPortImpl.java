@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
@@ -19,8 +19,8 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 			/**
 			 * Forward the event through the output port
 			 */
-			public void receiveEvent(Event e) {
-				sendEvent(e);
+			public void receiveEvent(WorkflowDataToken token) {
+				sendEvent(token);
 			}
 
 			/**

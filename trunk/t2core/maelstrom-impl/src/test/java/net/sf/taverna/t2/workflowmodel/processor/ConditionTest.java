@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
@@ -44,16 +43,16 @@ public class ConditionTest extends TestCase {
 		edits.getRenameProcessorEdit(p2, "processor2").doEdit();
 		edits.getCreateConditionEdit(p1, p2).doEdit();
 		deh1 = new DiagnosticEventHandler() {
-			public void receiveEvent(Event e) {
+			public void receiveEvent(WorkflowDataToken t) {
 				eventCount++;
-				System.out.println("1 : " + e.toString());
+				System.out.println("1 : " + t.toString());
 			}
 		};
 		edits.getConnectProcessorOutputEdit(p1, "output", deh1).doEdit();
 		deh2 = new DiagnosticEventHandler() {
-			public void receiveEvent(Event e) {
+			public void receiveEvent(WorkflowDataToken t) {
 				eventCount++;
-				System.out.println("2 : " + e.toString());
+				System.out.println("2 : " + t.toString());
 			}
 		};
 		edits.getConnectProcessorOutputEdit(p2, "output", deh2).doEdit();
