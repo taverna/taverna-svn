@@ -423,6 +423,9 @@ public class WorkflowLauncherWrapper {
 
 		externalArtifacts.add(new BasicArtifact(groupId,
 			"taverna-wsdl-processor", TAVERNA_BASE_VERSION));
+		
+		externalArtifacts.add(new BasicArtifact(groupId,
+				"taverna-biomoby-processor", TAVERNA_BASE_VERSION));
 
 		return externalArtifacts;
 	}
