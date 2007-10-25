@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
+import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
@@ -39,6 +40,8 @@ import org.apache.commons.io.IOUtils;
  *
  */
 public class FileBlobStore implements BlobStore {
+
+	private static final String UTF_8 = "utf-8";
 
 	private File path;
 
@@ -105,6 +108,32 @@ public class FileBlobStore implements BlobStore {
 		}
 	}
 
+	public String retrieveAsString(BlobReferenceScheme<?> reference)
+			throws RetrievalException, NotFoundException,
+			IllegalArgumentException {
+		String charset;
+		try {
+			charset = reference.getCharset();
+		} catch (DereferenceException e) {
+			throw new RetrievalException("Could not retrieve reference " + reference, e);
+		}
+		if (charset == null) {
+			throw new IllegalArgumentException("Reference did not have character set " + reference);
+		}
+		return retrieveAsString(reference, charset);
+	}
+
+	public String retrieveAsString(BlobReferenceScheme<?> reference,
+			String charset) throws RetrievalException, NotFoundException,
+			IllegalArgumentException {
+		InputStream stream = retrieveAsStream(reference);
+		try {
+			return IOUtils.toString(stream, charset);
+		} catch (IOException e) {
+			throw new RetrievalException("Could not retrieve " +  reference, e);
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -122,6 +151,11 @@ public class FileBlobStore implements BlobStore {
 	 */
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes)
 			throws StorageException {
+		return storeFromBytes(bytes, null);
+	}
+
+	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes, String charset)
+			throws StorageException {
 		String id = UUID.randomUUID().toString();
 		File file = fileById(namespace, id);
 		try {
@@ -129,7 +163,7 @@ public class FileBlobStore implements BlobStore {
 		} catch (IOException e) {
 			throw new StorageException("Could not store to " + file, e);
 		}
-		return new BlobReferenceSchemeImpl(namespace, id);
+		return new BlobReferenceSchemeImpl(namespace, id, charset);
 	}
 
 	/**
@@ -137,6 +171,14 @@ public class FileBlobStore implements BlobStore {
 	 */
 	public BlobReferenceScheme<?> storeFromStream(InputStream inStream)
 			throws StorageException {
+		return storeFromStream(inStream, null);
+		
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	public BlobReferenceScheme<?> storeFromStream(InputStream inStream,
+			String charset) throws StorageException {
 		String id = UUID.randomUUID().toString();
 		File file = fileById(namespace, id);
 		OutputStream outStream;
@@ -155,7 +197,18 @@ public class FileBlobStore implements BlobStore {
 			IOUtils.closeQuietly(outStream);
 		}
 
-		return new BlobReferenceSchemeImpl(namespace, id);
+		return new BlobReferenceSchemeImpl(namespace, id, charset);
+	}
+
+	public BlobReferenceScheme<?> storeFromString(String string)
+			throws StorageException {
+		InputStream stream;
+		try {
+			stream = IOUtils.toInputStream(string, UTF_8);
+		} catch (IOException e) {
+			throw new StorageException("Failed to store from string", e);
+		}
+		return storeFromStream(stream, UTF_8);
 	}
 
 	private File fileById(String namespace, String id) {
