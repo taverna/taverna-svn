@@ -9,6 +9,8 @@
   <packaging>pom</packaging>
   <modules>
   	<module>activity-test-utils</module>
+  	<module>apiconsumer-activity</module>
+  	<module>apiconsumer-activity-translator</module>
   	<module>beanshell-activity</module>
   	<module>beanshell-activity-translator</module>
   	<module>biomart-activity</module>
