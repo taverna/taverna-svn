@@ -16,11 +16,14 @@ import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceBean;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+
+import org.apache.log4j.Logger;
 
 public class DataDocumentImpl implements DataDocument {
+	private static Logger logger = Logger.getLogger(DataDocumentImpl.class);
+
 	private DataDocumentIdentifier identifier;
 	private Set<ReferenceScheme> referenceSchemes;
 
@@ -28,33 +31,19 @@ public class DataDocumentImpl implements DataDocument {
 		identifier = null;
 		referenceSchemes = new HashSet<ReferenceScheme>();
 	}
-	
+
 	public DataDocumentImpl(DataDocumentIdentifier identifier,
 			Set<ReferenceScheme> references) {
 		this.identifier = identifier;
 		this.referenceSchemes = references;
 	}
 
-	@SuppressWarnings("unchecked")
 	public DataDocumentBean getAsBean() {
 		DataDocumentBean bean = new DataDocumentBean();
 		bean.setIdentifier(identifier.getAsBean());
 		List<ReferenceBean> references = new ArrayList<ReferenceBean>();
-		for (ReferenceScheme refSchema : referenceSchemes) {
-			// FIXME: Make ReferenceScheme Beanable<? extends RefererenceBean> to
-			// avoid these instanceof tests
-			if (refSchema instanceof URLReferenceScheme) {
-			URLReferenceBean refBean = ((URLReferenceScheme) refSchema)
-						.getAsBean();
-				references.add(refBean);			
-			} else if (refSchema instanceof BlobReferenceScheme<?>) {
-				BlobReferenceScheme<BlobReferenceBean> blobRef = (BlobReferenceScheme<BlobReferenceBean>) refSchema;
-				BlobReferenceBean refBean = blobRef.getAsBean();
-				references.add(refBean);
-			} else {
-				//logger.warn("Unsupported reference schema " + refSchema);
-				continue;
-			}
+		for (ReferenceScheme<? extends ReferenceBean> refSchema : referenceSchemes) {
+			references.add(refSchema.getAsBean());
 		}
 		bean.setReferences(references);
 		return bean;
@@ -68,28 +57,29 @@ public class DataDocumentImpl implements DataDocument {
 		return referenceSchemes;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setFromBean(DataDocumentBean bean) {
-		if (identifier != null || ! referenceSchemes.isEmpty()) {
+		if (identifier != null || !referenceSchemes.isEmpty()) {
 			throw new IllegalStateException("Can't initialise twice");
 		}
-		identifier = EntityIdentifiers.parseDocumentIdentifier(bean.getIdentifier());
+		identifier = EntityIdentifiers.parseDocumentIdentifier(bean
+				.getIdentifier());
 		for (ReferenceBean refBean : bean.getReferences()) {
-			// TODO: Use registry
-			if (refBean.getType().equals(URLReferenceBean.TYPE)) {
-				URLReferenceBean urlRefBean = (URLReferenceBean) refBean;
-				URLReferenceScheme urlRefScheme = new URLReferenceScheme();
-				urlRefScheme.setFromBean(urlRefBean);
-				referenceSchemes.add(urlRefScheme);
-			} else if(refBean.getType().equals(BlobReferenceBean.TYPE)) {
-				BlobReferenceBean blobRefBean = (BlobReferenceBean) refBean;
-				BlobReferenceSchemeImpl blobRef = new BlobReferenceSchemeImpl();
-				blobRef.setFromBean(blobRefBean);
-				referenceSchemes.add(blobRef);
-			} else {
-				// logger.warn("Unsupported type " + refBean.getType());
-				continue;
+			Class<? extends ReferenceScheme> ownerClass = refBean
+					.getOwnerClass();
+			ReferenceScheme refScheme;
+			try {
+				refScheme = ownerClass.newInstance();
+			} catch (InstantiationException e) {
+				throw new RuntimeException("Can't instantiate reference scheme "
+						+ ownerClass, e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("Can't access reference scheme "
+						+ ownerClass, e);
 			}
- 		}
+			refScheme.setFromBean(refBean);
+			referenceSchemes.add(refScheme);
+		}
 	}
 
 	public void setIdentifier(DataDocumentIdentifier identifier) {
