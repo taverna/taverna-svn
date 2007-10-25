@@ -55,6 +55,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>stringconstant-activity</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-biomart-processor</artifactId>
 			<version>${depTaverna}</version>
