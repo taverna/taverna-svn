@@ -73,11 +73,18 @@ public class InMemoryBlobStore implements BlobStore {
 	public String retrieveAsString(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException,
 			IllegalArgumentException {
+		String charset;
 		try {
-			return retrieveAsString(reference, reference.getCharset());
+			charset = reference.getCharset();
 		} catch (DereferenceException e) {
-			throw new RetrievalException(e);
+			throw new RetrievalException("Could not retrieve reference "
+					+ reference, e);
 		}
+		if (charset == null) {
+			throw new IllegalArgumentException(
+					"Reference did not have character set " + reference);
+		}
+		return retrieveAsString(reference, charset);
 	}
 
 	public String retrieveAsString(BlobReferenceScheme<?> reference,

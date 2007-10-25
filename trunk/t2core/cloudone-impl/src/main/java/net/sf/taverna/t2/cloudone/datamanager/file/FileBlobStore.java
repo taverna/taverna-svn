@@ -26,18 +26,19 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * File-based {@link BlobStore}. This store is very similar to a
- * {@link FileDataManager}, they can even share the directory structure.
- * Each blob is simply stored as a separate file.
+ * {@link FileDataManager}, they can even share the directory structure. Each
+ * blob is simply stored as a separate file.
+ * 
  * <pre>
  * 	namespace1/
  * 		blob/
  * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.blob
  * 			4d056513-75b7-8ce1-4d05-95ed7b4912a5.blob
  * </pre>
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class FileBlobStore implements BlobStore {
 
@@ -52,12 +53,14 @@ public class FileBlobStore implements BlobStore {
 	 * store and retrieve from a directory structure below the given
 	 * <code>path</code>.
 	 * <p>
-	 * The {@link FileBlobStore} can retrieve from other namespaces as long
-	 * as the blobs are present in the <code>path</code>, but stored blobs
-	 * will be stored under and assigned the given namespace.
-	 *
-	 * @param namespace Namespace of blobstore
-	 * @param path Path to repository where to store blobs
+	 * The {@link FileBlobStore} can retrieve from other namespaces as long as
+	 * the blobs are present in the <code>path</code>, but stored blobs will
+	 * be stored under and assigned the given namespace.
+	 * 
+	 * @param namespace
+	 *            Namespace of blobstore
+	 * @param path
+	 *            Path to repository where to store blobs
 	 */
 	public FileBlobStore(String namespace, File path) {
 		if (!EntityIdentifier.isValidName(namespace)) {
@@ -115,10 +118,12 @@ public class FileBlobStore implements BlobStore {
 		try {
 			charset = reference.getCharset();
 		} catch (DereferenceException e) {
-			throw new RetrievalException("Could not retrieve reference " + reference, e);
+			throw new RetrievalException("Could not retrieve reference "
+					+ reference, e);
 		}
 		if (charset == null) {
-			throw new IllegalArgumentException("Reference did not have character set " + reference);
+			throw new IllegalArgumentException(
+					"Reference did not have character set " + reference);
 		}
 		return retrieveAsString(reference, charset);
 	}
@@ -130,7 +135,7 @@ public class FileBlobStore implements BlobStore {
 		try {
 			return IOUtils.toString(stream, charset);
 		} catch (IOException e) {
-			throw new RetrievalException("Could not retrieve " +  reference, e);
+			throw new RetrievalException("Could not retrieve " + reference, e);
 		}
 	}
 
@@ -172,8 +177,9 @@ public class FileBlobStore implements BlobStore {
 	public BlobReferenceScheme<?> storeFromStream(InputStream inStream)
 			throws StorageException {
 		return storeFromStream(inStream, null);
-		
+
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */

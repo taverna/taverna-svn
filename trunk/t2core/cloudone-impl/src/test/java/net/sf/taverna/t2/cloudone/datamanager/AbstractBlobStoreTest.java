@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -31,10 +32,10 @@ import org.junit.Test;
 /**
  * Abstract test case for testing any {@link BlobStore}. Used by
  * {@link FileBlobStoreTest} and {@link InMemoryBlobStoreTest}.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public abstract class AbstractBlobStoreTest {
 
@@ -122,16 +123,83 @@ public abstract class AbstractBlobStoreTest {
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
 				retrievedBytes));
 	}
-	
+
 	@Test
-	public void storeStringRetrieveString() throws RetrievalException, IllegalArgumentException, NotFoundException {
+	public void storeStringRetrieveString() throws RetrievalException,
+			IllegalArgumentException, NotFoundException {
 		String string = "qwertyuiop真陳電";
 		BlobReferenceScheme<?> ref = blobStore.storeFromString(string);
 		assertNotNull(ref);
 		String retrievedString = blobStore.retrieveAsString(ref);
 		assertEquals(string, retrievedString);
 	}
-	
+
+	@Test
+	public void storeStringRetrieveStream() throws RetrievalException,
+			NotFoundException, IOException {
+		String string = "qwertyuiop真陳電";
+		BlobReferenceScheme<?> ref = blobStore.storeFromString(string);
+		assertNotNull(ref);
+		InputStream stream = blobStore.retrieveAsStream(ref);
+		assertEquals(string, IOUtils.toString(stream, "utf-8"));
+	}
+
+	@Test
+	public void storeInputStreamRetrieveString() throws RetrievalException,
+			IllegalArgumentException, NotFoundException,
+			UnsupportedEncodingException {
+		String string = "qwertyuiop真陳電";
+		byte[] bytes = string.getBytes("UTF-16");
+		InputStream inStream = new ByteArrayInputStream(bytes);
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromStream(inStream);
+		assertNotNull(ref);
+		String retrievedString = blobStore.retrieveAsString(ref, "UTF-16");
+		assertEquals(string, retrievedString);
+	}
+
+	@Test
+	public void storeBytesRetrieveString() throws UnsupportedEncodingException,
+			RetrievalException, IllegalArgumentException, NotFoundException {
+		String string = "qwertyuiop真陳電";
+		byte[] bytes = string.getBytes("UTF-16");
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		assertNotNull(ref);
+		String retrievedString = blobStore.retrieveAsString(ref, "UTF-16");
+		assertEquals(string, retrievedString);
+		String retrievedString2 = blobStore.retrieveAsString(ref, "iso8859-1");
+		assertFalse(string.equals(retrievedString2));
+	}
+
+	@Test
+	public void storeBytesWithEncodingRetrieveString()
+			throws UnsupportedEncodingException, RetrievalException,
+			IllegalArgumentException, NotFoundException {
+		String string = "qwertyuiop真陳電";
+		byte[] bytes = string.getBytes("UTF-16");
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes, "UTF-16");
+		assertNotNull(ref);
+		String retrievedString = blobStore.retrieveAsString(ref);
+		assertEquals(string, retrievedString);
+
+		String retrievedString2 = blobStore.retrieveAsString(ref, "UTF-16");
+		assertEquals(string, retrievedString2);
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void storeBytesWithoutEncodingRetrieveStringFails()
+			throws UnsupportedEncodingException, RetrievalException,
+			IllegalArgumentException, NotFoundException {
+		String string = "qwertyuiop真陳電";
+		byte[] bytes = string.getBytes("UTF-16");
+		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
+				.storeFromBytes(bytes);
+		assertNotNull(ref);
+		assertNull(ref.getCharset());
+		blobStore.retrieveAsString(ref);
+	}
 
 	@Test
 	public void hasBlob() {
@@ -146,8 +214,7 @@ public abstract class AbstractBlobStoreTest {
 
 	@Test
 	public void size() throws RetrievalException, NotFoundException {
-		new BlobReferenceSchemeImpl(
-				TEST_NS, "notExists");
+		new BlobReferenceSchemeImpl(TEST_NS, "notExists");
 		byte[] bytes = makeByteArray();
 		BlobReferenceSchemeImpl ref = (BlobReferenceSchemeImpl) blobStore
 				.storeFromBytes(bytes);
