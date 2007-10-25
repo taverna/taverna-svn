@@ -16,14 +16,15 @@ import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class TranslatorRegistrySPITest {
 
-	public class MyReferenceScheme implements ReferenceScheme {
+	public class MyReferenceScheme implements ReferenceScheme<ReferenceBean> {
 		public InputStream dereference(DataManager manager)
 				throws DereferenceException {
 			throw new DereferenceException();
@@ -45,13 +46,25 @@ public class TranslatorRegistrySPITest {
 		public String getCharset() throws DereferenceException {
 			return null;
 		}
+
+		public ReferenceBean getAsBean() {
+			return null;
+		}
+
+		public Class<ReferenceBean> getBeanClass() {
+			return null;
+		}
+
+		public void setFromBean(ReferenceBean bean)
+				throws IllegalArgumentException {
+		}
 	}
 
-	URLReferenceScheme urlRef;
+	HttpReferenceScheme urlRef;
 
 	@Before
 	public void createUrlRef() throws MalformedURLException {
-		urlRef = new URLReferenceScheme(new URL("http://localhost/test.txt"));
+		urlRef = new HttpReferenceScheme(new URL("http://localhost/test.txt"));
 	}
 
 	TranslatorRegistry registry = TranslatorRegistry.getInstance();
@@ -79,8 +92,8 @@ public class TranslatorRegistrySPITest {
 
 	@Test
 	public void getURLTranslators() {
-		List<Translator<URLReferenceScheme>> urlTranslators = registry
-				.getTranslators(urlRef, URLReferenceScheme.class);
+		List<Translator<HttpReferenceScheme>> urlTranslators = registry
+				.getTranslators(urlRef, HttpReferenceScheme.class);
 		assertEquals(1, urlTranslators.size());
 		assertTrue(urlTranslators.get(0) instanceof AnyToFileURLTranslator);
 	}
