@@ -443,24 +443,6 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		assertFalse(inputPort_2.getIncomingLink().getSource() instanceof MergeOutputPortImpl);
 	}
 
-	@Test
-	public void testDefaultValues() throws Exception {
-		Dataflow dataflow = translateScuflFile("translation-test-defaults.xml");
-
-		// quick sanity check that it loaded correctly:
-		assertEquals(0, dataflow.getInputPorts().size());
-		assertEquals(1, dataflow.getOutputPorts().size());
-		assertEquals(1, dataflow.getProcessors().size());
-		Processor processor = dataflow.getProcessors().get(0);
-		assertEquals("a_processor", processor.getLocalName());
-		assertEquals(1, processor.getInputPorts().size());
-
-		InputPort inputPort = processor.getInputPorts().get(0);
-
-		assertEquals("input", inputPort.getName());
-
-		// TODO:test that the default value on input is 'DEFAULT'
-	}
 }
 
 class DummyEventHandler extends AbstractAnnotatedThing implements
