@@ -12,7 +12,6 @@ import net.sf.taverna.t2.cloudone.PeerContainer;
 import net.sf.taverna.t2.cloudone.PeerProxy;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.Entity;
-import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -30,13 +29,11 @@ public class MegaDataManager implements DataManager {
 	}
 
 	public BlobStore getBlobStore() {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.getBlobStore();
 	}
 
 	public String getCurrentNamespace() {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.getCurrentNamespace();
 	}
 
 	/**
@@ -56,18 +53,11 @@ public class MegaDataManager implements DataManager {
 	public <EI extends EntityIdentifier> Entity<EI, ?> getEntity(EI identifier)
 			throws NotFoundException, RetrievalException {
 
-		if (identifier instanceof Literal) {
-			return (Entity<EI, ?>) identifier;
-		}
-		
-		if (dataManager.getManagedNamespaces().contains(
-				identifier.getNamespace())) {
-			try {
-				// might throw RetrievalException on internal errors, which we
-				// should fail early on
-				return dataManager.getEntity(identifier);
-			} catch (NotFoundException e) {
-			}
+		try {
+			// might throw RetrievalException on internal errors, which we
+			// should fail early on
+			return dataManager.getEntity(identifier);
+		} catch (NotFoundException e) {
 		}
 
 		for (PeerContainer peer : peers) {
@@ -102,62 +92,52 @@ public class MegaDataManager implements DataManager {
 	}
 
 	public List<String> getManagedNamespaces() {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.getManagedNamespaces();
 	}
 
 	public int getMaxIDLength() {
-		// TODO Auto-generated method stub
-		return 0;
+		return dataManager.getMaxIDLength();
 	}
 
 	public DataDocumentIdentifier registerDocument(
 			ReferenceScheme... references) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerDocument(references);
 	}
 
 	public DataDocumentIdentifier registerDocument(
 			Set<ReferenceScheme> references) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerDocument(references);
 	}
 
 	public EntityListIdentifier registerEmptyList(int depth)
 			throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
-			String msg) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerEmptyList(depth);
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg, Throwable throwable) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerError(depth, implicitDepth, msg, throwable);
+	}
+
+	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
+			String msg) throws StorageException {
+		return dataManager.registerError(depth, implicitDepth, msg);
 	}
 
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			Throwable throwable) throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerError(depth, implicitDepth, throwable);
 	}
 
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
 			throws StorageException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.registerList(identifiers);
 	}
 
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
 			throws RetrievalException {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.traverse(identifier, desiredDepth);
 	}
 
 	public void addPeer(PeerContainer peer) {
