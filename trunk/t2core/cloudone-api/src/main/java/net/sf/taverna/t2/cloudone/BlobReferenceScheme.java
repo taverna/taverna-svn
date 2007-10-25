@@ -3,7 +3,6 @@ package net.sf.taverna.t2.cloudone;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
 /**
@@ -16,7 +15,7 @@ import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
  *            Bean for serialising BlobReferenceScheme
  */
 public interface BlobReferenceScheme<BlobBean extends ReferenceBean> extends
-		ReferenceScheme, Beanable<BlobBean> {
+		ReferenceScheme<BlobBean> {
 
 	/**
 	 * Compare to another object. BlobReferenceScheme must be comparable to each

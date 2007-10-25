@@ -4,6 +4,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
+
 /**
  * A reference to data used in a DataDocument. In addition, the set of
  * properties used to determine whether a reference using this scheme is within
@@ -14,7 +17,7 @@ import java.util.Set;
  * @author Tom Oinn
  * @author Matthew Pocock
  */
-public interface ReferenceScheme {
+public interface ReferenceScheme<BeanType extends ReferenceBean> extends Beanable<BeanType> {
 
 	/**
 	 * Dereference this reference scheme. Return an input stream accessing the
