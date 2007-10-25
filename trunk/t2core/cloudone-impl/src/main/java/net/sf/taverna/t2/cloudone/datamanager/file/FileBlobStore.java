@@ -42,8 +42,6 @@ import org.apache.commons.io.IOUtils;
  */
 public class FileBlobStore implements BlobStore {
 
-	private static final String UTF_8 = "utf-8";
-
 	private File path;
 
 	private String namespace;
@@ -210,11 +208,11 @@ public class FileBlobStore implements BlobStore {
 			throws StorageException {
 		InputStream stream;
 		try {
-			stream = IOUtils.toInputStream(string, UTF_8);
+			stream = IOUtils.toInputStream(string, STRING_CHARSET);
 		} catch (IOException e) {
 			throw new StorageException("Failed to store from string", e);
 		}
-		return storeFromStream(stream, UTF_8);
+		return storeFromStream(stream, STRING_CHARSET);
 	}
 
 	private File fileById(String namespace, String id) {

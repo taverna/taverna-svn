@@ -8,21 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 
-import sun.security.action.GetBooleanAction;
-
 public class InMemoryBlobStore implements BlobStore {
-
-	private static final String UTF_8 = "utf-8";
 
 	private Map<String, byte[]> blobs = new HashMap<String, byte[]>();
 
@@ -134,11 +130,11 @@ public class InMemoryBlobStore implements BlobStore {
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
 		try {
-			blobs.put(id, string.getBytes(UTF_8));
+			blobs.put(id, string.getBytes(STRING_CHARSET));
 		} catch (UnsupportedEncodingException e) {
 			throw new StorageException(e);
 		}
-		return new BlobReferenceSchemeImpl(namespace, id, UTF_8);
+		return new BlobReferenceSchemeImpl(namespace, id, STRING_CHARSET);
 	}
 
 }
