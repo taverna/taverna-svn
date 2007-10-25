@@ -37,7 +37,5 @@ public class BeanableRegistry extends SPIRegistry<Beanable>{
 					"Can't access Beanable class " + className, e);
 		}
 	}
-	
-	
 
 }
