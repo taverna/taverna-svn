@@ -17,9 +17,10 @@ public class ActivityTranslatorTest {
 
 	private ActivityTranslator<BeanshellActivityConfigurationBean> translator;
 
+	@SuppressWarnings("unchecked")
 	@Before
 	public void createTranslator() {
-		translator = new BeanshellActivityTranslator();
+		translator = (ActivityTranslator<BeanshellActivityConfigurationBean>) new BeanshellActivityTranslator();
 	}
 
 	@Test
