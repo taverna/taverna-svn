@@ -41,6 +41,8 @@ import net.sf.taverna.t2.cloudone.datamanager.StorageException;
  */
 public interface BlobStore {
 
+	public final String STRING_CHARSET = "utf-8";
+
 	/**
 	 * Check if the BlobStore has a given blob, as referenced from a
 	 * {@link BlobReferenceScheme}. If the result is true, the reference can be
@@ -222,11 +224,11 @@ public interface BlobStore {
 			String charset) throws StorageException;
 
 	/**
-	 * Store a blob from a String. The returned {@link BlobReferenceScheme} can
-	 * be used to retrieve the blob using
-	 * {@link #retrieveAsBytes(BlobReferenceScheme)} or
+	 * Store a blob from a String, encoded using character set UTF-8 ({@link #STRING_CHARSET}).
+	 * The returned {@link BlobReferenceScheme} can be used to retrieve the blob
+	 * using {@link #retrieveAsBytes(BlobReferenceScheme)} or
 	 * {@link #retrieveAsStream(BlobReferenceScheme)} and its
-	 * {@link ReferenceScheme#getCharset()} will not be null.
+	 * {@link ReferenceScheme#getCharset()} will be UTF-8.
 	 * 
 	 * @param string
 	 *            The string to store
