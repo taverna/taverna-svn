@@ -101,9 +101,9 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		assertTrue(report.getUnresolvedOutputs().size() == 0);
 
 		Edits edits = new EditsImpl();
-		Map<String, TestEventHandler> eventHandlers = new HashMap<String, TestEventHandler>();
+		Map<String, DummyEventHandler> eventHandlers = new HashMap<String, DummyEventHandler>();
 		for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
-			TestEventHandler testOutputEventHandler = new TestEventHandler(
+			DummyEventHandler testOutputEventHandler = new DummyEventHandler(
 					dataManager);
 			eventHandlers.put(outputPort.getName(), testOutputEventHandler);
 			Datalink link = edits.createDatalink(outputPort,
@@ -122,7 +122,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		boolean finished = false;
 		while (!finished) {
 			finished = true;
-			for (TestEventHandler testEventHandler : eventHandlers.values()) {
+			for (DummyEventHandler testEventHandler : eventHandlers.values()) {
 				if (testEventHandler.getResult() == null) {
 					finished = false;
 					Thread.sleep(1000);
@@ -130,7 +130,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 				}
 			}
 		}
-		for (Map.Entry<String, TestEventHandler> entry : eventHandlers
+		for (Map.Entry<String, DummyEventHandler> entry : eventHandlers
 				.entrySet()) {
 			System.out.println("Values for port " + entry.getKey());
 			Object result = entry.getValue().getResult();
@@ -463,14 +463,14 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	}
 }
 
-class TestEventHandler extends AbstractAnnotatedThing implements
+class DummyEventHandler extends AbstractAnnotatedThing implements
 		EventHandlingInputPort {
 
 	protected int eventCount = 0;
 	public InMemoryDataManager dataManager;
 	private Object result;
 
-	public TestEventHandler(InMemoryDataManager dataManager) {
+	public DummyEventHandler(InMemoryDataManager dataManager) {
 		super();
 		this.dataManager = dataManager;
 	}
