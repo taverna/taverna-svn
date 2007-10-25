@@ -4,6 +4,7 @@
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2integration-testing</artifactId>
 	<version>0.1-SNAPSHOT</version>
+	<name>Taverna 2 Integration Testing</name>
 	<description>
 		A suite of integration tests for Taverna 2
 	</description>
