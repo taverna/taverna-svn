@@ -16,6 +16,10 @@ import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.HeadMethod;
+
 /**
  * Reference scheme defined by a URL. This URL can be global, site local or link
  * local. It makes use of the NetworkName and MachineName context entries to
@@ -235,4 +239,21 @@ public class URLReferenceScheme implements ReferenceScheme,
 		return URLReferenceBean.class;
 	}
 
+	public String getCharset() throws DereferenceException {
+		if (! url.getProtocol().equals("http")) {
+			return null; // Don't know
+		}
+		HeadMethod method = new HeadMethod(url.toExternalForm());
+		HttpClient httpClient = new HttpClient();
+		try {
+			httpClient.executeMethod(method);
+			return method.getResponseCharSet();
+		} catch (HttpException e) {
+			throw new DereferenceException(e);
+		} catch (IOException e) {
+			throw new DereferenceException(e);
+		} finally {
+			method.releaseConnection();
+		}
+	}
 }

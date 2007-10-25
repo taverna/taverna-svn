@@ -30,12 +30,18 @@ public class BlobReferenceSchemeImpl implements
 
 	private String namespace;
 
+	private String charset;
+
 	public BlobReferenceSchemeImpl() {
 		id = null;
 		namespace = null;
 	}
 
 	public BlobReferenceSchemeImpl(String namespace, String id) {
+		this(namespace, id, null);
+	}
+	
+	public BlobReferenceSchemeImpl(String namespace, String id, String charset) {
 		if (id == null || namespace == null) {
 			throw new NullPointerException("id and namespace can't be null");
 		}
@@ -45,6 +51,7 @@ public class BlobReferenceSchemeImpl implements
 		}
 		this.id = id;
 		this.namespace = namespace;
+		this.charset = charset;
 	}
 
 	public InputStream dereference(DataManager manager)
@@ -92,6 +99,7 @@ public class BlobReferenceSchemeImpl implements
 		BlobReferenceBean bean = new BlobReferenceBean();
 		bean.setNamespace(getNamespace());
 		bean.setId(getId());
+		bean.setCharset(getCharset());
 		return bean;
 	}
 
@@ -128,6 +136,7 @@ public class BlobReferenceSchemeImpl implements
 		}
 		id = bean.getId();
 		namespace = bean.getNamespace();
+		charset = bean.getCharset();
 	}
 
 	@Override
@@ -142,6 +151,10 @@ public class BlobReferenceSchemeImpl implements
 
 	public Class<BlobReferenceBean> getBeanClass() {
 		return BlobReferenceBean.class;
+	}
+
+	public String getCharset() {
+		return charset;
 	}
 
 }

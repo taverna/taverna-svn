@@ -9,6 +9,12 @@ public class BlobReferenceBean extends ReferenceBean {
 
 	private String namespace;
 
+	private String charset;
+
+	public String getCharset() {
+		return charset;
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -20,6 +26,10 @@ public class BlobReferenceBean extends ReferenceBean {
 	@Override
 	public String getType() {
 		return TYPE;
+	}
+
+	public void setCharset(String charset) {
+		this.charset = charset;		
 	}
 
 	public void setId(String id) {
