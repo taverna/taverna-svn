@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DereferenceException;
@@ -121,6 +122,16 @@ public abstract class AbstractBlobStoreTest {
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,
 				retrievedBytes));
 	}
+	
+	@Test
+	public void storeStringRetrieveString() throws RetrievalException, IllegalArgumentException, NotFoundException {
+		String string = "qwertyuiop¿¿ÄÄÅÅ";
+		BlobReferenceScheme<?> ref = blobStore.storeFromString(string);
+		assertNotNull(ref);
+		String retrievedString = blobStore.retrieveAsString(ref);
+		assertEquals(string, retrievedString);
+	}
+	
 
 	@Test
 	public void hasBlob() {

@@ -41,6 +41,10 @@ public class TranslatorRegistrySPITest {
 				DataPeer currentLocation) {
 			return true;
 		}
+
+		public String getCharset() throws DereferenceException {
+			return null;
+		}
 	}
 
 	URLReferenceScheme urlRef;
