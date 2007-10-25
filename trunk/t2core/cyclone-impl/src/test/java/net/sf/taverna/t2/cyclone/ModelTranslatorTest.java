@@ -19,7 +19,6 @@ import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -84,7 +83,8 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
-//		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("very_simple_workflow.xml");
+		// DataflowImpl dataflow = (DataflowImpl)
+		// translateScuflFile("very_simple_workflow.xml");
 		DataflowValidationReport report = dataflow.checkValidity();
 		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
 			System.out.println(unsatisfiedProcessor.getLocalName());
@@ -130,7 +130,8 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 				}
 			}
 		}
-		for (Map.Entry<String, TestEventHandler> entry : eventHandlers.entrySet()) {
+		for (Map.Entry<String, TestEventHandler> entry : eventHandlers
+				.entrySet()) {
 			System.out.println("Values for port " + entry.getKey());
 			Object result = entry.getValue().getResult();
 			if (result instanceof List) {
@@ -474,22 +475,19 @@ class TestEventHandler extends AbstractAnnotatedThing implements
 		this.dataManager = dataManager;
 	}
 
-	public void receiveEvent(Event e) {
+	public void receiveEvent(WorkflowDataToken token) {
 		eventCount++;
-		if (e instanceof WorkflowDataToken) {
-			WorkflowDataToken token = (WorkflowDataToken) e;
-			DataFacade dataFacade = new DataFacade(dataManager);
-			try {
-				result = dataFacade.resolve(token.getData());
-			} catch (RetrievalException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (NotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+		DataFacade dataFacade = new DataFacade(dataManager);
+		try {
+			result = dataFacade.resolve(token.getData());
+		} catch (RetrievalException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		System.out.println(e.toString());
+		System.out.println(token);
 	}
 
 	public Object getResult() {
