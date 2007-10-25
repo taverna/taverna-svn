@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-19 16:22:05 $
+ * Last modified on   $Date: 2007-10-25 09:17:17 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -214,7 +214,7 @@ public class WSDLSOAPInvokerTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testEncodedDifferentOutputName() throws Exception {
-		
+		System.setProperty("taverna.wsdl.timeout","1");
 		WSDLParser wsdlParser = new WSDLParser("http://biowulf.bu.edu/zlab/promoser/promoser.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("help")) {
@@ -229,5 +229,4 @@ public class WSDLSOAPInvokerTest {
 
 		assertTrue("unexpected output contents", thing.toString().startsWith("Usage:"));
 	}
-
 }
