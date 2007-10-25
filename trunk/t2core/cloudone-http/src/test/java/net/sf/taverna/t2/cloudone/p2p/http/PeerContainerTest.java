@@ -22,7 +22,7 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
-		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(fileURL);
 		references.add(urlRef);
 		DataManager dMan = cloudApp.getDataManager();
 		DataDocumentIdentifier docId = dMan.registerDocument(references);
@@ -65,9 +65,9 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 		ReferenceScheme ref = retrievedDoc.getReferenceSchemes().iterator()
 				.next();
 		assertTrue("Reference was not an URLReferenceScheme",
-				ref instanceof URLReferenceScheme);
+				ref instanceof HttpReferenceScheme);
 		assertEquals("URLReference was not " + fileURL, fileURL.toString(),
-				((URLReferenceScheme) ref).getUrl().toString());
+				((HttpReferenceScheme) ref).getUrl().toString());
 	}
 
 	@Ignore("Hard coded identifier, requires server")

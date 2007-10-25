@@ -10,7 +10,7 @@ import java.util.List;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.PeerContainer;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.MegaDataManager;
+import net.sf.taverna.t2.cloudone.datamanager.PeerDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
@@ -21,7 +21,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class MegaDataManagerTest extends AbstractCloudOneServerTest {
+public class PeerDataManagerTest extends AbstractCloudOneServerTest {
 
 	@Test
 	public void megaDM() throws Exception {
@@ -29,7 +29,7 @@ public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 				.<LocationalContext> emptySet());
 		InMemoryDataManager mem2 = new InMemoryDataManager("soup", Collections
 				.<LocationalContext> emptySet());
-		MegaDataManager megaDM = new MegaDataManager(mem1);
+		PeerDataManager megaDM = new PeerDataManager(mem1);
 
 		EntityListIdentifier emptyList1 = mem1.registerEmptyList(2);
 		EntityListIdentifier emptyList2 = mem2.registerEmptyList(2);
@@ -48,7 +48,7 @@ public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 
 		InMemoryDataManager inMemoryDataManager = new InMemoryDataManager(
 				"fish", Collections.<LocationalContext> emptySet());
-		MegaDataManager megaDM = new MegaDataManager(inMemoryDataManager);
+		PeerDataManager megaDM = new PeerDataManager(inMemoryDataManager);
 		EntityListIdentifier emptyList1 = cloudApp.getDataManager()
 				.registerEmptyList(2);
 		PeerContainer peer = new HttpPeerContainer();
@@ -63,7 +63,7 @@ public class MegaDataManagerTest extends AbstractCloudOneServerTest {
 	public void getRemoteList() throws Exception {
 		InMemoryDataManager inMemoryDataManager = new InMemoryDataManager(
 				"fish", Collections.<LocationalContext> emptySet());
-		MegaDataManager megaDM = new MegaDataManager(inMemoryDataManager);
+		PeerDataManager megaDM = new PeerDataManager(inMemoryDataManager);
 		PeerContainer peer = new HttpPeerContainer();
 		megaDM.addPeer(peer);
 		

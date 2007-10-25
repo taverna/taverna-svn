@@ -18,13 +18,13 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 
-public class MegaDataManager implements DataManager {
+public class PeerDataManager implements DataManager {
 
 	DataManager dataManager;
 
 	List<PeerContainer> peers = new ArrayList<PeerContainer>();
 
-	public MegaDataManager(DataManager dManager) {
+	public PeerDataManager(DataManager dManager) {
 		dataManager = dManager;
 	}
 
