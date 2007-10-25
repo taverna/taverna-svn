@@ -141,7 +141,7 @@ public class BlobReferenceSchemeImpl implements
 
 	@Override
 	public String toString() {
-		return "Blob " + getNamespace() + " " + getId();
+		return "Blob [ns:" + getNamespace() + " id:" + getId() + "]";
 	}
 
 	public boolean validInContext(Set<LocationalContext> contextSet,
