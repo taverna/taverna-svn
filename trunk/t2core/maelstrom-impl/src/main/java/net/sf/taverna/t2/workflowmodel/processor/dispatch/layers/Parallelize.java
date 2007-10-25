@@ -75,6 +75,12 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		producesMessage.put(DispatchMessageType.JOB, true);
 	}
 
+	/**
+	 * Test constructor, only used by unit tests, should probably not be public
+	 * access here?
+	 * 
+	 * @param maxJobs
+	 */
 	public Parallelize(int maxJobs) {
 		super();
 		config.setMaximumJobs(maxJobs);
@@ -89,7 +95,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> activities) {
+			BlockingQueue<Event> queue,
+			List<? extends ActivityAnnotationContainer> activities) {
 		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
 		stateMap.put(owningProcess, model);
@@ -100,7 +107,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		return DispatchLayerAction.FORBIDDEN;
 	}
 
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
+	public void receiveJob(Job job,
+			List<? extends ActivityAnnotationContainer> activities) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -145,39 +153,62 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private List<? extends ActivityAnnotationContainer> activities;
 
-		public StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends ActivityAnnotationContainer> activities, int maxJobs) {
+		private List<Event> pendingEvents = new ArrayList<Event>();
+
+		private int activeJobs = 0;
+
+		private int maximumJobs;
+
+		/**
+		 * Construct state model for a particular owning process
+		 * 
+		 * @param owningProcess
+		 *            Process to track parallel execution
+		 * @param queue
+		 *            reference to the queue into which jobs are inserted by the
+		 *            iteration strategy
+		 * @param activities
+		 *            activities to pass along with job events down into the
+		 *            stack below
+		 * @param maxJobs
+		 *            maximum number of concurrent jobs to keep 'hot' at any
+		 *            given point
+		 */
+		protected StateModel(String owningProcess, BlockingQueue<Event> queue,
+				List<? extends ActivityAnnotationContainer> activities,
+				int maxJobs) {
 			this.queue = queue;
 			this.activities = activities;
 			this.maximumJobs = maxJobs;
 		}
 
-		List<Event> pendingEvents = new ArrayList<Event>();
-
-		int activeJobs = 0;
-
-		int maximumJobs = 2;
-
-		@SuppressWarnings("unchecked")
-		public void receiveEvent(Event e) {
-			synchronized (pendingEvents) {
-				if (e instanceof Completion && pendingEvents.isEmpty()) {
-					getAbove().receiveResultCompletion((Completion) e);
-				} else {
-					pendingEvents.add(e);
-				}
-			}
-			if (e instanceof Job) {
-				activeJobs++;
-				getBelow().receiveJob((Job) e, activities);
-			}
-		}
-
-		public void fillFromQueue() {
+		/**
+		 * Poll the queue repeatedly until either the queue is empty or we have
+		 * enough jobs pulled from it. The semantics for this are:
+		 * <ul>
+		 * <li>If the head of the queue is a Job and activeJobs < maximumJobs
+		 * then increment activeJobs, add the Job to the pending events list at
+		 * the end and send the message down the stack
+		 * <li>If the head of the queue is a Completion and the pending jobs
+		 * list is empty then send it to the layer above
+		 * <li>If the head of the queue is a Completion and the pending jobs
+		 * list is not empty then add the Completion to the end of the pending
+		 * jobs list and return
+		 * </ul>
+		 */
+		protected void fillFromQueue() {
 			synchronized (pendingEvents) {
 				while (queue.peek() != null && activeJobs < maximumJobs) {
 					Event e = queue.remove();
-					receiveEvent(e);
+					if (e instanceof Completion && pendingEvents.isEmpty()) {
+						getAbove().receiveResultCompletion((Completion) e);
+					} else {
+						pendingEvents.add(e);
+					}
+					if (e instanceof Job) {
+						activeJobs++;
+						getBelow().receiveJob((Job) e, activities);
+					}
 				}
 			}
 		}
@@ -190,50 +221,56 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 * @param index
 		 * @return
 		 */
-		public boolean finishWith(int[] index) {
+		protected boolean finishWith(int[] index) {
 			synchronized (pendingEvents) {
-				boolean matched = false;
-				Set<Event> removeMe = new HashSet<Event>();
-				for (Event e : pendingEvents) {
+				// Iterate over copy of pending event list so we can remove
+				// items from the live one as we go
+				for (Event e : new ArrayList<Event>(pendingEvents)) {
 					if (e instanceof Job) {
 						Job j = (Job) e;
-						if (index.length == j.getIndex().length) {
-							boolean equal = true;
-							for (int i = 0; i < index.length && equal; i++) {
-								if (index[i] != j.getIndex()[i]) {
-									equal = false;
-								}
+						if (arrayEquals(j.getIndex(), index)) {
+							// Found a job in the pending events list which has
+							// the same index, remove it and decrement the
+							// current count of active jobs
+							pendingEvents.remove(e);
+							activeJobs--;
+							// Now pull any completion events that have reached
+							// the head of the queue - this indicates that all
+							// the job events which came in before them have
+							// been processed and we can emit the completions
+							while (!pendingEvents.isEmpty()
+									&& pendingEvents.get(0) instanceof Completion) {
+								Completion c = (Completion) pendingEvents
+										.get(0);
+								getAbove().receiveResultCompletion(c);
+								pendingEvents.remove(c);
 							}
-							if (equal) {
-								removeMe.add(e);
-								matched = true;
-							}
+							// Refresh from the queue; as we've just decremented
+							// the active job count there should be a worker
+							// available
+							fillFromQueue();
+							// Return true to indicate that we removed a job
+							// event from the queue, that is to say that the
+							// index wasn't that of a partial completion.
+							return true;
 						}
 					}
 				}
-				if (!matched) {
-					return false;
-				}
-				for (Event e : removeMe) {
-					pendingEvents.remove(e);
-					activeJobs--;
-				}
-				boolean finished = false;
-				while (!finished) {
-					if (pendingEvents.isEmpty()
-							|| pendingEvents.get(0) instanceof Job) {
-						finished = true;
-					} else {
-						Completion c = (Completion) pendingEvents.get(0);
-						getAbove().receiveResultCompletion(c);
-						pendingEvents.remove(c);
-					}
-				}
 			}
-			fillFromQueue();
-			return true;
+			return false;
 		}
 
+		private boolean arrayEquals(int[] a, int[] b) {
+			if (a.length != b.length) {
+				return false;
+			}
+			for (int i = 0; i < a.length; i++) {
+				if (a[i] != b[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
 	}
 
 	public void configure(ParallelizeConfig config) {
