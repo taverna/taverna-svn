@@ -1,13 +1,17 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
+import static net.sf.taverna.t2.cloudone.BlobStore.STRING_CHARSET;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DereferenceException;
@@ -15,9 +19,13 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
+import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 
 /**
  * <p>
@@ -36,20 +44,23 @@ import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
  * {@link #register(Object)}, {@link #resolve(EntityIdentifier)} would return a
  * reconstructed <code>List&lt;String&gt;</code>.
  * </p>
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class DataFacade {
 
 	public static final int UNKNOWN_DEPTH = -1;
+
+	private static Logger logger = Logger.getLogger(DataFacade.class);
 	private DataManager dManager;
 
 	/**
 	 * Construct a DataFacade facading the specified {@link DataManager}.
-	 *
-	 * @param manager The {@link DataManager} to facade.
+	 * 
+	 * @param manager
+	 *            The {@link DataManager} to facade.
 	 */
 	public DataFacade(DataManager manager) {
 		if (manager == null) {
@@ -67,7 +78,7 @@ public class DataFacade {
 	 * {@link EmptyListException} if the object is a list and it's either empty
 	 * or all of it's children are empty lists.
 	 * </p>
-	 *
+	 * 
 	 * @param obj
 	 *            Supported object as defined by {@link #register(Object, int)}
 	 * @return EntityIdentifier of the Object passed in
@@ -82,7 +93,7 @@ public class DataFacade {
 	 *             If the object, or an object within the list is not supported
 	 * @throws IOException
 	 * @see #register(Object, int) for list of supported object types
-	 *
+	 * 
 	 */
 	public EntityIdentifier register(Object obj) throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException, IOException {
@@ -113,10 +124,10 @@ public class DataFacade {
 	 * </ul>
 	 * <p>
 	 * Attempts to registering an unsupported object type will throw an
-	 *
+	 * 
 	 * @param obj
 	 *            A supported object
-	 * @param depth
+	 * @param unknownDepth
 	 *            Number of levels in the parent List (for instance, a List of a
 	 *            List of strings is depth 2), or {@link #UNKNOWN_DEPTH} if
 	 *            unknown. Values less than -1 are invalid.
@@ -132,15 +143,69 @@ public class DataFacade {
 	 *             If the object, or an object within the list is not supported
 	 * @throws IOException
 	 */
+	public EntityIdentifier register(Object obj, int unknownDepth)
+			throws EmptyListException, MalformedListException,
+			UnsupportedObjectTypeException, IOException {
+		return register(obj, unknownDepth, null);
+	}
+
+	/**
+	 * <p>
+	 * Determine the Object type, registers it with the DataManager and return
+	 * the referencing EntityIdentifier. Long strings, byte[] and
+	 * {@link InputStream} are stored in a {@link BlobStore} if available.
+	 * </p>
+	 * <p>
+	 * Currently supported object types:
+	 * </p>
+	 * <ul>
+	 * <li>{@link String}</li>
+	 * <li>{@link Float}</li>
+	 * <li>{@link Double}</li>
+	 * <li>{@link Integer}</li>
+	 * <li>{@link Long}</li>
+	 * <li>{@link Boolean}</li>
+	 * <li>{@link EntityIdentifier} (previously registered object)</li>
+	 * <li>byte[]</li>
+	 * <li>{@link InputStream}</li>
+	 * <li>{@link List} containing any of the supported objects, including
+	 * {@link List}</li>
+	 * </ul>
+	 * <p>
+	 * Attempts to registering an unsupported object type will throw an
+	 * 
+	 * @param obj
+	 *            A supported object
+	 * @param depth
+	 *            Number of levels in the parent List (for instance, a List of a
+	 *            List of strings is depth 2), or {@link #UNKNOWN_DEPTH} if
+	 *            unknown. Values less than -1 are invalid.
+	 * @param charSet
+	 *            Character set for byte[] or {@link InputStream}s registered.
+	 *            If <code>null</code>, such objects will be considered
+	 *            binaries and won't have an attached character set. (hence
+	 *            can't be resolved as {@link String}s)
+	 * @return EntityIdentifier of the Object passed in
+	 * @throws EmptyListException
+	 *             If attempting to register an empty list (or a list containing
+	 *             only empty lists), with depth defined as -1 (UNKNOWN_DEPTH).
+	 *             (As when invoked from {@link #register(Object)} )
+	 * @throws MalformedListException
+	 *             If attempting to register a malformed list, as detailed in
+	 *             {@link MalformedListException}
+	 * @throws UnsupportedObjectTypeException
+	 *             If the object, or an object within the list is not supported
+	 * @throws IOException
+	 */
 	@SuppressWarnings("unchecked")
-	public EntityIdentifier register(Object obj, int depth)
+	public EntityIdentifier register(Object obj, int depth, String charSet)
 			throws EmptyListException, MalformedListException,
 			UnsupportedObjectTypeException, IOException {
 		if (obj instanceof EntityIdentifier) {
 			return (EntityIdentifier) obj;
 		}
 		if (obj instanceof List) {
-			return registerList((List) obj, depth);
+			return registerList((List) obj, depth, charSet);
 		}
 		// TODO: Support errors
 
@@ -164,7 +229,7 @@ public class DataFacade {
 				// TODO: turn it into blob and store
 				BlobStore blobStore = dManager.getBlobStore();
 				BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
-						.storeFromBytes(str.getBytes("utf8"));
+						.storeFromString(str);
 				Set<ReferenceScheme> blobSet = Collections
 						.singleton((ReferenceScheme) blobRef);
 				return dManager.registerDocument(blobSet);
@@ -174,14 +239,14 @@ public class DataFacade {
 		} else if (obj instanceof byte[]) {
 			BlobStore blobStore = dManager.getBlobStore();
 			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
-					.storeFromBytes((byte[]) obj);
+					.storeFromBytes((byte[]) obj, charSet);
 			Set<ReferenceScheme> blobSet = Collections
 					.singleton((ReferenceScheme) blobRef);
 			return dManager.registerDocument(blobSet);
 		} else if (obj instanceof InputStream) {
 			BlobStore blobStore = dManager.getBlobStore();
 			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) blobStore
-					.storeFromStream((InputStream) obj);
+					.storeFromStream((InputStream) obj, charSet);
 			Set<ReferenceScheme> blobSet = Collections
 					.singleton((ReferenceScheme) blobRef);
 			return dManager.registerDocument(blobSet);
@@ -192,9 +257,59 @@ public class DataFacade {
 	}
 
 	/**
+	 * <p>
+	 * Determine the Object type, registers it with the DataManager and return
+	 * the referencing EntityIdentifier. Long strings, byte[] and
+	 * {@link InputStream} are stored in a {@link BlobStore} if available.
+	 * </p>
+	 * <p>
+	 * Currently supported object types:
+	 * </p>
+	 * <ul>
+	 * <li>{@link String}</li>
+	 * <li>{@link Float}</li>
+	 * <li>{@link Double}</li>
+	 * <li>{@link Integer}</li>
+	 * <li>{@link Long}</li>
+	 * <li>{@link Boolean}</li>
+	 * <li>{@link EntityIdentifier} (previously registered object)</li>
+	 * <li>byte[]</li>
+	 * <li>{@link InputStream}</li>
+	 * <li>{@link List} containing any of the supported objects, including
+	 * {@link List}</li>
+	 * </ul>
+	 * <p>
+	 * Attempts to registering an unsupported object type will throw an
+	 * 
+	 * @param obj
+	 *            A supported object
+	 * @param charSet
+	 *            Character set for byte[] or {@link InputStream}s registered.
+	 *            If <code>null</code>, such objects will be considered
+	 *            binaries and won't have an attached character set. (hence
+	 *            can't be resolved as {@link String}s)
+	 * @return EntityIdentifier of the Object passed in
+	 * @throws EmptyListException
+	 *             If attempting to register an empty list (or a list containing
+	 *             only empty lists), with depth defined as -1 (UNKNOWN_DEPTH).
+	 *             (As when invoked from {@link #register(Object)} )
+	 * @throws MalformedListException
+	 *             If attempting to register a malformed list, as detailed in
+	 *             {@link MalformedListException}
+	 * @throws UnsupportedObjectTypeException
+	 *             If the object, or an object within the list is not supported
+	 * @throws IOException
+	 */
+	public EntityIdentifier register(Object obj, String charSet)
+			throws EmptyListException, MalformedListException,
+			UnsupportedObjectTypeException, IOException {
+		return register(obj, UNKNOWN_DEPTH, charSet);
+	}
+
+	/**
 	 * Resolve identifier and return referenced entity, literal or a list of
 	 * entities.
-	 *
+	 * 
 	 * @param entityId
 	 *            Identifier of the entity
 	 * @return Entity, literal or list of entities/literals
@@ -204,17 +319,80 @@ public class DataFacade {
 	 *             If the underlying {@link DataManager} can't find the entity
 	 * @throws IllegalArgumentException
 	 *             If the entity type is not yet supported by {@link DataFacade}
+	 * @see #resolve(EntityIdentifier, Class)
 	 */
-	public Object resolve(EntityIdentifier entityId) throws RetrievalException,
+	public Object resolve(EntityIdentifier entity) throws RetrievalException,
 			NotFoundException {
+		return resolve(entity, Object.class);
+	}
+
+	/**
+	 * Resolve identifier and return referenced entity, literal or a list of
+	 * entities.
+	 * <p>
+	 * Note: If a {@link Literal} {@link String} is retrieved with desired type
+	 * <code>byte[]</code> or {@link InputStream}, the string will be encoded
+	 * as bytes using the character set UTF-8 to be consistent with byte
+	 * retrieval of longer {@link String}s registered as
+	 * {@link BlobReferenceScheme}s (which {@link BlobStore} will encode using
+	 * UTF-8 {@link BlobStore#STRING_CHARSET} ).
+	 * </p>
+	 * 
+	 * @param entityId
+	 *            Identifier of the entity
+	 * @param desiredType
+	 *            The desired type for resolving {@link DataDocument}s.
+	 *            Currently supported types are {@link InputStream} (the default
+	 *            used by {@link #resolve(EntityIdentifier)}), {@link String}
+	 *            and <code>byte[]</code>, in addition to the types supported
+	 *            by {@link Literal}, such as {@link Integer} and
+	 *            {@link Double}.
+	 * @return The resolved object of the desired type, or a list containing
+	 *         such objects (or deeper lists)
+	 * @throws RetrievalException
+	 *             If something goes wrong when retrieving the entity, such as
+	 *             when no references can be resolved or if the referenced value
+	 *             was not of the desired type.
+	 * @throws NotFoundException
+	 *             If the underlying {@link DataManager} can't find the entity
+	 * @throws IllegalArgumentException
+	 *             If the entity type is not yet supported by {@link DataFacade},
+	 *             (ie. an {@link ErrorDocument}).
+	 */
+	public Object resolve(EntityIdentifier entityId, Class<?> desiredType)
+			throws RetrievalException, NotFoundException {
 		Entity<?, ?> ent = dManager.getEntity(entityId);
 		if (ent instanceof Literal) {
-			return ((Literal) ent).getValue();
+			Object value = ((Literal) ent).getValue();
+			if (desiredType.isInstance(value)) {
+				return value;
+			} else if (value instanceof String) {
+				String string = ((String) value);
+				if (desiredType.isAssignableFrom(byte[].class)) {
+					try {
+						return string.getBytes(STRING_CHARSET);
+					} catch (UnsupportedEncodingException e) {
+						throw new RuntimeException("Unsupported encoding "
+								+ STRING_CHARSET, e);
+					}
+				} else if (desiredType.isAssignableFrom(InputStream.class)) {
+					try {
+						return IOUtils.toInputStream(string, STRING_CHARSET);
+					} catch (IOException e) {
+						throw new RetrievalException(
+								"Could not convert string to InputStream", e);
+					}
+				}
+			}
+			throw new RetrievalException("Entity " + entityId
+					+ " was not of desired " + desiredType + ", but was of "
+					+ value.getClass());
+
 		} else if (ent instanceof EntityList) {
 			EntityList entityList = (EntityList) ent;
 			List<Object> resolved = new ArrayList<Object>();
 			for (EntityIdentifier id : entityList) {
-				resolved.add(resolve(id));
+				resolved.add(resolve(id, desiredType));
 			}
 			return resolved;
 		} else if (ent instanceof DataDocument) {
@@ -222,16 +400,45 @@ public class DataFacade {
 			for (ReferenceScheme ref : doc.getReferenceSchemes()) {
 				// TODO: Check if valid in context
 				// if (ref.validInContext(contextSet, currentLocation)) {
+				InputStream stream;
 				try {
-					return ref.dereference(dManager);
+					stream = ref.dereference(dManager);
 				} catch (DereferenceException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.warn("Could not dereference " + ref, e);
 					continue; // try next one
+				}
+				if (desiredType.isAssignableFrom(InputStream.class)) {
+					return stream;
+				} else if (desiredType.isAssignableFrom(String.class)) {
+					try {
+						if (ref.getCharset() == null) {
+							logger.warn("Can't resolve " + ref
+									+ " as String: No charset");
+							continue; // try next one
+						}
+						return IOUtils.toString(stream, ref.getCharset());
+					} catch (IOException e) {
+						logger.warn("Could not read " + ref, e);
+						continue; // try next one
+					} catch (DereferenceException e) {
+						logger.warn("Could not dereference " + ref, e);
+						continue; // try next one
+					}
+				} else if (desiredType.isAssignableFrom(byte[].class)) {
+					try {
+						return IOUtils.toByteArray(stream);
+					} catch (IOException e) {
+						logger.warn("Could not read " + ref, e);
+						continue; // try next one
+					}
+				} else {
+					throw new IllegalArgumentException(
+							"Unsupported desired type " + desiredType);
 				}
 			}
 			throw new RetrievalException(
-					"No dereferencable reference schemes found for " + entityId);
+					"No dereferencable reference schemes (for desired type) found for "
+							+ entityId);
 
 		} else {
 			// TODO: Support the other types
@@ -244,12 +451,17 @@ public class DataFacade {
 	 * Used internally by the DataFacade to register List Objects. These can be
 	 * Lists of Lists of Lists etc. Checks that they conform to the protocol of
 	 * each child having the same depth.
-	 *
+	 * 
 	 * @param list
 	 *            Objects of the list
 	 * @param listDepth
 	 *            Depth of the list, it's children must have the depth
 	 *            <code>listDepth</code>-1
+	 * @param charSet
+	 *            Character set for byte[] or {@link InputStream}s registered.
+	 *            If <code>null</code>, such objects will be considered
+	 *            binaries and won't have an attached character set. (hence
+	 *            can't be resolved as {@link String}s)
 	 * @return {@link EntityIdentifier} for the registered list
 	 * @throws EmptyListException
 	 *             If attempting to register an empty list or list of empty
@@ -260,8 +472,8 @@ public class DataFacade {
 	 *             If the object, or an object within the list is not supported
 	 * @throws IOException
 	 */
-	private EntityIdentifier registerList(List<Object> list, int listDepth)
-			throws EmptyListException, MalformedListException,
+	private EntityIdentifier registerList(List<Object> list, int listDepth,
+			String charSet) throws EmptyListException, MalformedListException,
 			UnsupportedObjectTypeException, IOException {
 		if (listDepth == 0) {
 			throw new MalformedListException("Can't register list of 0 depth");
@@ -286,7 +498,7 @@ public class DataFacade {
 		for (Object obj : list) {
 			EntityIdentifier id;
 			try {
-				id = register(obj, childDepth);
+				id = register(obj, childDepth, charSet);
 				registered.add(id);
 			} catch (EmptyListException ex) {
 				registered.add(null);
@@ -314,7 +526,7 @@ public class DataFacade {
 			EntityIdentifier id = registeredIterator.next();
 			if (id == null) {
 				// Previously unknown depth
-				id = register(obj, childDepth);
+				id = register(obj, childDepth, charSet);
 			}
 			ids.add(id);
 		}
