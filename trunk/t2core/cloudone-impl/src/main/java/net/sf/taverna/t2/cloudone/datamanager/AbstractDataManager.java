@@ -88,11 +88,6 @@ public abstract class AbstractDataManager implements DataManager {
 		if (id instanceof Literal) {
 			return (Entity<EI, ?>) id;
 		}
-		if (!getManagedNamespaces().contains(id.getNamespace())) {
-			// TODO: Retrieve from other DataManagers on p2p
-			throw new NotFoundException("Unknown namespace "
-					+ id.getNamespace());
-		}
 		Entity ent = retrieveEntity(id);
 		if (ent == null) {
 			throw new NotFoundException(id);
