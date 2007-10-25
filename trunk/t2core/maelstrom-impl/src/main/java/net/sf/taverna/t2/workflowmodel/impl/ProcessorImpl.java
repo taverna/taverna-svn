@@ -165,8 +165,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		Map<String, Integer> inputDepths = new HashMap<String, Integer>();
 		for (ProcessorInputPortImpl input : inputPorts) {
 			if (input.getIncomingLink() == null) {
-			//TODO This should not be commented out
-//				return false;
+				return false;
 			} else {
 				if (input.getIncomingLink().getResolvedDepth() == -1) {
 					// Incoming link hasn't been resolved yet, can't do this
