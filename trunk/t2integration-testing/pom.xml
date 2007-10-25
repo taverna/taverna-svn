@@ -142,5 +142,50 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository
+			</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<!-- use the following if you're not using a snapshot version. -->
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+			</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+			</url>
+		</snapshotRepository>
+		<site>
+			<id>website</id>
+			<url>${siteurl}</url>
+		</site>
+	</distributionManagement>
 
 </project>
