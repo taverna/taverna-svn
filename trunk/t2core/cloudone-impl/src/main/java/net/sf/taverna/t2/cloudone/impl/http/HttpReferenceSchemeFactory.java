@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl.url;
+package net.sf.taverna.t2.cloudone.impl.http;
 
 import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
 
@@ -18,19 +18,19 @@ import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
  * @author Matthew Pocock
  *
  */
-public class URLReferenceSchemeFactory extends
-		AbstractReferenceSchemeFactory<URLReferenceScheme> {
+public class HttpReferenceSchemeFactory extends
+		AbstractReferenceSchemeFactory<HttpReferenceScheme> {
 
-	private static URLReferenceSchemeFactory urlRefSchemeFactory;
+	private static HttpReferenceSchemeFactory urlRefSchemeFactory;
 
-	public static URLReferenceSchemeFactory getInstance() {
+	public static HttpReferenceSchemeFactory getInstance() {
 		if (urlRefSchemeFactory == null) {
-			urlRefSchemeFactory = new URLReferenceSchemeFactory();
+			urlRefSchemeFactory = new HttpReferenceSchemeFactory();
 		}
 		return urlRefSchemeFactory;
 	}
 
-	protected URLReferenceSchemeFactory() {
+	protected HttpReferenceSchemeFactory() {
 		super();
 	}
 

@@ -1,3 +1,3 @@
 net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl
-net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme
+net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme
 net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl

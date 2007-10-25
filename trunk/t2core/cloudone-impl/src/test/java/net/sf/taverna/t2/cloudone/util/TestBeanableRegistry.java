@@ -13,7 +13,7 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 @SuppressWarnings("unchecked")
 public class TestBeanableRegistry {
@@ -25,7 +25,7 @@ public class TestBeanableRegistry {
 			EntityListIdentifier.class,
 			ErrorDocumentIdentifier.class,
 			Literal.class,
-			URLReferenceScheme.class,
+			HttpReferenceScheme.class,
 			BlobReferenceSchemeImpl.class,
 			EntityList.class,
 			ErrorDocument.class,

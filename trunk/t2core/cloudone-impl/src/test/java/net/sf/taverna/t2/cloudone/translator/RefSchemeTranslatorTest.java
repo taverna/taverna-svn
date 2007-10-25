@@ -28,7 +28,7 @@ import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -110,7 +110,7 @@ public class RefSchemeTranslatorTest {
 		DataDocumentIdentifier id = makeString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
-		AsynchRefScheme runnable = translator.translateAsynch(id, URLReferenceScheme.class, BlobReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, HttpReferenceScheme.class, BlobReferenceScheme.class);
 		runnable.run(); // run directly
 		assertTrue(runnable.isFinished());
 		assertNull(runnable.getException());
@@ -131,7 +131,7 @@ public class RefSchemeTranslatorTest {
 		File tmpFile = File.createTempFile("test", ".txt");
 		tmpFile.deleteOnExit();
 		FileUtils.writeStringToFile(tmpFile, TEST_DATA, ASCII);
-		URLReferenceScheme urlRef = new URLReferenceScheme(tmpFile.toURI().toURL());
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(tmpFile.toURI().toURL());
 		
 		DataDocumentIdentifier id = dManager.registerDocument(urlRef);
 		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
@@ -152,11 +152,11 @@ public class RefSchemeTranslatorTest {
 		DataDocumentIdentifier id = makeString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
-		AsynchRefScheme runnable = translator.translateAsynch(id, URLReferenceScheme.class);
+		AsynchRefScheme runnable = translator.translateAsynch(id, HttpReferenceScheme.class);
 		runnable.run(); // run directly
 		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a URLReferenceScheme",
-				refScheme instanceof URLReferenceScheme);
+				refScheme instanceof HttpReferenceScheme);
 		assertEquals(LONG_STRING, 
 				IOUtils.toString(refScheme.dereference(dManager), ASCII));
 	}
@@ -167,7 +167,7 @@ public class RefSchemeTranslatorTest {
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeTwoFakeRefs();
 		AsynchRefScheme runnable = translator.translateAsynch(id,
-				BlobReferenceScheme.class, URLReferenceScheme.class);
+				BlobReferenceScheme.class, HttpReferenceScheme.class);
 		runnable.run(); // run directly
 		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
@@ -203,7 +203,7 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException, IOException {
 		BlobReferenceScheme blobRef = new BlobReferenceSchemeImpl(TEST_NS, UUID
 				.randomUUID().toString());
-		URLReferenceScheme urlRef = new URLReferenceScheme(new URL(
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(new URL(
 				"http://taverna.sf.net/"));
 		// Register a new data document with both reference schemes
 		return (DataDocumentIdentifier) dManager.registerDocument(blobRef,

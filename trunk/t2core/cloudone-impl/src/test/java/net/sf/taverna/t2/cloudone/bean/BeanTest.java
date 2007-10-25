@@ -31,8 +31,8 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean;
 import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.apache.commons.io.FileUtils;
@@ -64,24 +64,26 @@ public class BeanTest {
 		DataDocumentIdentifier id = new DataDocumentIdentifier(urn);
 		HashSet<ReferenceScheme> refSchemes = new HashSet<ReferenceScheme>();
 		URL url1 = new URL("http://taverna.sourceforge.net/");
-		refSchemes.add(new URLReferenceScheme(url1));
+		refSchemes.add(new HttpReferenceScheme(url1));
 		URL url2 = new URL("http://taverna.sourceforge.net/");
-		refSchemes.add(new URLReferenceScheme(url2)); // Duplicate to be
+		refSchemes.add(new HttpReferenceScheme(url2)); // Duplicate to be
 		// ignored
 		URL url3 = new URL("http://www.mygrid.org.uk/");
-		refSchemes.add(new URLReferenceScheme(url3));
+		refSchemes.add(new HttpReferenceScheme(url3));
 		URL url4 = new URL("http://mygrid.org.uk/");
 
 		// Disabled because Java looks up in DNS
 		// assertEquals("Java not buggy", url3, url4);
 		// should DIFFER from url3 although Javas URL thing it equals
-		refSchemes.add(new URLReferenceScheme(url4));
+		refSchemes.add(new HttpReferenceScheme(url4));
 		DataDocument doc = new DataDocumentImpl(id, refSchemes);
 
 		assertEquals(urn, doc.getIdentifier().getAsBean());
 		assertEquals(3, doc.getReferenceSchemes().size());
 
 		DataDocumentBean bean = serialised(doc.getAsBean());
+		List<ReferenceBean> refs = bean.getReferences();
+		
 		DataDocument newDoc = new DataDocumentImpl();
 		newDoc.setFromBean(bean);
 		assertEquals(urn, newDoc.getIdentifier().getAsBean());
@@ -284,12 +286,12 @@ public class BeanTest {
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
-		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(fileURL);
 		InputStream stream = urlRef.dereference(dManager);
 		assertEquals("Test data\n", IOUtils.toString(stream, "utf8"));
 
-		URLReferenceBean bean = serialised(urlRef.getAsBean());
-		URLReferenceScheme newUrlRef = new URLReferenceScheme();
+		HttpReferenceBean bean = serialised(urlRef.getAsBean());
+		HttpReferenceScheme newUrlRef = new HttpReferenceScheme();
 		newUrlRef.setFromBean(bean);
 		InputStream newStream = newUrlRef.dereference(dManager);
 		assertEquals("Test data\n", IOUtils.toString(newStream, "utf8"));

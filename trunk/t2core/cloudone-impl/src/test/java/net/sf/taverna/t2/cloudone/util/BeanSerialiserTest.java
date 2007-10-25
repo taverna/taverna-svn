@@ -15,8 +15,8 @@ import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.SillyBean;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceBean;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -68,13 +68,13 @@ public class BeanSerialiserTest {
 
 	@Test
 	public void serialiseURLRefScheme() throws JDOMException, IOException {
-		URLReferenceScheme urlRef = new URLReferenceScheme();
-		URLReferenceBean bean = new URLReferenceBean();
+		HttpReferenceScheme urlRef = new HttpReferenceScheme();
+		HttpReferenceBean bean = new HttpReferenceBean();
 		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
 
 		Element elem = BeanSerialiser.beanableToXML(urlRef);
-		URLReferenceScheme retrievedUrlRef = (URLReferenceScheme) BeanSerialiser
+		HttpReferenceScheme retrievedUrlRef = (HttpReferenceScheme) BeanSerialiser
 				.beanableFromXML(elem);
 		assertEquals(urlRef.getUrl().toString(), retrievedUrlRef.getUrl().toString());
 	}

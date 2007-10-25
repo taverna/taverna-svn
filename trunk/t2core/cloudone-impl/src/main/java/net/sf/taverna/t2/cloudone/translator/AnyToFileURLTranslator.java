@@ -12,23 +12,23 @@ import java.net.URL;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 
 /**
  * Translator for any type of {@link ReferenceScheme} to a file:/// based
- * {@link URLReferenceScheme}
+ * {@link HttpReferenceScheme}
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
  * 
  */
-public class AnyToFileURLTranslator implements Translator<URLReferenceScheme> {
+public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 	/**
-	 * Translate the {@link ReferenceScheme} to a {@link URLReferenceScheme}
+	 * Translate the {@link ReferenceScheme} to a {@link HttpReferenceScheme}
 	 */
-	public URLReferenceScheme translate(DataManager dataManager,
+	public HttpReferenceScheme translate(DataManager dataManager,
 			ReferenceScheme ref) throws DereferenceException,
 			TranslatorException {
 		File translatedFile;
@@ -63,18 +63,18 @@ public class AnyToFileURLTranslator implements Translator<URLReferenceScheme> {
 			throw new RuntimeException("Could not convert from URI to URL", e);
 		}
 		// file:/// is also an URL
-		return new URLReferenceScheme(url);
+		return new HttpReferenceScheme(url);
 	}
 
 	/**
 	 * Check whether the specified {@link ReferenceScheme} can be translated to
 	 * a {@link ReferenceScheme}.
 	 * 
-	 * @return true if <code>toType</code> is an {@link URLReferenceScheme}
+	 * @return true if <code>toType</code> is an {@link HttpReferenceScheme}
 	 */
 	public boolean canTranslate(ReferenceScheme fromScheme,
 			Class<? extends ReferenceScheme> toType) {
-		return toType.isAssignableFrom(URLReferenceScheme.class);
+		return toType.isAssignableFrom(HttpReferenceScheme.class);
 	}
 
 }

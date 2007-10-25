@@ -15,9 +15,9 @@ import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
-import net.sf.taverna.t2.cloudone.impl.url.URLLocationalContext;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceSchemeFactory;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpLocationalContext;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceSchemeFactory;
 import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 
 import org.apache.commons.io.FileUtils;
@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * Tests the {@link LocationalContext} aspects of the {@link DataManager},
- * {@link DataPeer} and {@link URLReferenceSchemeFactory}.  
+ * {@link DataPeer} and {@link HttpReferenceSchemeFactory}.  
  * 
  * @author Ian
  * 
@@ -75,7 +75,7 @@ public class URLLocationalContextTest {
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
-		URLReferenceScheme urlRef = new URLReferenceScheme(fileURL);
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(fileURL);
 		assertTrue(urlRef.validInContext(contextSet, dataPeer));
 	}
 
@@ -90,15 +90,15 @@ public class URLLocationalContextTest {
 		machineName.put("type", "MachineName");
 		machineName.put("name", "express");
 		contextSet = new HashSet<LocationalContext>();
-		contextSet.add(new URLLocationalContext(machineName));
-		contextSet.add(new URLLocationalContext(networkName));
+		contextSet.add(new HttpLocationalContext(machineName));
+		contextSet.add(new HttpLocationalContext(networkName));
 		fileDataManager = new FileDataManager(TEST_NS, contextSet, tmpDir);
 		dataPeer = new DataPeerImpl(fileDataManager);
 	}
 
 	@Test
 	public void URLRefSchemeFactoryTest() {
-		Map<String, Set<List<String>>> map = URLReferenceSchemeFactory
+		Map<String, Set<List<String>>> map = HttpReferenceSchemeFactory
 				.getInstance().getRequiredKeys();
 		assertTrue(map.containsKey("MachineName"));
 	}

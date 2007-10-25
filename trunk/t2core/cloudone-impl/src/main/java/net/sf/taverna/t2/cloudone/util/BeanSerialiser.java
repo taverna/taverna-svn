@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
-import net.sf.taverna.t2.cloudone.impl.url.URLReferenceScheme;
+import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -160,6 +160,7 @@ public class BeanSerialiser {
 		return elem;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <Bean> Beanable<?> beanableFromXML(Element elem) {
 		String className = elem.getAttributeValue(CLASS_NAME);
 		Beanable<Bean> beanable = beanableRegistry.getBeanable(className);

@@ -66,6 +66,13 @@ public abstract class AbstractBlobStoreTest {
 				.size());
 		ReferenceScheme retrievedRef = retrievedReferences.iterator().next();
 
+
+		if (retrievedRef instanceof BlobReferenceSchemeImpl) {
+			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) retrievedRef;
+			System.out.println(blobRef.getId());
+			System.out.println(blobRef.getNamespace());
+		}
+		
 		InputStream stream = retrievedRef.dereference(dManager);
 		byte[] retrievedBytes = IOUtils.toByteArray(stream);
 		assertTrue("Retrieved byte array did not match", Arrays.equals(bytes,

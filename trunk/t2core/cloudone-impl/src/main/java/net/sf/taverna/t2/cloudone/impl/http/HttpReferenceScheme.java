@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl.url;
+package net.sf.taverna.t2.cloudone.impl.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +29,7 @@ import org.apache.commons.httpclient.methods.HeadMethod;
  * @author Matthew Pocock
  * 
  */
-public class URLReferenceScheme implements ReferenceScheme,
-		Beanable<URLReferenceBean> {
+public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 
 	private static String getMachineName(Set<LocationalContext> context) {
 		for (LocationalContext lc : context) {
@@ -80,11 +79,11 @@ public class URLReferenceScheme implements ReferenceScheme,
 
 	private URL url;
 
-	public URLReferenceScheme() {
+	public HttpReferenceScheme() {
 		url = null;
 	}
 
-	public URLReferenceScheme(URL url) {
+	public HttpReferenceScheme(URL url) {
 		if (url == null) {
 			throw new NullPointerException("URL can't be null");
 		}
@@ -106,9 +105,9 @@ public class URLReferenceScheme implements ReferenceScheme,
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof URLReferenceScheme))
+		if (!(obj instanceof HttpReferenceScheme))
 			return false;
-		final URLReferenceScheme other = (URLReferenceScheme) obj;
+		final HttpReferenceScheme other = (HttpReferenceScheme) obj;
 		if (url == null) {
 			if (other.url != null)
 				return false;
@@ -117,8 +116,8 @@ public class URLReferenceScheme implements ReferenceScheme,
 		return true;
 	}
 
-	public URLReferenceBean getAsBean() {
-		URLReferenceBean bean = new URLReferenceBean();
+	public HttpReferenceBean getAsBean() {
+		HttpReferenceBean bean = new HttpReferenceBean();
 		bean.setUrl(url.toExternalForm());
 		return bean;
 	}
@@ -140,7 +139,7 @@ public class URLReferenceScheme implements ReferenceScheme,
 		return false;
 	}
 
-	public void setFromBean(URLReferenceBean bean)
+	public void setFromBean(HttpReferenceBean bean)
 			throws IllegalArgumentException {
 		String url = bean.getUrl();
 		if (this.url != null) {
@@ -235,8 +234,8 @@ public class URLReferenceScheme implements ReferenceScheme,
 		return url;
 	}
 
-	public Class<URLReferenceBean> getBeanClass() {
-		return URLReferenceBean.class;
+	public Class<HttpReferenceBean> getBeanClass() {
+		return HttpReferenceBean.class;
 	}
 
 	public String getCharset() throws DereferenceException {
