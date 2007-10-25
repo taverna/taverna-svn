@@ -41,6 +41,10 @@ import net.sf.taverna.t2.cloudone.datamanager.StorageException;
  */
 public interface BlobStore {
 
+	/**
+	 * Character set used when storing String with
+	 * {@link #storeFromString(String)}.
+	 */
 	public final String STRING_CHARSET = "utf-8";
 
 	/**
