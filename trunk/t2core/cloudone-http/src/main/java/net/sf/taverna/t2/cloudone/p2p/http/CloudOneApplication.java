@@ -61,6 +61,7 @@ public class CloudOneApplication extends Application {
 	 * <ul>
 	 * <li>Creating a default worker, so there is always at least 1</li>
 	 * </ul>
+	 * @throws IOException 
 	 */
 	private void init() {
 		initializeRestletLogging();
@@ -69,7 +70,14 @@ public class CloudOneApplication extends Application {
 
 	private void createDatamanger() {
 		namespace = "http2p_" + host + "_" + port;
-		File userHome = new File(System.getProperty("user.home"));
+		File userHome;
+		try {
+			userHome = File.createTempFile("cloudone", "test");
+			userHome.delete();
+			userHome.mkdir();
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to create temp directory for data storage", e);
+		}
 		File dataManagerRoot = new File(userHome, ".cloudone");
 		dataManager = new FileDataManager(namespace, Collections
 				.<LocationalContext> emptySet(), dataManagerRoot);
