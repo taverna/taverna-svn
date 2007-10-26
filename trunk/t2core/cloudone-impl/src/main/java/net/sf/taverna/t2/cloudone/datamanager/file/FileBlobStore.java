@@ -9,17 +9,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DereferenceException;
+import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -46,6 +52,8 @@ public class FileBlobStore implements BlobStore {
 
 	private String namespace;
 
+	private Set<LocationalContext> locationalContexts;
+
 	/**
 	 * Construct a FileBlobStore with a given <code>namespace</code> which can
 	 * store and retrieve from a directory structure below the given
@@ -71,6 +79,35 @@ public class FileBlobStore implements BlobStore {
 			throw new IllegalArgumentException("Invalid directory " + path);
 		}
 		this.path = path;
+
+		initContext();
+	}
+
+	private void initContext() {
+		File context = new File(path, LOCATIONAL_CONTEXT_TYPE + ".locationalcontext");
+		String uuid;
+		if (! context.exists()) {
+			// Create and store in file
+			uuid = UUID.randomUUID().toString();
+			try {
+				FileUtils.writeStringToFile(context, uuid, STRING_CHARSET);
+			} catch (IOException e) {
+				throw new IllegalStateException("Can't wrote context to "
+						+ context, e);
+			}
+		} else {
+			// Read it from file
+			try {
+				uuid = FileUtils.readFileToString(context, STRING_CHARSET);
+			} catch (IOException e) {
+				throw new IllegalStateException("Can't read context from "
+						+ context, e);
+			}
+		}
+		Map<String, String> contextMap = new HashMap<String, String>();
+		contextMap.put(LOCATIONAL_CONTEXT_KEY_UUID, uuid);
+		LocationalContext locationalContext = new LocationalContextImpl(LOCATIONAL_CONTEXT_TYPE, contextMap);
+		locationalContexts = Collections.singleton(locationalContext);
 	}
 
 	/**
@@ -239,6 +276,10 @@ public class FileBlobStore implements BlobStore {
 			throw new IllegalStateException("Invalid directory" + dirs);
 		}
 		return dirs;
+	}
+
+	public Set<LocationalContext> getLocationalContexts() {
+		return locationalContexts;
 	}
 
 }

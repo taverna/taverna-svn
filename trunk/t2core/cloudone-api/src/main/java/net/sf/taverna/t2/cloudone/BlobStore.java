@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone;
 
 import java.io.InputStream;
+import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
@@ -40,6 +41,18 @@ import net.sf.taverna.t2.cloudone.datamanager.StorageException;
  * 
  */
 public interface BlobStore {
+
+	/**
+	 * The key for {@link LocationalContext#getValue(String...)} to uniquely
+	 * identify a BlobStore.
+	 */
+	public static final String LOCATIONAL_CONTEXT_KEY_UUID = "uuid";
+
+	/**
+	 * The {@link LocationalContext#getContextType()} for
+	 * {@link LocationalContext}s returned by {@link #getLocationalContexts()}.
+	 */
+	public static final String LOCATIONAL_CONTEXT_TYPE = "BlobStore";
 
 	/**
 	 * Character set used when storing String with
@@ -244,5 +257,19 @@ public interface BlobStore {
 	 */
 	public BlobReferenceScheme<?> storeFromString(String string)
 			throws StorageException;
+
+	/**
+	 * Get the set of BlobStore related {@link LocationalContext}s, normally
+	 * with a {@link LocationalContext#getContextType()} of
+	 * {@value #LOCATIONAL_CONTEXT_TYPE}. Used by
+	 * {@link ReferenceScheme#validInContext(Set, DataPeer)}. Several
+	 * {@link BlobStore} instances might share {@link LocationalContext}s if
+	 * they can directly access each others blobs, for instance using a shared
+	 * directory or database.
+	 * 
+	 * @return A {@link Set} of {@link LocationalContext} describing the blob
+	 *         store
+	 */
+	public Set<LocationalContext> getLocationalContexts();
 
 }

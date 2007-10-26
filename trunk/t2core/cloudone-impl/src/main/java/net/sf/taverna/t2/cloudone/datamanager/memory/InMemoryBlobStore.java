@@ -4,17 +4,21 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DereferenceException;
+import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
 
 import org.apache.commons.io.IOUtils;
 
@@ -23,6 +27,8 @@ public class InMemoryBlobStore implements BlobStore {
 	private Map<String, byte[]> blobs = new HashMap<String, byte[]>();
 
 	private String namespace;
+
+	private Set<LocationalContext> locationalContexts;
 
 	public InMemoryBlobStore() {
 		// Always a new namespace
@@ -135,6 +141,20 @@ public class InMemoryBlobStore implements BlobStore {
 			throw new StorageException(e);
 		}
 		return new BlobReferenceSchemeImpl(namespace, id, STRING_CHARSET);
+	}
+
+	public Set<LocationalContext> getLocationalContexts() {
+		if (locationalContexts == null) {
+			// Create our LocationalContext
+			Map<String, String> contextMap = new HashMap<String, String>();
+			// Our namespace is an UUID
+			contextMap.put(LOCATIONAL_CONTEXT_KEY_UUID, namespace);
+			LocationalContext locationalContext = new LocationalContextImpl(
+					LOCATIONAL_CONTEXT_TYPE, contextMap);
+			locationalContexts = Collections.singleton(locationalContext);
+		}
+		return locationalContexts;
+
 	}
 
 }
