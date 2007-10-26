@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
@@ -43,9 +44,11 @@ public abstract class AbstractDataManager implements DataManager {
 		return result;
 	}
 
-	private Set<LocationalContext> contexts;
 
 	private String namespace;
+
+	private Set<LocationalContext> initialContexts;
+	private Set<LocationalContext> locationalContexts = null;
 
 	/**
 	 * Construct an AbstractDataManager with a given namespace and a set of
@@ -64,7 +67,7 @@ public abstract class AbstractDataManager implements DataManager {
 					+ namespace);
 		}
 		this.namespace = namespace;
-		this.contexts = contexts;
+		this.initialContexts = contexts;
 	}
 
 	/**
@@ -96,8 +99,15 @@ public abstract class AbstractDataManager implements DataManager {
 		return ent;
 	}
 
-	public Set<LocationalContext> getLocationalContexts() {
-		return contexts;
+	public synchronized Set<LocationalContext> getLocationalContexts() {
+		if (locationalContexts == null) {
+			locationalContexts = new HashSet<LocationalContext>(initialContexts);
+			BlobStore blobStore = getBlobStore();
+			if (blobStore != null) {
+				locationalContexts.addAll(blobStore.getLocationalContexts());
+			}
+		}
+		return locationalContexts;
 	}
 
 	public List<String> getManagedNamespaces() {
