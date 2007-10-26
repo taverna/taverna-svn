@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
@@ -28,10 +29,10 @@ import org.junit.Test;
 /**
  * Test the Data Manager. Creates Empty Lists, data documents, Lists of Empty
  * Lists and Lists of Data Documents and registers them all. Used by
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public abstract class AbstractDataManagerTest {
 
@@ -193,10 +194,12 @@ public abstract class AbstractDataManagerTest {
 
 	@Test
 	public void locationalContexts() {
-		// This shouldn't really be empty, but when this is implemented, this
-		// test should be updated
-		assertTrue("Locational contexts was not empty", dManager
-				.getLocationalContexts().isEmpty());
+		Set<LocationalContext> blobContexts = dManager.getBlobStore()
+				.getLocationalContexts();
+		assertTrue(dManager.getLocationalContexts().containsAll(blobContexts));
+		// And nothing else (we had an empty set in our constructor)
+		assertEquals(blobContexts.size(), dManager.getLocationalContexts().size());
+		assertEquals(1, blobContexts.size());
 	}
 
 	@Test
