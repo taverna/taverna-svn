@@ -4,7 +4,10 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.BlobStore;
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
@@ -26,6 +29,8 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 public class BlobReferenceSchemeImpl implements
 		BlobReferenceScheme<BlobReferenceBean> {
 
+	private static Logger logger = Logger.getLogger(BlobReferenceSchemeImpl.class);
+	
 	private String id;
 
 	private String namespace;
@@ -57,7 +62,6 @@ public class BlobReferenceSchemeImpl implements
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
 		try {
-			// TODO: might not be the right manager
 			return manager.getBlobStore().retrieveAsStream(this);
 		} catch (RetrievalException e) {
 			throw new DereferenceException(e);
@@ -103,6 +107,14 @@ public class BlobReferenceSchemeImpl implements
 		return bean;
 	}
 
+	public Class<BlobReferenceBean> getBeanClass() {
+		return BlobReferenceBean.class;
+	}
+
+	public String getCharset() {
+		return charset;
+	}
+
 	public Date getExpiry() {
 		return null;
 	}
@@ -146,15 +158,35 @@ public class BlobReferenceSchemeImpl implements
 
 	public boolean validInContext(Set<LocationalContext> contextSet,
 			DataPeer currentLocation) {
-		return true;
+		return validInBlobContext(contextSet, currentLocation);
 	}
 
-	public Class<BlobReferenceBean> getBeanClass() {
-		return BlobReferenceBean.class;
-	}
-
-	public String getCharset() {
-		return charset;
+	public static boolean validInBlobContext(Set<LocationalContext> contextSet,
+			DataPeer currentLocation) {
+		for (LocationalContext currentContext : currentLocation.getLocationalContexts()) {
+			if (! currentContext.getContextType().equals(BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
+				continue;
+			}
+			String currentUuid = currentContext.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
+			if (currentUuid == null) {
+				logger.warn("Invalid current BlobStore LocationalContext " + currentContext);
+				continue;
+			}
+			for (LocationalContext context :  contextSet) {
+				if (! context.getContextType().equals(BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
+					continue;
+				}
+				String uuid = context.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
+				if (uuid == null) {
+					logger.warn("Invalid BlobStore LocationalContext " + currentContext);
+					continue;					
+				}
+				if (currentUuid.equals(uuid)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }
