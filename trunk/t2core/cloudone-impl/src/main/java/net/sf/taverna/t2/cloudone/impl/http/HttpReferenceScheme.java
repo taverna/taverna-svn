@@ -87,6 +87,11 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 		if (url == null) {
 			throw new NullPointerException("URL can't be null");
 		}
+		if (!(url.getProtocol().equals("http"))
+				|| url.getProtocol().equals("https")) {
+			// throw new IllegalArgumentException("Only HTTP URLs are supported,
+			// not " + url);
+		}
 		this.url = url;
 	}
 
@@ -172,8 +177,10 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 			DataPeer currentLocation) {
 		// First check whether we're on the same machine (as identified by
 		// UUID) as the target, in which case all URLs are by definition valid.
-		if (getMachineName(currentLocation.getLocationalContexts()).equals(
-				getMachineName(contextSet))) {
+		String currentMachineName = getMachineName(currentLocation
+				.getLocationalContexts());
+		if (currentMachineName != null
+				&& currentMachineName.equals(getMachineName(contextSet))) {
 			return true;
 		}
 
@@ -239,7 +246,7 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 	}
 
 	public String getCharset() throws DereferenceException {
-		if (! url.getProtocol().equals("http")) {
+		if (!url.getProtocol().equals("http")) {
 			return null; // Don't know
 		}
 		HeadMethod method = new HeadMethod(url.toExternalForm());
