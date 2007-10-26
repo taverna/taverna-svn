@@ -1,11 +1,13 @@
 package net.sf.taverna.t2.cloudone.translator;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import java.util.List;
+
+import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 
 public interface ReferenceSchemeTranslator {
 
 	public AsynchRefScheme translateAsynch(DataDocumentIdentifier id,
-			Class<? extends ReferenceScheme>... preferredTypes);
+			List<TranslationPreference> preferences);
 
 }

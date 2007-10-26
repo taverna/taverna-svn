@@ -9,9 +9,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
@@ -28,8 +29,8 @@ public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 	/**
 	 * Translate the {@link ReferenceScheme} to a {@link HttpReferenceScheme}
 	 */
-	public HttpReferenceScheme translate(DataManager dataManager,
-			ReferenceScheme ref) throws DereferenceException,
+	public HttpReferenceScheme translate(DataPeer dataPeer,
+			ReferenceScheme ref, TranslationPreference preference) throws DereferenceException,
 			TranslatorException {
 		File translatedFile;
 		try {
@@ -45,7 +46,7 @@ public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 		} catch (FileNotFoundException e) {
 			throw new TranslatorException(e);
 		}
-		InputStream inStream = ref.dereference(dataManager);
+		InputStream inStream = ref.dereference(dataPeer.getDataManager());
 		try {
 			IOUtils.copy(inStream, outStream);
 			outStream.close();
@@ -72,9 +73,12 @@ public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 	 * 
 	 * @return true if <code>toType</code> is an {@link HttpReferenceScheme}
 	 */
-	public boolean canTranslate(ReferenceScheme fromScheme,
-			Class<? extends ReferenceScheme> toType) {
+	public boolean canTranslate(DataPeer dataPeer, ReferenceScheme fromScheme,
+			TranslationPreference preference) {
+		Class<? extends ReferenceScheme> toType = preference.getReferenceSchemeClass();
 		return toType.isAssignableFrom(HttpReferenceScheme.class);
 	}
+
+
 
 }

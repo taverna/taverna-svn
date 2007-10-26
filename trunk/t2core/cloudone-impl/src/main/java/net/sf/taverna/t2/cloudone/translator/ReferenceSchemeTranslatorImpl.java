@@ -3,8 +3,10 @@ package net.sf.taverna.t2.cloudone.translator;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
@@ -26,6 +28,7 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	private static TranslatorRegistry translatorReg = TranslatorRegistry
 			.getInstance();
 	private DataManager dataManager;
+	private DataPeer dataPeer;
 
 	/**
 	 * Construct using a {@link DataManager} to do any Entity resolution.
@@ -33,8 +36,9 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	 * @param dataManager
 	 *            {@link DataManager} for resolving entities
 	 */
-	public ReferenceSchemeTranslatorImpl(DataManager dataManager) {
-		this.dataManager = dataManager;
+	public ReferenceSchemeTranslatorImpl(DataPeer dataPeer) {
+		this.dataPeer = dataPeer;
+		this.dataManager = dataPeer.getDataManager();
 	}
 
 	/**
@@ -53,15 +57,15 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	 * @see AsynchRefScheme
 	 * @param id
 	 *            {@link DataDocumentIdentifier} to be translated
-	 * @param preferredTypes
+	 * @param preferences
 	 *            One or more desired {@link ReferenceScheme} classes in
 	 *            preferred order (var args).
 	 * @return A {@link AsynchRefScheme} that must be {@link Runnable#run()} to
 	 *         do the translation.
 	 */
 	public AsynchRefScheme translateAsynch(final DataDocumentIdentifier id,
-			final Class<? extends ReferenceScheme>... preferredTypes) {
-		return new AsynchTranslate(id, preferredTypes);
+			List<TranslationPreference> preferences) {
+		return new AsynchTranslate(id, preferences);
 	}
 
 	/**
@@ -70,7 +74,7 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	 * from {@link AsynchTranslate#execute()}.
 	 * 
 	 * @param id
-	 * @param preferredTypes
+	 * @param preferences
 	 * @return
 	 * @throws RetrievalException
 	 * @throws NotFoundException
@@ -78,25 +82,30 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	 */
 	@SuppressWarnings("unchecked")
 	protected ReferenceScheme translate(DataDocumentIdentifier id,
-			Class<? extends ReferenceScheme>... preferredTypes)
+			List<TranslationPreference> preferences)
 			throws RetrievalException, NotFoundException, TranslatorException {
 		DataDocument dataDoc = (DataDocument) dataManager.getEntity(id);
 		// match ref scheme directly
-		for (Class<? extends ReferenceScheme> type : preferredTypes) {
+		for (TranslationPreference preference : preferences) {
+			Class<? extends ReferenceScheme> type = preference.getReferenceSchemeClass();
 			for (ReferenceScheme ref : dataDoc.getReferenceSchemes()) {
-				if (type.isInstance(ref)) {
-					return ref;
+				if (! type.isInstance(ref)) {
+					continue;
 				}
+				if (! ref.validInContext(preference.getContexts(), dataPeer)) {
+					continue;
+				}
+				return ref;
 			}
 		}
 		// otherwise try to translate directly
-		for (Class<? extends ReferenceScheme> type : preferredTypes) {
+		for (TranslationPreference preference : preferences) {
 			for (ReferenceScheme ref : dataDoc.getReferenceSchemes()) {
-				List<? extends Translator> translators = translatorReg
-						.getTranslators(ref, type);
+				List<Translator<ReferenceScheme>>  translators = translatorReg
+						.getTranslators(dataPeer, ref, preference);
 				for (Translator translator : translators) {
 					try {
-						return translator.translate(dataManager, ref);
+						return translator.translate(dataPeer, ref, preference);
 					} catch (RuntimeException ex) {
 						// Trying next translator
 						continue;
@@ -114,21 +123,23 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 		throw new TranslatorException("Could not translate " + id);
 	}
 
+	@SuppressWarnings("unchecked")
 	class AsynchTranslate extends AbstractAsynchRunnable<ReferenceScheme>
 			implements AsynchRefScheme {
 
 		protected final DataDocumentIdentifier id;
-		protected final Class<? extends ReferenceScheme>[] preferredTypes;
+		protected final List<TranslationPreference> preferences;
 
 		AsynchTranslate(DataDocumentIdentifier id,
-				Class<? extends ReferenceScheme>[] preferredTypes) {
+				List<TranslationPreference> preferences) {
 			this.id = id;
-			this.preferredTypes = preferredTypes;
+			this.preferences = preferences;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected ReferenceScheme execute() throws RetrievalException,
 				NotFoundException, TranslatorException {
-			ReferenceScheme refScheme = translate(id, preferredTypes);
+			ReferenceScheme refScheme = translate(id, preferences);
 			return refScheme;
 		}
 	}

@@ -3,7 +3,9 @@ package net.sf.taverna.t2.cloudone.translator;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.util.SPIRegistry;
 
 /**
@@ -48,15 +50,16 @@ public class TranslatorRegistry extends SPIRegistry<Translator> {
 	 * 
 	 * @param fromScheme
 	 *            {@link ReferenceScheme} to translate
-	 * @param toType
+	 * @param preference
 	 *            {@link ReferenceScheme} class to translate to
 	 * @return A (possibly empty) list of {@link Translator}s
 	 */
 	public <Translated extends ReferenceScheme> List<Translator<Translated>> getTranslators(
-			ReferenceScheme fromScheme, Class<Translated> toType) {
+			DataPeer dataPeer,
+			ReferenceScheme fromScheme, TranslationPreference preference) {
 		List<Translator<Translated>> translators = new ArrayList<Translator<Translated>>();
 		for (Translator translator : getInstances()) {
-			if (translator.canTranslate(fromScheme, toType)) {
+			if (translator.canTranslate(dataPeer, fromScheme, preference)) {
 				translators.add(translator);
 			}
 		}
