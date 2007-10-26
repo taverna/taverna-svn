@@ -9,13 +9,18 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
@@ -29,6 +34,7 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,24 +44,27 @@ import org.junit.Test;
 public class RefSchemeTranslatorTest {
 
 	private static final String LONG_STRING = "qwertyuiopasdfghjklzxcvbnmqwertyuiopasdfghjklzx"
-					+ "cvbnmqwertyuiopasdfghjklzxcvbnmqwertyuioipasdfghjklzxcvbnmq";
+			+ "cvbnmqwertyuiopasdfghjklzxcvbnmqwertyuioipasdfghjklzxcvbnmq";
 	private static final String ASCII = "ascii";
 	private static final String TEST_DATA = "This is the test data.\n";
 	private static final String TEST_NS = "testNS";
 	protected AbstractDataManager dManager;
 	protected DataFacade facade;
 	protected ReferenceSchemeTranslator translator;
+	private DataPeer dataPeer;
 
 	@Before
 	public void setDataManager() {
 		dManager = new InMemoryDataManager(TEST_NS,
 				new HashSet<LocationalContext>());
+		dataPeer = new DataPeerImpl(dManager);
 		facade = new DataFacade(dManager);
-		translator = new ReferenceSchemeTranslatorImpl(dManager);
+		translator = new ReferenceSchemeTranslatorImpl(dataPeer);
 	}
 
 	@Test
-	public void testFindBlobScheme() throws RetrievalException, NotFoundException {
+	public void testFindBlobScheme() throws RetrievalException,
+			NotFoundException {
 		BlobReferenceScheme blobRef = new BlobReferenceSchemeImpl(TEST_NS, UUID
 				.randomUUID().toString());
 		// Register a new data document with fake scheme
@@ -89,13 +98,20 @@ public class RefSchemeTranslatorTest {
 		@SuppressWarnings("unused")
 		BlobReferenceScheme<?> originalRef = findBlobScheme(id);
 
-		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
+		TranslationPreference preference = new TranslationPreferenceImpl(
+				BlobReferenceScheme.class, dManager.getLocationalContexts());
+
+		AsynchRefScheme runnable = translator.translateAsynch(id, Collections
+				.singletonList(preference));
 		runnable.run(); // run directly
 		assertTrue(runnable.isFinished());
-		assertNull(runnable.getException());
+		Exception exception = runnable.getException();
+		if (exception != null) {
+			throw new RuntimeException(exception);
+		}
 		ReferenceScheme refScheme = runnable.getResult();
 		assertNotNull(refScheme);
-		
+
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
 				refScheme instanceof BlobReferenceScheme<?>);
 		assertEquals("Didn't get original BlobReferenceScheme",
@@ -108,15 +124,21 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeString();
-		// We prefer URLReferenceScheme (which id don't have), but it should not
-		// convert as long as we say we accept BlobReferenceScheme
-		AsynchRefScheme runnable = translator.translateAsynch(id, HttpReferenceScheme.class, BlobReferenceScheme.class);
+		// We prefer HttpReferenceScheme (which id don't have), but it should
+		// not convert as long as we say we accept BlobReferenceScheme
+		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
+		preferences.add(new TranslationPreferenceImpl(
+				HttpReferenceScheme.class, dManager.getLocationalContexts()));
+		preferences.add(new TranslationPreferenceImpl(
+				BlobReferenceScheme.class, dManager.getLocationalContexts()));
+
+		AsynchRefScheme runnable = translator.translateAsynch(id, preferences);
 		runnable.run(); // run directly
 		assertTrue(runnable.isFinished());
 		assertNull(runnable.getException());
 		ReferenceScheme refScheme = runnable.getResult();
 		assertNotNull(refScheme);
-		
+
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
 				refScheme instanceof BlobReferenceScheme<?>);
 		assertEquals("Didn't get original BlobReferenceScheme",
@@ -127,38 +149,49 @@ public class RefSchemeTranslatorTest {
 	@Test
 	public void translateURLToBlob() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
-			IOException, RetrievalException, NotFoundException, DereferenceException {
+			IOException, RetrievalException, NotFoundException,
+			DereferenceException {
 		File tmpFile = File.createTempFile("test", ".txt");
 		tmpFile.deleteOnExit();
 		FileUtils.writeStringToFile(tmpFile, TEST_DATA, ASCII);
-		HttpReferenceScheme urlRef = new HttpReferenceScheme(tmpFile.toURI().toURL());
-		
+		HttpReferenceScheme urlRef = new HttpReferenceScheme(tmpFile.toURI()
+				.toURL());
+
 		DataDocumentIdentifier id = dManager.registerDocument(urlRef);
-		AsynchRefScheme runnable = translator.translateAsynch(id, BlobReferenceScheme.class);
+
+		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
+		preferences.add(new TranslationPreferenceImpl(
+				BlobReferenceScheme.class, dManager.getLocationalContexts()));
+		AsynchRefScheme runnable = translator.translateAsynch(id, preferences);
+
 		runnable.run(); // run directly
 		ReferenceScheme blobRef = runnable.getResult();
-		
+
 		assertTrue("Translated scheme was not a BlobReferenceScheme",
 				blobRef instanceof BlobReferenceScheme);
-		assertEquals(TEST_DATA, 
-				IOUtils.toString(blobRef.dereference(dManager), ASCII));
+		assertEquals(TEST_DATA, IOUtils.toString(blobRef.dereference(dManager),
+				ASCII));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void translateBlobToURL() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
-			IOException, RetrievalException, NotFoundException, DereferenceException {
+			IOException, RetrievalException, NotFoundException,
+			DereferenceException {
 		DataDocumentIdentifier id = makeString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
-		AsynchRefScheme runnable = translator.translateAsynch(id, HttpReferenceScheme.class);
+		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
+		preferences.add(new TranslationPreferenceImpl(
+				HttpReferenceScheme.class, dManager.getLocationalContexts()));
+		AsynchRefScheme runnable = translator.translateAsynch(id, preferences);
 		runnable.run(); // run directly
 		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a URLReferenceScheme",
 				refScheme instanceof HttpReferenceScheme);
-		assertEquals(LONG_STRING, 
-				IOUtils.toString(refScheme.dereference(dManager), ASCII));
+		assertEquals(LONG_STRING, IOUtils.toString(refScheme
+				.dereference(dManager), ASCII));
 	}
 
 	@Test
@@ -166,8 +199,12 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataDocumentIdentifier id = makeTwoFakeRefs();
-		AsynchRefScheme runnable = translator.translateAsynch(id,
-				BlobReferenceScheme.class, HttpReferenceScheme.class);
+		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
+		preferences.add(new TranslationPreferenceImpl(
+				BlobReferenceScheme.class, dManager.getLocationalContexts()));
+		preferences.add(new TranslationPreferenceImpl(
+				HttpReferenceScheme.class, dManager.getLocationalContexts()));
+		AsynchRefScheme runnable = translator.translateAsynch(id, preferences);
 		runnable.run(); // run directly
 		ReferenceScheme refScheme = runnable.getResult();
 		assertTrue("Translated scheme was not a BlobReferenceScheme",

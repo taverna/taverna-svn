@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,12 +18,27 @@ import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 
 import org.junit.Before;
 import org.junit.Test;
 
 public class TranslatorRegistrySPITest {
+
+	private InMemoryDataManager dManager;
+	private DataPeerImpl dataPeer;
+
+	private static final String TEST_NS = "testNS";
+
+	@Before
+	public void setDataManager() {
+		dManager = new InMemoryDataManager(TEST_NS,
+				new HashSet<LocationalContext>());
+		dataPeer = new DataPeerImpl(dManager);
+	}
 
 	public class MyReferenceScheme implements ReferenceScheme<ReferenceBean> {
 		public InputStream dereference(DataManager manager)
@@ -84,24 +100,30 @@ public class TranslatorRegistrySPITest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void getBlobTranslators() {
+		TranslationPreferenceImpl blobPref = new TranslationPreferenceImpl(
+				BlobReferenceScheme.class, dManager.getLocationalContexts());
 		List<Translator<BlobReferenceScheme>> blobTranslators = registry
-				.getTranslators(urlRef, BlobReferenceScheme.class);
+				.getTranslators(dataPeer, urlRef, blobPref);
 		assertEquals(1, blobTranslators.size());
 		assertTrue(blobTranslators.get(0) instanceof AnyToBlobTranslator);
 	}
 
 	@Test
 	public void getURLTranslators() {
+		TranslationPreferenceImpl httpPref = new TranslationPreferenceImpl(
+				HttpReferenceScheme.class, dManager.getLocationalContexts());
 		List<Translator<HttpReferenceScheme>> urlTranslators = registry
-				.getTranslators(urlRef, HttpReferenceScheme.class);
+				.getTranslators(dataPeer, urlRef, httpPref);
 		assertEquals(1, urlTranslators.size());
 		assertTrue(urlTranslators.get(0) instanceof AnyToFileURLTranslator);
 	}
 
 	@Test
 	public void getNoTranslators() {
+		TranslationPreferenceImpl myPref = new TranslationPreferenceImpl(
+				MyReferenceScheme.class, dManager.getLocationalContexts());
 		List<Translator<MyReferenceScheme>> urlTranslators = registry
-				.getTranslators(urlRef, MyReferenceScheme.class);
+				.getTranslators(dataPeer, urlRef, myPref);
 		assertEquals(0, urlTranslators.size());
 	}
 
