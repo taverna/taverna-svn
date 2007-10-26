@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
-import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.junit.Test;
@@ -60,6 +60,8 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertNotNull("There should be a processor named processor_A",processor_A);
 		assertEquals("processor_A should have 1 input",1,processor_A.getInputPorts().size());
 		assertEquals("The should only be 1 activity",1,processorStringConstant.getActivityList().size());
+		assertEquals("Processor_A should have 1 iteration stragegy",1,processor_A.getIterationStrategy().getStrategies().size());
+		
 		assertEquals("There should be a processor that contains a string constant activity",StringConstantActivity.class,processorStringConstant.getActivityList().get(0).getActivity().getClass());
 		
 		StringConstantActivity activity = (StringConstantActivity) processorStringConstant.getActivityList().get(0).getActivity();

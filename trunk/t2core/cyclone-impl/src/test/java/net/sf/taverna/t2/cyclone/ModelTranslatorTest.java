@@ -63,8 +63,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
-		// DataflowImpl dataflow = (DataflowImpl)
-		// translateScuflFile("very_simple_workflow.xml");
+		
 		DataflowValidationReport report = dataflow.checkValidity();
 		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
 			System.out.println(unsatisfiedProcessor.getLocalName());

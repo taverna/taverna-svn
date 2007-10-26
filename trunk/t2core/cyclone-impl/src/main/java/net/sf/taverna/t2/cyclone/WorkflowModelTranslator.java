@@ -45,6 +45,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrateg
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DotNode;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
 import org.embl.ebi.escience.scufl.IterationStrategy;
@@ -100,11 +101,19 @@ public class WorkflowModelTranslator {
 	 */
 	public static Dataflow doTranslation(ScuflModel scuflModel)
 			throws WorkflowTranslationException {
-		WorkflowModelTranslator translator = new WorkflowModelTranslator(scuflModel);
+		WorkflowModelTranslator translator;
+		try {
+			translator = new WorkflowModelTranslator(scuflModel.clone());
+		} catch (CloneNotSupportedException e) {
+			throw new WorkflowTranslationException("The scufl model could not be cloned",e);
+		}
 
 		Dataflow dataflow = translator.edits.createDataflow();
 
 		try {
+			
+			translator.replaceDefaultsWithStringConstants();
+			
 			translator.createInputs(dataflow);
 
 			translator.createOutputs(dataflow);
@@ -131,10 +140,52 @@ public class WorkflowModelTranslator {
 			throw new WorkflowTranslationException(
 					"An error occurred whilst translating T1 processor into a T2 activity",
 					e);
-		}
+		} 
 
 		return dataflow;
 	}
+
+	/**
+	 * Crawls the scuflModel processors and checks their input ports for unbound default values. If one is found then 
+	 * a StringConstantProcessor is inserted upstream.
+	 * @param scuflModel
+	 * @throws WorkflowTranslationException
+	 */
+	private void replaceDefaultsWithStringConstants() throws WorkflowTranslationException {
+		for (org.embl.ebi.escience.scufl.Processor t1Processor : scuflModel.getProcessors()) {
+			for (org.embl.ebi.escience.scufl.InputPort t1InputPort : t1Processor.getInputPorts()) {
+				if (!t1InputPort.isBound() && t1InputPort.getDefaultValue()!=null) {
+					String processorName = t1Processor.getName() + "_" + t1InputPort.getName() + "_defaultValue";
+					try {
+						org.embl.ebi.escience.scufl.Processor stringConstantProcessor = new StringConstantProcessor(scuflModel, processorName, t1InputPort.getDefaultValue());
+						scuflModel.addProcessor(stringConstantProcessor);
+						DataConstraint constraint = new DataConstraint(scuflModel,stringConstantProcessor.getOutputPorts()[0],t1InputPort);
+						scuflModel.addDataConstraint(constraint);
+					} catch (ProcessorCreationException e) {
+						throw new WorkflowTranslationException(e);
+					} catch (DuplicateProcessorNameException e) {
+						throw new WorkflowTranslationException(e);
+					} catch (DataConstraintCreationException e) {
+						throw new WorkflowTranslationException(e);
+					}
+				}
+			}
+		}
+		
+	}
+	
+//	if (!t1InputPort.isBound() && t1InputPort.hasDefaultValue()) {
+//		String processorName = t2Processor.getLocalName() + "_" + inputPort.getName() + "_defaultValue";
+//		try {
+//			Processor stringConstantProcessor = createProcessor(new StringConstantProcessor(scuflModel, processorName, t1InputPort.getDefaultValue()), dataflow);
+//			Datalink datalink = edits.createDatalink(findOutputPort(stringConstantProcessor, "value"), findInputPort(t2Processor, inputPort.getName()));
+//			edits.getConnectDatalinkEdit(datalink).doEdit();
+//		} catch (ProcessorCreationException e) {
+//			throw new WorkflowTranslationException(e);
+//		} catch (DuplicateProcessorNameException e) {
+//			throw new WorkflowTranslationException(e);
+//		}
+//	}
 
 	private void createInputs(Dataflow dataflow)
 			throws EditException {
@@ -347,25 +398,13 @@ public class WorkflowModelTranslator {
 		for (InputPort inputPort : inputPorts) {
 			org.embl.ebi.escience.scufl.InputPort t1InputPort = t1InputPorts
 					.get(inputPort.getName());
-			if (t1InputPort.isBound() || t1InputPort.hasDefaultValue()) {
+			if (t1InputPort.isBound()) {
 				Edit<Processor> addInputPortEdit = edits
 						.getCreateProcessorInputPortEdit(t2Processor, inputPort
 								.getName(), inputPort.getDepth());
 				addInputPortEdit.doEdit();
 				activity.getInputPortMapping().put(inputPort.getName(),
 						inputPort.getName());
-			}
-			if (!t1InputPort.isBound() && t1InputPort.hasDefaultValue()) {
-				String processorName = t2Processor.getLocalName() + "_" + inputPort.getName() + "_defaultValue";
-				try {
-					Processor stringConstantProcessor = createProcessor(new StringConstantProcessor(scuflModel, processorName, t1InputPort.getDefaultValue()), dataflow);
-					Datalink datalink = edits.createDatalink(findOutputPort(stringConstantProcessor, "value"), findInputPort(t2Processor, inputPort.getName()));
-					edits.getConnectDatalinkEdit(datalink).doEdit();
-				} catch (ProcessorCreationException e) {
-					throw new WorkflowTranslationException(e);
-				} catch (DuplicateProcessorNameException e) {
-					throw new WorkflowTranslationException(e);
-				}
 			}
 		}
 	}
