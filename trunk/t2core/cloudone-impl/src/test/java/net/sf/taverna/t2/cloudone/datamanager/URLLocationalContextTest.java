@@ -16,7 +16,7 @@ import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.http.HttpLocationalContext;
+import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceSchemeFactory;
 import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 
@@ -71,7 +71,6 @@ public class URLLocationalContextTest {
 
 	@Test
 	public void checkURLLocationalContextValid() throws IOException {
-
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
@@ -90,8 +89,6 @@ public class URLLocationalContextTest {
 		machineName.put("type", "MachineName");
 		machineName.put("name", "express");
 		contextSet = new HashSet<LocationalContext>();
-		contextSet.add(new HttpLocationalContext(machineName));
-		contextSet.add(new HttpLocationalContext(networkName));
 		fileDataManager = new FileDataManager(TEST_NS, contextSet, tmpDir);
 		dataPeer = new DataPeerImpl(fileDataManager);
 	}
