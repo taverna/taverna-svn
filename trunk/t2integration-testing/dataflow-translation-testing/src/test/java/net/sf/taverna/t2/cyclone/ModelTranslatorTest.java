@@ -62,8 +62,6 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
-		// DataflowImpl dataflow = (DataflowImpl)
-		// translateScuflFile("very_simple_workflow.xml");
 		DataflowValidationReport report = dataflow.checkValidity();
 		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
 			System.out.println(unsatisfiedProcessor.getLocalName());
@@ -147,6 +145,44 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		DummyEventHandler handler = eventHandlers.get("out");
 		assertEquals("The output was incorrect","Some Data",handler.getResult());
 	
+	}
+	
+	@Test
+	public void testErrorPropogation() throws Exception {
+		Dataflow dataflow = translateScuflFile("test_error_propagation.xml");
+		DataflowValidationReport report = dataflow.checkValidity();
+		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+			System.out.println(unsatisfiedProcessor.getLocalName());
+		}
+		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
+		for (Processor failedProcessor : report.getFailedProcessors()) {
+			System.out.println(failedProcessor.getLocalName());
+		}
+		assertTrue(report.getFailedProcessors().size() == 0);
+		for (DataflowOutputPort unresolvedOutput : report
+				.getUnresolvedOutputs()) {
+			System.out.println(unresolvedOutput.getName());
+		}
+		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		
+		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		
+		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		
+		for (Processor processor : dataflow.getProcessors()) {
+			//find the string constant processor
+			if (!processor.getLocalName().equals("List_Emitter"))  {
+				processor.fire("test");
+				break;
+			}
+		}
+		
+		waitForCompletion(eventHandlers);
+		
+		DummyEventHandler handler = eventHandlers.get("out");
+		assertTrue("The result should be a list",handler.getResult() instanceof List);
+		
+		//TODO: test that the error is passed through.
 	}
 }
 

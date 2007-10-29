@@ -74,9 +74,25 @@ public class TranslatorTestHelper {
 		return eventHandlers;
 	}
 	
+	/**
+	 * 
+	 * Uses a default max time of 1 minute.
+	 * 
+	 * @param eventHandlers
+	 * @throws InterruptedException
+	 * @throws DataflowTimeoutException
+	 */
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers)
-			throws InterruptedException {
+			throws InterruptedException, DataflowTimeoutException {
+		waitForCompletion(eventHandlers,60);
+		
+	}
+	
+	protected void waitForCompletion(
+			Map<String, DummyEventHandler> eventHandlers, int maxtimeSeconds)
+			throws InterruptedException, DataflowTimeoutException {
+		int time=0;
 		boolean finished = false;
 		while (!finished) {
 			finished = true;
@@ -84,8 +100,10 @@ public class TranslatorTestHelper {
 				if (testEventHandler.getResult() == null) {
 					finished = false;
 					Thread.sleep(1000);
+					time+=1000;
 					break;
 				}
+				if (time>(maxtimeSeconds*1000)) throw new DataflowTimeoutException("The max time of "+maxtimeSeconds+"s was exceed waiting for the results");
 			}
 		}
 	}
