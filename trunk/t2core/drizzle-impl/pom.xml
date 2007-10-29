@@ -11,14 +11,20 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<description>
-		Implementation of the Drizzle layer. This is an implementation of classes 
-		for the service palette.
+		Implementation of the Drizzle layer. This is an implementation
+		of classes for the service palette.
 	</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>drizzle-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${depJunit}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
