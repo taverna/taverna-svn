@@ -12,9 +12,17 @@ import java.util.HashMap;
  * @author alanrw
  * 
  */
+/**
+ * @author alanrw
+ *
+ * @param <O> The object class that can be contained by the PropertiedObjectSet
+ */
 public class PropertiedObjectSetBean <O>{
 	HashMap<O, PropertiedObjectBean> propertiedObjectMap;
 	
+	/**
+	 * 
+	 */
 	public PropertiedObjectSetBean () {
 		super();
 		propertiedObjectMap = new HashMap<O, PropertiedObjectBean>();
