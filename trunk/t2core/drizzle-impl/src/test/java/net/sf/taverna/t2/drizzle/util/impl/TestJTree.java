@@ -7,34 +7,27 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
-import java.util.Timer;
-
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphView;
 import net.sf.taverna.t2.drizzle.util.PropertiedObject;
@@ -46,10 +39,13 @@ import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 import net.sf.taverna.t2.utility.TreeModelAdapter;
 
+import org.junit.Ignore;
+
 /**
  * @author alanrw
  * 
  */
+@Ignore("Not a test case")
 public final class TestJTree extends JFrame {
 
 	private PropertiedObjectSet<StringObject> testSet = new PropertiedObjectSetImpl<StringObject>();
