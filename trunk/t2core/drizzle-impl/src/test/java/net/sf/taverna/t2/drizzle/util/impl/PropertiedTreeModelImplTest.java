@@ -160,7 +160,7 @@ public class PropertiedTreeModelImplTest {
 		
 		changeEvent = null;
 		testSet.setProperty(service2, domainKey, geneticsValue);
-		assert(changeEvent != null);
+		assertNull(changeEvent);
 	}
 
 	/**
