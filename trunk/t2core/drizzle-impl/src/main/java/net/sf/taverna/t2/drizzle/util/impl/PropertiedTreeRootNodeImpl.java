@@ -7,6 +7,8 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
 
 /**
  * @author alanrw
+ * 
+ * @param <O> The class of Object to which the leaf nodes correspond.
  *
  */
 public final class PropertiedTreeRootNodeImpl<O> extends PropertiedTreeNodeImpl<O> implements
@@ -19,6 +21,9 @@ public final class PropertiedTreeRootNodeImpl<O> extends PropertiedTreeNodeImpl<
 		// nothing to do
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return "root";
 	}

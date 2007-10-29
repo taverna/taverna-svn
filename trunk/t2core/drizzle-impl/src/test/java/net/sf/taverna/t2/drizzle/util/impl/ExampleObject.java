@@ -12,14 +12,25 @@ public class ExampleObject implements Comparable {
 	
 	private int i;
 	
+	/**
+	 * Construct an ExampleObject
+	 */
 	public ExampleObject() {
 		i = objectCount++;
 	}
 	
+	/**
+	 * Return the integer identifying the ExampleObject
+	 * 
+	 * @return
+	 */
 	public int getI() {
 		return i;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof ExampleObject) {
 			return ((ExampleObject)o).getI() == this.i;
@@ -28,6 +39,9 @@ public class ExampleObject implements Comparable {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object o) {
 		int result = 0;
 		if (o instanceof ExampleObject) {
@@ -40,6 +54,9 @@ public class ExampleObject implements Comparable {
 		return result;	
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return "ExampleObject" + Integer.toString(getI());
 	}

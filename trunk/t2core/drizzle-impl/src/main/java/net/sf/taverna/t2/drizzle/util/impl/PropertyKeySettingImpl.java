@@ -25,17 +25,23 @@ public final class PropertyKeySettingImpl implements PropertyKeySetting {
 	public PropertyKeySettingImpl() {
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Comparator<PropertyValue> getComparator() {
 		return comparator;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertyKeySetting#getPropertyKey()
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertyKey getPropertyKey() {
 		return this.key;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setComparator(Comparator<PropertyValue> comparator) {
 		if (comparator == null) {
 			throw new NullPointerException ("comparator cannot be null");
@@ -46,8 +52,8 @@ public final class PropertyKeySettingImpl implements PropertyKeySetting {
 		this.comparator = comparator;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertyKeySetting#setPropertyKey(net.sf.taverna.t2.drizzle.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setPropertyKey(final PropertyKey propertyKey) {
 		if (propertyKey == null) {

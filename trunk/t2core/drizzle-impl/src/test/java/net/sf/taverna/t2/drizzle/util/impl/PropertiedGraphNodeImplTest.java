@@ -12,6 +12,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * @author alanrw
+ *
+ */
 public class PropertiedGraphNodeImplTest {
 	
 	private PropertiedGraphNodeImpl<ExampleObject> testImpl;

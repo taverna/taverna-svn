@@ -11,6 +11,7 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 /**
  * @author alanrw
  *
+ * @param <O> The class of Object represented by the tree node
  */
 public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImpl<O>
 	implements PropertiedTreeObjectNode<O> {
@@ -24,6 +25,9 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 		// Nothing to do
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<O> getAllObjects() {
 		Set<O> result = new HashSet<O> ();
 		if (object != null) {
@@ -32,6 +36,9 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setObject(O object) {
 		if (object == null) {
 			throw new NullPointerException ("object cannot be null");
@@ -42,10 +49,16 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 		this.object = object;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public O getObject() {
 		return this.object;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return this.object.toString();
 	}

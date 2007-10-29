@@ -14,14 +14,25 @@ public class ExampleKey implements PropertyKey, Comparable {
 	
 	private int key;
 	
+	/**
+	 * Construct an ExampleKey
+	 */
 	public ExampleKey() {
 		key = keyCount++;
 	}
 	
+	/**
+	 * Return the integer key value
+	 * 
+	 * @return
+	 */
 	public int getKey() {
 		return key;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof ExampleKey) {
 			return ((ExampleKey)o).getKey() == key;
@@ -30,6 +41,9 @@ public class ExampleKey implements PropertyKey, Comparable {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object o) {
 		int result = 0;
 		if (o instanceof ExampleKey) {
@@ -42,6 +56,9 @@ public class ExampleKey implements PropertyKey, Comparable {
 		return result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return Integer.toString(getKey());
 	}

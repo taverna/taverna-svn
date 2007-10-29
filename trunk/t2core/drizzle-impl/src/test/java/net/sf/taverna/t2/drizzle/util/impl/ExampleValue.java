@@ -14,14 +14,25 @@ public class ExampleValue implements PropertyValue, Comparable {
 	
 	private int value;
 	
+	/**
+	 * Construct a new ExampleValue
+	 */
 	public ExampleValue() {
 		value = valueCount++;
 	}
 	
+	/**
+	 * Return the integer identifying the ExampleValue
+	 * 
+	 * @return
+	 */
 	public int getValue() {
 		return value;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof ExampleValue) {
 			return ((ExampleValue)o).getValue() == value;
@@ -30,6 +41,9 @@ public class ExampleValue implements PropertyValue, Comparable {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object arg0) {
 		int result = 0;
 		if (arg0 instanceof ExampleValue) {
@@ -42,6 +56,9 @@ public class ExampleValue implements PropertyValue, Comparable {
 		return result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return Integer.toString(getValue());
 	}

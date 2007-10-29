@@ -10,14 +10,27 @@ package net.sf.taverna.t2.drizzle.util.impl;
 public class StringObject implements Comparable {
 	private String objectString;
 	
+	/**
+	 * Construct a new StringObject
+	 * 
+	 * @param objectString
+	 */
 	public StringObject(final String objectString) {
 		this.objectString = objectString;
 	}
 	
+	/**
+	 * Return the String that identifies the StringObject
+	 * 
+	 * @return
+	 */
 	public String getString() {
 		return objectString;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof StringObject) {
 			return ((StringObject)o).getString().equals(objectString);
@@ -26,6 +39,9 @@ public class StringObject implements Comparable {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object o) {
 		int result = 0;
 		if (o instanceof StringObject) {
@@ -38,6 +54,9 @@ public class StringObject implements Comparable {
 		return result;	
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return getString();
 	}

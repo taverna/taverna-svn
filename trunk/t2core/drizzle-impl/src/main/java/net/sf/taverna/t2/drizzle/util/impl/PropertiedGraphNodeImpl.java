@@ -16,6 +16,9 @@ import net.sf.taverna.t2.drizzle.util.PropertiedGraphNode;
  * 
  * @author alanrw
  * 
+ * @param <O>
+ *            The class of Object within the PropertiedObjectSet of which the
+ *            containing PropertiedgraphView is a view.
  */
 public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 
@@ -38,10 +41,8 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 		edges = new HashSet<PropertiedGraphEdge<O>>();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphNode#addEdge(net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addEdge(final PropertiedGraphEdge<O> edge) {
 		if (edge == null) {
@@ -50,29 +51,23 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 		edges.add(edge);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphNode#getEdges()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertiedGraphEdge<O>> getEdges() {
 		// Copy to be safe
 		return new HashSet<PropertiedGraphEdge<O>>(edges);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphNode#getObject()
+	/**
+	 * {@inheritDoc}
 	 */
 	public O getObject() {
 		return this.object;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphNode#removeEdge(net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeEdge(final PropertiedGraphEdge<O> edge) {
 		if (edge == null) {
@@ -81,10 +76,8 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 		edges.remove(edge);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphNode#setObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setObject(final O object) {
 		if (object == null) {

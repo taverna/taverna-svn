@@ -17,6 +17,9 @@ import java.util.Set;
  * 
  * @author alanrw
  * 
+ * @param <O>
+ *            The class of Object in the PropertiedObjectSet of which this is a
+ *            view.
  */
 public interface PropertiedGraphView<O> {
 	/**
@@ -73,7 +76,7 @@ public interface PropertiedGraphView<O> {
 	 * Note that the calls are not necessarily the same as created the state.
 	 */
 	void replayToListener(final PropertiedGraphViewListener<O> listener);
-	
+
 	/**
 	 * Return the PropertiedGraphNode that corresponds to the specified Object
 	 * in the PropertiedObjectSet.
@@ -83,10 +86,23 @@ public interface PropertiedGraphView<O> {
 	 */
 	PropertiedGraphNode<O> getNode(O object);
 
+	/**
+	 * Return the set of PropertyKey for which there are edges in the
+	 * PropertiedGraphView.
+	 * 
+	 * @return
+	 */
 	Set<PropertyKey> getKeys();
-	
+
+	/**
+	 * Return the set of PropertyValue for which there is an edge for the
+	 * PropertyKey + PropertyValue.
+	 * 
+	 * @param key
+	 * @return
+	 */
 	Set<PropertyValue> getValues(final PropertyKey key);
-	
+
 	/**
 	 * Return the PropertiedGraphEdge the connects PropertiedGraphNodes where
 	 * the corresponding Objects within the PropertiedObjectSet share the

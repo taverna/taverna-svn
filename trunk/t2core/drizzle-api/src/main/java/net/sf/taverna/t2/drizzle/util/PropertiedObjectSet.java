@@ -20,7 +20,7 @@ import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
  * @param <O>
  */
 public interface PropertiedObjectSet<O> extends
-		Beanable<PropertiedObjectSetBean<O>> {
+		Beanable<PropertiedObjectSetBean> {
 
 	/**
 	 * Add the specified PropertiedObjectListener to all PropertiedObjects

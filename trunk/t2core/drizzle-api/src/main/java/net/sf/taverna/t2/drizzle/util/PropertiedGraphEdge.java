@@ -16,6 +16,9 @@ import java.util.Set;
  * 
  * @author alanrw
  * 
+ * @param <O>
+ *            The class of Object that are contained by PropertiedGraphNodes
+ *            connected by the PropertiedGraphEdge
  */
 public interface PropertiedGraphEdge<O> {
 	/**

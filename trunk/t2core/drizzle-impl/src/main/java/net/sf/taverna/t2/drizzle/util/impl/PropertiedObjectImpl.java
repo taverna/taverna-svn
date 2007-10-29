@@ -23,6 +23,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * Note that it is deliberate that a PropertiedObject can have more only one
  * PropertyValue for a given PropertyKey.
  * 
+ * @param <O> The class of object encapsulated by the PropertiedObject.
  */
 public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	/**
@@ -55,10 +56,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		object = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#addListener(net.sf.taverna.t2.service.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
@@ -67,10 +66,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		listeners.add(pol);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#hasProperty(net.sf.taverna.t2.service.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public boolean hasProperty(final PropertyKey key) {
 		if (key == null) {
@@ -79,29 +76,23 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		return properties.containsKey(key);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#getObject()
+	/**
+	 * {@inheritDoc}
 	 */
 	public O getObject() {
 		return object;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#getPropertyKeys()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertyKey> getPropertyKeys() {
 		// Create new Set just to be on the safe side
 		return new HashSet<PropertyKey>(properties.keySet());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#getPropertyValue(net.sf.taverna.t2.service.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertyValue getPropertyValue(final PropertyKey key) {
 		if (key == null) {
@@ -184,10 +175,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#removeListener(net.sf.taverna.t2.service.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
@@ -196,10 +185,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		listeners.remove(pol);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#removeProperty(net.sf.taverna.t2.service.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeProperty(final PropertyKey key) {
 		if (key == null) {
@@ -212,11 +199,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObject#setProperty(net.sf.taverna.t2.service.util.PropertyKey,
-	 *      net.sf.taverna.t2.service.util.PropertyValue)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setProperty(final PropertyKey key, final PropertyValue value) {
 		if (key == null) {
@@ -237,11 +221,10 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
+	/**
+	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public PropertiedObjectBean getAsBean() {
 		PropertiedObjectBean result = new PropertiedObjectBean();
 		HashMap<PropertyKey, PropertyValue> beanedProperties = (HashMap<PropertyKey, PropertyValue>) this.properties
@@ -252,11 +235,10 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#setFromBean(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public void setFromBean(PropertiedObjectBean bean)
 			throws IllegalArgumentException {
 		if ((properties.size() != 0) || (listeners.size() != 0)) {
@@ -267,10 +249,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 				.getProperties().clone();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObject#setObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setObject(O object) {
 		if (object == null) {
@@ -282,10 +262,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		this.object = object;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObject#replayToListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void replayToListener(PropertiedObjectListener pol) {
 		if (pol == null) {
@@ -296,6 +274,10 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 			PropertyValue value = properties.get(key);
 			pol.propertyAdded(this.object, key, value);
 		}
+	}
+
+	public Class<PropertiedObjectBean> getBeanClass() {
+		return PropertiedObjectBean.class;
 	}
 
 }

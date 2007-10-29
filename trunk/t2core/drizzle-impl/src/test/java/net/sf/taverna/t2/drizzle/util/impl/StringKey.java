@@ -13,14 +13,27 @@ public final class StringKey implements PropertyKey, Comparable {
 
 	private String key;
 	
+	/**
+	 * Construct a new StringKey
+	 * 
+	 * @param key
+	 */
 	public StringKey(final String key) {
 		this.key = key;
 	}
 	
+	/**
+	 * Return the String that identifies the StringKey
+	 * 
+	 * @return
+	 */
 	public String getKey() {
 		return key;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof StringKey) {
 			return ((StringKey)o).getKey().equals(key);
@@ -29,6 +42,9 @@ public final class StringKey implements PropertyKey, Comparable {
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object o) {
 		int result = 0;
 		if (o instanceof StringKey) {
@@ -41,6 +57,9 @@ public final class StringKey implements PropertyKey, Comparable {
 		return result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return getKey();
 	}

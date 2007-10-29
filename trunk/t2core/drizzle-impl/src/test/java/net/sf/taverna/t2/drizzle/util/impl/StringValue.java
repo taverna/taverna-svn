@@ -12,14 +12,27 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
 public class StringValue implements PropertyValue, Comparable {
 	private String value;
 	
+	/**
+	 * Construct a new StringValue
+	 * 
+	 * @param value
+	 */
 	public StringValue(final String value) {
 		this.value = value;
 	}
 	
+	/**
+	 * Return the String that identifies the StringValue
+	 * 
+	 * @return
+	 */
 	public String getValue() {
 		return value;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean equals (Object o) {
 		if (o instanceof StringValue) {
 			return ((StringValue)o).getValue().equals(value);
@@ -28,6 +41,9 @@ public class StringValue implements PropertyValue, Comparable {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int compareTo(Object arg0) {
 		int result = 0;
 		if (arg0 instanceof StringValue) {
@@ -40,6 +56,9 @@ public class StringValue implements PropertyValue, Comparable {
 		return result;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		return getValue();
 	}

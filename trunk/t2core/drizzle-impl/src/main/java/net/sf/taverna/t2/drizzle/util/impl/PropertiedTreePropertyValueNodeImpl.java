@@ -10,6 +10,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
 /**
  * @author alanrw
  *
+ * @param <O> The class of object to which the property key + value pair apply.
  */
 public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTreeNodeImpl<O> implements
 		PropertiedTreePropertyValueNode<O> {
@@ -24,14 +25,23 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 		// nothing to do
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public PropertyKey getKey() {
 		return key;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public PropertyValue getValue() {
 		return value;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setKey(final PropertyKey key) {
 		if (key == null) {
 			throw new NullPointerException ("key cannot be null");
@@ -42,6 +52,9 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 		this.key = key;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setValue(PropertyValue value) {
 		if (this.value != null) {
 			throw new IllegalStateException ("value cannot be initialized more than once");
@@ -50,6 +63,9 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String toString() {
 		String keyString = "missing";
 		

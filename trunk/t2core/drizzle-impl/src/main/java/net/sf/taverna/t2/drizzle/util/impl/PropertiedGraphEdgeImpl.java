@@ -16,7 +16,8 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * interface.
  * 
  * @author alanrw
- * 
+ *
+ * @param <O> The class of Object encapsulated by nodes connected by the edge.
  */
 public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> {
 
@@ -46,10 +47,8 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 		nodes = new HashSet<PropertiedGraphNode<O>>();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#addNode(net.sf.taverna.t2.drizzle.util.PropertiedGraphNode)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addNode(final PropertiedGraphNode<O> node) {
 		if (node == null) {
@@ -58,38 +57,30 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 		nodes.add(node);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#getKey()
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertyKey getKey() {
 		return this.key;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#getNodes()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertiedGraphNode<O>> getNodes() {
 		// Copy to be safe
 		return new HashSet<PropertiedGraphNode<O>>(nodes);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#getValue()
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertyValue getValue() {
 		return this.value;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#removeNode(net.sf.taverna.t2.drizzle.util.PropertiedGraphNode)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeNode(final PropertiedGraphNode<O> node) {
 		if (node == null) {
@@ -98,8 +89,8 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 		nodes.remove(node);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#setKey(net.sf.taverna.t2.drizzle.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setKey(PropertyKey key) {
 		if (key == null) {
@@ -112,10 +103,10 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 		this.key = key;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge#setValue(net.sf.taverna.t2.drizzle.util.PropertyValue)
+	/**
+	 * {@inheritDoc}
 	 */
-	public void setValue(PropertyValue value) {
+	public void setValue(final PropertyValue value) {
 		if (value == null) {
 			throw new NullPointerException("value cannot be null");
 		}

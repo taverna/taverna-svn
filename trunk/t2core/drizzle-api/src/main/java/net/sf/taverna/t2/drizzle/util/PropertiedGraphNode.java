@@ -13,6 +13,11 @@ import java.util.Set;
  * @author alanrw
  * 
  */
+/**
+ * @author alanrw
+ *
+ * @param <O> The class of Object contained by the PropertiedGraphNode
+ */
 public interface PropertiedGraphNode<O> {
 	/**
 	 * Return the Object that is encapsulated by the PropertiedGraphNode.

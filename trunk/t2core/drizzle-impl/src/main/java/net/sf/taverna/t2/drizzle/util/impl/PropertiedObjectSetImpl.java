@@ -22,6 +22,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * 
  * @author alanrw
  * 
+ * @param <O> The class of object within the PropertiedObjectSet.
  */
 public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> {
 
@@ -57,10 +58,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#addAllObjectsListener(net.sf.taverna.t2.service.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addAllObjectsListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
@@ -74,10 +73,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		objectListeners.add(pol);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#addListener(net.sf.taverna.t2.service.util.PropertiedObjectSetListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addListener(final PropertiedObjectSetListener posl) {
 		if (posl == null) {
@@ -86,10 +83,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		listeners.add(posl);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#addObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertiedObject addObject(final O object) {
 		if (object == null) {
@@ -111,10 +106,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#containsObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public boolean containsObject(final O object) {
 		if (object == null) {
@@ -123,10 +116,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return propertiedObjectMap.containsKey(object);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#containsPropertiedObject(net.sf.taverna.t2.service.util.PropertiedObject)
+	/**
+	 * {@inheritDoc}
 	 */
 	public boolean containsPropertiedObject(final PropertiedObject po) {
 		if (po == null) {
@@ -135,10 +126,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return propertiedObjectMap.containsValue(po);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getAllPropertyKeys()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertyKey> getAllPropertyKeys() {
 		HashSet<PropertyKey> result = new HashSet<PropertyKey>();
@@ -148,10 +137,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getAllPropertyValues(net.sf.taverna.t2.service.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertyValue> getAllPropertyValues(final PropertyKey key) {
 		if (key == null) {
@@ -166,20 +153,16 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getObjects()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<O> getObjects() {
 		// Copy to be on the safe side
 		return new HashSet<O>(propertiedObjectMap.keySet());
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getPropertiedObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertiedObject<O> getPropertiedObject(final O object) {
 		if (object == null) {
@@ -188,10 +171,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return propertiedObjectMap.get(object);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#getPropertiedObjects()
+	/**
+	 * {@inheritDoc}
 	 */
 	public Set<PropertiedObject> getPropertiedObjects() {
 		// Copy to be on the safe side
@@ -238,10 +219,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#removeAllObjectsListener(net.sf.taverna.t2.service.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeAllObjectsListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
@@ -257,10 +236,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#removeListener(net.sf.taverna.t2.service.util.PropertiedObjectSetListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeListener(final PropertiedObjectSetListener posl) {
 		if (posl == null) {
@@ -269,10 +246,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		listeners.remove(posl);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#removeObject(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeObject(final O key) {
 		if (key == null) {
@@ -284,11 +259,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#removeProperty(java.lang.Object,
-	 *      net.sf.taverna.t2.service.util.PropertyKey)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeProperty(final O o, final PropertyKey key) {
 		if (o == null) {
@@ -301,12 +273,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		po.removeProperty(key);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.service.util.PropertiedObjectSet#setProperty(java.lang.Object,
-	 *      net.sf.taverna.t2.service.util.PropertyKey,
-	 *      net.sf.taverna.t2.service.util.PropertyValue)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setProperty(O object, PropertyKey key, PropertyValue value) {
 		if (object == null) {
@@ -323,8 +291,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertiedObjectSetBean<O> getAsBean() {
 		PropertiedObjectSetBean<O> result = new PropertiedObjectSetBean<O>();
@@ -341,10 +309,11 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#setFromBean(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
-	public void setFromBean(PropertiedObjectSetBean<O> bean) throws IllegalArgumentException {
+	@SuppressWarnings("unchecked")
+	public void setFromBean(PropertiedObjectSetBean bean) throws IllegalArgumentException {
 		if ((propertiedObjectMap.size() != 0) || (listeners.size() != 0) ||
 				(objectListeners.size() != 0)) {
 			throw new IllegalStateException("Cannot initialise twice");
@@ -358,8 +327,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObjectSet#replayToListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectSetListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void replayToListener(PropertiedObjectSetListener posl) {
 		if (posl == null) {
@@ -370,13 +339,17 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedObjectSet#replayToAllObjectsListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void replayToAllObjectsListener(PropertiedObjectListener pol) {
 		for (PropertiedObject<O> po : propertiedObjectMap.values()) {
 			po.replayToListener(pol);
 		}
+	}
+
+	public Class<PropertiedObjectSetBean> getBeanClass() {
+		return PropertiedObjectSetBean.class;
 	}
 
 }

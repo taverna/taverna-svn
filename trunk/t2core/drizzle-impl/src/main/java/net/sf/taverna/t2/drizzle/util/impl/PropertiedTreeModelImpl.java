@@ -33,6 +33,9 @@ import net.sf.taverna.t2.utility.TypedTreeModelListener;
 /**
  * @author alanrw
  * 
+ * @param <O>
+ *            The class of object within the PropertiedObjectSet of which this
+ *            is a tree model.
  */
 public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> {
 
@@ -61,10 +64,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#addTreeModelListener(net.sf.taverna.t2.utility.TypedTreeModelListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addTreeModelListener(
 			final TypedTreeModelListener<PropertiedTreeNode<O>> l) {
@@ -132,7 +133,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 
 	private void generateTree() {
 		if (root == null) {
-			root = new PropertiedTreeRootNodeImpl<O> ();
+			root = new PropertiedTreeRootNodeImpl<O>();
 		} else {
 			root.removeAllChildren();
 		}
@@ -152,11 +153,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 				this, root.getPath()));
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#getChild(java.lang.Object,
-	 *      int)
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertiedTreeNode<O> getChild(final PropertiedTreeNode<O> parent,
 			int index) {
@@ -166,10 +164,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return parent.getChild(index);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#getChildCount(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public int getChildCount(final PropertiedTreeNode<O> parent) {
 		if (parent == null) {
@@ -178,11 +174,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return parent.getChildCount();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#getIndexOfChild(java.lang.Object,
-	 *      java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public int getIndexOfChild(PropertiedTreeNode<O> parent,
 			PropertiedTreeNode<O> child) {
@@ -195,10 +188,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return parent.getIndexOfChild(child);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedTreeModel#getPropertyKeySettings()
+	/**
+	 * {@inheritDoc}
 	 */
 	public List<PropertyKeySetting> getPropertyKeySettings() {
 		List<PropertyKeySetting> result;
@@ -211,10 +202,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#getRoot()
+	/**
+	 * {@inheritDoc}
 	 */
 	public PropertiedTreeNode<O> getRoot() {
 		return this.root;
@@ -261,10 +250,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#isLeaf(java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public boolean isLeaf(final PropertiedTreeNode<O> node) {
 		if (node == null) {
@@ -322,10 +309,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#removeTreeModelListener(net.sf.taverna.t2.utility.TypedTreeModelListener)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeTreeModelListener(
 			final TypedTreeModelListener<PropertiedTreeNode<O>> l) {
@@ -335,10 +320,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		listeners.remove(l);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedTreeModel#setFilter(net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setFilter(final PropertiedObjectFilter<O> filter) {
 		if (this.filter != null) {
@@ -349,6 +332,9 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		this.filter = filter;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setObjectComparator(Comparator<O> objectComparator) {
 		if (objectComparator == null) {
 			throw new NullPointerException("objectComparator cannot be null");
@@ -361,10 +347,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedTreeModel#setPropertiedGraphView(net.sf.taverna.t2.drizzle.util.PropertiedGraphView)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setPropertiedGraphView(
 			final PropertiedGraphView<O> propertiedGraphView) {
@@ -404,10 +388,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.util.PropertiedTreeModel#setPropertyKeySettings(java.util.List)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void setPropertyKeySettings(
 			final List<PropertyKeySetting> settingList) {
@@ -422,24 +404,30 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		keySettings = new ArrayList<PropertyKeySetting>(settingList);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.utility.TypedTreeModel#valueForPathChanged(javax.swing.tree.TreePath,
-	 *      java.lang.Object)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void valueForPathChanged(TreePath path, Object newValue) {
 		// Do nothing
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public PropertiedObjectFilter<O> getFilter() {
 		return this.filter;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Comparator<O> getObjectComparator() {
 		return this.objectComparator;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void detachFromGraphView() {
 		if (posl != null) {
 			propertiedGraphView.removeListener(posl);
