@@ -8,39 +8,36 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>cloudone-impl</artifactId>
-	<version>${depT2core}</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>CloudOne implementation</name>
 	<description>Basic implementation of the CloudOne API</description>
 	<dependencies>
 		<dependency>
 			<groupId>jdom</groupId>
 			<artifactId>jdom</artifactId>
-			<version>${depJdom}</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
 			<artifactId>raven</artifactId>
-			<version>${depRaven}</version>
+			<version>1.6.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>${depCommonsIO}</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>${depLog4j}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -50,7 +47,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${depJunit}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

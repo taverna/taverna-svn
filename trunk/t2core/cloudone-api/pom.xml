@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>cloudone-api</artifactId>
-	<version>${depT2core}</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>CloudOne API</name>
 	<description>
 		API definition for the CloudOne federating data layer. This is
@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.raven.spi.SpiRegistry;
@@ -81,17 +82,22 @@ public class ActivityTranslatorFactory {
 	}
 
 	private static Repository getRepository() {
-		// FIXME: Need to get the repository from the LocalArtifactClassloader.
-		File tmpDir = null;
-		try {
-			tmpDir = File.createTempFile("taverna", "raven");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (ActivityTranslatorFactory.class.getClassLoader() instanceof LocalArtifactClassLoader) {
+			return ((LocalArtifactClassLoader)ActivityTranslatorFactory.class.getClassLoader()).getRepository();
 		}
-		tmpDir.delete();
-		tmpDir.mkdir();
-		Repository tempRepository = LocalRepository.getRepository(tmpDir);
-		return tempRepository;
+		else {
+			// FIXME: Need to get the repository from the LocalArtifactClassloader.
+			File tmpDir = null;
+			try {
+				tmpDir = File.createTempFile("taverna", "raven");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			tmpDir.delete();
+			tmpDir.mkdir();
+			Repository tempRepository = LocalRepository.getRepository(tmpDir);
+			return tempRepository;
+		}
 	}
 }

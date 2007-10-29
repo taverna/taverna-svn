@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>tsunami-api</artifactId>
-	<version>${depT2core}</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Tsunami API</name>
 	<description>
 		Security system for Taverna 2, handles authentication concerns

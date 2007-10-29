@@ -53,7 +53,6 @@ import org.embl.ebi.escience.scufl.LeafNode;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor;
 
 /**

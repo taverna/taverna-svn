@@ -8,23 +8,22 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>gridsam-activity</artifactId>
-	<version>${depT2core}</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Gridsam Activity</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 				<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-impl</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${depJunit}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

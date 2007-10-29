@@ -42,24 +42,13 @@
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
-		<module>drizzle-api</module>
-		<module>drizzle-impl</module>
+		<!--<module>drizzle-api</module>
+		<module>drizzle-impl</module> -->
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
 		<!--<module>gridsam-activity</module>
 			<module>ogsadai-activity</module>-->
 	</modules>
-	<properties>
-		<!--  Common version numbers of dependencies -->
-		<depT2core>0.1-SNAPSHOT</depT2core>
-		<depTaverna>1.6.2.0</depTaverna>
-		<depRaven>1.6.2.0</depRaven>
-		<depLog4j>1.2.13</depLog4j>
-		<depJunit>4.4</depJunit>
-		<depCommonsIO>1.3</depCommonsIO>
-		<depCommonsCLI>1.0</depCommonsCLI>
-		<depJdom>1.0</depJdom>
-	</properties>
 	<licenses>
 		<license>
 			<name>GNU Lesser General Public License</name>

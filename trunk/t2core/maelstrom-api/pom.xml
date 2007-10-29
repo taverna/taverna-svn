@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>maelstrom-api</artifactId>
-	<version>${depT2core}</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Maelstrom API</name>
 	<description>
 		Core workflow object model for Taverna 2 workflows. Depends on
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>${depT2core}</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
