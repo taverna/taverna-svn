@@ -148,21 +148,20 @@ public class SPIRegistry<SPI> {
 			try {
 				spiClass = (Class<? extends SPI>) cl.loadClass(className);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.warn("Could not find " + className + " for SPI " + spi);
 				continue;
 			}
 			if (!(spi.isAssignableFrom(spiClass))) {
-				System.err.println("Class " + spiClass + " did not implement "
+				logger.warn("Class " + spiClass + " did not implement "
 						+ spi);
 				continue;
 			}
 			if (spiClass.isInterface()) {
-				System.err.println(spiClass + " is an interface, not a class");
+				logger.warn(spiClass + " is an interface, not a class");
 				continue;
 			}
 			if (Modifier.isAbstract(spiClass.getModifiers())) {
-				System.err.println(spiClass + " is an abstract class");
+				logger.warn(spiClass + " is an abstract class");
 				continue;
 			}
 			foundClasses.put(className, spiClass);
