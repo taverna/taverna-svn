@@ -12,6 +12,8 @@
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
+		<module>drizzle-api</module>
+		<module>drizzle-impl</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
 		<!--<module>gridsam-activity</module>
