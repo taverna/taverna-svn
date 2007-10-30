@@ -2,19 +2,16 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
