@@ -16,8 +16,6 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
-import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -141,7 +139,7 @@ public class Tools {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void annotateObject(Element annotations,
-			MutableAnnotated annotated) {
+			Annotated annotated) {
 		for (Element e : (List<Element>) annotations.getChildren(ANNOTATION)) {
 			ClassLoader cl = Tools.class.getClassLoader();
 			Element ravenElement = e.getChild(RAVEN);
@@ -160,7 +158,12 @@ public class Tools {
 			Object annotationBean = createBean(e.getChild(JAVA), cl);
 			if (annotationBean instanceof WorkflowAnnotation) {
 				WorkflowAnnotation newAnnotation = (WorkflowAnnotation) annotationBean;
-				annotated.addAnnotation(newAnnotation);
+				try {
+					annotated.getAddAnnotationEdit(newAnnotation).doEdit();
+				} catch (EditException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			} else {
 				System.out.println("Found non annotation bean inside an"
 						+ " annotation element, something's not right here");
@@ -316,7 +319,7 @@ public class Tools {
 			throws EditException {
 		ProcessorImpl processor = new ProcessorImpl();
 		// Add the Activity to the processor
-		processor.activityList.add(new ActivityAnnotationContainerImpl(activity));
+		processor.activityList.add(activity);
 		// Create processor inputs and outputs corresponding to activity inputs
 		// and outputs and set the mappings in the Activity object.
 		activity.getInputPortMapping().clear();
@@ -400,7 +403,7 @@ public class Tools {
 	 *            the workflow entity to serialise annotations for
 	 * @return a JDOM {@link Element} object containing the annotations
 	 */
-	public static Element getAnnotationsElement(Annotated annotated) {
+	public static Element getAnnotationsElement(Annotated<?> annotated) {
 		Element result = new Element(ANNOTATIONS);
 		for (WorkflowAnnotation annotation : annotated.getAnnotations()) {
 			Element annotationElement = new Element(ANNOTATION);
@@ -477,7 +480,7 @@ public class Tools {
 	 * @param annotated
 	 *            {@link Annotated} from where to find annotations
 	 */
-	public static void injectAnnotations(Element element, Annotated annotated) {
+	public static void injectAnnotations(Element element, Annotated<?> annotated) {
 		if (!annotated.getAnnotations().isEmpty()) {
 			element.addContent(getAnnotationsElement(annotated));
 		}
@@ -495,7 +498,7 @@ public class Tools {
 	 *            {@link MutableAnnotated} to be annotated
 	 */
 	public static void populateAnnotationsFromParent(Element parent,
-			MutableAnnotated annotated) {
+			Annotated<?> annotated) {
 		Element annotationsElement = parent.getChild(ANNOTATIONS);
 		if (annotationsElement != null) {
 			annotateObject(annotationsElement, annotated);

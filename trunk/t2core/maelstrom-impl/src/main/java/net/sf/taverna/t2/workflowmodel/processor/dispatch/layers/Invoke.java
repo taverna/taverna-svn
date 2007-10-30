@@ -14,7 +14,6 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
@@ -95,16 +94,16 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, final List<? extends ActivityAnnotationContainer> annotatedActivities) {
-		for (ActivityAnnotationContainer sac : annotatedActivities) {
-			Activity<?> s = sac.getActivity();
-			if (s instanceof AsynchronousActivity) {
+	public void receiveJob(final Job job, final List<? extends Activity<?>> activities) {
+		for (Activity<?> a : activities) {
+			
+			if (a instanceof AsynchronousActivity) {
 
 				// The activity is an AsynchronousActivity so we invoke it with an
 				// AsynchronousActivityCallback object containing appropriate
 				// callback methods to push results, completions and failures
 				// back to the invocation layer.
-				final AsynchronousActivity<?> as = (AsynchronousActivity<?>) s;
+				final AsynchronousActivity<?> as = (AsynchronousActivity<?>) a;
 
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire

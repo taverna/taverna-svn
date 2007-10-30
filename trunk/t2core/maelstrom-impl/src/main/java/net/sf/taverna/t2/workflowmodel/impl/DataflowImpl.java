@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -27,7 +27,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
  * @author Tom Oinn
  * 
  */
-public class DataflowImpl extends AbstractMutableAnnotatedThing implements
+public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		Dataflow {
 
 	List<ProcessorImpl> processors;

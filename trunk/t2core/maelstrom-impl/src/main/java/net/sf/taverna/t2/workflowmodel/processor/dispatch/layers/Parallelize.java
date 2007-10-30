@@ -10,8 +10,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
@@ -104,7 +104,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	public void receiveJobQueue(String owningProcess,
 			BlockingQueue<Event> queue,
-			List<? extends ActivityAnnotationContainer> activities) {
+			List<? extends Activity<?>> activities) {
 		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
@@ -117,7 +117,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJob(Job job,
-			List<? extends ActivityAnnotationContainer> activities) {
+			List<? extends Activity<?>> activities) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -162,7 +162,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private BlockingQueue<Event> queue;
 
-		private List<? extends ActivityAnnotationContainer> activities;
+		private List<? extends Activity<?>> activities;
 
 		private BlockingQueue<Event> pendingEvents = new LinkedBlockingQueue<Event>();
 
@@ -186,7 +186,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 *            given point
 		 */
 		protected StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends ActivityAnnotationContainer> activities,
+				List<? extends Activity<?>> activities,
 				int maxJobs) {
 			this.queue = queue;
 			this.activities = activities;

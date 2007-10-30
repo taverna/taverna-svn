@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.translator;
 
-import java.util.Collections;
 import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.LocationalContext;

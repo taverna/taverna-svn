@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import net.sf.taverna.t2.annotation.Annotated;
+
 /**
  * A single point to point data link from an instance of
  * EventForwardingOutputPort to an instance of EventHandlingInputPort
@@ -7,7 +9,7 @@ package net.sf.taverna.t2.workflowmodel;
  * @author Tom Oinn
  * 
  */
-public interface Datalink {
+public interface Datalink extends Annotated<Datalink> {
 
 	/**
 	 * Get the sink for events flowing through this link

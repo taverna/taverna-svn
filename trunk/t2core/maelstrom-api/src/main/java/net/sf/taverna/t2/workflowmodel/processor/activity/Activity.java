@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
@@ -16,7 +17,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
  * @author Tom Oinn
  * 
  */
-public interface Activity<ConfigurationType> {
+public interface Activity<ConfigurationType> extends Annotated<Activity<?>> {
 
 	/**
 	 * Each Activity implementation stores configuration within a bean of type

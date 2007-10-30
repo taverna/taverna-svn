@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.MimeTypeImpl;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
@@ -51,7 +50,8 @@ public class ActivityPortBuilderImpl implements ActivityPortBuilder {
 	private Set<WorkflowAnnotation> createMimeTypeSet(List<String> mimeTypes) {
 		Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
 		for (String mimeType : mimeTypes) {
-			annotations.add(new MimeTypeImpl(mimeType));
+			// TODO - commenting out for now while I get the annotation objects refactored
+			// annotations.add(new MimeTypeImpl(mimeType));
 		}
 		return annotations;
 	}

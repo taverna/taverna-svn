@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -16,16 +15,16 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  */
 public class AddActivityEdit extends AbstractProcessorEdit {
 
-	private ActivityAnnotationContainerImpl activityToAdd;
+	private Activity<?> activityToAdd;
 
 	public AddActivityEdit(Processor processor, Activity<?> activity) {
 		super(processor);
-		this.activityToAdd = new ActivityAnnotationContainerImpl(activity);
+		this.activityToAdd = activity;
 	}
 
 	@Override
 	protected void doEditAction(ProcessorImpl processor) throws EditException {
-		List<ActivityAnnotationContainerImpl> activities = processor.activityList;
+		List<Activity<?>> activities = processor.activityList;
 		if (activities.contains(activityToAdd) == false) {
 			synchronized (processor) {
 				activities.add(activityToAdd);

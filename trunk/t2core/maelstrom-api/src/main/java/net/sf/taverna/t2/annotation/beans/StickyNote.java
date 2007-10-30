@@ -1,4 +1,7 @@
-package net.sf.taverna.t2.annotation;
+package net.sf.taverna.t2.annotation.beans;
+
+import net.sf.taverna.t2.annotation.AppliesTo;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 
 /**
  * Generic bit of free text to fill the role of a 'postit note' on a bit of the

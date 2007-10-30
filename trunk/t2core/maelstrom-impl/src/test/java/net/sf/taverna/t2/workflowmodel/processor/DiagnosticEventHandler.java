@@ -3,12 +3,13 @@
  */
 package net.sf.taverna.t2.workflowmodel.processor;
 
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
-import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
+import net.sf.taverna.t2.workflowmodel.Port;
 
-public class DiagnosticEventHandler extends AbstractAnnotatedThing implements EventHandlingInputPort {
+public class DiagnosticEventHandler extends AbstractAnnotatedThing<Port> implements EventHandlingInputPort {
 
 	protected int eventCount = 0;
 

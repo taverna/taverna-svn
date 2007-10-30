@@ -12,9 +12,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-
-import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;

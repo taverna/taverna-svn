@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -18,7 +16,7 @@ import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
  * 
  */
 public class BasicEventForwardingOutputPort extends AbstractOutputPort
-		implements EventForwardingOutputPort, MutableAnnotated {
+		implements EventForwardingOutputPort {
 
 	protected Set<DatalinkImpl> outgoingLinks;
 
@@ -51,14 +49,6 @@ public class BasicEventForwardingOutputPort extends AbstractOutputPort
 		for (Datalink link : outgoingLinks) {
 			link.getSink().receiveEvent(e);
 		}
-	}
-
-	public void addAnnotation(WorkflowAnnotation newAnnotation) {
-		annotations.add(newAnnotation);
-	}
-
-	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
-		annotations.remove(annotationToRemove);
 	}
 
 	protected void addOutgoingLink(DatalinkImpl link) {

@@ -9,8 +9,7 @@ import java.util.Map;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
-import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.Condition;
@@ -19,7 +18,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
@@ -38,7 +37,7 @@ import org.jdom.JDOMException;
  * @author Stuart Owen
  * 
  */
-public final class ProcessorImpl extends AbstractMutableAnnotatedThing
+public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		implements Processor {
 
 	protected List<ConditionImpl> conditions = new ArrayList<ConditionImpl>();
@@ -49,7 +48,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 
 	protected List<ProcessorOutputPortImpl> outputPorts = new ArrayList<ProcessorOutputPortImpl>();
 
-	protected List<ActivityAnnotationContainerImpl> activityList = new ArrayList<ActivityAnnotationContainerImpl>();
+	protected List<Activity<?>> activityList = new ArrayList<Activity<?>>();
 
 	protected AbstractCrystalizer crystalizer;
 
@@ -121,7 +120,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 			}
 
 			@Override
-			protected List<? extends ActivityAnnotationContainer> getActivities() {
+			protected List<? extends Activity<?>> getActivities() {
 				return ProcessorImpl.this.getActivityList();
 			}
 
@@ -244,10 +243,10 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		e.addContent(iterationStack.asXML());
 		e.addContent(dispatchStack.asXML());
 		Element activitesElement = new Element("activities");
-		for (ActivityAnnotationContainerImpl saci : activityList) {
+		for (Activity<?> saci : activityList) {
 			Element containerElement = new Element("activitycontainer");
 			// Add activity detail element
-			Element activityElement = Tools.activityAsXML(saci.getActivity());
+			Element activityElement = Tools.activityAsXML(saci);
 			containerElement.addContent(activityElement);
 			// Add annotations on activity container objects
 			Tools.injectAnnotations(containerElement, saci);
@@ -293,8 +292,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		activityList.clear();
 		for (Element activityElement : (List<Element>) e.getChild("activities")
 				.getChildren("activitycontainer")) {
-			ActivityAnnotationContainerImpl sac = new ActivityAnnotationContainerImpl(
-					Tools.buildActivity(activityElement.getChild("activity")));
+			Activity sac = Tools.buildActivity(activityElement.getChild("activity"));
 			// Pick up annotations on activity container
 			Tools.populateAnnotationsFromParent(activityElement, sac);
 			activityList.add(sac);
@@ -369,7 +367,7 @@ public final class ProcessorImpl extends AbstractMutableAnnotatedThing
 		return Collections.unmodifiableList(outputPorts);
 	}
 
-	public List<? extends ActivityAnnotationContainer> getActivityList() {
+	public List<? extends Activity<?>> getActivityList() {
 		return Collections.unmodifiableList(activityList);
 	}
 

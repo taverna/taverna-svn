@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -9,7 +7,7 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 
 public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
-		implements DataflowInputPort,MutableAnnotated {
+		implements DataflowInputPort {
 
 	protected BasicEventForwardingOutputPort internalOutput;
 
@@ -46,13 +44,4 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	public Dataflow getDataflow() {
 		return dataflow;
 	}
-	
-	public void addAnnotation(WorkflowAnnotation newAnnotation) {
-		annotations.add(newAnnotation);
-	}
-
-	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
-		annotations.remove(annotationToRemove);
-	}
-
 }

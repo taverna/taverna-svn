@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 
 /**
  * Superclass of error handling dispatch layers (for example retry and
@@ -86,7 +86,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * @param activities
 	 * @return
 	 */
-	protected abstract JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> activities);
+	protected abstract JobState getStateObject(Job j, List<? extends Activity<?>> activities);
 
 	/**
 	 * Abstract superclass of all state models for pending failure handlers.
@@ -100,9 +100,9 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	protected abstract class JobState {
 		protected Job job;
 
-		protected List<? extends ActivityAnnotationContainer> activities;
+		protected List<? extends Activity<?>> activities;
 
-		protected JobState(Job job, List<? extends ActivityAnnotationContainer> activities) {
+		protected JobState(Job job, List<? extends Activity<?>> activities) {
 			this.job = job;
 			this.activities = activities;
 		}
@@ -130,7 +130,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
+	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {

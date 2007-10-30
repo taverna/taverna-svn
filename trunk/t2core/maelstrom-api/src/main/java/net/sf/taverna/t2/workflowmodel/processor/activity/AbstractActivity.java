@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -36,7 +36,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDe
  *            type of configuration object to be used to hold configuration information
  */
 public abstract class AbstractActivity<ConfigType> extends
-		AbstractAnnotatedThing implements Activity<ConfigType> {
+		AbstractAnnotatedThing<Activity<?>> implements Activity<ConfigType> {
 
 	protected Map<String, String> inputPortMapping = new HashMap<String, String>();
 

@@ -18,8 +18,6 @@ import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-
 import org.apache.log4j.Logger;
 import org.restlet.Application;
 import org.restlet.Component;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.sf.taverna.t2.annotation;
+package net.sf.taverna.t2.annotation.beans;
 
 /**
  * @author alanrw

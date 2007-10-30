@@ -1,11 +1,13 @@
 /**
  * 
  */
-package net.sf.taverna.t2.annotation;
+package net.sf.taverna.t2.annotation.beans;
 
 import java.net.URL;
 import java.util.Set;
 
+import net.sf.taverna.t2.annotation.AppliesTo;
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 

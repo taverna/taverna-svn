@@ -8,8 +8,8 @@ import java.util.concurrent.BlockingQueue;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 
 /**
  * Convenience abstract implementation of DispatchLayer, all actions are set to
@@ -122,7 +122,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
+	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
 		checkValid(DispatchMessageType.JOB);
 		DispatchLayer<?> below = dispatchStack.layerBelow(this);
 		if (below != null) {
@@ -132,7 +132,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 
 	@SuppressWarnings("unchecked")
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends ActivityAnnotationContainer> activities) {
+			BlockingQueue<Event> queue, List<? extends Activity<?>> activities) {
 		checkValid(DispatchMessageType.JOBQUEUE);
 		DispatchLayer below = dispatchStack.layerBelow(this);
 		if (below != null) {

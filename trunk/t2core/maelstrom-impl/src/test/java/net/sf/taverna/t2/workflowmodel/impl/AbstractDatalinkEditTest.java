@@ -3,7 +3,12 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Set;
+
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
@@ -104,6 +109,30 @@ public class AbstractDatalinkEditTest {
 			}
 
 			public EventForwardingOutputPort getSource() {
+				return null;
+			}
+
+			public Edit<? extends Datalink> getAddAnnotationEdit(
+					WorkflowAnnotation newAnnotation) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public Set<? extends WorkflowAnnotation> getAnnotations() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public Edit<? extends Datalink> getRemoveAnnotationEdit(
+					WorkflowAnnotation annotationToRemove) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public Edit<? extends Datalink> getReplaceAnnotationEdit(
+					WorkflowAnnotation oldAnnotation,
+					WorkflowAnnotation newAnnotation) {
+				// TODO Auto-generated method stub
 				return null;
 			}
 

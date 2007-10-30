@@ -88,24 +88,24 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		Processor processor = dataflow.getProcessors().get(0);
 		assertEquals(2, processor.getActivityList().size());
 		
-		assertEquals(1, processor.getActivityList().get(0).getActivity().getInputPorts().size());
-		assertEquals("input", processor.getActivityList().get(0).getActivity().getInputPorts().iterator().next().getName());
-		assertEquals(1, processor.getActivityList().get(0).getActivity().getOutputPorts().size());
-		assertEquals("output", processor.getActivityList().get(0).getActivity().getOutputPorts().iterator().next().getName());
+		assertEquals(1, processor.getActivityList().get(0).getInputPorts().size());
+		assertEquals("input", processor.getActivityList().get(0).getInputPorts().iterator().next().getName());
+		assertEquals(1, processor.getActivityList().get(0).getOutputPorts().size());
+		assertEquals("output", processor.getActivityList().get(0).getOutputPorts().iterator().next().getName());
 
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getInputPorts().size());
-		assertEquals("in", processor.getActivityList().get(1).getActivity().getInputPorts().iterator().next().getName());
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getOutputPorts().size());
-		assertEquals("out", processor.getActivityList().get(1).getActivity().getOutputPorts().iterator().next().getName());
+		assertEquals(1, processor.getActivityList().get(1).getInputPorts().size());
+		assertEquals("in", processor.getActivityList().get(1).getInputPorts().iterator().next().getName());
+		assertEquals(1, processor.getActivityList().get(1).getOutputPorts().size());
+		assertEquals("out", processor.getActivityList().get(1).getOutputPorts().iterator().next().getName());
 		
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getInputPortMapping().keySet().size());
-		assertEquals("input", processor.getActivityList().get(1).getActivity().getInputPortMapping().keySet().iterator().next());
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getInputPortMapping().values().size());
-		assertEquals("in", processor.getActivityList().get(1).getActivity().getInputPortMapping().values().iterator().next());
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getOutputPortMapping().keySet().size());
-		assertEquals("out", processor.getActivityList().get(1).getActivity().getOutputPortMapping().keySet().iterator().next());
-		assertEquals(1, processor.getActivityList().get(1).getActivity().getOutputPortMapping().values().size());
-		assertEquals("output", processor.getActivityList().get(1).getActivity().getOutputPortMapping().values().iterator().next());
+		assertEquals(1, processor.getActivityList().get(1).getInputPortMapping().keySet().size());
+		assertEquals("input", processor.getActivityList().get(1).getInputPortMapping().keySet().iterator().next());
+		assertEquals(1, processor.getActivityList().get(1).getInputPortMapping().values().size());
+		assertEquals("in", processor.getActivityList().get(1).getInputPortMapping().values().iterator().next());
+		assertEquals(1, processor.getActivityList().get(1).getOutputPortMapping().keySet().size());
+		assertEquals("out", processor.getActivityList().get(1).getOutputPortMapping().keySet().iterator().next());
+		assertEquals(1, processor.getActivityList().get(1).getOutputPortMapping().values().size());
+		assertEquals("output", processor.getActivityList().get(1).getOutputPortMapping().values().iterator().next());
 	}
 	
 	/**
@@ -165,8 +165,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 			}
 
 			assertEquals(1, processor.getActivityList().size());
-			Activity<?> activity = processor.getActivityList().get(0)
-					.getActivity();
+			Activity<?> activity = processor.getActivityList().get(0);
 			assertNotNull(processor.getLocalName(), activity);
 			Map<String, String> inputPortMap = activity.getInputPortMapping();
 			Map<String, String> outputPortMap = activity.getOutputPortMapping();

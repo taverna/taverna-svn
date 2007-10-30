@@ -1,10 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.annotation.Annotated;
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.AddAnnotationEdit;
-import net.sf.taverna.t2.annotation.impl.RemoveAnnotationEdit;
-import net.sf.taverna.t2.annotation.impl.ReplaceAnnotationEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
@@ -119,17 +114,7 @@ public class EditsImpl implements Edits {
 		return new RemoveConditionEdit(control, target);
 	}
 
-	public <TargetType extends Annotated> Edit<TargetType> getAddAnnotationEdit(WorkflowAnnotation newAnnotation, TargetType objectToAnnotate) {
-		return new AddAnnotationEdit<TargetType>(objectToAnnotate, newAnnotation);
-	}
-
-	public <TargetType extends Annotated> Edit<TargetType> getRemoveAnnotationEdit(WorkflowAnnotation annotationToRemove, TargetType objectToAnnotate) {
-		return new RemoveAnnotationEdit<TargetType>(objectToAnnotate, annotationToRemove);
-	}
-
-	public <TargetType extends Annotated> Edit<TargetType> getReplaceAnnotationEdit(WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation, TargetType objectToAnnotate) {
-		return new ReplaceAnnotationEdit<TargetType>(objectToAnnotate, oldAnnotation, newAnnotation);
-	}
+	
 
 	public Processor createProcessor(String name) {
 		ProcessorImpl processor = new ProcessorImpl();

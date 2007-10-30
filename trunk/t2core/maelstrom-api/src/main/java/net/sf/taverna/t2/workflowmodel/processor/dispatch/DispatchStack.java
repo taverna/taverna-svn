@@ -16,7 +16,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * @author Tom Oinn
  * 
  */
-public interface DispatchStack extends Annotated {
+public interface DispatchStack extends Annotated<DispatchStack> {
 
 	/**
 	 * The DispatchStack consists of an ordered list of DispatchLayer instances

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.annotation.impl.ActivityAnnotationContainerImpl;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -16,7 +15,6 @@ import net.sf.taverna.t2.workflowmodel.impl.AbstractCrystalizer;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import junit.framework.TestCase;
@@ -26,12 +24,12 @@ public class DispatchStackTestWithParallelize extends TestCase {
 
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		
-		private List<ActivityAnnotationContainerImpl> activities;
+		private List<Activity<?>> activities;
 		
-		public BasicDispatchStackImpl(List<? extends Activity<?>> activityList) {
-			this.activities = new ArrayList<ActivityAnnotationContainerImpl>();
+		public BasicDispatchStackImpl(List<Activity<?>> activityList) {
+			this.activities = new ArrayList<Activity<?>>();
 			for (Activity<?> s : activityList) {
-				activities.add(new ActivityAnnotationContainerImpl(s));
+				activities.add(s);
 			}		
 		}
 
@@ -41,7 +39,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		}
 
 		@Override
-		protected List<? extends ActivityAnnotationContainer> getActivities() {
+		protected List<? extends Activity<?>> getActivities() {
 			return this.activities;
 		}
 

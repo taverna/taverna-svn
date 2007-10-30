@@ -8,8 +8,8 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 
 /**
  * Acts as a fake invocation layer as with the DummyInvokerLayer but this one
@@ -22,7 +22,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationCont
  */
 public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 
-	public void receiveJob(Job job, List<? extends ActivityAnnotationContainer> activities) {
+	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
 		final Job j = job;
 		new Thread(new Runnable() {
 			public void run() {

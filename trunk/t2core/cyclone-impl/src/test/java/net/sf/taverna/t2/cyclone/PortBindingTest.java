@@ -7,8 +7,6 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
-
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.junit.Test;
 
@@ -36,7 +34,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertEquals("processor_B should have 1 output",1,processor_B.getOutputPorts().size());
 		
 		assertEquals("processor_B should have 1 activity",1,processor_B.getActivityList().size());
-		Activity<?>activity = processor_B.getActivityList().get(0).getActivity();
+		Activity<?>activity = processor_B.getActivityList().get(0);
 		
 		assertEquals("activity should have 3 input ports",3,activity.getInputPorts().size());
 	}
@@ -62,9 +60,9 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertEquals("The should only be 1 activity",1,processorStringConstant.getActivityList().size());
 		assertEquals("Processor_A should have 1 iteration stragegy",1,processor_A.getIterationStrategy().getStrategies().size());
 		
-		assertEquals("There should be a processor that contains a string constant activity",StringConstantActivity.class,processorStringConstant.getActivityList().get(0).getActivity().getClass());
+		assertEquals("There should be a processor that contains a string constant activity",StringConstantActivity.class,processorStringConstant.getActivityList().get(0).getClass());
 		
-		StringConstantActivity activity = (StringConstantActivity) processorStringConstant.getActivityList().get(0).getActivity();
+		StringConstantActivity activity = (StringConstantActivity) processorStringConstant.getActivityList().get(0);
 		assertEquals("activity should have value 'Some Data'","Some Data",activity.getStringValue());
 		
 		assertEquals("The string constant shoudl have 1 output port",1,processorStringConstant.getOutputPorts().size());
@@ -94,9 +92,9 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertNotNull("There should be a processor named processor_A",processor_A);
 		assertEquals("processor_A should have 1 input",1,processor_A.getInputPorts().size());
 		assertEquals("The should only be 1 activity",1,processorStringConstant.getActivityList().size());
-		assertEquals("There should be a processor that contains a string constant activity",StringConstantActivity.class,processorStringConstant.getActivityList().get(0).getActivity().getClass());
+		assertEquals("There should be a processor that contains a string constant activity",StringConstantActivity.class,processorStringConstant.getActivityList().get(0).getClass());
 		
-		StringConstantActivity activity = (StringConstantActivity) processorStringConstant.getActivityList().get(0).getActivity();
+		StringConstantActivity activity = (StringConstantActivity) processorStringConstant.getActivityList().get(0);
 		assertEquals("activity should have value 'Some Data'","Some Data",activity.getStringValue());
 		
 		assertEquals("The string constant shoudl have 1 output port",1,processorStringConstant.getOutputPorts().size());
@@ -129,7 +127,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertEquals("processor_B should have 1 output",1,processor_B.getOutputPorts().size());
 		
 		assertEquals("processor_B should have 1 activity",1,processor_B.getActivityList().size());
-		Activity<?>activity = processor_B.getActivityList().get(0).getActivity();
+		Activity<?>activity = processor_B.getActivityList().get(0);
 		
 		assertEquals("activity should have 3 input ports",3,activity.getInputPorts().size());
 	}

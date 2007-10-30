@@ -11,12 +11,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.t2.annotation.impl.AbstractMutableAnnotatedThing;
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -37,7 +37,7 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing
+public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchStack>
 		implements DispatchStack {
 
 	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
@@ -50,7 +50,7 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing
 	 * 
 	 * @return list of activities to be used by jobs in this dispatch stack
 	 */
-	protected abstract List<? extends ActivityAnnotationContainer> getActivities();
+	protected abstract List<? extends Activity<?>> getActivities();
 
 	/**
 	 * Called when an event (Completion or Job) hits the top of the dispatch

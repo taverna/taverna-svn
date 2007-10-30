@@ -13,7 +13,7 @@ import net.sf.taverna.t2.annotation.Annotated;
  * @author Tom Oinn
  * 
  */
-public interface Condition extends Annotated {
+public interface Condition extends Annotated<Condition> {
 
 	/**
 	 * @return the Processor constrained by this condition

@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workflowmodel;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
@@ -15,7 +15,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
  * @author Tom Oinn
  * 
  */
-public interface Processor extends TokenProcessingEntity, Annotated {
+public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 
 	/**
 	 * The iteration strategy is responsible for combining input data events
@@ -79,7 +79,7 @@ public interface Processor extends TokenProcessingEntity, Annotated {
 	 * 
 	 * @return list of Activity instances
 	 */
-	public List<? extends ActivityAnnotationContainer> getActivityList();
+	public List<? extends Activity<?>> getActivityList();
 
 	/**
 	 * A processor with no inputs cannot be driven by the supply of data tokens

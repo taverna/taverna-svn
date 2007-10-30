@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
-import net.sf.taverna.t2.annotation.impl.MutableAnnotated;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
@@ -19,7 +17,7 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
  * 
  */
 public class ProcessorInputPortImpl extends AbstractFilteringInputPort implements
-		ProcessorInputPort,MutableAnnotated {
+		ProcessorInputPort {
 
 	private ProcessorImpl parent;
 
@@ -47,12 +45,4 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 		return this.parent;
 	}
 	
-	public void addAnnotation(WorkflowAnnotation newAnnotation) {
-		annotations.add(newAnnotation);
-	}
-
-	public void removeAnnotation(WorkflowAnnotation annotationToRemove) {
-		annotations.remove(annotationToRemove);
-	}
-
 }

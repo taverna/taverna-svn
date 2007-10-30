@@ -3,8 +3,8 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
@@ -62,7 +62,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 	@Override
 	protected JobState getStateObject(Job j,
-			List<? extends ActivityAnnotationContainer> activities) {
+			List<? extends Activity<?>> activities) {
 		return new FailoverState(j, activities);
 	}
 
@@ -74,7 +74,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void receiveJob(Job job,
-			List<? extends ActivityAnnotationContainer> activities) {
+			List<? extends Activity<?>> activities) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
@@ -85,7 +85,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 			}
 		}
 		stateList.add(getStateObject(job, activities));
-		List<ActivityAnnotationContainer> newActivityList = new ArrayList<ActivityAnnotationContainer>();
+		List<Activity<?>> newActivityList = new ArrayList<Activity<?>>();
 		newActivityList.add(activities.get(0));
 		getBelow().receiveJob(job, newActivityList);
 
@@ -95,7 +95,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 		int currentActivityIndex = 0;
 
-		public FailoverState(Job j, List<? extends ActivityAnnotationContainer> activities) {
+		public FailoverState(Job j, List<? extends Activity<?>> activities) {
 			super(j, activities);
 		}
 
@@ -105,7 +105,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 			if (currentActivityIndex == activities.size()) {
 				return false;
 			} else {
-				List<ActivityAnnotationContainer> newActivityList = new ArrayList<ActivityAnnotationContainer>();
+				List<Activity<?>> newActivityList = new ArrayList<Activity<?>>();
 				newActivityList.add(activities.get(currentActivityIndex));
 				getBelow().receiveJob(job, newActivityList);
 				return true;

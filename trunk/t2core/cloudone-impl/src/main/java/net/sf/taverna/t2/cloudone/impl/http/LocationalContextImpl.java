@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.impl.http;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.LocationalContext;

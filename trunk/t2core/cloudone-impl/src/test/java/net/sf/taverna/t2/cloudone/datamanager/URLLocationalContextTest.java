@@ -16,7 +16,6 @@ import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceSchemeFactory;
 import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
 

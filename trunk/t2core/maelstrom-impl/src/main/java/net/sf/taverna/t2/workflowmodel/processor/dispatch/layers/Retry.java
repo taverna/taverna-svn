@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAnnotationContainer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
 
 /**
@@ -45,7 +45,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 
 		int currentRetryCount = 0;
 
-		public RetryState(Job job, List<? extends ActivityAnnotationContainer> activities) {
+		public RetryState(Job job, List<? extends Activity<?>> activities) {
 			super(job, activities);
 		}
 
@@ -80,7 +80,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 	}
 
 	@Override
-	protected JobState getStateObject(Job j, List<? extends ActivityAnnotationContainer> activities) {
+	protected JobState getStateObject(Job j, List<? extends Activity<?>> activities) {
 		return new RetryState(j, activities);
 	}
 
