@@ -84,7 +84,7 @@ public class SoaplabActivity extends
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
 				try {
-					// Copy the contents of the DataThing set in the input map
+					// Copy the contents of the data set in the input map
 					// to a new Map object which just contains the raw data
 					// objects
 					Map<String, Object> soaplabInputMap = new HashMap<String, Object>();
@@ -172,6 +172,7 @@ public class SoaplabActivity extends
 						String reportText = temp.get("report");
 						callback.fail("Soaplab call returned an error : "
 								+ reportText);
+						return;
 					}
 
 					// Get the results required by downstream processors
@@ -243,7 +244,7 @@ public class SoaplabActivity extends
 	}
 
 	public boolean isPollingDefined() {
-		return (configurationBean.getPollingInterval() != 0
+		return configurationBean != null && (configurationBean.getPollingInterval() != 0
 				|| configurationBean.getPollingBackoff() != 1.0 || configurationBean
 				.getPollingIntervalMax() != 0);
 	}
