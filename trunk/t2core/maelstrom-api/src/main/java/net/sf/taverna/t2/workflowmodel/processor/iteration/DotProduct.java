@@ -69,7 +69,8 @@ public class DotProduct extends AbstractIterationStrategyNode {
 					.getOwningProcess(), inputIndex);
 			if (allDone) {
 				ownerToCache.remove(completion.getOwningProcess());
-				pushCompletion(completion);
+				// BUG - the receiveFinalCompletion already did this! 
+				// pushCompletion(completion);
 			}
 		}
 	}
