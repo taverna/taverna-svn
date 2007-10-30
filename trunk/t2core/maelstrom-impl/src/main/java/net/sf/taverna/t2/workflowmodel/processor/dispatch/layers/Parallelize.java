@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
@@ -66,6 +68,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	private ParallelizeConfig config = new ParallelizeConfig();
 
+	int sentJobsCount = 0;
+
 	public Parallelize() {
 		super();
 		messageActions.put(DispatchMessageType.JOBQUEUE,
@@ -91,12 +95,20 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void eventAdded(String owningProcess) {
-		stateMap.get(owningProcess).fillFromQueue();
+		if (stateMap.containsKey(owningProcess) == false) {
+			throw new WorkflowStructureException(
+					"Should never see this here, it means we've had duplicate completion events from upstream");
+		} else {
+			synchronized (stateMap.get(owningProcess)) {
+				stateMap.get(owningProcess).fillFromQueue();
+			}
+		}
 	}
 
 	public void receiveJobQueue(String owningProcess,
 			BlockingQueue<Event> queue,
 			List<? extends ActivityAnnotationContainer> activities) {
+		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
 		stateMap.put(owningProcess, model);
@@ -115,6 +127,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	public void receiveError(String owningProcess, int[] index,
 			String errorMessage, Throwable detail) {
+		// System.out.println(sentJobsCount);
 		StateModel model = stateMap.get(owningProcess);
 		getAbove().receiveError(owningProcess, index, errorMessage, detail);
 		model.finishWith(index);
@@ -138,6 +151,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void finishedWith(String owningProcess) {
+		// System.out.println("Removing state map for " + owningProcess);
 		stateMap.remove(owningProcess);
 	}
 
@@ -153,7 +167,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private List<? extends ActivityAnnotationContainer> activities;
 
-		private List<Event> pendingEvents = new ArrayList<Event>();
+		private BlockingQueue<Event> pendingEvents = new LinkedBlockingQueue<Event>();
 
 		private int activeJobs = 0;
 
@@ -197,16 +211,26 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 * </ul>
 		 */
 		protected void fillFromQueue() {
-			synchronized (pendingEvents) {
+			synchronized (this) {
 				while (queue.peek() != null && activeJobs < maximumJobs) {
-					Event e = queue.remove();
-					if (e instanceof Completion && pendingEvents.isEmpty()) {
-						getAbove().receiveResultCompletion((Completion) e);
+					final Event e = queue.remove();
+
+					if (e instanceof Completion && pendingEvents.peek() == null) {
+						new Thread(new Runnable() {
+							public void run() {
+								getAbove().receiveResultCompletion(
+										(Completion) e);
+							}
+						}).start();
+						// getAbove().receiveResultCompletion((Completion) e);
 					} else {
 						pendingEvents.add(e);
 					}
 					if (e instanceof Job) {
-						activeJobs++;
+						synchronized (this) {
+							activeJobs++;
+						}
+						// sentJobsCount++;
 						getBelow().receiveJob((Job) e, activities);
 					}
 				}
@@ -222,9 +246,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 * @return
 		 */
 		protected boolean finishWith(int[] index) {
-			synchronized (pendingEvents) {
-				// Iterate over copy of pending event list so we can remove
-				// items from the live one as we go
+			synchronized (this) {
+
 				for (Event e : new ArrayList<Event>(pendingEvents)) {
 					if (e instanceof Job) {
 						Job j = (Job) e;
@@ -238,12 +261,12 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 							// the head of the queue - this indicates that all
 							// the job events which came in before them have
 							// been processed and we can emit the completions
-							while (!pendingEvents.isEmpty()
-									&& pendingEvents.get(0) instanceof Completion) {
+							while (pendingEvents.peek() != null
+									&& pendingEvents.peek() instanceof Completion) {
 								Completion c = (Completion) pendingEvents
-										.get(0);
+										.remove();
 								getAbove().receiveResultCompletion(c);
-								pendingEvents.remove(c);
+
 							}
 							// Refresh from the queue; as we've just decremented
 							// the active job count there should be a worker
