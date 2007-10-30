@@ -86,7 +86,7 @@ public class ActivityTranslatorFactory {
 			return ((LocalArtifactClassLoader)ActivityTranslatorFactory.class.getClassLoader()).getRepository();
 		}
 		else {
-			// FIXME: Need to get the repository from the LocalArtifactClassloader.
+			
 			File tmpDir = null;
 			try {
 				tmpDir = File.createTempFile("taverna", "raven");
