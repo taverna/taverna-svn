@@ -31,21 +31,22 @@ public class PropertiedObjectSetImplTest {
 	
 	private PropertiedObjectSetImpl<ExampleObject> testImpl;
 
-	private int addedPropertyCount;
+	int addedPropertyCount;
 
-	private int changedPropertyCount;
+	int changedPropertyCount;
 
-	private int removedPropertyCount;
+	int removedPropertyCount;
 	
-	private int addedCount;
+	int addedCount;
 	
-	private int removedCount;
+	int removedCount;
 	
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -53,6 +54,7 @@ public class PropertiedObjectSetImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -60,10 +62,10 @@ public class PropertiedObjectSetImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		addedPropertyCount = 0;
-		changedPropertyCount = 0;
-		removedPropertyCount = 0;
-		testImpl = new PropertiedObjectSetImpl<ExampleObject> ();
+		this.addedPropertyCount = 0;
+		this.changedPropertyCount = 0;
+		this.removedPropertyCount = 0;
+		this.testImpl = new PropertiedObjectSetImpl<ExampleObject> ();
 	}
 
 	/**
@@ -71,19 +73,20 @@ public class PropertiedObjectSetImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	private PropertiedObjectListener createObjectListener () {
 		return new PropertiedObjectListener ()
 			 {	
 					public void propertyAdded (Object o, PropertyKey key, PropertyValue value) {
-						addedPropertyCount++;
+						PropertiedObjectSetImplTest.this.addedPropertyCount++;
 					}
 					public void propertyRemoved (Object o, PropertyKey key, PropertyValue value) {
-						removedPropertyCount++;
+						PropertiedObjectSetImplTest.this.removedPropertyCount++;
 					}
 					public void propertyChanged (Object o, PropertyKey key, PropertyValue oldValue, PropertyValue newValue) {
-						changedPropertyCount++;
+						PropertiedObjectSetImplTest.this.changedPropertyCount++;
 					}
 		};
 	}
@@ -91,11 +94,11 @@ public class PropertiedObjectSetImplTest {
 	private PropertiedObjectSetListener createObjectSetListener () {
 		return new PropertiedObjectSetListener ()
 			 {	
-					public void objectAdded (PropertiedObjectSet pos, Object o) {
-						addedCount++;
+					public void objectAdded (PropertiedObjectSet<?> pos, Object o) {
+						PropertiedObjectSetImplTest.this.addedCount++;
 					}
-					public void objectRemoved (PropertiedObjectSet pos, Object o) {
-						removedCount++;
+					public void objectRemoved (PropertiedObjectSet<?> pos, Object o) {
+						PropertiedObjectSetImplTest.this.removedCount++;
 					}
 		};
 	}
@@ -117,8 +120,8 @@ public class PropertiedObjectSetImplTest {
 	 */
 	@Test
 	public void testPropertiedObjectSetImpl() {
-		assertFalse ("testImpl.getObjects()", testImpl.getObjects() == null);
-		assertEquals("testImpl.getObjects().size()", 0, testImpl.getObjects().size());
+		assertFalse ("testImpl.getObjects()", this.testImpl.getObjects() == null); //$NON-NLS-1$
+		assertEquals("testImpl.getObjects().size()", 0, this.testImpl.getObjects().size()); //$NON-NLS-1$
 	}
 
 	/**
@@ -127,25 +130,25 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testAddAllObjectsListener() {
 		try {
-			testImpl.addAllObjectsListener(null);
-			fail("NullPointerException should have been thrown for listener");
+			this.testImpl.addAllObjectsListener(null);
+			fail("NullPointerException should have been thrown for listener"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		testImpl.addAllObjectsListener (createObjectListener());
+		this.testImpl.addAllObjectsListener (createObjectListener());
 		ExampleObject testObject1 = createObject();
 		ExampleObject testObject2 = createObject();
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
-		testImpl.setProperty(testObject1, testKey1, testValue1);
-		testImpl.setProperty(testObject2, testKey1, testValue1);
-		testImpl.setProperty(testObject1, testKey1, testValue2);
-		testImpl.removeProperty(testObject1, testKey1);
-		assertEquals("addedPropertyCount", 2, addedPropertyCount);
-		assertEquals("changedPropertyCount", 1, changedPropertyCount);
-		assertEquals("removedPropertyCount", 1, removedPropertyCount);
+		this.testImpl.setProperty(testObject1, testKey1, testValue1);
+		this.testImpl.setProperty(testObject2, testKey1, testValue1);
+		this.testImpl.setProperty(testObject1, testKey1, testValue2);
+		this.testImpl.removeProperty(testObject1, testKey1);
+		assertEquals("addedPropertyCount", 2, this.addedPropertyCount); //$NON-NLS-1$
+		assertEquals("changedPropertyCount", 1, this.changedPropertyCount); //$NON-NLS-1$
+		assertEquals("removedPropertyCount", 1, this.removedPropertyCount); //$NON-NLS-1$
 	}
 
 	/**
@@ -154,20 +157,20 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testAddListener() {
 		try {
-			testImpl.addListener (null);
-			fail ("NullPointerException should have been thrown for listener");
+			this.testImpl.addListener (null);
+			fail ("NullPointerException should have been thrown for listener"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		testImpl.addListener(createObjectSetListener());
+		this.testImpl.addListener(createObjectSetListener());
 		ExampleObject testObject1 = createObject();
 		ExampleObject testObject2 = createObject();
-		testImpl.addObject (testObject1);
-		testImpl.addObject (testObject2);
-		testImpl.removeObject (testObject1);
-		assertEquals ("addedCount", 2, addedCount);
-		assertEquals ("removedCount", 1, removedCount);
+		this.testImpl.addObject (testObject1);
+		this.testImpl.addObject (testObject2);
+		this.testImpl.removeObject (testObject1);
+		assertEquals ("addedCount", 2, this.addedCount); //$NON-NLS-1$
+		assertEquals ("removedCount", 1, this.removedCount); //$NON-NLS-1$
 	}
 
 	/**
@@ -176,16 +179,16 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testAddObject() {
 		try {
-			testImpl.addObject (null);
-			fail ("NullPointerException should have been thrown for object");
+			this.testImpl.addObject (null);
+			fail ("NullPointerException should have been thrown for object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		ExampleObject testObject = createObject();
-		testImpl.addObject (testObject);
-		assertTrue ("testImpl.containsObject (testObject)",
-				testImpl.containsObject (testObject));
+		this.testImpl.addObject (testObject);
+		assertTrue ("testImpl.containsObject (testObject)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
 	}
 
 	/**
@@ -194,21 +197,21 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testContainsObject() {
 		try {
-			testImpl.containsObject (null);
-			fail ("NullPointerException should have been thrown for object");
+			this.testImpl.containsObject (null);
+			fail ("NullPointerException should have been thrown for object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		ExampleObject testObject = createObject();
-		assertFalse ("testImpl.containsObject (testObject1)",
-				testImpl.containsObject (testObject));
-		testImpl.addObject (testObject);
-		assertTrue ("testImpl.containsObject (testObject1)",
-				testImpl.containsObject (testObject));
-		testImpl.removeObject (testObject);
-		assertFalse ("testImpl.containsObject (testObject1)",
-				testImpl.containsObject (testObject));
+		assertFalse ("testImpl.containsObject (testObject1)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
+		this.testImpl.addObject (testObject);
+		assertTrue ("testImpl.containsObject (testObject1)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
+		this.testImpl.removeObject (testObject);
+		assertFalse ("testImpl.containsObject (testObject1)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
 	}
 
 	/**
@@ -217,20 +220,20 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testContainsPropertiedObject() {
 		try {
-			testImpl.containsPropertiedObject (null);
-			fail ("NullPointerException should have been thrown for propertied object");
+			this.testImpl.containsPropertiedObject (null);
+			fail ("NullPointerException should have been thrown for propertied object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		ExampleObject testObject = createObject();
-		PropertiedObject testPropertiedObject = testImpl.addObject (testObject);
-		testImpl.addObject (testObject);
-		assertTrue ("testImpl.containsPropertiedObject (testPropertiedObject)",
-				testImpl.containsPropertiedObject (testPropertiedObject));
-		testImpl.removeObject (testObject);
-		assertFalse ("testImpl.containsPropertiedObject (testPropertiedObject)",
-				testImpl.containsPropertiedObject (testPropertiedObject));
+		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject (testObject);
+		this.testImpl.addObject (testObject);
+		assertTrue ("testImpl.containsPropertiedObject (testPropertiedObject)", //$NON-NLS-1$
+				this.testImpl.containsPropertiedObject (testPropertiedObject));
+		this.testImpl.removeObject (testObject);
+		assertFalse ("testImpl.containsPropertiedObject (testPropertiedObject)", //$NON-NLS-1$
+				this.testImpl.containsPropertiedObject (testPropertiedObject));
 	}
 
 	/**
@@ -244,15 +247,15 @@ public class PropertiedObjectSetImplTest {
 		PropertyKey testKey2 = createKey();
 		PropertyKey testKey3 = createKey();
 		PropertyValue testValue = createValue();
-		testImpl.setProperty(testObject1, testKey1, testValue);
-		testImpl.setProperty(testObject1, testKey2, testValue);
-		testImpl.setProperty(testObject2, testKey3, testValue);
+		this.testImpl.setProperty(testObject1, testKey1, testValue);
+		this.testImpl.setProperty(testObject1, testKey2, testValue);
+		this.testImpl.setProperty(testObject2, testKey3, testValue);
 		
-		Set<PropertyKey> keys = testImpl.getAllPropertyKeys();
-		assertEquals ("keys.size()", 3, keys.size());
-		assertTrue("keys.contains(testKey1)", keys.contains(testKey1));
-		assertTrue("keys.contains(testKey2)", keys.contains(testKey2));
-		assertTrue("keys.contains(testKey3)", keys.contains(testKey3));
+		Set<PropertyKey> keys = this.testImpl.getAllPropertyKeys();
+		assertEquals ("keys.size()", 3, keys.size()); //$NON-NLS-1$
+		assertTrue("keys.contains(testKey1)", keys.contains(testKey1)); //$NON-NLS-1$
+		assertTrue("keys.contains(testKey2)", keys.contains(testKey2)); //$NON-NLS-1$
+		assertTrue("keys.contains(testKey3)", keys.contains(testKey3)); //$NON-NLS-1$
 	}
 
 	/**
@@ -261,30 +264,30 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testGetAllPropertyValues() {
 		try {
-			testImpl.getAllPropertyValues(null);
-			fail("NullPointerException should have been thrown");
+			this.testImpl.getAllPropertyValues(null);
+			fail("NullPointerException should have been thrown"); //$NON-NLS-1$
 		} catch (NullPointerException e) {
 			// This is expected
 		}
 		ExampleObject testObject1 = createObject ();
 		ExampleObject testObject2 = createObject ();
 		ExampleObject testObject3 = createObject ();
-		testImpl.addObject(testObject1);
-		testImpl.addObject(testObject2);
-		testImpl.addObject(testObject3);
+		this.testImpl.addObject(testObject1);
+		this.testImpl.addObject(testObject2);
+		this.testImpl.addObject(testObject3);
 		PropertyKey testKey = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
 		PropertyValue testValue3 = createValue();
-		testImpl.setProperty (testObject1, testKey, testValue1);
-		testImpl.setProperty (testObject2, testKey, testValue2);
-		testImpl.setProperty (testObject3, testKey, testValue3);
+		this.testImpl.setProperty (testObject1, testKey, testValue1);
+		this.testImpl.setProperty (testObject2, testKey, testValue2);
+		this.testImpl.setProperty (testObject3, testKey, testValue3);
 		
-		Set<PropertyValue> values = testImpl.getAllPropertyValues(testKey);
-		assertEquals ("values.size()", 3, values.size());
-		assertTrue("values.contains(testValue1)", values.contains(testValue1));
-		assertTrue("values.contains(testValue2)", values.contains(testValue2));
-		assertTrue("values.contains(testValue3)", values.contains(testValue3));
+		Set<PropertyValue> values = this.testImpl.getAllPropertyValues(testKey);
+		assertEquals ("values.size()", 3, values.size()); //$NON-NLS-1$
+		assertTrue("values.contains(testValue1)", values.contains(testValue1)); //$NON-NLS-1$
+		assertTrue("values.contains(testValue2)", values.contains(testValue2)); //$NON-NLS-1$
+		assertTrue("values.contains(testValue3)", values.contains(testValue3)); //$NON-NLS-1$
 	}
 
 	/**
@@ -295,14 +298,14 @@ public class PropertiedObjectSetImplTest {
 		ExampleObject testObject1 = createObject ();
 		ExampleObject testObject2 = createObject ();
 		ExampleObject testObject3 = createObject ();
-		testImpl.addObject(testObject1);
-		testImpl.addObject(testObject2);
-		testImpl.addObject(testObject3);
-		Set<ExampleObject> objects = testImpl.getObjects();
-		assertEquals ("objects.size()", 3, objects.size());
-		assertTrue("objects.contains(testObject1)", objects.contains(testObject1));
-		assertTrue("objects.contains(testObject2)", objects.contains(testObject2));
-		assertTrue("objects.contains(testObject3)", objects.contains(testObject3));
+		this.testImpl.addObject(testObject1);
+		this.testImpl.addObject(testObject2);
+		this.testImpl.addObject(testObject3);
+		Set<ExampleObject> objects = this.testImpl.getObjects();
+		assertEquals ("objects.size()", 3, objects.size()); //$NON-NLS-1$
+		assertTrue("objects.contains(testObject1)", objects.contains(testObject1)); //$NON-NLS-1$
+		assertTrue("objects.contains(testObject2)", objects.contains(testObject2)); //$NON-NLS-1$
+		assertTrue("objects.contains(testObject3)", objects.contains(testObject3)); //$NON-NLS-1$
 		
 	}
 
@@ -312,19 +315,19 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testGetPropertiedObject() {
 		try {
-			testImpl.getPropertiedObject(null);
-			fail ("NullPointerException should have been thrown");
+			this.testImpl.getPropertiedObject(null);
+			fail ("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// this is expected
 		}
 		ExampleObject testObject = createObject();
-		PropertiedObject testPropertiedObject = testImpl.addObject(testObject);
-		assertEquals("testImpl.getPropertiedObject(testObject)", testPropertiedObject,
-				testImpl.getPropertiedObject(testObject));
-		testImpl.removeObject(testObject);
-		assertNull("testImpl.getPropertiedObject(testObject)",
-				testImpl.getPropertiedObject(testObject));
+		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
+		assertEquals("testImpl.getPropertiedObject(testObject)", testPropertiedObject, //$NON-NLS-1$
+				this.testImpl.getPropertiedObject(testObject));
+		this.testImpl.removeObject(testObject);
+		assertNull("testImpl.getPropertiedObject(testObject)", //$NON-NLS-1$
+				this.testImpl.getPropertiedObject(testObject));
 	}
 
 	/**
@@ -335,16 +338,16 @@ public class PropertiedObjectSetImplTest {
 		ExampleObject testObject1 = createObject ();
 		ExampleObject testObject2 = createObject ();
 		ExampleObject testObject3 = createObject ();
-		PropertiedObject testPropertiedObject1 = testImpl.addObject(testObject1);
-		PropertiedObject testPropertiedObject2 = testImpl.addObject(testObject2);
-		PropertiedObject testPropertiedObject3 = testImpl.addObject(testObject3);
-		Set<PropertiedObject> propertiedObjects = testImpl.getPropertiedObjects();
-		assertEquals ("propertiedObjects.size()", 3, propertiedObjects.size());
-		assertTrue("propertiedObjects.contains(testPropertiedObject1)",
+		PropertiedObject<ExampleObject> testPropertiedObject1 = this.testImpl.addObject(testObject1);
+		PropertiedObject<ExampleObject> testPropertiedObject2 = this.testImpl.addObject(testObject2);
+		PropertiedObject<ExampleObject> testPropertiedObject3 = this.testImpl.addObject(testObject3);
+		Set<PropertiedObject<ExampleObject>> propertiedObjects = this.testImpl.getPropertiedObjects();
+		assertEquals ("propertiedObjects.size()", 3, propertiedObjects.size()); //$NON-NLS-1$
+		assertTrue("propertiedObjects.contains(testPropertiedObject1)", //$NON-NLS-1$
 				propertiedObjects.contains(testPropertiedObject1));
-		assertTrue("propertiedObjects.contains(testPropertiedObject2)",
+		assertTrue("propertiedObjects.contains(testPropertiedObject2)", //$NON-NLS-1$
 				propertiedObjects.contains(testPropertiedObject2));
-		assertTrue("propertiedObjects.contains(testPropertiedObject3)",
+		assertTrue("propertiedObjects.contains(testPropertiedObject3)", //$NON-NLS-1$
 				propertiedObjects.contains(testPropertiedObject3));
 	}
 
@@ -354,27 +357,27 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testRemoveAllObjectsListener() {
 		try {
-			testImpl.removeAllObjectsListener(null);
-			fail("NullPointerException should have been thrown for listener");
+			this.testImpl.removeAllObjectsListener(null);
+			fail("NullPointerException should have been thrown for listener"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		PropertiedObjectListener objectListener = createObjectListener();
-		testImpl.addAllObjectsListener (objectListener);
+		this.testImpl.addAllObjectsListener (objectListener);
 		ExampleObject testObject1 = createObject();
 		ExampleObject testObject2 = createObject();
 		PropertyKey testKey1 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
-		testImpl.setProperty(testObject1, testKey1, testValue1);
-		testImpl.removeAllObjectsListener(objectListener);
-		testImpl.setProperty(testObject2, testKey1, testValue1);
-		testImpl.setProperty(testObject1, testKey1, testValue2);
-		testImpl.removeProperty(testObject1, testKey1);
-		assertEquals("addedPropertyCount", 1, addedPropertyCount);
-		assertEquals("changedPropertyCount", 0, changedPropertyCount);
-		assertEquals("removedPropertyCount", 0, removedPropertyCount);
+		this.testImpl.setProperty(testObject1, testKey1, testValue1);
+		this.testImpl.removeAllObjectsListener(objectListener);
+		this.testImpl.setProperty(testObject2, testKey1, testValue1);
+		this.testImpl.setProperty(testObject1, testKey1, testValue2);
+		this.testImpl.removeProperty(testObject1, testKey1);
+		assertEquals("addedPropertyCount", 1, this.addedPropertyCount); //$NON-NLS-1$
+		assertEquals("changedPropertyCount", 0, this.changedPropertyCount); //$NON-NLS-1$
+		assertEquals("removedPropertyCount", 0, this.removedPropertyCount); //$NON-NLS-1$
 	}
 
 	/**
@@ -383,22 +386,22 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testRemoveListener() {
 		try {
-			testImpl.removeListener (null);
-			fail ("NullPointerException should have been thrown for listener");
+			this.testImpl.removeListener (null);
+			fail ("NullPointerException should have been thrown for listener"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		PropertiedObjectSetListener listener = createObjectSetListener();
-		testImpl.addListener(listener);
+		this.testImpl.addListener(listener);
 		ExampleObject testObject1 = createObject();
 		ExampleObject testObject2 = createObject();
-		testImpl.addObject (testObject1);
-		testImpl.removeListener(listener);
-		testImpl.addObject (testObject2);
-		testImpl.removeObject (testObject1);
-		assertEquals ("addedCount", 1, addedCount);
-		assertEquals ("removedCount", 0, removedCount);
+		this.testImpl.addObject (testObject1);
+		this.testImpl.removeListener(listener);
+		this.testImpl.addObject (testObject2);
+		this.testImpl.removeObject (testObject1);
+		assertEquals ("addedCount", 1, this.addedCount); //$NON-NLS-1$
+		assertEquals ("removedCount", 0, this.removedCount); //$NON-NLS-1$
 	}
 
 	/**
@@ -407,23 +410,23 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testRemoveObject() {
 		try {
-			testImpl.removeObject (null);
-			fail ("NullPointerException should have been thrown for object");
+			this.testImpl.removeObject (null);
+			fail ("NullPointerException should have been thrown for object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		ExampleObject testObject = createObject();
-		PropertiedObject testPropertiedObject = testImpl.addObject (testObject);
-		assertTrue ("testImpl.containsObject (testObject)",
-				testImpl.containsObject (testObject));
-		assertTrue ("testImpl.containsPropertiedObject  (testPropertiedObject)",
-				testImpl.containsPropertiedObject (testPropertiedObject));
-		testImpl.removeObject (testObject);
-		assertFalse ("testImpl.containsObject (testObject)",
-				testImpl.containsObject (testObject));
-		assertFalse ("testImpl.containsPropertiedObject  (testPropertiedObject)",
-				testImpl.containsPropertiedObject (testPropertiedObject));
+		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject (testObject);
+		assertTrue ("testImpl.containsObject (testObject)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
+		assertTrue ("testImpl.containsPropertiedObject  (testPropertiedObject)", //$NON-NLS-1$
+				this.testImpl.containsPropertiedObject (testPropertiedObject));
+		this.testImpl.removeObject (testObject);
+		assertFalse ("testImpl.containsObject (testObject)", //$NON-NLS-1$
+				this.testImpl.containsObject (testObject));
+		assertFalse ("testImpl.containsPropertiedObject  (testPropertiedObject)", //$NON-NLS-1$
+				this.testImpl.containsPropertiedObject (testPropertiedObject));
 	}
 
 	/**
@@ -432,8 +435,8 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testRemoveProperty() {
 		try {
-			testImpl.removeProperty(null, null);
-			fail ("NullPointerException should have been thrown for object or key");
+			this.testImpl.removeProperty(null, null);
+			fail ("NullPointerException should have been thrown for object or key"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
@@ -443,26 +446,26 @@ public class PropertiedObjectSetImplTest {
 		PropertyValue testValue = createValue();
 		PropertyKey testKey2 = createKey();
 		try {
-			testImpl.removeProperty(testObject, null);
-			fail ("NullPointerException should have been thrown for key");
+			this.testImpl.removeProperty(testObject, null);
+			fail ("NullPointerException should have been thrown for key"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		try {
-			testImpl.removeProperty(null, testKey1);
-			fail ("NullPointerException should have been thrown for object");
+			this.testImpl.removeProperty(null, testKey1);
+			fail ("NullPointerException should have been thrown for object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		PropertiedObject testPropertiedObject = testImpl.addObject(testObject);
-		testImpl.setProperty (testObject, testKey1, testValue);
-		testImpl.setProperty (testObject, testKey2, testValue);
-		testImpl.removeProperty (testObject, testKey1);
-		assertFalse("testPropertiedObject.hasProperty(testKey1)",
+		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
+		this.testImpl.setProperty (testObject, testKey1, testValue);
+		this.testImpl.setProperty (testObject, testKey2, testValue);
+		this.testImpl.removeProperty (testObject, testKey1);
+		assertFalse("testPropertiedObject.hasProperty(testKey1)", //$NON-NLS-1$
 				testPropertiedObject.hasProperty(testKey1));
-		assertTrue("testPropertiedObject.hasProperty(testKey2)",
+		assertTrue("testPropertiedObject.hasProperty(testKey2)", //$NON-NLS-1$
 				testPropertiedObject.hasProperty(testKey2));
 	}
 
@@ -472,8 +475,8 @@ public class PropertiedObjectSetImplTest {
 	@Test
 	public void testSetProperty() {
 		try {
-			testImpl.setProperty(null, null, null);
-			fail ("NullPointerException should have been thrown for object, key or value");
+			this.testImpl.setProperty(null, null, null);
+			fail ("NullPointerException should have been thrown for object, key or value"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
@@ -483,32 +486,32 @@ public class PropertiedObjectSetImplTest {
 		PropertyValue testValue = createValue();
 		PropertyKey testKey2 = createKey();
 		try {
-			testImpl.setProperty(null, testKey1, testValue);
-			fail ("NullPointerException should have been thrown for object");
+			this.testImpl.setProperty(null, testKey1, testValue);
+			fail ("NullPointerException should have been thrown for object"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		try {
-			testImpl.setProperty(testObject, null, testValue);
-			fail ("NullPointerException should have been thrown for key");
+			this.testImpl.setProperty(testObject, null, testValue);
+			fail ("NullPointerException should have been thrown for key"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		try {
-			testImpl.setProperty(testObject, testKey1, null);
-			fail ("NullPointerException should have been thrown for value");
+			this.testImpl.setProperty(testObject, testKey1, null);
+			fail ("NullPointerException should have been thrown for value"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		PropertiedObject testPropertiedObject = testImpl.addObject(testObject);
-		testImpl.setProperty (testObject, testKey1, testValue);
-		testImpl.setProperty (testObject, testKey2, testValue);
-		assertTrue("testPropertiedObject.hasProperty(testKey1)",
+		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
+		this.testImpl.setProperty (testObject, testKey1, testValue);
+		this.testImpl.setProperty (testObject, testKey2, testValue);
+		assertTrue("testPropertiedObject.hasProperty(testKey1)", //$NON-NLS-1$
 				testPropertiedObject.hasProperty(testKey1));
-		assertTrue("testPropertiedObject.hasProperty(testKey2)",
+		assertTrue("testPropertiedObject.hasProperty(testKey2)", //$NON-NLS-1$
 				testPropertiedObject.hasProperty(testKey2));
 	}
 
@@ -523,35 +526,35 @@ public class PropertiedObjectSetImplTest {
 		PropertyKey testKey2 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
-		testImpl.setProperty (testObject1, testKey1, testValue1);
-		testImpl.setProperty (testObject2, testKey1, testValue1);
-		testImpl.setProperty (testObject2, testKey2, testValue2);
+		this.testImpl.setProperty (testObject1, testKey1, testValue1);
+		this.testImpl.setProperty (testObject2, testKey1, testValue1);
+		this.testImpl.setProperty (testObject2, testKey2, testValue2);
 		
-		PropertiedObjectSetBean<ExampleObject> testBean = testImpl.getAsBean();
+		PropertiedObjectSetBean<ExampleObject> testBean = this.testImpl.getAsBean();
 		HashMap<ExampleObject, PropertiedObjectBean> beanedMap =
 			testBean.getPropertiedObjectMap();
-		assertEquals("beanedMap.size()", beanedMap.size(),2);
-		assertTrue("beanedMap.containsKey(testObject1)", beanedMap.containsKey(testObject1));
-		assertTrue("beanedMap.containsKey(testObject2)", beanedMap.containsKey(testObject2));
+		assertEquals("beanedMap.size()", beanedMap.size(),2); //$NON-NLS-1$
+		assertTrue("beanedMap.containsKey(testObject1)", beanedMap.containsKey(testObject1)); //$NON-NLS-1$
+		assertTrue("beanedMap.containsKey(testObject2)", beanedMap.containsKey(testObject2)); //$NON-NLS-1$
 		
 		PropertiedObjectBean beanedObject1 = beanedMap.get(testObject1);
 		HashMap<PropertyKey, PropertyValue> beanedProperties1 = beanedObject1.getProperties();
-		assertEquals("beanedProperties1.size()", 1, beanedProperties1.size());
-		assertTrue("beanedProperties1.containsKey(testKey1)",
+		assertEquals("beanedProperties1.size()", 1, beanedProperties1.size()); //$NON-NLS-1$
+		assertTrue("beanedProperties1.containsKey(testKey1)", //$NON-NLS-1$
 				beanedProperties1.containsKey(testKey1));
-		assertEquals("beanedProperties1.get(testKey1)",
+		assertEquals("beanedProperties1.get(testKey1)", //$NON-NLS-1$
 				testValue1, beanedProperties1.get(testKey1));
 
 		PropertiedObjectBean beanedObject2 = beanedMap.get(testObject2);
 		HashMap<PropertyKey, PropertyValue> beanedProperties2 = beanedObject2.getProperties();
-		assertEquals("beanedProperties2.size()", 2, beanedProperties2.size());
-		assertTrue("beanedProperties2.containsKey(testKey1)",
+		assertEquals("beanedProperties2.size()", 2, beanedProperties2.size()); //$NON-NLS-1$
+		assertTrue("beanedProperties2.containsKey(testKey1)", //$NON-NLS-1$
 				beanedProperties2.containsKey(testKey1));
-		assertEquals("beanedProperties2.get(testKey1)",
+		assertEquals("beanedProperties2.get(testKey1)", //$NON-NLS-1$
 				testValue1, beanedProperties2.get(testKey1));
-		assertTrue("beanedProperties2.containsKey(testKey2)",
+		assertTrue("beanedProperties2.containsKey(testKey2)", //$NON-NLS-1$
 				beanedProperties2.containsKey(testKey2));
-		assertEquals("beanedProperties2.get(testKey2)",
+		assertEquals("beanedProperties2.get(testKey2)", //$NON-NLS-1$
 				testValue2, beanedProperties2.get(testKey2));
 	}
 
@@ -566,35 +569,35 @@ public class PropertiedObjectSetImplTest {
 		PropertyKey testKey2 = createKey();
 		PropertyValue testValue1 = createValue();
 		PropertyValue testValue2 = createValue();
-		testImpl.setProperty (testObject1, testKey1, testValue1);
-		testImpl.setProperty (testObject2, testKey1, testValue1);
-		testImpl.setProperty (testObject2, testKey2, testValue2);
+		this.testImpl.setProperty (testObject1, testKey1, testValue1);
+		this.testImpl.setProperty (testObject2, testKey1, testValue1);
+		this.testImpl.setProperty (testObject2, testKey2, testValue2);
 		
-		PropertiedObjectSetBean<ExampleObject> testBean = testImpl.getAsBean();
+		PropertiedObjectSetBean<ExampleObject> testBean = this.testImpl.getAsBean();
 		PropertiedObjectSetImpl<ExampleObject> backFromBean =
 			new PropertiedObjectSetImpl<ExampleObject>();
 		backFromBean.setFromBean (testBean);
 		
-		assertEquals("backFromBean.getObjects.size()",
+		assertEquals("backFromBean.getObjects.size()", //$NON-NLS-1$
 				2, backFromBean.getObjects().size());
-		assertTrue("backFromBean.containsObject(testObject1)",
+		assertTrue("backFromBean.containsObject(testObject1)", //$NON-NLS-1$
 				backFromBean.containsObject(testObject1));
-		assertTrue("backFromBean.containsObject(testObject2)",
+		assertTrue("backFromBean.containsObject(testObject2)", //$NON-NLS-1$
 				backFromBean.containsObject(testObject2));
 		PropertiedObject<ExampleObject> po1 =
 			backFromBean.getPropertiedObject(testObject1);
-		assertEquals("po1.getPropertyKeys().size()",
+		assertEquals("po1.getPropertyKeys().size()", //$NON-NLS-1$
 				1, po1.getPropertyKeys().size());
-		assertEquals("po1.getPropertyValue(testKey1)",
+		assertEquals("po1.getPropertyValue(testKey1)", //$NON-NLS-1$
 				testValue1, po1.getPropertyValue(testKey1));
 		
 		PropertiedObject<ExampleObject> po2 =
 			backFromBean.getPropertiedObject(testObject2);
-		assertEquals("po2.getPropertyKeys().size()",
+		assertEquals("po2.getPropertyKeys().size()", //$NON-NLS-1$
 				2, po2.getPropertyKeys().size());
-		assertEquals("po2.getPropertyValue(testKey1)",
+		assertEquals("po2.getPropertyValue(testKey1)", //$NON-NLS-1$
 				testValue1, po2.getPropertyValue(testKey1));
-		assertEquals("po2.getPropertyValue(testKey2)",
+		assertEquals("po2.getPropertyValue(testKey2)", //$NON-NLS-1$
 				testValue2, po2.getPropertyValue(testKey2));
 	}
 

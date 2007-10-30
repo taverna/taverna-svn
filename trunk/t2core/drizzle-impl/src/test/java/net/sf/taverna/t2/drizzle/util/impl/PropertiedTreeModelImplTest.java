@@ -40,13 +40,14 @@ public class PropertiedTreeModelImplTest {
 	
 	private PropertiedTreeModel<ExampleObject> testImpl;
 	
-	TypedTreeModelEvent<PropertiedTreeNode<ExampleObject>>	changeEvent = null;;
+	TypedTreeModelEvent<PropertiedTreeNode<ExampleObject>>	changeEvent = null;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -54,6 +55,7 @@ public class PropertiedTreeModelImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -61,7 +63,7 @@ public class PropertiedTreeModelImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 	}
 
 	/**
@@ -69,6 +71,7 @@ public class PropertiedTreeModelImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -76,9 +79,9 @@ public class PropertiedTreeModelImplTest {
 	 */
 	@Test
 	public final void testPropertiedTreeModelImpl() {
-		assertNull(testImpl.getPropertyKeySettings());
-		assertNull(testImpl.getFilter());
-		assertNull(testImpl.getObjectComparator());
+		assertNull(this.testImpl.getPropertyKeySettings());
+		assertNull(this.testImpl.getFilter());
+		assertNull(this.testImpl.getObjectComparator());
 	}
 
 	private TypedTreeModelListener<PropertiedTreeNode<ExampleObject>> createListener () {
@@ -97,7 +100,7 @@ public class PropertiedTreeModelImplTest {
 			}
 
 			public void treeStructureChanged(TypedTreeModelEvent<PropertiedTreeNode<ExampleObject>> e) {
-				changeEvent = e;
+				PropertiedTreeModelImplTest.this.changeEvent = e;
 			}
 					
 		};
@@ -108,8 +111,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testAddTreeModelListener() {
 		try {
-			testImpl.addTreeModelListener(null);
-			fail ("NullPointerException should have been thrown");
+			this.testImpl.addTreeModelListener(null);
+			fail ("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
@@ -130,37 +133,37 @@ public class PropertiedTreeModelImplTest {
 
 		// Try an empty ordering
 		List<PropertyKeySetting> keySettings = new ArrayList<PropertyKeySetting> ();
-		testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertyKeySettings(keySettings);
 		
-		testImpl.addTreeModelListener (createListener());
-		testImpl.setPropertiedGraphView(graphView);
-		assertTrue (changeEvent != null);
-		assertEquals(testImpl, changeEvent.getSource());
-		PropertiedTreeNode<ExampleObject> root = testImpl.getRoot();
+		this.testImpl.addTreeModelListener (createListener());
+		this.testImpl.setPropertiedGraphView(graphView);
+		assertTrue (this.changeEvent != null);
+		assertEquals(this.testImpl, this.changeEvent.getSource());
+		PropertiedTreeNode<ExampleObject> root = this.testImpl.getRoot();
 		assertEquals(1, root.getChildCount());
 		assertEquals(new TreePath(new PropertiedTreeNode[] {root}),
-				changeEvent.getTreePath());
+				this.changeEvent.getTreePath());
 
-		changeEvent = null;
+		this.changeEvent = null;
 		testSet.addObject(service1);
-		assertNull(changeEvent);
+		assertNull(this.changeEvent);
 		
-		changeEvent = null;
+		this.changeEvent = null;
 		testSet.addObject(service2);
 		assertEquals(2, root.getChildCount());
 		assertEquals(new TreePath(new PropertiedTreeNode[] {root}),
-				changeEvent.getTreePath());
+				this.changeEvent.getTreePath());
 		
-		changeEvent = null;
+		this.changeEvent = null;
 		testSet.removeObject(service1);
-		assert(changeEvent != null);
+		assert(this.changeEvent != null);
 		assertEquals(1, root.getChildCount());
 		assertEquals(new TreePath(new PropertiedTreeNode[] {root}),
-				changeEvent.getTreePath());
+				this.changeEvent.getTreePath());
 		
-		changeEvent = null;
+		this.changeEvent = null;
 		testSet.setProperty(service2, domainKey, geneticsValue);
-		assertNull(changeEvent);
+		assertNull(this.changeEvent);
 	}
 
 	/**
@@ -169,8 +172,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testGetChild() {
 		try {
-			testImpl.getChild(null, 0);
-			fail("NullPointerException expected");
+			this.testImpl.getChild(null, 0);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -184,10 +187,10 @@ public class PropertiedTreeModelImplTest {
 			new PropertiedTreeObjectNodeImpl<ExampleObject>();
 		parent.addChild(child2);
 
-		assertEquals(child1, testImpl.getChild(parent, 0));
-		assertEquals(child2, testImpl.getChild(parent, 1));
-		assertNull(testImpl.getChild(parent, -1));
-		assertNull(testImpl.getChild(parent, 7));
+		assertEquals(child1, this.testImpl.getChild(parent, 0));
+		assertEquals(child2, this.testImpl.getChild(parent, 1));
+		assertNull(this.testImpl.getChild(parent, -1));
+		assertNull(this.testImpl.getChild(parent, 7));
 	}
 
 	/**
@@ -196,25 +199,25 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testGetChildCount() {
 		try {
-			testImpl.getChildCount(null);
-			fail("NullPointerException expected");
+			this.testImpl.getChildCount(null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		PropertiedTreeRootNode<ExampleObject> parent =
 			new PropertiedTreeRootNodeImpl<ExampleObject>();
-		assertEquals(0, testImpl.getChildCount(parent));
+		assertEquals(0, this.testImpl.getChildCount(parent));
 		
 		PropertiedTreeObjectNode<ExampleObject> child1 =
 			new PropertiedTreeObjectNodeImpl<ExampleObject>();
 		parent.addChild(child1);
-		assertEquals(1, testImpl.getChildCount(parent));
+		assertEquals(1, this.testImpl.getChildCount(parent));
 		
 		PropertiedTreeObjectNode<ExampleObject> child2 =
 			new PropertiedTreeObjectNodeImpl<ExampleObject>();
 		parent.addChild(child2);
-		assertEquals(2, testImpl.getChildCount(parent));
+		assertEquals(2, this.testImpl.getChildCount(parent));
 	}
 
 	/**
@@ -223,8 +226,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testGetIndexOfChild() {
 		try {
-			testImpl.getIndexOfChild(null, null);
-			fail("NullPointerException expected");
+			this.testImpl.getIndexOfChild(null, null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -233,8 +236,8 @@ public class PropertiedTreeModelImplTest {
 			new PropertiedTreeRootNodeImpl<ExampleObject>();
 		
 		try {
-			testImpl.getIndexOfChild(parent, null);
-			fail("NullPointerException expected");
+			this.testImpl.getIndexOfChild(parent, null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -245,19 +248,19 @@ public class PropertiedTreeModelImplTest {
 		PropertiedTreeObjectNode<ExampleObject> child2 =
 			new PropertiedTreeObjectNodeImpl<ExampleObject>();
 		try {
-			testImpl.getIndexOfChild(null, child1);
-			fail("NullPointerException expected");
+			this.testImpl.getIndexOfChild(null, child1);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 			
 		}
 		parent.addChild(child1);
-		assertEquals(0, testImpl.getIndexOfChild(parent, child1));
-		assertEquals(-1, testImpl.getIndexOfChild(parent, child2));
+		assertEquals(0, this.testImpl.getIndexOfChild(parent, child1));
+		assertEquals(-1, this.testImpl.getIndexOfChild(parent, child2));
 		
 		parent.addChild(child2);
-		assertEquals(1, testImpl.getIndexOfChild(parent, child2));
+		assertEquals(1, this.testImpl.getIndexOfChild(parent, child2));
 	}
 
 	/**
@@ -265,7 +268,7 @@ public class PropertiedTreeModelImplTest {
 	 */
 	@Test
 	public final void testGetPropertyKeySettings() {
-		List<PropertyKeySetting> settings = testImpl.getPropertyKeySettings();
+		List<PropertyKeySetting> settings = this.testImpl.getPropertyKeySettings();
 		assertNull(settings);
 		
 		List<PropertyKeySetting> newSettings = new ArrayList<PropertyKeySetting>();
@@ -274,8 +277,8 @@ public class PropertiedTreeModelImplTest {
 		PropertyKeySetting setting2 = new PropertyKeySettingImpl();
 		newSettings.add(setting2);
 		
-		testImpl.setPropertyKeySettings(newSettings);
-		settings = testImpl.getPropertyKeySettings();
+		this.testImpl.setPropertyKeySettings(newSettings);
+		settings = this.testImpl.getPropertyKeySettings();
 		assertEquals(newSettings, settings);
 		
 	}
@@ -294,8 +297,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testIsLeaf() {
 		try {
-			testImpl.isLeaf(null);
-			fail("NullPointerException expected");
+			this.testImpl.isLeaf(null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -306,8 +309,8 @@ public class PropertiedTreeModelImplTest {
 			new PropertiedTreeObjectNodeImpl<ExampleObject>();
 		parent.addChild(child);
 		
-		assertFalse(testImpl.isLeaf(parent));
-		assertTrue(testImpl.isLeaf(child));
+		assertFalse(this.testImpl.isLeaf(parent));
+		assertTrue(this.testImpl.isLeaf(child));
 	}
 
 	/**
@@ -316,8 +319,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testRemoveTreeModelListener() {
 		try {
-			testImpl.removeTreeModelListener(null);
-			fail ("NullPointerException should have been thrown");
+			this.testImpl.removeTreeModelListener(null);
+			fail ("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
@@ -336,22 +339,22 @@ public class PropertiedTreeModelImplTest {
 
 		// Try an empty ordering
 		List<PropertyKeySetting> keySettings = new ArrayList<PropertyKeySetting> ();
-		testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertyKeySettings(keySettings);
 		
 		TypedTreeModelListener<PropertiedTreeNode<ExampleObject>> listener = createListener();
-		testImpl.addTreeModelListener (listener);
-		testImpl.setPropertiedGraphView(graphView);
-		assertTrue (changeEvent != null);
-		assertEquals(testImpl, changeEvent.getSource());
-		PropertiedTreeNode<ExampleObject> root = testImpl.getRoot();
+		this.testImpl.addTreeModelListener (listener);
+		this.testImpl.setPropertiedGraphView(graphView);
+		assertTrue (this.changeEvent != null);
+		assertEquals(this.testImpl, this.changeEvent.getSource());
+		PropertiedTreeNode<ExampleObject> root = this.testImpl.getRoot();
 		assertEquals(1, root.getChildCount());
 		assertEquals(new TreePath(new PropertiedTreeNode[] {root}),
-				changeEvent.getTreePath());
+				this.changeEvent.getTreePath());
 		
-		changeEvent = null;
-		testImpl.removeTreeModelListener(listener);
+		this.changeEvent = null;
+		this.testImpl.removeTreeModelListener(listener);
 		testSet.removeObject(service1);
-		assertNull (changeEvent);
+		assertNull (this.changeEvent);
 	}
 
 	/**
@@ -360,11 +363,11 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testSetFilter() {
 		try {
-			testImpl.setFilter(null);
+			this.testImpl.setFilter(null);
 			// This is OK
 		}
 		catch (NullPointerException e) {
-			fail ("NullPointerException should not be thrown");
+			fail ("NullPointerException should not be thrown"); //$NON-NLS-1$
 		}
 		PropertiedObjectFilter<ExampleObject> filter =
 			new PropertiedObjectFilter<ExampleObject> () {
@@ -374,12 +377,12 @@ public class PropertiedTreeModelImplTest {
 				}
 			
 		};
-		testImpl.setFilter(filter);
-		assertEquals(filter, testImpl.getFilter());
+		this.testImpl.setFilter(filter);
+		assertEquals(filter, this.testImpl.getFilter());
 		
 		try {
-			testImpl.setFilter(filter);
-			fail("IllegalStateException expected");
+			this.testImpl.setFilter(filter);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
@@ -393,20 +396,20 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testSetObjectComparator() {
 		try {
-			testImpl.setObjectComparator(null);
-			fail("NullPointerException should have been thrown");
+			this.testImpl.setObjectComparator(null);
+			fail("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		Comparator comparator = Collator.getInstance();
 
-		testImpl.setObjectComparator(comparator);
-		assertEquals(comparator, testImpl.getObjectComparator());
+		this.testImpl.setObjectComparator(comparator);
+		assertEquals(comparator, this.testImpl.getObjectComparator());
 		
 		try {
-			testImpl.setObjectComparator(comparator);
-			fail("IllegalStateException expected");
+			this.testImpl.setObjectComparator(comparator);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
@@ -420,8 +423,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testSetPropertiedGraphView() {
 		try {
-			testImpl.setPropertiedGraphView(null);
-			fail("NullPointerException should have been thrown");
+			this.testImpl.setPropertiedGraphView(null);
+			fail("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -430,8 +433,8 @@ public class PropertiedTreeModelImplTest {
 			new PropertiedGraphViewImpl<ExampleObject>();
 		
 		try {
-			testImpl.setPropertiedGraphView(graphView);
-			fail("IllegalStateException expected");
+			this.testImpl.setPropertiedGraphView(graphView);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is expected
@@ -483,24 +486,24 @@ public class PropertiedTreeModelImplTest {
 
 		// Try an empty ordering
 		List<PropertyKeySetting> keySettings = new ArrayList<PropertyKeySetting> ();
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		
-		PropertiedTreeNode<ExampleObject> root = testImpl.getRoot();
+		PropertiedTreeNode<ExampleObject> root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(4, root.getChildCount());
-		PropertiedTreeNode child0 = root.getChild(0);
-		PropertiedTreeNode child1 = root.getChild(1);
-		PropertiedTreeNode child2 = root.getChild(2);
-		PropertiedTreeNode child3 = root.getChild(3);
+		PropertiedTreeNode<ExampleObject> child0 = root.getChild(0);
+		PropertiedTreeNode<ExampleObject> child1 = root.getChild(1);
+		PropertiedTreeNode<ExampleObject> child2 = root.getChild(2);
+		PropertiedTreeNode<ExampleObject> child3 = root.getChild(3);
 		assertTrue (child0 instanceof PropertiedTreeObjectNode);
 		assertTrue (child1 instanceof PropertiedTreeObjectNode);
 		assertTrue (child2 instanceof PropertiedTreeObjectNode);
 		assertTrue (child3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)child0).getObject());
-		assertEquals (service2, ((PropertiedTreeObjectNode)child1).getObject());
-		assertEquals (service3, ((PropertiedTreeObjectNode)child2).getObject());
-		assertEquals (service4, ((PropertiedTreeObjectNode)child3).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)child0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)child1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)child2).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)child3).getObject());
 		
 		// Try a reverse comparator
 		
@@ -511,13 +514,13 @@ public class PropertiedTreeModelImplTest {
 			}
 		};
 		
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setObjectComparator(reverseComparator);
-		testImpl.setPropertiedGraphView(graphView);
-		root = testImpl.getRoot();
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setObjectComparator(reverseComparator);
+		this.testImpl.setPropertiedGraphView(graphView);
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(4, root.getChildCount());
 		child0 = root.getChild(0);
@@ -528,10 +531,10 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreeObjectNode);
 		assertTrue (child2 instanceof PropertiedTreeObjectNode);
 		assertTrue (child3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)child0).getObject());
-		assertEquals (service3, ((PropertiedTreeObjectNode)child1).getObject());
-		assertEquals (service2, ((PropertiedTreeObjectNode)child2).getObject());
-		assertEquals (service1, ((PropertiedTreeObjectNode)child3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)child0).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)child1).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)child2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)child3).getObject());
 		
 		// Try a filter
 		PropertiedObjectFilter<ExampleObject> evenFilter =
@@ -542,13 +545,13 @@ public class PropertiedTreeModelImplTest {
 			}
 			
 		};
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setFilter(evenFilter);
-		testImpl.setPropertiedGraphView(graphView);
-		root = testImpl.getRoot();
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setFilter(evenFilter);
+		this.testImpl.setPropertiedGraphView(graphView);
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -557,16 +560,16 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreeObjectNode);
 		
 		// Try one level of ordering
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		PropertyKeySetting typeSetting = new PropertyKeySettingImpl();
 		typeSetting.setPropertyKey(typeKey);
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -575,35 +578,35 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
-		PropertiedTreeNode grandchild0 = child0.getChild(0);
-		PropertiedTreeNode grandchild1 = child0.getChild(1);
-		PropertiedTreeNode grandchild2 = child1.getChild(0);
-		PropertiedTreeNode grandchild3 = child1.getChild(1);
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
+		PropertiedTreeNode<ExampleObject> grandchild0 = child0.getChild(0);
+		PropertiedTreeNode<ExampleObject> grandchild1 = child0.getChild(1);
+		PropertiedTreeNode<ExampleObject> grandchild2 = child1.getChild(0);
+		PropertiedTreeNode<ExampleObject> grandchild3 = child1.getChild(1);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try two levels of ordering
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
 		PropertyKeySetting providerSetting = new PropertyKeySettingImpl();
 		providerSetting.setPropertyKey(providerKey);
 		keySettings.add (providerSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -612,10 +615,10 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(1, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child1.getChild(0);
@@ -626,36 +629,36 @@ public class PropertiedTreeModelImplTest {
 		assertEquals(2, grandchild0.getChildCount());
 		assertEquals(1, grandchild1.getChildCount());
 		assertEquals(1, grandchild2.getChildCount());
-		assertEquals(providerKey, ((PropertiedTreePropertyValueNode)grandchild0).getKey());
-		assertEquals(ebiValue, ((PropertiedTreePropertyValueNode)grandchild0).getValue());
-		assertEquals(providerKey, ((PropertiedTreePropertyValueNode)grandchild1).getKey());
-		assertEquals(ebiValue, ((PropertiedTreePropertyValueNode)grandchild1).getValue());
-		assertEquals(providerKey, ((PropertiedTreePropertyValueNode)grandchild2).getKey());
-		assertEquals(manchesterValue, ((PropertiedTreePropertyValueNode)grandchild2).getValue());
+		assertEquals(providerKey, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild0).getKey());
+		assertEquals(ebiValue, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild0).getValue());
+		assertEquals(providerKey, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild1).getKey());
+		assertEquals(ebiValue, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild1).getValue());
+		assertEquals(providerKey, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild2).getKey());
+		assertEquals(manchesterValue, ((PropertiedTreePropertyValueNode<ExampleObject>)grandchild2).getValue());
 		
-		PropertiedTreeNode greatgrandchild0 = grandchild0.getChild(0);
-		PropertiedTreeNode greatgrandchild1 = grandchild0.getChild(1);
-		PropertiedTreeNode greatgrandchild2 = grandchild1.getChild(0);
-		PropertiedTreeNode greatgrandchild3 = grandchild2.getChild(0);
+		PropertiedTreeNode<ExampleObject> greatgrandchild0 = grandchild0.getChild(0);
+		PropertiedTreeNode<ExampleObject> greatgrandchild1 = grandchild0.getChild(1);
+		PropertiedTreeNode<ExampleObject> greatgrandchild2 = grandchild1.getChild(0);
+		PropertiedTreeNode<ExampleObject> greatgrandchild3 = grandchild2.getChild(0);
 		assertTrue (greatgrandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)greatgrandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)greatgrandchild0).getObject());
 		assertTrue (greatgrandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)greatgrandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)greatgrandchild1).getObject());
 		assertTrue (greatgrandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)greatgrandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)greatgrandchild2).getObject());
 		assertTrue (greatgrandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)greatgrandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)greatgrandchild3).getObject());
 		
 		// Try one level with a missing value
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertyKeySettings(keySettings);
 		testSet.removeProperty(service1, typeKey);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertiedGraphView(graphView);
 		
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(3, root.getChildCount());
 		child0 = root.getChild(0);
@@ -668,35 +671,35 @@ public class PropertiedTreeModelImplTest {
 		assertEquals(1, child1.getChildCount());
 		assertEquals(1, child2.getChildCount());
 		
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child2).getKey());
-		assertNull(((PropertiedTreePropertyValueNode)child2).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child2).getKey());
+		assertNull(((PropertiedTreePropertyValueNode<ExampleObject>)child2).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child2.getChild(0);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try removing a property that's in the tree
 		testSet.setProperty(service1, typeKey, wsdlValue);
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.removeProperty(service1, typeKey);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(3, root.getChildCount());
 		child0 = root.getChild(0);
@@ -709,35 +712,35 @@ public class PropertiedTreeModelImplTest {
 		assertEquals(1, child1.getChildCount());
 		assertEquals(1, child2.getChildCount());
 		
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child2).getKey());
-		assertNull(((PropertiedTreePropertyValueNode)child2).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child2).getKey());
+		assertNull(((PropertiedTreePropertyValueNode<ExampleObject>)child2).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child2.getChild(0);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try removing a property that isn't in the tree
 		testSet.setProperty(service1, typeKey, wsdlValue);
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.removeProperty(service1, providerKey);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -746,34 +749,34 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child1.getChild(1);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try adding a property that is in the tree
 		testSet.setProperty(service1, providerKey, ebiValue);
 		testSet.removeProperty(service1, typeKey);
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.setProperty(service1, typeKey, wsdlValue);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -782,33 +785,33 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child1.getChild(1);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try adding a property that isn't in the tree
 		testSet.removeProperty(service1, providerKey);
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.setProperty(service1, providerKey, ebiValue);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -817,33 +820,33 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child1.getChild(1);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Check changing of a property value
 		testSet.setProperty(service1, typeKey, soaplabValue);
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.setProperty(service1, typeKey, wsdlValue);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -852,32 +855,32 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(2, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child1.getChild(1);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 		
 		// Try removing an object
-		testImpl.detachFromGraphView();
-		testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
+		this.testImpl.detachFromGraphView();
+		this.testImpl = new PropertiedTreeModelImpl<ExampleObject> ();
 		keySettings = new ArrayList<PropertyKeySetting> ();
 		keySettings.add (typeSetting);
-		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		this.testImpl.setPropertyKeySettings(keySettings);
+		this.testImpl.setPropertiedGraphView(graphView);
 		testSet.removeObject(service1);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(2, root.getChildCount());
 		child0 = root.getChild(0);
@@ -887,23 +890,23 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(1, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		
 		// Try adding an object
 		testSet.addObject(service1);
-		root = testImpl.getRoot();
+		root = this.testImpl.getRoot();
 		assertTrue (root instanceof PropertiedTreeRootNode);
 		assertEquals(3, root.getChildCount());
 		child0 = root.getChild(0);
@@ -914,24 +917,24 @@ public class PropertiedTreeModelImplTest {
 		assertTrue (child1 instanceof PropertiedTreePropertyValueNode);
 		assertEquals(2, child0.getChildCount());
 		assertEquals(1, child1.getChildCount());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child0).getKey());
-		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode)child0).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode)child1).getValue());
-		assertEquals(typeKey, ((PropertiedTreePropertyValueNode)child1).getKey());
-		assertNull(((PropertiedTreePropertyValueNode)child2).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getKey());
+		assertEquals(soaplabValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child0).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertEquals(wsdlValue, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getValue());
+		assertEquals(typeKey, ((PropertiedTreePropertyValueNode<ExampleObject>)child1).getKey());
+		assertNull(((PropertiedTreePropertyValueNode<ExampleObject>)child2).getValue());
 		grandchild0 = child0.getChild(0);
 		grandchild1 = child0.getChild(1);
 		grandchild2 = child1.getChild(0);
 		grandchild3 = child2.getChild(0);
 		assertTrue (grandchild0 instanceof PropertiedTreeObjectNode);
-		assertEquals (service2, ((PropertiedTreeObjectNode)grandchild0).getObject());
+		assertEquals (service2, ((PropertiedTreeObjectNode<ExampleObject>)grandchild0).getObject());
 		assertTrue (grandchild1 instanceof PropertiedTreeObjectNode);
-		assertEquals (service3, ((PropertiedTreeObjectNode)grandchild1).getObject());
+		assertEquals (service3, ((PropertiedTreeObjectNode<ExampleObject>)grandchild1).getObject());
 		assertTrue (grandchild2 instanceof PropertiedTreeObjectNode);
-		assertEquals (service4, ((PropertiedTreeObjectNode)grandchild2).getObject());
+		assertEquals (service4, ((PropertiedTreeObjectNode<ExampleObject>)grandchild2).getObject());
 		assertTrue (grandchild3 instanceof PropertiedTreeObjectNode);
-		assertEquals (service1, ((PropertiedTreeObjectNode)grandchild3).getObject());
+		assertEquals (service1, ((PropertiedTreeObjectNode<ExampleObject>)grandchild3).getObject());
 	}
 
 	/**
@@ -940,8 +943,8 @@ public class PropertiedTreeModelImplTest {
 	@Test
 	public final void testSetPropertyKeySettings() {
 		try {
-			testImpl.setPropertyKeySettings(null);
-			fail("NullPointerException should have been thrown");
+			this.testImpl.setPropertyKeySettings(null);
+			fail("NullPointerException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
@@ -953,13 +956,13 @@ public class PropertiedTreeModelImplTest {
 		PropertyKeySetting setting2 = new PropertyKeySettingImpl();
 		newSettings.add(setting2);
 		
-		testImpl.setPropertyKeySettings(newSettings);
-		List<PropertyKeySetting> settings = testImpl.getPropertyKeySettings();
+		this.testImpl.setPropertyKeySettings(newSettings);
+		List<PropertyKeySetting> settings = this.testImpl.getPropertyKeySettings();
 		assertEquals(newSettings, settings);
 		
 		try {
-			testImpl.setPropertyKeySettings(newSettings);
-			fail("IllegalStateException should have been thrown");
+			this.testImpl.setPropertyKeySettings(newSettings);
+			fail("IllegalStateException should have been thrown"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK

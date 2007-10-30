@@ -9,7 +9,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
-public class ExampleKey implements PropertyKey, Comparable {
+public class ExampleKey implements PropertyKey, Comparable<Object> {
 	private static int keyCount = 0;
 	
 	private int key;
@@ -18,7 +18,7 @@ public class ExampleKey implements PropertyKey, Comparable {
 	 * Construct an ExampleKey
 	 */
 	public ExampleKey() {
-		key = keyCount++;
+		this.key = keyCount++;
 	}
 	
 	/**
@@ -27,18 +27,18 @@ public class ExampleKey implements PropertyKey, Comparable {
 	 * @return
 	 */
 	public int getKey() {
-		return key;
+		return this.key;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof ExampleKey) {
-			return ((ExampleKey)o).getKey() == key;
-		} else {
-			return false;
+			return ((ExampleKey)o).getKey() == this.key;
 		}
+		return false;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class ExampleKey implements PropertyKey, Comparable {
 			result = getKey() - exampleArg.getKey();
 		}
 		else {
-			throw new ClassCastException ("Argument is not an ExampleKey");
+			throw new ClassCastException ("Argument is not an ExampleKey"); //$NON-NLS-1$
 		}
 		return result;
 	}
@@ -59,6 +59,7 @@ public class ExampleKey implements PropertyKey, Comparable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return Integer.toString(getKey());
 	}

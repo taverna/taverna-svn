@@ -16,5 +16,5 @@ package net.sf.taverna.t2.drizzle.util;
  * 
  */
 public interface PropertyValue{
-
+	// Nothing in common
 }

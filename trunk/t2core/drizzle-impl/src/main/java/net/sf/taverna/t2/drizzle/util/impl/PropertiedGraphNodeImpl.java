@@ -38,7 +38,7 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 	 */
 	public PropertiedGraphNodeImpl() {
 		super();
-		edges = new HashSet<PropertiedGraphEdge<O>>();
+		this.edges = new HashSet<PropertiedGraphEdge<O>>();
 	}
 
 	/**
@@ -46,9 +46,9 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 	 */
 	public void addEdge(final PropertiedGraphEdge<O> edge) {
 		if (edge == null) {
-			throw new NullPointerException("edge cannot be null");
+			throw new NullPointerException("edge cannot be null"); //$NON-NLS-1$
 		}
-		edges.add(edge);
+		this.edges.add(edge);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 	 */
 	public Set<PropertiedGraphEdge<O>> getEdges() {
 		// Copy to be safe
-		return new HashSet<PropertiedGraphEdge<O>>(edges);
+		return new HashSet<PropertiedGraphEdge<O>>(this.edges);
 	}
 
 	/**
@@ -71,9 +71,9 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 	 */
 	public void removeEdge(final PropertiedGraphEdge<O> edge) {
 		if (edge == null) {
-			throw new NullPointerException("edge cannot be null");
+			throw new NullPointerException("edge cannot be null"); //$NON-NLS-1$
 		}
-		edges.remove(edge);
+		this.edges.remove(edge);
 	}
 
 	/**
@@ -81,11 +81,11 @@ public class PropertiedGraphNodeImpl<O> implements PropertiedGraphNode<O> {
 	 */
 	public void setObject(final O object) {
 		if (object == null) {
-			throw new NullPointerException("object cannot be null");
+			throw new NullPointerException("object cannot be null"); //$NON-NLS-1$
 		}
 		if (this.object != null) {
 			throw new IllegalStateException(
-					"object cannot be initialized more than once");
+					"object cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.object = object;
 	}

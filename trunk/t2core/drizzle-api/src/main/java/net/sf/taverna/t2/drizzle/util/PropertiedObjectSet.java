@@ -19,6 +19,7 @@ import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
  * 
  * @param <O>
  */
+@SuppressWarnings("unchecked")
 public interface PropertiedObjectSet<O> extends
 		Beanable<PropertiedObjectSetBean> {
 
@@ -55,7 +56,7 @@ public interface PropertiedObjectSet<O> extends
 	 * @param object
 	 * @return
 	 */
-	PropertiedObject addObject(final O object);
+	PropertiedObject<O> addObject(final O object);
 
 	/**
 	 * Check if the PropertiedObjectSet contains the specified object and a
@@ -73,7 +74,7 @@ public interface PropertiedObjectSet<O> extends
 	 * @param po
 	 * @return
 	 */
-	boolean containsPropertiedObject(final PropertiedObject po);
+	boolean containsPropertiedObject(final PropertiedObject<O> po);
 
 	/**
 	 * Return all the PropertyKeys for which there is at least one object within
@@ -115,7 +116,7 @@ public interface PropertiedObjectSet<O> extends
 	 * 
 	 * @return
 	 */
-	Set<PropertiedObject> getPropertiedObjects();
+	Set<PropertiedObject<O>> getPropertiedObjects();
 
 	/**
 	 * Remove the PropertiedObjectListener from listening to all the

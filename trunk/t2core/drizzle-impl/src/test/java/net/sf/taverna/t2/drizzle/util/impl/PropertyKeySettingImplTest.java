@@ -3,7 +3,9 @@
  */
 package net.sf.taverna.t2.drizzle.util.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.text.Collator;
 import java.util.Comparator;
@@ -30,6 +32,7 @@ public class PropertyKeySettingImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -37,6 +40,7 @@ public class PropertyKeySettingImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -44,7 +48,7 @@ public class PropertyKeySettingImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		testImpl = new PropertyKeySettingImpl();
+		this.testImpl = new PropertyKeySettingImpl();
 	}
 
 	/**
@@ -52,6 +56,7 @@ public class PropertyKeySettingImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -59,19 +64,20 @@ public class PropertyKeySettingImplTest {
 	 */
 	@Test
 	public final void testPropertyKeySettingImpl() {
-		assertNull(testImpl.getPropertyKey());
-		assertNull(testImpl.getComparator());
+		assertNull(this.testImpl.getPropertyKey());
+		assertNull(this.testImpl.getComparator());
 	}
 
 	/**
 	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertyKeySettingImpl#getComparator()}.
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public final void testGetComparator() {
-		assertNull(testImpl.getComparator());
+		assertNull(this.testImpl.getComparator());
 		Comparator comparator = Collator.getInstance();
-		testImpl.setComparator(comparator);
-		assertEquals(comparator, testImpl.getComparator());
+		this.testImpl.setComparator(comparator);
+		assertEquals(comparator, this.testImpl.getComparator());
 	}
 
 	/**
@@ -79,31 +85,32 @@ public class PropertyKeySettingImplTest {
 	 */
 	@Test
 	public final void testGetPropertyKey() {
-		assertNull(testImpl.getPropertyKey());
+		assertNull(this.testImpl.getPropertyKey());
 		PropertyKey key = new ExampleKey();
-		testImpl.setPropertyKey(key);
-		assertEquals(key, testImpl.getPropertyKey());
+		this.testImpl.setPropertyKey(key);
+		assertEquals(key, this.testImpl.getPropertyKey());
 	}
 
 	/**
 	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertyKeySettingImpl#setComparator(java.util.Comparator)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public final void testSetComparator() {
 		try {
-			testImpl.setComparator(null);
-			fail("NullPointerException expected");
+			this.testImpl.setComparator(null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		Comparator comparator = Collator.getInstance();
-		testImpl.setComparator(comparator);
-		assertEquals(comparator, testImpl.getComparator());
+		this.testImpl.setComparator(comparator);
+		assertEquals(comparator, this.testImpl.getComparator());
 		
 		try {
-			testImpl.setComparator(comparator);
-			fail("IllegalStateException expected");
+			this.testImpl.setComparator(comparator);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
@@ -116,19 +123,19 @@ public class PropertyKeySettingImplTest {
 	@Test
 	public final void testSetPropertyKey() {
 		try {
-			testImpl.setPropertyKey(null);
-			fail("NullPointerException expected");
+			this.testImpl.setPropertyKey(null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		PropertyKey key = new ExampleKey();
-		testImpl.setPropertyKey(key);
-		assertEquals(key, testImpl.getPropertyKey());
+		this.testImpl.setPropertyKey(key);
+		assertEquals(key, this.testImpl.getPropertyKey());
 		
 		try {
-			testImpl.setPropertyKey(key);
-			fail("IllegalStateException expected");
+			this.testImpl.setPropertyKey(key);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK

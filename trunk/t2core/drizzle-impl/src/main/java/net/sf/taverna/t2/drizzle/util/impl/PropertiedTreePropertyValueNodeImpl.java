@@ -29,14 +29,14 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 	 * {@inheritDoc}
 	 */
 	public PropertyKey getKey() {
-		return key;
+		return this.key;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public PropertyValue getValue() {
-		return value;
+		return this.value;
 	}
 
 	/**
@@ -44,10 +44,10 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 	 */
 	public void setKey(final PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException ("key cannot be null");
+			throw new NullPointerException ("key cannot be null"); //$NON-NLS-1$
 		}
 		if (this.key != null) {
-			throw new IllegalStateException ("key cannot be initialized more than once");
+			throw new IllegalStateException ("key cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.key = key;
 	}
@@ -57,7 +57,7 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 	 */
 	public void setValue(PropertyValue value) {
 		if (this.value != null) {
-			throw new IllegalStateException ("value cannot be initialized more than once");
+			throw new IllegalStateException ("value cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.value = value;
 		
@@ -66,17 +66,18 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
-		String keyString = "missing";
+		String keyString = Messages.getString("PropertiedTreePropertyValueNodeImpl.MISSING"); //$NON-NLS-1$
+		String valueString = Messages.getString("PropertiedTreePropertyValueNodeImpl.MISSING"); //$NON-NLS-1$
 		
-		if (key != null) {
-			keyString = key.toString();
+		if (this.key != null) {
+			keyString = this.key.toString();
 		}
-		String valueString = "missing";
-		if (value != null ) {
-			valueString = value.toString();
+		if (this.value != null ) {
+			valueString = this.value.toString();
 		}
 		
-		return keyString + " = " +valueString;
+		return keyString + Messages.getString("PropertiedTreePropertyValueNodeImpl.EQUALS") +valueString; //$NON-NLS-1$
 	}
 }

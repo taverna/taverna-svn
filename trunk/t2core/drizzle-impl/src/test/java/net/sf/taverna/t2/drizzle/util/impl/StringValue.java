@@ -9,7 +9,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * @author alanrw
  *
  */
-public class StringValue implements PropertyValue, Comparable {
+public class StringValue implements PropertyValue, Comparable<Object> {
 	private String value;
 	
 	/**
@@ -27,18 +27,18 @@ public class StringValue implements PropertyValue, Comparable {
 	 * @return
 	 */
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof StringValue) {
-			return ((StringValue)o).getValue().equals(value);
-		} else {
-			return false;
+			return ((StringValue)o).getValue().equals(this.value);
 		}
+		return false;
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class StringValue implements PropertyValue, Comparable {
 			result = getValue().compareTo(exampleArg.getValue());
 		}
 		else {
-			throw new ClassCastException ("Argument is not a StringValue");
+			throw new ClassCastException ("Argument is not a StringValue"); //$NON-NLS-1$
 		}
 		return result;
 	}
@@ -59,6 +59,7 @@ public class StringValue implements PropertyValue, Comparable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return getValue();
 	}

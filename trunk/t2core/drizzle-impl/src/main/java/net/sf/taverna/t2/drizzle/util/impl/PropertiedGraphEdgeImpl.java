@@ -44,7 +44,7 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public PropertiedGraphEdgeImpl() {
 		super();
-		nodes = new HashSet<PropertiedGraphNode<O>>();
+		this.nodes = new HashSet<PropertiedGraphNode<O>>();
 	}
 
 	/**
@@ -52,9 +52,9 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public void addNode(final PropertiedGraphNode<O> node) {
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		nodes.add(node);
+		this.nodes.add(node);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public Set<PropertiedGraphNode<O>> getNodes() {
 		// Copy to be safe
-		return new HashSet<PropertiedGraphNode<O>>(nodes);
+		return new HashSet<PropertiedGraphNode<O>>(this.nodes);
 	}
 
 	/**
@@ -84,9 +84,9 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public void removeNode(final PropertiedGraphNode<O> node) {
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		nodes.remove(node);
+		this.nodes.remove(node);
 	}
 
 	/**
@@ -94,11 +94,11 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public void setKey(PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (this.key != null) {
 			throw new IllegalStateException(
-					"key cannot be initialized more than once");
+					"key cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.key = key;
 	}
@@ -108,11 +108,11 @@ public final class PropertiedGraphEdgeImpl<O> implements PropertiedGraphEdge<O> 
 	 */
 	public void setValue(final PropertyValue value) {
 		if (value == null) {
-			throw new NullPointerException("value cannot be null");
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
 		if (this.value != null) {
 			throw new IllegalStateException(
-					"value cannot be initialized more than once");
+					"value cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.value = value;
 	}

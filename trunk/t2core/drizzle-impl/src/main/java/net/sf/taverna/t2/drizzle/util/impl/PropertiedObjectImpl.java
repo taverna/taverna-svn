@@ -51,9 +51,9 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public PropertiedObjectImpl() {
 		super();
-		properties = new HashMap<PropertyKey, PropertyValue>();
-		listeners = new HashSet<PropertiedObjectListener>();
-		object = null;
+		this.properties = new HashMap<PropertyKey, PropertyValue>();
+		this.listeners = new HashSet<PropertiedObjectListener>();
+		this.object = null;
 	}
 
 	/**
@@ -61,9 +61,9 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void addListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
-			throw new NullPointerException("pol cannot be null");
+			throw new NullPointerException("pol cannot be null"); //$NON-NLS-1$
 		}
-		listeners.add(pol);
+		this.listeners.add(pol);
 	}
 
 	/**
@@ -71,16 +71,16 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public boolean hasProperty(final PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
-		return properties.containsKey(key);
+		return this.properties.containsKey(key);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public O getObject() {
-		return object;
+		return this.object;
 	}
 
 	/**
@@ -88,7 +88,7 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public Set<PropertyKey> getPropertyKeys() {
 		// Create new Set just to be on the safe side
-		return new HashSet<PropertyKey>(properties.keySet());
+		return new HashSet<PropertyKey>(this.properties.keySet());
 	}
 
 	/**
@@ -96,11 +96,11 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public PropertyValue getPropertyValue(final PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		PropertyValue result = null;
-		if (properties.containsKey(key)) {
-			result = properties.get(key);
+		if (this.properties.containsKey(key)) {
+			result = this.properties.get(key);
 		}
 		return result;
 	}
@@ -115,12 +115,12 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	private void notifyListenersPropertyAdded(final PropertyKey key,
 			final PropertyValue value) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (value == null) {
-			throw new NullPointerException("value cannot be null");
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedObjectListener[] copy = listeners
+		PropertiedObjectListener[] copy = this.listeners
 				.toArray(new PropertiedObjectListener[0]);
 		for (PropertiedObjectListener l : copy) {
 			l.propertyAdded(getObject(), key, value);
@@ -138,15 +138,15 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	private void notifyListenersPropertyChanged(final PropertyKey key,
 			final PropertyValue oldValue, final PropertyValue newValue) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (oldValue == null) {
-			throw new NullPointerException("oldValue cannot be null");
+			throw new NullPointerException("oldValue cannot be null"); //$NON-NLS-1$
 		}
 		if (newValue == null) {
-			throw new NullPointerException("newValue cannot be null");
+			throw new NullPointerException("newValue cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedObjectListener[] copy = listeners
+		PropertiedObjectListener[] copy = this.listeners
 				.toArray(new PropertiedObjectListener[0]);
 		for (PropertiedObjectListener l : copy) {
 			l.propertyChanged(getObject(), key, oldValue, newValue);
@@ -163,12 +163,12 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	private void notifyListenersPropertyRemoved(final PropertyKey key,
 			final PropertyValue value) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (value == null) {
-			throw new NullPointerException("value cannot be null");
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedObjectListener[] copy = listeners
+		PropertiedObjectListener[] copy = this.listeners
 				.toArray(new PropertiedObjectListener[0]);
 		for (PropertiedObjectListener l : copy) {
 			l.propertyRemoved(getObject(), key, value);
@@ -180,9 +180,9 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void removeListener(final PropertiedObjectListener pol) {
 		if (pol == null) {
-			throw new NullPointerException("pol cannot be null");
+			throw new NullPointerException("pol cannot be null"); //$NON-NLS-1$
 		}
-		listeners.remove(pol);
+		this.listeners.remove(pol);
 	}
 
 	/**
@@ -190,11 +190,11 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void removeProperty(final PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
-		if (properties.containsKey(key)) {
-			PropertyValue value = properties.get(key);
-			properties.remove(key);
+		if (this.properties.containsKey(key)) {
+			PropertyValue value = this.properties.get(key);
+			this.properties.remove(key);
 			notifyListenersPropertyRemoved(key, value);
 		}
 	}
@@ -204,17 +204,17 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void setProperty(final PropertyKey key, final PropertyValue value) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (value == null) {
-			throw new NullPointerException("value cannot be null");
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
-		if (!properties.containsKey(key)) {
-			properties.put(key, value);
+		if (!this.properties.containsKey(key)) {
+			this.properties.put(key, value);
 			notifyListenersPropertyAdded(key, value);
 		} else {
-			PropertyValue oldValue = properties.get(key);
-			properties.put(key, value);
+			PropertyValue oldValue = this.properties.get(key);
+			this.properties.put(key, value);
 			if (!oldValue.equals(value)) {
 				notifyListenersPropertyChanged(key, oldValue, value);
 			}
@@ -241,8 +241,8 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	@SuppressWarnings("unchecked")
 	public void setFromBean(PropertiedObjectBean bean)
 			throws IllegalArgumentException {
-		if ((properties.size() != 0) || (listeners.size() != 0)) {
-			throw new IllegalStateException("Cannot initialize twice");
+		if ((this.properties.size() != 0) || (this.listeners.size() != 0)) {
+			throw new IllegalStateException("Cannot initialize twice"); //$NON-NLS-1$
 		}
 
 		this.properties = (HashMap<PropertyKey, PropertyValue>) bean
@@ -254,10 +254,10 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void setObject(O object) {
 		if (object == null) {
-			throw new NullPointerException("object cannot be null");
+			throw new NullPointerException("object cannot be null"); //$NON-NLS-1$
 		}
 		if (this.object != null) {
-			throw new IllegalStateException("Cannot initialize twice");
+			throw new IllegalStateException("Cannot initialize twice"); //$NON-NLS-1$
 		}
 		this.object = object;
 	}
@@ -267,11 +267,11 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	 */
 	public void replayToListener(PropertiedObjectListener pol) {
 		if (pol == null) {
-			throw new NullPointerException("pol cannot be null");
+			throw new NullPointerException("pol cannot be null"); //$NON-NLS-1$
 		}
 
-		for (PropertyKey key : properties.keySet()) {
-			PropertyValue value = properties.get(key);
+		for (PropertyKey key : this.properties.keySet()) {
+			PropertyValue value = this.properties.get(key);
 			pol.propertyAdded(this.object, key, value);
 		}
 	}

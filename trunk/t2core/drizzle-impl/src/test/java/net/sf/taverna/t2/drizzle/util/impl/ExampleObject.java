@@ -7,7 +7,7 @@ package net.sf.taverna.t2.drizzle.util.impl;
  * @author alanrw
  *
  */
-public class ExampleObject implements Comparable {
+public class ExampleObject implements Comparable<Object> {
 	private static int objectCount = 0;
 	
 	private int i;
@@ -16,7 +16,7 @@ public class ExampleObject implements Comparable {
 	 * Construct an ExampleObject
 	 */
 	public ExampleObject() {
-		i = objectCount++;
+		this.i = objectCount++;
 	}
 	
 	/**
@@ -25,18 +25,18 @@ public class ExampleObject implements Comparable {
 	 * @return
 	 */
 	public int getI() {
-		return i;
+		return this.i;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof ExampleObject) {
 			return ((ExampleObject)o).getI() == this.i;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class ExampleObject implements Comparable {
 			result = getI() - exampleArg.getI();
 		}
 		else {
-			throw new ClassCastException ("Argument is not an ExampleObject");
+			throw new ClassCastException ("Argument is not an ExampleObject"); //$NON-NLS-1$
 		}
 		return result;	
 	}
@@ -57,7 +57,8 @@ public class ExampleObject implements Comparable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
-		return "ExampleObject" + Integer.toString(getI());
+		return "ExampleObject" + Integer.toString(getI()); //$NON-NLS-1$
 	}
 }

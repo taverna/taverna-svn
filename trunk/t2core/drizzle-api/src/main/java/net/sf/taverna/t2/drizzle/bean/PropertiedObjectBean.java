@@ -24,7 +24,7 @@ public class PropertiedObjectBean {
 	 * @return the properties
 	 */
 	public HashMap<PropertyKey, PropertyValue> getProperties() {
-		return properties;
+		return this.properties;
 	}
 
 	/**

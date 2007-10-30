@@ -24,7 +24,8 @@ public final class PropertiedTreeRootNodeImpl<O> extends PropertiedTreeNodeImpl<
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
-		return "root";
+		return Messages.getString("PropertiedTreeRootNodeImpl.ROOT"); //$NON-NLS-1$
 	}
 }

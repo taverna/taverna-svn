@@ -3,8 +3,6 @@
  */
 package net.sf.taverna.t2.drizzle.util.impl;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,6 +20,7 @@ public class PropertiedTreeRootNodeImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -29,6 +28,7 @@ public class PropertiedTreeRootNodeImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -36,6 +36,7 @@ public class PropertiedTreeRootNodeImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -43,6 +44,7 @@ public class PropertiedTreeRootNodeImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	/**

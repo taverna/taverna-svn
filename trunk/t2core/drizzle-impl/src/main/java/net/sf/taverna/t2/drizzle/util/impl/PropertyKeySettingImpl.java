@@ -23,13 +23,14 @@ public final class PropertyKeySettingImpl implements PropertyKeySetting {
 	 * 
 	 */
 	public PropertyKeySettingImpl() {
+		// Nothing to do
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Comparator<PropertyValue> getComparator() {
-		return comparator;
+		return this.comparator;
 	}
 
 	/**
@@ -44,10 +45,10 @@ public final class PropertyKeySettingImpl implements PropertyKeySetting {
 	 */
 	public void setComparator(Comparator<PropertyValue> comparator) {
 		if (comparator == null) {
-			throw new NullPointerException ("comparator cannot be null");
+			throw new NullPointerException ("comparator cannot be null"); //$NON-NLS-1$
 		}
 		if (this.comparator != null) {
-			throw new IllegalStateException ("comparator cannot be initialized more than once");
+			throw new IllegalStateException ("comparator cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.comparator = comparator;
 	}
@@ -57,10 +58,10 @@ public final class PropertyKeySettingImpl implements PropertyKeySetting {
 	 */
 	public void setPropertyKey(final PropertyKey propertyKey) {
 		if (propertyKey == null) {
-			throw new NullPointerException ("propertyKey cannot be null");
+			throw new NullPointerException ("propertyKey cannot be null"); //$NON-NLS-1$
 		}
 		if (this.key != null) {
-			throw new IllegalStateException ("key cannot be initialized more than once");
+			throw new IllegalStateException ("key cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.key = propertyKey;
 

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.naming.OperationNotSupportedException;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge;
@@ -59,9 +58,9 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 * 
 	 */
 	public PropertiedTreeModelImpl() {
-		root = new PropertiedTreeRootNodeImpl<O>();
-		listeners = new HashSet<TypedTreeModelListener<PropertiedTreeNode<O>>>();
-		nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
+		this.root = new PropertiedTreeRootNodeImpl<O>();
+		this.listeners = new HashSet<TypedTreeModelListener<PropertiedTreeNode<O>>>();
+		this.nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
 	}
 
 	/**
@@ -70,17 +69,17 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public void addTreeModelListener(
 			final TypedTreeModelListener<PropertiedTreeNode<O>> l) {
 		if (l == null) {
-			throw new NullPointerException("l cannot be null");
+			throw new NullPointerException("l cannot be null"); //$NON-NLS-1$
 		}
-		listeners.add(l);
+		this.listeners.add(l);
 	}
 
 	private void constructSubTree(final PropertiedTreeNode<O> parent,
 			final int settingIndex, final Set<O> permittedObjects) {
-		if (settingIndex != keySettings.size()) {
-			PropertyKeySetting setting = keySettings.get(settingIndex);
+		if (settingIndex != this.keySettings.size()) {
+			PropertyKeySetting setting = this.keySettings.get(settingIndex);
 			PropertyKey key = setting.getPropertyKey();
-			Set<PropertyValue> values = propertiedGraphView.getValues(key);
+			Set<PropertyValue> values = this.propertiedGraphView.getValues(key);
 
 			// Note that a null compaarator is OK
 			TreeSet<PropertyValue> sortedValues = new TreeSet<PropertyValue>(
@@ -92,7 +91,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 				PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
 				subNode.setKey(key);
 				subNode.setValue(value);
-				Set<PropertiedGraphNode<O>> nodes = propertiedGraphView
+				Set<PropertiedGraphNode<O>> nodes = this.propertiedGraphView
 						.getEdge(key, value).getNodes();
 				Set<O> objectsWithValue = new HashSet<O>();
 				for (PropertiedGraphNode<O> node : nodes) {
@@ -120,37 +119,37 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 			}
 		} else {
 			// Note that a null comparator is OK
-			TreeSet<O> sortedObjects = new TreeSet<O>(objectComparator);
+			TreeSet<O> sortedObjects = new TreeSet<O>(this.objectComparator);
 			sortedObjects.addAll(permittedObjects);
 			for (O object : sortedObjects) {
 				PropertiedTreeObjectNode<O> subNode = new PropertiedTreeObjectNodeImpl<O>();
 				subNode.setObject(object);
 				parent.addChild(subNode);
-				nodeMap.put(object, subNode);
+				this.nodeMap.put(object, subNode);
 			}
 		}
 	}
 
 	private void generateTree() {
-		if (root == null) {
-			root = new PropertiedTreeRootNodeImpl<O>();
+		if (this.root == null) {
+			this.root = new PropertiedTreeRootNodeImpl<O>();
 		} else {
-			root.removeAllChildren();
+			this.root.removeAllChildren();
 		}
-		nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
+		this.nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
 		Set<O> filteredObjects = new HashSet<O>();
 		Set<PropertiedGraphNode<O>> graphNodes = this.propertiedGraphView
 				.getNodes();
 		for (PropertiedGraphNode<O> graphNode : graphNodes) {
-			if ((filter == null)
-					|| (filter.acceptObject(graphNode.getObject()))) {
+			if ((this.filter == null)
+					|| (this.filter.acceptObject(graphNode.getObject()))) {
 				filteredObjects.add(graphNode.getObject());
 			}
 		}
-		constructSubTree(root, 0, filteredObjects);
+		constructSubTree(this.root, 0, filteredObjects);
 
 		notifyListenersTreeStructureChanged(new TypedTreeModelEvent<PropertiedTreeNode<O>>(
-				this, root.getPath()));
+				this, this.root.getPath()));
 	}
 
 	/**
@@ -159,7 +158,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public PropertiedTreeNode<O> getChild(final PropertiedTreeNode<O> parent,
 			int index) {
 		if (parent == null) {
-			throw new NullPointerException("parent cannot be null");
+			throw new NullPointerException("parent cannot be null"); //$NON-NLS-1$
 		}
 		return parent.getChild(index);
 	}
@@ -169,7 +168,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 */
 	public int getChildCount(final PropertiedTreeNode<O> parent) {
 		if (parent == null) {
-			throw new NullPointerException("parent cannot be null");
+			throw new NullPointerException("parent cannot be null"); //$NON-NLS-1$
 		}
 		return parent.getChildCount();
 	}
@@ -180,10 +179,10 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public int getIndexOfChild(PropertiedTreeNode<O> parent,
 			PropertiedTreeNode<O> child) {
 		if (parent == null) {
-			throw new NullPointerException("parent cannot be null");
+			throw new NullPointerException("parent cannot be null"); //$NON-NLS-1$
 		}
 		if (child == null) {
-			throw new NullPointerException("child cannot be null");
+			throw new NullPointerException("child cannot be null"); //$NON-NLS-1$
 		}
 		return parent.getIndexOfChild(child);
 	}
@@ -193,10 +192,10 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 */
 	public List<PropertyKeySetting> getPropertyKeySettings() {
 		List<PropertyKeySetting> result;
-		if (keySettings == null) {
+		if (this.keySettings == null) {
 			result = null;
 		} else {
-			result = new ArrayList<PropertyKeySetting>(keySettings);
+			result = new ArrayList<PropertyKeySetting>(this.keySettings);
 		}
 		// Copy just in case
 		return result;
@@ -209,11 +208,11 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return this.root;
 	}
 
-	private void internalEdgeChanged(PropertiedGraphEdge<O> edge,
+	void internalEdgeChanged(PropertiedGraphEdge<O> edge,
 			PropertiedGraphNode<O> node) {
 		O object = node.getObject();
-		if (nodeMap.containsKey(object)) {
-			PropertiedTreeObjectNode<O> treeNode = nodeMap.get(object);
+		if (this.nodeMap.containsKey(object)) {
+			PropertiedTreeObjectNode<O> treeNode = this.nodeMap.get(object);
 			PropertyKey key = edge.getKey();
 			PropertiedTreeNode<O> ancestor = treeNode.getAncestorWithKey(key);
 			if (ancestor != null) {
@@ -221,9 +220,9 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 				Set<O> containedObjects = containerNode.getAllObjects();
 
 				// If object is now filtered
-				if ((filter != null) && !(filter.acceptObject(object))) {
+				if ((this.filter != null) && !(this.filter.acceptObject(object))) {
 					containedObjects.remove(object);
-					nodeMap.remove(object);
+					this.nodeMap.remove(object);
 				}
 				containerNode.removeAllChildren();
 				// rely on constructSubTree to overwrite the entries in the
@@ -236,16 +235,16 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		}
 	}
 
-	private void internalNodeAdded(PropertiedGraphNode<O> node) {
+	void internalNodeAdded(PropertiedGraphNode<O> node) {
 		O object = node.getObject();
-		if ((filter == null) || (filter.acceptObject(object))) {
+		if ((this.filter == null) || (this.filter.acceptObject(object))) {
 			generateTree();
 		}
 
 	}
 
-	private void internalNodeRemoved(PropertiedGraphNode<O> node) {
-		if (nodeMap.containsKey(node.getObject())) {
+	void internalNodeRemoved(PropertiedGraphNode<O> node) {
+		if (this.nodeMap.containsKey(node.getObject())) {
 			generateTree();
 		}
 	}
@@ -255,41 +254,44 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 */
 	public boolean isLeaf(final PropertiedTreeNode<O> node) {
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
 		return (node.getChildCount() == 0);
 	}
 
+	@SuppressWarnings({ "unchecked", "unused" })
 	private void notifyListenersTreeNodesChanged(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
-			throw new NullPointerException("e cannot be null");
+			throw new NullPointerException("e cannot be null"); //$NON-NLS-1$
 		}
-		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = listeners
+		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = this.listeners
 				.toArray(new TypedTreeModelListener[0]);
 		for (TypedTreeModelListener<PropertiedTreeNode<O>> l : copy) {
 			l.treeNodesChanged(e);
 		}
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
 	private void notifyListenersTreeNodesInserted(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
-			throw new NullPointerException("e cannot be null");
+			throw new NullPointerException("e cannot be null"); //$NON-NLS-1$
 		}
-		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = listeners
+		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = this.listeners
 				.toArray(new TypedTreeModelListener[0]);
 		for (TypedTreeModelListener<PropertiedTreeNode<O>> l : copy) {
 			l.treeNodesInserted(e);
 		}
 	}
 
+	@SuppressWarnings({ "unused", "unchecked" })
 	private void notifyListenersTreeNodesRemoved(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
-			throw new NullPointerException("e cannot be null");
+			throw new NullPointerException("e cannot be null"); //$NON-NLS-1$
 		}
-		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = listeners
+		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = this.listeners
 				.toArray(new TypedTreeModelListener[0]);
 		for (TypedTreeModelListener<PropertiedTreeNode<O>> l : copy) {
 			l.treeNodesRemoved(e);
@@ -300,9 +302,9 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	private void notifyListenersTreeStructureChanged(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
-			throw new NullPointerException("e cannot be null");
+			throw new NullPointerException("e cannot be null"); //$NON-NLS-1$
 		}
-		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = listeners
+		TypedTreeModelListener<PropertiedTreeNode<O>>[] copy = this.listeners
 				.toArray(new TypedTreeModelListener[0]);
 		for (TypedTreeModelListener<PropertiedTreeNode<O>> l : copy) {
 			l.treeStructureChanged(e);
@@ -315,9 +317,9 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public void removeTreeModelListener(
 			final TypedTreeModelListener<PropertiedTreeNode<O>> l) {
 		if (l == null) {
-			throw new NullPointerException("l cannot be null");
+			throw new NullPointerException("l cannot be null"); //$NON-NLS-1$
 		}
-		listeners.remove(l);
+		this.listeners.remove(l);
 	}
 
 	/**
@@ -326,7 +328,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public void setFilter(final PropertiedObjectFilter<O> filter) {
 		if (this.filter != null) {
 			throw new IllegalStateException(
-					"filter cannot be initialized more than once");
+					"filter cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		// OK to be null
 		this.filter = filter;
@@ -337,11 +339,11 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 */
 	public void setObjectComparator(Comparator<O> objectComparator) {
 		if (objectComparator == null) {
-			throw new NullPointerException("objectComparator cannot be null");
+			throw new NullPointerException("objectComparator cannot be null"); //$NON-NLS-1$
 		}
 		if (this.objectComparator != null) {
 			throw new IllegalStateException(
-					"objectComparator cannot be initialized more than once");
+					"objectComparator cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.objectComparator = objectComparator;
 
@@ -353,13 +355,13 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public void setPropertiedGraphView(
 			final PropertiedGraphView<O> propertiedGraphView) {
 		if (propertiedGraphView == null) {
-			throw new NullPointerException("propertiedGraphView cannot be null");
+			throw new NullPointerException("propertiedGraphView cannot be null"); //$NON-NLS-1$
 		}
-		if (keySettings == null) {
-			throw new IllegalStateException("keySettings must be set");
+		if (this.keySettings == null) {
+			throw new IllegalStateException("keySettings must be set"); //$NON-NLS-1$
 		}
 		this.propertiedGraphView = propertiedGraphView;
-		posl = new PropertiedGraphViewListener<O>() {
+		this.posl = new PropertiedGraphViewListener<O>() {
 
 			public void edgeAdded(PropertiedGraphView<O> view,
 					PropertiedGraphEdge<O> edge, PropertiedGraphNode<O> node) {
@@ -382,7 +384,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 			}
 
 		};
-		this.propertiedGraphView.addListener(posl);
+		this.propertiedGraphView.addListener(this.posl);
 
 		generateTree();
 
@@ -394,14 +396,14 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public void setPropertyKeySettings(
 			final List<PropertyKeySetting> settingList) {
 		if (settingList == null) {
-			throw new NullPointerException("settingList cannot be null");
+			throw new NullPointerException("settingList cannot be null"); //$NON-NLS-1$
 		}
 		if (this.keySettings != null) {
 			throw new IllegalStateException(
-					"keySettings can only be initialized once");
+					"keySettings can only be initialized once"); //$NON-NLS-1$
 		}
 		// Copy just in case
-		keySettings = new ArrayList<PropertyKeySetting>(settingList);
+		this.keySettings = new ArrayList<PropertyKeySetting>(settingList);
 	}
 
 	/**
@@ -429,8 +431,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	 * {@inheritDoc}
 	 */
 	public void detachFromGraphView() {
-		if (posl != null) {
-			propertiedGraphView.removeListener(posl);
+		if (this.posl != null) {
+			this.propertiedGraphView.removeListener(this.posl);
 		}
 	}
 

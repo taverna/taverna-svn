@@ -28,10 +28,11 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Set<O> getAllObjects() {
 		Set<O> result = new HashSet<O> ();
-		if (object != null) {
-			result.add (object);
+		if (this.object != null) {
+			result.add (this.object);
 		}
 		return result;
 	}
@@ -41,10 +42,10 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 	 */
 	public void setObject(O object) {
 		if (object == null) {
-			throw new NullPointerException ("object cannot be null");
+			throw new NullPointerException ("object cannot be null"); //$NON-NLS-1$
 		}
 		if (this.object != null) {
-			throw new IllegalStateException("object cannot be initialized more than once");
+			throw new IllegalStateException("object cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.object = object;
 	}
@@ -59,6 +60,7 @@ public final class PropertiedTreeObjectNodeImpl<O> extends PropertiedTreeNodeImp
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return this.object.toString();
 	}

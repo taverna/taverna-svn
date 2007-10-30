@@ -9,7 +9,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
-public final class StringKey implements PropertyKey, Comparable {
+public final class StringKey implements PropertyKey, Comparable<Object> {
 
 	private String key;
 	
@@ -28,18 +28,18 @@ public final class StringKey implements PropertyKey, Comparable {
 	 * @return
 	 */
 	public String getKey() {
-		return key;
+		return this.key;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof StringKey) {
-			return ((StringKey)o).getKey().equals(key);
-		} else {
-			return false;
+			return ((StringKey)o).getKey().equals(this.key);
 		}
+		return false;
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public final class StringKey implements PropertyKey, Comparable {
 			result = getKey().compareTo(stringArg.getKey());
 		}
 		else {
-			throw new ClassCastException ("Argument is not a StringKey");
+			throw new ClassCastException ("Argument is not a StringKey"); //$NON-NLS-1$
 		}
 		return result;
 	}
@@ -60,6 +60,7 @@ public final class StringKey implements PropertyKey, Comparable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return getKey();
 	}

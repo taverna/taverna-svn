@@ -13,5 +13,5 @@ package net.sf.taverna.t2.drizzle.util;
  *            PropertiedTreeModel corresponds.
  */
 public interface PropertiedTreeRootNode<O> extends PropertiedTreeNode<O> {
-
+	// Nothing in common
 }

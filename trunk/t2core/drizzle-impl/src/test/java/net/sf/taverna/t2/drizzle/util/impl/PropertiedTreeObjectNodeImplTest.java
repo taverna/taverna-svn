@@ -26,6 +26,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -33,6 +34,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -40,7 +42,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		testImpl = new PropertiedTreeObjectNodeImpl<ExampleObject> ();
+		this.testImpl = new PropertiedTreeObjectNodeImpl<ExampleObject> ();
 	}
 
 	/**
@@ -48,6 +50,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -55,14 +58,14 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@Test
 	public final void testGetAllObjects() {
-		Set<ExampleObject> allObjects = testImpl.getAllObjects();
+		Set<ExampleObject> allObjects = this.testImpl.getAllObjects();
 		assertEquals (0, allObjects.size());
 		
 		ExampleObject object = new ExampleObject();
-		testImpl.setObject(object);
-		allObjects = testImpl.getAllObjects();
+		this.testImpl.setObject(object);
+		allObjects = this.testImpl.getAllObjects();
 		assertEquals(1, allObjects.size());
-		assertEquals(object, testImpl.getObject());
+		assertEquals(object, this.testImpl.getObject());
 		assertTrue(allObjects.contains(object));
 	}
 
@@ -71,7 +74,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	 */
 	@Test
 	public final void testPropertiedTreeObjectNodeImpl() {
-		assertNull(testImpl.getObject());
+		assertNull(this.testImpl.getObject());
 	}
 
 	/**
@@ -80,19 +83,19 @@ public class PropertiedTreeObjectNodeImplTest {
 	@Test
 	public final void testSetObject() {
 		try {
-			testImpl.setObject(null);
-			fail("NullPointerException expected");
+			this.testImpl.setObject(null);
+			fail("NullPointerException expected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		ExampleObject object = new ExampleObject();
-		testImpl.setObject(object);
-		assertEquals(object, testImpl.getObject());
+		this.testImpl.setObject(object);
+		assertEquals(object, this.testImpl.getObject());
 		
 		try {
-			testImpl.setObject(object);
-			fail("IllegalStateException expected");
+			this.testImpl.setObject(object);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
@@ -105,7 +108,7 @@ public class PropertiedTreeObjectNodeImplTest {
 	@Test
 	public final void testGetObject() {
 		// Covered by testSetObject except for
-		assertNull(testImpl.getObject());
+		assertNull(this.testImpl.getObject());
 	}
 
 }

@@ -25,14 +25,14 @@ public class PropertiedObjectSetBean <O>{
 	 */
 	public PropertiedObjectSetBean () {
 		super();
-		propertiedObjectMap = new HashMap<O, PropertiedObjectBean>();
+		this.propertiedObjectMap = new HashMap<O, PropertiedObjectBean>();
 	}
 
 	/**
 	 * @return the propertiedObjectMap
 	 */
 	public HashMap<O, PropertiedObjectBean> getPropertiedObjectMap() {
-		return propertiedObjectMap;
+		return this.propertiedObjectMap;
 	}
 
 	/**

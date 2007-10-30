@@ -17,7 +17,7 @@ public interface PropertiedObjectSetListener {
 	 * @param pos
 	 * @param o
 	 */
-	void objectAdded(PropertiedObjectSet pos, Object o);
+	void objectAdded(PropertiedObjectSet<?> pos, Object o);
 
 	/**
 	 * An object has been removed from the specified PropertiedObjectSet.
@@ -25,5 +25,5 @@ public interface PropertiedObjectSetListener {
 	 * @param pos
 	 * @param o
 	 */
-	void objectRemoved(PropertiedObjectSet pos, Object o);
+	void objectRemoved(PropertiedObjectSet<?> pos, Object o);
 }

@@ -28,6 +28,7 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -35,6 +36,7 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -42,7 +44,7 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		testImpl = new PropertiedTreePropertyValueNodeImpl<ExampleObject> ();
+		this.testImpl = new PropertiedTreePropertyValueNodeImpl<ExampleObject> ();
 	}
 
 	/**
@@ -50,6 +52,7 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	/**
@@ -57,8 +60,8 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@Test
 	public final void testPropertiedTreePropertyValueNodeImpl() {
-		assertNull(testImpl.getKey());
-		assertNull(testImpl.getValue());
+		assertNull(this.testImpl.getKey());
+		assertNull(this.testImpl.getValue());
 	}
 
 	/**
@@ -66,11 +69,11 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@Test
 	public final void testGetKey() {
-		assertNull(testImpl.getKey());
+		assertNull(this.testImpl.getKey());
 		
 		PropertyKey key = new ExampleKey();
-		testImpl.setKey(key);
-		assertEquals(key, testImpl.getKey());
+		this.testImpl.setKey(key);
+		assertEquals(key, this.testImpl.getKey());
 	}
 
 	/**
@@ -78,11 +81,11 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	 */
 	@Test
 	public final void testGetValue() {
-		assertNull(testImpl.getValue());
+		assertNull(this.testImpl.getValue());
 		
 		PropertyValue value = new ExampleValue();
-		testImpl.setValue(value);
-		assertEquals(value, testImpl.getValue());
+		this.testImpl.setValue(value);
+		assertEquals(value, this.testImpl.getValue());
 	}
 
 	/**
@@ -91,19 +94,19 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	@Test
 	public final void testSetKey() {
 		try {
-			testImpl.setKey(null);
-			fail("NullPointerException excpected");
+			this.testImpl.setKey(null);
+			fail("NullPointerException excpected"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is OK
 		}
 		PropertyKey key = new ExampleKey();
-		testImpl.setKey(key);
-		assertEquals(key, testImpl.getKey());
+		this.testImpl.setKey(key);
+		assertEquals(key, this.testImpl.getKey());
 		
 		try {
-			testImpl.setKey(new ExampleKey());
-			fail("IllegalStateException expected");
+			this.testImpl.setKey(new ExampleKey());
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
@@ -116,27 +119,27 @@ public class PropertiedTreePropertyValueNodeImplTest {
 	@Test
 	public final void testSetValue() {
 		try {
-			testImpl.setValue(null);
+			this.testImpl.setValue(null);
 			// This is OK
 		}
 		catch (NullPointerException e) {
-			fail ("NullPointer should be OK");
+			fail ("NullPointer should be OK"); //$NON-NLS-1$
 		}
 		PropertyValue value = new ExampleValue();
-		testImpl.setValue(value);
-		assertEquals(value, testImpl.getValue());
+		this.testImpl.setValue(value);
+		assertEquals(value, this.testImpl.getValue());
 		
 		try {
-			testImpl.setValue(new ExampleValue());
-			fail("IllegalStateException expected");
+			this.testImpl.setValue(new ExampleValue());
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK
 		}
 		
 		try {
-			testImpl.setValue(null);
-			fail("IllegalStateException expected");
+			this.testImpl.setValue(null);
+			fail("IllegalStateException expected"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is OK

@@ -28,7 +28,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 * 
 	 */
 	public PropertiedTreeNodeImpl() {
-		children = new ArrayList<PropertiedTreeNode<O>>();
+		this.children = new ArrayList<PropertiedTreeNode<O>>();
 	}
 
 	/**
@@ -36,12 +36,12 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 */
 	public void addChild(PropertiedTreeNode<O> child) {
 		if (child == null) {
-			throw new NullPointerException("child cannot be null");
+			throw new NullPointerException("child cannot be null"); //$NON-NLS-1$
 		}
 		if (child.getParent() != null) {
-			throw new IllegalArgumentException ("child already owned");
+			throw new IllegalArgumentException ("child already owned"); //$NON-NLS-1$
 		}
-		children.add(child);
+		this.children.add(child);
 		if (child instanceof PropertiedTreeNodeImpl) {
 			((PropertiedTreeNodeImpl<O>) child).setParent(this);
 		}
@@ -52,7 +52,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 */
 	public Set<O> getAllObjects() {
 		Set<O> result = new HashSet<O> ();
-		for (PropertiedTreeNode<O> child : children) {
+		for (PropertiedTreeNode<O> child : this.children) {
 			result.addAll (child.getAllObjects());
 		}
 		return result;
@@ -63,15 +63,15 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 */
 	public PropertiedTreePropertyValueNode<O> getAncestorWithKey(final PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException ("key cannot be null");
+			throw new NullPointerException ("key cannot be null"); //$NON-NLS-1$
 		}
 		PropertiedTreePropertyValueNode<O> result = null;
-		for (PropertiedTreeNode<O> parent = this.getParent();
-			(parent != null) && (result == null);
-			parent = parent.getParent()) {
-			if (parent instanceof PropertiedTreePropertyValueNode) {
+		for (PropertiedTreeNode<O> ancestor = this.getParent();
+			(ancestor != null) && (result == null);
+			ancestor = ancestor.getParent()) {
+			if (ancestor instanceof PropertiedTreePropertyValueNode) {
 				PropertiedTreePropertyValueNode<O> propertyParent =
-					(PropertiedTreePropertyValueNode<O>) parent;
+					(PropertiedTreePropertyValueNode<O>) ancestor;
 				PropertyKey k = propertyParent.getKey();
 				if (k.equals(key)) {
 					result = propertyParent;
@@ -87,7 +87,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	public final PropertiedTreeNode<O> getChild(final int index) {
 		PropertiedTreeNode<O> result = null;
 		try {
-			result = children.get(index);
+			result = this.children.get(index);
 		} catch (IndexOutOfBoundsException e) {
 			// reset result
 			result = null;
@@ -99,7 +99,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 * {@inheritDoc}
 	 */
 	public final int getChildCount() {
-		return children.size();
+		return this.children.size();
 	}
 
 	/**
@@ -107,8 +107,10 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 */
 	public int getDepth() {
 		int result = 0;
-		for (PropertiedTreeNode<O> parent = this.getParent();
-			parent != null; parent = parent.getParent(), result++);
+		for (PropertiedTreeNode<O> ancestor = this.getParent();
+			ancestor != null; ancestor = ancestor.getParent(), result++) {
+			// nothing in loop
+		}
 		return result;
 	}
 
@@ -117,9 +119,9 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 */
 	public final int getIndexOfChild(final PropertiedTreeNode<O> child) {
 		if (child == null) {
-			throw new NullPointerException("child cannot be null");
+			throw new NullPointerException("child cannot be null"); //$NON-NLS-1$
 		}
-		return children.indexOf(child);
+		return this.children.indexOf(child);
 	}
 
 	/**
@@ -159,12 +161,12 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	 * {@inheritDoc}
 	 */
 	public void removeAllChildren() {
-		for (PropertiedTreeNode<O> child : children) {
+		for (PropertiedTreeNode<O> child : this.children) {
 			if (child instanceof PropertiedTreeNodeImpl) {
 				((PropertiedTreeNodeImpl<O>) child).setParent(null);
 			}
 		}
-		children = new ArrayList<PropertiedTreeNode<O>> ();
+		this.children = new ArrayList<PropertiedTreeNode<O>> ();
 	}
 
 	/**

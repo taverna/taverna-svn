@@ -1,10 +1,13 @@
 package net.sf.taverna.t2.drizzle.util.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.drizzle.util.PropertiedGraphEdge;
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
@@ -37,167 +40,168 @@ public class PropertiedGraphEdgeImplTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// Nothing to do
 	}
 
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// Nothing to do
 	}
 
 	@Before
 	public void setUp() throws Exception {
-		testImpl = new PropertiedGraphEdgeImpl<ExampleObject> ();
+		this.testImpl = new PropertiedGraphEdgeImpl<ExampleObject> ();
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		// Nothing to do
 	}
 
 	@Test
 	public final void testPropertiedGraphEdgeImpl() {
-		assertEquals("testImpl.getNodes().size()", 0, testImpl.getNodes().size());
-		assertNull("testImpl.getKey()", testImpl.getKey());
-		assertNull("testImpl.getValue()", testImpl.getValue());
+		assertEquals(0, this.testImpl.getNodes().size());
+		assertNull(this.testImpl.getKey());
+		assertNull(this.testImpl.getValue());
 	}
 
 	@Test
 	public final void testGetKey() {
 		PropertyKey testKey = createKey();
-		testImpl.setKey(testKey);
-		assertEquals("testImpl.getKey()", testKey, testImpl.getKey());
+		this.testImpl.setKey(testKey);
+		assertEquals(testKey, this.testImpl.getKey());
 	}
 
 	@Test
 	public final void testGetNodes() {
 		PropertiedGraphNode<ExampleObject> testNode1 = createNode();
 		PropertiedGraphNode<ExampleObject> testNode2 = createNode();
-		testImpl.addNode(testNode1);
-		testImpl.addNode(testNode2);
-		assertEquals("testImpl.getNodes().size()", 2, testImpl.getNodes().size());
-		assertTrue("testImpl.getNodes(),contains(testNode1)",
-				testImpl.getNodes().contains(testNode1));
-		assertTrue("testImpl.getNodes(),contains(testNode2)",
-				testImpl.getNodes().contains(testNode2));
+		this.testImpl.addNode(testNode1);
+		this.testImpl.addNode(testNode2);
+		assertEquals(2, this.testImpl.getNodes().size());
+		assertTrue(this.testImpl.getNodes().contains(testNode1));
+		assertTrue(this.testImpl.getNodes().contains(testNode2));
 	}
 
 	@Test
 	public final void testGetValue() {
 		PropertyValue testValue = createValue();
-		testImpl.setValue(testValue);
-		assertEquals("testImpl.getValue()", testValue, testImpl.getValue());
+		this.testImpl.setValue(testValue);
+		assertEquals(testValue, this.testImpl.getValue());
 	}
 
 	@Test
 	public final void testAddNode() {
 		try {
-			testImpl.addNode(null);
-			fail("NullPointerException should have been thrown for node");
+			this.testImpl.addNode(null);
+			fail("NullPointerException should have been thrown for node"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		PropertiedGraphNode<ExampleObject> testNode1 = createNode();
 		PropertiedGraphNode<ExampleObject> testNode2 = createNode();
-		testImpl.addNode(testNode1);
-		assertEquals("testImpl.getNodes().size()", 1, testImpl.getNodes().size());
-		assertTrue("testImpl.getNodes(),contains(testNode1)",
-				testImpl.getNodes().contains(testNode1));
-		assertFalse("testImpl.getNodes(),contains(testNode2)",
-				testImpl.getNodes().contains(testNode2));
+		this.testImpl.addNode(testNode1);
+		assertEquals("testImpl.getNodes().size()", 1, this.testImpl.getNodes().size()); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes(),contains(testNode1)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode1));
+		assertFalse("testImpl.getNodes(),contains(testNode2)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode2));
 		
 		// Check adding twice has no effect
-		testImpl.addNode(testNode1);
-		assertEquals("testImpl.getNodes().size()", 1, testImpl.getNodes().size());
-		assertTrue("testImpl.getNodes(),contains(testNode1)",
-				testImpl.getNodes().contains(testNode1));
-		assertFalse("testImpl.getNodes(),contains(testNode2)",
-				testImpl.getNodes().contains(testNode2));
+		this.testImpl.addNode(testNode1);
+		assertEquals("testImpl.getNodes().size()", 1, this.testImpl.getNodes().size()); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes(),contains(testNode1)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode1));
+		assertFalse("testImpl.getNodes(),contains(testNode2)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode2));
 		
-		testImpl.addNode(testNode2);
-		assertEquals("testImpl.getNodes().size()", 2, testImpl.getNodes().size());
-		assertTrue("testImpl.getNodes(),contains(testNode1)",
-				testImpl.getNodes().contains(testNode1));
-		assertTrue("testImpl.getNodes(),contains(testNode2)",
-				testImpl.getNodes().contains(testNode2));
+		this.testImpl.addNode(testNode2);
+		assertEquals("testImpl.getNodes().size()", 2, this.testImpl.getNodes().size()); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes(),contains(testNode1)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode1));
+		assertTrue("testImpl.getNodes(),contains(testNode2)", //$NON-NLS-1$
+				this.testImpl.getNodes().contains(testNode2));
 	}
 
 	@Test
 	public final void testRemoveNode() {
 		try {
-			testImpl.removeNode(null);
-			fail("NullPointerException should have been thrown for node");
+			this.testImpl.removeNode(null);
+			fail("NullPointerException should have been thrown for node"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		PropertiedGraphNode<ExampleObject> testNode1 = createNode();
 		PropertiedGraphNode<ExampleObject> testNode2 = createNode();
-		testImpl.addNode(testNode1);
-		testImpl.addNode(testNode2);
-		Set<PropertiedGraphNode<ExampleObject>> nodes = testImpl.getNodes();
-		assertEquals("testImpl.getNodes().size", 2, nodes.size());
-		assertTrue("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1));
-		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2));
+		this.testImpl.addNode(testNode1);
+		this.testImpl.addNode(testNode2);
+		Set<PropertiedGraphNode<ExampleObject>> nodes = this.testImpl.getNodes();
+		assertEquals("testImpl.getNodes().size", 2, nodes.size()); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1)); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2)); //$NON-NLS-1$
 		
-		testImpl.removeNode(testNode1);
-		nodes = testImpl.getNodes();
-		assertEquals("testImpl.getNodes().size", 1, nodes.size());
-		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1));
-		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2));
+		this.testImpl.removeNode(testNode1);
+		nodes = this.testImpl.getNodes();
+		assertEquals("testImpl.getNodes().size", 1, nodes.size()); //$NON-NLS-1$
+		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1)); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2)); //$NON-NLS-1$
 
 		// Check that removing twice does nothing
-		testImpl.removeNode(testNode1);
-		nodes = testImpl.getNodes();
-		assertEquals("testImpl.getNodes().size", 1, nodes.size());
-		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1));
-		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2));
+		this.testImpl.removeNode(testNode1);
+		nodes = this.testImpl.getNodes();
+		assertEquals("testImpl.getNodes().size", 1, nodes.size()); //$NON-NLS-1$
+		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1)); //$NON-NLS-1$
+		assertTrue("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2)); //$NON-NLS-1$
 		
-		testImpl.removeNode(testNode2);
-		nodes = testImpl.getNodes();
-		assertEquals("testImpl.getNodes().size", 0, nodes.size());
-		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1));
-		assertFalse("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2));
+		this.testImpl.removeNode(testNode2);
+		nodes = this.testImpl.getNodes();
+		assertEquals("testImpl.getNodes().size", 0, nodes.size()); //$NON-NLS-1$
+		assertFalse("testImpl.getNodes().contains(testNode1)", nodes.contains(testNode1)); //$NON-NLS-1$
+		assertFalse("testImpl.getNodes().contains(testNode2)", nodes.contains(testNode2)); //$NON-NLS-1$
 	}
 
 	@Test
 	public final void testSetKey() {
 		PropertyKey testKey = createKey();
 		try {
-			testImpl.setKey(null);
-			fail("NullPointerException should have been thrown for key");
+			this.testImpl.setKey(null);
+			fail("NullPointerException should have been thrown for key"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		try {
-			testImpl.setKey(testKey);
-			testImpl.setKey(testKey);
-			fail("IllegalStateException should have been thrown for key");
+			this.testImpl.setKey(testKey);
+			this.testImpl.setKey(testKey);
+			fail("IllegalStateException should have been thrown for key"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is expected
 		}
-		assertEquals("testImpl.getKey()", testKey, testImpl.getKey());
+		assertEquals("testImpl.getKey()", testKey, this.testImpl.getKey()); //$NON-NLS-1$
 	}
 
 	@Test
 	public final void testSetValue() {
 		PropertyValue testValue = createValue();
 		try {
-			testImpl.setValue(null);
-			fail("NullPointerException should have been thrown for value");
+			this.testImpl.setValue(null);
+			fail("NullPointerException should have been thrown for value"); //$NON-NLS-1$
 		}
 		catch (NullPointerException e) {
 			// This is expected
 		}
 		try {
-			testImpl.setValue(testValue);
-			testImpl.setValue(testValue);
-			fail("IllegalStateException should have been thrown for value");
+			this.testImpl.setValue(testValue);
+			this.testImpl.setValue(testValue);
+			fail("IllegalStateException should have been thrown for value"); //$NON-NLS-1$
 		}
 		catch (IllegalStateException e) {
 			// This is expected
 		}
-		assertEquals("testImpl.getValue()", testValue, testImpl.getValue());
+		assertEquals("testImpl.getValue()", testValue, this.testImpl.getValue()); //$NON-NLS-1$
 	}
 
 }

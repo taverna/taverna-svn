@@ -48,76 +48,81 @@ import org.junit.Ignore;
 @Ignore("Not a test case")
 public final class TestJTree extends JFrame {
 
-	private PropertiedObjectSet<StringObject> testSet = new PropertiedObjectSetImpl<StringObject>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1244291627173869253L;
 
-	private StringObject service1 = new StringObject("blast service");
+	PropertiedObjectSet<StringObject> testSet = new PropertiedObjectSetImpl<StringObject>();
 
-	private StringObject service2 = new StringObject("emma service");
+	StringObject service1 = new StringObject("blast service"); //$NON-NLS-1$
 
-	private StringObject service3 = new StringObject("fetchPdb service");
+	StringObject service2 = new StringObject("emma service"); //$NON-NLS-1$
 
-	private StringObject service4 = new StringObject("renderPdb service");
+	private StringObject service3 = new StringObject("fetchPdb service"); //$NON-NLS-1$
 
-	private PropertyKey domainKey = new StringKey("domain");
+	private StringObject service4 = new StringObject("renderPdb service"); //$NON-NLS-1$
 
-	private PropertyKey nameKey = new StringKey("name");
+	PropertyKey domainKey = new StringKey("domain"); //$NON-NLS-1$
 
-	private PropertyKey providerKey = new StringKey("provider");
+	PropertyKey nameKey = new StringKey("name"); //$NON-NLS-1$
 
-	private PropertyKey typeKey = new StringKey("type");
+	PropertyKey providerKey = new StringKey("provider"); //$NON-NLS-1$
 
-	private PropertyValue ebiValue = new StringValue("ebi");
+	PropertyKey typeKey = new StringKey("type"); //$NON-NLS-1$
 
-	private PropertyValue manchesterValue = new StringValue("manchester");
+	PropertyValue ebiValue = new StringValue("ebi"); //$NON-NLS-1$
 
-	private PropertyValue soaplabValue = new StringValue("soaplab");
+	private PropertyValue manchesterValue = new StringValue("manchester"); //$NON-NLS-1$
 
-	private PropertyValue wsdlValue = new StringValue("wsdl");
+	private PropertyValue soaplabValue = new StringValue("soaplab"); //$NON-NLS-1$
 
-	private PropertyValue geneticsValue = new StringValue("genetics");
+	PropertyValue wsdlValue = new StringValue("wsdl"); //$NON-NLS-1$
 
-	private PropertyValue structureValue = new StringValue("structure");
+	PropertyValue geneticsValue = new StringValue("genetics"); //$NON-NLS-1$
 
-	private PropertyValue blastValue = new StringValue("blast");
+	private PropertyValue structureValue = new StringValue("structure"); //$NON-NLS-1$
 
-	private PropertyValue emmaValue = new StringValue("emma");
+	PropertyValue blastValue = new StringValue("blast"); //$NON-NLS-1$
 
-	private PropertyValue fetchPdbValue = new StringValue("fetchPdb");
+	private PropertyValue emmaValue = new StringValue("emma"); //$NON-NLS-1$
 
-	private PropertyValue renderPdbValue = new StringValue("renderPdb");
+	private PropertyValue fetchPdbValue = new StringValue("fetchPdb"); //$NON-NLS-1$
 
-	private JTree tree;
+	private PropertyValue renderPdbValue = new StringValue("renderPdb"); //$NON-NLS-1$
+
+	JTree currentTree;
 
 	private PropertiedGraphView<StringObject> graphView = null;
 
-	private TreeModel model = null;
+	TreeModel model = null;
 	
-	private List<PropertyKeySetting> fullKeySettings = null;
+	List<PropertyKeySetting> fullKeySettings = null;
 
 	private void initializeSet() {
-		graphView = new PropertiedGraphViewImpl<StringObject>();
+		this.graphView = new PropertiedGraphViewImpl<StringObject>();
 
-		testSet.setProperty(service1, providerKey, ebiValue);
-		testSet.setProperty(service1, typeKey, wsdlValue);
-		testSet.setProperty(service1, domainKey, geneticsValue);
-		testSet.setProperty(service1, nameKey, blastValue);
+		this.testSet.setProperty(this.service1, this.providerKey, this.ebiValue);
+		this.testSet.setProperty(this.service1, this.typeKey, this.wsdlValue);
+		this.testSet.setProperty(this.service1, this.domainKey, this.geneticsValue);
+		this.testSet.setProperty(this.service1, this.nameKey, this.blastValue);
 
-		testSet.setProperty(service2, providerKey, ebiValue);
-		testSet.setProperty(service2, typeKey, soaplabValue);
-		testSet.setProperty(service2, domainKey, geneticsValue);
-		testSet.setProperty(service2, nameKey, emmaValue);
+		this.testSet.setProperty(this.service2, this.providerKey, this.ebiValue);
+		this.testSet.setProperty(this.service2, this.typeKey, this.soaplabValue);
+		this.testSet.setProperty(this.service2, this.domainKey, this.geneticsValue);
+		this.testSet.setProperty(this.service2, this.nameKey, this.emmaValue);
 
-		testSet.setProperty(service3, providerKey, ebiValue);
-		testSet.setProperty(service3, typeKey, soaplabValue);
-		testSet.setProperty(service3, domainKey, structureValue);
-		testSet.setProperty(service3, nameKey, fetchPdbValue);
+		this.testSet.setProperty(this.service3, this.providerKey, this.ebiValue);
+		this.testSet.setProperty(this.service3, this.typeKey, this.soaplabValue);
+		this.testSet.setProperty(this.service3, this.domainKey, this.structureValue);
+		this.testSet.setProperty(this.service3, this.nameKey, this.fetchPdbValue);
 
-		testSet.setProperty(service4, providerKey, manchesterValue);
-		testSet.setProperty(service4, typeKey, wsdlValue);
-		testSet.setProperty(service4, domainKey, structureValue);
-		testSet.setProperty(service4, nameKey, renderPdbValue);
+		this.testSet.setProperty(this.service4, this.providerKey, this.manchesterValue);
+		this.testSet.setProperty(this.service4, this.typeKey, this.wsdlValue);
+		this.testSet.setProperty(this.service4, this.domainKey, this.structureValue);
+		this.testSet.setProperty(this.service4, this.nameKey, this.renderPdbValue);
 
-		graphView.setPropertiedObjectSet(testSet);
+		this.graphView.setPropertiedObjectSet(this.testSet);
 
 	}
 
@@ -125,26 +130,26 @@ public final class TestJTree extends JFrame {
 		List<PropertyKeySetting> keySettings = new ArrayList<PropertyKeySetting>();
 
 		PropertyKeySetting typeSetting = new PropertyKeySettingImpl();
-		typeSetting.setPropertyKey(typeKey);
+		typeSetting.setPropertyKey(this.typeKey);
 		keySettings.add(typeSetting);
 		PropertyKeySetting domainSetting = new PropertyKeySettingImpl();
-		domainSetting.setPropertyKey(domainKey);
+		domainSetting.setPropertyKey(this.domainKey);
 		keySettings.add(domainSetting);
 		PropertyKeySetting providerSetting = new PropertyKeySettingImpl();
-		providerSetting.setPropertyKey(providerKey);
+		providerSetting.setPropertyKey(this.providerKey);
 		keySettings.add(providerSetting);
 		PropertyKeySetting nameSetting = new PropertyKeySettingImpl();
-		nameSetting.setPropertyKey(nameKey);
+		nameSetting.setPropertyKey(this.nameKey);
 		keySettings.add(nameSetting);
 		PropertyKeySetting edgeSetting = new PropertyKeySettingImpl();
 		keySettings.add(edgeSetting);
 		return keySettings;
 	}
 
-	private List<PropertyKeySetting> getTreeSettings
-		(final List<PropertyKeySetting> fullKeySettings) {
+	List<PropertyKeySetting> getTreeSettings
+		(final List<PropertyKeySetting> fullSettings1) {
 		List<PropertyKeySetting> result = new ArrayList<PropertyKeySetting>();
-		for (PropertyKeySetting pks : fullKeySettings) {
+		for (PropertyKeySetting pks : fullSettings1) {
 			if (pks.getPropertyKey() != null) {
 				result.add(pks);
 			}
@@ -155,13 +160,15 @@ public final class TestJTree extends JFrame {
 		return result;
 	}
 	
-	private List<PropertyKeySetting> getTableSettings
-	(final List<PropertyKeySetting> fullKeySettings) {
-		PropertyKeySetting[] fullArray = fullKeySettings.toArray(new PropertyKeySetting[0]);
+	List<PropertyKeySetting> getTableSettings
+	(final List<PropertyKeySetting> fullSettings1) {
+		PropertyKeySetting[] fullArray = fullSettings1.toArray(new PropertyKeySetting[0]);
 		List<PropertyKeySetting> result = new ArrayList<PropertyKeySetting> ();
 		
 		int index = 0;
-		for (; fullArray[index].getPropertyKey() != null; index++);
+		for (; fullArray[index].getPropertyKey() != null; index++) {
+			// Just loop
+		}
 		for (++index; index < fullArray.length; index++) {
 			result.add(fullArray[index]);
 		}
@@ -175,19 +182,24 @@ public final class TestJTree extends JFrame {
 	public TreeModel createTree(final List<PropertyKeySetting> keySettings) {
 		PropertiedTreeModel<StringObject> testImpl = new PropertiedTreeModelImpl<StringObject>();
 		testImpl.setPropertyKeySettings(keySettings);
-		testImpl.setPropertiedGraphView(graphView);
+		testImpl.setPropertiedGraphView(this.graphView);
 
 		TreeModel untypedView = TreeModelAdapter.untypedView(testImpl);
 		return untypedView;
 	}
 
-	private void expandAll(JTree tree) {
-		for (int i = 0; i <= tree.getRowCount(); i++) {
-			tree.expandRow(i);
+	void expandAll(final JTree expansionTree) {
+		for (int i = 0; i <= expansionTree.getRowCount(); i++) {
+			expansionTree.expandRow(i);
 		}
 	}
 
 	public class TableTreeCellRenderer extends JPanel implements TreeCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8795507848377363512L;
 
 		private JTable table;
 		
@@ -205,47 +217,54 @@ public final class TestJTree extends JFrame {
 			Component result = null;
 			if (value instanceof PropertiedTreeObjectNode) {
 				this.table.setModel(new DefaultTableModel() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 6622165324630089260L;
+					@Override
 					public int getRowCount() {
 						return 1;
 					}
+					@Override
 					public int getColumnCount() {
 						List<PropertyKeySetting> tableKeySettings =
-							getTableSettings(fullKeySettings);
-						int result = 1;
-						if (tableKeySettings.size() > result) {
-							result = tableKeySettings.size();
+							getTableSettings(TestJTree.this.fullKeySettings);
+						int count = 1;
+						if (tableKeySettings.size() > count) {
+							count = tableKeySettings.size();
 						}
-						return result;
+						return count;
 					}
-					public Object getValueAt(int row, int column) {
-						Object result;
+					@SuppressWarnings("unchecked")
+					@Override
+					public Object getValueAt(int valueRow, int column) {
+						Object resultValue;
 						StringObject so = ((PropertiedTreeObjectNode<StringObject>) value).getObject();
 						List<PropertyKeySetting> tableKeySettings =
-							getTableSettings(fullKeySettings);
+							getTableSettings(TestJTree.this.fullKeySettings);
 						if (column == tableKeySettings.size()) {
-							result = so.toString();
+							resultValue = so.toString();
 						}
 						else {
 						PropertyKey key = tableKeySettings.get(column).getPropertyKey();
-						String keyString = key.toString();
-						String valueString = "missing";
-						PropertiedObject<StringObject> po = testSet.getPropertiedObject(so);
+						String valueString = "missing"; //$NON-NLS-1$
+						PropertiedObject<StringObject> po = TestJTree.this.testSet.getPropertiedObject(so);
 						if (po != null) {
 							PropertyValue pv = po.getPropertyValue(key);
 							if (pv != null) {
 								valueString = pv.toString();
 							}
 						}
-							result = valueString;
+							resultValue = valueString;
 						}
-						return result;
+						return resultValue;
 					}
 				});
 				this.table.doLayout();
 				result = this;
 			}
 			else {
-			result = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+			result = this.defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 			}
 			return result;
 		}
@@ -255,31 +274,29 @@ public final class TestJTree extends JFrame {
 	 * Construct a TestJTree that takes a PropertiedObjectSet populated with
 	 * example data and shows it as a JTree. The effects of altering the
 	 * PropertiedObjectSet are shown to be mirrored in the JTree.
-	 * 
-	 * @throws InterruptedException
 	 */
-	public TestJTree() throws InterruptedException {
+	public TestJTree() {
 		initializeSet();
-		fullKeySettings = initializeSettings();
+		this.fullKeySettings = initializeSettings();
 		
-		model = createTree(getTreeSettings(fullKeySettings));
+		this.model = createTree(getTreeSettings(this.fullKeySettings));
 		Container content = getContentPane();
-		tree = new JTree(model);
-		tree.setCellRenderer (new TableTreeCellRenderer());
+		this.currentTree = new JTree(this.model);
+		this.currentTree.setCellRenderer (new TableTreeCellRenderer());
 		content.setLayout(new BorderLayout());
-		content.add(tree, BorderLayout.CENTER);
+		content.add(this.currentTree, BorderLayout.CENTER);
 		setSize(275, 300);
-		expandAll(tree);
+		expandAll(this.currentTree);
 		setVisible(true);
 		Vector<String> keyNames = new Vector<String>();
 		int edgeIndex = 0;
-		for (PropertyKeySetting pks : fullKeySettings) {
+		for (PropertyKeySetting pks : this.fullKeySettings) {
 			PropertyKey pk = pks.getPropertyKey();
 			if (pk != null) {
 				keyNames.add(pk.toString());
 			} else {
 				edgeIndex = keyNames.size();
-				keyNames.add("");
+				keyNames.add(""); //$NON-NLS-1$
 			}
 		}
 		DefaultTableModel tableModel = new DefaultTableModel(keyNames, 0);
@@ -304,12 +321,12 @@ public final class TestJTree extends JFrame {
 			public void columnMoved(TableColumnModelEvent arg0) {
 				int fromIndex = arg0.getFromIndex();
 				int toIndex = arg0.getToIndex();
-				PropertyKeySetting movedKey = fullKeySettings.get(fromIndex);
-				fullKeySettings.remove(fromIndex);
-				fullKeySettings.add(toIndex, movedKey);
-				model = createTree(getTreeSettings(fullKeySettings));
-				tree.setModel(model);
-				expandAll(tree);
+				PropertyKeySetting movedKey = TestJTree.this.fullKeySettings.get(fromIndex);
+				TestJTree.this.fullKeySettings.remove(fromIndex);
+				TestJTree.this.fullKeySettings.add(toIndex, movedKey);
+				TestJTree.this.model = createTree(getTreeSettings(TestJTree.this.fullKeySettings));
+				TestJTree.this.currentTree.setModel(TestJTree.this.model);
+				expandAll(TestJTree.this.currentTree);
 
 			}
 
@@ -330,33 +347,37 @@ public final class TestJTree extends JFrame {
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
-				testSet.removeObject(service1);
-				expandAll(tree);
+				TestJTree.this.testSet.removeObject(TestJTree.this.service1);
+				expandAll(TestJTree.this.currentTree);
 			}
 		}, 10000);
 		timer.schedule(new TimerTask() {
 
+			@Override
 			public void run() {
-				testSet.setProperty(service2, typeKey, wsdlValue);
-				expandAll(tree);
+				TestJTree.this.testSet.setProperty(TestJTree.this.service2, TestJTree.this.typeKey, TestJTree.this.wsdlValue);
+				expandAll(TestJTree.this.currentTree);
 			}
 		}, 20000);
 		timer.schedule(new TimerTask() {
 
+			@Override
 			public void run() {
-				testSet.addObject(service1);
-				expandAll(tree);
+				TestJTree.this.testSet.addObject(TestJTree.this.service1);
+				expandAll(TestJTree.this.currentTree);
 			}
 		}, 30000);
 		timer.schedule(new TimerTask() {
 
+			@Override
 			public void run() {
-				testSet.setProperty(service1, providerKey, ebiValue);
-				testSet.setProperty(service1, typeKey, wsdlValue);
-				testSet.setProperty(service1, domainKey, geneticsValue);
-				testSet.setProperty(service1, nameKey, blastValue);
-				expandAll(tree);
+				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.providerKey, TestJTree.this.ebiValue);
+				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.typeKey, TestJTree.this.wsdlValue);
+				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.domainKey, TestJTree.this.geneticsValue);
+				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.nameKey, TestJTree.this.blastValue);
+				expandAll(TestJTree.this.currentTree);
 			}
 		}, 40000);
 		 
@@ -366,9 +387,8 @@ public final class TestJTree extends JFrame {
 	 * Show the test JTree.
 	 * 
 	 * @param args
-	 * @throws InterruptedException
 	 */
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		new TestJTree();
 	}
 }

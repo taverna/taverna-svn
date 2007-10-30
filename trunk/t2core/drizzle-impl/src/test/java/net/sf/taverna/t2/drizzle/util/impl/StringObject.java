@@ -7,7 +7,7 @@ package net.sf.taverna.t2.drizzle.util.impl;
  * @author alanrw
  *
  */
-public class StringObject implements Comparable {
+public class StringObject implements Comparable<Object> {
 	private String objectString;
 	
 	/**
@@ -25,18 +25,18 @@ public class StringObject implements Comparable {
 	 * @return
 	 */
 	public String getString() {
-		return objectString;
+		return this.objectString;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals (Object o) {
 		if (o instanceof StringObject) {
-			return ((StringObject)o).getString().equals(objectString);
-		} else {
-			return false;
+			return ((StringObject)o).getString().equals(this.objectString);
 		}
+		return false;
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class StringObject implements Comparable {
 			result = getString().compareTo(exampleArg.getString());
 		}
 		else {
-			throw new ClassCastException ("Argument is not a StringObject");
+			throw new ClassCastException ("Argument is not a StringObject"); //$NON-NLS-1$
 		}
 		return result;	
 	}
@@ -57,6 +57,7 @@ public class StringObject implements Comparable {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return getString();
 	}

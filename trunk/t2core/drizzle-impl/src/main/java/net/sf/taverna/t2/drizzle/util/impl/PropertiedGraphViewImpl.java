@@ -39,13 +39,13 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * edges holds the Set of PropertiedGraphEdge that connect nodes within the
 	 * graph. It is legal for an edge to connect no nodes.
 	 */
-	private HashSet<PropertiedGraphEdge<O>> edges;
+	HashSet<PropertiedGraphEdge<O>> edges;
 
 	/**
 	 * nodes holds the Set of PropertiedGraphNodes that correspond to Objects
 	 * within the PropertiedObjectSet of which the graph is a view.
 	 */
-	private HashSet<PropertiedGraphNode<O>> nodes;
+	HashSet<PropertiedGraphNode<O>> nodes;
 
 	/**
 	 * nodeMap maps the Objects within the PropertiedObjectSet to their
@@ -53,13 +53,13 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * 
 	 * The nodes Set may be redundant.
 	 */
-	private HashMap<O, PropertiedGraphNode<O>> nodeMap;
+	HashMap<O, PropertiedGraphNode<O>> nodeMap;
 
 	/**
 	 * edgeMap maps a PropertyKey + PropertyValue to the corresponding
 	 * PropertiedGGraphEdge within the graph.
 	 */
-	private HashMap<PropertyKey, HashMap<PropertyValue, PropertiedGraphEdge<O>>> edgeMap;
+	HashMap<PropertyKey, HashMap<PropertyValue, PropertiedGraphEdge<O>>> edgeMap;
 
 	/**
 	 * listeners holds the Set of PropertiedGraphViewListeners that listen to
@@ -72,14 +72,14 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public PropertiedGraphViewImpl() {
 		super();
-		propertiedObjectSet = null;
-		edges = new HashSet<PropertiedGraphEdge<O>>();
-		nodes = new HashSet<PropertiedGraphNode<O>>();
+		this.propertiedObjectSet = null;
+		this.edges = new HashSet<PropertiedGraphEdge<O>>();
+		this.nodes = new HashSet<PropertiedGraphNode<O>>();
 
-		nodeMap = new HashMap<O, PropertiedGraphNode<O>>();
-		edgeMap = new HashMap<PropertyKey, HashMap<PropertyValue, PropertiedGraphEdge<O>>>();
+		this.nodeMap = new HashMap<O, PropertiedGraphNode<O>>();
+		this.edgeMap = new HashMap<PropertyKey, HashMap<PropertyValue, PropertiedGraphEdge<O>>>();
 
-		listeners = new HashSet<PropertiedGraphViewListener<O>>();
+		this.listeners = new HashSet<PropertiedGraphViewListener<O>>();
 	}
 
 	/**
@@ -87,9 +87,9 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public void addListener(final PropertiedGraphViewListener<O> listener) {
 		if (listener == null) {
-			throw new NullPointerException("listener cannot be null");
+			throw new NullPointerException("listener cannot be null"); //$NON-NLS-1$
 		}
-		listeners.add(listener);
+		this.listeners.add(listener);
 	}
 
 	/**
@@ -97,14 +97,14 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public PropertiedGraphEdge<O> getEdge(PropertyKey key, PropertyValue value) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		if (value == null) {
-			throw new NullPointerException("value cannot be null");
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
 		PropertiedGraphEdge<O> result = null;
-		if (edgeMap.containsKey(key)) {
-			result = edgeMap.get(key).get(value);
+		if (this.edgeMap.containsKey(key)) {
+			result = this.edgeMap.get(key).get(value);
 		}
 
 		return result;
@@ -117,7 +117,7 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 		// edges cannot just be copied because some edges may no longer connect
 		// nodes
 		HashSet<PropertiedGraphEdge<O>> result = new HashSet<PropertiedGraphEdge<O>>();
-		for (PropertiedGraphEdge<O> edge : edges) {
+		for (PropertiedGraphEdge<O> edge : this.edges) {
 			if (edge.getNodes().size() > 0) {
 				result.add(edge);
 			}
@@ -130,9 +130,9 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public PropertiedGraphNode<O> getNode(O object) {
 		if (object == null) {
-			throw new NullPointerException("object cannot be null");
+			throw new NullPointerException("object cannot be null"); //$NON-NLS-1$
 		}
-		return nodeMap.get(object);
+		return this.nodeMap.get(object);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public Set<PropertiedGraphNode<O>> getNodes() {
 		// Copy to be safe
-		return new HashSet<PropertiedGraphNode<O>>(nodes);
+		return new HashSet<PropertiedGraphNode<O>>(this.nodes);
 	}
 
 	/**
@@ -158,15 +158,15 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * @param edge
 	 * @param node
 	 */
-	private void notifyListenersEdgeAdded(final PropertiedGraphEdge<O> edge,
+	@SuppressWarnings("unchecked") void notifyListenersEdgeAdded(final PropertiedGraphEdge<O> edge,
 			final PropertiedGraphNode<O> node) {
 		if (edge == null) {
-			throw new NullPointerException("edge cannot be null");
+			throw new NullPointerException("edge cannot be null"); //$NON-NLS-1$
 		}
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedGraphViewListener<O>[] copy = listeners
+		PropertiedGraphViewListener<O>[] copy = this.listeners
 				.toArray(new PropertiedGraphViewListener[0]);
 		for (PropertiedGraphViewListener<O> l : copy) {
 			l.edgeAdded(this, edge, node);
@@ -182,15 +182,15 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * @param edge
 	 * @param node
 	 */
-	private void notifyListenersEdgeRemoved(final PropertiedGraphEdge<O> edge,
+	@SuppressWarnings({"unchecked" }) void notifyListenersEdgeRemoved(final PropertiedGraphEdge<O> edge,
 			final PropertiedGraphNode<O> node) {
 		if (edge == null) {
-			throw new NullPointerException("edge cannot be null");
+			throw new NullPointerException("edge cannot be null"); //$NON-NLS-1$
 		}
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedGraphViewListener<O>[] copy = listeners
+		PropertiedGraphViewListener<O>[] copy = this.listeners
 				.toArray(new PropertiedGraphViewListener[0]);
 		for (PropertiedGraphViewListener<O> l : copy) {
 			l.edgeRemoved(this, edge, node);
@@ -203,11 +203,11 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * 
 	 * @param node
 	 */
-	private void notifyListenersNodeAdded(final PropertiedGraphNode<O> node) {
+	@SuppressWarnings("unchecked") void notifyListenersNodeAdded(final PropertiedGraphNode<O> node) {
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedGraphViewListener<O>[] copy = listeners
+		PropertiedGraphViewListener<O>[] copy = this.listeners
 				.toArray(new PropertiedGraphViewListener[0]);
 		for (PropertiedGraphViewListener<O> l : copy) {
 			l.nodeAdded(this, node);
@@ -221,11 +221,11 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * 
 	 * @param node
 	 */
-	private void notifyListenersNodeRemoved(final PropertiedGraphNode<O> node) {
+	@SuppressWarnings("unchecked") void notifyListenersNodeRemoved(final PropertiedGraphNode<O> node) {
 		if (node == null) {
-			throw new NullPointerException("node cannot be null");
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedGraphViewListener<O>[] copy = listeners
+		PropertiedGraphViewListener<O>[] copy = this.listeners
 				.toArray(new PropertiedGraphViewListener[0]);
 		for (PropertiedGraphViewListener<O> l : copy) {
 			l.nodeRemoved(this, node);
@@ -237,9 +237,9 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public void removeListener(final PropertiedGraphViewListener<O> listener) {
 		if (listener == null) {
-			throw new NullPointerException("listener cannot be null");
+			throw new NullPointerException("listener cannot be null"); //$NON-NLS-1$
 		}
-		listeners.remove(listener);
+		this.listeners.remove(listener);
 	}
 
 	/**
@@ -248,36 +248,37 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	public void setPropertiedObjectSet(
 			final PropertiedObjectSet<O> propertiedObjectSet) {
 		if (propertiedObjectSet == null) {
-			throw new NullPointerException("propertiedObjectSet cannot be null");
+			throw new NullPointerException("propertiedObjectSet cannot be null"); //$NON-NLS-1$
 		}
 		if (this.propertiedObjectSet != null) {
 			throw new IllegalStateException(
-					"Cannot be initialized more than once");
+					"Cannot be initialized more than once"); //$NON-NLS-1$
 		}
 		this.propertiedObjectSet = propertiedObjectSet;
 
 		PropertiedObjectSetListener posListener = new PropertiedObjectSetListener() {
 
-			public void objectAdded(PropertiedObjectSet pos, Object o) {
-				if (!nodeMap.keySet().contains(o)) {
+			@SuppressWarnings("unchecked")
+			public void objectAdded(PropertiedObjectSet<?> pos, Object o) {
+				if (!PropertiedGraphViewImpl.this.nodeMap.keySet().contains(o)) {
 					PropertiedGraphNode<O> node = new PropertiedGraphNodeImpl<O>();
 					node.setObject((O) o);
-					nodes.add(node);
-					nodeMap.put((O) o, node);
+					PropertiedGraphViewImpl.this.nodes.add(node);
+					PropertiedGraphViewImpl.this.nodeMap.put((O) o, node);
 					notifyListenersNodeAdded(node);
 				}
 			}
 
-			public void objectRemoved(PropertiedObjectSet pos, Object o) {
-				if (nodeMap.keySet().contains(o)) {
-					PropertiedGraphNode<O> node = nodeMap.get(o);
-					Set<PropertiedGraphEdge<O>> edges = node.getEdges();
-					for (PropertiedGraphEdge<O> edge : edges) {
+			public void objectRemoved(PropertiedObjectSet<?> pos, Object o) {
+				if (PropertiedGraphViewImpl.this.nodeMap.keySet().contains(o)) {
+					PropertiedGraphNode<O> node = PropertiedGraphViewImpl.this.nodeMap.get(o);
+					Set<PropertiedGraphEdge<O>> nodeEdges = node.getEdges();
+					for (PropertiedGraphEdge<O> edge : nodeEdges) {
 						edge.removeNode(node);
 						notifyListenersEdgeRemoved(edge, node);
 					}
-					nodes.remove(node);
-					nodeMap.remove(o);
+					PropertiedGraphViewImpl.this.nodes.remove(node);
+					PropertiedGraphViewImpl.this.nodeMap.remove(o);
 					notifyListenersNodeRemoved(node);
 				}
 			}
@@ -289,24 +290,24 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 
 			public void propertyAdded(Object o, PropertyKey key,
 					PropertyValue value) {
-				if (!nodeMap.keySet().contains(o)) {
+				if (!PropertiedGraphViewImpl.this.nodeMap.keySet().contains(o)) {
 					throw new IllegalArgumentException(
-							"o must be in the propertiedObjectSet");
+							"o must be in the propertiedObjectSet"); //$NON-NLS-1$
 				}
-				PropertiedGraphNode<O> node = nodeMap.get(o);
+				PropertiedGraphNode<O> node = PropertiedGraphViewImpl.this.nodeMap.get(o);
 				PropertiedGraphEdge<O> edge = null;
 				HashMap<PropertyValue, PropertiedGraphEdge<O>> valueMap = null;
-				if (edgeMap.containsKey(key)) {
-					valueMap = edgeMap.get(key);
+				if (PropertiedGraphViewImpl.this.edgeMap.containsKey(key)) {
+					valueMap = PropertiedGraphViewImpl.this.edgeMap.get(key);
 				} else {
 					valueMap = new HashMap<PropertyValue, PropertiedGraphEdge<O>>();
-					edgeMap.put(key, valueMap);
+					PropertiedGraphViewImpl.this.edgeMap.put(key, valueMap);
 				}
 				if (valueMap.containsKey(value)) {
 					edge = valueMap.get(value);
 				} else {
 					edge = new PropertiedGraphEdgeImpl<O>();
-					edges.add(edge);
+					PropertiedGraphViewImpl.this.edges.add(edge);
 					edge.setKey(key);
 					edge.setValue(value);
 					valueMap.put(value, edge);
@@ -326,22 +327,22 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 
 			public void propertyRemoved(Object o, PropertyKey key,
 					PropertyValue value) {
-				if (!nodeMap.keySet().contains(o)) {
+				if (!PropertiedGraphViewImpl.this.nodeMap.keySet().contains(o)) {
 					throw new IllegalArgumentException(
-							"o must be in the propertiedObjectSet");
+							"o must be in the propertiedObjectSet"); //$NON-NLS-1$
 				}
-				HashMap<PropertyValue, PropertiedGraphEdge<O>> valueMap = edgeMap
+				HashMap<PropertyValue, PropertiedGraphEdge<O>> valueMap = PropertiedGraphViewImpl.this.edgeMap
 						.get(key);
 				if (valueMap == null) {
 					throw new IllegalStateException(
-							"key has no entry in edgeMap");
+							"key has no entry in edgeMap"); //$NON-NLS-1$
 				}
 				PropertiedGraphEdge<O> edge = valueMap.get(value);
 				if (edge == null) {
 					throw new IllegalStateException(
-							"value has no entry in edgeMap");
+							"value has no entry in edgeMap"); //$NON-NLS-1$
 				}
-				PropertiedGraphNode<O> node = nodeMap.get(o);
+				PropertiedGraphNode<O> node = PropertiedGraphViewImpl.this.nodeMap.get(o);
 				if (edge.getNodes().contains(node)) {
 					edge.removeNode(node);
 					node.removeEdge(edge);
@@ -360,7 +361,7 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * {@inheritDoc}
 	 */
 	public void replayToListener(PropertiedGraphViewListener<O> listener) {
-		for (PropertiedGraphNode<O> node : nodes) {
+		for (PropertiedGraphNode<O> node : this.nodes) {
 			listener.nodeAdded(this, node);
 			for (PropertiedGraphEdge<O> edge : node.getEdges()) {
 				listener.edgeAdded(this, edge, node);
@@ -372,7 +373,7 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 * {@inheritDoc}
 	 */
 	public Set<PropertyKey> getKeys() {
-		return new HashSet<PropertyKey>(edgeMap.keySet());
+		return new HashSet<PropertyKey>(this.edgeMap.keySet());
 	}
 
 	/**
@@ -380,11 +381,11 @@ public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> 
 	 */
 	public Set<PropertyValue> getValues(PropertyKey key) {
 		if (key == null) {
-			throw new NullPointerException("key cannot be null");
+			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		Set<PropertyValue> result;
-		if (edgeMap.containsKey(key)) {
-			result = edgeMap.get(key).keySet();
+		if (this.edgeMap.containsKey(key)) {
+			result = this.edgeMap.get(key).keySet();
 		} else {
 			result = new HashSet<PropertyValue>();
 		}
