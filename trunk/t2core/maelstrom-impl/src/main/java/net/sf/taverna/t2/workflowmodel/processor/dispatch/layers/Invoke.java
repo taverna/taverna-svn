@@ -65,6 +65,8 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
  */
 public class Invoke extends AbstractDispatchLayer<Object> {
 
+	static int threadCount = 0;
+	
 	public Invoke() {
 		super();
 		messageActions.put(DispatchMessageType.JOB,
@@ -79,7 +81,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 		producesMessage.put(DispatchMessageType.RESULT, true);
 		producesMessage.put(DispatchMessageType.RESULTCOMPLETION, true);
 	}
-
+	int errorCount = 0;
 	@Override
 	/**
 	 * Receive a job from the layer above and pick the first concrete activity
@@ -93,7 +95,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, List<? extends ActivityAnnotationContainer> annotatedActivities) {
+	public void receiveJob(final Job job, final List<? extends ActivityAnnotationContainer> annotatedActivities) {
 		for (ActivityAnnotationContainer sac : annotatedActivities) {
 			Activity<?> s = sac.getActivity();
 			if (s instanceof AsynchronousActivity) {
@@ -127,7 +129,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				AsynchronousActivityCallback callback = new AsynchronousActivityCallback() {
 
 					private boolean sentJob = false;
-
+					
 					public void fail(String message, Throwable t) {
 						getAbove().receiveError(job.getOwningProcess(),
 								job.getIndex(), message, t);
@@ -231,8 +233,10 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					// TODO - this is a naive implementation, we can use this
 					// hook to implement thread limit and reuse policies
+					
 					public void requestRun(Runnable runMe) {
-						new Thread(runMe).start();
+						String newThreadName = job.toString();
+						new Thread(runMe, newThreadName).start();
 					}
 
 				};
