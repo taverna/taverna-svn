@@ -55,14 +55,17 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 	 */
 	public Job getEmptyJob(String owningProcess, int[] index) {
 		int wrappingDepth = parent.resultWrappingDepth;
-		if (wrappingDepth < 0) throw new RuntimeException("Processor hasn't been configured, cannot emit empty job");
+		if (wrappingDepth < 0)
+			throw new RuntimeException(
+					"Processor hasn't been configured, cannot emit empty job");
 		// The wrapping depth is the length of index array that would be used if
 		// a single item of the output port type were returned. We can examine
 		// the index array for the node we're trying to create and use this to
 		// work out how much we need to add to the output port depth to create
 		// empty lists of the right type given the index array.
 		int depth = wrappingDepth - index.length;
-		depth++;		
+		// TODO - why was this incrementing?
+		// depth++;
 		DataManager dManager = ContextManager.getDataManager(owningProcess);
 		Map<String, EntityIdentifier> emptyJobMap = new HashMap<String, EntityIdentifier>();
 		for (OutputPort op : parent.getOutputPorts()) {
