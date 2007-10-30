@@ -37,7 +37,8 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing implements DispatchStack {
+public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing
+		implements DispatchStack {
 
 	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
 
@@ -137,7 +138,10 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 		@Override
 		public void receiveError(String owningProcess, int[] errorIndex,
 				String errorMessage, Throwable detail) {
+			System.out.println("Error : " + owningProcess + " " + errorMessage
+					+ " " + Thread.currentThread().getName() + queues.get(owningProcess).size());
 			if (errorIndex.length == 0) {
+				// System.out.println(" - sent purge");
 				sendCachePurge(owningProcess);
 			}
 		}
@@ -192,15 +196,17 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 				queue = new LinkedBlockingQueue<Event>();
 				queues.put(owningProcess, queue);
 				queue.add(e);
+
 				// If all preconditions are satisfied push the queue to the
 				// dispatch layer
 				if (conditionsSatisfied(enclosingProcess)) {
 					dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
-							 getActivities());
+							getActivities());
 				}
 			} else {
-				queue = queues.get(e.getOwningProcess());
+				queue = queues.get(owningProcess);
 				queue.add(e);
+
 				// If all preconditions are satisfied then notify the queue
 				// addition to any NotifiableLayer instances. If the
 				// preconditions are not satisfied the queue isn't visible to
@@ -250,8 +256,9 @@ public abstract class DispatchStackImpl extends AbstractMutableAnnotatedThing im
 		}
 	}
 
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack#getLayers()
 	 */
 	public List<DispatchLayer<?>> getLayers() {
