@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.cyclone;
 
+import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.AbstractAnnotatedThing;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -13,10 +13,10 @@ public class DummyEventHandler extends AbstractAnnotatedThing implements
 		EventHandlingInputPort {
 
 	protected int eventCount = 0;
-	public InMemoryDataManager dataManager;
+	public AbstractDataManager dataManager;
 	private Object result;
 
-	public DummyEventHandler(InMemoryDataManager dataManager) {
+	public DummyEventHandler(AbstractDataManager dataManager) {
 		super();
 		this.dataManager = dataManager;
 	}

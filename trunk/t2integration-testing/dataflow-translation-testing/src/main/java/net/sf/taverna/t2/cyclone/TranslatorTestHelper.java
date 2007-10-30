@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -36,7 +36,7 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
  */
 public class TranslatorTestHelper {
 	
-	protected InMemoryDataManager dataManager;
+	protected AbstractDataManager dataManager;
 	
 	protected void setUpRavenRepository() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
