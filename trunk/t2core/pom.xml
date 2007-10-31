@@ -5,24 +5,24 @@
 	<version>0.1-SNAPSHOT</version>
 	<artifactId>core</artifactId>
 	<packaging>pom</packaging>
-    <dependencyManagement>
-        <dependencies>
-		    <dependency>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.4</version>
 				<scope>test</scope>
 			</dependency>
- 		    <dependency>
+			<dependency>
 				<groupId>jdom</groupId>
 				<artifactId>jdom</artifactId>
 				<version>1.0</version>
 			</dependency>
-        	<dependency>
-            	<groupId>log4j</groupId>
-            	<artifactId>log4j</artifactId>
-         	   <version>1.2.13</version>
-    	    </dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.13</version>
+			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
@@ -33,17 +33,18 @@
 				<artifactId>commons-cli</artifactId>
 				<version>1.0</version>
 			</dependency>
-       </dependencies>
-    </dependencyManagement>
+		</dependencies>
+	</dependencyManagement>
 	<modules>
 		<module>cloudone-api</module>
 		<module>cloudone-impl</module>
 		<module>cloudone-http</module>
+		<module>cloudone-gui</module>
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
 		<!--<module>drizzle-api</module>
-		<module>drizzle-impl</module> -->
+			<module>drizzle-impl</module> -->
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
 		<!--<module>gridsam-activity</module>

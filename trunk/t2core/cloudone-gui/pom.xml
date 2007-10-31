@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>cloudone-gui</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>CloudOne GUI for data manager</name>
+	<description>User interface for viewing and creating entities for a DataManager. </description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>cloudone-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+	</dependencies>
+</project>
