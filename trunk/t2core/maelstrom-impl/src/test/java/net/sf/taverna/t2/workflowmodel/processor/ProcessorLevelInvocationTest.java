@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.processor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,6 +27,11 @@ import org.junit.Test;
 
 public class ProcessorLevelInvocationTest {
 
+	/**
+	 * sleep for given milliseconds before checking deh.getEventCount().
+	 * 
+	 */
+	private static final int COMPLETION_SLEEP = 100;
 	// Create a diagnostic event receiver
 	DiagnosticEventHandler deh;
 	ProcessorImpl processor;
@@ -62,12 +66,13 @@ public class ProcessorLevelInvocationTest {
 	@Test
 	public synchronized void singleDataTokenBehaviour()
 			throws MalformedIdentifierException, EditException, JDOMException,
-			IOException, ActivityConfigurationException {
-		//System.out.println("Single token, 'A string'");
+			IOException, ActivityConfigurationException, InterruptedException {
+		// System.out.println("Single token, 'A string'");
 		// Build an input data token
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess1",
 				new int[0], Literal.buildLiteral("A string"));
 		processor.getInputPorts().get(0).receiveEvent(token);
+		Thread.sleep(250);
 		assertEquals(1, deh.getEventCount());
 	}
 
@@ -75,7 +80,7 @@ public class ProcessorLevelInvocationTest {
 	public void singleEmptyListDataTokenBehaviour()
 			throws MalformedIdentifierException, EditException, JDOMException,
 			IOException, ActivityConfigurationException, InterruptedException {
-		//System.out.println("Empty list");
+		// System.out.println("Empty list");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
 				.registerEmptyList(1);
 		// Build an input data token of a single list
@@ -95,14 +100,15 @@ public class ProcessorLevelInvocationTest {
 		// 0 so it ignores this list which has depth 1. It will now, however,
 		// correctly iterate over what it thinks is an empty set and return a
 		// single empty result on the output
+		Thread.sleep(100);
 		assertEquals(1, deh.getEventCount());
 	}
 
 	@Test
-	public void singleListDataTokenWithFilterConfigured()
-			throws EditException, JDOMException, IOException,
-			ActivityConfigurationException, MalformedIdentifierException, InterruptedException {
-		//System.out.println("List with two items, 'foo' and 'bar'");
+	public void singleListDataTokenWithFilterConfigured() throws EditException,
+			JDOMException, IOException, ActivityConfigurationException,
+			MalformedIdentifierException, InterruptedException {
+		// System.out.println("List with two items, 'foo' and 'bar'");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
 				.registerList(new EntityIdentifier[] {
 						Literal.buildLiteral("foo"),
@@ -118,14 +124,15 @@ public class ProcessorLevelInvocationTest {
 		processor.getInputPorts().get(0).receiveEvent(token);
 
 		// Should produce two outputs followed by a collection
+		Thread.sleep(100);
 		assertEquals(3, deh.getEventCount());
 	}
 
 	@Test
-	public void topLevelEmptyCollection() throws EditException,
-			JDOMException, IOException, ActivityConfigurationException,
+	public void topLevelEmptyCollection() throws EditException, JDOMException,
+			IOException, ActivityConfigurationException,
 			MalformedIdentifierException, InterruptedException {
-		//System.out.println("Top level empty list (depth 2)");
+		// System.out.println("Top level empty list (depth 2)");
 		EntityIdentifier listIdentifier = ContextManager.baseManager
 				.registerEmptyList(2);
 		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
@@ -142,6 +149,7 @@ public class ProcessorLevelInvocationTest {
 		processor.resultWrappingDepth = 2;
 
 		processor.getInputPorts().get(0).receiveEvent(token);
+		Thread.sleep(100);
 		assertEquals(1, deh.getEventCount());
 	}
 
@@ -151,7 +159,7 @@ public class ProcessorLevelInvocationTest {
 			MalformedIdentifierException, InterruptedException {
 		EntityIdentifier emptyListIdentifier = ContextManager.baseManager
 				.registerEmptyList(1);
-		//System.out.println("Partially empty collection : {{}{foo, bar}}");
+		// System.out.println("Partially empty collection : {{}{foo, bar}}");
 		EntityIdentifier populatedListIdentifier = ContextManager.baseManager
 				.registerList(new EntityIdentifier[] {
 						Literal.buildLiteral("foo"),
@@ -163,7 +171,7 @@ public class ProcessorLevelInvocationTest {
 				.setFilterDepth(2);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess5",
 				new int[0], listIdentifier);
-		
+
 		// This is not a public API! We're using it here because we need some
 		// way to push the configuration data into the processor that would
 		// normally be created during the typecheck operation. In this case
@@ -171,9 +179,9 @@ public class ProcessorLevelInvocationTest {
 		// where it wanted a single item and that it therefore has a wrapping
 		// level of 2 after the iteration strategy has been applied.
 		processor.resultWrappingDepth = 2;
-		
+
 		processor.getInputPorts().get(0).receiveEvent(token);
-		Thread.sleep(1);
+		Thread.sleep(COMPLETION_SLEEP);
 		assertEquals(5, deh.getEventCount());
 	}
 

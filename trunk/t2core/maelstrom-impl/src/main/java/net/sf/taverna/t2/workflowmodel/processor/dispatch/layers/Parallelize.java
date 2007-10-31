@@ -103,7 +103,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends Activity<?>> activities) {
+			BlockingQueue<Event> queue,
+			List<? extends Activity<?>> activities) {
 		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
@@ -115,7 +116,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		return DispatchLayerAction.FORBIDDEN;
 	}
 
-	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
+	public void receiveJob(Job job,
+			List<? extends Activity<?>> activities) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -184,7 +186,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 *            given point
 		 */
 		protected StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends Activity<?>> activities, int maxJobs) {
+				List<? extends Activity<?>> activities,
+				int maxJobs) {
 			this.queue = queue;
 			this.activities = activities;
 			this.maximumJobs = maxJobs;
@@ -210,16 +213,13 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 					final Event e = queue.remove();
 
 					if (e instanceof Completion && pendingEvents.peek() == null) {
-						// Nobody was waiting for this Thread to finish, which
-						// broke ProcessorLevelInvocationTest, so we'll do it non-threaded instead
-						
-						// new Thread() {
-						// public void run() {
-						// getAbove().receiveResultCompletion(
-						// (Completion) e);
-						// }
-						// }.start();
-						getAbove().receiveResultCompletion((Completion) e);
+						new Thread(new Runnable() {
+							public void run() {
+								getAbove().receiveResultCompletion(
+										(Completion) e);
+							}
+						}).start();
+						// getAbove().receiveResultCompletion((Completion) e);
 					} else {
 						pendingEvents.add(e);
 					}
