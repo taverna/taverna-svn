@@ -2,6 +2,15 @@ package net.sf.taverna.t2.cloudone.impl;
 
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
+/**
+ * {@link ReferenceBean} for serialising a {@link BlobReferenceSchemeImpl}.
+ * 
+ * @see BlobReferenceSchemeImpl#getAsBean()
+ * @see BlobReferenceSchemeImpl#setFromBean(BlobReferenceBean)
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class BlobReferenceBean extends ReferenceBean {
 	private String id;
 

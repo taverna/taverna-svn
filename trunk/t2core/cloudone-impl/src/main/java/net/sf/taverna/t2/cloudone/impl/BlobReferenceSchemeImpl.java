@@ -13,6 +13,7 @@ import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.DereferenceException;
 import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -21,31 +22,60 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 /**
  * A {@link BlobReferenceScheme} that is {@link Beanable} as a
  * {@link BlobReferenceBean}.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class BlobReferenceSchemeImpl implements
 		BlobReferenceScheme<BlobReferenceBean> {
 
-	private static Logger logger = Logger.getLogger(BlobReferenceSchemeImpl.class);
-	
+	private static Logger logger = Logger
+			.getLogger(BlobReferenceSchemeImpl.class);
+
 	private String id;
 
 	private String namespace;
 
 	private String charset;
 
+	/**
+	 * Construct for immediate initialisation using
+	 * {@link #setFromBean(BlobReferenceBean)}.
+	 * 
+	 */
 	public BlobReferenceSchemeImpl() {
 		id = null;
 		namespace = null;
 	}
 
+	/**
+	 * Construct a BlobReferenceSchemeImpl with the given namespace and id, and
+	 * no character set. This blob can't automatically be converted to a
+	 * {@link String} by the {@link DataFacade}.
+	 * 
+	 * @param namespace
+	 *            Namespace
+	 * @param id
+	 *            Identifier
+	 */
 	public BlobReferenceSchemeImpl(String namespace, String id) {
 		this(namespace, id, null);
 	}
-	
+
+	/**
+	 * Construct a BlobReferenceSchemeImpl with the given namespace, id, and
+	 * character set. Since a character set is given, the blob can be converted
+	 * to a {@link String} by the {@link DataFacade}.
+	 * 
+	 * @param namespace
+	 *            Namespace
+	 * @param id
+	 *            Identifier
+	 * @param charset
+	 *            A valid character set, for example
+	 *            {@value BlobStore#STRING_CHARSET}
+	 */
 	public BlobReferenceSchemeImpl(String namespace, String id, String charset) {
 		if (id == null || namespace == null) {
 			throw new NullPointerException("id and namespace can't be null");
@@ -59,6 +89,9 @@ public class BlobReferenceSchemeImpl implements
 		this.charset = charset;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
 		try {
@@ -70,6 +103,9 @@ public class BlobReferenceSchemeImpl implements
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -99,6 +135,9 @@ public class BlobReferenceSchemeImpl implements
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceBean getAsBean() {
 		BlobReferenceBean bean = new BlobReferenceBean();
 		bean.setNamespace(getNamespace());
@@ -107,26 +146,47 @@ public class BlobReferenceSchemeImpl implements
 		return bean;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Class<BlobReferenceBean> getBeanClass() {
 		return BlobReferenceBean.class;
 	}
 
+	/**
+	 * Get the character set for interpreting this blob as a {@link String}, or
+	 * <code>null</code> if blob is a binary or the character set is unknown.
+	 * 
+	 * @return A valid character set, or <code>null</code>
+	 */
 	public String getCharset() {
 		return charset;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Date getExpiry() {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getNamespace() {
 		return namespace;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -137,10 +197,16 @@ public class BlobReferenceSchemeImpl implements
 		return result;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean isImmediate() {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void setFromBean(BlobReferenceBean bean)
 			throws IllegalArgumentException {
 		if (id != null) {
@@ -151,35 +217,58 @@ public class BlobReferenceSchemeImpl implements
 		charset = bean.getCharset();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return "Blob [ns:" + getNamespace() + " id:" + getId() + "]";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean validInContext(Set<LocationalContext> contextSet,
 			DataPeer currentLocation) {
 		return validInBlobContext(contextSet, currentLocation);
 	}
 
+	/**
+	 * Check if a {@link BlobReferenceSchemeImpl} would be valid in
+	 * currentLocation given contextSet of {@link LocationalContext}s.
+	 * <p>
+	 * Similar to {@link #validInContext(Set, DataPeer)}
+	 * 
+	 * @param contextSet
+	 * @param currentLocation
+	 * @return true if a blob from contextSet would be valid
+	 */
 	public static boolean validInBlobContext(Set<LocationalContext> contextSet,
 			DataPeer currentLocation) {
-		for (LocationalContext currentContext : currentLocation.getLocationalContexts()) {
-			if (! currentContext.getContextType().equals(BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
+		for (LocationalContext currentContext : currentLocation
+				.getLocationalContexts()) {
+			if (!currentContext.getContextType().equals(
+					BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
 				continue;
 			}
-			String currentUuid = currentContext.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
+			String currentUuid = currentContext
+					.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
 			if (currentUuid == null) {
-				logger.warn("Invalid current BlobStore LocationalContext " + currentContext);
+				logger.warn("Invalid current BlobStore LocationalContext "
+						+ currentContext);
 				continue;
 			}
-			for (LocationalContext context :  contextSet) {
-				if (! context.getContextType().equals(BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
+			for (LocationalContext context : contextSet) {
+				if (!context.getContextType().equals(
+						BlobStore.LOCATIONAL_CONTEXT_TYPE)) {
 					continue;
 				}
-				String uuid = context.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
+				String uuid = context
+						.getValue(BlobStore.LOCATIONAL_CONTEXT_KEY_UUID);
 				if (uuid == null) {
-					logger.warn("Invalid BlobStore LocationalContext " + currentContext);
-					continue;					
+					logger.warn("Invalid BlobStore LocationalContext "
+							+ currentContext);
+					continue;
 				}
 				if (currentUuid.equals(uuid)) {
 					return true;
