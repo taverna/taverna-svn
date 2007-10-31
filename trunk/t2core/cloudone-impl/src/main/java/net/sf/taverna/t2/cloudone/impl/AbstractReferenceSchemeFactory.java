@@ -22,6 +22,7 @@ import net.sf.taverna.t2.cloudone.ReferenceSchemeFactorySPI;
  * @author Matthew Pocock
  * 
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractReferenceSchemeFactory<RS extends ReferenceScheme> implements
 		ReferenceSchemeFactorySPI<RS> {
 
