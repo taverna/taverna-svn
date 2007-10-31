@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.workflowmodel.processor;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Datalink;
@@ -11,18 +13,20 @@ import net.sf.taverna.t2.workflowmodel.Port;
 
 public class DiagnosticEventHandler extends AbstractAnnotatedThing<Port> implements EventHandlingInputPort {
 
+	private static Logger logger = Logger.getLogger(DiagnosticEventHandler.class);
+	
 	protected int eventCount = 0;
 
-	public void receiveEvent(WorkflowDataToken token) {
+	public synchronized void receiveEvent(WorkflowDataToken token) {
 		eventCount++;
-		System.out.println(token.toString());
+		logger.debug(token);
 	}
 
 	public int getEventCount() {
 		return this.eventCount;
 	}
 
-	public void reset() {
+	public synchronized void reset() {
 		this.eventCount = 0;
 	}
 
