@@ -18,35 +18,65 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 
+/**
+ * A peer data manager, wrapping another "backend" {@link DataManager} to do
+ * {@link #getEntity(EntityIdentifier)} resolution using a list of
+ * {@link PeerContainer}s.
+ * <p>
+ * {@link PeerContainer}s are added using {@link #addPeer(PeerContainer)} and
+ * removed using {@link #removePeer(PeerContainer)}.
+ * {@link #getEntity(EntityIdentifier)} will first attempt lookup with the local
+ * data manager before attempting any of the peers. All register*() methods
+ * delegate directly to the local datamanager.
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class PeerDataManager implements DataManager {
 
 	DataManager dataManager;
 
 	List<PeerContainer> peers = new ArrayList<PeerContainer>();
 
+	/**
+	 * Construct a PeerDataManager delegating writes to the given
+	 * {@link DataManager}.
+	 * 
+	 * @param dManager
+	 *            Delegated {@link DataManager}.
+	 */
 	public PeerDataManager(DataManager dManager) {
 		dataManager = dManager;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobStore getBlobStore() {
 		return dataManager.getBlobStore();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getCurrentNamespace() {
 		return dataManager.getCurrentNamespace();
 	}
 
 	/**
-	 * Get entity from list of datamanagers registered using
-	 * {@link #addDataManager(DataManager)}.
+	 * Get entity from delegated {@link DataManager}, or on failure, get entity
+	 * from list of {@link PeerContainer}s registered using
+	 * {@link #addPeer(PeerContainer)}
 	 * 
 	 * @param identifier
 	 *            Identifier of entity to retrieve
 	 * @return Retrieved {@link Entity}
 	 * @throws NotFoundException
-	 *             If all known datamanagers threw {@link NotFoundException} or
-	 *             didn't manage the identifier's namespace.
+	 *             If all known {@link PeerContainer}s threw
+	 *             {@link NotFoundException}
 	 * @throws RetrievalException
+	 *             If the local datamanager threw a {@link RetrievalException}.
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
@@ -86,60 +116,101 @@ public class PeerDataManager implements DataManager {
 		throw new NotFoundException(identifier);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<LocationalContext> getLocationalContexts() {
-		// TODO Auto-generated method stub
-		return null;
+		return dataManager.getLocationalContexts();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public List<String> getManagedNamespaces() {
 		return dataManager.getManagedNamespaces();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getMaxIDLength() {
 		return dataManager.getMaxIDLength();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			ReferenceScheme... references) throws StorageException {
 		return dataManager.registerDocument(references);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			Set<ReferenceScheme> references) throws StorageException {
 		return dataManager.registerDocument(references);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public EntityListIdentifier registerEmptyList(int depth)
 			throws StorageException {
 		return dataManager.registerEmptyList(depth);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg, Throwable throwable) throws StorageException {
 		return dataManager.registerError(depth, implicitDepth, msg, throwable);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg) throws StorageException {
 		return dataManager.registerError(depth, implicitDepth, msg);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			Throwable throwable) throws StorageException {
 		return dataManager.registerError(depth, implicitDepth, throwable);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
 			throws StorageException {
 		return dataManager.registerList(identifiers);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
 			throws RetrievalException {
 		return dataManager.traverse(identifier, desiredDepth);
 	}
 
+	/**
+	 * Add a {@link PeerContainer} to be used in resolution from
+	 * {@link #getEntity(EntityIdentifier)}.
+	 * 
+	 * @param peer
+	 *            {@link PeerContainer} to add
+	 */
 	public void addPeer(PeerContainer peer) {
 		if (peers.contains(peer)) {
 			throw new IllegalArgumentException("Peer was already registered");
@@ -147,6 +218,13 @@ public class PeerDataManager implements DataManager {
 		peers.add(peer);
 	}
 
+	/**
+	 * Remove a {@link PeerContainer} previously added using
+	 * {@link #addPeer(PeerContainer)}.
+	 * 
+	 * @param peer
+	 *            {@link PeerContainer} to remove
+	 */
 	public void removePeer(PeerContainer peer) {
 		if (!peers.contains(peer)) {
 			throw new IllegalArgumentException(

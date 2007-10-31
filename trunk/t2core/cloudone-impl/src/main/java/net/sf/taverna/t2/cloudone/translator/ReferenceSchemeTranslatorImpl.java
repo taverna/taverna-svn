@@ -12,7 +12,6 @@ import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.util.AbstractAsynchRunnable;
-import net.sf.taverna.t2.cloudone.util.AsynchRunnable;
 
 /**
  * Translate from one {@link ReferenceScheme} to another. Uses a
@@ -31,10 +30,10 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	private DataPeer dataPeer;
 
 	/**
-	 * Construct using a {@link DataManager} to do any Entity resolution.
+	 * Construct using a {@link DataPeer} to do any Entity resolution.
 	 * 
 	 * @param dataManager
-	 *            {@link DataManager} for resolving entities
+	 *            {@link DataPeer} for resolving entities
 	 */
 	public ReferenceSchemeTranslatorImpl(DataPeer dataPeer) {
 		this.dataPeer = dataPeer;
@@ -42,26 +41,7 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	}
 
 	/**
-	 * Translate {@link DataDocumentIdentifier} to one of the specified
-	 * preferred {@link ReferenceScheme} types. If the referenced
-	 * {@link DataDocument} already contains one of the desired reference
-	 * schemes, that reference scheme will be returned. If not, translation will
-	 * be attempted in the order of <code>preferredTypes</code>.
-	 * <p>
-	 * Note that this method is designed for asynchronous execution, and return
-	 * an {@link AsynchRefScheme} instance which {@link Runnable#run()} method
-	 * will do the actual execution. The result is available in
-	 * {@link AsynchRunnable#getResult()}, or
-	 * {@link AsynchRunnable#getException()} if the execution failed.
-	 * 
-	 * @see AsynchRefScheme
-	 * @param id
-	 *            {@link DataDocumentIdentifier} to be translated
-	 * @param preferences
-	 *            One or more desired {@link ReferenceScheme} classes in
-	 *            preferred order (var args).
-	 * @return A {@link AsynchRefScheme} that must be {@link Runnable#run()} to
-	 *         do the translation.
+	 * {@inheritDoc}
 	 */
 	public AsynchRefScheme translateAsynch(final DataDocumentIdentifier id,
 			List<TranslationPreference> preferences) {
@@ -74,25 +54,33 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 	 * from {@link AsynchTranslate#execute()}.
 	 * 
 	 * @param id
+	 *            {@link DataDocumentIdentifier} to be translated
 	 * @param preferences
-	 * @return
+	 *            One or more {@link TranslationPreference}s describing the
+	 *            preferred {@link ReferenceScheme} (and it's valid contexts).
+	 * @return The translated ReferenceScheme
 	 * @throws RetrievalException
+	 *             If the referenced {@link DataDocument} or all of it's
+	 *             references could not be retrieved
 	 * @throws NotFoundException
+	 *             If the {@link DataDocumentIdentifier} could not be found
 	 * @throws TranslatorException
+	 *             If no translations could be performed.
 	 */
 	@SuppressWarnings("unchecked")
 	protected ReferenceScheme translate(DataDocumentIdentifier id,
-			List<TranslationPreference> preferences)
-			throws RetrievalException, NotFoundException, TranslatorException {
+			List<TranslationPreference> preferences) throws RetrievalException,
+			NotFoundException, TranslatorException {
 		DataDocument dataDoc = (DataDocument) dataManager.getEntity(id);
 		// match ref scheme directly
 		for (TranslationPreference preference : preferences) {
-			Class<? extends ReferenceScheme> type = preference.getReferenceSchemeClass();
+			Class<? extends ReferenceScheme> type = preference
+					.getReferenceSchemeClass();
 			for (ReferenceScheme ref : dataDoc.getReferenceSchemes()) {
-				if (! type.isInstance(ref)) {
+				if (!type.isInstance(ref)) {
 					continue;
 				}
-				if (! ref.validInContext(preference.getContexts(), dataPeer)) {
+				if (!ref.validInContext(preference.getContexts(), dataPeer)) {
 					continue;
 				}
 				return ref;
@@ -101,7 +89,7 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 		// otherwise try to translate directly
 		for (TranslationPreference preference : preferences) {
 			for (ReferenceScheme ref : dataDoc.getReferenceSchemes()) {
-				List<Translator<ReferenceScheme>>  translators = translatorReg
+				List<Translator<ReferenceScheme>> translators = translatorReg
 						.getTranslators(dataPeer, ref, preference);
 				for (Translator translator : translators) {
 					try {
@@ -123,6 +111,12 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 		throw new TranslatorException("Could not translate " + id);
 	}
 
+	/**
+	 * AbstractAsynchRunnable that calls
+	 * {@link ReferenceSchemeTranslatorImpl#translate(DataDocumentIdentifier, List)}
+	 * to perform the actual translation asynchronously. Returned by
+	 * {@link ReferenceSchemeTranslatorImpl#translateAsynch(DataDocumentIdentifier, List)}.
+	 */
 	@SuppressWarnings("unchecked")
 	class AsynchTranslate extends AbstractAsynchRunnable<ReferenceScheme>
 			implements AsynchRefScheme {

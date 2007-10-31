@@ -38,8 +38,10 @@ import org.apache.commons.io.IOUtils;
  * <pre>
  * 	namespace1/
  * 		blob/
- * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.blob
- * 			4d056513-75b7-8ce1-4d05-95ed7b4912a5.blob
+ * 			65/
+ *  			651375b7-8ce1-4d05-95ed-7b4912a50d0c.blob
+ * 			4d/
+ * 				4d056513-75b7-8ce1-4d05-95ed7b4912a5.blob
  * </pre>
  * 
  * @author Ian Dunlop
@@ -83,10 +85,17 @@ public class FileBlobStore implements BlobStore {
 		initContext();
 	}
 
+	/**
+	 * Read/generate locational context for {@link #path}. This makes it
+	 * possible to share {@link FileBlobStore} between different nodes accessing
+	 * the same file system.
+	 * 
+	 */
 	private void initContext() {
-		File context = new File(path, LOCATIONAL_CONTEXT_TYPE + ".locationalcontext");
+		File context = new File(path, LOCATIONAL_CONTEXT_TYPE
+				+ ".locationalcontext");
 		String uuid;
-		if (! context.exists()) {
+		if (!context.exists()) {
 			// Create and store in file
 			uuid = UUID.randomUUID().toString();
 			try {
@@ -106,7 +115,8 @@ public class FileBlobStore implements BlobStore {
 		}
 		Map<String, String> contextMap = new HashMap<String, String>();
 		contextMap.put(LOCATIONAL_CONTEXT_KEY_UUID, uuid);
-		LocationalContext locationalContext = new LocationalContextImpl(LOCATIONAL_CONTEXT_TYPE, contextMap);
+		LocationalContext locationalContext = new LocationalContextImpl(
+				LOCATIONAL_CONTEXT_TYPE, contextMap);
 		locationalContexts = Collections.singleton(locationalContext);
 	}
 
@@ -127,7 +137,6 @@ public class FileBlobStore implements BlobStore {
 			return IOUtils.toByteArray(retrieveAsStream(reference));
 		} catch (IOException e) {
 			throw new RetrievalException("Can't read " + reference, e);
-
 		} finally {
 			IOUtils.closeQuietly(stream);
 		}
@@ -146,6 +155,9 @@ public class FileBlobStore implements BlobStore {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String retrieveAsString(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException,
 			IllegalArgumentException {
@@ -163,6 +175,9 @@ public class FileBlobStore implements BlobStore {
 		return retrieveAsString(reference, charset);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String retrieveAsString(BlobReferenceScheme<?> reference,
 			String charset) throws RetrievalException, NotFoundException,
 			IllegalArgumentException {
@@ -194,6 +209,9 @@ public class FileBlobStore implements BlobStore {
 		return storeFromBytes(bytes, null);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes, String charset)
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
@@ -212,7 +230,6 @@ public class FileBlobStore implements BlobStore {
 	public BlobReferenceScheme<?> storeFromStream(InputStream inStream)
 			throws StorageException {
 		return storeFromStream(inStream, null);
-
 	}
 
 	/**
@@ -241,6 +258,9 @@ public class FileBlobStore implements BlobStore {
 		return new BlobReferenceSchemeImpl(namespace, id, charset);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromString(String string)
 			throws StorageException {
 		InputStream stream;
@@ -252,22 +272,39 @@ public class FileBlobStore implements BlobStore {
 		return storeFromStream(stream, STRING_CHARSET);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	private File fileById(String namespace, String id) {
 		File nsDir = new File(path, namespace);
 		File typeDir = new File(nsDir, "blob");
-		// typeDir.mkdirs();
-		// if (! typeDir.isDirectory()) {
-		// throw new IllegalStateException("Invalid directory" + typeDir);
-		// }
+		File dir = parentDirectory(typeDir, id);
 		String fileName = id + ".blob";
-		return new File(parentDirectory(typeDir, id), fileName);
-		// return new File(typeDir, fileName);
+		return new File(dir, fileName);
 	}
 
+	/**
+	 * Generate filename for reference.
+	 * 
+	 * @param reference
+	 *            {@link BlobReferenceScheme}
+	 * @return generated {@link File}
+	 */
 	private File fileByReference(BlobReferenceScheme<?> reference) {
 		return fileById(reference.getNamespace(), reference.getId());
 	}
 
+	/**
+	 * Find (and make) parent directory for a given id within a type directory.
+	 * The parent directory is normally given by the first two characters of the
+	 * id.
+	 * 
+	 * @param typeDir
+	 *            The parent of the parent directory
+	 * @param id
+	 *            The identifier
+	 * @return The {@link File} for given identifier.
+	 */
 	private File parentDirectory(File typeDir, String id) {
 		String newName = id.substring(0, 2);
 		File dirs = new File(typeDir, newName);
@@ -278,6 +315,9 @@ public class FileBlobStore implements BlobStore {
 		return dirs;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<LocationalContext> getLocationalContexts() {
 		return locationalContexts;
 	}

@@ -16,8 +16,21 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 /**
- * Simple SPI lookup (using META-INF/services/interfaceName) to discover run
- * time class implementations. Extend in other classes to use the SPI lookup.
+ * Simple SPI () lookup (using META-INF/services/interfaceName) to discover runtime
+ * class implementations. Construct with interface Class or extend in other
+ * classes to lookup a specific SPI.
+ * <p>
+ * An SPI is an implementation of the given interface, and this SPIRegistry
+ * makes it possible to discover all implementations of the interface.
+ * Implementation classes must be listed in a text file
+ * META-INF/services/interfaceName - where interfaceName is matching the full
+ * classname of the SPI interface.
+ * <p>
+ * Implementing SPI classes will be available from {@link #getClassNames()}, as
+ * loaded {@link Class}es from {@link #getClasses()}, or if the classes
+ * support instantiation using the default constructor, as instances from
+ * {@link #getInstances()}.
+ * 
  * 
  * @author Stian Soiland
  * 
@@ -87,8 +100,7 @@ public class SPIRegistry<SPI> {
 		// TODO: Support Raven class loaders
 		ClassLoader cl = getClassLoader();
 		Enumeration<URL> spiFiles;
-		String spiResource = "META-INF/services/"
-			+ spi.getCanonicalName();
+		String spiResource = "META-INF/services/" + spi.getCanonicalName();
 		try {
 			spiFiles = cl.getResources(spiResource);
 		} catch (IOException e) {
@@ -152,8 +164,7 @@ public class SPIRegistry<SPI> {
 				continue;
 			}
 			if (!(spi.isAssignableFrom(spiClass))) {
-				logger.warn("Class " + spiClass + " did not implement "
-						+ spi);
+				logger.warn("Class " + spiClass + " did not implement " + spi);
 				continue;
 			}
 			if (spiClass.isInterface()) {

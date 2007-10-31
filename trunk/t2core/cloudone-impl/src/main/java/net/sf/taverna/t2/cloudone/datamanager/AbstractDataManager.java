@@ -44,9 +44,7 @@ public abstract class AbstractDataManager implements DataManager {
 		return result;
 	}
 
-
 	private String namespace;
-
 	private Set<LocationalContext> initialContexts;
 	private Set<LocationalContext> locationalContexts = null;
 
@@ -161,8 +159,9 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerDocument(ReferenceScheme...)
+	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			ReferenceScheme... references) throws StorageException {
 		HashSet<ReferenceScheme> referenceSet = new HashSet<ReferenceScheme>(
@@ -171,8 +170,9 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerDocument(Set)
+	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			final Set<ReferenceScheme> references) throws StorageException {
 		final DataDocumentIdentifier id = nextDataIdentifier();
@@ -182,7 +182,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerEmptyList(int)
+	 * {@inheritDoc}
 	 */
 	public EntityListIdentifier registerEmptyList(int depth)
 			throws StorageException {
@@ -194,7 +194,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerError(int, int, String)
+	 * {@inheritDoc}
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg) throws StorageException {
@@ -202,7 +202,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerError(int, int, String, Throwable)
+	 * {@inheritDoc}
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			String msg, Throwable throwable) throws StorageException {
@@ -214,7 +214,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerError(int, int, Throwable)
+	 * {@inheritDoc}
 	 */
 	public ErrorDocumentIdentifier registerError(int depth, int implicitDepth,
 			Throwable throwable) throws StorageException {
@@ -222,7 +222,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#registerList(EntityIdentifier[])
+	 * {@inheritDoc}
 	 */
 	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
 			throws StorageException {
@@ -237,7 +237,7 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	/**
-	 * @see DataManager#traverse(EntityIdentifier, int)
+	 * {@inheritDoc}
 	 */
 	public Iterator<ContextualizedIdentifier> traverse(
 			EntityIdentifier identifier, int desiredDepth)
@@ -272,8 +272,7 @@ public abstract class AbstractDataManager implements DataManager {
 					throw new AssertionError(
 							"Should never be trying to drill inside a data document identifier");
 				case Error:
-					newSet
-							.add(new ContextualizedIdentifier(
+					newSet.add(new ContextualizedIdentifier(
 									((ErrorDocumentIdentifier) ci.getDataRef())
 											.drill(),
 									addIndex(ci.getIndex(), 0)));

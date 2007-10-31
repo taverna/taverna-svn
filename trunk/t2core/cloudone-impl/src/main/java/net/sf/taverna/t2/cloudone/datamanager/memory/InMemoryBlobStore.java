@@ -17,11 +17,21 @@ import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
+import net.sf.taverna.t2.cloudone.datamanager.file.FileBlobStore;
 import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
 import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Simple in-memory implementation of {@link BlobStore} storing the blobs as in
+ * a HashMap containing byte arrays. Mainly used for testing purposes.
+ * 
+ * @see FileBlobStore
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class InMemoryBlobStore implements BlobStore {
 
 	private Map<String, byte[]> blobs = new HashMap<String, byte[]>();
@@ -30,11 +40,18 @@ public class InMemoryBlobStore implements BlobStore {
 
 	private Set<LocationalContext> locationalContexts;
 
+	/**
+	 * Construct a in-memory blob store with a new, unique namespace.
+	 * 
+	 */
 	public InMemoryBlobStore() {
 		// Always a new namespace
 		namespace = UUID.randomUUID().toString();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean hasBlob(BlobReferenceScheme<?> reference) {
 		if (!reference.getNamespace().equals(namespace)) {
 			return false;
@@ -43,15 +60,7 @@ public class InMemoryBlobStore implements BlobStore {
 	}
 
 	/**
-	 * Retrieve blob as a byte[] array, or <code>null</code> if this store
-	 * does not contain the blob.
-	 * 
-	 * @param reference
-	 *            A reference to a blob, previously stored using
-	 *            {@link #storeFromBytes(byte[])} or
-	 *            {@link #storeFromStream(InputStream)}
-	 * @return byte[] array or <code>null</code>
-	 * @throws NotFoundException
+	 * {@inheritDoc}
 	 */
 	public byte[] retrieveAsBytes(BlobReferenceScheme<?> reference)
 			throws NotFoundException {
@@ -66,12 +75,18 @@ public class InMemoryBlobStore implements BlobStore {
 		return bytes;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public InputStream retrieveAsStream(BlobReferenceScheme<?> reference)
 			throws NotFoundException {
 		byte[] bytes = retrieveAsBytes(reference);
 		return new ByteArrayInputStream(bytes);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String retrieveAsString(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException,
 			IllegalArgumentException {
@@ -89,6 +104,9 @@ public class InMemoryBlobStore implements BlobStore {
 		return retrieveAsString(reference, charset);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public String retrieveAsString(BlobReferenceScheme<?> reference,
 			String charset) throws RetrievalException, NotFoundException,
 			IllegalArgumentException {
@@ -99,16 +117,25 @@ public class InMemoryBlobStore implements BlobStore {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public long sizeOfBlob(BlobReferenceScheme<?> reference)
 			throws RetrievalException, NotFoundException {
 		byte[] bytes = retrieveAsBytes(reference);
 		return bytes.length;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes) {
 		return storeFromBytes(bytes, null);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromBytes(byte[] bytes, String charset)
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
@@ -116,11 +143,17 @@ public class InMemoryBlobStore implements BlobStore {
 		return new BlobReferenceSchemeImpl(namespace, id, charset);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromStream(InputStream stream)
 			throws StorageException {
 		return storeFromStream(stream, null);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromStream(InputStream stream,
 			String charset) throws StorageException {
 		byte[] bytes;
@@ -132,6 +165,9 @@ public class InMemoryBlobStore implements BlobStore {
 		return storeFromBytes(bytes, charset);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public BlobReferenceScheme<?> storeFromString(String string)
 			throws StorageException {
 		String id = UUID.randomUUID().toString();
@@ -143,6 +179,9 @@ public class InMemoryBlobStore implements BlobStore {
 		return new BlobReferenceSchemeImpl(namespace, id, STRING_CHARSET);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public Set<LocationalContext> getLocationalContexts() {
 		if (locationalContexts == null) {
 			// Create our LocationalContext
