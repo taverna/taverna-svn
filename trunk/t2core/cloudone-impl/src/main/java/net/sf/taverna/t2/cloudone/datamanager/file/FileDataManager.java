@@ -34,27 +34,28 @@ import org.jdom.JDOMException;
  * <pre>
  * 	namespace1/
  * 		ddoc/
- *      65/
- * 			651375b7-8ce1-4d05-95ed-7b4912a50d0c.xml
- * 		97/
- * 			973ab8eb-0a5a-49d9-a7cc-d5f7f64f29b1.xml
+ *      	65/
+ * 				651375b7-8ce1-4d05-95ed-7b4912a50d0c.xml
+ * 				6571b8eb-0a5a-49d9-a7cc-d5f7f64f29b1.xml
+ * 			97/
+ * 				973ab8eb-0a5a-49d9-a7cc-d5f7f64f29b1.xml
  * 		error/
- * 		9e/
- * 			9e190835-ea2e-45ae-a28d-20ac781e2ede.xml
- * 		6f/
- * 			6f02c8ac-04a3-4d45-8a35-45a59cd2da83.xml
+ * 			9e/
+ * 				9e190835-ea2e-45ae-a28d-20ac781e2ede.xml
+ * 			6f/
+ * 				6f02c8ac-04a3-4d45-8a35-45a59cd2da83.xml
  * 		list/
- * 		25/
- * 			2549b0a5-d70a-4630-9345-ca33b045b4cd.xml
- * 		52/
- * 			523d00b6-0294-455e-8638-1c0a3962e7cd.xml
+ * 			25/
+ * 				2549b0a5-d70a-4630-9345-ca33b045b4cd.xml
+ * 			52/
+ * 				523d00b6-0294-455e-8638-1c0a3962e7cd.xml
  * 	namespace2/
  * 		ddoc/
- * 		49/
- * 			49d725d5-0b8f-4572-a804-160a9df690a4.xml
+ * 			49/
+ * 				49d725d5-0b8f-4572-a804-160a9df690a4.xml
  * 		blob/
- * 		0b/
- * 			0b8f4572-49d7-25d5-160a-a8049df690a4.blob
+ * 			0b/
+ * 				0b8f4572-49d7-25d5-160a-a8049df690a4.blob
  * </pre>
  *
  * <p>
@@ -127,16 +128,8 @@ public class FileDataManager extends AbstractDataManager {
 					+ id);
 		}
 
-		// /path/ns/type/name
+		// /path/ns/type/na/name
 		File entityPath = new File(parentDirectory(ns, type, name), name);
-		// File entityPath = new File(typeDir(ns, type), name);
-
-		// TODO: File systems have a maximum number of files per directory, so
-		// should be for example:
-		// a3/
-		// a39a9aefae.txt
-		// a3f9g9a9a.txt
-		// (Even this would support maximum 256 * 32k entities)
 		return entityPath;
 	}
 
