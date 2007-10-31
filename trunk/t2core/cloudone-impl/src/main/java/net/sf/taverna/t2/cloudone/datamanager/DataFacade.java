@@ -359,6 +359,7 @@ public class DataFacade {
 	 *             If the entity type is not yet supported by {@link DataFacade},
 	 *             (ie. an {@link ErrorDocument}).
 	 */
+	@SuppressWarnings("unchecked")
 	public Object resolve(EntityIdentifier entityId, Class<?> desiredType)
 			throws RetrievalException, NotFoundException {
 		Entity<?, ?> ent = dManager.getEntity(entityId);
