@@ -101,7 +101,7 @@ public class FileBlobStore implements BlobStore {
 			try {
 				FileUtils.writeStringToFile(context, uuid, STRING_CHARSET);
 			} catch (IOException e) {
-				throw new IllegalStateException("Can't wrote context to "
+				throw new IllegalStateException("Can't write context to "
 						+ context, e);
 			}
 		} else {
