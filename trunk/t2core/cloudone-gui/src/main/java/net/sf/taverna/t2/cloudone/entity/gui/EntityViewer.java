@@ -2,6 +2,7 @@ package net.sf.taverna.t2.cloudone.entity.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,16 +45,29 @@ public class EntityViewer extends JFrame {
 
 	private void initialise(EntityIdentifier id) throws RetrievalException,
 			NotFoundException {
-		JPanel entityPanels = getPanelForEntity(dataManager, id);
+		AbstractEntityPanel entityPanels = getPanelForEntity(dataManager, id);
+		JPanel verticalFiller = new JPanel();
+		verticalFiller.setMinimumSize(new Dimension(0,0));
+		verticalFiller.setBorder(BorderFactory.createLineBorder(Color.RED));
+		
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.BOTH;
+		c.weighty = 0.1;
+		c.weightx = 0.1;
+		entityPanels.add(verticalFiller, c); // vertical filler
+		
+		entityPanels.setDetailsVisible(true);
 		jScrollPane1 = new JScrollPane(entityPanels);
 		// add the panel to the parent panel
 		add(jScrollPane1);
 	}
 
-	public static JPanel getPanelForEntity(DataManager dataManager,
+	public static AbstractEntityPanel getPanelForEntity(DataManager dataManager,
 			EntityIdentifier id) throws RetrievalException, NotFoundException {
 		IDType type = id.getType();
-		JPanel panel;
+		AbstractEntityPanel panel;
 		if (type.equals(IDType.Data)) {
 			panel = new DataDocumentPanel(dataManager,
 					(DataDocumentIdentifier) id);
@@ -68,8 +82,7 @@ public class EntityViewer extends JFrame {
 			throw new IllegalArgumentException("Unknown entity type " + type
 					+ " for " + id);
 		}
-		// For debugging, add ugly border:
-		//panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	
 		return panel;
 	}
 
