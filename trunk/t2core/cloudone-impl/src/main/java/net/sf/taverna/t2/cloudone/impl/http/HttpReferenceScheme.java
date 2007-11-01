@@ -157,7 +157,7 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 
 	@Override
 	public String toString() {
-		return "URLReferenceScheme: " + url;
+		return "HttpReferenceScheme: " + url;
 	}
 
 	/**
