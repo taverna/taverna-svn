@@ -73,7 +73,11 @@ public class RunEntityViewer {
 		thirdList.add(blobIdentifier);
 		listOfList.add(thirdList);
 		
-		EntityIdentifier strings = facade.register(listOfList);
+		ArrayList<Object> superList = new ArrayList<Object>();
+		superList.add(listOfList);
+		superList.add(listOfList);
+		
+		EntityIdentifier strings = facade.register(superList);
 		EntityViewer frame = new EntityViewer(dataManager, strings);
 		frame.setSize(new Dimension(300, 300));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

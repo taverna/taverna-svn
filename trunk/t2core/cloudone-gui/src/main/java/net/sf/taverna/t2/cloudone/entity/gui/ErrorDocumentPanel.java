@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.entity.gui;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
@@ -33,6 +34,7 @@ public class ErrorDocumentPanel extends AbstractEntityPanel {
 	@Override
 	public JComponent createDetails() {
 		JPanel details = new JPanel(new GridBagLayout());
+		details.setBackground(new Color(240,160,160,64));
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.weightx = 0.1;
@@ -53,7 +55,10 @@ public class ErrorDocumentPanel extends AbstractEntityPanel {
 
 	@Override
 	public JComponent createHeader() {
-		return createLabel("ErrorDocument", id);
+		JLabel label = createLabel("ErrorDocument", id);
+		label.setBackground(new Color(240,128,128,128));
+		label.setOpaque(true);
+		return label;
 	}
 
 }

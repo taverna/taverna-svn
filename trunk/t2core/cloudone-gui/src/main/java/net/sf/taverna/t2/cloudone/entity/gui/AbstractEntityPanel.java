@@ -50,16 +50,17 @@ public abstract class AbstractEntityPanel extends JPanel {
 	}
 	
 	public void buildPanel() {
+		setOpaque(false);
 		setLayout(new GridBagLayout());
 		
 		// For debugging, add ugly border:
-		setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		//setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		GridBagConstraints c = new GridBagConstraints();
 
 		header = createHeader();
 		header.addMouseListener(new ToggleDetailsMouseListener());
-		header.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+		//header.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 		
 		c.gridx = 0;
 		c.weightx = 0.1;
@@ -81,15 +82,16 @@ public abstract class AbstractEntityPanel extends JPanel {
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		details.setVisible(false);
-		details.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+		//details.setBorder(BorderFactory.createLineBorder(Color.GREEN));
 		add(details, c);
 
 	}
 
 	public JLabel createLabel(String type, EntityIdentifier id) {
-		return new JLabel(
+		JLabel label = new JLabel(
 				"<html><b>" + type + "</b> <small>" + id
 						+ " <a href='#'>(details)</a></small></html>");
+		return label;
 	}
 
 }

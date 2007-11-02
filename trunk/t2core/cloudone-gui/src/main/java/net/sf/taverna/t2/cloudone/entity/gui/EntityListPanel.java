@@ -32,7 +32,9 @@ public class EntityListPanel extends AbstractEntityPanel {
 		this.dataManager = dataManager;
 		this.id = id;
 		entitylist = (EntityList) dataManager.getEntity(id);
+		setBackground(new Color(128,128,240,32));
 		buildPanel();
+		setOpaque(true);
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class EntityListPanel extends AbstractEntityPanel {
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		JPanel indentationFiller = new JPanel();
 		details.add(indentationFiller, c); // indentation filler
-		indentationFiller.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+		//indentationFiller.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
 		
 		c.gridx = 1;
 		c.gridy = GridBagConstraints.RELATIVE;

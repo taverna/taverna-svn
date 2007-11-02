@@ -48,7 +48,7 @@ public class EntityViewer extends JFrame {
 		AbstractEntityPanel entityPanels = getPanelForEntity(dataManager, id);
 		JPanel verticalFiller = new JPanel();
 		verticalFiller.setMinimumSize(new Dimension(0,0));
-		verticalFiller.setBorder(BorderFactory.createLineBorder(Color.RED));
+		//verticalFiller.setBorder(BorderFactory.createLineBorder(Color.RED));
 		
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
