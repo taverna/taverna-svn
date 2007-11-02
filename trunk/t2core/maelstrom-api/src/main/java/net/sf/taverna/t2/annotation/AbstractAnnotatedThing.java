@@ -21,7 +21,10 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 	private Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
 
 	/**
-	 * Return the set of annotations bound to this annotated object
+	 * Return the set of annotations bound to this annotated object, the set
+	 * returned is an unmodifiable copy of the internal annotation set, if you
+	 * need to modify the annotations you should use the get methods for Edit
+	 * objects to do so.
 	 * 
 	 * @see net.sf.taverna.t2.annotation.Annotated#getAnnotations()
 	 */
@@ -37,7 +40,7 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 	 * 
 	 * @param <TargetType>
 	 */
-	static abstract class AbstractAnnotationEdit<TargetType> implements
+	private static abstract class AbstractAnnotationEdit<TargetType> implements
 			Edit<TargetType> {
 
 		private AbstractAnnotatedThing<TargetType> subject;
