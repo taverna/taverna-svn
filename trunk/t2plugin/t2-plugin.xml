@@ -1,0 +1,28 @@
+<plugin>
+	<name>Taverna 2</name>
+	<description>Preview of Taverna 2 enactment</description>
+	<identifier>uk.org.mygrid.taverna.plugins.t2</identifier>
+	<version>0.0.1</version>
+	<provider>mygrid.org.uk</provider>
+	<repositories>
+		<repository>http://www.mygrid.org.uk/maven/repository</repository>
+	</repositories>
+	<profile>
+		<artifact groupId="net.sf.taverna.t2" artifactId="t2-plugin" version="0.0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="apiconsumer-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="apiconsumer-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="beanshell-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="beanshell-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="biomart-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="biomart-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="soaplab-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="soaplab-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="stringconstant-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="stringconstant-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="wsdl-activity" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="wsdl-activity-translator" version="0.1-SNAPSHOT" />
+	</profile>
+	<taverna>
+		<version>1.6.2</version>
+	</taverna>
+</plugin>
