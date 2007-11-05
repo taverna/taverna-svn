@@ -4,10 +4,13 @@ package net.sf.taverna.t2.cloudone.entity.gui;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.cloudone.entity.Literal;
 
 public class LiteralPanel extends AbstractEntityPanel {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(LiteralPanel.class);
 	private Literal id;
 
 	public LiteralPanel(Literal id) {

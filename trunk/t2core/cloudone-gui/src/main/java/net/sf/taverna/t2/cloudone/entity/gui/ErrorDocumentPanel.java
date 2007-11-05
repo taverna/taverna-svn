@@ -8,6 +8,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
 import net.sf.taverna.t2.cloudone.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
@@ -17,6 +19,7 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 public class ErrorDocumentPanel extends AbstractEntityPanel {
 
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(ErrorDocumentPanel.class);
 	private JLabel messageLabel;
 	private JLabel stackLabel;
 	private ErrorDocumentIdentifier id;
