@@ -12,7 +12,7 @@ import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
- * Recieves Job and Completion events and emits Jobs unaltered. Completion
+ * Receives Job and Completion events and emits Jobs unaltered. Completion
  * events additionally cause registration of lists for each key in the datamap
  * of the jobs at immediate child locations in the index structure. These list
  * identifiers are sent in place of the Completion events.
