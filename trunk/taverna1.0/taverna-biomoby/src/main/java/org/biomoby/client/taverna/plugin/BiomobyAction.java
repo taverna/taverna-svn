@@ -442,7 +442,7 @@ public class BiomobyAction extends AbstractProcessorAction {
 									&& path.getParentPath().getLastPathComponent().toString()
 											.startsWith("Collection(") && (path.getParentPath()
 									.toString()).indexOf("Outputs") > 0)
-									|| (path.toString().indexOf("Collection") < 0)) {
+									|| (path.toString().indexOf("Collection(") < 0)) {
 								final JPopupMenu menu = new JPopupMenu();
 								JMenuItem item = new JMenuItem("Find Services that Consume "
 										+ selectedObject + " - brief search");
