@@ -1,16 +1,8 @@
 package net.sf.taverna.t2.cyclone.activity;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
-import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.raven.spi.InstanceRegistry;
-import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
@@ -28,11 +20,11 @@ import org.embl.ebi.escience.scufl.Processor;
  * 
  */
 public class ActivityTranslatorFactory {
-
-	private static InstanceRegistry<ActivityTranslator<?>> instanceRegistry = null;
+	
 
 	private static Map<Class<?>, ActivityTranslator<?>> translatorMap = new HashMap<Class<?>, ActivityTranslator<?>>();
 
+	private static ActivityTranslatorSPIRegistry registry = new ActivityTranslatorSPIRegistry();
 	/**
 	 * <p>
 	 * Given a particular Processor class it returns an appropriate
@@ -48,8 +40,7 @@ public class ActivityTranslatorFactory {
 			throws ActivityTranslatorNotFoundException {
 		if (!translatorMap.containsKey(processor.getClass())) {
 			boolean foundTranslator = false;
-			List<ActivityTranslator<?>> translators = getTranslators();
-			for (ActivityTranslator<?> translator : translators) {
+			for (ActivityTranslator<?> translator : getRegistry().getInstances()) {
 				if (translator.canHandle(processor)) {
 					translatorMap.put(processor.getClass(), translator);
 					foundTranslator = true;
@@ -66,38 +57,7 @@ public class ActivityTranslatorFactory {
 		return translatorMap.get(processor.getClass());
 	}
 
-	private static List<ActivityTranslator<?>> getTranslators() {
-		return getRegistry().getInstances();
-	}
-
-	private synchronized static InstanceRegistry<ActivityTranslator<?>> getRegistry() {
-		if (instanceRegistry == null) {
-			SpiRegistry registry = new SpiRegistry(getRepository(),
-					ActivityTranslator.class.getName(),
-					ActivityTranslatorFactory.class.getClassLoader());
-			instanceRegistry = new InstanceRegistry<ActivityTranslator<?>>(
-					registry, new Object[0]);
-		}
-		return instanceRegistry;
-	}
-
-	private static Repository getRepository() {
-		if (ActivityTranslatorFactory.class.getClassLoader() instanceof LocalArtifactClassLoader) {
-			return ((LocalArtifactClassLoader)ActivityTranslatorFactory.class.getClassLoader()).getRepository();
-		}
-		else {
-			
-			File tmpDir = null;
-			try {
-				tmpDir = File.createTempFile("taverna", "raven");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			tmpDir.delete();
-			tmpDir.mkdir();
-			Repository tempRepository = LocalRepository.getRepository(tmpDir);
-			return tempRepository;
-		}
+	protected static ActivityTranslatorSPIRegistry getRegistry() {
+		return registry;
 	}
 }

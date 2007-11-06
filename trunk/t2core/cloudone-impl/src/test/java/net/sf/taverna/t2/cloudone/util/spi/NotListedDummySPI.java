@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.util.spi;
 
-import net.sf.taverna.t2.cloudone.util.SPIRegistry;
+import net.sf.taverna.t2.spi.SPIRegistry;
 import static junit.framework.Assert.fail;
 
 /**

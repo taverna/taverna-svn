@@ -6,7 +6,7 @@ import java.util.List;
 import net.sf.taverna.t2.cloudone.DataPeer;
 import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.TranslationPreference;
-import net.sf.taverna.t2.cloudone.util.SPIRegistry;
+import net.sf.taverna.t2.spi.SPIRegistry;
 
 /**
  * SPI registry for {@link Translator}s. Used by

@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cloudone.util;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.spi.SPIRegistry;
 
 @SuppressWarnings("unchecked")
 public class BeanableRegistry extends SPIRegistry<Beanable>{
