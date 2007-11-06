@@ -30,110 +30,107 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private static final Logger logger = Logger.getLogger(T2Component.class);
 
-	private Dataflow dataflow;
-	
+	private ScuflModel model;
+
 	private JButton runButton;
-	
+
 	private JButton stopButton;
-	
-	private JTextArea translationStatus;
-	
-	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory().getComponent();
-	
+
+	private JTextArea runStatus;
+
+	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
+			.getComponent();
+
 	private int results = 0;
-	
+
 	public T2Component() {
 		setLayout(new BorderLayout());
-		
+
 		runButton = createRunButton();
 		stopButton = new JButton("Stop");
-		
-		translationStatus = new JTextArea();
-		
+
+		runStatus = new JTextArea();
+
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
-		
+
 		JPanel topPanel = new JPanel(new BorderLayout());
-		topPanel.add(translationStatus, BorderLayout.NORTH);
+		topPanel.add(runStatus, BorderLayout.NORTH);
 		topPanel.add(buttonPanel, BorderLayout.SOUTH);
-		
+
 		add(topPanel, BorderLayout.NORTH);
 		add(resultComponent, BorderLayout.CENTER);
 	}
 
 	private JButton createRunButton() {
-		final JButton runButton = new JButton("Run");
-		runButton.setEnabled(false);
-		add(runButton);
-		runButton.addActionListener(new ActionListener() {
+		JButton button = new JButton("Run");
+		button.setEnabled(false);
+
+		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				ContextManager.baseManager = new InMemoryDataManager("namespace", Collections.EMPTY_SET);
-
-				runButton.setEnabled(false);
+				runStatus.setText("");
+				resultComponent.clear();
+				
+				ContextManager.baseManager = new InMemoryDataManager(
+						"namespace", Collections.EMPTY_SET);
 				try {
-					
-					resultComponent.register(dataflow, new ResultListener() {
+					runStatus.append("Translating workflow...\n");
+					final Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+					DataflowValidationReport report = dataflow.checkValidity();
+					if (report.isValid()) {
+						runStatus.setText("Workflow translated OK\n");
+						resultComponent.register(dataflow, new ResultListener() {
 
-						public void resultTokenProduced(EntityIdentifier token,
-								int[] index, String portName) {
-							logger.info("Result for " + portName);
-							if (index.length == 0) {
-								results++;
-								if (results == dataflow.getOutputPorts().size()) {
-									runButton.setEnabled(true);
-									results = 0;
+							public void resultTokenProduced(EntityIdentifier token,
+									int[] index, String portName) {
+								logger.info("Result for " + portName);
+								if (index.length == 0) {
+									results++;
+									if (results == dataflow.getOutputPorts().size()) {
+										runButton.setEnabled(true);
+										results = 0;
+									}
 								}
 							}
+
+						});
+						for (Processor processor : dataflow.getProcessors()) {
+							if (processor.getInputPorts().size() == 0) {
+								logger.debug("Firing processor : "
+										+ processor.getLocalName());
+								processor.fire(dataflow.getLocalName());
+							}
 						}
-						
-					});
-					for (Processor processor : dataflow.getProcessors()) {
-						if (processor.getInputPorts().size() == 0) {
-							logger.debug("Firing processor : " + processor.getLocalName());
-							processor.fire(dataflow.getLocalName());
-						}
-					}
+					} else {
+						showErrorDialog("Unable to translate workflow", "Unable to validate translated workflow");
+						runButton.setEnabled(true);
+					}					
 				} catch (EditException e) {
 					logger.error(e);
-					showErrorDialog("Unable to translate workflow", e);
+					showErrorDialog("Unable to translate workflow", e.getMessage());
+					runButton.setEnabled(true);
+				} catch (WorkflowTranslationException e) {
+					logger.error(e);
+					showErrorDialog("Unable to translate workflow", e.getMessage());
 					runButton.setEnabled(true);
 				}
 
 			}
 
 		});
-		
-		return runButton;
+
+		return button;
 	}
-	
-	private Dataflow translateWorkflow(ScuflModel model) {
-		Dataflow dataflow = null;
-		try {
-			dataflow = WorkflowModelTranslator.doTranslation(model);
-			DataflowValidationReport report = dataflow.checkValidity();
-			if (report.isValid()) {
-				translationStatus.setText("Workflow translated OK");
-				runButton.setEnabled(true);
-			} else {
-				translationStatus.setText("Unable to validate translated workflow");				
-			}
-			
-		} catch (WorkflowTranslationException e) {
-			logger.error(e);
-			translationStatus.setText("Unable to translate workflow\n" + e.getMessage());
-			runButton.setEnabled(false);
-		}
-		return dataflow;
+
+	private void showErrorDialog(String title, String message) {
+		JOptionPane.showMessageDialog(this, message, title,
+				JOptionPane.INFORMATION_MESSAGE);
 	}
-	
-	private void showErrorDialog(String title, Exception e) {
-		JOptionPane.showMessageDialog(this, e.getMessage(), title, JOptionPane.INFORMATION_MESSAGE);
-	}
-	
+
 	public void attachToModel(ScuflModel model) {
-		this.dataflow = translateWorkflow(model);
+		this.model = model;
 	}
 
 	public void detachFromModel() {
