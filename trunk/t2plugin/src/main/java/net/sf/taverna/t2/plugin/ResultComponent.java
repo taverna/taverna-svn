@@ -29,7 +29,7 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 	}
 	
 	public void register(Dataflow dataflow, ResultListener resultListener) throws EditException {
-		tabbedPane.removeAll();
+		clear();
 		List<? extends DataflowOutputPort> dataflowOutputPorts = dataflow.getOutputPorts();
 		for (DataflowOutputPort dataflowOutputPort : dataflowOutputPorts) {
 			JComponent outputPanel = new JPanel();
@@ -52,6 +52,10 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 	public void onDispose() {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void clear() {
+		tabbedPane.removeAll();
 	}
 
 }
