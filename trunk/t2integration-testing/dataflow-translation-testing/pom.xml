@@ -90,6 +90,27 @@
 			<scope>test</scope>
 		</dependency>
 		
+		
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity-translator</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-wsdl-processor</artifactId>
+			<version>${depTaverna}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-stringconstant-processor</artifactId>

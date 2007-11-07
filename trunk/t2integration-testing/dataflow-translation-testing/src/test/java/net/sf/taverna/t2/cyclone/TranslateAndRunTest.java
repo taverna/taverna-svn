@@ -36,7 +36,7 @@ import org.junit.Test;
  * @author Stuart Owen
  * 
  */
-public class ModelTranslatorTest extends TranslatorTestHelper {
+public class TranslateAndRunTest extends TranslatorTestHelper {
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -149,6 +149,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	
 	}
 	
+	@Ignore
 	@Test
 	public void testErrorPropogation() throws Exception {
 		Dataflow dataflow = translateScuflFile("test_error_propagation.xml");
@@ -185,6 +186,43 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		assertTrue("The result should be a list",handler.getResult() instanceof List);
 		
 		//TODO: test that the error is passed through.
+	}
+	
+	@Test
+	public void testWorkflowContainingWSDL() throws Exception {
+		Dataflow dataflow = translateScuflFile("wsdl_test.xml");
+		
+		DataflowValidationReport report = dataflow.checkValidity();
+		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+			System.out.println(unsatisfiedProcessor.getLocalName());
+		}
+		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
+		for (Processor failedProcessor : report.getFailedProcessors()) {
+			System.out.println(failedProcessor.getLocalName());
+		}
+		assertTrue(report.getFailedProcessors().size() == 0);
+		for (DataflowOutputPort unresolvedOutput : report
+				.getUnresolvedOutputs()) {
+			System.out.println(unresolvedOutput.getName());
+		}
+		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		
+		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		
+		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		
+		for (Processor processor : dataflow.getProcessors()) {
+			//find the string constant processor
+			if (processor.getLocalName().equals("Make_gene_list"))  {
+				processor.fire("test");
+				break;
+			}
+		}
+		
+		waitForCompletion(eventHandlers);
+		
+		DummyEventHandler handler = eventHandlers.get("out");
+		assertTrue("The result should be a list",handler.getResult() instanceof List);
 	}
 }
 
