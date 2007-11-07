@@ -23,7 +23,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${depJunit}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
