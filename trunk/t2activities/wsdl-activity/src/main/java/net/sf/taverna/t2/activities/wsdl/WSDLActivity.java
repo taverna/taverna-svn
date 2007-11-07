@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfigurationBean> {
     private WSDLActivityConfigurationBean configurationBean;
     private WSDLParser parser;
+    private Map<String,Integer> outputDepth = new HashMap<String, Integer>();
 
     protected ActivityPortBuilder getPortBuilder() {
         return ActivityPortBuilderImpl.getInstance();
@@ -84,10 +85,12 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
             List<String>mimeTypes = new ArrayList<String>();
             mimeTypes.add(descriptor.getMimeType());
             addOutput(descriptor.getName(),descriptor.getDepth(),mimeTypes);
+            outputDepth.put(descriptor.getName(), Integer.valueOf(descriptor.getDepth()));
         }
         
         //add output for attachment list
         addOutput("attachmentList",1,new ArrayList<String>());
+        outputDepth.put("attachmentList", Integer.valueOf(1));
 	}
 
 	/**
@@ -121,8 +124,16 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 					
 					for (String outputName : invokerOutputMap.keySet()) {
 						Object value = invokerOutputMap.get(outputName);
+						
 						if (value != null) {
-							outputData.put(outputName, dataFacade.register(value));
+							Integer depth=outputDepth.get(outputName);
+							if (depth!=null) {
+								outputData.put(outputName, dataFacade.register(value,depth));
+							}
+							else {
+								System.out.println("Depth not recorded for output:"+outputName);
+								outputData.put(outputName, dataFacade.register(value));
+							}
 						}
 					}
 				}
@@ -134,7 +145,6 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 				}
 				
 				callback.receiveResult(outputData, new int[0]);
-				
 			}
 			
 		});
