@@ -391,7 +391,9 @@ public class WorkflowModelTranslator {
 	 */
 	private void addInputPorts(Activity<?> activity,
 			org.embl.ebi.escience.scufl.Processor t1Processor,
-			Processor t2Processor, Dataflow dataflow) throws EditException, ActivityTranslatorNotFoundException, ActivityTranslationException, ActivityConfigurationException, WorkflowTranslationException {
+			Processor t2Processor, Dataflow dataflow) throws EditException,
+			ActivityTranslatorNotFoundException, ActivityTranslationException,
+			ActivityConfigurationException, WorkflowTranslationException {
 		Set<InputPort> inputPorts = activity.getInputPorts();
 		Map<String, org.embl.ebi.escience.scufl.InputPort> t1InputPorts = getInputPortMap(t1Processor);
 		for (InputPort inputPort : inputPorts) {

@@ -21,7 +21,7 @@ import net.sf.taverna.raven.spi.SpiRegistry;
  * @author Stian Soiland
  * 
  * @param <SPI>
- *            The interface to discover
+ *            The interface type that the SPI classes implement
  */
 public class SPIRegistry<SPI> {
 
@@ -39,18 +39,25 @@ public class SPIRegistry<SPI> {
 		this.spi = spi;
 	}
 
+	/**
+	 * Resets the instanceRegistry causing it to be re-populated on the
+	 * next call to getInstances.
+	 */
 	public void refresh() {
 		this.instanceRegistry = null;
 		this.ravenSPIRegistry = null;
 		getInstances();
 	}
 
+	/**
+	 * @return a List of instances of the classes discovered by the registry
+	 */
 	public List<SPI> getInstances() {
 		return getRegistry().getInstances();
 	}
 
 	/**
-	 * Return instantiated implementations of the SPI.
+	 * Returns instantiated implementations of the SPI.
 	 * 
 	 * @return
 	 */
@@ -79,9 +86,12 @@ public class SPIRegistry<SPI> {
 	}
 
 	private ClassLoader getClassLoader() {
-		return SPIRegistry.class.getClassLoader();
+		return getClass().getClassLoader();
 	}
 
+	/**
+	 * @return a Map of classes, the key being the classname and the value being the Class<? extends SPI> itself.
+	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Class<? extends SPI>> getClasses() {
 		getRegistry();
