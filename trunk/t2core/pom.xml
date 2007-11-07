@@ -43,6 +43,7 @@
 		<module>maelstrom-api</module>
 		<module>maelstrom-impl</module>
 		<module>tsunami-api</module>
+		<module>snowflake-api</module>
 		<!--<module>drizzle-api</module>
 			<module>drizzle-impl</module> -->
 		<module>cyclone-api</module>

@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.util.spi;
+package net.sf.taverna.t2.spi;
 
 /**
  * An abstract class that can't be constructed

@@ -15,6 +15,7 @@ import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -32,6 +33,11 @@ public class BeanSerialiserTest {
 
 	InMemoryDataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
+	
+	@Before
+	public void setUpRaven() {
+		System.setProperty("raven.eclipse", "true");
+	}
 
 	@Test
 	public void serialiseAsFile() throws IOException, JDOMException {

@@ -15,6 +15,7 @@ public class AbstractCloudOneServerTest {
 
 	@BeforeClass
 	public static void startServer() {
+		System.setProperty("raven.eclipse", "true");
 		cloudApp = new CloudOneApplication(HOST, PORT);
 		cloudApp.startServer();
 	}

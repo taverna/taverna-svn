@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.util.spi;
+package net.sf.taverna.t2.spi;
 
 /**
  * Dummy SPI interface for {@link SPIRegistryTest}.

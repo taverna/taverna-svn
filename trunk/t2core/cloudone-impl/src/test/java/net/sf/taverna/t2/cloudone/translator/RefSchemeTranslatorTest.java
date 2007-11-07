@@ -61,6 +61,11 @@ public class RefSchemeTranslatorTest {
 		facade = new DataFacade(dManager);
 		translator = new ReferenceSchemeTranslatorImpl(dataPeer);
 	}
+	
+	@Before
+	public void setUpRaven() {
+		System.setProperty("raven.eclipse", "true");
+	}
 
 	@Test
 	public void testFindBlobScheme() throws RetrievalException,

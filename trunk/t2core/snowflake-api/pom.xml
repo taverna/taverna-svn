@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>snowflake-api</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Snowflake API</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>core</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>
+		Handles SPI discovery through Raven.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>raven</artifactId>
+			<version>1.6.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

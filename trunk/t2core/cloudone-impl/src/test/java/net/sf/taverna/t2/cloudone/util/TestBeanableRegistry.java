@@ -2,6 +2,7 @@ package net.sf.taverna.t2.cloudone.util;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import net.sf.taverna.t2.cloudone.bean.Beanable;
@@ -31,6 +32,11 @@ public class TestBeanableRegistry {
 			ErrorDocument.class,
 			DataDocumentImpl.class,
 	};
+	
+	@Before
+	public void setUpRaven() {
+		System.setProperty("raven.eclipse", "true");
+	}
 	
 	@Test
 	public void getBeanables() {

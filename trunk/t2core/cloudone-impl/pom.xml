@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>maelstrom-api</artifactId>
+			<artifactId>snowflake-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

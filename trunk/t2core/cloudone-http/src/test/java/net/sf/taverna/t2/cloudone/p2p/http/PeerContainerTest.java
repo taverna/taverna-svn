@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 		tmpDir.delete();
 		tmpDir.mkdir();
 	}
-
+	
 	@Test
 	public void peer() throws Exception {
 		PeerContainer container = new HttpPeerContainer();

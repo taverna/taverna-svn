@@ -38,6 +38,11 @@ public class TranslatorRegistrySPITest {
 				new HashSet<LocationalContext>());
 		dataPeer = new DataPeerImpl(dManager);
 	}
+	
+	@Before
+	public void setUpRaven() {
+		System.setProperty("raven.eclipse", "true");
+	}
 
 	public class MyReferenceScheme implements ReferenceScheme<ReferenceBean> {
 		public InputStream dereference(DataManager manager)

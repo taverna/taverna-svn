@@ -12,10 +12,16 @@ import net.sf.taverna.t2.activities.biomart.translator.BiomartActivityTranslator
 import net.sf.taverna.t2.activities.soaplab.translator.SoaplabActivityTranslator;
 import net.sf.taverna.t2.activities.stringconstant.translator.StringConstantActivityTranslator;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ActivityTranslatorSPITest {
 
+	@Before
+	public void setUpRaven() {
+		System.setProperty("raven.eclipse", "true");
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFindTranslators() {

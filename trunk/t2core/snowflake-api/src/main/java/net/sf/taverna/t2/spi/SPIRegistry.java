@@ -36,12 +36,12 @@ public class SPIRegistry<SPI> {
 	 *            Interface to discover
 	 */
 	public SPIRegistry(Class<SPI> spi) {
-		this.spi=spi;
+		this.spi = spi;
 	}
 
 	public void refresh() {
-		this.instanceRegistry=null;
-		this.ravenSPIRegistry=null;
+		this.instanceRegistry = null;
+		this.ravenSPIRegistry = null;
 		getInstances();
 	}
 
@@ -58,25 +58,22 @@ public class SPIRegistry<SPI> {
 	public Collection<String> getClassNames() {
 		return getClasses().keySet();
 	}
-	
+
 	private InstanceRegistry<SPI> getRegistry() {
 		if (instanceRegistry == null) {
-			ravenSPIRegistry = new SpiRegistry(getRepository(),
-					spi.getName(),
+			ravenSPIRegistry = new SpiRegistry(getRepository(), spi.getName(),
 					getClassLoader());
-			instanceRegistry = new InstanceRegistry<SPI>(
-					ravenSPIRegistry, new Object[0]);
+			instanceRegistry = new InstanceRegistry<SPI>(ravenSPIRegistry,
+					new Object[0]);
 		}
 		return instanceRegistry;
 	}
 
 	private Repository getRepository() {
 		if (getClassLoader() instanceof LocalArtifactClassLoader) {
-			return ((LocalArtifactClassLoader)getClassLoader()).getRepository();
-		}
-		else {
-			//FIXME: temporary hack to avoid defining this throughout the tests.
-			System.setProperty("raven.eclipse","true");
+			return ((LocalArtifactClassLoader) getClassLoader())
+					.getRepository();
+		} else {
 			return new EclipseRepository();
 		}
 	}
@@ -88,8 +85,8 @@ public class SPIRegistry<SPI> {
 	@SuppressWarnings("unchecked")
 	public Map<String, Class<? extends SPI>> getClasses() {
 		getRegistry();
-		List<Class> classes=ravenSPIRegistry.getClasses();
-		Map<String,Class<? extends SPI>> result = new HashMap<String, Class<? extends SPI>>();
+		List<Class> classes = ravenSPIRegistry.getClasses();
+		Map<String, Class<? extends SPI>> result = new HashMap<String, Class<? extends SPI>>();
 		for (Class c : classes) {
 			result.put(c.getName(), c);
 		}
