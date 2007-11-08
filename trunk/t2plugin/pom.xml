@@ -5,6 +5,7 @@
   <artifactId>t2-plugin</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <description>Preview of Taverna 2 enactment</description>
+  <name>Taverna 2 enactment plugin</name>
   <licenses>
   <license>
     <name>GNU Lesser General Public License</name>
