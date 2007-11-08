@@ -50,7 +50,7 @@ public class ActivityTranslatorFactory {
 			if (!foundTranslator) {
 				throw new ActivityTranslatorNotFoundException(
 						"Unable to find Activity Translator for:"
-								+ processor.getClass());
+								+ processor.getClass(),processor);
 			}
 		}
 

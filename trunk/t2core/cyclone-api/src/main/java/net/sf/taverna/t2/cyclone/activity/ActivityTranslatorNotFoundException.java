@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.cyclone.activity;
 
+import org.embl.ebi.escience.scufl.Processor;
+
 /**
  * <p>
  * An Exception indicating that a suitable {@link ActivityTranslator} cannot be found.
@@ -11,27 +13,25 @@ package net.sf.taverna.t2.cyclone.activity;
 public class ActivityTranslatorNotFoundException extends Exception {
 
 	private static final long serialVersionUID = 8779255468276952392L;
-
-	/**
-	 * @param msg a message describing the reason for the exception.
-	 */
-	public ActivityTranslatorNotFoundException(String msg) {
-		super(msg);
-	}
-
 	
-	/**
-	 * @param msg a message describing the reason for the exception.
-	 * @param cause a previous exception that caused this ActivityTranslatorNotFoundException to be thrown.
-	 */
-	public ActivityTranslatorNotFoundException(String msg, Throwable cause) {
-		super(msg, cause);
-	}
+	private Processor taverna1Processor;
 
 	/**
-	 * @param cause a previous exception that caused this ActivityTranslatorNotFoundException to be thrown.
+	 * @param msg a message describing the reason for the exception.
+	 * @param tavena1Processor the Taverna 1 processor for which no translator could be found.
 	 */
-	public ActivityTranslatorNotFoundException(Throwable cause) {
-		super(cause);
-	}	
+	public ActivityTranslatorNotFoundException(String msg, Processor taverna1Processor) {
+		super(msg);
+		this.taverna1Processor = taverna1Processor;
+	}
+
+
+	/**
+	 * @return the Taverna 1 processor for which a translator could not be found
+	 */
+	public Processor getTaverna1Processor() {
+		return taverna1Processor;
+	}
+	
+	
 }
