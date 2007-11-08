@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import java.awt.Dimension;
 import java.net.MalformedURLException;
@@ -13,24 +13,22 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.entity.DataDocument;
-import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 public class RunDataDocumentViewer {
 
 	/**
 	 * @param args
-	 * @throws MalformedURLException 
-	 * @throws NotFoundException 
-	 * @throws RetrievalException 
+	 * @throws MalformedURLException
+	 * @throws NotFoundException
+	 * @throws RetrievalException
 	 */
 	@SuppressWarnings("unchecked")
-	public static void main(String[] args) throws MalformedURLException, RetrievalException, NotFoundException {
-		InMemoryDataManager dataManager = new InMemoryDataManager("mem1", Collections
-				.<LocationalContext> emptySet());
+	public static void main(String[] args) throws MalformedURLException,
+			RetrievalException, NotFoundException {
+		InMemoryDataManager dataManager = new InMemoryDataManager("mem1",
+				Collections.<LocationalContext> emptySet());
 
 		HashSet<ReferenceScheme> refSchemes = new HashSet<ReferenceScheme>();
 		URL url1 = new URL("http://taverna.sourceforge.net/");
@@ -40,9 +38,10 @@ public class RunDataDocumentViewer {
 		URL url3 = new URL("http://mygrid.org.uk/");
 
 		refSchemes.add(new HttpReferenceScheme(url3));
-		
-		DataDocumentIdentifier identifier = (DataDocumentIdentifier) dataManager.registerDocument(refSchemes);
-		
+
+		DataDocumentIdentifier identifier = (DataDocumentIdentifier) dataManager
+				.registerDocument(refSchemes);
+
 		EntityViewer frame = new EntityViewer(dataManager, identifier);
 		frame.setSize(new Dimension(300, 300));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

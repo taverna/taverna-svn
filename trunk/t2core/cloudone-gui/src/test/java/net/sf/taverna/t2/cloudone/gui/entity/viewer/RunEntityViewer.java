@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import java.awt.Dimension;
 import java.io.IOException;
@@ -21,19 +21,21 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.gui.entity.viewer.EntityViewer;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
 
 public class RunEntityViewer {
-	
+
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		DataManager dataManager = new InMemoryDataManager("mem1", Collections
 				.<LocationalContext> emptySet());
 		DataFacade facade = new DataFacade(dataManager);
-		
+
 		HashSet<ReferenceScheme> refSchemes = new HashSet<ReferenceScheme>();
 		URL url1 = new URL("http://taverna.sourceforge.net/");
 		refSchemes.add(new HttpReferenceScheme(url1));
@@ -42,15 +44,18 @@ public class RunEntityViewer {
 		URL url3 = new URL("http://mygrid.org.uk/");
 
 		refSchemes.add(new HttpReferenceScheme(url3));
-		
-		DataDocumentIdentifier identifier = (DataDocumentIdentifier) dataManager.registerDocument(refSchemes);
-		
-		BlobReferenceScheme<?> blobReferenceScheme = dataManager.getBlobStore().storeFromString("qwertyuiopasdfdghghjkdfgdbkdfbkbfdfgorg");
-		
+
+		DataDocumentIdentifier identifier = (DataDocumentIdentifier) dataManager
+				.registerDocument(refSchemes);
+
+		BlobReferenceScheme<?> blobReferenceScheme = dataManager.getBlobStore()
+				.storeFromString("qwertyuiopasdfdghghjkdfgdbkdfbkbfdfgorg");
+
 		HashSet<ReferenceScheme> blobRefs = new HashSet<ReferenceScheme>();
 		blobRefs.add(blobReferenceScheme);
-		DataDocumentIdentifier blobIdentifier = (DataDocumentIdentifier) dataManager.registerDocument(blobRefs);
-		
+		DataDocumentIdentifier blobIdentifier = (DataDocumentIdentifier) dataManager
+				.registerDocument(blobRefs);
+
 		List<Object> listOfList = new ArrayList<Object>();
 		ArrayList<Object> firstList = new ArrayList<Object>();
 		firstList.add("Anything");
@@ -59,12 +64,13 @@ public class RunEntityViewer {
 		firstList.add(identifier);
 
 		listOfList.add(firstList);
-		
+
 		Throwable throwable = new Throwable("failure", new Exception(
 				"total failure", new Exception("asfzaf")));
-		EntityIdentifier errorId = dataManager.registerError(1, 0, "did not work", throwable);
+		EntityIdentifier errorId = dataManager.registerError(1, 0,
+				"did not work", throwable);
 		listOfList.add(errorId);
-		
+
 		ArrayList<Object> thirdList = new ArrayList<Object>();
 		thirdList.add("Something else");
 		thirdList.add("that matters");
@@ -72,17 +78,16 @@ public class RunEntityViewer {
 		thirdList.add(true);
 		thirdList.add(blobIdentifier);
 		listOfList.add(thirdList);
-		
+
 		ArrayList<Object> superList = new ArrayList<Object>();
 		superList.add(listOfList);
 		superList.add(listOfList);
-		
+
 		EntityIdentifier strings = facade.register(superList);
 		EntityViewer frame = new EntityViewer(dataManager, strings);
 		frame.setSize(new Dimension(300, 300));
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		
-		
+
 	}
 }
