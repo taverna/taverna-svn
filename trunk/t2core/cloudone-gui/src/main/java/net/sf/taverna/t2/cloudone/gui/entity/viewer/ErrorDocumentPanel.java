@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -19,6 +19,7 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 public class ErrorDocumentPanel extends AbstractEntityPanel {
 
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ErrorDocumentPanel.class);
 	private JLabel messageLabel;
 	private JLabel stackLabel;
@@ -37,7 +38,7 @@ public class ErrorDocumentPanel extends AbstractEntityPanel {
 	@Override
 	public JComponent createDetails() {
 		JPanel details = new JPanel(new GridBagLayout());
-		details.setBackground(new Color(240,160,160,64));
+		details.setBackground(new Color(240, 160, 160, 64));
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 1;
 		c.weightx = 0.1;
@@ -59,7 +60,7 @@ public class ErrorDocumentPanel extends AbstractEntityPanel {
 	@Override
 	public JComponent createHeader() {
 		JLabel label = createLabel("ErrorDocument", id);
-		label.setBackground(new Color(240,128,128,128));
+		label.setBackground(new Color(240, 128, 128, 128));
 		label.setOpaque(true);
 		return label;
 	}

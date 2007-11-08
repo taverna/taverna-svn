@@ -1,5 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
-
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -10,6 +9,7 @@ import net.sf.taverna.t2.cloudone.entity.Literal;
 
 public class LiteralPanel extends AbstractEntityPanel {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LiteralPanel.class);
 	private Literal id;
 

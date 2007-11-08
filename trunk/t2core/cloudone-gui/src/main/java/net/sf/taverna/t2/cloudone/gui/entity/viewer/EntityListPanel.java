@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;
@@ -20,6 +20,7 @@ import org.apache.log4j.Logger;
 
 public class EntityListPanel extends AbstractEntityPanel {
 
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(EntityListPanel.class);
 	private EntityList entitylist;
 	private final DataManager dataManager;
@@ -31,28 +32,9 @@ public class EntityListPanel extends AbstractEntityPanel {
 		this.dataManager = dataManager;
 		this.id = id;
 		entitylist = (EntityList) dataManager.getEntity(id);
-		setBackground(new Color(128,128,240,32));
+		setBackground(new Color(128, 128, 240, 32));
 		buildPanel();
 		setOpaque(true);
-	}
-
-	@Override
-	public void setDetailsVisible(boolean visible) {
-		super.setDetailsVisible(visible);
-		if (!visible) {
-			// Also collapse children
-			for (AbstractEntityPanel childPanel : childPanels) {
-				childPanel.setDetailsVisible(visible);
-			}
-		}
-	}
-
-	@Override
-	public JComponent createHeader() {
-		JLabel header = new JLabel("<html><b>List</b>, " + entitylist.size()
-				+ " elements <small>" + id
-				+ " <a href='#'>(details)</a></small></html>");
-		return header;
 	}
 
 	@Override
@@ -64,18 +46,19 @@ public class EntityListPanel extends AbstractEntityPanel {
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		JPanel indentationFiller = new JPanel();
 		details.add(indentationFiller, c); // indentation filler
-		//indentationFiller.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
-		
+		// indentationFiller.setBorder(BorderFactory.createLineBorder(Color.YELLOW));
+
 		c.gridx = 1;
 		c.gridy = GridBagConstraints.RELATIVE;
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.weightx = 0.1;
-		
+
 		childPanels.clear();
 		for (EntityIdentifier entityID : entitylist) {
 			try {
-				AbstractEntityPanel panel = EntityViewer.getPanelForEntity(dataManager, entityID);
+				AbstractEntityPanel panel = EntityViewer.getPanelForEntity(
+						dataManager, entityID);
 				details.add(panel, c);
 				childPanels.add(panel);
 			} catch (RetrievalException e) {
@@ -88,6 +71,25 @@ public class EntityListPanel extends AbstractEntityPanel {
 
 		}
 		return details;
+	}
+
+	@Override
+	public JComponent createHeader() {
+		JLabel header = new JLabel("<html><b>List</b>, " + entitylist.size()
+				+ " elements <small>" + id
+				+ " <a href='#'>(details)</a></small></html>");
+		return header;
+	}
+
+	@Override
+	public void setDetailsVisible(boolean visible) {
+		super.setDetailsVisible(visible);
+		if (!visible) {
+			// Also collapse children
+			for (AbstractEntityPanel childPanel : childPanels) {
+				childPanel.setDetailsVisible(visible);
+			}
+		}
 	}
 
 }

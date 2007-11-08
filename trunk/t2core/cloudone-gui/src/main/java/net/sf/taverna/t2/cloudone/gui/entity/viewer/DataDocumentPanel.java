@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.entity.gui;
+package net.sf.taverna.t2.cloudone.gui.entity.viewer;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,11 +34,11 @@ import org.apache.log4j.Logger;
 
 public class DataDocumentPanel extends AbstractEntityPanel {
 
+	private static Logger logger = Logger.getLogger(DataDocumentPanel.class);
 	static final long serialVersionUID = 1L;
 	private DataDocumentIdentifier id;
 	private DataDocument doc;
 	private final DataManager dataManager;
-	private static Logger logger = Logger.getLogger(DataDocumentPanel.class);
 
 	public DataDocumentPanel(DataManager dataManager, DataDocumentIdentifier id)
 			throws RetrievalException, NotFoundException {
@@ -46,12 +46,6 @@ public class DataDocumentPanel extends AbstractEntityPanel {
 		this.id = id;
 		doc = (DataDocument) dataManager.getEntity(id);
 		buildPanel();
-	}
-
-	@Override
-	public JComponent createHeader() {
-
-		return createLabel("DataDocument", id);
 	}
 
 	@Override
@@ -128,7 +122,7 @@ public class DataDocumentPanel extends AbstractEntityPanel {
 			} catch (DereferenceException e) {
 				logger.warn("Cannot dereference " + id, e);
 			} catch (IOException e) {
-				logger.warn("Problem reading data stream" , e);
+				logger.warn("Problem reading data stream", e);
 			} catch (MagicParseException e) {
 				logger.warn("Could not find mime type from " + id, e);
 			} catch (MagicMatchNotFoundException e) {
@@ -142,5 +136,11 @@ public class DataDocumentPanel extends AbstractEntityPanel {
 			refPanel.add(refSchemeType, c);
 		}
 		return refPanel;
+	}
+
+	@Override
+	public JComponent createHeader() {
+
+		return createLabel("DataDocument", id);
 	}
 }
