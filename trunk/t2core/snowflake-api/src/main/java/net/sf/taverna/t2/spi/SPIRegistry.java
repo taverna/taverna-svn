@@ -12,7 +12,6 @@ import net.sf.taverna.raven.repository.impl.EclipseRepository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.raven.spi.SpiRegistry;
-import net.sf.taverna.t2.cloudone.util.BeanableRegistry;
 
 /**
  * Simple SPI lookup (using META-INF/services/interfaceName) to discover run
@@ -27,7 +26,7 @@ import net.sf.taverna.t2.cloudone.util.BeanableRegistry;
  *            The interface type that the SPI classes implement
  */
 public class SPIRegistry<SPI> {
-	
+
 	static {
 		// Set log4j logger for Raven
 		Log4jLog log4jLog = new Log4jLog();
@@ -49,8 +48,8 @@ public class SPIRegistry<SPI> {
 	}
 
 	/**
-	 * Resets the instanceRegistry causing it to be re-populated on the
-	 * next call to getInstances.
+	 * Resets the instanceRegistry causing it to be re-populated on the next
+	 * call to getInstances.
 	 */
 	public void refresh() {
 		this.instanceRegistry = null;
@@ -99,8 +98,11 @@ public class SPIRegistry<SPI> {
 	}
 
 	/**
-	 * @return a Map of classes, the key being the classname and the value being the Class<? extends SPI> itself.
-	 * @deprecated this method will be removed once the {@link BeanableRegistry} has have been refactored to use factory classes.
+	 * @return a Map of classes, the key being the classname and the value being
+	 *         the Class<? extends SPI> itself.
+	 * @deprecated this method will be removed once the
+	 *             {@link net.sf.taverna.t2.cloudone.util.BeanableRegistry} has
+	 *             have been refactored to use factory classes.
 	 */
 	@Deprecated
 	@SuppressWarnings("unchecked")
