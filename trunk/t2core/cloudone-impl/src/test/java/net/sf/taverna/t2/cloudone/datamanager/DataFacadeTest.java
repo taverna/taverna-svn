@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
-import static net.sf.taverna.t2.cloudone.BlobStore.STRING_CHARSET;
+import static net.sf.taverna.t2.cloudone.datamanager.BlobStore.STRING_CHARSET;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -15,13 +15,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -398,7 +398,8 @@ public class DataFacadeTest {
 		assertFalse("Test string was too long", str.length() > dManager
 				.getMaxIDLength());
 		EntityIdentifier entity = facade.register(str);
-		InputStream stream = (InputStream) facade.resolve(entity, InputStream.class);
+		InputStream stream = (InputStream) facade.resolve(entity,
+				InputStream.class);
 		assertEquals(str, IOUtils.toString(stream, STRING_CHARSET));
 	}
 
@@ -483,6 +484,133 @@ public class DataFacadeTest {
 		deepList.add(list);
 		// deepList is depth 2, should fail with 3
 		facade.register(deepList, 3);
+	}
+
+	@Test
+	public void registerStringArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		String[] strings = new String[] { "my", "string", "array" };
+		EntityIdentifier entity = facade.register(strings);
+
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(strings[0], resolved.get(0));
+		assertEquals(strings[1], resolved.get(1));
+		assertEquals(strings[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerObjectArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		Object[] objects = new Object[] { "my", 14, -13.37 };
+		EntityIdentifier entity = facade.register(objects);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(objects[0], resolved.get(0));
+		assertEquals(objects[1], resolved.get(1));
+		assertEquals(objects[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerIntArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		int[] ints = new int[] { 42, 14, -13 };
+		EntityIdentifier entity = facade.register(ints);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(ints[0], resolved.get(0));
+		assertEquals(ints[1], resolved.get(1));
+		assertEquals(ints[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerLongArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		long[] longs = new long[] { 4212387128373438123l, Long.MAX_VALUE, -13l };
+		EntityIdentifier entity = facade.register(longs);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(longs[0], resolved.get(0));
+		assertEquals(longs[1], resolved.get(1));
+		assertEquals(longs[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerFloatArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		float[] floats = new float[] { 2.12f, 2.44f, -13.37f };
+		EntityIdentifier entity = facade.register(floats);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(floats[0], resolved.get(0));
+		assertEquals(floats[1], resolved.get(1));
+		assertEquals(floats[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerDoubleArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		double[] doubles = new double[] { 2.12, 2.44, -13.37 };
+		EntityIdentifier entity = facade.register(doubles);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(doubles[0], resolved.get(0));
+		assertEquals(doubles[1], resolved.get(1));
+		assertEquals(doubles[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerBoolArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		boolean[] bools = new boolean[] { true, false, false };
+		EntityIdentifier entity = facade.register(bools);
+		assertEquals(1, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+		assertEquals(bools[0], resolved.get(0));
+		assertEquals(bools[1], resolved.get(1));
+		assertEquals(bools[2], resolved.get(2));
+	}
+
+	@Test
+	public void registerStringStringArray() throws EmptyListException,
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, RetrievalException, NotFoundException {
+		String[][] arrayOfStringArrays = new String[][] { {}, // empty
+				{ "attempt" },
+				{ "to", "create", "an", "array" } };
+		EntityIdentifier entity = facade.register(arrayOfStringArrays);
+
+		assertEquals(2, entity.getDepth());
+		List resolved = (List) facade.resolve(entity);
+		assertEquals(3, resolved.size());
+
+		List firstList = (List) resolved.get(0);
+		assertTrue(firstList.isEmpty());
+
+		List secondList = (List) resolved.get(1);
+		assertEquals(1, secondList.size());
+		assertEquals(arrayOfStringArrays[1][0], secondList.get(0));
+
+		List thirdList = (List) resolved.get(2);
+		assertEquals(4, thirdList.size());
+		assertEquals(arrayOfStringArrays[2][0], thirdList.get(0));
+		assertEquals(arrayOfStringArrays[2][1], thirdList.get(1));
+		assertEquals(arrayOfStringArrays[2][2], thirdList.get(2));
+		assertEquals(arrayOfStringArrays[2][3], thirdList.get(3));
 	}
 
 	@Before

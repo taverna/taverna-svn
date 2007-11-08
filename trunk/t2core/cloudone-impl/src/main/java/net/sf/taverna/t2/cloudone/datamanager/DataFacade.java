@@ -1,30 +1,30 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
-import static net.sf.taverna.t2.cloudone.BlobStore.STRING_CHARSET;
+import static net.sf.taverna.t2.cloudone.datamanager.BlobStore.STRING_CHARSET;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -160,6 +160,7 @@ public class DataFacade {
 	 * </p>
 	 * <ul>
 	 * <li>{@link String}</li>
+	 * (stored as {@link Literal}s or blobs depending on length)
 	 * <li>{@link Float}</li>
 	 * <li>{@link Double}</li>
 	 * <li>{@link Integer}</li>
@@ -167,9 +168,22 @@ public class DataFacade {
 	 * <li>{@link Boolean}</li>
 	 * <li>{@link EntityIdentifier} (previously registered object)</li>
 	 * <li>byte[]</li>
+	 * (stored as blobs)
 	 * <li>{@link InputStream}</li>
+	 * (stored as blobs)
 	 * <li>{@link List} containing any of the supported objects, including
 	 * {@link List}</li>
+	 * </ul>
+	 * In addition any of these array types are treated as if they were
+	 * {@link List}s:
+	 * <ul>
+	 * <li>Object[] (including String[] and arrays of other supported objects,
+	 * such as long[][])</li>
+	 * <li>int[]</li>
+	 * <li>long[]</li>
+	 * <li>float[]</li>
+	 * <li>double[]</li>
+	 * <li>boolean[]</li>
 	 * </ul>
 	 * <p>
 	 * Attempts to registering an unsupported object type will throw an
@@ -206,9 +220,23 @@ public class DataFacade {
 		}
 		if (obj instanceof List) {
 			return registerList((List) obj, depth, charSet);
+		} else if (obj instanceof Object[]) {
+			return register(Arrays.asList((Object[]) obj), depth, charSet);
+		} else if (obj instanceof int[]) {
+			return register(ArrayUtils.toObject((int[]) obj), depth, charSet);
+		} else if (obj instanceof float[]) {
+			return register(ArrayUtils.toObject((float[]) obj), depth, charSet);
+		} else if (obj instanceof double[]) {
+			return register(ArrayUtils.toObject((double[]) obj), depth, charSet);
+		} else if (obj instanceof boolean[]) {
+			return register(ArrayUtils.toObject((boolean[]) obj), depth,
+					charSet);
+		} else if (obj instanceof long[]) {
+			return register(ArrayUtils.toObject((long[]) obj), depth, charSet);
 		}
 		// TODO: Support errors
 
+		// Anything below is a non-list and must have depth 0
 		if (depth > 0 || depth < UNKNOWN_DEPTH) {
 			throw new IllegalArgumentException(
 					"Attempt to register non-list at depth " + depth);
