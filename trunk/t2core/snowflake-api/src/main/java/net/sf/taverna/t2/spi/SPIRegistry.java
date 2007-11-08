@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.raven.log.Log;
+import net.sf.taverna.raven.log.Log4jLog;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.EclipseRepository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
@@ -25,6 +27,12 @@ import net.sf.taverna.t2.cloudone.util.BeanableRegistry;
  *            The interface type that the SPI classes implement
  */
 public class SPIRegistry<SPI> {
+	
+	static {
+		// Set log4j logger for Raven
+		Log4jLog log4jLog = new Log4jLog();
+		Log.setImplementation(log4jLog);
+	}
 
 	private InstanceRegistry<SPI> instanceRegistry;
 	private SpiRegistry ravenSPIRegistry;
