@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl.http;
+package net.sf.taverna.t2.cloudone.refscheme.http;
 
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 

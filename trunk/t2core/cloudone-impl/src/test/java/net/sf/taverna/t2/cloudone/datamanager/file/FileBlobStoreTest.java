@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractBlobStoreTest;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;

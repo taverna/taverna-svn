@@ -1,9 +1,8 @@
 package net.sf.taverna.t2.cloudone.translator;
 
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 @SuppressWarnings("unchecked")
 public interface Translator<TranslatedReferenceScheme extends ReferenceScheme> {

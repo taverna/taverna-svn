@@ -5,13 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.SillyBean;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;

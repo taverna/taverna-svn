@@ -18,7 +18,7 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.HttpRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent.EventType;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -36,10 +36,10 @@ public class DataDocumentView extends JFrame {
 	private static Logger logger = Logger.getLogger(DataDocumentView.class);
 	/**
 	 * A {@link Map} of {@link ReferenceSchemeModel} to
-	 * {@link ReferenceSchemeView} to allow tracking of view state and what
+	 * {@link RefSchemeView} to allow tracking of view state and what
 	 * model is associated with what view
 	 */
-	private Map<ReferenceSchemeModel, ReferenceSchemeView> refModelViews = new HashMap<ReferenceSchemeModel, ReferenceSchemeView>();
+	private Map<ReferenceSchemeModel, RefSchemeView> refModelViews = new HashMap<ReferenceSchemeModel, RefSchemeView>();
 
 	private DataDocumentModel model;
 
@@ -47,8 +47,8 @@ public class DataDocumentView extends JFrame {
 
 	private JPanel refViews;
 
-	/** What {@link ReferenceSchemeView} was the last one to be edited */
-	private ReferenceSchemeView lastEditedView;
+	/** What {@link RefSchemeView} was the last one to be edited */
+	private RefSchemeView lastEditedView;
 
 	private JButton httpButton;
 	private JButton blobButton;
@@ -83,7 +83,7 @@ public class DataDocumentView extends JFrame {
 	 */
 	public void edit(ReferenceSchemeModel model) throws IllegalStateException {
 		// Might return null, which is OK
-		ReferenceSchemeView view = refModelViews.get(model);
+		RefSchemeView view = refModelViews.get(model);
 		if (lastEditedView != null && lastEditedView != view) {
 			try {
 				lastEditedView.setEdit(false);
@@ -102,7 +102,7 @@ public class DataDocumentView extends JFrame {
 	 * 
 	 * @param refView
 	 */
-	private void addReferenceView(ReferenceSchemeView refView) {
+	private void addReferenceView(RefSchemeView refView) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
 		refViews.add(refView, c);
@@ -119,7 +119,7 @@ public class DataDocumentView extends JFrame {
 	 *            eg {@link HttpRefSchemeModel}
 	 */
 	private void addRefSchemeModel(ReferenceSchemeModel refModel) {
-		ReferenceSchemeView refView = null;
+		RefSchemeView refView = null;
 		if (refModel instanceof HttpRefSchemeModel) {
 			refView = new HttpRefSchemeView((HttpRefSchemeModel) refModel, this);
 		} else {
@@ -172,7 +172,7 @@ public class DataDocumentView extends JFrame {
 	 *            eg {@link HttpRefSchemeModel}
 	 */
 	private void removeRefSchemeModel(ReferenceSchemeModel refModel) {
-		ReferenceSchemeView view = refModelViews.remove(refModel);
+		RefSchemeView view = refModelViews.remove(refModel);
 		refViews.remove(view);
 		if (lastEditedView == view) {
 			lastEditedView = null;

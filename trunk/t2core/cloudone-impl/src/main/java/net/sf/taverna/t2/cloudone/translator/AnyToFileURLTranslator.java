@@ -9,11 +9,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 

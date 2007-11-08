@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.refscheme;
 
 import java.util.List;
 import java.util.Map;

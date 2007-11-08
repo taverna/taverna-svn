@@ -11,7 +11,7 @@ import javax.swing.tree.TreeNode;
 
 import org.jdom.Element;
 
-import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;

@@ -1,8 +1,8 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
-import net.sf.taverna.t2.cloudone.PeerContainer;
-import net.sf.taverna.t2.cloudone.PeerProxy;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.peer.PeerContainer;
+import net.sf.taverna.t2.cloudone.peer.PeerProxy;
 
 public class HttpPeerContainer implements PeerContainer {
 

@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 /**
  * Naive but functional implementation of DataManager which stores all entities

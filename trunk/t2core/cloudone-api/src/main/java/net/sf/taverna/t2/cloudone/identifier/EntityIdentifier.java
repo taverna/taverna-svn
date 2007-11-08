@@ -100,7 +100,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 	/**
 	 * Get the namespace allocated by the creating
-	 * {@link net.sf.taverna.t2.cloudone.DataManager}.
+	 * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager}.
 	 * 
 	 * @return The namespace
 	 */

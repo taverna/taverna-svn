@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.refscheme;
 
 /**
  * Thrown if an attempt to dereference a reference scheme instance fails for

@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+
 import org.apache.log4j.Logger;
 import org.restlet.Application;
 import org.restlet.Component;

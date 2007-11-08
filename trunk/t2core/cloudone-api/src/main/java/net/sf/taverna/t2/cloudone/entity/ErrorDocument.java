@@ -45,7 +45,7 @@ public class ErrorDocument implements
 	 * <code>null</code>, but not both.
 	 *
 	 * @param identifier
-	 *            The identifier as created by the {@link net.sf.taverna.t2.cloudone.DataManager}
+	 *            The identifier as created by the {@link net.sf.taverna.t2.cloudone.datamanager.DataManager}
 	 * @param message
 	 *            The optional error message
 	 * @param cause

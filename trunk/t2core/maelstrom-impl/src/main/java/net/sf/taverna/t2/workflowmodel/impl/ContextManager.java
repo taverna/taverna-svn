@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 
 /**
  * Provides access to hierarchical context on a per-process name basis. Any

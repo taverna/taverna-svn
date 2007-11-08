@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.UUID;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManagerTest;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;

@@ -2,8 +2,8 @@ package net.sf.taverna.t2.cloudone.datamanager.memory;
 
 import java.util.HashSet;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractBlobStoreTest;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 /**
  * Test {@link InMemoryBlobStore} using the tests of {@link AbstractBlobStoreTest}.

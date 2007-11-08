@@ -16,7 +16,7 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.cloudone.gui.entity.model.HttpRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
@@ -29,7 +29,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
  * @author Stian Soiland
  * 
  */
-public class HttpRefSchemeView extends ReferenceSchemeView implements
+public class HttpRefSchemeView extends RefSchemeView implements
 		Observer<URL> {
 
 	private static final long serialVersionUID = 1L;

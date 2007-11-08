@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.peer;
 
 /**
  * Defines locational context information mandated by a single type of reference

@@ -2,7 +2,7 @@ package net.sf.taverna.t2.cloudone.datamanager;
 
 /**
  * Base class for Exceptions thrown by
- * {@link net.sf.taverna.t2.cloudone.DataManager} and {@link DataFacade}.
+ * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager} and {@link DataFacade}.
  *
  * @author Stian Soiland
  * @author Ian Dunlop

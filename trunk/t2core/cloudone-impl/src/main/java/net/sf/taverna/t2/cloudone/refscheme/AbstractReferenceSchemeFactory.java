@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl;
+package net.sf.taverna.t2.cloudone.refscheme;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.ReferenceSchemeFactorySPI;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceSchemeFactorySPI;
 
 /**
  * Abstract superclass for reference scheme factories. This class provides the

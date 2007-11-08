@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl.http;
+package net.sf.taverna.t2.cloudone.refscheme.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,11 +9,12 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.HeadMethod;

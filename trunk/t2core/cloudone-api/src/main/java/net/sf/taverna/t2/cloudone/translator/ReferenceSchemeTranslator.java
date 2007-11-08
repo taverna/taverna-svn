@@ -2,10 +2,9 @@ package net.sf.taverna.t2.cloudone.translator;
 
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.util.AsynchRunnable;
 
 /**

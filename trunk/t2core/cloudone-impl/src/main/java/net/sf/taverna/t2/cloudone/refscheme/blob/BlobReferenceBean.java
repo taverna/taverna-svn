@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl;
+package net.sf.taverna.t2.cloudone.refscheme.blob;
 
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 

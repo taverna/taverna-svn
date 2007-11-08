@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.bean;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * Abstract bean for serialising references, such as from
@@ -8,8 +8,8 @@ import net.sf.taverna.t2.cloudone.ReferenceScheme;
  * 
  * @see Beanable
  * @see DataDocumentBean
- * @see net.sf.taverna.t2.cloudone.impl.BlobReferenceBean
- * @see net.sf.taverna.t2.cloudone.impl.http.HttpReferenceBean
+ * @see net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceBean
+ * @see net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean
  * @author Ian Dunlop
  * @author Stian Soiland
  * 

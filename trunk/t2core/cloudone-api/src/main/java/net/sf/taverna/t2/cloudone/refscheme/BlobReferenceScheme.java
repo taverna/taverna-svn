@@ -1,9 +1,11 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.refscheme;
 
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
+import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 
 /**
  * A reference scheme for blobs stored in a {@link BlobStore}.

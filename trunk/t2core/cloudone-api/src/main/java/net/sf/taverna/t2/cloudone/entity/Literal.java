@@ -14,7 +14,7 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * <p>
  * This class is both an {@link EntityIdentifier} and an {@link Entity},
  * attempts to resolve it through the
- * {@link net.sf.taverna.t2.cloudone.DataManager} or get its identity through
+ * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager} or get its identity through
  * the {@link Entity} interface will both return self.
  *
  * @author Tom Oinn
@@ -92,7 +92,7 @@ public class Literal extends EntityIdentifier implements
 	 * Build a new String literal. The string is URL encoded using UTF-8.
 	 * Although there is no upper limit to the length of an URL, URLs should
 	 * generally not be longer than say 250 characters. Use a
-	 * {@link net.sf.taverna.t2.cloudone.BlobStore} to store larger strings.
+	 * {@link net.sf.taverna.t2.cloudone.datamanager.BlobStore} to store larger strings.
 	 * {@link net.sf.taverna.t2.cloudone.datamanager.DataFacade#register(Object)}
 	 * will do this automatically depending on
 	 * {@link import net.sf.taverna.t2.cloudone.DataManager#getMaxIDLength()}.

@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
-import net.sf.taverna.t2.cloudone.DataManager;
 
 /**
  * Thrown when a {@link DataManager} can't store an entity or blob, for instance

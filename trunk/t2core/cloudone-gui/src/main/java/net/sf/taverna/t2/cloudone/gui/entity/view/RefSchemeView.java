@@ -10,7 +10,7 @@ import javax.swing.JComponent;
  * @author Ian Dunlop
  * 
  */
-public abstract class ReferenceSchemeView extends JComponent {
+public abstract class RefSchemeView extends JComponent {
 	/**
 	 * How the view should handle changes of state in its components eg.
 	 * disable/enable buttons

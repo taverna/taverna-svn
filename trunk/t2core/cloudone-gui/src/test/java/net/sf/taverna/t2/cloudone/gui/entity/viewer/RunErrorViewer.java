@@ -6,7 +6,6 @@ import java.util.Collections;
 
 import javax.swing.WindowConstants;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -14,6 +13,7 @@ import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 public class RunErrorViewer {
 

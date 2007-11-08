@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.peer;
 
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.Entity;

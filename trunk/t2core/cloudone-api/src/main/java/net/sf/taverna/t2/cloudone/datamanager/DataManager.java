@@ -1,12 +1,9 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.datamanager;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
@@ -14,6 +11,8 @@ import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * The data manager is the primary access interface for external (i.e. not in
@@ -93,6 +92,7 @@ public interface DataManager {
 	 * @return Registered {@link DataDocumentIdentifier}
 	 */
 
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			ReferenceScheme... references) throws StorageException;
 
@@ -105,6 +105,7 @@ public interface DataManager {
 	 * @param references
 	 * @return Registered {@link DataDocumentIdentifier}
 	 */
+	@SuppressWarnings("unchecked")
 	public DataDocumentIdentifier registerDocument(
 			Set<ReferenceScheme> references) throws StorageException;
 

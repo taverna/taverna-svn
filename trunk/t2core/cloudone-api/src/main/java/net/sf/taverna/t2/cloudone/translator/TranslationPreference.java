@@ -1,8 +1,9 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.translator;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.translator.ReferenceSchemeTranslator;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * A preference for translation using a {@link ReferenceSchemeTranslator}. A

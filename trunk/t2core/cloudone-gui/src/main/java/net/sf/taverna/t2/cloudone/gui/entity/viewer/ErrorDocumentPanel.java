@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.t2.cloudone.DataManager;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;

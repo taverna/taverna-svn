@@ -2,9 +2,9 @@ package net.sf.taverna.t2.cloudone.entity;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * A bundle of zero or more reference scheme implementations pointing to byte
@@ -23,5 +23,6 @@ public interface DataDocument extends
 	 *
 	 * @return Set of {@link ReferenceScheme}s
 	 */
+	@SuppressWarnings("unchecked")
 	public Set<ReferenceScheme> getReferenceSchemes();
 }

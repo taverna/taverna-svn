@@ -2,15 +2,14 @@ package net.sf.taverna.t2.cloudone.translator;
 
 import java.io.InputStream;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 
 /**
  * Translator for any type of {@link ReferenceScheme} to a

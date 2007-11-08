@@ -10,11 +10,8 @@ import java.util.List;
 
 import javax.swing.WindowConstants;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -24,7 +21,10 @@ import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.gui.entity.viewer.EntityViewer;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 public class RunEntityViewer {
 

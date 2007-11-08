@@ -2,9 +2,8 @@ package net.sf.taverna.t2.cloudone.translator;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 public class TranslationPreferenceImpl implements TranslationPreference {
 

@@ -5,7 +5,7 @@
  * handling and migration of data by reference.
  * <p>
  * The main entrance point is the
- * {@link net.sf.taverna.t2.cloudone.DataManager}, which can store and
+ * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager}, which can store and
  * retrieve {@link net.sf.taverna.t2.cloudone.entity.Entity}s identified
  * using {@link net.sf.taverna.t2.cloudone.identifier.EntityIdentifier}. There
  * are several implementations of DataManager, mainly
@@ -16,7 +16,7 @@
  * {@link net.sf.taverna.t2.cloudone.datamanager.DataFacade} that
  * is useful for converting back and forth between Java structures and
  * stored {@link net.sf.taverna.t2.cloudone.entity.Entity}s and blobs in
- * a {@link net.sf.taverna.t2.cloudone.BlobStore}.
+ * a {@link net.sf.taverna.t2.cloudone.datamanager.BlobStore}.
  */
 package net.sf.taverna.t2.cloudone;
 

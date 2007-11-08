@@ -1,8 +1,9 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.peer;
 
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;

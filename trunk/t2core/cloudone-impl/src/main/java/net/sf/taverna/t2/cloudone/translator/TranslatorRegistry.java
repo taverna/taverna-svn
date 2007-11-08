@@ -3,9 +3,8 @@ package net.sf.taverna.t2.cloudone.translator;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.TranslationPreference;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 /**

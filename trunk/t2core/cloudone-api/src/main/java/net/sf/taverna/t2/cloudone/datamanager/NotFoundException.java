@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * Thrown when a request is made for resolution of an entity or blob that cannot
@@ -19,6 +19,7 @@ public class NotFoundException extends Exception {
 	public NotFoundException() {
 	}
 
+	@SuppressWarnings("unchecked")
 	public NotFoundException(ReferenceScheme reference) {
 		super("Can't find blob " + reference);
 	}

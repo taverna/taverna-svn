@@ -15,17 +15,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.LocationalContext;
+import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
-import net.sf.taverna.t2.cloudone.impl.http.LocationalContextImpl;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.peer.LocationalContextImpl;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

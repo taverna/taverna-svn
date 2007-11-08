@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 import java.util.Collections;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.PeerContainer;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.PeerDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -14,6 +12,8 @@ import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.peer.PeerContainer;
 
 import org.junit.Ignore;
 import org.junit.Test;

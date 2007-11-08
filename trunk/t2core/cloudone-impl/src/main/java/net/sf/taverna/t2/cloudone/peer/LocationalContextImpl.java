@@ -1,8 +1,8 @@
-package net.sf.taverna.t2.cloudone.impl.http;
+package net.sf.taverna.t2.cloudone.peer;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.LocationalContext;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 /**
  * Implementation of {@link LocationalContext}
  * 

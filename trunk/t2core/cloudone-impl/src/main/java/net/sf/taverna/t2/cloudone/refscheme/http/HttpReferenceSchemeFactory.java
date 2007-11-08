@@ -1,6 +1,6 @@
-package net.sf.taverna.t2.cloudone.impl.http;
+package net.sf.taverna.t2.cloudone.refscheme.http;
 
-import net.sf.taverna.t2.cloudone.impl.AbstractReferenceSchemeFactory;
+import net.sf.taverna.t2.cloudone.refscheme.AbstractReferenceSchemeFactory;
 
 /**
  * Reference scheme factory for the URLReferenceScheme. Defines the following

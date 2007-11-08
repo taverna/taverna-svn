@@ -5,18 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.LocationalContext;
-import net.sf.taverna.t2.cloudone.PeerContainer;
-import net.sf.taverna.t2.cloudone.PeerProxy;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.peer.PeerContainer;
+import net.sf.taverna.t2.cloudone.peer.PeerProxy;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * A peer data manager, wrapping another "backend" {@link DataManager} to do

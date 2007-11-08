@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.impl;
+package net.sf.taverna.t2.cloudone.refscheme.blob;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -6,18 +6,18 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 
 /**
  * A {@link BlobReferenceScheme} that is {@link Beanable} as a

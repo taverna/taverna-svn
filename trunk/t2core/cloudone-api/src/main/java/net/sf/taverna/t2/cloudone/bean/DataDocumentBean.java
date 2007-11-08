@@ -2,8 +2,8 @@ package net.sf.taverna.t2.cloudone.bean;
 
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * Bean for serialising a {@link DataDocument}. A DataDocument is serialised as

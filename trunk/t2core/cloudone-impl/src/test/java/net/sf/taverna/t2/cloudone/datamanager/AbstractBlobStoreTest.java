@@ -9,16 +9,14 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.BlobReferenceScheme;
-import net.sf.taverna.t2.cloudone.BlobStore;
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DereferenceException;
-import net.sf.taverna.t2.cloudone.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileBlobStoreTest;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryBlobStoreTest;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.impl.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;

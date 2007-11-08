@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceSchemeFactory;
-import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.peer.DataPeerImpl;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceSchemeFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -29,10 +28,10 @@ import org.junit.Test;
  * Tests the {@link LocationalContext} aspects of the {@link DataManager},
  * {@link DataPeer} and {@link HttpReferenceSchemeFactory}.  
  * 
- * @author Ian
+ * @author Ian Dunlop
  * 
  */
-public class URLLocationalContextTest {
+public class HttpRefLocationalContextTest {
 
 	private static final String TEST_NS = "TestNS";
 

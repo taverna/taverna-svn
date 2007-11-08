@@ -1,11 +1,11 @@
-package net.sf.taverna.t2.cloudone;
+package net.sf.taverna.t2.cloudone.datamanager;
 
 import java.io.InputStream;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.StorageException;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
 /**
  * <p>

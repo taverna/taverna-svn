@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import net.sf.taverna.t2.cloudone.DataManager;
-import net.sf.taverna.t2.cloudone.DataPeer;
-import net.sf.taverna.t2.cloudone.LocationalContext;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -18,7 +16,9 @@ import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.p2p.DataPeerImpl;
+import net.sf.taverna.t2.cloudone.peer.DataPeer;
+import net.sf.taverna.t2.cloudone.peer.DataPeerImpl;
+import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
