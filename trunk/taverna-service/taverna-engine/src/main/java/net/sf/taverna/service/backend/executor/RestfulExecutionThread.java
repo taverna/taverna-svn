@@ -62,6 +62,8 @@ public class RestfulExecutionThread extends Thread {
 	private String workerUsername;
 
 	private String workerPassword;
+	
+	private static final String BASE_TAVERNA_VERSION="1.6.2.0";
 
 	public RestfulExecutionThread(String jobUri, String baseUri,
 			String workerUsername, String workerPassword) {
@@ -245,54 +247,54 @@ public class RestfulExecutionThread extends Thread {
 		
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-tools", "1.6.1.0"));
+				"scufl-tools", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core", "1.6.1.0"));
+				"baclava-core", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-tools", "1.6.1.0"));
+				"baclava-tools", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core", "1.6.1.0"));
+				"taverna-core", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-enactor", "1.6.1.0"));
+				"taverna-enactor", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-tools", "1.6.1.0"));
+				"taverna-tools", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-core", "1.6.1.0"));
+				"scufl-core", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-model", "1.6.1.0"));
+				"scufl-model", BASE_TAVERNA_VERSION));
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-workflow", "1.6.1.0"));
+				"scufl-workflow", BASE_TAVERNA_VERSION));
 
 		Repository repository = LocalRepository.getRepository(base, this
 				.getClass().getClassLoader(), systemArtifacts);
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
-				"1.6.1.0"));
+				BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-				"1.6.1.0"));
+				BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-stringconstant-processor", "1.6.1.0"));
+				"taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-				"1.6.1.0"));
+				BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
-				"taverna-contrib", "1.6.1.0"));
+				"taverna-contrib", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-beanshell-processor", "1.6.1.0"));
+				"taverna-beanshell-processor", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-biomart-processor", "1.6.1.0"));
+				"taverna-biomart-processor", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-soaplab-processor", "1.6.1.0"));
+				"taverna-soaplab-processor", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
-				"taverna-notification-processor", "1.6.1.0"));
+				"taverna-notification-processor", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact("biomoby.org",
-				"taverna-biomoby", "1.6.1.0"));
+				"taverna-biomoby", BASE_TAVERNA_VERSION));
 
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
