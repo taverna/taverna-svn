@@ -60,7 +60,7 @@ public class HttpRefSchemeView extends RefSchemeView implements
 
 	/**
 	 * The {@link HttpRefSchemeModel} notifies the {@link HttpRefSchemeView}
-	 * that the URL has been changed ans must be updated in the view
+	 * that the URL has been changed and must be updated in the view
 	 */
 	public void notify(Observable<URL> sender, URL url) {
 		textField.setText(url.toString());

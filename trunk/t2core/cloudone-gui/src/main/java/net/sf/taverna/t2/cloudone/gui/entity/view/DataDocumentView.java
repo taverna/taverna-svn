@@ -15,9 +15,11 @@ import javax.swing.JPanel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.BlobRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent;
+import net.sf.taverna.t2.cloudone.gui.entity.model.FileRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.HttpRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent.EventType;
+import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -52,6 +54,7 @@ public class DataDocumentView extends JFrame {
 
 	private JButton httpButton;
 	private JButton blobButton;
+	private JButton fileButton;
 
 	/**
 	 * Constructor creates a {@link ModelObserver} and registers it as an
@@ -122,6 +125,8 @@ public class DataDocumentView extends JFrame {
 		RefSchemeView refView = null;
 		if (refModel instanceof HttpRefSchemeModel) {
 			refView = new HttpRefSchemeView((HttpRefSchemeModel) refModel, this);
+		} else if (refModel instanceof FileRefSchemeModel) {
+			refView = new FileRefSchemeView((FileRefSchemeModel) refModel, this);
 		} else {
 			logger.warn("Unsupported reference model " + refModel);
 			return;
@@ -205,15 +210,20 @@ public class DataDocumentView extends JFrame {
 
 		JLabel httpRefLabel = new JLabel("Http Reference Scheme");
 		JLabel blobRefLabel = new JLabel("Blob Reference Scheme");
+		JLabel fileRefLabel = new JLabel("File Reference Scheme");
 		CreateHttpAction createHttpAction = new CreateHttpAction(model);
 		CreateBlobAction createBlobAction = new CreateBlobAction(model);
+		CreateFileAction createFileAction = new CreateFileAction(model);
 		httpButton = new JButton(createHttpAction);
 		blobButton = new JButton(createBlobAction);
+		fileButton = new JButton(createFileAction);
 
 		addSchemes.add(httpRefLabel, cLabel);
 		addSchemes.add(httpButton, cButton);
 		addSchemes.add(blobRefLabel, cLabel);
 		addSchemes.add(blobButton, cButton);
+		addSchemes.add(fileRefLabel, cLabel);
+		addSchemes.add(fileButton, cLabel);
 		return addSchemes;
 	}
 
@@ -264,6 +274,30 @@ public class DataDocumentView extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			HttpRefSchemeModel refModel = new HttpRefSchemeModel(dataDocModel);
+			addCreatedRefModel(refModel);
+		}
+	}
+	
+	/**
+	 * The Controller (in Model-View-Controller terms) for adding a
+	 * {@link FileReferenceScheme} via clicking the appropriate button
+	 * 
+	 * @author Stian Soiland
+	 * @author Ian Dunlop
+	 * 
+	 */
+	public class CreateFileAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		private DataDocumentModel dataDocModel;
+
+		public CreateFileAction(DataDocumentModel dataDocModel) {
+			super("Create HTTP reference");
+			this.dataDocModel = dataDocModel;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			FileRefSchemeModel refModel = new FileRefSchemeModel(dataDocModel);
 			addCreatedRefModel(refModel);
 		}
 	}
