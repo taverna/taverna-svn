@@ -5,7 +5,7 @@ import javax.swing.JComponent;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.entity.gui.EntityViewer;
+import net.sf.taverna.t2.cloudone.gui.entity.viewer.EntityViewer;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
