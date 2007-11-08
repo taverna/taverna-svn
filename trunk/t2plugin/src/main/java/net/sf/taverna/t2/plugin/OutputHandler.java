@@ -63,14 +63,14 @@ public class OutputHandler extends AbstractAnnotatedThing<Port> implements
 				resultsComponent.add(EntityViewer.getPanelForEntity(
 						ContextManager.baseManager, token.getData()));
 				resultsComponent.revalidate();
-				resultListener.resultTokenProduced(token.getData(), token
-						.getIndex(), getName());
 			} catch (RetrievalException e) {
 				e.printStackTrace();
 			} catch (NotFoundException e) {
 				e.printStackTrace();
 			}
 		}
+		resultListener.resultTokenProduced(token.getData(), token
+				.getIndex(), getName());
 	}
 
 	public int getDepth() {
