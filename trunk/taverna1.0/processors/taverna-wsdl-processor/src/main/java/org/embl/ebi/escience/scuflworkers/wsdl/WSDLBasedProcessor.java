@@ -215,7 +215,7 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 		WSIFPort port = getPort();
 		synchronized (port) {
 			WSIFOperation op = port.createOperation(operationName);
-			logger.debug("Created operation : " + op.toString());			
+			logger.debug("Created operation : " + op);			
 			return op;
 		}
 	}
@@ -359,6 +359,11 @@ public class WSDLBasedProcessor extends Processor implements Serializable,
 
 	public int htmlTablePlacement() {
 		return 1;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " " + getWSDLLocation() + " " + operationName;
 	}
 
 }
