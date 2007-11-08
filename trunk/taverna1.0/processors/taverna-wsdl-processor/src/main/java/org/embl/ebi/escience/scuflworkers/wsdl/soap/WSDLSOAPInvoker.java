@@ -25,16 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.14 $
+ * Revision           $Revision: 1.15 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 12:10:52 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-11-08 11:43:08 $
+ *               by   $Author: stain $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,9 +44,6 @@ import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.wsdl.WSDLException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
 
@@ -56,26 +52,14 @@ import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.message.SOAPEnvelope;
-import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFOperation_ApacheAxis;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
-import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.baclava.factory.DataThingFactory;
-import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
 import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 /**
  * Invokes SOAP based webservices
@@ -102,6 +86,7 @@ public class WSDLSOAPInvoker {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public Map invoke(Map inputMap) throws Exception {
 		return invoke(inputMap, null);
 	}
@@ -114,6 +99,7 @@ public class WSDLSOAPInvoker {
 	 * @return
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public Map invoke(Map inputMap, EngineConfiguration config)
 			throws Exception {
 
@@ -123,8 +109,9 @@ public class WSDLSOAPInvoker {
 					.getGlobalResponse());
 		}
 		call.setTimeout(getTimeout());
-		
-		BodyBuilder builder = BodyBuilderFactory.instance().create(getProcessor());
+
+		BodyBuilder builder = BodyBuilderFactory.instance().create(
+				getProcessor());
 		SOAPBodyElement body = builder.build(inputMap);
 
 		SOAPEnvelope requestEnv = new SOAPEnvelope();
@@ -132,17 +119,30 @@ public class WSDLSOAPInvoker {
 		requestEnv.addBodyElement(body);
 
 		SOAPEnvelope responseEnv = call.invoke(requestEnv);
-
-		List response = responseEnv.getBodyElements();
-
-		logger.info("SOAP response was:" + response);
-
-		SOAPResponseParser parser = SOAPResponseParserFactory.instance()
-				.create(response, getUse(), getStyle(),
-						getProcessor().getOutputPorts());
-		Map result = parser.parse(response);
-
-		result.put("attachmentList", extractAttachmentsDataThing(call));
+		Map result;
+		if (responseEnv == null) {
+			if (processor.getOutputPorts().length == 1
+					&& processor.getOutputPorts()[0].getName().equals(
+							"attachmentList")) {
+				// Could be axis 2 service with no output (TAV-617)
+				logger.info("No output from WSDL-processor: " + processor);
+				result = new HashMap();
+				// Make an empty attachmentList
+				DataThing attachmentThing = DataThingFactory.bake(new ArrayList());
+				result.put("attachmentList", attachmentThing);
+			} else {
+				throw new IllegalStateException(
+						"Missing expected outputs from service");
+			}
+		} else {
+			List response = responseEnv.getBodyElements();
+			logger.info("SOAP response was:" + response);
+			SOAPResponseParser parser = SOAPResponseParserFactory.instance()
+					.create(response, getUse(), getStyle(),
+							getProcessor().getOutputPorts());
+			result = parser.parse(response);
+			result.put("attachmentList", extractAttachmentsDataThing(call));
+		}
 
 		return result;
 	}
@@ -221,7 +221,7 @@ public class WSDLSOAPInvoker {
 
 		return result;
 	}
-	
+
 	/**
 	 * Exctracts any attachments that result from invoking the service, and
 	 * returns them as a List wrapped within a DataThing
@@ -231,6 +231,7 @@ public class WSDLSOAPInvoker {
 	 * @throws SOAPException
 	 * @throws IOException
 	 */
+	@SuppressWarnings("unchecked")
 	private DataThing extractAttachmentsDataThing(Call axisCall)
 			throws SOAPException, IOException {
 		List attachmentList = new ArrayList();
@@ -267,7 +268,5 @@ public class WSDLSOAPInvoker {
 		}
 		return attachmentThing;
 	}
+	
 }
-
-	
-	
