@@ -69,7 +69,7 @@ public class SPIRegistry<SPI> {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public Collection<String> getClassNames() {
 		return getClasses().keySet();
 	}
