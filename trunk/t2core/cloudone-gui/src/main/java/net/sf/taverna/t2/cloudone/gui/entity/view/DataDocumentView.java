@@ -19,8 +19,8 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.HttpRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent.EventType;
 import net.sf.taverna.t2.cloudone.impl.http.HttpReferenceScheme;
-import net.sf.taverna.t2.snowflake.observer.Observable;
-import net.sf.taverna.t2.snowflake.observer.Observer;
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
