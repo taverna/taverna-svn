@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.15 $
+ * Revision           $Revision: 1.16 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-08 11:43:08 $
+ * Last modified on   $Date: 2007-11-08 11:43:53 $
  *               by   $Author: stain $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -141,6 +141,7 @@ public class WSDLSOAPInvoker {
 					.create(response, getUse(), getStyle(),
 							getProcessor().getOutputPorts());
 			result = parser.parse(response);
+			// TODO: Should sanity check that output ports map our definitions
 			result.put("attachmentList", extractAttachmentsDataThing(call));
 		}
 
