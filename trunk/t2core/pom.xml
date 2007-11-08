@@ -36,6 +36,7 @@
 		</dependencies>
 	</dependencyManagement>
 	<modules>
+		<module>lang</module>
 		<module>cloudone-api</module>
 		<module>cloudone-impl</module>
 		<module>cloudone-http</module>
