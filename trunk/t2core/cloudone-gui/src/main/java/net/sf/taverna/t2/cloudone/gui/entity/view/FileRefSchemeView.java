@@ -1,6 +1,17 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 import java.io.File;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import net.sf.taverna.t2.cloudone.gui.entity.model.FileRefSchemeModel;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -11,6 +22,10 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 	private static final long serialVersionUID = 1L;
 	private FileRefSchemeModel model;
 	private DataDocumentView parentView;
+	private JTextField textField;
+	private JButton browseButton;
+	private BrowseAction browseAction = new BrowseAction();
+	private RemoveAction removeAction = new RemoveAction();
 
 	public FileRefSchemeView(FileRefSchemeModel model,
 			DataDocumentView parentView) {
@@ -22,18 +37,98 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 
 	private void initialise() {
 		// GUI stuff
+		setLayout(new GridBagLayout());
+		GridBagConstraints headerC = new GridBagConstraints();
+		headerC.gridx = 0;
+		headerC.gridy = 0;
+		headerC.gridwidth = 2;
+		headerC.anchor = GridBagConstraints.LAST_LINE_START;
+		headerC.ipadx = 4;
+		add(new JLabel("<html><small>File reference</small></html>"), headerC);
+
+		GridBagConstraints fieldConstraints = new GridBagConstraints();
+		fieldConstraints.gridx = 0;
+		fieldConstraints.gridy = 1;
+		fieldConstraints.weightx = 0.1;
+		fieldConstraints.fill = GridBagConstraints.HORIZONTAL;
+		textField = new JTextField(20);
+		textField.setMinimumSize(new Dimension(250, 20));
+		textField.setEditable(false);
+		add(textField, fieldConstraints);
+		GridBagConstraints buttonConstraints = new GridBagConstraints();
+		buttonConstraints.gridy = 1;
+
+		browseButton = new JButton(browseAction);
+		add(browseButton, buttonConstraints);
+		JButton removeButton = new JButton(removeAction);
+		add(removeButton, buttonConstraints);
+	}
+
+	public File chooseFile(File selectedFile) {
+		JFileChooser fileChooser = new JFileChooser() {
+			@Override
+			public void approveSelection() {
+				File file = getSelectedFile();
+				if (!file.isFile()) {
+					JOptionPane.showMessageDialog(this, file
+							+ " is not a valid file", "Invalid file",
+							JOptionPane.WARNING_MESSAGE);
+				} else {
+					super.approveSelection();
+				}
+			}
+		};
+		fileChooser.setSelectedFile(selectedFile);
+		int returnValue = fileChooser.showDialog(FileRefSchemeView.this,
+				"Select");
+		if (returnValue == JFileChooser.APPROVE_OPTION) {
+			// do something with file
+			return fileChooser.getSelectedFile();
+		}
+		return null; // User cancelled
+	}
+
+	public void notify(Observable<File> sender, File file) {
+		String path = "";
+		if (file != null) {
+			path = file.getAbsolutePath();
+		}
+		textField.setText(path);
+	}
+
+	public class BrowseAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		public BrowseAction() {
+			super("Browse");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			parentView.edit(model);
+		}
+	}
+
+	public class RemoveAction extends AbstractAction {
+
+		private static final long serialVersionUID = 1L;
+
+		public RemoveAction() {
+			super("Remove");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			model.remove();
+		}
 	}
 
 	@Override
 	public void setEdit(boolean editable) throws IllegalStateException {
-		// set the edit state of the components
-
-	}
-
-	public void notify(Observable<File> sender, File message) {
-		// the model informs us that something has happened, change the GUI
-		// accordingly
-
+		if (editable) {
+			File file = chooseFile(model.getFile());
+			if (file != null) {
+				model.setFile(file);
+			}
+		}
 	}
 
 }

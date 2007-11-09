@@ -8,7 +8,7 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  * @author Ian Dunlop
  * @author Stian Soiland
  */
-public class DataDocumentView extends JFrame {
+public class DataDocumentView extends JComponent {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(DataDocumentView.class);
@@ -108,6 +108,8 @@ public class DataDocumentView extends JFrame {
 	private void addReferenceView(RefSchemeView refView) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridx = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.1;
 		refViews.add(refView, c);
 		refViews.revalidate();
 	}
@@ -223,7 +225,7 @@ public class DataDocumentView extends JFrame {
 		addSchemes.add(blobRefLabel, cLabel);
 		addSchemes.add(blobButton, cButton);
 		addSchemes.add(fileRefLabel, cLabel);
-		addSchemes.add(fileButton, cLabel);
+		addSchemes.add(fileButton, cButton);
 		return addSchemes;
 	}
 
@@ -292,13 +294,17 @@ public class DataDocumentView extends JFrame {
 		private DataDocumentModel dataDocModel;
 
 		public CreateFileAction(DataDocumentModel dataDocModel) {
-			super("Create HTTP reference");
+			super("Create file reference");
 			this.dataDocModel = dataDocModel;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			FileRefSchemeModel refModel = new FileRefSchemeModel(dataDocModel);
 			addCreatedRefModel(refModel);
+			if (refModel.getFile() == null) { 
+				// User cancelled, remove it
+				refModel.remove();
+			}
 		}
 	}
 

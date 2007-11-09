@@ -1,6 +1,8 @@
 package net.sf.taverna.t2.cloudone.refscheme.file;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
@@ -14,33 +16,48 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 
 	private File file;
+	private String charset;
 
 	public FileReferenceScheme(File file) {
-		this.file = file.getAbsoluteFile();
+		this(file, null);
 	}
 
+	/**
+	 * Default constructor for immediate initialisation using
+	 * {@link #setFromBean(FileReferenceBean)}.
+	 * 
+	 */
 	public FileReferenceScheme() {
 		file = null;
+		charset = null;
+	}
+
+	public FileReferenceScheme(File file, String charset) {
+		if (file == null) {
+			throw new NullPointerException("File can't be null");
+		}
+		this.file = file.getAbsoluteFile();
+		this.charset = charset;
 	}
 
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new DereferenceException("Could not find file " + file, e);
+		}
 	}
 
-	public String getCharset() throws DereferenceException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getCharset() {
+		return charset;
 	}
 
 	public Date getExpiry() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean isImmediate() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -53,6 +70,7 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 	public FileReferenceBean getAsBean() {
 		FileReferenceBean bean = new FileReferenceBean();
 		bean.setFile(getFile().getPath());
+		bean.setCharset(getCharset());
 		return bean;
 	}
 
@@ -66,6 +84,7 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 			throw new IllegalStateException("Can't initialise twice");
 		}
 		file = new File(bean.getFile()).getAbsoluteFile();
+		charset = bean.getCharset();
 	}
 
 	public File getFile() {
@@ -76,7 +95,7 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 	public String toString() {
 		return getClass().getSimpleName() + " " + file;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -84,7 +103,6 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		result = prime * result + ((file == null) ? 0 : file.hashCode());
 		return result;
 	}
-	
 
 	@Override
 	public boolean equals(Object obj) {
