@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.7.2.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-08-29 15:33:34 $
+ * Last modified on   $Date: 2007-11-09 15:44:23 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -53,14 +53,9 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 	public void testPrimitive() throws Exception {
 
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName",
+		processor = new WSDLBasedProcessor(null, "procName",
 					TESTWSDL_BASE+"KEGG.wsdl", "get_pathways_by_genes");
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testComplexDocStyle, skipping test");
-			return; // don't fail because the service is unavailable
-		}
+		
 
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
@@ -81,22 +76,34 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 				outputThing.getDataObject().getClass());
 
 	}
+	
+	public void testServiceWithNoOutputs() throws Exception {
+		WSDLBasedProcessor processor = null;
+		processor = new WSDLBasedProcessor(null, "procName",
+					"http://www.cbuc.cl:8080/axis2/services/StockQuoteService?wsdl", "update");
+		
+
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
+
+		String[] inputs = { "parameters", "<parameters xmlns=\"http://quickstart.samples/xsd\"><symbol>TAV</symbol><price>15.332</price></parameters>" };
+
+		Map inputMap = new HashMap();
+		inputMap.put("genes_id_list", new DataThing(inputs));
+
+		Map outputMap = invoker.invoke(inputMap);
+		
+		assertEquals("there should be 1 output - the attachement list",1,outputMap.size());
+		assertTrue("the attachmentList output should be present",outputMap.containsKey("attachmentList"));
+	}
 
 	public void testComplexDocStyle() throws Exception {
 
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(
+		processor = new WSDLBasedProcessor(
 					null,
 					"procName",
 					"http://eutils.ncbi.nlm.nih.gov/entrez/eutils/soap/eutils_lite.wsdl",
 					"run_eInfo");
-
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testComplexDocStyle, skipping test");
-			return; // don't fail because the service is unavailable
-		}
 
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
@@ -125,16 +132,9 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 	public void testComplexMultiRef() throws Exception {
 
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName",
+		processor = new WSDLBasedProcessor(null, "procName",
 					TESTWSDL_BASE+"ma.wsdl",
 					"whatGeneInStage");
-
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testComplexMultiRef, skipping test");
-			return; // don't fail because the service is unavailable
-		}
 
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
@@ -166,18 +166,11 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 
 	public void testMultirefWithOutputNamespaced() throws Exception {
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(
+		processor = new WSDLBasedProcessor(
 					null,
 					"procName",
 					TESTWSDL_BASE+"Annotation.wsdl",
 					"getDatabasesWithDetails");
-
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testMultirefWithOutputNamespaced, skipping test");
-			return; // don't fail because the service is unavailable
-		}
 
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 
@@ -193,15 +186,10 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 	public void testSOAPEncoded() throws Exception {
 
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName",
+		processor = new WSDLBasedProcessor(null, "procName",
 					"http://www.claudehussenet.com/ws/services/Anagram.wsdl",
 					"getRandomizeAnagram");
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testSOAPEncoded, skipping test");
-			return; // don't fail because the service is unavailable
-		}
+		
 
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		Map output = invoker.invoke(new HashMap());
@@ -215,17 +203,12 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 	public void testDocumentNamespace() throws Exception {
 
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(
+		processor = new WSDLBasedProcessor(
 					null,
 					"procName",
-					TESTWSDL_BASE+"CountryInfo.wsdl",
+					TESTWSDL_BASE+"CountryInfoService.wsdl",
 					"CapitalCity");
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testDocumentNamespace, skipping test");
-			return; // don't fail because the service is unavailable
-		}
+		
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		Map inputMap = new HashMap();
 		inputMap
@@ -241,14 +224,9 @@ public class WSDLSOAPInvokerTest extends WSDLBasedTestCase {
 	// the output message part.
 	public void testEncodedDifferentOutputName() throws Exception {
 		WSDLBasedProcessor processor = null;
-		try {
-			processor = new WSDLBasedProcessor(null, "procName",
+		processor = new WSDLBasedProcessor(null, "procName",
 					"http://biowulf.bu.edu/zlab/promoser/promoser.wsdl", "help");
-		} catch (ProcessorCreationException e) {
-			logger
-					.error("Unable to connect to serivce in testEncodedDifferentOutputName, skipping test");
-			return; // don't fail because the service is unavailable
-		}
+		
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
 		Map output = invoker.invoke(new HashMap());
 

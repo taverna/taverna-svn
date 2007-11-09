@@ -80,6 +80,7 @@ public class WebImageFetcher implements LocalWorker {
 			while (bytesRead != -1) {
 				bytesRead = is.read(contents, totalBytesRead, contents.length - totalBytesRead);
 				totalBytesRead += bytesRead;
+				if (contents.length==totalBytesRead) break;
 			}
 			logger.info("Read " + totalBytesRead + " from input stream");
 			Map outputMap = new HashMap();

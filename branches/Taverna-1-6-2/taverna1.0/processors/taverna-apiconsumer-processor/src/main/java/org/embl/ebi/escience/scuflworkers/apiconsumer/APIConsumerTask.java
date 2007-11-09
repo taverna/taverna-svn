@@ -43,15 +43,14 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 			DataThing parameterThing = (DataThing) input.get(def.pNames[i]);
 			if (parameterThing == null) {
 				throw new TaskExecutionException("Requires input name "
-					+ def.pNames[i]);
+						+ def.pNames[i]);
 			}
 			try {
-				inputObjects[i] =
-					APIConsumerDefinition.createInputObject(parameterThing,
-						def.pTypes[i]);
+				inputObjects[i] = APIConsumerDefinition.createInputObject(
+						parameterThing, def.pTypes[i]);
 			} catch (Exception ex) {
-				TaskExecutionException tee =
-					new TaskExecutionException(ex.getMessage());
+				TaskExecutionException tee = new TaskExecutionException(ex
+						.getMessage());
 				tee.initCause(ex);
 				throw tee;
 			}
@@ -65,30 +64,47 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 		Class[] inputClasses = new Class[def.pNames.length];
 		for (int i = 0; i < inputClasses.length; i++) {
 			String className = def.pTypes[i];
+			Class baseClass;
 			try {
-				Class baseClass = Class.forName(className, true, classLoader);
-				if (def.pDimensions[i] > 0) {
-					int[] temp = new int[def.pDimensions[i]];
-					inputClasses[i] =
-						Array.newInstance(baseClass, temp).getClass();
-				} else {
-					inputClasses[i] = baseClass;
-				}
+				baseClass = Class.forName(className, true, classLoader);
 			} catch (ClassNotFoundException cnfe) {
-				throw new TaskExecutionException(
-					"Can't locate parameter class " + def.pTypes[i]);
+				baseClass = classForPrimative(className);
+				if (baseClass == null) {
+					throw new TaskExecutionException(
+							"Can't locate parameter class " + def.pTypes[i]);
+				}
 			}
+			if (def.pDimensions[i] > 0) {
+				int[] temp = new int[def.pDimensions[i]];
+				inputClasses[i] = Array.newInstance(baseClass, temp).getClass();
+			} else {
+				inputClasses[i] = baseClass;
+			}
+
 		}
 		return inputClasses;
 	}
 
-	private static void translateNumericTypes(Object[] objects, Class[] classes) {
+	private Class classForPrimative(String className) {
+		if ("int".equals(className)) return int.class;
+		if ("long".equals(className)) return long.class;
+		if ("double".equals("classname")) return double.class;
+		if ("float".equals(className)) return float.class;
+		if ("byte".equals(className)) return byte.class;
+		if ("char".equals(className)) return byte.class;
+		if ("short".equals(className)) return short.class;
+		if ("boolean".equals(className)) return boolean.class;
+		return null;
+	}
+
+	private void translateNumericTypes(Object[] objects, Class[] classes) {
 		for (int i = 0; i < objects.length; i++) {
 			Class target = classes[i];
 			if (Number.class.isAssignableFrom(target)) {
 				if (objects[i] instanceof String) {
 					// If the input is a numeric type and the actual object
-					// is a string we need to parse the string into the appropriate
+					// is a string we need to parse the string into the
+					// appropriate
 					// numeric wrapper type
 					String string = (String) objects[i];
 					Number number = null;
@@ -97,22 +113,22 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 					} else if (target.equals(BigInteger.class)) {
 						number = new BigInteger(string);
 					} else if (target.equals(Byte.class)
-						|| target.equals(byte.class)) {
+							|| target.equals(byte.class)) {
 						number = new Byte(string);
 					} else if (target.equals(Double.class)
-						|| target.equals(double.class)) {
+							|| target.equals(double.class)) {
 						number = new Double(string);
 					} else if (target.equals(Float.class)
-						|| target.equals(float.class)) {
+							|| target.equals(float.class)) {
 						number = new Float(string);
 					} else if (target.equals(Integer.class)
-						|| target.equals(int.class)) {
+							|| target.equals(int.class)) {
 						number = new Integer(string);
 					} else if (target.equals(Long.class)
-						|| target.equals(long.class)) {
+							|| target.equals(long.class)) {
 						number = new Long(string);
 					} else if (target.equals(Short.class)
-						|| target.equals(short.class)) {
+							|| target.equals(short.class)) {
 						number = new Short(string);
 					}
 					objects[i] = number;
@@ -122,7 +138,7 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 	}
 
 	public Map execute(Map input, IProcessorTask parentTask)
-		throws TaskExecutionException {
+			throws TaskExecutionException {
 		Map<String, DataThing> result = new HashMap<String, DataThing>();
 		// Different code paths for constructor, static and non static
 		APIConsumerDefinition def = processor.definition;
@@ -131,37 +147,38 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 			targetClass = Class.forName(def.className, true, classLoader);
 		} catch (ClassNotFoundException cnfe) {
 			throw new TaskExecutionException("No class " + def.className
-				+ " found!");
+					+ " found!");
 		}
-		if (! def.isConstructor) {
+		if (!def.isConstructor) {
 			Object targetObject = null;
-			// If this isn't a static method then get the target object out of the 
+			// If this isn't a static method then get the target object out of
+			// the
 			// incoming DataThing - will be called 'object'
 
-			if (! def.isStatic) {
+			if (!def.isStatic) {
 				DataThing objectThing = (DataThing) input.get("object");
 				if (objectThing == null) {
 					throw new TaskExecutionException(
-						"Referenced a non static method but no object supplied to act on!");
+							"Referenced a non static method but no object supplied to act on!");
 				}
 				try {
-					targetObject =
-						APIConsumerDefinition.createInputObject(objectThing,
-							def.className);
+					targetObject = APIConsumerDefinition.createInputObject(
+							objectThing, def.className);
 				} catch (Exception ex) {
-					TaskExecutionException tee =
-						new TaskExecutionException(ex.getMessage());
+					TaskExecutionException tee = new TaskExecutionException(ex
+							.getMessage());
 					tee.initCause(ex);
 					throw tee;
 				}
-				// Check whether the target object is assignable to the specified
+				// Check whether the target object is assignable to the
+				// specified
 				// classname, if not then complain
 				Class objectClass = targetObject.getClass();
 				// Check assignment here
-				if (! targetClass.isAssignableFrom(objectClass)) {
+				if (!targetClass.isAssignableFrom(objectClass)) {
 					throw new TaskExecutionException("Class of "
-						+ objectClass.getName() + " not assignable to "
-						+ targetClass.getName());
+							+ objectClass.getName() + " not assignable to "
+							+ targetClass.getName());
 				}
 				// Class found and is compatible
 			}
@@ -174,7 +191,7 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 				method = targetClass.getMethod(def.methodName, inputClasses);
 			} catch (NoSuchMethodException nsme) {
 				throw new TaskExecutionException("No method with name "
-					+ def.methodName + " found in " + targetClass.getName());
+						+ def.methodName + " found in " + targetClass.getName());
 			}
 
 			Object[] inputObjects = inputObjects(input);
@@ -185,8 +202,8 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 			try {
 				resultObject = method.invoke(targetObject, inputObjects);
 			} catch (Exception ex) {
-				TaskExecutionException tee =
-					new TaskExecutionException(ex.getMessage());
+				TaskExecutionException tee = new TaskExecutionException(ex
+						.getMessage());
 				tee.initCause(ex);
 				throw tee;
 			}
@@ -195,8 +212,9 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 				result.put("result", new DataThing(resultObject));
 			}
 			// TODO - invoke method here
-			if (! def.isStatic) {
-				// Put the original object into the return after the method has been called on it
+			if (!def.isStatic) {
+				// Put the original object into the return after the method has
+				// been called on it
 				result.put("object", new DataThing(targetObject));
 			}
 		} else {
@@ -206,8 +224,8 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 			try {
 				constructor = targetClass.getConstructor(inputClasses);
 			} catch (NoSuchMethodException nsme) {
-				TaskExecutionException tee =
-					new TaskExecutionException("Cannot locate Constructor");
+				TaskExecutionException tee = new TaskExecutionException(
+						"Cannot locate Constructor");
 				tee.initCause(nsme);
 				throw tee;
 			}
@@ -216,8 +234,8 @@ public class APIConsumerTask implements ProcessorTaskWorker {
 				Object resultObject = constructor.newInstance(inputObjects);
 				result.put("object", new DataThing(resultObject));
 			} catch (Exception ex) {
-				TaskExecutionException tee =
-					new TaskExecutionException("Problem calling constructor");
+				TaskExecutionException tee = new TaskExecutionException(
+						"Problem calling constructor");
 				tee.initCause(ex);
 				throw tee;
 			}

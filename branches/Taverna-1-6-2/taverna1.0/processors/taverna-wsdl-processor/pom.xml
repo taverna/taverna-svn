@@ -9,7 +9,7 @@
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-wsdl-processor</artifactId>
   <name>WSDL Processor</name>
-  <version>1.6.2.0</version>
+  <version>1.6.2.1</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
