@@ -1,9 +1,8 @@
 /**
  * 
  */
-package net.sf.taverna.t2.drizzle.util.impl;
+package net.sf.taverna.t2.drizzle.util;
 
-import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
 /**
  * @author alanrw

@@ -215,28 +215,6 @@ public class PropertiedObjectSetImplTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#containsPropertiedObject(net.sf.taverna.t2.drizzle.util.PropertiedObject)}.
-	 */
-	@Test
-	public void testContainsPropertiedObject() {
-		try {
-			this.testImpl.containsPropertiedObject (null);
-			fail ("NullPointerException should have been thrown for propertied object"); //$NON-NLS-1$
-		}
-		catch (NullPointerException e) {
-			// This is expected
-		}
-		ExampleObject testObject = createObject();
-		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject (testObject);
-		this.testImpl.addObject (testObject);
-		assertTrue ("testImpl.containsPropertiedObject (testPropertiedObject)", //$NON-NLS-1$
-				this.testImpl.containsPropertiedObject (testPropertiedObject));
-		this.testImpl.removeObject (testObject);
-		assertFalse ("testImpl.containsPropertiedObject (testPropertiedObject)", //$NON-NLS-1$
-				this.testImpl.containsPropertiedObject (testPropertiedObject));
-	}
-
-	/**
 	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#getAllPropertyKeys()}.
 	 */
 	@Test
@@ -310,48 +288,6 @@ public class PropertiedObjectSetImplTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#getPropertiedObject(java.lang.Object)}.
-	 */
-	@Test
-	public void testGetPropertiedObject() {
-		try {
-			this.testImpl.getPropertiedObject(null);
-			fail ("NullPointerException should have been thrown"); //$NON-NLS-1$
-		}
-		catch (NullPointerException e) {
-			// this is expected
-		}
-		ExampleObject testObject = createObject();
-		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
-		assertEquals("testImpl.getPropertiedObject(testObject)", testPropertiedObject, //$NON-NLS-1$
-				this.testImpl.getPropertiedObject(testObject));
-		this.testImpl.removeObject(testObject);
-		assertNull("testImpl.getPropertiedObject(testObject)", //$NON-NLS-1$
-				this.testImpl.getPropertiedObject(testObject));
-	}
-
-	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#getPropertiedObjects()}.
-	 */
-	@Test
-	public void testGetPropertiedObjects() {
-		ExampleObject testObject1 = createObject ();
-		ExampleObject testObject2 = createObject ();
-		ExampleObject testObject3 = createObject ();
-		PropertiedObject<ExampleObject> testPropertiedObject1 = this.testImpl.addObject(testObject1);
-		PropertiedObject<ExampleObject> testPropertiedObject2 = this.testImpl.addObject(testObject2);
-		PropertiedObject<ExampleObject> testPropertiedObject3 = this.testImpl.addObject(testObject3);
-		Set<PropertiedObject<ExampleObject>> propertiedObjects = this.testImpl.getPropertiedObjects();
-		assertEquals ("propertiedObjects.size()", 3, propertiedObjects.size()); //$NON-NLS-1$
-		assertTrue("propertiedObjects.contains(testPropertiedObject1)", //$NON-NLS-1$
-				propertiedObjects.contains(testPropertiedObject1));
-		assertTrue("propertiedObjects.contains(testPropertiedObject2)", //$NON-NLS-1$
-				propertiedObjects.contains(testPropertiedObject2));
-		assertTrue("propertiedObjects.contains(testPropertiedObject3)", //$NON-NLS-1$
-				propertiedObjects.contains(testPropertiedObject3));
-	}
-
-	/**
 	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#removeAllObjectsListener(net.sf.taverna.t2.drizzle.util.PropertiedObjectListener)}.
 	 */
 	@Test
@@ -417,16 +353,12 @@ public class PropertiedObjectSetImplTest {
 			// This is expected
 		}
 		ExampleObject testObject = createObject();
-		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject (testObject);
+		this.testImpl.addObject(testObject);
 		assertTrue ("testImpl.containsObject (testObject)", //$NON-NLS-1$
 				this.testImpl.containsObject (testObject));
-		assertTrue ("testImpl.containsPropertiedObject  (testPropertiedObject)", //$NON-NLS-1$
-				this.testImpl.containsPropertiedObject (testPropertiedObject));
 		this.testImpl.removeObject (testObject);
 		assertFalse ("testImpl.containsObject (testObject)", //$NON-NLS-1$
 				this.testImpl.containsObject (testObject));
-		assertFalse ("testImpl.containsPropertiedObject  (testPropertiedObject)", //$NON-NLS-1$
-				this.testImpl.containsPropertiedObject (testPropertiedObject));
 	}
 
 	/**
@@ -459,14 +391,11 @@ public class PropertiedObjectSetImplTest {
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
 		this.testImpl.setProperty (testObject, testKey1, testValue);
 		this.testImpl.setProperty (testObject, testKey2, testValue);
 		this.testImpl.removeProperty (testObject, testKey1);
-		assertFalse("testPropertiedObject.hasProperty(testKey1)", //$NON-NLS-1$
-				testPropertiedObject.hasProperty(testKey1));
-		assertTrue("testPropertiedObject.hasProperty(testKey2)", //$NON-NLS-1$
-				testPropertiedObject.hasProperty(testKey2));
+		assertFalse(this.testImpl.hasProperty(testObject, testKey1));
+		assertTrue(this.testImpl.hasProperty(testObject,testKey2));
 	}
 
 	/**
@@ -506,13 +435,11 @@ public class PropertiedObjectSetImplTest {
 		catch (NullPointerException e) {
 			// This is expected
 		}
-		PropertiedObject<ExampleObject> testPropertiedObject = this.testImpl.addObject(testObject);
+		this.testImpl.addObject(testObject);
 		this.testImpl.setProperty (testObject, testKey1, testValue);
 		this.testImpl.setProperty (testObject, testKey2, testValue);
-		assertTrue("testPropertiedObject.hasProperty(testKey1)", //$NON-NLS-1$
-				testPropertiedObject.hasProperty(testKey1));
-		assertTrue("testPropertiedObject.hasProperty(testKey2)", //$NON-NLS-1$
-				testPropertiedObject.hasProperty(testKey2));
+		assertTrue(this.testImpl.hasProperty(testObject, testKey1));
+		assertTrue(this.testImpl.hasProperty(testObject, testKey2));
 	}
 
 	/**
@@ -554,7 +481,7 @@ public class PropertiedObjectSetImplTest {
 				testValue1, beanedProperties2.get(testKey1));
 		assertTrue("beanedProperties2.containsKey(testKey2)", //$NON-NLS-1$
 				beanedProperties2.containsKey(testKey2));
-		assertEquals("beanedProperties2.get(testKey2)", //$NON-NLS-1$
+		assertEquals("beanedProperties2.get(testKey2)",   //$NON-NLS-1$
 				testValue2, beanedProperties2.get(testKey2));
 	}
 
@@ -584,7 +511,7 @@ public class PropertiedObjectSetImplTest {
 				backFromBean.containsObject(testObject1));
 		assertTrue("backFromBean.containsObject(testObject2)", //$NON-NLS-1$
 				backFromBean.containsObject(testObject2));
-		PropertiedObject<ExampleObject> po1 =
+/*		PropertiedObject<ExampleObject> po1 =
 			backFromBean.getPropertiedObject(testObject1);
 		assertEquals("po1.getPropertyKeys().size()", //$NON-NLS-1$
 				1, po1.getPropertyKeys().size());
@@ -598,7 +525,7 @@ public class PropertiedObjectSetImplTest {
 		assertEquals("po2.getPropertyValue(testKey1)", //$NON-NLS-1$
 				testValue1, po2.getPropertyValue(testKey1));
 		assertEquals("po2.getPropertyValue(testKey2)", //$NON-NLS-1$
-				testValue2, po2.getPropertyValue(testKey2));
+				testValue2, po2.getPropertyValue(testKey2));*/
 	}
 
 }

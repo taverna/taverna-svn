@@ -3,6 +3,7 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
+
 /**
  * @author alanrw
  * 
@@ -11,6 +12,7 @@ package net.sf.taverna.t2.drizzle.util;
  *            PropertiedGraphView which is being listened to is a view.
  */
 public interface PropertiedGraphViewListener<O> {
+
 	/**
 	 * Hear that an edge connected to a node has been added to the specified
 	 * PropertiedGraphView.

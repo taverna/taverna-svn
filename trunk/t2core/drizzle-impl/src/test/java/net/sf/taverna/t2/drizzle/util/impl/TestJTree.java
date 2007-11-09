@@ -37,6 +37,8 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
+import net.sf.taverna.t2.drizzle.util.StringKey;
+import net.sf.taverna.t2.drizzle.util.StringValue;
 import net.sf.taverna.t2.utility.TreeModelAdapter;
 
 import org.junit.Ignore;
@@ -248,14 +250,11 @@ public final class TestJTree extends JFrame {
 						else {
 						PropertyKey key = tableKeySettings.get(column).getPropertyKey();
 						String valueString = "missing"; //$NON-NLS-1$
-						PropertiedObject<StringObject> po = TestJTree.this.testSet.getPropertiedObject(so);
-						if (po != null) {
-							PropertyValue pv = po.getPropertyValue(key);
-							if (pv != null) {
-								valueString = pv.toString();
-							}
+						PropertyValue pv = TestJTree.this.testSet.getPropertyValue(so, key);
+						if (pv != null) {
+							valueString = pv.toString();
 						}
-							resultValue = valueString;
+						resultValue = valueString;
 						}
 						return resultValue;
 					}

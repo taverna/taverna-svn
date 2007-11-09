@@ -87,7 +87,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	/**
 	 * {@inheritDoc}
 	 */
-	public PropertiedObject<O> addObject(final O object) {
+	public void addObject(final O object) {
 		if (object == null) {
 			throw new NullPointerException("object cannot be null"); //$NON-NLS-1$
 		}
@@ -101,10 +101,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 			for (PropertiedObjectListener pol : this.objectListeners) {
 				result.addListener(pol);
 			}
-		} else {
-			result = this.propertiedObjectMap.get(object);
 		}
-		return result;
 	}
 
 	/**
@@ -120,19 +117,9 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean containsPropertiedObject(final PropertiedObject<O> po) {
-		if (po == null) {
-			throw new NullPointerException("po cannot be null"); //$NON-NLS-1$
-		}
-		return this.propertiedObjectMap.containsValue(po);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public Set<PropertyKey> getAllPropertyKeys() {
 		HashSet<PropertyKey> result = new HashSet<PropertyKey>();
-		for (PropertiedObject<O> po : getPropertiedObjects()) {
+		for (PropertiedObject<O> po : this.propertiedObjectMap.values()) {
 			result.addAll(po.getPropertyKeys());
 		}
 		return result;
@@ -146,7 +133,7 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
 		Set<PropertyValue> result = new HashSet<PropertyValue>();
-		for (PropertiedObject<O> po : getPropertiedObjects()) {
+		for (PropertiedObject<O> po : this.propertiedObjectMap.values()) {
 			if (po.hasProperty(key)) {
 				result.add(po.getPropertyValue(key));
 			}
@@ -162,22 +149,11 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		return new HashSet<O>(this.propertiedObjectMap.keySet());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public PropertiedObject<O> getPropertiedObject(final O object) {
+	private PropertiedObject<O> getPropertiedObject(final O object) {
 		if (object == null) {
 			throw new NullPointerException ("object cannot be null"); //$NON-NLS-1$
 		}
 		return this.propertiedObjectMap.get(object);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Set<PropertiedObject<O>> getPropertiedObjects() {
-		// Copy to be on the safe side
-		return new HashSet<PropertiedObject<O>>(this.propertiedObjectMap.values());
 	}
 
 	/**
@@ -271,7 +247,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		if (key == null) {
 			throw new NullPointerException("key cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedObject<?> po = addObject(o);
+		addObject(o);
+		PropertiedObject<O> po = getPropertiedObject(o);
 		po.removeProperty(key);
 	}
 
@@ -288,7 +265,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		if (value == null) {
 			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
-		PropertiedObject<?> po = addObject(object);
+		addObject(object);
+		PropertiedObject<?> po = getPropertiedObject(object);
 		po.setProperty(key, value);
 
 	}
@@ -323,7 +301,8 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		HashMap<O, PropertiedObjectBean> beanedPropertiedObjectMap =
 			bean.getPropertiedObjectMap();
 		for (O object : beanedPropertiedObjectMap.keySet()) {
-			PropertiedObject<O> po = this.addObject(object);
+			this.addObject(object);
+			PropertiedObject<O> po = getPropertiedObject(object);
 			PropertiedObjectBean beanedPo = beanedPropertiedObjectMap.get(object);
 			po.setFromBean (beanedPo);
 		}
@@ -353,6 +332,48 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	@SuppressWarnings("unchecked")
 	public Class<PropertiedObjectSetBean> getBeanClass() {
 		return PropertiedObjectSetBean.class;
+	}
+
+	public Set<PropertyKey> getPropertyKeys(O object) {
+		if (object == null) {
+			throw new NullPointerException ("object cannot be null"); //$NON-NLS-1$
+		}
+		Set<PropertyKey> result = null;
+		PropertiedObject<O> po = getPropertiedObject(object);
+		if (po != null) {
+			result = po.getPropertyKeys();
+		}
+		return result;
+	}
+
+	public PropertyValue getPropertyValue(O object, PropertyKey key) {
+		if (object == null) {
+			throw new NullPointerException ("object cannot be null"); //$NON-NLS-1$
+		}
+		if (key == null) {
+			throw new NullPointerException ("key cannot be null"); //$NON-NLS-1$
+		}
+		PropertyValue result = null;
+		PropertiedObject<O> po = getPropertiedObject(object);
+		if (po != null) {
+			result = po.getPropertyValue(key);
+		}
+		return result;
+	}
+
+	public boolean hasProperty(O object, PropertyKey key) {
+		if (object == null) {
+			throw new NullPointerException ("object cannot be null"); //$NON-NLS-1$
+		}
+		if (key == null) {
+			throw new NullPointerException ("key cannot be null"); //$NON-NLS-1$
+		}
+		PropertiedObject<O> po = getPropertiedObject(object);
+		boolean result = false;
+		if (po != null) {
+			result = po.hasProperty(key);
+		}
+		return result;
 	}
 
 }

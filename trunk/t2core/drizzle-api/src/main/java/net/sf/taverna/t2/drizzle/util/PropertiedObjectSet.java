@@ -45,18 +45,8 @@ public interface PropertiedObjectSet<O> extends
 	/**
 	 * Add an object to the PropertiedObjectSet.
 	 * 
-	 * If the PropertiedObjectSet already contains the specified object, then
-	 * its current associated PropertiedObject is returned.
-	 * 
-	 * If the PropertiedObjectSet does not already contain the specified object,
-	 * then a new PropertiedObject is created corresponding to the object.
-	 * Listeners to the PropertiedObjectSet ar enotified of the addition of the
-	 * object.
-	 * 
-	 * @param object
-	 * @return
 	 */
-	PropertiedObject<O> addObject(final O object);
+	void addObject(final O object);
 
 	/**
 	 * Check if the PropertiedObjectSet contains the specified object and a
@@ -66,15 +56,6 @@ public interface PropertiedObjectSet<O> extends
 	 * @return
 	 */
 	boolean containsObject(final O object);
-
-	/**
-	 * Check if the PropertiedObjectSet contains the specified PropertiedObject
-	 * and a corresponding object.
-	 * 
-	 * @param po
-	 * @return
-	 */
-	boolean containsPropertiedObject(final PropertiedObject<O> po);
 
 	/**
 	 * Return all the PropertyKeys for which there is at least one object within
@@ -100,23 +81,11 @@ public interface PropertiedObjectSet<O> extends
 	 */
 	Set<O> getObjects();
 
-	/**
-	 * Return the PropertiedObject corresponding to the object within the
-	 * PropertiedObjectSet. If the object is not within the PropertiedObjectSet
-	 * then null is returned.
-	 * 
-	 * @param object
-	 * @return
-	 */
-	PropertiedObject<O> getPropertiedObject(final O object);
-
-	/**
-	 * Return the Set of PropertiedObjects corresponding to objects within the
-	 * PropertiedObjectSet.
-	 * 
-	 * @return
-	 */
-	Set<PropertiedObject<O>> getPropertiedObjects();
+	Set<PropertyKey> getPropertyKeys(final O object);
+	
+	PropertyValue getPropertyValue(final O object, final PropertyKey key);
+	
+	boolean hasProperty(final O object, final PropertyKey key);
 
 	/**
 	 * Remove the PropertiedObjectListener from listening to all the

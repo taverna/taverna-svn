@@ -3,6 +3,10 @@ package net.sf.taverna.t2.drizzle.util.impl;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+/**
+ * @author alanrw
+ *
+ */
 public class Messages {
 	private static final String BUNDLE_NAME = "net.sf.taverna.t2.drizzle.util.impl.messages"; //$NON-NLS-1$
 
@@ -13,6 +17,10 @@ public class Messages {
 		// Nothing to do
 	}
 
+	/**
+	 * @param key
+	 * @return
+	 */
 	public static String getString(String key) {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
