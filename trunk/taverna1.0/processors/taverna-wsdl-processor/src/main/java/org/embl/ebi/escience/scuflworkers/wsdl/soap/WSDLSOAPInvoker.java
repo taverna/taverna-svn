@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.16 $
+ * Revision           $Revision: 1.17 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-08 11:43:53 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-11-09 15:10:57 $
+ *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.wsdl.soap;
@@ -119,6 +119,7 @@ public class WSDLSOAPInvoker {
 		requestEnv.addBodyElement(body);
 
 		SOAPEnvelope responseEnv = call.invoke(requestEnv);
+		
 		Map result;
 		if (responseEnv == null) {
 			if (processor.getOutputPorts().length == 1
@@ -127,9 +128,6 @@ public class WSDLSOAPInvoker {
 				// Could be axis 2 service with no output (TAV-617)
 				logger.info("No output from WSDL-processor: " + processor);
 				result = new HashMap();
-				// Make an empty attachmentList
-				DataThing attachmentThing = DataThingFactory.bake(new ArrayList());
-				result.put("attachmentList", attachmentThing);
 			} else {
 				throw new IllegalStateException(
 						"Missing expected outputs from service");
@@ -141,9 +139,9 @@ public class WSDLSOAPInvoker {
 					.create(response, getUse(), getStyle(),
 							getProcessor().getOutputPorts());
 			result = parser.parse(response);
-			// TODO: Should sanity check that output ports map our definitions
-			result.put("attachmentList", extractAttachmentsDataThing(call));
 		}
+		
+		result.put("attachmentList", extractAttachmentsDataThing(call));
 
 		return result;
 	}
@@ -236,37 +234,43 @@ public class WSDLSOAPInvoker {
 	private DataThing extractAttachmentsDataThing(Call axisCall)
 			throws SOAPException, IOException {
 		List attachmentList = new ArrayList();
-		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
-				.hasNext();) {
-			AttachmentPart ap = (AttachmentPart) i.next();
-			logger.debug("Found attachment filename : "
-					+ ap.getAttachmentFile());
-			DataHandler dh = ap.getDataHandler();
-			BufferedInputStream bis = new BufferedInputStream(dh
-					.getInputStream());
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			int c;
-			while ((c = bis.read()) != -1) {
-				bos.write(c);
-			}
-			bis.close();
-			bos.close();
-			String mimeType = dh.getContentType();
-			if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*")
-					|| mimeType.matches(".*audio.*")
-					|| mimeType.matches(".*application/zip.*")) {
-				attachmentList.add(bos.toByteArray());
-			} else {
-				attachmentList.add(new String(bos.toByteArray()));
+		if (axisCall.getResponseMessage()!=null && axisCall.getResponseMessage().getAttachments()!=null) {
+			for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
+					.hasNext();) {
+				AttachmentPart ap = (AttachmentPart) i.next();
+				logger.debug("Found attachment filename : "
+						+ ap.getAttachmentFile());
+				DataHandler dh = ap.getDataHandler();
+				BufferedInputStream bis = new BufferedInputStream(dh
+						.getInputStream());
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				int c;
+				while ((c = bis.read()) != -1) {
+					bos.write(c);
+				}
+				bis.close();
+				bos.close();
+				String mimeType = dh.getContentType();
+				if (mimeType.matches(".*image.*") || mimeType.matches(".*octet.*")
+						|| mimeType.matches(".*audio.*")
+						|| mimeType.matches(".*application/zip.*")) {
+					attachmentList.add(bos.toByteArray());
+				} else {
+					attachmentList.add(new String(bos.toByteArray()));
+				}
 			}
 		}
+		
 		DataThing attachmentThing = DataThingFactory.bake(attachmentList);
-		for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
-				.hasNext();) {
-			String mimeType = ((AttachmentPart) i.next()).getDataHandler()
-					.getContentType();
-			attachmentThing.getMetadata().addMIMEType(mimeType);
+		if (axisCall.getResponseMessage()!=null && axisCall.getResponseMessage().getAttachments()!=null) {
+			for (Iterator i = axisCall.getResponseMessage().getAttachments(); i
+					.hasNext();) {
+				String mimeType = ((AttachmentPart) i.next()).getDataHandler()
+						.getContentType();
+				attachmentThing.getMetadata().addMIMEType(mimeType);
+			}
 		}
+		
 		return attachmentThing;
 	}
 	
