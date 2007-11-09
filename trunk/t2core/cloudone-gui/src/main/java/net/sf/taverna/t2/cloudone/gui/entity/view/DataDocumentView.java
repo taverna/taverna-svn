@@ -53,7 +53,6 @@ public class DataDocumentView extends JComponent {
 	private RefSchemeView lastEditedView;
 
 	private JButton httpButton;
-	private JButton blobButton;
 	private JButton fileButton;
 
 	/**
@@ -211,49 +210,17 @@ public class DataDocumentView extends JComponent {
 		cButton.fill = GridBagConstraints.HORIZONTAL;
 
 		JLabel httpRefLabel = new JLabel("Http Reference Scheme");
-		JLabel blobRefLabel = new JLabel("Blob Reference Scheme");
 		JLabel fileRefLabel = new JLabel("File Reference Scheme");
 		CreateHttpAction createHttpAction = new CreateHttpAction(model);
-		CreateBlobAction createBlobAction = new CreateBlobAction(model);
 		CreateFileAction createFileAction = new CreateFileAction(model);
 		httpButton = new JButton(createHttpAction);
-		blobButton = new JButton(createBlobAction);
 		fileButton = new JButton(createFileAction);
 
 		addSchemes.add(httpRefLabel, cLabel);
 		addSchemes.add(httpButton, cButton);
-		addSchemes.add(blobRefLabel, cLabel);
-		addSchemes.add(blobButton, cButton);
 		addSchemes.add(fileRefLabel, cLabel);
 		addSchemes.add(fileButton, cButton);
 		return addSchemes;
-	}
-
-	/**
-	 * The Controller (in Model-View-Controller terms) for adding a
-	 * {@link BlobReferenceSchemeReferenceScheme} via clicking the appropriate
-	 * button
-	 * 
-	 * @author Stian Soiland
-	 * @author Ian Dunlop
-	 * 
-	 */
-	public class CreateBlobAction extends AbstractAction {
-
-		private static final long serialVersionUID = 1L;
-		@SuppressWarnings("unused")
-		private DataDocumentModel dataDocmodel;
-
-		public CreateBlobAction(DataDocumentModel model) {
-			super("Create blob reference");
-			this.dataDocmodel = model;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			// this.dataDocumentView.controller.createReference(BlobRefSchemeModel.class);
-			BlobRefSchemeModel refModel = new BlobRefSchemeModel();
-			addCreatedRefModel(refModel);
-		}
 	}
 
 	/**
