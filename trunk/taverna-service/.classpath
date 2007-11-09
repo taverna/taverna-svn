@@ -22,6 +22,6 @@
 	<classpathentry kind="src" path="execute-remotely-plugin/src/main/java"/>
 	<classpathentry excluding="**" kind="src" output="execute-remotely-plugin/src/main/resources" path="execute-remotely-plugin/src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
