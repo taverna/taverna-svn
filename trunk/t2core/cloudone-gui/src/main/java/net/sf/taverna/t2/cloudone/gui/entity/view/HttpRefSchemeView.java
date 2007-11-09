@@ -11,6 +11,7 @@ import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -29,8 +30,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
  * @author Stian Soiland
  * 
  */
-public class HttpRefSchemeView extends RefSchemeView implements
-		Observer<URL> {
+public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 
 	private static final long serialVersionUID = 1L;
 	private final HttpRefSchemeModel model;
@@ -99,18 +99,33 @@ public class HttpRefSchemeView extends RefSchemeView implements
 	}
 
 	private void initialise() {
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
 		setLayout(new GridBagLayout());
+		GridBagConstraints headerC = new GridBagConstraints();
+		headerC.gridx = 0;
+		headerC.gridy = 0;
+		headerC.gridwidth = 2;
+		headerC.anchor = GridBagConstraints.LAST_LINE_START;
+		headerC.ipadx = 4;
+		add(new JLabel("<html><small>HTTP reference</small></html>"), headerC);
+		
+		GridBagConstraints fieldC = new GridBagConstraints();
+		fieldC.gridx = 0;
+		fieldC.gridy = 1;
+		fieldC.weightx = 0.1;
+		fieldC.fill = GridBagConstraints.HORIZONTAL;
 		textField = new JTextField(20);
 		textField.setMinimumSize(new Dimension(250, 20));
-		add(textField, c);
+		add(textField, fieldC);
+		
+		GridBagConstraints buttonC = new GridBagConstraints();
+		buttonC.gridy = 1;
+
 		okButton = new JButton(okAction);
-		add(okButton);
+		add(okButton, buttonC);
 		editButton = new JButton(editAction);
-		add(editButton);
+		add(editButton, buttonC);
 		removeButton = new JButton(removeAction);
-		add(removeButton);
+		add(removeButton, buttonC);
 
 		editAction.setEnabled(false);
 		textField.addMouseListener(new MouseAdapter() {
@@ -125,13 +140,13 @@ public class HttpRefSchemeView extends RefSchemeView implements
 	}
 
 	/**
-				 * Enable/disable fields and buttons to reflect editable status.
-				 * Used by {@link #setEdit(boolean)} and the constructor, and
-				 * does not check if the URL is valid.
-				 * 
-				 * @param editable
-				 *            True if the fields are to be editable
-				 */
+	 * Enable/disable fields and buttons to reflect editable status. Used by
+	 * {@link #setEdit(boolean)} and the constructor, and does not check if the
+	 * URL is valid.
+	 * 
+	 * @param editable
+	 *            True if the fields are to be editable
+	 */
 	private void setFieldsEditable(boolean editable) {
 		textField.setEditable(editable);
 		textField.setEnabled(editable);
