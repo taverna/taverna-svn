@@ -18,7 +18,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
  * 
  */
 @SuppressWarnings("unchecked")
-public class DataDocumentModel implements Observable<DataDocumentModelEvent> {
+public class DataDocumentModel extends EntityModel implements Observable<DataDocumentModelEvent> {
 
 	private List<ReferenceSchemeModel> refSchemeModels = new ArrayList<ReferenceSchemeModel>();
 

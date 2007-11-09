@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -32,7 +31,7 @@ import org.apache.log4j.Logger;
  * @author Ian Dunlop
  * @author Stian Soiland
  */
-public class DataDocumentView extends JComponent {
+public class DataDocumentView extends EntityView {
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(DataDocumentView.class);
