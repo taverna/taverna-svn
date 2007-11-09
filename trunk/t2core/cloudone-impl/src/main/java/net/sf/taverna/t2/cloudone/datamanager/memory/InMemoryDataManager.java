@@ -1,8 +1,10 @@
 package net.sf.taverna.t2.cloudone.datamanager.memory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
@@ -36,6 +38,10 @@ public class InMemoryDataManager extends AbstractDataManager {
 		super(namespace, contexts);
 		blobStore = new InMemoryBlobStore();
 		this.contents = new HashMap<EntityIdentifier, Entity<? extends EntityIdentifier, ?>>();
+	}
+
+	public InMemoryDataManager() {
+		this(UUID.randomUUID().toString(), Collections.<LocationalContext>emptySet());
 	}
 
 	public InMemoryBlobStore getBlobStore() {
