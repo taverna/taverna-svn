@@ -61,11 +61,6 @@ public class RefSchemeTranslatorTest {
 		translator = new ReferenceSchemeTranslatorImpl(dataPeer);
 	}
 	
-	@Before
-	public void setUpRaven() {
-		System.setProperty("raven.eclipse", "true");
-	}
-
 	@Test
 	public void testFindBlobScheme() throws RetrievalException,
 			NotFoundException {

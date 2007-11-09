@@ -32,12 +32,7 @@ public class BeanSerialiserTest {
 	private ClassLoader classLoader = BeanSerialiserTest.class.getClassLoader();
 
 	InMemoryDataManager dManager = new InMemoryDataManager("dataNS",
-			new HashSet<LocationalContext>());
-	
-	@Before
-	public void setUpRaven() {
-		System.setProperty("raven.eclipse", "true");
-	}
+			new HashSet<LocationalContext>());	
 
 	@Test
 	public void serialiseAsFile() throws IOException, JDOMException {

@@ -133,7 +133,6 @@ public class PortBindingTest extends TranslatorTestHelper {
 	}
 	
 	private Dataflow loadAndTranslateWorkflow(String resourceName) throws Exception {
-		System.setProperty("raven.eclipse", "true");
 		setUpRavenRepository();
 		ScuflModel model = loadScufl(resourceName);
 		return WorkflowModelTranslator.doTranslation(model);

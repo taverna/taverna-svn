@@ -17,11 +17,6 @@ import org.junit.Test;
 
 public class ActivityTranslatorSPITest {
 
-	@Before
-	public void setUpRaven() {
-		System.setProperty("raven.eclipse", "true");
-	}
-	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFindTranslators() {

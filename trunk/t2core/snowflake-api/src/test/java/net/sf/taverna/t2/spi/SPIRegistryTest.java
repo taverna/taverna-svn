@@ -6,17 +6,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class SPIRegistryTest {
 
 	SPIRegistry<DummySPI> registry = new SPIRegistry<DummySPI>(DummySPI.class);
-
-	@Before
-	public void setUpRaven() {
-		System.setProperty("raven.eclipse", "true");
-	}
 
 	@Test
 	public void getClassNames() throws Exception {

@@ -33,11 +33,7 @@ public class TestBeanableRegistry {
 			DataDocumentImpl.class,
 	};
 	
-	@Before
-	public void setUpRaven() {
-		System.setProperty("raven.eclipse", "true");
-	}
-	
+
 	@Test
 	public void getBeanables() {
 		for (Class<? extends Beanable> c : beanableClasses) {

@@ -18,7 +18,6 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 
 	@Test
 	public void testActivityTranslatorFactory() throws Exception {
-		System.setProperty("raven.eclipse", "true");
 		Processor processor = new BeanshellProcessor(null,"beanshell","",new String[]{},new String[]{});
 		ActivityTranslator<?> translator = ActivityTranslatorFactory
 				.getTranslator(processor);
@@ -33,7 +32,6 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 
 	@Test
 	public void testBeanshellActivityTranslator() throws Exception {
-		System.setProperty("raven.eclipse", "true");
 		setUpRavenRepository();
 		ScuflModel model = loadScufl("beanshell.xml");
 		Processor p = model.getProcessorsOfType(BeanshellProcessor.class)[0];

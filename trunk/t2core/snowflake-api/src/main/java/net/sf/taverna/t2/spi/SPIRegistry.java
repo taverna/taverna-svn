@@ -74,7 +74,7 @@ public class SPIRegistry<SPI> {
 		return getClasses().keySet();
 	}
 
-	private InstanceRegistry<SPI> getRegistry() {
+	private synchronized InstanceRegistry<SPI> getRegistry() {
 		if (instanceRegistry == null) {
 			ravenSPIRegistry = new SpiRegistry(getRepository(), spi.getName(),
 					getClassLoader());
@@ -89,6 +89,8 @@ public class SPIRegistry<SPI> {
 			return ((LocalArtifactClassLoader) getClassLoader())
 					.getRepository();
 		} else {
+			// Do the ugly hack in one place
+			System.setProperty("raven.eclipse", "true");
 			return new EclipseRepository();
 		}
 	}
@@ -109,6 +111,7 @@ public class SPIRegistry<SPI> {
 	public Map<String, Class<? extends SPI>> getClasses() {
 		getRegistry();
 		List<Class> classes = ravenSPIRegistry.getClasses();
+		System.out.println("Found for " + spi + ": "  + classes);
 		Map<String, Class<? extends SPI>> result = new HashMap<String, Class<? extends SPI>>();
 		for (Class c : classes) {
 			result.put(c.getName(), c);

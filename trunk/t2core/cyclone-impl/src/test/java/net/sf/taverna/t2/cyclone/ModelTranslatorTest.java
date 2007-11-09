@@ -273,7 +273,6 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 			ConcurrencyConstraintCreationException,
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
 			WorkflowTranslationException {
-		System.setProperty("raven.eclipse", "true");
 		setUpRavenRepository();
 		ScuflModel model = loadScufl(filename);
 		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
