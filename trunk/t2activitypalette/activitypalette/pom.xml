@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>activitypalette</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Activity Palette API</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2activitypalette</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>
+		Activity palette.
+	</description>
+	<dependencies>
+    <dependency>
+      <groupId>net.sf.taverna.t2</groupId>
+      <artifactId>drizzle-api</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+	</dependencies>
+</project>

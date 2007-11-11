@@ -6,7 +6,7 @@ package net.sf.taverna.t2.drizzle.activityregistry;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.util.SPIRegistry;
+import net.sf.taverna.t2.spi.SPIRegistry;
 
 /**
  * @author alanrw
@@ -44,10 +44,10 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	 * @return A list of {@link PropertyDecoder}s
 	 */
 	public List<PropertyDecoder> getDecoders(
-			Object encodedObject) {
+			Class sourceClass, Class targetClass) {
 		List<PropertyDecoder> decoders = new ArrayList<PropertyDecoder>();
 		for (PropertyDecoder decoder : getInstances()) {
-			if (decoder.canDecode(encodedObject)) {
+			if (decoder.canDecode(sourceClass, targetClass)) {
 				decoders.add(decoder);
 			}
 		}
