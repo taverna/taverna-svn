@@ -4,9 +4,6 @@
 package net.sf.taverna.t2.drizzle.activityregistry;
 
 
-import java.util.HashSet;
-import java.util.Set;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
@@ -36,7 +33,7 @@ public final class WsdlProcessorFactoryDecoder extends ProcessorFactoryDecoder<W
 		targetSet.setProperty(encodedFactory, CommonKey.WsdlPortTypeKey, new StringValue(encodedFactory.getPortTypeName().getLocalPart()));
 	}
 
-	public boolean canDecode(Class sourceClass, Class targetClass) {
+	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		return (targetClass.isAssignableFrom(WSDLBasedProcessorFactory.class) &&
 				WSDLBasedProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

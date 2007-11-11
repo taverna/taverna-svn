@@ -3,14 +3,11 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
-import java.util.Set;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
 
 /**
  * @author alanrw
@@ -30,7 +27,7 @@ public final class BiomobyProcessorFactoryDecoder extends
 
 	}
 
-	public boolean canDecode(Class sourceClass, Class targetClass) {
+	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		return (targetClass.isAssignableFrom(BiomobyProcessorFactory.class) &&
 				BiomobyProcessorFactory.class.isAssignableFrom(sourceClass));
 		

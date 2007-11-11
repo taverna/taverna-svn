@@ -43,10 +43,10 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	 *            Object to decode
 	 * @return A list of {@link PropertyDecoder}s
 	 */
-	public List<PropertyDecoder> getDecoders(
-			Class sourceClass, Class targetClass) {
-		List<PropertyDecoder> decoders = new ArrayList<PropertyDecoder>();
-		for (PropertyDecoder decoder : getInstances()) {
+	public List<PropertyDecoder<?,?>> getDecoders(
+			Class<?> sourceClass, Class<?> targetClass) {
+		List<PropertyDecoder<?,?>> decoders = new ArrayList<PropertyDecoder<?,?>>();
+		for (PropertyDecoder<?,?> decoder : getInstances()) {
 			if (decoder.canDecode(sourceClass, targetClass)) {
 				decoders.add(decoder);
 			}

@@ -15,7 +15,7 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
  */
 public interface PropertyDecoder<Target, Source> {
 
-	boolean canDecode (Class sourceClass, Class targetClass);
+	boolean canDecode (Class<?> sourceClass, Class<?> targetClass);
 	
 	Set<Target> decode (PropertiedObjectSet<ProcessorFactory> target, Source encodedObject);
 }
