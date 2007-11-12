@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-25 09:17:17 $
+ * Last modified on   $Date: 2007-11-12 17:30:09 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -46,22 +46,24 @@ import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class WSDLSOAPInvokerTest {
-
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPrimitive() throws Exception {
 
-
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"KEGG.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+				+ "KEGG.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("get_pathways_by_genes")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("get_pathways_by_genes")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"get_pathways_by_genes",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
+				"get_pathways_by_genes", outputNames);
 
 		List<String> inputs = new ArrayList<String>();
 		inputs.add("eco:b0077");
@@ -87,12 +89,15 @@ public class WSDLSOAPInvokerTest {
 	@Test
 	public void testComplexDocStyle() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"eutils/eutils_lite.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+				+ "eutils/eutils_lite.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("run_eInfo")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("run_eInfo")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"run_eInfo",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser, "run_eInfo",
+				outputNames);
 
 		String input = "<eInfoRequest><db>pubmed</db></eInfoRequest>";
 
@@ -107,7 +112,8 @@ public class WSDLSOAPInvokerTest {
 
 		assertNotNull("no return with name 'parameters' found", outputThing);
 
-		assertEquals("result should be a string", String.class, outputThing.getClass());
+		assertEquals("result should be a string", String.class, outputThing
+				.getClass());
 
 		String xml = outputThing.toString();
 		assertTrue("unexpected start to result", xml.startsWith("<eInfoResult"));
@@ -115,52 +121,53 @@ public class WSDLSOAPInvokerTest {
 
 	}
 
+	@Ignore("endpoint failing")
 	@SuppressWarnings("unchecked")
 	@Test
+	//TODO: set up an equivalent test on Phoebus - this service is unreliable.
 	public void testComplexMultiRef() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"ma.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+				+ "ma.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("whatGeneInStage")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("whatGeneInStage")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"whatGeneInStage",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
+				"whatGeneInStage", outputNames);
 
 		Map inputs = new HashMap();
 		inputs.put("in0", "13");
 		inputs.put("in1", "14");
 		inputs.put("in2", "1");
 
-		try {
-			Map outputs = invoker.invoke(inputs);
-			assertEquals("outputs should have 2 entries", 2, outputs.size());
+		Map outputs = invoker.invoke(inputs);
+		assertEquals("outputs should have 2 entries", 2, outputs.size());
 
-			Object thing = outputs.get("whatGeneInStageReturn");
+		Object thing = outputs.get("whatGeneInStageReturn");
 
-			assertNotNull(
-					"output should contain an entry with key 'whatGeneInStageReturn'",
-					thing);
+		assertNotNull(
+				"output should contain an entry with key 'whatGeneInStageReturn'",
+				thing);
 
-			assertEquals("output type should be of type String", String.class,
-					thing.getClass());
-		}
-		catch(Exception e) {
-			//FIXME: this service is unreliable and should be updated to use another service.
-			//... so dont fail test because the service failed. 
-		}
+		assertEquals("output type should be of type String", String.class,
+				thing.getClass());
 
-		
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultirefWithOutputNamespaced() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"Annotation.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+				+ "Annotation.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("getDatabasesWithDetails")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("getDatabasesWithDetails")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"getDatabasesWithDetails",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
+				"getDatabasesWithDetails", outputNames);
 
 		Map output = invoker.invoke(new HashMap());
 
@@ -174,12 +181,15 @@ public class WSDLSOAPInvokerTest {
 	@Test
 	public void testSOAPEncoded() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser("http://www.claudehussenet.com/ws/services/Anagram.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(
+				"http://www.claudehussenet.com/ws/services/Anagram.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("getRandomizeAnagram")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("getRandomizeAnagram")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"getRandomizeAnagram",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
+				"getRandomizeAnagram", outputNames);
 		Map output = invoker.invoke(new HashMap());
 		assertEquals("should be 2 elements", 2, output.size());
 		Object outputThing = output.get("Result");
@@ -192,18 +202,19 @@ public class WSDLSOAPInvokerTest {
 	@Test
 	public void testDocumentNamespace() throws Exception {
 
-		
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"CountryInfoService.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+				+ "CountryInfoService.wsdl");
 		List<String> outputNames = new ArrayList<String>();
-		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("CapitalCity")) {
+		for (TypeDescriptor d : wsdlParser
+				.getOperationOutputParameters("CapitalCity")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"CapitalCity",outputNames);
-		
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
+				"CapitalCity", outputNames);
+
 		Map inputMap = new HashMap();
 		inputMap
-				.put(
-						"parameters",
+				.put("parameters",
 						"<parameters><sCountryISOCode>FR</sCountryISOCode></parameters>");
 
 		invoker.invoke(inputMap);
@@ -214,19 +225,22 @@ public class WSDLSOAPInvokerTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testEncodedDifferentOutputName() throws Exception {
-		System.setProperty("taverna.wsdl.timeout","1");
-		WSDLParser wsdlParser = new WSDLParser("http://biowulf.bu.edu/zlab/promoser/promoser.wsdl");
+		System.setProperty("taverna.wsdl.timeout", "1");
+		WSDLParser wsdlParser = new WSDLParser(
+				"http://biowulf.bu.edu/zlab/promoser/promoser.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser.getOperationOutputParameters("help")) {
 			outputNames.add(d.getName());
 		}
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,"help",outputNames);
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser, "help",
+				outputNames);
 		Map output = invoker.invoke(new HashMap());
 
 		assertNotNull("missing output", output.get("helpResponseSoapMsg"));
 
 		Object thing = output.get("helpResponseSoapMsg");
 
-		assertTrue("unexpected output contents", thing.toString().startsWith("Usage:"));
+		assertTrue("unexpected output contents", thing.toString().startsWith(
+				"Usage:"));
 	}
 }
