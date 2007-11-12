@@ -90,7 +90,6 @@
 			<scope>test</scope>
 		</dependency>
 		
-		
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>

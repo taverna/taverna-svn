@@ -47,6 +47,7 @@ public class DummyEventHandler extends AbstractAnnotatedThing<Port> implements
 
 	public void reset() {
 		this.eventCount = 0;
+		this.result=null;
 	}
 
 	public int getDepth() {

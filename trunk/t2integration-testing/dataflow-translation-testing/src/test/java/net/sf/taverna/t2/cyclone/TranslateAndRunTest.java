@@ -4,12 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -223,6 +228,89 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		
 		DummyEventHandler handler = eventHandlers.get("out");
 		assertTrue("The result should be a list",handler.getResult() instanceof List);
+	}
+	
+	@Test
+	public void testIterateOverList() throws Exception {
+		Dataflow dataflow = translateScuflFile("lists_iterate.xml");
+		
+		DataflowValidationReport report = dataflow.checkValidity();
+		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+			System.out.println(unsatisfiedProcessor.getLocalName());
+		}
+		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
+		for (Processor failedProcessor : report.getFailedProcessors()) {
+			System.out.println(failedProcessor.getLocalName());
+		}
+		assertTrue(report.getFailedProcessors().size() == 0);
+		for (DataflowOutputPort unresolvedOutput : report
+				.getUnresolvedOutputs()) {
+			System.out.println(unresolvedOutput.getName());
+		}
+		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		
+		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		
+		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		
+		for (Processor processor : dataflow.getProcessors()) {
+			//find the string constant processor
+			if (processor.getLocalName().equals("List_Emmitter"))  {
+				processor.fire("test");
+				break;
+			}
+		}
+		
+		waitForCompletion(eventHandlers);
+		
+		DummyEventHandler handler = eventHandlers.get("out");
+		assertTrue("The result should be a list",handler.getResult() instanceof List);
+		
+	}
+	
+	@Test
+	public void testSimpleWorkflowWithInput() throws Exception {
+		Dataflow dataflow = translateScuflFile("simple_workflow_with_input.xml");
+		
+		DataflowValidationReport report = dataflow.checkValidity();
+		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+			System.out.println(unsatisfiedProcessor.getLocalName());
+		}
+		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
+		for (Processor failedProcessor : report.getFailedProcessors()) {
+			System.out.println(failedProcessor.getLocalName());
+		}
+		assertTrue(report.getFailedProcessors().size() == 0);
+		for (DataflowOutputPort unresolvedOutput : report
+				.getUnresolvedOutputs()) {
+			System.out.println(unresolvedOutput.getName());
+		}
+		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		
+		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		
+		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		
+		List<String> inputs = new ArrayList<String>();
+		inputs.add("one");
+		inputs.add("two");
+		inputs.add("three");
+		
+		DataFacade facade = new DataFacade(dataManager);
+		int i=0;
+		for (String input : inputs) {
+			EntityIdentifier entityId=facade.register(input);
+			for (DataflowInputPort port : dataflow.getInputPorts()) {
+				port.receiveEvent(new WorkflowDataToken("test"+i,new int[0],entityId));
+			}
+			
+			waitForCompletion(eventHandlers);
+			
+			DummyEventHandler handler = eventHandlers.get("output");
+			assertEquals(input+"XXX", handler.getResult());
+			handler.reset();
+			i++;
+		}
 	}
 }
 
