@@ -5,4 +5,10 @@ public class BlobRefSchemeModel extends ReferenceSchemeModel {
 	public BlobRefSchemeModel() {
 		
 	}
+
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
 }

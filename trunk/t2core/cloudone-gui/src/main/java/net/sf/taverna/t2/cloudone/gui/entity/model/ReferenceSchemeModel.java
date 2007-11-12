@@ -7,6 +7,8 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
  * @author Stian Soiland
  * 
  */
-public class ReferenceSchemeModel {
+public abstract class ReferenceSchemeModel {
+	
+	public abstract void remove();
 
 }
