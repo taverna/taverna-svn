@@ -22,9 +22,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
@@ -48,16 +46,6 @@ public class SoaplabActivity extends
 	private SoaplabActivityConfigurationBean configurationBean;
 
 	public SoaplabActivity() {
-	}
-
-	@Override
-	protected ActivityPortBuilder getPortBuilder() {
-		// FIXME: remove this dependency on the maelstrom-impl. This is
-		// currently the only link between the 2.
-		// There are easy ways to do this, but non of them particularly elegant.
-		// Passing the builder to configure involves passing it around all over
-		// the place.
-		return ActivityPortBuilderImpl.getInstance();
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 public class ApiConsumerActivity extends AbstractAsynchronousActivity<ApiConsumerActivityConfigBean> {
@@ -29,11 +28,4 @@ public class ApiConsumerActivity extends AbstractAsynchronousActivity<ApiConsume
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	protected ActivityPortBuilder getPortBuilder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

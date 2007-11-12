@@ -10,10 +10,8 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -38,14 +36,6 @@ public class BeanshellActivity extends
 		// TODO decide how to get the beanshell's class loader
 		// interpreter.setClassLoader(classLoader);
 	}
-
-	@Override
-	protected ActivityPortBuilder getPortBuilder() {
-		//FIXME: remove this dependency on the maelstrom-impl. This is currently the only link between the 2. 
-		//There are easy ways to do this, but non of them particularly elegant. 
-		//Passing the builder to configure involves passing it around all over the place.
-		return ActivityPortBuilderImpl.getInstance();
-	} 
 
 	@Override
 	public void configure(BeanshellActivityConfigurationBean configurationBean)

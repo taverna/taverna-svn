@@ -12,9 +12,7 @@ import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 /**
  * <p>
@@ -42,11 +40,6 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 	@Override
 	public StringConstantConfigurationBean getConfiguration() {
 		return config;
-	}
-
-	@Override
-	protected ActivityPortBuilder getPortBuilder() {
-		return ActivityPortBuilderImpl.getInstance();
 	}
 
 	@Override

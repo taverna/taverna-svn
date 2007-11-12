@@ -19,9 +19,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 import org.xml.sax.SAXException;
 
@@ -39,10 +37,6 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
     private WSDLActivityConfigurationBean configurationBean;
     private WSDLParser parser;
     private Map<String,Integer> outputDepth = new HashMap<String, Integer>();
-
-    protected ActivityPortBuilder getPortBuilder() {
-        return ActivityPortBuilderImpl.getInstance();
-    }
 
     /**
      * Configures the activity according to the information passed by the configuration bean.<br>

@@ -15,14 +15,12 @@ import net.sf.taverna.t2.workflowmodel.DataflowPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.AbstractEventHandlingInputPort;
-import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityPortBuilder;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.impl.ActivityPortBuilderImpl;
 
 import org.apache.log4j.Logger;
 
@@ -42,21 +40,11 @@ public class DataflowActivity extends
 
 	private Dataflow dataflow;
 
-	private Edits edits = new EditsImpl();
+	private Edits edits = EditsRegistry.getEdits();
 	
 	private AsynchronousActivityCallback callback;
 	
 	private AtomicLong runIndex = new AtomicLong(0);
-
-	@Override
-	protected ActivityPortBuilder getPortBuilder() {
-		// FIXME: remove this dependency on the maelstrom-impl. This is
-		// currently the only link between the 2.
-		// There are easy ways to do this, but non of them particularly elegant.
-		// Passing the builder to configure involves passing it around all over
-		// the place.
-		return ActivityPortBuilderImpl.getInstance();
-	}
 
 	@Override
 	public void configure(DataflowActivityConfigurationBean configurationBean)
@@ -68,6 +56,7 @@ public class DataflowActivity extends
 
 		for (final DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
 			Datalink datalink = edits.createDatalink(outputPort,
+					//FIXME: reference to AbstractEventHandlingInputPort forces a dependency on maelstrom-impl (all other activities require only API).
 					new AbstractEventHandlingInputPort(outputPort
 							.getName(), outputPort.getDepth()) {
 

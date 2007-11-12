@@ -18,7 +18,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>maelstrom-impl</artifactId>
+			<artifactId>maelstrom-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
