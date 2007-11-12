@@ -11,9 +11,11 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
@@ -31,19 +33,34 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
 /**
  * A helper class to support tests for the {@link WorkflowModelTranslator}
+ * 
  * @author Stuart Owen
- *
+ * 
  */
 public class TranslatorTestHelper {
-	
+
 	protected AbstractDataManager dataManager;
-	
+
 	protected void setUpRavenRepository() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
 		tmpDir.delete();
 		tmpDir.mkdir();
 		Repository tempRepository = LocalRepository.getRepository(tmpDir);
 		TavernaSPIRegistry.setRepository(tempRepository);
+	}
+
+	protected Dataflow translateScuflFile(String filename) throws IOException,
+			UnknownProcessorException, UnknownPortException,
+			ProcessorCreationException, DataConstraintCreationException,
+			DuplicateProcessorNameException, MalformedNameException,
+			ConcurrencyConstraintCreationException,
+			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
+			WorkflowTranslationException {
+		System.setProperty("raven.eclipse", "true");
+		setUpRavenRepository();
+		ScuflModel model = loadScufl(filename);
+		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
+		return dataflow;
 	}
 
 	protected ScuflModel loadScufl(String resourceName)
@@ -54,11 +71,12 @@ public class TranslatorTestHelper {
 			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
 			IOException {
 		ScuflModel model = new ScuflModel();
-		InputStream inStream = TranslatorTestHelper.class.getResourceAsStream("/"+resourceName);
-		XScuflParser.populate(inStream,model,null);
+		InputStream inStream = TranslatorTestHelper.class
+				.getResourceAsStream("/" + resourceName);
+		XScuflParser.populate(inStream, model, null);
 		return model;
 	}
-	
+
 	protected Map<String, DummyEventHandler> addDummyEventHandlersToOutputs(
 			Dataflow dataflow) throws EditException {
 		Edits edits = new EditsImpl();
@@ -73,7 +91,22 @@ public class TranslatorTestHelper {
 		}
 		return eventHandlers;
 	}
-	
+
+	protected DataflowValidationReport validateDataflow(Dataflow dataflow) {
+		DataflowValidationReport report = dataflow.checkValidity();
+		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+			System.out.println(unsatisfiedProcessor.getLocalName());
+		}
+		for (Processor failedProcessor : report.getFailedProcessors()) {
+			System.out.println(failedProcessor.getLocalName());
+		}
+		for (DataflowOutputPort unresolvedOutput : report
+				.getUnresolvedOutputs()) {
+			System.out.println(unresolvedOutput.getName());
+		}
+		return report;
+	}
+
 	/**
 	 * 
 	 * Uses a default max time of 1 minute.
@@ -85,14 +118,14 @@ public class TranslatorTestHelper {
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers)
 			throws InterruptedException, DataflowTimeoutException {
-		waitForCompletion(eventHandlers,60);
-		
+		waitForCompletion(eventHandlers, 60);
+
 	}
-	
+
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers, int maxtimeSeconds)
 			throws InterruptedException, DataflowTimeoutException {
-		int time=0;
+		int time = 0;
 		boolean finished = false;
 		while (!finished) {
 			finished = true;
@@ -100,10 +133,13 @@ public class TranslatorTestHelper {
 				if (testEventHandler.getResult() == null) {
 					finished = false;
 					Thread.sleep(1000);
-					time+=1000;
+					time += 1000;
 					break;
 				}
-				if (time>(maxtimeSeconds*1000)) throw new DataflowTimeoutException("The max time of "+maxtimeSeconds+"s was exceed waiting for the results");
+				if (time > (maxtimeSeconds * 1000))
+					throw new DataflowTimeoutException("The max time of "
+							+ maxtimeSeconds
+							+ "s was exceed waiting for the results");
 			}
 		}
 	}

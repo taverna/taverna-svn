@@ -3,7 +3,6 @@ package net.sf.taverna.t2.cyclone;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,22 +14,11 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
-import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 
-import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
-import org.embl.ebi.escience.scufl.DataConstraintCreationException;
-import org.embl.ebi.escience.scufl.DuplicateConcurrencyConstraintNameException;
-import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
-import org.embl.ebi.escience.scufl.MalformedNameException;
-import org.embl.ebi.escience.scufl.ProcessorCreationException;
-import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scufl.UnknownPortException;
-import org.embl.ebi.escience.scufl.UnknownProcessorException;
-import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,38 +39,15 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		ContextManager.baseManager = dataManager;
 	}
 
-	private Dataflow translateScuflFile(String filename) throws IOException,
-			UnknownProcessorException, UnknownPortException,
-			ProcessorCreationException, DataConstraintCreationException,
-			DuplicateProcessorNameException, MalformedNameException,
-			ConcurrencyConstraintCreationException,
-			DuplicateConcurrencyConstraintNameException, XScuflFormatException,
-			WorkflowTranslationException {
-		System.setProperty("raven.eclipse", "true");
-		setUpRavenRepository();
-		ScuflModel model = loadScufl(filename);
-		Dataflow dataflow = WorkflowModelTranslator.doTranslation(model);
-		return dataflow;
-	}
-
 	@Ignore("Biomart error prevents this test from working correctly. Needs new workflow or Biomart fix")
 	@Test
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 
@@ -109,8 +74,6 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 			}
 		}
 	}
-
-	
 	
 	/**
 	 * Tests a simple workflow that contains unbound ports and a port with a default value.
@@ -120,20 +83,11 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	@Test
 	public void testUnboundPortsAndADefaultValue() throws Exception {
 		Dataflow dataflow = translateScuflFile("unbound_ports_with_default.xml");
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 		
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 		
@@ -158,20 +112,11 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	@Test
 	public void testErrorPropogation() throws Exception {
 		Dataflow dataflow = translateScuflFile("test_error_propagation.xml");
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 		
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 		
@@ -197,20 +142,11 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	public void testWorkflowContainingWSDL() throws Exception {
 		Dataflow dataflow = translateScuflFile("wsdl_test.xml");
 		
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 		
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 		
@@ -233,21 +169,11 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	@Test
 	public void testIterateOverList() throws Exception {
 		Dataflow dataflow = translateScuflFile("lists_iterate.xml");
-		
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 		
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 		
@@ -272,20 +198,11 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	public void testSimpleWorkflowWithInput() throws Exception {
 		Dataflow dataflow = translateScuflFile("simple_workflow_with_input.xml");
 		
-		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
-		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
-		}
-		assertTrue(report.getFailedProcessors().size() == 0);
-		for (DataflowOutputPort unresolvedOutput : report
-				.getUnresolvedOutputs()) {
-			System.out.println(unresolvedOutput.getName());
-		}
-		assertTrue(report.getUnresolvedOutputs().size() == 0);
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 		
 		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
 		

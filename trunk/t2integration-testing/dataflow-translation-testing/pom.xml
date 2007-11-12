@@ -118,13 +118,32 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>stringconstant-activity-translator</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>stringconstant-activity</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-workflow</artifactId>
+			<version>${depTaverna}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>dataflow-activity-translator</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>dataflow-activity</artifactId>
+			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
 		
