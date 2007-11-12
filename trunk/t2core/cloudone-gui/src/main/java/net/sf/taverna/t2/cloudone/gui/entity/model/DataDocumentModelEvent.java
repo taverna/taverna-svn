@@ -7,10 +7,7 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
  * @author Ian Dunlop
  * 
  */
-public class DataDocumentModelEvent {
-
-	private final ReferenceSchemeModel refSchemeModel;
-	private final EventType eventType;
+public class DataDocumentModelEvent extends ModelEvent<ReferenceSchemeModel> {
 
 	/**
 	 * The {@link EventType} and the {@link ReferenceSchemeModel} that caused it
@@ -23,38 +20,6 @@ public class DataDocumentModelEvent {
 	 */
 	public DataDocumentModelEvent(EventType type,
 			ReferenceSchemeModel refSchemeModel) {
-		this.eventType = type;
-		this.refSchemeModel = refSchemeModel;
+		super(type, refSchemeModel);
 	}
-
-	/**
-	 * What actually happened to trigger the event
-	 * 
-	 * @return
-	 */
-	public EventType getEventType() {
-		return eventType;
-	}
-
-	/**
-	 * The {@link ReferenceSchemeModel} that the {@link DataDocumentModel} is
-	 * about
-	 * 
-	 * @return
-	 */
-	public ReferenceSchemeModel getRefSchemeModel() {
-		return refSchemeModel;
-	}
-
-	/**
-	 * What is the type of event
-	 * 
-	 * @author Ian Dunlop
-	 * @author Stian Soiland
-	 * 
-	 */
-	public enum EventType {
-		ADDED, REMOVED
-	}
-
 }
