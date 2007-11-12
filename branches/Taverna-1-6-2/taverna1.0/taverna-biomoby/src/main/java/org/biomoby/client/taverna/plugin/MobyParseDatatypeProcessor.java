@@ -198,7 +198,8 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 
 	private boolean isPrimitive(String name) {
 		if (name.equals("Integer") || name.equals("String") || name.equals("Float")
-				|| name.equals("DateTime") || name.equals("Boolean"))
+				|| name.equals("DateTime") || name.equals("Boolean")
+		)
 			return true;
 		return false;
 	}
@@ -206,6 +207,11 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 	@SuppressWarnings("unchecked")
 	private void processDatatype(MobyDataType dt, Central central, String currentName, List list)
 			throws ProcessorCreationException {
+		
+		if (dt.getParentName() == null || dt.getParentName().trim().equals("")) {
+			//TODO should we throw an error or just return ...
+			return;
+		}
 
 		if (!dt.getParentName().equals("Object")) {
 			flattenChildType(dt.getParentName(), central, currentName, list);
@@ -221,16 +227,19 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 			MobyRelationship relation = relations[i];
 			switch (relation.getRelationshipType()) {
 			case CentralImpl.iHAS: {
-				if (isPrimitive(relation.getDataTypeName())) {
-					list
-							.add(currentName + (currentName.equals("") ? "" : "_'")
-									+ relation.getName() + (currentName.equals("") ? "" : "'"));
+				// check for object or primitives
+				if (isPrimitive(relation.getDataTypeName()) || relation.getDataTypeName().equals("Object")) {
+					// object has no value ... only primitives do
+					if (!relation.getDataTypeName().equals("Object"))
+						list
+						.add(currentName + (currentName.equals("") ? "" : "_'")
+					  			 + relation.getName() + (currentName.equals("") ? "" : "'"));
 					list
 					.add(currentName + (currentName.equals("") ? "" : "_'")
-							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_id");
+							 + relation.getName() + (currentName.equals("") ? "" : "'")+"_id");
 					list
 					.add(currentName + (currentName.equals("") ? "" : "_'")
-							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_ns");
+							 + relation.getName() + (currentName.equals("") ? "" : "'")+"_ns");
 				}
 				else {
 					flattenChildType(relation.getDataTypeName(), central, currentName
@@ -239,10 +248,13 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 			}
 				break;
 			case CentralImpl.iHASA: {
-				if (isPrimitive(relation.getDataTypeName())) {
-					list
-							.add(currentName + (currentName.equals("") ? "" : "_'")
-									+ relation.getName()+ (currentName.equals("") ? "" : "'"));
+				// check for object or primitives ... 
+				if (isPrimitive(relation.getDataTypeName()) || relation.getDataTypeName().equals("Object")) {
+					// object has no value ... only primitives do
+                                        if (!relation.getDataTypeName().equals("Object"))
+						list
+						.add(currentName + (currentName.equals("") ? "" : "_'")
+						 		 + relation.getName()+ (currentName.equals("") ? "" : "'"));
 					list
 					.add(currentName + (currentName.equals("") ? "" : "_'")
 							+ relation.getName() + (currentName.equals("") ? "" : "'")+"_id");
@@ -331,3 +343,4 @@ public class MobyParseDatatypeProcessor extends Processor implements java.io.Ser
 		this.workflowName = workflowName;
 	}
 }
+
