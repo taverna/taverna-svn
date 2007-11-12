@@ -23,7 +23,7 @@
 	</properties>
 	
 	<modules>
-		<module>dataflow-translation-testing</module>
+		<module>dataflow-invocation-testing</module>
 		<module>activity-testing</module>
 	</modules>
 

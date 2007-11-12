@@ -7,9 +7,9 @@
 		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>dataflow-translation-testing</artifactId>
+	<artifactId>dataflow-invocation-testing</artifactId>
 	<version>${depT2core}</version>
-	<name>Testing of Dataflows after Translation from a ScuflModel</name>
+	<name>Testing of Dataflow invocation after Translation from a ScuflModel</name>
 	<packaging>jar</packaging>
 	
 	<dependencies>
