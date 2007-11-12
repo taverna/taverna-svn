@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
@@ -26,7 +27,6 @@ import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
@@ -72,7 +72,7 @@ import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor
  */
 public class WorkflowModelTranslator {
 
-	private Edits edits = new EditsImpl();
+	private Edits edits = EditsRegistry.getEdits();
 
 	private Map<org.embl.ebi.escience.scufl.Processor, Processor> processorMap = new HashMap<org.embl.ebi.escience.scufl.Processor, Processor>();
 

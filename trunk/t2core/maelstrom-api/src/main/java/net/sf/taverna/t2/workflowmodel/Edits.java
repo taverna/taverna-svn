@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import java.util.List;
+
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -252,5 +254,23 @@ public interface Edits {
 	 */
 	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(
 			Processor control, Processor target);
+	
+	/**
+	 * Builds an instance of an {@link InputPort} for an Activity.
+	 * @param portName
+	 * @param portDepth
+	 * @param mimeTypes
+	 * @return an instance of InputPort
+	 */
+	InputPort buildActivityInputPort(String portName, int portDepth, List<String> mimeTypes);
 
+	/**
+	 * Builds an instance of an {@link OutputPort} for an Activity.
+	 * @param portName
+	 * @param portDepth
+	 * @param portGranularDepth
+	 * @param mimeTypes
+	 * @return an instance of OutputPort
+	 */
+	OutputPort buildActivityOutputPort(String portName, int portDepth, int portGranularDepth, List<String> mimeTypes);
 }

@@ -1,8 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 /**
  * Abstraction of an edit acting on a Dataflow instance. Handles the check to

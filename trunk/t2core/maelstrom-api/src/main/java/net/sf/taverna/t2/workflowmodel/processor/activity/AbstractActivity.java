@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -57,14 +58,6 @@ public abstract class AbstractActivity<ConfigType> extends
 	 */
 	public abstract ConfigType getConfiguration();
 	
-	/**
-	 * Provides access to an implementation specific factory class responsible for building ports.
-	 * Since this method is abstract, the implementation of this AbstractActivity is responsible for
-	 * providing an instance of the builder.
-	 */
-	//FIXME: this approach doesn't work as intended, since the Activity implementation ends up with a dependency on maelstrom-impl.
-	//There are easy ways round this but non particularly elegant. Passing the PortBuilder to configure leads to the port builder being passed around all over the place.
-	protected abstract ActivityPortBuilder getPortBuilder();
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getInputPortMapping()
@@ -102,7 +95,7 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param mimeTypes - a list of String representations of the MIME type this port will accept as inputs.
 	 */
 	protected void addInput(String portName, int portDepth, List<String>mimeTypes) {
-		inputPorts.add(getPortBuilder().buildInputPort(portName, portDepth,mimeTypes));
+		inputPorts.add(EditsRegistry.getEdits().buildActivityInputPort(portName, portDepth,mimeTypes));
 	}
 
 	/**
@@ -113,7 +106,7 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param mimeTypes - a List of String representations of the MIME type this port will emit as outputs.
 	 */
 	protected void addOutput(String portName, int portDepth, int granularDepth, List<String>mimeTypes) {
-		outputPorts.add(getPortBuilder().buildOutputPort(portName, portDepth,
+		outputPorts.add(EditsRegistry.getEdits().buildActivityOutputPort(portName, portDepth,
 				granularDepth,mimeTypes));
 	}
 
