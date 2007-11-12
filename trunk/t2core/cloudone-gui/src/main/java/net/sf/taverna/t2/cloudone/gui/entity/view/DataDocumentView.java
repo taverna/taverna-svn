@@ -2,7 +2,12 @@ package net.sf.taverna.t2.cloudone.gui.entity.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -48,8 +53,21 @@ public class DataDocumentView extends
 	}
 
 	@Override
-	protected JComponent createModelView(ReferenceSchemeModel refModel) {
-		return new JLabel(refModel.toString());
+	protected JComponent createModelView(final ReferenceSchemeModel refModel) {
+		JPanel panel = new JPanel();
+//		JLabel removeRef = new JLabel("<html><a href='#'>remove</a></html>");
+//		removeRef.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				refModel.remove();
+//			}
+//		});
+		
+		JButton removeRef = new JButton(new RemoveViewAction((refModel)));
+		JLabel lable = new  JLabel(refModel.toString());
+		panel.add(lable);
+		panel.add(removeRef);
+		return panel;
 	}
 
 	@Override
@@ -66,6 +84,21 @@ public class DataDocumentView extends
 	@Override
 	protected void removeViewComponent(JComponent refModel) {
 		views.remove(refModel);
+		views.revalidate();
+	}
+	
+	public class RemoveViewAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+		private final ReferenceSchemeModel model;
+
+		public RemoveViewAction(ReferenceSchemeModel model) {
+			super("Remove");
+			this.model = model;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			model.remove();
+		}
 	}
 
 }
