@@ -142,12 +142,11 @@ public class JobInfo extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					job.getOwner().getJobs().delete(job);
+					uiLog.log("Deleted " + job);
 				} catch (NotSuccessException e1) {
 					logger.warn("Could not delete " + job, e1);
 					uiLog.log("Could not delete " + job);
-					return;
 				}
-				uiLog.log("Deleted " + job);
 				jobsPanel.refresh();
 			}
 		});
