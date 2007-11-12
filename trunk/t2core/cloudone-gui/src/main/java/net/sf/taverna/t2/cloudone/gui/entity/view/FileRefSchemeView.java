@@ -21,14 +21,14 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 
 	private static final long serialVersionUID = 1L;
 	private FileRefSchemeModel model;
-	private DataDocumentView parentView;
+	private DataDocumentEditView parentView;
 	private JTextField textField;
 	private JButton browseButton;
 	private BrowseAction browseAction = new BrowseAction();
 	private RemoveAction removeAction = new RemoveAction();
 
 	public FileRefSchemeView(FileRefSchemeModel model,
-			DataDocumentView parentView) {
+			DataDocumentEditView parentView) {
 		this.model = model;
 		this.parentView = parentView;
 		model.registerObserver(this);

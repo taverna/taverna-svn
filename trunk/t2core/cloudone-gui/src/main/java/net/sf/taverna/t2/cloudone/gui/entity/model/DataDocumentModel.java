@@ -3,14 +3,14 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.gui.entity.view.DataDocumentView;
+import net.sf.taverna.t2.cloudone.gui.entity.view.DataDocumentEditView;
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
 /**
  * Acts as the Model in the Model-View-Controller pattern for the
- * {@link DataDocumentView}. Contains a list of {@link ReferenceSchemeModel}s
+ * {@link DataDocumentEditView}. Contains a list of {@link ReferenceSchemeModel}s
  * which it delegates add/remove responsibilities to a {@link MultiCaster}
  * 
  * @author Stian Soiland
@@ -25,10 +25,14 @@ public class DataDocumentModel extends EntityModel implements Observable<DataDoc
 	private MultiCaster<DataDocumentModelEvent> multiCaster = new MultiCaster<DataDocumentModelEvent>(
 			this);
 
+	public DataDocumentModel(EntityListModel entityListModel) {
+		super(entityListModel);
+	}
+
 	/**
 	 * Add a {@link ReferenceSchemeModel} to the model. Use the
 	 * {@link MultiCaster} to inform registered observers (usually the
-	 * {@link DataDocumentView} that something has been added by sending a
+	 * {@link DataDocumentEditView} that something has been added by sending a
 	 * {@link DataDocumentModelEvent}
 	 * 
 	 * @param refSchemeModel
@@ -67,7 +71,7 @@ public class DataDocumentModel extends EntityModel implements Observable<DataDoc
 	/**
 	 * Remove a {@link ReferenceSchemeModel} from the model. Use the
 	 * {@link MultiCaster} to inform registered observers (probably the
-	 * {@link DataDocumentView} that something has been removed by sending a
+	 * {@link DataDocumentEditView} that something has been removed by sending a
 	 * {@link DataDocumentModelEvent}
 	 * 
 	 * @param refSchemeModel

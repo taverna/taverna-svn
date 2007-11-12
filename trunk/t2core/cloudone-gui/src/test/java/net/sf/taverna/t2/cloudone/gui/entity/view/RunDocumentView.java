@@ -20,14 +20,14 @@ public class RunDocumentView {
 
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
-		DataDocumentModel model = new DataDocumentModel();
-		DataDocumentView view = new DataDocumentView(model);
+		DataDocumentModel model = new DataDocumentModel(null);
+		DataDocumentEditView view = new DataDocumentEditView(model);
 
 		model.registerObserver(new Observer<DataDocumentModelEvent>() {
 			public void notify(Observable<DataDocumentModelEvent> sender,
 					DataDocumentModelEvent message) {
 				System.out.println(message.getEventType() + " "
-						+ message.getRefSchemeModel() + " in " + sender);
+						+ message.getModel() + " in " + sender);
 			}
 		});
 

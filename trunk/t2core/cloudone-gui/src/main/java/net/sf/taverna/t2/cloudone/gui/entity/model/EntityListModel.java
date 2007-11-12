@@ -13,6 +13,10 @@ public class EntityListModel extends EntityModel implements Observable<EntityLis
 
 	private List<EntityModel> entityModels = new ArrayList<EntityModel>();
 
+	public EntityListModel(EntityListModel parentModel) {
+		super(parentModel);
+	}
+
 	public void registerObserver(Observer<EntityListModelEvent> observer) {
 		multiCaster.registerObserver(observer);
 	}
@@ -24,13 +28,13 @@ public class EntityListModel extends EntityModel implements Observable<EntityLis
 	public void addEntityModel(EntityModel entityModel) {
 		entityModels.add(entityModel);
 		multiCaster.notify(new EntityListModelEvent(
-				EntityListModelEvent.EventType.ADDED, entityModel));
+				ModelEvent.EventType.ADDED, entityModel));
 	}
 	
 	public void removeEntityModel(EntityModel entityModel) {
 		entityModels.remove(entityModel);
 		multiCaster.notify(new EntityListModelEvent(
-				EntityListModelEvent.EventType.REMOVED, entityModel));
+				ModelEvent.EventType.REMOVED, entityModel));
 	}
 
 	public List<EntityModel> getEntityModels() {

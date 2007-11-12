@@ -1,62 +1,134 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityModel;
-import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent.EventType;
-import net.sf.taverna.t2.lang.observer.Observable;
-import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.apache.log4j.Logger;
 
+public class EntityListView extends
+		EntityView<EntityListModel, EntityModel, EntityListModelEvent> {
 
-public class EntityListView extends EntityView implements Observer<EntityListModelEvent> {
-	
-	private Map<EntityModel, EntityView> modelViews = new HashMap<EntityModel, EntityView>();
-
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(EntityListView.class);
 
-	private final EntityListModel entityListModel;
-	
+	private JButton dataDocButton;
+
 	private JPanel entityViews;
 
+	@SuppressWarnings("unchecked")
 	private EntityView lastEditedView;
 
-	private ModelObserver observer;
-	
+	private JButton listButton;
+
 	public EntityListView(EntityListModel entityListModel) {
-		this.entityListModel = entityListModel;
+		super(entityListModel);
 		initialise();
-		observer = new ModelObserver();
-		entityListModel.registerObserver(observer);
+	}
+
+	public void addEntityToModel(EntityModel entityModel) {
+		getParentModel().addEntityModel(entityModel);
+	}
+
+	private JPanel createSchemeButtons() {
+		JPanel addSchemes = new JPanel();
+		addSchemes.setLayout(new GridBagLayout());
+		GridBagConstraints cLabel = new GridBagConstraints();
+		cLabel.gridx = 0;
+		cLabel.weightx = 0.1;
+		cLabel.fill = GridBagConstraints.HORIZONTAL;
+
+		GridBagConstraints cButton = new GridBagConstraints();
+		cButton.gridx = 1;
+		cButton.fill = GridBagConstraints.HORIZONTAL;
+
+		JLabel dataDocLabel = new JLabel("Data Document");
+		JLabel listLabel = new JLabel("List");
+		CreatDataDocAction createDataDocAction = new CreatDataDocAction(
+				getParentModel());
+		CreateListAction createListAction = new CreateListAction(
+				getParentModel());
+		dataDocButton = new JButton(createDataDocAction);
+		listButton = new JButton(createListAction);
+
+		addSchemes.add(dataDocLabel, cLabel);
+		addSchemes.add(dataDocButton, cButton);
+		addSchemes.add(listLabel, cLabel);
+		addSchemes.add(listButton, cButton);
+		return addSchemes;
+	}
+
+	private JPanel createEntityViewsPanel() {
+		JPanel views = new JPanel();
+		views.setLayout(new GridBagLayout());
+		for (EntityModel model : getParentModel().getEntityModels()) {
+			addModelView(model);
+		}
+		return views;
 	}
 
 	private void initialise() {
-		entityViews = new JPanel();
-		
+		setLayout(new GridBagLayout());
+
+		JPanel addSchemes = createSchemeButtons();
+		GridBagConstraints outerConstraint = new GridBagConstraints();
+		outerConstraint.gridx = 0;
+		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
+		add(addSchemes, outerConstraint);
+
+		entityViews = createEntityViewsPanel();
+		add(entityViews, outerConstraint);
+
+		outerConstraint.gridx = 1;
+		outerConstraint.gridy = 100;
+		outerConstraint.weighty = 0.1;
+		outerConstraint.weightx = 0.1;
+		outerConstraint.fill = GridBagConstraints.BOTH;
+		JPanel filler = new JPanel();
+		// filler.setBorder(BorderFactory.createEtchedBorder());
+		add(filler, outerConstraint);
 	}
-	
-	public void addEntityModel(EntityModel entityModel) {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected EntityView createModelView(EntityModel model) {
 		EntityView view;
-		if (entityModel instanceof DataDocumentModel) {
-			view = new DataDocumentView((DataDocumentModel)entityModel);
-		} else if (entityModel instanceof EntityListModel) {
-			view = new EntityListView((EntityListModel) entityModel);
+		if (model instanceof DataDocumentModel) {
+			view = new DataDocumentEditView((DataDocumentModel) model);
+		} else if (model instanceof EntityListModel) {
+			view = new EntityListView((EntityListModel) model);
 		} else {
-			throw new IllegalArgumentException("Unsupported model type " + entityModel);
+			// TODO: Strings and literals
+			throw new IllegalArgumentException("Unsupported model type "
+					+ model);
 		}
-		modelViews.put(entityModel, view);
-		// TODO: Strings and literals
+		return view;
 	}
-	
-	public void removeEntityModel(EntityModel entityModel) {
-		EntityView view = modelViews.remove(entityModel);
+
+	@Override
+	protected void placeViewComponent(JComponent view) {
+		GridBagConstraints c = new GridBagConstraints();
+		// indent?
+		c.gridx = 0;
+		entityViews.add(view, c);
+		entityViews.revalidate();
+	}
+
+	@Override
+	protected void removeViewComponent(JComponent view) {
 		entityViews.remove(view);
 		if (lastEditedView == view) {
 			lastEditedView = null;
@@ -64,41 +136,52 @@ public class EntityListView extends EntityView implements Observer<EntityListMod
 		entityViews.revalidate();
 	}
 
-	public void notify(Observable<EntityListModelEvent> sender,
-			EntityListModelEvent event) {
-		if (event.getEventType().equals(EntityListModelEvent.EventType.ADDED)) {
-			addEntityModel(event.getEntityModel());
-		} else if (event.getEventType().equals(EntityListModelEvent.EventType.REMOVED)) {
-			removeEntityModel(event.getEntityModel());
-		} else {
-			logger.warn("Unsupported event type " + event.getEventType());
-		}
-		
-	}
-	
 	/**
-	 * Observes the changes in a {@link DataDocumentModel} and is notified by
-	 * the {@link DataDocumentModel} whenit wants to inform it of a change to
-	 * the underlying data
+	 * The Controller (in Model-View-Controller terms) for adding a
+	 * {@link HttpReferenceScheme} via clicking the appropriate button
 	 * 
 	 * @author Stian Soiland
 	 * @author Ian Dunlop
 	 * 
 	 */
-	private final class ModelObserver implements
-			Observer<EntityListModelEvent> {
+	public class CreatDataDocAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
 
-		public void notify(Observable<EntityListModelEvent> sender,
-				EntityListModelEvent event) {
-			EventType eventType = event.getEventType();
-			EntityModel entityModel = event.getEntityModel();
-			if (eventType.equals(EventType.ADDED)) {
-				addEntityModel(entityModel);
-			} else if (eventType.equals(EventType.REMOVED)) {
-				removeEntityModel(entityModel);
-			} else {
-				logger.warn("Unsupported event type " + eventType);
-			}
+		private EntityListModel entityListModel;
+
+		public CreatDataDocAction(EntityListModel entityListModel) {
+			super("Create Data Document");
+			this.entityListModel = entityListModel;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			DataDocumentModel dataDocModel = new DataDocumentModel(
+					entityListModel);
+			addEntityToModel(dataDocModel);
+		}
+	}
+
+	/**
+	 * The Controller (in Model-View-Controller terms) for adding a
+	 * {@link FileReferenceScheme} via clicking the appropriate button
+	 * 
+	 * @author Stian Soiland
+	 * @author Ian Dunlop
+	 * 
+	 */
+	public class CreateListAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		private EntityListModel parentModel;
+
+		public CreateListAction(EntityListModel parentModel) {
+			super("Create List");
+			this.parentModel = parentModel;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			EntityListModel entityListModel = new EntityListModel(parentModel);
+			addEntityToModel(entityListModel);
 		}
 	}
 

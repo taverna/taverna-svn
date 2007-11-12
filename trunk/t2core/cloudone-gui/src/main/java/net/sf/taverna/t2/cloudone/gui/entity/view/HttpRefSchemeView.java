@@ -41,7 +41,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 	private OKAction okAction = new OKAction();
 	private EditAction editAction = new EditAction();
 	private RemoveAction removeAction = new RemoveAction();
-	private DataDocumentView parentView;
+	private DataDocumentEditView parentView;
 
 	/**
 	 * Register as an observer with a {@link HttpRefSchemeModel} and initialise
@@ -51,7 +51,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 	 * @param parentView
 	 */
 	public HttpRefSchemeView(HttpRefSchemeModel model,
-			DataDocumentView parentView) {
+			DataDocumentEditView parentView) {
 		this.model = model;
 		this.parentView = parentView;
 		model.registerObserver(this);
@@ -157,7 +157,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 	/**
 	 * Controller for edit button action. Asks parent view to deal with the
 	 * button enable/disable etc. through the
-	 * {@link DataDocumentView#edit(ReferenceSchemeModel)}
+	 * {@link DataDocumentEditView#edit(ReferenceSchemeModel)}
 	 * 
 	 * @author Stian Soiland
 	 * @author Ian Dunlop
