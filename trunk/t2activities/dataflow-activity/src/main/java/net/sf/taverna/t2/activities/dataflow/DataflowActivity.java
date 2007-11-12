@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
@@ -44,6 +45,8 @@ public class DataflowActivity extends
 	private Edits edits = new EditsImpl();
 	
 	private AsynchronousActivityCallback callback;
+	
+	private AtomicLong runIndex = new AtomicLong(0);
 
 	@Override
 	protected ActivityPortBuilder getPortBuilder() {
@@ -95,25 +98,24 @@ public class DataflowActivity extends
 	public void executeAsynch(final Map<String, EntityIdentifier> data,
 			final AsynchronousActivityCallback callback) {
 		this.callback = callback;
-		dataflow.checkValidity();
 		logger.info("executeAsynch dataflow");
 		callback.requestRun(new Runnable() {
 
 			public void run() {
+				String owningProcess = dataflow.getLocalName() + runIndex.getAndIncrement();
 				logger.info("Run dataflow");
 				for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
 					if (data.containsKey(inputPort.getName())) {
 						EntityIdentifier id =  data.get(inputPort.getName());
 						logger.info("Port = " + inputPort.getName());
 						logger.info("Depth = " + id.getDepth());
-						inputPort.receiveEvent(new WorkflowDataToken(dataflow
-								.getLocalName(), new int[0], id));
+						inputPort.receiveEvent(new WorkflowDataToken(owningProcess, new int[0], id));
 					}
 				}
 				
 				for (Processor processor : dataflow.getProcessors()) {
 					if (processor.getInputPorts().size() == 0 && processor.getPreconditionList().size() == 0) {
-						processor.fire(dataflow.getLocalName());
+						processor.fire(owningProcess);
 					}
 				}
 

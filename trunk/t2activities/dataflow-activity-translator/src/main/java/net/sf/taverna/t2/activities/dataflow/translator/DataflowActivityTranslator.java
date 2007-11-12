@@ -31,13 +31,13 @@ public class DataflowActivityTranslator extends
 		try {
 			Dataflow dataflow = WorkflowModelTranslator
 					.doTranslation(getScuflModel(processor));
-//			DataflowValidationReport report = dataflow.checkValidity();
-//			if (report.isValid()) {
+			DataflowValidationReport report = dataflow.checkValidity();
+			if (report.isValid()) {
 				bean.setDataflow(dataflow);
-//			} else {
-//				throw new ActivityTranslationException(
-//						"Error validating nested workflow");				
-//			}
+			} else {
+				throw new ActivityTranslationException(
+						"Error validating nested workflow");				
+			}
 		} catch (WorkflowTranslationException e) {
 			throw new ActivityTranslationException(
 					"Error translating nested workflow", e);
