@@ -18,7 +18,7 @@ public class DataDocumentModelTest {
 
 	@Test
 	public void add() throws Exception {
-		ReferenceSchemeModel refSchemeMod = new ReferenceSchemeModel();
+		ReferenceSchemeModel refSchemeMod = new DummyRefSchemeModel();
 		model.addReferenceScheme(refSchemeMod);
 		assertEquals(1, model.getReferenceSchemeModels().size());
 		assertEquals(refSchemeMod, model.getReferenceSchemeModels().get(0));
@@ -40,7 +40,7 @@ public class DataDocumentModelTest {
 
 	@Test
 	public void remove() throws Exception {
-		ReferenceSchemeModel otherRefScheme = new ReferenceSchemeModel();
+		ReferenceSchemeModel otherRefScheme = new DummyRefSchemeModel();
 		ReferenceSchemeModel refSchemeMod = otherRefScheme;
 		model.addReferenceScheme(refSchemeMod);
 		model.addReferenceScheme(otherRefScheme); // another
@@ -50,6 +50,12 @@ public class DataDocumentModelTest {
 		assertEquals(otherRefScheme, model.getReferenceSchemeModels().get(0));
 		assertEquals(EventType.REMOVED, observer.lastEvent.getEventType());
 		assertEquals(refSchemeMod, observer.lastEvent.getModel());
+	}
+
+	private final class DummyRefSchemeModel extends ReferenceSchemeModel {
+		@Override
+		public void remove() {
+		}
 	}
 
 	public class DataDocObserver implements Observer<DataDocumentModelEvent> {
