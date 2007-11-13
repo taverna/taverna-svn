@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
 
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -42,7 +43,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private JTextArea runStatus;
 
-	private JScrollPane runStatusPane;
+	private JScrollPane runStatusScrollPane;
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
@@ -58,14 +59,18 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		runStatus = new JTextArea();
 		runStatus.setSize(new Dimension(0, 200));
 		
-		runStatusPane = new JScrollPane(runStatus);
+		JPanel runStatusPanel = new JPanel(new BorderLayout());
+		runStatusPanel.add(runStatus, BorderLayout.CENTER);
+		runStatusPanel.add(Box.createVerticalStrut(200), BorderLayout.EAST);
+		
+		runStatusScrollPane = new JScrollPane(runStatusPanel);
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
 
 		JSplitPane midPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		midPanel.add(runStatusPane);
+		midPanel.add(runStatusScrollPane);
 		midPanel.add(resultComponent);
 
 		add(buttonPanel, BorderLayout.NORTH);
@@ -103,7 +108,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 												EntityIdentifier token,
 												int[] index, String portName) {
 											logger.info("Result for "
-													+ portName);
+													+ portName + ", index.length = " + index.length);
 											if (index.length == 0) {
 												results++;
 												if (results == dataflow
@@ -123,7 +128,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 									});
 							for (Processor processor : dataflow.getProcessors()) {
 								if (processor.getInputPorts().size() == 0) {
-									logger.debug("Firing processor : "
+									logger.info("Firing processor : "
 											+ processor.getLocalName());
 									processor.fire(dataflow.getLocalName());
 								}
@@ -176,7 +181,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	
 	private void updateStatus(String status) {
 		runStatus.append(status);
-		JScrollBar scrollBar = runStatusPane.getVerticalScrollBar();
+		JScrollBar scrollBar = runStatusScrollPane.getVerticalScrollBar();
 		if (scrollBar != null) {
 			scrollBar.setValue(scrollBar.getMaximum());
 		}
