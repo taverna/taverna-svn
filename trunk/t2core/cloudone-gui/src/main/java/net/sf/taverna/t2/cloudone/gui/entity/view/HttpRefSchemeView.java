@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -100,6 +102,9 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 
 	private void initialise() {
 		setLayout(new GridBagLayout());
+		//setBorder(BorderFactory.createLineBorder(Color.RED));
+//		setOpaque(false);
+		
 		GridBagConstraints headerC = new GridBagConstraints();
 		headerC.gridx = 0;
 		headerC.gridy = 0;

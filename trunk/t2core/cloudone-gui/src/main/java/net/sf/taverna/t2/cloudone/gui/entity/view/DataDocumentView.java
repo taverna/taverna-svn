@@ -1,12 +1,12 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -26,18 +26,21 @@ public class DataDocumentView extends
 	private JPanel views;
 
 	public DataDocumentView(DataDocumentModel model) {
-		super(model);
+		super(model, null);
 		initialise();
+		//setBorder(BorderFactory.createLineBorder(Color.BLUE));
 	}
 
 	protected void initialise() {
 		setLayout(new GridBagLayout());
+//		setOpaque(false);
 		// JPanel addSchemes = addSchemeButtons();
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		// add to outer panel first then the parent?
 		views = new JPanel();
+//		views.setOpaque(false);
 		views.setLayout(new GridBagLayout());
 		outerConstraint.weighty = 0.1;
 		outerConstraint.weightx = 0.1;
@@ -48,6 +51,7 @@ public class DataDocumentView extends
 			addModelView(ref);
 		}
 		JPanel filler = new JPanel();
+//		filler.setOpaque(false);
 		// filler.setBorder(BorderFactory.createEtchedBorder());
 		add(filler, outerConstraint);
 	}
@@ -64,6 +68,7 @@ public class DataDocumentView extends
 //		});
 		
 		JButton removeRef = new JButton(new RemoveViewAction((refModel)));
+//		removeRef.setOpaque(false);
 		JLabel lable = new  JLabel(refModel.toString());
 		panel.add(lable);
 		panel.add(removeRef);
@@ -99,6 +104,12 @@ public class DataDocumentView extends
 		public void actionPerformed(ActionEvent e) {
 			model.remove();
 		}
+	}
+
+	@Override
+	public void setEdit(boolean editable) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

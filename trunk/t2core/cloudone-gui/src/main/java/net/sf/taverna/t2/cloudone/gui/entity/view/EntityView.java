@@ -30,7 +30,12 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 
 	protected final ModelObserver modelObserver;
 
-	public EntityView(ParentModelType parentModel) {
+	private int depth;
+
+	private EntityListView parentView;
+
+	public EntityView(ParentModelType parentModel, EntityListView parentView) {
+		this.parentView = parentView;		
 		this.parentModel = parentModel;
 		this.modelObserver = makeModelObserver();
 		// TODO: removeObserver on window close
@@ -46,6 +51,7 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 		if (view == null) { 
 			return;
 		}
+		view.setOpaque(false);
 		modelViews.put(refModel, view);
 		placeViewComponent(view);
 	}
@@ -80,5 +86,11 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 				logger.warn("Unsupported event type " + eventType);
 			}
 		}
+	}
+
+	public abstract void setEdit(boolean editable);
+
+	public EntityListView getParentView() {
+		return parentView;
 	}
 }

@@ -1,10 +1,12 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -56,8 +58,9 @@ public class DataDocumentEditView
 	 *            the {@link DataDocumentModel} model part in
 	 *            Model-View-Controller terms
 	 */
-	public DataDocumentEditView(DataDocumentModel model) {
-		super(model);
+	public DataDocumentEditView(DataDocumentModel model,
+			EntityListView parentView) {
+		super(model, parentView);
 		initialiseGui();
 	}
 
@@ -102,6 +105,9 @@ public class DataDocumentEditView
 
 		// panel inside panel for on-click activation
 		setLayout(new GridBagLayout());
+		// setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		//setBackground(new Color(180, 240, 160, 64));
+
 		// JPanel addSchemes = addSchemeButtons();
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
@@ -121,6 +127,7 @@ public class DataDocumentEditView
 		outerConstraint.weightx = 0.1;
 		outerConstraint.fill = GridBagConstraints.BOTH;
 		JPanel filler = new JPanel();
+		//filler.setOpaque(false);
 		// filler.setBorder(BorderFactory.createEtchedBorder());
 		add(filler, outerConstraint);
 		// panel which is switched in/out on edit button click
@@ -128,15 +135,18 @@ public class DataDocumentEditView
 
 	private void outerPanel() {
 		outerPanel = new JPanel();
+		//outerPanel.setOpaque(false);
 		EditPanelAction editPanelAction = new EditPanelAction();
 		editButton = new JButton(editPanelAction);
 		editButton.setText("Edit");
+		//editButton.setOpaque(false);
 		outerPanel.add(editButton);
 		actionPanel = addSchemeButtons();
 		nonEditPanel = new DataDocumentView(getParentModel());
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
+		// does this need a grid bag constraint?
 		outerPanel.add(actionPanel);
 		outerPanel.add(nonEditPanel);
 		nonEditPanel.setVisible(false);
@@ -156,6 +166,7 @@ public class DataDocumentEditView
 
 	protected JPanel addSchemeButtons() {
 		JPanel addSchemes = new JPanel();
+//		addSchemes.setOpaque(false);
 		addSchemes.setLayout(new GridBagLayout());
 		GridBagConstraints cLabel = new GridBagConstraints();
 		cLabel.gridx = 0;
@@ -173,7 +184,9 @@ public class DataDocumentEditView
 		CreateFileAction createFileAction = new CreateFileAction(
 				getParentModel());
 		httpButton = new JButton(createHttpAction);
+//		httpButton.setOpaque(false);
 		fileButton = new JButton(createFileAction);
+//		fileButton.setOpaque(false);
 
 		addSchemes.add(httpRefLabel, cLabel);
 		addSchemes.add(httpButton, cButton);
@@ -275,21 +288,42 @@ public class DataDocumentEditView
 
 		public EditPanelAction() {
 			super("Edit Data Document");
+
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			if (editButton.getText().equalsIgnoreCase("Hide")) {
-				actionPanel.setVisible(false);
-				refViews.setVisible(false);
-				nonEditPanel.setVisible(true);
-				editButton.setText("Edit");
+			boolean editable = editButton.getText().equalsIgnoreCase("Edit");
+			// FIXME: Check editable state instead of button text
+			if (getParentView() == null) {
+				setEdit(editable);
 			} else {
-				actionPanel.setVisible(true);
-				refViews.setVisible(true);
-				nonEditPanel.setVisible(false);
-				editButton.setText("Hide");
+				if (editable) {
+					getParentView().edit(getParentModel());
+				} else {
+					getParentView().edit(null);
+				}
 			}
 		}
 	}
+
+	@Override
+	public void setEdit(boolean editable) {
+		if (!editable) {
+			edit(null);
+			// read-only
+			actionPanel.setVisible(false);
+			refViews.setVisible(false);
+			nonEditPanel.setVisible(true);
+			editButton.setText("Edit");
+		} else {
+			actionPanel.setVisible(true);
+			refViews.setVisible(true);
+			nonEditPanel.setVisible(false);
+			editButton.setText("Hide");
+		}
+		revalidate();
+
+	}
+
 
 }
