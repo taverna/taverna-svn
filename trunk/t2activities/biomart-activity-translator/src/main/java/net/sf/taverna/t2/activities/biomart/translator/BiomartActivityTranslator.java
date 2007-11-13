@@ -43,7 +43,7 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Biomar
 		} catch (NoSuchMethodException e) {
 			throw new ActivityTranslationException("The processor does not have the method getQuery, and therefore does not conform to being a Biomart processor",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getQuery on the beanshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getQuery on the Biomart processor had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
 			throw new ActivityTranslationException("Unable to access the method getQuery on the Biomart processor",e);
 		} catch (InvocationTargetException e) {
