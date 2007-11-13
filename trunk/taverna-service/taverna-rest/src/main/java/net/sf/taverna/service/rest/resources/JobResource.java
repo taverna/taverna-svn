@@ -70,13 +70,7 @@ public class JobResource extends AbstractJobResource {
 		daoFactory.getJobDAO().delete(job);
 		daoFactory.commit();
 		logger.info("Deleted " + job);
-		if (getRequest().getEntity()!=null) {
-			// only set redirection when coming from a browser.
-			getResponse().setRedirectRef(getRequest().getReferrerRef());
-			getResponse().setStatus(Status.REDIRECTION_FOUND);
-		} else {
-			getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
-		}
+		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 	}
 
 	@Override
