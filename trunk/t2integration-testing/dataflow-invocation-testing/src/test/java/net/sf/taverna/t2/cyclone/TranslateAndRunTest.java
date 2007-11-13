@@ -39,10 +39,9 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		ContextManager.baseManager = dataManager;
 	}
 
-	@Ignore("Biomart error prevents this test from working correctly. Needs new workflow or Biomart fix")
 	@Test
-	public void translateAndValidateTest() throws Exception {
-		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
+	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {
+		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis2.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
 		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
 		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
