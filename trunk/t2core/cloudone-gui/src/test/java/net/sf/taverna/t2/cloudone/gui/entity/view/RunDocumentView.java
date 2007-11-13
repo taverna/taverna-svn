@@ -21,7 +21,7 @@ public class RunDocumentView {
 	public static void main(String[] args) throws InterruptedException,
 			IOException {
 		DataDocumentModel model = new DataDocumentModel(null);
-		DataDocumentEditView view = new DataDocumentEditView(model);
+		DataDocumentEditView view = new DataDocumentEditView(model, null);
 
 		model.registerObserver(new Observer<DataDocumentModelEvent>() {
 			public void notify(Observable<DataDocumentModelEvent> sender,
