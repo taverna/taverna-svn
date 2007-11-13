@@ -193,8 +193,13 @@ public class SoaplabActivity extends
 							// the output document.
 							// outputThing = DataThingFactory
 							// .bake((byte[][]) outputObject);
-							outputData.put(parameterName, dataFacade
-									.register(Arrays.asList(outputObject)));
+							List<byte[]> list = new ArrayList<byte[]>();
+							for (byte[] byteArray : (byte[][]) outputObject) {
+								list.add(byteArray);
+							}
+							outputData.put(parameterName, dataFacade.register(list));
+//							outputData.put(parameterName, dataFacade
+//									.register(Arrays.asList(outputObject)));
 						} else if (outputObject instanceof List) {
 							List<?> convertedList = convertList((List<?>) outputObject);
 							outputData.put(parameterName, dataFacade
