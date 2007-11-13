@@ -166,11 +166,13 @@ public class UserResource extends AbstractUserResource {
 		}
 
 		User userElem;
+                String text="";
 		try {
+                        text=entity.getText();
 			userElem =
-				UserDocument.Factory.parse(entity.getStream(), xmlOptions).getUser();
+				UserDocument.Factory.parse(text, xmlOptions).getUser();
 		} catch (IOException e) {
-			logger.warn("Could not read user XML", e);
+			logger.warn("Could not read user XML\n"+text+"\n", e);
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 				"Could not read XML");
 			return;

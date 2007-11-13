@@ -86,10 +86,12 @@ public class JobsResource extends AbstractUserResource {
 			return;
 		}
 		JobDocument jobDoc;
+                String text=""; 
 		try {
-			jobDoc = JobDocument.Factory.parse(entity.getStream());
+                        text= entity.getText();
+			jobDoc = JobDocument.Factory.parse(text);
 		} catch (XmlException ex) {
-			logger.warn("Could not parse job document", ex);
+			logger.warn("Could not parse job document\n"+text+"\n", ex);
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
 				"Could not parse as XML");
 			return;

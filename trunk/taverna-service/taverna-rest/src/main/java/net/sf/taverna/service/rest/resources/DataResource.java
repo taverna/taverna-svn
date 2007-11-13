@@ -97,10 +97,12 @@ public class DataResource extends AbstractOwnedResource<DataDoc> {
 			return;
 		}
 		DataDocument dataDocument;
+                String text="";
 		try {
-			dataDocument = DataDocument.Factory.parse(entity.getStream());
+                        text=entity.getText();
+			dataDocument = DataDocument.Factory.parse(text);
 		} catch (XmlException e) {
-			logger.warn("Could not parse XML", e);
+			logger.warn("Could not parse XML\n"+text+"\n", e);
 			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL,
 				"Could not parse XML");
 			return;

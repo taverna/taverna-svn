@@ -50,10 +50,12 @@ public class UsersResource extends AbstractResource {
 			return;
 		}
 		UserDocument doc;
+                String text="";
 		try {
-			doc = UserDocument.Factory.parse(entity.getStream());
+                        text=entity.getText();
+			doc = UserDocument.Factory.parse(text);
 		} catch (XmlException e) {
-			logger.warn("Could not parse user document", e);
+			logger.warn("Could not parse user document\n"+text+"\n", e);
 			getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
 				"Could not parse as XML");
 			return;
