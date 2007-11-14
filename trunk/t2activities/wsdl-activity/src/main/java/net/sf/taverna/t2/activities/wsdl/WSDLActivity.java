@@ -106,7 +106,7 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 	
 				try {
 					for (String key : data.keySet()) {
-						invokerInputMap.put(key, dataFacade.resolve(data.get(key)));
+						invokerInputMap.put(key, dataFacade.resolve(data.get(key),String.class));
 					}
 					List<String> outputNames = new ArrayList<String>();
 					for (OutputPort port : getOutputPorts()) {

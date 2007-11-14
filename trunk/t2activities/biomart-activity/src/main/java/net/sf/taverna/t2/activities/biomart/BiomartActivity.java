@@ -83,7 +83,7 @@ public class BiomartActivity extends
 						String name = filter.getQualifiedName();
 						if (data.containsKey(name + "_filter")) {
 							Object filterValue = dataFacade.resolve(data
-									.get(name + "_filter"));
+									.get(name + "_filter"),String.class);
 							if (filterValue instanceof String) {
 								filter.setValue((String) filterValue);
 							} else if (filterValue instanceof List) {

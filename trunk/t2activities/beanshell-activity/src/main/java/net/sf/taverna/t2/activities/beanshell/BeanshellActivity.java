@@ -65,7 +65,7 @@ public class BeanshellActivity extends
 						// set inputs
 						for (String inputName : data.keySet()) {
 							Object input = dataFacade.resolve(data
-									.get(inputName));
+									.get(inputName),String.class);
 							interpreter.set(inputName, input);
 						}
 						// run
