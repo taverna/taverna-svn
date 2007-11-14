@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -16,7 +17,9 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityModel;
+import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
+import net.sf.taverna.t2.cloudone.gui.entity.model.StringModel;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
@@ -31,11 +34,16 @@ public class EntityListView extends
 	private JButton dataDocButton;
 
 	private JPanel entityViews;
+	
+	private JButton literalButton;
 
 	@SuppressWarnings("unchecked")
 	private EntityView lastEditedView;
 
 	private JButton listButton;
+
+	private JButton stringButton;
+
 
 	public EntityListView(EntityListModel entityListModel,
 			EntityListView parentView) {
@@ -49,13 +57,14 @@ public class EntityListView extends
 	}
 
 	public void addEntityToModel(EntityModel entityModel) {
-		getParentModel().addEntityModel(entityModel);
+		getModel().addEntityModel(entityModel);
+		System.out.println("add");
 		try {
 			// Make it editable
 			edit(entityModel);
 		} catch (IllegalStateException ex) {
 			// Could not change editable, remove fresh model
-			getParentModel().removeEntityModel(entityModel);
+			getModel().removeEntityModel(entityModel);
 		}
 	}
 
@@ -93,19 +102,29 @@ public class EntityListView extends
 
 		JLabel dataDocLabel = new JLabel("Data Document");
 		JLabel listLabel = new JLabel("List");
+		JLabel literalLabel = new JLabel("Literal");
+		JLabel stringLabel = new JLabel("String");
 		CreatDataDocAction createDataDocAction = new CreatDataDocAction(
-				getParentModel());
+				getModel());
 		CreateListAction createListAction = new CreateListAction(
-				getParentModel());
+				getModel());
+		CreateLiteralAction createLiteralAction = new CreateLiteralAction(getModel());
+		CreateStringAction createStringAction = new CreateStringAction(getModel());
 		dataDocButton = new JButton(createDataDocAction);
 		// dataDocButton.setOpaque(false);
 		listButton = new JButton(createListAction);
 		// listButton.setOpaque(false);
+		literalButton = new JButton(createLiteralAction);
+		stringButton = new JButton(createStringAction);
 
 		addSchemes.add(dataDocLabel, cLabel);
 		addSchemes.add(dataDocButton, cButton);
 		addSchemes.add(listLabel, cLabel);
 		addSchemes.add(listButton, cButton);
+		addSchemes.add(literalLabel, cLabel);
+		addSchemes.add(literalButton, cButton);
+		addSchemes.add(stringLabel, cLabel);
+		addSchemes.add(stringButton, cButton);
 		return addSchemes;
 	}
 
@@ -113,7 +132,7 @@ public class EntityListView extends
 		JPanel views = new JPanel();
 		// views.setBackground(new Color(255, 255, 255, 0));
 		views.setLayout(new GridBagLayout());
-		for (EntityModel model : getParentModel().getEntityModels()) {
+		for (EntityModel model : getModel().getEntityModels()) {
 			addModelView(model);
 		}
 		return views;
@@ -159,6 +178,10 @@ public class EntityListView extends
 			view = new DataDocumentEditView((DataDocumentModel) model, this);
 		} else if (model instanceof EntityListModel) {
 			view = new EntityListView((EntityListModel) model, this);
+		} else if (model instanceof LiteralModel) {
+			view = new LiteralView((LiteralModel) model, this);
+		} else if (model instanceof StringModel){
+			view = new StringView((StringModel) model, this);
 		} else {
 			// TODO: Strings and literals
 			throw new IllegalArgumentException("Unsupported model type "
@@ -184,6 +207,7 @@ public class EntityListView extends
 			lastEditedView = null;
 		}
 		entityViews.revalidate();
+		System.out.println("removing");
 	}
 
 	/**
@@ -232,6 +256,38 @@ public class EntityListView extends
 		public void actionPerformed(ActionEvent e) {
 			EntityListModel entityListModel = new EntityListModel(parentModel);
 			addEntityToModel(entityListModel);
+		}
+	}
+	
+	public class CreateLiteralAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		private EntityListModel parentModel;
+
+		public CreateLiteralAction(EntityListModel parentModel) {
+			super("Create Literal");
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			LiteralModel literalModel = new LiteralModel(getModel());
+			System.out.println("hello");
+			addEntityToModel(literalModel);
+		}
+	}
+	
+	public class CreateStringAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		private EntityListModel parentModel;
+
+		public CreateStringAction(EntityListModel parentModel) {
+			super("Create String");
+			this.parentModel = parentModel;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			StringModel stringModel = new StringModel(parentModel);
+			addEntityToModel(stringModel);
 		}
 	}
 
