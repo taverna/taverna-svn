@@ -22,6 +22,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
@@ -40,6 +41,8 @@ import org.jdom.JDOMException;
 public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchStack>
 		implements DispatchStack {
 
+	private static Logger logger = Logger.getLogger(DispatchStackImpl.class);
+	
 	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
 
 	private List<DispatchLayer<?>> dispatchLayers = new ArrayList<DispatchLayer<?>>();
@@ -140,7 +143,9 @@ public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchS
 				String errorMessage, Throwable detail) {
 			System.out.println("Error : " + owningProcess + " " + errorMessage
 					+ " " + Thread.currentThread().getName() + queues.get(owningProcess).size());
+			logger.error("Error received in dispatch stack on owningProcess:"+owningProcess+", msg:"+errorMessage,detail);
 			if (errorIndex.length == 0) {
+				
 				// System.out.println(" - sent purge");
 				sendCachePurge(owningProcess);
 			}
