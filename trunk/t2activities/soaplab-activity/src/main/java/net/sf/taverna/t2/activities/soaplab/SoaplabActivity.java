@@ -44,6 +44,8 @@ public class SoaplabActivity extends
 	private static final int INVOCATION_TIMEOUT = 0;
 
 	private SoaplabActivityConfigurationBean configurationBean;
+	
+	private Map<String, Class<?>> inputTypeMap = new HashMap<String, Class<?>>();
 
 	public SoaplabActivity() {
 	}
@@ -78,8 +80,10 @@ public class SoaplabActivity extends
 					Map<String, Object> soaplabInputMap = new HashMap<String, Object>();
 					for (Map.Entry<String, EntityIdentifier> entry : data
 							.entrySet()) {
+						logger.info("Resolving " + entry.getKey() + " to " + inputTypeMap.get(entry.getKey()));
 						soaplabInputMap.put(entry.getKey(), dataFacade
-								.resolve(entry.getValue()));
+								.resolve(entry.getValue(), inputTypeMap.get(entry.getKey())));
+						logger.info("  Value = " + soaplabInputMap.get(entry.getKey()));
 					}
 
 					// Invoke the web service...
@@ -288,15 +292,19 @@ public class SoaplabActivity extends
 				if (input_type.equals("string")) {
 					addInput(input_name, 0, Collections
 							.singletonList("'text/plain'"));
+					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("string[]")) {
 					addInput(input_name, 1, Collections
 							.singletonList("l('text/plain')"));
+					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("byte[]")) {
 					addInput(input_name, 0, Collections
 							.singletonList("'application/octet-stream'"));
+					inputTypeMap.put(input_name, byte[].class);
 				} else if (input_type.equals("byte[][]")) {
 					addInput(input_name, 1, Collections
 							.singletonList("l('application/octet-stream')"));
+					inputTypeMap.put(input_name, byte[][].class);
 				}
 			}
 
