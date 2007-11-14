@@ -46,7 +46,7 @@ public class DataDocumentView extends
 		outerConstraint.weightx = 0.1;
 		outerConstraint.fill = GridBagConstraints.BOTH;
 		add(views, outerConstraint);
-		for (ReferenceSchemeModel ref : getParentModel()
+		for (ReferenceSchemeModel ref : getModel()
 				.getReferenceSchemeModels()) {
 			addModelView(ref);
 		}

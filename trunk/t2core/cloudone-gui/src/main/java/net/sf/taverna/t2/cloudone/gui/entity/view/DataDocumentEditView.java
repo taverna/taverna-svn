@@ -142,7 +142,7 @@ public class DataDocumentEditView
 		//editButton.setOpaque(false);
 		outerPanel.add(editButton);
 		actionPanel = addSchemeButtons();
-		nonEditPanel = new DataDocumentView(getParentModel());
+		nonEditPanel = new DataDocumentView(getModel());
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
@@ -154,13 +154,13 @@ public class DataDocumentEditView
 	}
 
 	protected void addRefToModel(ReferenceSchemeModel refModel) {
-		getParentModel().addReferenceScheme(refModel);
+		getModel().addReferenceScheme(refModel);
 		try {
 			// Make it editable
 			edit(refModel);
 		} catch (IllegalStateException ex) {
 			// Could not change editable, remove fresh model
-			getParentModel().removeReferenceScheme(refModel);
+			getModel().removeReferenceScheme(refModel);
 		}
 	}
 
@@ -180,9 +180,9 @@ public class DataDocumentEditView
 		JLabel httpRefLabel = new JLabel("Http Reference Scheme");
 		JLabel fileRefLabel = new JLabel("File Reference Scheme");
 		CreateHttpAction createHttpAction = new CreateHttpAction(
-				getParentModel());
+				getModel());
 		CreateFileAction createFileAction = new CreateFileAction(
-				getParentModel());
+				getModel());
 		httpButton = new JButton(createHttpAction);
 //		httpButton.setOpaque(false);
 		fileButton = new JButton(createFileAction);
@@ -298,7 +298,7 @@ public class DataDocumentEditView
 				setEdit(editable);
 			} else {
 				if (editable) {
-					getParentView().edit(getParentModel());
+					getParentView().edit(getModel());
 				} else {
 					getParentView().edit(null);
 				}

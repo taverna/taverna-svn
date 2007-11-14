@@ -42,7 +42,7 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 		parentModel.registerObserver(modelObserver);
 	}
 
-	public ParentModelType getParentModel() {
+	public ParentModelType getModel() {
 		return parentModel;
 	}
 
