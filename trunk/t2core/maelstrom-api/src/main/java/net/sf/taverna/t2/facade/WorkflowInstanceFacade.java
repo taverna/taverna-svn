@@ -30,7 +30,7 @@ public interface WorkflowInstanceFacade {
 
 	/**
 	 * Push a data token into the specified port. If the token is part of a
-	 * stream of such the index contains the index of this particular token. If
+	 * stream the index contains the index of this particular token. If
 	 * not the index should be the empty integer array.
 	 * 
 	 * @param token

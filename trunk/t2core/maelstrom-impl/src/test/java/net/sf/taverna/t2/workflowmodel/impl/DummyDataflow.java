@@ -1,0 +1,81 @@
+package net.sf.taverna.t2.workflowmodel.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
+import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Edit;
+import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
+import net.sf.taverna.t2.workflowmodel.Processor;
+
+public class DummyDataflow implements Dataflow{
+
+	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();	
+	public List<Processor> processors = new ArrayList<Processor>();
+	
+	
+	
+	public DataflowValidationReport checkValidity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+
+	public <T extends NamedWorkflowEntity> List<? extends T> getEntities(
+			Class<T> entityType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<? extends DataflowInputPort> getInputPorts() {
+		return inputPorts;
+	}
+
+	public List<? extends Datalink> getLinks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<? extends DataflowOutputPort> getOutputPorts() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<? extends Processor> getProcessors() {
+		return processors;
+	}
+
+	public Edit<? extends Dataflow> getAddAnnotationEdit(
+			WorkflowAnnotation newAnnotation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Set<? extends WorkflowAnnotation> getAnnotations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Edit<? extends Dataflow> getRemoveAnnotationEdit(
+			WorkflowAnnotation annotationToRemove) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Edit<? extends Dataflow> getReplaceAnnotationEdit(
+			WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getLocalName() {
+		return "test_dataflow";
+	}
+
+}
