@@ -16,6 +16,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -28,59 +29,57 @@ import net.sf.taverna.t2.cloudone.gui.entity.view.LiteralView.RemoveAction;
 
 import org.apache.log4j.Logger;
 
-public class StringView extends EntityView<StringModel, StringModel, StringModelEvent>{
-	
+public class StringView extends
+		EntityView<StringModel, String, StringModelEvent> {
+
 	private static Logger logger = Logger.getLogger(StringView.class);
 	private EntityListView parentView;
 	private JTextArea textArea;
 	private JButton okButton;
 	private JButton editButton;
 	private JButton removeButton;
-	private JButton browseButton;
 	private OKAction okAction = new OKAction();
 	private EditAction editAction = new EditAction();
 	private RemoveAction removeAction = new RemoveAction();
-	private BrowseAction browseAction = new BrowseAction();
 	private JComboBox comboBox;
 	private JPanel editPanel;
 	private JPanel viewPanel;
 	private StringModel model;
-	
+	private String string;
+
 	public StringView(StringModel model, EntityListView parentView) {
 		super(model, parentView);
 		this.parentView = parentView;
 		this.model = model;
 		initialise();
 	}
-	
+
 	public void initialise() {
 		editPanel = new JPanel();
-		setLayout(new GridBagLayout());
+		editPanel.setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
 		// setOpaque(false);
 		GridBagConstraints headerC = new GridBagConstraints();
 		headerC.gridx = 0;
 		headerC.gridy = 0;
-		headerC.gridwidth = 2;
+		headerC.gridwidth = 4;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
 		editPanel.add(new JLabel("<html><small>String</small></html>"), headerC);
-		browseButton = new JButton(browseAction);
-		editPanel.add(browseButton);
+
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
 		fieldC.gridy = 1;
-		fieldC.weightx = 0.1;
-		fieldC.fill = GridBagConstraints.HORIZONTAL;
-		textArea = new JTextArea(10,30);
-		editPanel.add(textArea, fieldC);
-		
+		fieldC.gridwidth = 4;
+		textArea = new JTextArea(6, 30);
+		editPanel.add(new JScrollPane(textArea), fieldC);
 
 		GridBagConstraints buttonC = new GridBagConstraints();
-		buttonC.gridy = 1;
-		
+		buttonC.gridy = 2;
+		buttonC.gridx = 0;
 		okButton = new JButton(okAction);
 		editPanel.add(okButton, buttonC);
+		buttonC.gridx = GridBagConstraints.RELATIVE;
 		editButton = new JButton(editAction);
 		editPanel.add(editButton, buttonC);
 		removeButton = new JButton(removeAction);
@@ -90,7 +89,7 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 		textArea.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				// dataDocumentBuilder.edit(HttpRefSchemePanel.this);
+				parentView.edit(getModel());
 			}
 		});
 		// By default, a new view is not editable
@@ -99,7 +98,7 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 	}
 
 	@Override
-	protected JComponent createModelView(StringModel model) {
+	protected JComponent createModelView(String model) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -107,28 +106,47 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 	@Override
 	protected void placeViewComponent(JComponent view) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void removeViewComponent(JComponent view) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setEdit(boolean editable) {
-		// TODO Auto-generated method stub
-		
+		if (!editable) {
+			setStringFromField();
+		}
+		// Disable buttons and stuff
+		setFieldsEditable(editable);
 	}
-	
+
+	private void setStringFromField() {
+		model.setString(textArea.getText());
+	}
+
 	private void setFieldsEditable(boolean editable) {
 		textArea.setEditable(editable);
 		editAction.setEnabled(!editable);
 		okAction.setEnabled(editable);
-		browseButton.setEnabled(editable);
+		if (editable) {
+			textArea.requestFocusInWindow();
+		}
 	}
-	
+
+	@Override
+	protected void addModelView(String string) {
+		textArea.setText(string);
+	}
+
+	@Override
+	protected void removeModelView(String refModel) {
+		textArea.setText("");
+	}
+
 	public class EditAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -137,7 +155,7 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			setFieldsEditable(true);
+			parentView.edit(getModel());
 		}
 	}
 
@@ -150,7 +168,7 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				setFieldsEditable(false);
+				parentView.edit(null);
 			} catch (IllegalStateException ex) {
 				// Warning box already shown, won't do edit(null)
 			}
@@ -167,45 +185,7 @@ public class StringView extends EntityView<StringModel, StringModel, StringModel
 
 		public void actionPerformed(ActionEvent e) {
 			model.remove();
-			System.out.println("remove me");
 		}
 	}
-	
-	public class BrowseAction extends AbstractAction {
 
-		private static final long serialVersionUID = 1L;
-
-		public BrowseAction() {
-			super("Browse");
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			File file = chooseFile();
-			textArea.setText("file:" + file.toString());
-			textArea.revalidate();
-		}
-	}
-	
-	private File chooseFile() {
-		JFileChooser fileChooser = new JFileChooser() {
-			@Override
-			public void approveSelection() {
-				File file = getSelectedFile();
-				if (!file.isFile()) {
-					JOptionPane.showMessageDialog(this, file
-							+ " is not a valid file", "Invalid file",
-							JOptionPane.WARNING_MESSAGE);
-				} else {
-					super.approveSelection();
-				}
-			}
-		};
-		int returnValue = fileChooser.showDialog(StringView.this,
-				"Select");
-		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			// do something with file
-			return fileChooser.getSelectedFile();
-		}
-		return null; // User cancelled
-	}
 }

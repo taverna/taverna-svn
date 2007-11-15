@@ -15,7 +15,7 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 	
 	private MultiCaster<LiteralModelEvent> multiCaster = new MultiCaster<LiteralModelEvent>(this);
 	
-	private Literal literal = null;
+	private Object literal = null;
 	private EntityListModel parentModel;
 	
 	public LiteralModel(EntityListModel parentModel) {
@@ -34,6 +34,31 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 	
 	public void removeLiteral() {
 		parentModel.removeEntityModel(this);
-		multiCaster.notify(new LiteralModelEvent(LiteralModelEvent.EventType.REMOVED, this));
+		multiCaster.notify(new LiteralModelEvent(LiteralModelEvent.EventType.REMOVED, literal));
+	}
+	
+	public void setLiteral(Integer literal) {
+		setLiteralObject(literal);
+	}
+	
+	public void setLiteral(Float literal) {
+		setLiteralObject(literal);
+	}
+	public void setLiteral(Double literal) {
+		setLiteralObject(literal);
+	}
+	public void setLiteral(Boolean literal) {
+		setLiteralObject(literal);
+	}
+	public void setLiteral(Long literal) {
+		setLiteralObject(literal);
+	}
+	
+	private void setLiteralObject(Object literal) {
+		if (literal == null) {
+			throw new NullPointerException();
+		}
+		this.literal = literal;
+		multiCaster.notify(new LiteralModelEvent(ModelEvent.EventType.ADDED, literal));
 	}
 }

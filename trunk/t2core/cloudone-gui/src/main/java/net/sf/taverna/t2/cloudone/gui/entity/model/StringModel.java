@@ -10,6 +10,7 @@ public class StringModel extends EntityModel implements Observable<StringModelEv
 	
 	private MultiCaster<StringModelEvent> multiCaster = new MultiCaster<StringModelEvent>(this);
 	private EntityListModel parentModel;
+	private String string;
 	
 	
 	public StringModel(EntityListModel parentModel) {
@@ -32,6 +33,11 @@ public class StringModel extends EntityModel implements Observable<StringModelEv
 	
 	public void remove() {
 		parentModel.removeEntityModel(this);
-		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.REMOVED, this));
+		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.REMOVED, string));
+	}
+	
+	public void setString(String string) {
+		this.string = string;
+		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.ADDED, string));
 	}
 }

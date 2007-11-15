@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -20,8 +21,15 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModelEvent;
 
 import org.apache.log4j.Logger;
 
-public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralModelEvent> {
+public class LiteralView extends
+		EntityView<LiteralModel, Object, LiteralModelEvent> {
 
+	private static final String BOOLEAN = Boolean.class.getSimpleName();
+	private static final String FLOAT = Float.class.getSimpleName();
+	private static final String DOUBLE = Double.class.getSimpleName();
+	private static final String LONG = Long.class.getSimpleName();
+	private static final String INTEGER = Integer.class.getSimpleName();
+	
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LiteralView.class);
 	private LiteralModel model;
@@ -49,7 +57,8 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 		setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
 		// setOpaque(false);
-		String [] literalChoices ={"Integer", "Double", "Float", "boolean", "Long"};
+		String[] literalChoices = { INTEGER, LONG, DOUBLE, FLOAT, BOOLEAN,
+				};
 		comboBox = new JComboBox(literalChoices);
 		GridBagConstraints headerC = new GridBagConstraints();
 		headerC.gridx = 0;
@@ -57,7 +66,8 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		editPanel.add(new JLabel("<html><small>Literal</small></html>"), headerC);
+		editPanel.add(new JLabel("<html><small>Literal</small></html>"),
+				headerC);
 		editPanel.add(comboBox);
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
@@ -67,7 +77,6 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 		textField = new JTextField(20);
 		textField.setMinimumSize(new Dimension(250, 20));
 		editPanel.add(textField, fieldC);
-		
 
 		GridBagConstraints buttonC = new GridBagConstraints();
 		buttonC.gridy = 1;
@@ -108,7 +117,7 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			setFieldsEditable(true);
+			parentView.edit(getModel());
 		}
 	}
 
@@ -121,25 +130,9 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 
 		public void actionPerformed(ActionEvent e) {
 			try {
-				//is it a string etc
-				String text = comboBox.getSelectedItem().toString();
-				String value = textField.getText();
-				if(text.equalsIgnoreCase("integer")) {
-					System.out.println("int " + value);
-				} else if (text.equalsIgnoreCase("double")) {
-					System.out.println("double " + value);
-				} else if (text.equalsIgnoreCase("float")) {
-					System.out.println("float " + value);
-				} else if (text.equalsIgnoreCase("boolean")){
-					System.out.println("boolean " + value);
-				} else if (text.equalsIgnoreCase("long")) {
-					System.out.println("long " + value);
-				} else {
-					//crash cos its bust
-				}
-				setFieldsEditable(false);
-			} catch (IllegalStateException ex) {
-				// Warning box already shown, won't do edit(null)
+				parentView.edit(null);
+			} catch (IllegalStateException e1){
+				//warned already
 			}
 		}
 	}
@@ -157,44 +150,84 @@ public class LiteralView extends EntityView<LiteralModel, LiteralModel, LiteralM
 			System.out.println("remove me");
 		}
 	}
-	
-	public class RemoveViewAction extends AbstractAction {
-		private static final long serialVersionUID = 1L;
-		private final LiteralModel model;
-
-		public RemoveViewAction(LiteralModel literalModel) {
-			super("Remove");
-			this.model = literalModel;
-		}
-
-		public void actionPerformed(ActionEvent e) {
-			model.removeLiteral();
-		}
-	}
 
 	@Override
-	protected JComponent createModelView(LiteralModel model) {
+	protected JComponent createModelView(Object model) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setLiteralFromField() {
+		// is it a string etc
+		String type = comboBox.getSelectedItem().toString();
+		String value = textField.getText();
+		try {
+			if (type.equals(INTEGER)) {
+				int result = Integer.parseInt(value);
+				model.setLiteral(result);
+			} else if (type.equals(LONG)) {
+				long result = Long.parseLong(value);
+				model.setLiteral(result);
+			} else if (type.equals(DOUBLE)) {
+				double result = Double.parseDouble(value);
+				model.setLiteral(result);
+			} else if (type.equals(FLOAT)) {
+				float result = Float.parseFloat(value);
+				model.setLiteral(result);
+			} else if (type.equals(BOOLEAN)) {
+				boolean result;
+				if (value.equalsIgnoreCase("false")) {
+					result = false;
+				} else if (value.equalsIgnoreCase("true")) {
+					result = true;
+				} else {
+					throw new NumberFormatException("Invalid boolean: " + value);
+				}
+				model.setLiteral(result);
+			} else {
+				// crash cos its bust
+			}
+		} catch (NumberFormatException e1) {
+			JOptionPane.showMessageDialog(LiteralView.this, value
+					+ " is not a valid " + type, "Invalid value",
+					JOptionPane.WARNING_MESSAGE);
+			textField.requestFocusInWindow();
+			throw new IllegalStateException(e1);
+		}
 	}
 
 	@Override
 	protected void placeViewComponent(JComponent view) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void removeViewComponent(JComponent view) {
 		// TODO Auto-generated method stub
-		
+
 	}
+	
+	@Override
+	protected void addModelView(Object literalModel) {
+		textField.setText(literalModel.toString());
+		comboBox.setSelectedItem(literalModel.getClass().getSimpleName());
+	}
+	
+	@Override
+	protected void removeModelView(Object refModel) {
+		textField.setText("");
+		comboBox.setSelectedIndex(0);
+	}
+	
 
 	@Override
-	public void setEdit(boolean editable) {
-		// TODO Auto-generated method stub
-		
+	public void setEdit(boolean editable) throws IllegalStateException {
+		if (!editable) {
+			setLiteralFromField();
+		}
+		// Disable buttons and stuff
+		setFieldsEditable(editable);
 	}
-
 
 }
