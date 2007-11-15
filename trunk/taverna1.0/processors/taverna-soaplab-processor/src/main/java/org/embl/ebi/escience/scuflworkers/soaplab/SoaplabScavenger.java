@@ -62,6 +62,7 @@ public class SoaplabScavenger extends Scavenger {
 			DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(category.getCategory());
 			for (String service : category.getServices()) {
 				SoaplabProcessorFactory f = new SoaplabProcessorFactory(base, service);
+				f.setCategory(category.getCategory());
 				categoryNode.add(new DefaultMutableTreeNode(f));
 			}
 			this.add(categoryNode);

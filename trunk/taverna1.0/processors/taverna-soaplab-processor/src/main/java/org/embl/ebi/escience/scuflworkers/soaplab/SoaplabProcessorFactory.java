@@ -17,6 +17,22 @@ public class SoaplabProcessorFactory extends ProcessorFactory {
 	private String endpoint;
 
 	private String applicationname;
+	
+	private String category;
+
+	/**
+	 * @return the category
+	 */
+	public synchronized final String getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category the category to set
+	 */
+	public synchronized final void setCategory(final String category) {
+		this.category = category;
+	}
 
 	/**
 	 * Create a new factory configured with the specified endpoint base and
