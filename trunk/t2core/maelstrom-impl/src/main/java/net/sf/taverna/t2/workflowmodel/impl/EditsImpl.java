@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
@@ -156,6 +158,10 @@ public class EditsImpl implements Edits {
 			// annotations.add(new MimeTypeImpl(mimeType));
 		//}
 		return annotations;
+	}
+
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow) {
+		return new WorkflowInstanceFacadeImpl(dataflow);
 	}
 
 }

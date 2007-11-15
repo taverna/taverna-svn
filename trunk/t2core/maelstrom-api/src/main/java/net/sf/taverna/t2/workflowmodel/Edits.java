@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -30,6 +31,15 @@ public interface Edits {
 	 * @return
 	 */
 	public Dataflow createDataflow();
+	
+	/**
+	 * Build a new WorkflowInstanceFacade using the supplied Dataflow
+	 * @param dataflow
+	 * @return an instance of a WorkflowInstanceFacade
+	 * 
+	 * @see WorkflowInstanceFacade
+	 */
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow);
 	
 	/**
 	 * Builds a new instance of a Processor with the given name
