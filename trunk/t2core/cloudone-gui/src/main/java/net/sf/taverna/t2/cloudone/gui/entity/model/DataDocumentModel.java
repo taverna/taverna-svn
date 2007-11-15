@@ -83,4 +83,12 @@ public class DataDocumentModel extends EntityModel implements Observable<DataDoc
 				DataDocumentModelEvent.EventType.REMOVED, refSchemeModel));
 	}
 
+	@Override
+	public void remove() {
+		for (ReferenceSchemeModel refModel : getReferenceSchemeModels()) {
+			refModel.remove();
+		}
+		super.remove();
+	}
+
 }

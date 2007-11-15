@@ -19,8 +19,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
  * @author Stian Soiland
  * 
  */
-public class HttpRefSchemeModel extends ReferenceSchemeModel implements
-		Observable<URL> {
+public class HttpRefSchemeModel extends ReferenceSchemeModel<URL> {
 
 	private MultiCaster<URL> multiCaster = new MultiCaster<URL>(this);
 
@@ -59,6 +58,7 @@ public class HttpRefSchemeModel extends ReferenceSchemeModel implements
 	 * Remove this {@link HttpRefSchemeModel} from the model and inform the
 	 * parent model that it has happened
 	 */
+	@Override
 	public void remove() {
 		parentModel.removeReferenceScheme(this);
 	}
@@ -80,6 +80,14 @@ public class HttpRefSchemeModel extends ReferenceSchemeModel implements
 	public void setURL(String text) throws MalformedURLException {
 		url = new URL(text);
 		multiCaster.notify(url);
+	}
+
+	@Override
+	public String getStringRepresentation() {
+		if (url == null) {
+			return "(none)";
+		}
+		return url.toString();
 	}
 
 }

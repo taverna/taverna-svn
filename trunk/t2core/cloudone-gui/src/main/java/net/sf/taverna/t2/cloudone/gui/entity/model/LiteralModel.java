@@ -11,17 +11,18 @@ import org.apache.log4j.Logger;
 public class LiteralModel extends EntityModel implements Observable<LiteralModelEvent>{
 	
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LiteralModel.class);
 	
 	private MultiCaster<LiteralModelEvent> multiCaster = new MultiCaster<LiteralModelEvent>(this);
 	
 	private Object literal = null;
+	@SuppressWarnings("unused")
 	private EntityListModel parentModel;
 	
 	public LiteralModel(EntityListModel parentModel) {
 		super(parentModel);
 		this.parentModel = parentModel;
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void registerObserver(Observer<LiteralModelEvent> observer) {
@@ -32,8 +33,9 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 		multiCaster.removeObserver(observer);
 	}
 	
-	public void removeLiteral() {
-		parentModel.removeEntityModel(this);
+	@Override
+	public void remove() {
+		super.remove();
 		multiCaster.notify(new LiteralModelEvent(LiteralModelEvent.EventType.REMOVED, literal));
 	}
 	
@@ -60,5 +62,9 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 		}
 		this.literal = literal;
 		multiCaster.notify(new LiteralModelEvent(ModelEvent.EventType.ADDED, literal));
+	}
+
+	public Object getLiteral() {
+		return literal;
 	}
 }

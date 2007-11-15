@@ -9,7 +9,6 @@ public class LiteralModelEvent extends ModelEvent<Object>{
 	
 	public LiteralModelEvent(EventType eventType, Object literal) {
 		super(eventType, literal);
-		// TODO Auto-generated constructor stub
 	}
 
 }

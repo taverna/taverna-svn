@@ -32,7 +32,7 @@ public class StringModel extends EntityModel implements Observable<StringModelEv
 	}
 	
 	public void remove() {
-		parentModel.removeEntityModel(this);
+		super.remove();
 		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.REMOVED, string));
 	}
 	

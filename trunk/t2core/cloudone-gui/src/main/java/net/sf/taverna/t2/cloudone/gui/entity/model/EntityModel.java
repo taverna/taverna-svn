@@ -12,4 +12,11 @@ public class EntityModel {
 		return parentModel;
 	}
 
+	public void remove() {
+		EntityListModel parent = getParentModel();
+		if (parent != null) {
+			parent.removeEntityModel(this);
+		}
+	}
+
 }

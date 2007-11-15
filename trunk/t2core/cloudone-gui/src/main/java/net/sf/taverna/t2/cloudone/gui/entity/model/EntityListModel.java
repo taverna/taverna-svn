@@ -40,6 +40,14 @@ public class EntityListModel extends EntityModel implements Observable<EntityLis
 	public List<EntityModel> getEntityModels() {
 		return new ArrayList<EntityModel>(entityModels);
 	}
+
+	@Override
+	public void remove() {
+		for (EntityModel entModel:getEntityModels()) {
+			entModel.remove();
+		}
+		super.remove();
+	}
 	
 	
 	

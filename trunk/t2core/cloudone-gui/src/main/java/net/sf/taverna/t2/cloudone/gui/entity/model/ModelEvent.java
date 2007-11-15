@@ -33,6 +33,11 @@ public class ModelEvent<Model> {
 	public EventType getEventType() {
 		return eventType;
 	}
+	
+	@Override
+	public String toString() {
+		return getEventType() + ": " + getModel();
+	}
 
 	/**
 	 * What is the type of event

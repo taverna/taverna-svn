@@ -3,11 +3,9 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 import java.io.File;
 
 import net.sf.taverna.t2.lang.observer.MultiCaster;
-import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
-public class FileRefSchemeModel extends ReferenceSchemeModel implements
-Observable<File>{
+public class FileRefSchemeModel extends ReferenceSchemeModel<File>{
 	
 	private MultiCaster<File> multiCaster = new MultiCaster<File>(this);
 	private File file = null;
@@ -29,6 +27,7 @@ Observable<File>{
 	 * Remove this {@link FileRefSchemeModel} from the model and inform the
 	 * parent model that it has happened
 	 */
+	@Override
 	public void remove() {
 		parentModel.removeReferenceScheme(this);
 	}
@@ -40,6 +39,14 @@ Observable<File>{
 	public void setFile(File file) {
 		this.file = file;
 		multiCaster.notify(file);
+	}
+
+	@Override
+	public String getStringRepresentation() {
+		if (file == null) {
+			return "(none)";
+		}
+		return file.toString();
 	}
 
 }
