@@ -52,9 +52,24 @@ public class DataDocumentModelTest {
 		assertEquals(refSchemeMod, observer.lastEvent.getModel());
 	}
 
-	private final class DummyRefSchemeModel extends ReferenceSchemeModel {
+	private final class DummyRefSchemeModel extends ReferenceSchemeModel<String> {
 		@Override
 		public void remove() {
+		}
+
+		@Override
+		public String getStringRepresentation() {
+			return null;
+		}
+
+		public void registerObserver(Observer<String> observer) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void removeObserver(Observer<String> observer) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
