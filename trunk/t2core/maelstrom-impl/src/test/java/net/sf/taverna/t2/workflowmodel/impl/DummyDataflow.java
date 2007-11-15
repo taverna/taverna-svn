@@ -16,7 +16,8 @@ import net.sf.taverna.t2.workflowmodel.Processor;
 
 public class DummyDataflow implements Dataflow{
 
-	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();	
+	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();
+	public  List<DataflowOutputPort> outputPorts = new ArrayList<DataflowOutputPort>();
 	public List<Processor> processors = new ArrayList<Processor>();
 	
 	
@@ -43,8 +44,7 @@ public class DummyDataflow implements Dataflow{
 	}
 
 	public List<? extends DataflowOutputPort> getOutputPorts() {
-		// TODO Auto-generated method stub
-		return null;
+		return outputPorts;
 	}
 
 	public List<? extends Processor> getProcessors() {

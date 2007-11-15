@@ -13,6 +13,7 @@ import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
 
@@ -69,6 +70,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
 	public void removeResultListener(ResultListener listener) {
 		resultListeners.remove(listener);
+		
 	}
 
 	public Dataflow getDataflow() {

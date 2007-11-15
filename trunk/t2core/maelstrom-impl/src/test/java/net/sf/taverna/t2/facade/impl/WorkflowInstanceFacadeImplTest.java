@@ -11,11 +11,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyProcessor;
-import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,12 +21,12 @@ import org.junit.Test;
 
 public class WorkflowInstanceFacadeImplTest {
 	
-	private Dataflow dataflow;
+	private DummyDataflow dataflow;
 	private WorkflowInstanceFacadeImpl facade;
 	
 	@Before
 	public void createDataflow() {
-		dataflow=new EditsImpl().createDataflow();
+		dataflow=new DummyDataflow();
 		WorkflowInstanceFacadeImpl.owningProcessId = new AtomicLong(0);
 		facade = new WorkflowInstanceFacadeImpl(dataflow);
 	}
@@ -70,13 +68,11 @@ public class WorkflowInstanceFacadeImplTest {
 
 	@Test
 	public void testFire() {
-		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
 		DummyProcessor processor = new DummyProcessor();
-		dummyDataflow.processors.add(processor);
+		dataflow.processors.add(processor);
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_1",processor.firedOwningProcess);
+		assertEquals("test_dataflow_0",processor.firedOwningProcess);
 	}
 
 	@Ignore("Not implemented")
@@ -87,29 +83,25 @@ public class WorkflowInstanceFacadeImplTest {
 
 	@Test
 	public void testPushData() throws Exception {
-		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
-		DummyDataflowInputPort port = new DummyDataflowInputPort("test",0,0,dummyDataflow);
-		dummyDataflow.inputPorts.add(port);
+		DummyDataflowInputPort port = new DummyDataflowInputPort("test",0,0,dataflow);
+		dataflow.inputPorts.add(port);
 		facade.pushData(null, new int[0], "test");
 		
 		assertNotNull(port.tokenOwningProcess);
-		assertEquals("test_dataflow_1",port.tokenOwningProcess);
+		assertEquals("test_dataflow_0",port.tokenOwningProcess);
 	}
 	
 	@Test
 	// test pushData doesn't fire port with non-matching name
 	public void testPushData2() throws Exception {
-		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
-		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dummyDataflow);
-		dummyDataflow.inputPorts.add(port1);
-		DummyDataflowInputPort port2 = new DummyDataflowInputPort("test_port2",0,0,dummyDataflow);
-		dummyDataflow.inputPorts.add(port2);
+		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dataflow);
+		dataflow.inputPorts.add(port1);
+		DummyDataflowInputPort port2 = new DummyDataflowInputPort("test_port2",0,0,dataflow);
+		dataflow.inputPorts.add(port2);
 		facade.pushData(null, new int[0], "test_port1");
 		
 		assertNotNull(port1.tokenOwningProcess);
-		assertEquals("test_dataflow_1",port1.tokenOwningProcess);
+		assertEquals("test_dataflow_0",port1.tokenOwningProcess);
 		
 		assertNull(port2.tokenOwningProcess);
 	}
@@ -119,28 +111,24 @@ public class WorkflowInstanceFacadeImplTest {
 	//test fire doesn't fire input ports
 	@Test
 	public void testFire2() {
-		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
 		DummyProcessor processor = new DummyProcessor();
-		dummyDataflow.processors.add(processor);
-		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dummyDataflow);
-		dummyDataflow.inputPorts.add(port1);
+		dataflow.processors.add(processor);
+		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dataflow);
+		dataflow.inputPorts.add(port1);
 		
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_1",processor.firedOwningProcess);
+		assertEquals("test_dataflow_0",processor.firedOwningProcess);
 		assertNull(port1.tokenOwningProcess);
 	}
 	
 	//test for calling fire after pushData has been called throws an Exception
 	@Test(expected=IllegalStateException.class)
 	public void testFireIllegalStateException() throws Exception{
-		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
 		DummyProcessor processor = new DummyProcessor();
-		dummyDataflow.processors.add(processor);
-		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dummyDataflow);
-		dummyDataflow.inputPorts.add(port1);
+		dataflow.processors.add(processor);
+		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dataflow);
+		dataflow.inputPorts.add(port1);
 		
 		facade.pushData(null, new int[0], "test_port1");
 		
