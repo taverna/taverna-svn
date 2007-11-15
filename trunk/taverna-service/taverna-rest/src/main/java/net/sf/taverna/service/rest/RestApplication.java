@@ -102,13 +102,12 @@ public class RestApplication extends Application {
 	}
 	
 	private void initializeRestletLogging() {
-
 	    Handler[] handlers = java.util.logging.Logger.getLogger("").getHandlers();
 	    for (Handler handler : handlers) {
     		handler.setFormatter(new ReallySimpleFormatter());
 	    }
-	    java.util.logging.Logger.getLogger("org.mortbay.log").setLevel(Level.WARNING);
-
+	    java.util.logging.Logger.getLogger("").setLevel(Level.WARNING);
+            logger.warn("Set logging to WARNING");
 	}
 
 	private void createDefaultWorker() {
