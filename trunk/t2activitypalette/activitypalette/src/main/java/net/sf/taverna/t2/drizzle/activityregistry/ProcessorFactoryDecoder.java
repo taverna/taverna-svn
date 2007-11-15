@@ -15,14 +15,14 @@ import net.sf.taverna.t2.drizzle.util.StringValue;
  * @author alanrw
  *
  */
-public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFactory> implements PropertyDecoder<FactoryType,FactoryType> {
+public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFactory> implements PropertyDecoder<FactoryType,ProcessorFactory> {
 
 	protected abstract void fillInDetails(PropertiedObjectSet<ProcessorFactory> targetSet, FactoryType encodedFactory);
 
-	public Set<FactoryType> decode(
+	public Set<ProcessorFactory> decode(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			FactoryType encodedObject) {
-		Set<FactoryType> result = new HashSet<FactoryType>();
+		Set<ProcessorFactory> result = new HashSet<ProcessorFactory>();
 		result.add (encodedObject);
 		targetSet.addObject(encodedObject);
 		targetSet.setProperty(encodedObject, CommonKey.ProcessorClassKey,

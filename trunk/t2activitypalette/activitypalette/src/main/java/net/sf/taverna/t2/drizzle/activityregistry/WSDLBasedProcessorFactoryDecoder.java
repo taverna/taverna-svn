@@ -14,15 +14,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
  * @author alanrw
  *
  */
-public final class WsdlProcessorFactoryDecoder extends ProcessorFactoryDecoder<WSDLBasedProcessorFactory> {
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoder#canDecode(java.lang.Object)
-	 */
-	public boolean canDecode(Object encodedObject) {
-		boolean result = (encodedObject instanceof WSDLBasedProcessorFactory);
-		return result;
-	}
+public final class WSDLBasedProcessorFactoryDecoder extends ProcessorFactoryDecoder<WSDLBasedProcessorFactory> {
 
 	@Override
 	protected void fillInDetails(

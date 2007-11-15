@@ -43,14 +43,23 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	 *            Object to decode
 	 * @return A list of {@link PropertyDecoder}s
 	 */
-	public List<PropertyDecoder<?,?>> getDecoders(
-			Class<?> sourceClass, Class<?> targetClass) {
-		List<PropertyDecoder<?,?>> decoders = new ArrayList<PropertyDecoder<?,?>>();
-		for (PropertyDecoder<?,?> decoder : getInstances()) {
+	public static <Source, Target> List<PropertyDecoder<Source,Target>> getDecoders(
+			Class<Source> sourceClass, Class<Target> targetClass) {
+		List<PropertyDecoder<Source,Target>> decoders = new ArrayList<PropertyDecoder<Source,Target>>();
+		for (PropertyDecoder<?,?> decoder : getInstance().getInstances()) {
 			if (decoder.canDecode(sourceClass, targetClass)) {
-				decoders.add(decoder);
+				decoders.add((PropertyDecoder<Source,Target>)decoder);
 			}
 		}
 		return decoders;
+	}
+	
+	public static <Source,Target> PropertyDecoder<Source,Target> getDecoder(Class<Source> sourceClass, Class<Target> targetClass) {
+		PropertyDecoder<Source,Target> result = null;
+		List<PropertyDecoder<Source,Target>> decoders = getDecoders(sourceClass, targetClass);
+		if (decoders.size() > 0) {
+			result = decoders.get(0);
+		}
+		return result;
 	}
 }

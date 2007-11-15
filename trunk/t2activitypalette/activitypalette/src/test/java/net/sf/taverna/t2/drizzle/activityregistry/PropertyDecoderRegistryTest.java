@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -66,11 +67,21 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@Test
 	public void testGetDecoders() {
-		WSDLBasedProcessorFactory testFactory = new WSDLBasedProcessorFactory("", "", new QName(""));
-		List<PropertyDecoder> decoders = PropertyDecoderRegistry.getInstance().getDecoders(testFactory);
+		List<PropertyDecoder<WSDLBasedProcessorFactory,ProcessorFactory>> decoders = PropertyDecoderRegistry.getDecoders(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
 		assertFalse (decoders.size() == 0);
 		PropertyDecoder decoder = decoders.get(0);
-		assertTrue (decoder instanceof WsdlProcessorFactoryDecoder);
+		assertTrue (decoder instanceof WSDLBasedProcessorFactoryDecoder);
+	}
+	
+	@Test
+	public void testGetDecoder() {
+		PropertyDecoder<WSDLBasedProcessorFactory, ProcessorFactory> decoder = PropertyDecoderRegistry.getDecoder(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
+		assertNotNull(decoder);
+		
+		WSDLBasedProcessorFactory factory = new WSDLBasedProcessorFactory("", "", new QName(""));
+		Object o = factory;
+		PropertyDecoder<?, ProcessorFactory> objectDecoder = PropertyDecoderRegistry.getDecoder(o.getClass(), ProcessorFactory.class);
+		assertNotNull(objectDecoder);
 	}
 
 }
