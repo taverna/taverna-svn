@@ -146,7 +146,7 @@ public class LiteralView extends
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			model.removeLiteral();
+			model.remove();
 			System.out.println("remove me");
 		}
 	}

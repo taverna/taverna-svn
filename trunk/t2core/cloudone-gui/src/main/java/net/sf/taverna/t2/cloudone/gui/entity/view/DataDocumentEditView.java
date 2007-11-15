@@ -42,6 +42,8 @@ public class DataDocumentEditView
 	private JButton fileButton;
 
 	private JButton httpButton;
+	
+	private JButton removeButton;
 
 	/** What {@link RefSchemeView} was the last one to be edited */
 	private RefSchemeView lastEditedView;
@@ -114,9 +116,14 @@ public class DataDocumentEditView
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		// add to outer panel first then the parent?
 
-		outerPanel();
+		outerPanel = outerPanel();
 		add(outerPanel, outerConstraint);
 		// add(addSchemes, outerConstraint);
+		
+
+		nonEditPanel = createNonEditView();
+		add(nonEditPanel, outerConstraint);
+	
 
 		refViews = createdRefs();
 		add(refViews, outerConstraint);
@@ -133,24 +140,43 @@ public class DataDocumentEditView
 		// panel which is switched in/out on edit button click
 	}
 
-	private void outerPanel() {
-		outerPanel = new JPanel();
+	private JPanel outerPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridy = 0;
+		
+		JLabel header = new JLabel("<html><strong>Data Document</strong></html>");
+		panel.add(header, c);
+		
+		c.gridy = 1;
+		
+		RemoveAction removeAction = new RemoveAction();
+		removeButton = new JButton(removeAction);
+		panel.add(removeButton, c);
+		
 		//outerPanel.setOpaque(false);
 		EditPanelAction editPanelAction = new EditPanelAction();
 		editButton = new JButton(editPanelAction);
 		editButton.setText("Edit");
 		//editButton.setOpaque(false);
-		outerPanel.add(editButton);
+		panel.add(editButton, c);
+		
 		actionPanel = addSchemeButtons();
-		nonEditPanel = new DataDocumentView(getModel());
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		// does this need a grid bag constraint?
-		outerPanel.add(actionPanel);
-		outerPanel.add(nonEditPanel);
-		nonEditPanel.setVisible(false);
+		panel.add(actionPanel, c);
+		c.gridy = 2;
 		actionPanel.setVisible(false);
+		return panel;
+	}
+
+	private DataDocumentView createNonEditView() {
+		DataDocumentView nonEditView = new DataDocumentView(getModel());
+		nonEditView.setVisible(false);
+		return nonEditView;
 	}
 
 	protected void addRefToModel(ReferenceSchemeModel refModel) {
@@ -166,31 +192,19 @@ public class DataDocumentEditView
 
 	protected JPanel addSchemeButtons() {
 		JPanel addSchemes = new JPanel();
-//		addSchemes.setOpaque(false);
 		addSchemes.setLayout(new GridBagLayout());
-		GridBagConstraints cLabel = new GridBagConstraints();
-		cLabel.gridx = 0;
-		cLabel.weightx = 0.1;
-		cLabel.fill = GridBagConstraints.HORIZONTAL;
 
 		GridBagConstraints cButton = new GridBagConstraints();
-		cButton.gridx = 1;
 		cButton.fill = GridBagConstraints.HORIZONTAL;
 
-		JLabel httpRefLabel = new JLabel("Http Reference Scheme");
-		JLabel fileRefLabel = new JLabel("File Reference Scheme");
 		CreateHttpAction createHttpAction = new CreateHttpAction(
 				getModel());
 		CreateFileAction createFileAction = new CreateFileAction(
 				getModel());
 		httpButton = new JButton(createHttpAction);
-//		httpButton.setOpaque(false);
 		fileButton = new JButton(createFileAction);
-//		fileButton.setOpaque(false);
 
-		addSchemes.add(httpRefLabel, cLabel);
 		addSchemes.add(httpButton, cButton);
-		addSchemes.add(fileRefLabel, cLabel);
 		addSchemes.add(fileButton, cButton);
 		return addSchemes;
 	}
@@ -303,6 +317,19 @@ public class DataDocumentEditView
 					getParentView().edit(null);
 				}
 			}
+		}
+	}
+	
+	public class RemoveAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		public RemoveAction() {
+			super("Remove");
+
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			getModel().remove();
 		}
 	}
 

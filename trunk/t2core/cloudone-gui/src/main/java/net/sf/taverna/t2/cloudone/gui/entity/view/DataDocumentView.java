@@ -15,6 +15,8 @@ import javax.swing.JPanel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
@@ -56,21 +58,15 @@ public class DataDocumentView extends
 		add(filler, outerConstraint);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected JComponent createModelView(final ReferenceSchemeModel refModel) {
 		JPanel panel = new JPanel();
-//		JLabel removeRef = new JLabel("<html><a href='#'>remove</a></html>");
-//		removeRef.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseClicked(MouseEvent e) {
-//				refModel.remove();
-//			}
-//		});
-		
 		JButton removeRef = new JButton(new RemoveViewAction((refModel)));
 //		removeRef.setOpaque(false);
-		JLabel lable = new  JLabel(refModel.toString());
-		panel.add(lable);
+		JLabel label = new  JLabel(refModel.getStringRepresentation());
+		refModel.registerObserver(new RefSchemeObserver(label));
+		panel.add(label);
 		panel.add(removeRef);
 		return panel;
 	}
@@ -109,6 +105,23 @@ public class DataDocumentView extends
 	@Override
 	public void setEdit(boolean editable) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	public class RefSchemeObserver implements Observer<Object> {
+
+		private final JLabel label;
+
+		public RefSchemeObserver(JLabel label) {
+			this.label = label;
+		}
+
+		@SuppressWarnings("unchecked")
+		public void notify(Observable<Object> sender, Object message) {
+			ReferenceSchemeModel refSchemeModel = (ReferenceSchemeModel) sender;
+			label.setText(refSchemeModel.getStringRepresentation());
+		}
+		
 		
 	}
 

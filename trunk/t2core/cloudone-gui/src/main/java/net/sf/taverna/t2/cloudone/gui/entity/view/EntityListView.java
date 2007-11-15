@@ -18,10 +18,13 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
+import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.StringModel;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +39,8 @@ public class EntityListView extends
 	private JPanel entityViews;
 	
 	private JButton literalButton;
+	
+	private JButton removeButton;
 
 	@SuppressWarnings("unchecked")
 	private EntityView lastEditedView;
@@ -92,24 +97,32 @@ public class EntityListView extends
 		addSchemes.setLayout(new GridBagLayout());
 		// addSchemes.setOpaque(false);
 		GridBagConstraints cLabel = new GridBagConstraints();
-		cLabel.gridx = 0;
-		cLabel.weightx = 0.1;
-		cLabel.fill = GridBagConstraints.HORIZONTAL;
+		cLabel.gridy = 0;
+//		cLabel.fill = GridBagConstraints.HORIZONTAL;
 
 		GridBagConstraints cButton = new GridBagConstraints();
-		cButton.gridx = 1;
+		cButton.gridy = 1;
 		cButton.fill = GridBagConstraints.HORIZONTAL;
+		cButton.anchor = GridBagConstraints.LINE_END;
 
-		JLabel dataDocLabel = new JLabel("Data Document");
-		JLabel listLabel = new JLabel("List");
-		JLabel literalLabel = new JLabel("Literal");
-		JLabel stringLabel = new JLabel("String");
+		JLabel headerLabel = new JLabel("<html><strong>List</strong></html>");
+		RemoveAction removeAction = new RemoveAction();
 		CreatDataDocAction createDataDocAction = new CreatDataDocAction(
 				getModel());
 		CreateListAction createListAction = new CreateListAction(
 				getModel());
 		CreateLiteralAction createLiteralAction = new CreateLiteralAction(getModel());
 		CreateStringAction createStringAction = new CreateStringAction(getModel());
+		removeButton = new JButton(removeAction);
+		if (getParentView() != null) {
+			addSchemes.add(headerLabel, cLabel);
+			addSchemes.add(removeButton,cLabel);
+		}
+		JLabel createLabel = new JLabel("Create:");
+		addSchemes.add(createLabel, cButton);
+		cButton.anchor = GridBagConstraints.LINE_START;
+
+		
 		dataDocButton = new JButton(createDataDocAction);
 		// dataDocButton.setOpaque(false);
 		listButton = new JButton(createListAction);
@@ -117,13 +130,9 @@ public class EntityListView extends
 		literalButton = new JButton(createLiteralAction);
 		stringButton = new JButton(createStringAction);
 
-		addSchemes.add(dataDocLabel, cLabel);
 		addSchemes.add(dataDocButton, cButton);
-		addSchemes.add(listLabel, cLabel);
 		addSchemes.add(listButton, cButton);
-		addSchemes.add(literalLabel, cLabel);
 		addSchemes.add(literalButton, cButton);
-		addSchemes.add(stringLabel, cLabel);
 		addSchemes.add(stringButton, cButton);
 		return addSchemes;
 	}
@@ -224,7 +233,7 @@ public class EntityListView extends
 		private EntityListModel entityListModel;
 
 		public CreatDataDocAction(EntityListModel entityListModel) {
-			super("Create Data Document");
+			super("Data Document");
 			this.entityListModel = entityListModel;
 		}
 
@@ -249,7 +258,7 @@ public class EntityListView extends
 		private EntityListModel parentModel;
 
 		public CreateListAction(EntityListModel parentModel) {
-			super("Create List");
+			super("List");
 			this.parentModel = parentModel;
 		}
 
@@ -265,12 +274,11 @@ public class EntityListView extends
 		private EntityListModel parentModel;
 
 		public CreateLiteralAction(EntityListModel parentModel) {
-			super("Create Literal");
+			super("Literal");
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			LiteralModel literalModel = new LiteralModel(getModel());
-			System.out.println("hello");
 			addEntityToModel(literalModel);
 		}
 	}
@@ -281,13 +289,26 @@ public class EntityListView extends
 		private EntityListModel parentModel;
 
 		public CreateStringAction(EntityListModel parentModel) {
-			super("Create String");
+			super("String");
 			this.parentModel = parentModel;
 		}
 
 		public void actionPerformed(ActionEvent e) {
 			StringModel stringModel = new StringModel(parentModel);
 			addEntityToModel(stringModel);
+		}
+	}
+	
+	public class RemoveAction extends AbstractAction {
+		private static final long serialVersionUID = 1L;
+
+		public RemoveAction() {
+			super("Remove");
+
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			getModel().remove();
 		}
 	}
 
