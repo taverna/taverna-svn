@@ -157,9 +157,6 @@ public class ExecuteRemotelyConf {
 	 */
 	public void removeService(RESTContext service) {
 		services.remove(service);
-		if (getSelected().equals(service)) {
-			setSelected(service);
-		}
 		save();
 		logger.info("Removed service " + service);
 	}
@@ -173,19 +170,19 @@ public class ExecuteRemotelyConf {
 		return services.toArray(new RESTContext[0]);
 	}
 
-	/**
-	 * Get the currently active service, or the first available service. If no
-	 * services are available, <code>null</code> is returned.
-	 * 
-	 * @return The currently selected service.
-	 */
-	public RESTContext getSelected() {
-		if (selected == null && !services.isEmpty()) {
-			// Just choose the first one instead
-			return services.get(0);
-		}
-		return selected;
-	}
+//	/**
+//	 * Get the currently active service, or the first available service. If no
+//	 * services are available, <code>null</code> is returned.
+//	 * 
+//	 * @return The currently selected service.
+//	 */
+//	public RESTContext getSelected() {
+//		if (selected == null && !services.isEmpty()) {
+//			// Just choose the first one instead
+//			return services.get(0);
+//		}
+//		return selected;
+//	}
 
 	/**
 	 * Set the currently active service. If this service has not yet been
