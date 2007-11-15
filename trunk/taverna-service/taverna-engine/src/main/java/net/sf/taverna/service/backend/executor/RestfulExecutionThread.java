@@ -265,20 +265,28 @@ public class RestfulExecutionThread extends Thread {
 		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
 				"scufl-workflow", BASE_TAVERNA_VERSION));
 
-		Repository repository = LocalRepository.getRepository(base, this
+                Repository repository = LocalRepository.getRepository(base, this
 				.getClass().getClassLoader(), systemArtifacts);
+                //FIXME: remove hard coded version. need to handle versions better with remote profile
+                
+                repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
+				"1.6.2.1"));
+                repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
+				"1.6.2.1"));
+                repository.addArtifact(new BasicArtifact("biomoby.org",
+				"taverna-biomoby", "1.6.2.1"));
+      
+		
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
 				BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-				BASE_TAVERNA_VERSION));
+		
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
 				"taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-				BASE_TAVERNA_VERSION));
+		
 		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
 				"taverna-contrib", BASE_TAVERNA_VERSION));
 		repository.addArtifact(new BasicArtifact(
