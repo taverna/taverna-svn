@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowPort;
-import net.sf.taverna.t2.workflowmodel.Datalink;
-import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.AbstractEventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -42,10 +39,6 @@ public class DataflowActivity extends
 
 	private Edits edits = EditsRegistry.getEdits();
 	
-	private AsynchronousActivityCallback callback;
-	
-	private AtomicLong runIndex = new AtomicLong(0);
-
 	@Override
 	public void configure(DataflowActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
@@ -53,28 +46,6 @@ public class DataflowActivity extends
 		this.dataflow = configurationBean.getDataflow();
 		buildInputPorts();
 		buildOutputPorts();
-
-		for (final DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
-			Datalink datalink = edits.createDatalink(outputPort,
-					//FIXME: reference to AbstractEventHandlingInputPort forces a dependency on maelstrom-impl (all other activities require only API).
-					new AbstractEventHandlingInputPort(outputPort
-							.getName(), outputPort.getDepth()) {
-
-						public void receiveEvent(WorkflowDataToken t) {
-							logger.info("Received event for " + outputPort.getName());
-							Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
-							outputData.put(getName(), t.getData());
-							callback.receiveResult(outputData, t.getIndex());
-						}
-
-					});
-			try {
-				logger.info("Connect link: " + datalink);
-				edits.getConnectDatalinkEdit(datalink).doEdit();
-			} catch (EditException e) {
-				callback.fail("", e);
-			}
-		}
 
 	}
 
@@ -86,28 +57,39 @@ public class DataflowActivity extends
 	@Override
 	public void executeAsynch(final Map<String, EntityIdentifier> data,
 			final AsynchronousActivityCallback callback) {
-		this.callback = callback;
-		logger.info("executeAsynch dataflow");
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				String owningProcess = dataflow.getLocalName() + runIndex.getAndIncrement();
-				logger.info("Run dataflow");
-				for (DataflowInputPort inputPort : dataflow.getInputPorts()) {
-					if (data.containsKey(inputPort.getName())) {
-						EntityIdentifier id =  data.get(inputPort.getName());
-						logger.info("Port = " + inputPort.getName());
-						logger.info("Depth = " + id.getDepth());
-						inputPort.receiveEvent(new WorkflowDataToken(owningProcess, new int[0], id));
+				
+				final WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(dataflow);
+				
+				facade.addResultListener(new ResultListener() {
+					int outputPortCount = dataflow.getOutputPorts().size();
+
+					public void resultTokenProduced(EntityIdentifier id,
+							int[] index, String port, String owningProcess) {
+						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+						outputData.put(port, id);
+						callback.receiveResult(outputData, index);	
+						if (index.length == 0) {
+							if (--outputPortCount == 0) {
+								facade.removeResultListener(this);
+							}
+						}
+					}
+					
+				});
+				
+				facade.fire();
+				
+				for (Map.Entry<String, EntityIdentifier> entry : data.entrySet()) {
+					try {
+						facade.pushData(entry.getValue(), new int[0], entry.getKey());
+					} catch (TokenOrderException e) {
+						callback.fail("Failed to push data into facade", e);
 					}
 				}
 				
-				for (Processor processor : dataflow.getProcessors()) {
-					if (processor.getInputPorts().size() == 0 && processor.getPreconditionList().size() == 0) {
-						processor.fire(owningProcess);
-					}
-				}
-
 			}
 
 		});

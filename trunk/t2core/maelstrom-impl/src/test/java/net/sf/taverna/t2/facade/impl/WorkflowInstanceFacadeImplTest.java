@@ -56,7 +56,7 @@ public class WorkflowInstanceFacadeImplTest {
 	public void testAddResultListener() {
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName) {	
+					int[] index, String portName, String owningProcess) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -191,7 +191,7 @@ public class WorkflowInstanceFacadeImplTest {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow);
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName) {	
+					int[] index, String portName, String owningProcess) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -201,7 +201,7 @@ public class WorkflowInstanceFacadeImplTest {
 		
 		ResultListener listener2 = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName) {	
+					int[] index, String portName, String owningProcess) {	
 			}
 		};
 		
@@ -219,7 +219,7 @@ public class WorkflowInstanceFacadeImplTest {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow);
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName) {	
+					int[] index, String portName, String owningProcess) {
 			}
 		};
 		DummyDataflowOutputPort outPort = new DummyDataflowOutputPort("test_output",dataflow);
@@ -227,7 +227,6 @@ public class WorkflowInstanceFacadeImplTest {
 		assertEquals("there should be no listeners on the output port yet",0,outPort.getResultListeners().size());
 		facade.addResultListener(listener);
 		assertEquals("there should be 1 listener on the output port",1,outPort.getResultListeners().size());
-		assertSame("it should be the same listener",listener,outPort.getResultListeners().get(0));
 		facade.removeResultListener(listener);
 		assertEquals("the listener should have been removed on the output port yet",0,outPort.getResultListeners().size());
 		

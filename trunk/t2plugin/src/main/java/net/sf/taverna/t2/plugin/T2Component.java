@@ -106,7 +106,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 										public void resultTokenProduced(
 												EntityIdentifier token,
-												int[] index, String portName) {
+												int[] index, String portName, String owningProcess) {
 											logger.info("Result for "
 													+ portName + ", index.length = " + index.length);
 											if (index.length == 0) {
@@ -117,12 +117,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 													runButton.setEnabled(true);
 													results = 0;
 												}
-											} else {
-												updateStatus("Result "
-														+ indexString(index)
-														+ " for port "
-														+ portName + "\n");
 											}
+											updateStatus("Result "
+													+ indexString(index)
+													+ " for port "
+													+ portName + "\n");
 										}
 
 									});

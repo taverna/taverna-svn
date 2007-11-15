@@ -23,8 +23,10 @@ public interface ResultListener {
 	 * @param portName
 	 *            The name of the output port on the workflow from which this
 	 *            token is produced
+	 * @param owningProcess
+	 * 		      The id of the owning process
 	 */
 	public void resultTokenProduced(EntityIdentifier token, int[] index,
-			String portName);
+			String portName, String owningProcess);
 
 }

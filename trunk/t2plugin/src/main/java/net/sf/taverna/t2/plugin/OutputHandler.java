@@ -70,7 +70,7 @@ public class OutputHandler extends AbstractAnnotatedThing<Port> implements
 			}
 		}
 		resultListener.resultTokenProduced(token.getData(), token
-				.getIndex(), getName());
+				.getIndex(), getName(), token.getOwningProcess());
 	}
 
 	public int getDepth() {
