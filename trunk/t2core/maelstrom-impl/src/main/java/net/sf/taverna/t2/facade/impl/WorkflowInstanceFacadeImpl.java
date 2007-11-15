@@ -37,6 +37,9 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
 	public void addResultListener(ResultListener listener) {
 		resultListeners.add(listener);
+		for (DataflowOutputPort port : dataflow.getOutputPorts()) {
+			port.addResultListener(listener);
+		}
 	}
 
 	public void fire() throws IllegalStateException {
@@ -70,6 +73,9 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
 	public void removeResultListener(ResultListener listener) {
 		resultListeners.remove(listener);
+		for (DataflowOutputPort port : dataflow.getOutputPorts()) {
+			port.removeResultListener(listener);
+		}
 		
 	}
 

@@ -13,6 +13,7 @@ import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyProcessor;
 
 import org.junit.Before;
@@ -209,6 +210,27 @@ public class WorkflowInstanceFacadeImplTest {
 		assertEquals(1,facade.resultListeners.size());
 		facade.removeResultListener(listener);
 		assertEquals(0,facade.resultListeners.size());
+	}
+	
+	
+	@Test
+	//tests that the listener is added and removed from the output ports
+	public void testResultListenerAndOutputPorts() {
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow);
+		ResultListener listener = new ResultListener() {
+			public void resultTokenProduced(EntityIdentifier token,
+					int[] index, String portName) {	
+			}
+		};
+		DummyDataflowOutputPort outPort = new DummyDataflowOutputPort("test_output",dataflow);
+		dataflow.outputPorts.add(outPort);
+		assertEquals("there should be no listeners on the output port yet",0,outPort.getResultListeners().size());
+		facade.addResultListener(listener);
+		assertEquals("there should be 1 listener on the output port",1,outPort.getResultListeners().size());
+		assertSame("it should be the same listener",listener,outPort.getResultListeners().get(0));
+		facade.removeResultListener(listener);
+		assertEquals("the listener should have been removed on the output port yet",0,outPort.getResultListeners().size());
+		
 	}
 
 }

@@ -1,5 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -9,6 +13,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 		implements DataflowOutputPort {
 
 	protected AbstractEventHandlingInputPort internalInput;
+	protected List<ResultListener> resultListeners = new ArrayList<ResultListener>();
 
 	private Dataflow dataflow;
 
@@ -18,9 +23,13 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 		this.internalInput = new AbstractEventHandlingInputPort(name, -1) {
 			/**
 			 * Forward the event through the output port
+			 * Also informs any ResultListeners on the output port to the new token.
 			 */
 			public void receiveEvent(WorkflowDataToken token) {
 				sendEvent(token);
+				for (ResultListener listener : resultListeners.toArray(new ResultListener[]{})) {
+					listener.resultTokenProduced(token.getData(), token.getIndex(), this.getName());
+				}
 			}
 
 			/**
@@ -45,4 +54,11 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 		this.granularDepth = granularDepth;
 	}
 
+	public void addResultListener(ResultListener listener) {
+		resultListeners.add(listener);
+	}
+
+	public void removeResultListener(ResultListener listener) {
+		resultListeners.remove(listener);
+	}
 }
