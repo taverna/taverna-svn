@@ -133,9 +133,6 @@ public class CloudOneApplication extends Application {
 		} catch (UnsupportedObjectTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		//EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
 		
