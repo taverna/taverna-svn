@@ -36,7 +36,10 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null");
 		}
-		PropertyDecoder<Scavenger, ProcessorFactory> decoder = PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactory.class);
+		PropertyDecoder decoder = PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactory.class);
+		if (decoder == null) {
+			throw new NullPointerException("No decoder found for " + this.scavenger.getClass().getName());
+		}
 		final Set<ProcessorFactory> factories =
 			decoder.decode(targetSet, scavenger);
 		final PropertiedObjectFilter<ProcessorFactory> factoriesFilter = 

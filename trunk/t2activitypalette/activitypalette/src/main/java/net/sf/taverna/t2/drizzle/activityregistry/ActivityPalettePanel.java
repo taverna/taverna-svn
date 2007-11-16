@@ -13,12 +13,18 @@ import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
  * @author alanrw
  *
  */
-public class ActivityPalettePane extends JPanel implements WorkflowModelViewSPI {
+public class ActivityPalettePanel extends JPanel implements WorkflowModelViewSPI {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -891768552987961118L;
+	
+	private ActivityPaletteModel model = null;
+	
+	public ActivityPalettePanel() {
+		model = new ActivityPaletteModel();
+	}
 
 	public void attachToModel(ScuflModel model) {
 		// TODO Auto-generated method stub
