@@ -21,6 +21,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
 import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
 import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -47,6 +48,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
+	
+	private WorkflowInstanceFacadeImpl facade;
 
 	private int results = 0;
 
@@ -101,37 +104,34 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 								.checkValidity();
 						if (report.isValid()) {
 							updateStatus("done\n");
-							resultComponent.register(dataflow,
-									new ResultListener() {
+							
+							facade = new WorkflowInstanceFacadeImpl(dataflow);
+							facade.addResultListener(new ResultListener() {
 
-										public void resultTokenProduced(
-												EntityIdentifier token,
-												int[] index, String portName, String owningProcess) {
-											logger.info("Result for "
-													+ portName + ", index.length = " + index.length);
-											if (index.length == 0) {
-												results++;
-												if (results == dataflow
-														.getOutputPorts()
-														.size()) {
-													runButton.setEnabled(true);
-													results = 0;
-												}
-											}
-											updateStatus("Result "
-													+ indexString(index)
-													+ " for port "
-													+ portName + "\n");
+								public void resultTokenProduced(
+										EntityIdentifier token,
+										int[] index, String portName, String owningProcess) {
+									if (index.length == 0) {
+										results++;
+										if (results == dataflow
+												.getOutputPorts()
+												.size()) {
+											resultComponent.deregister(facade);
+											facade.removeResultListener(this);
+											runButton.setEnabled(true);
+											results = 0;
 										}
-
-									});
-							for (Processor processor : dataflow.getProcessors()) {
-								if (processor.getInputPorts().size() == 0) {
-									logger.info("Firing processor : "
-											+ processor.getLocalName());
-									processor.fire(dataflow.getLocalName());
+									}
+									updateStatus("Result "
+											+ indexString(index)
+											+ " for port "
+											+ portName + "\n");
 								}
-							}
+
+							});
+							resultComponent.register(facade);
+									
+							facade.fire();
 						} else {
 							updateStatus("failed\n");
 							showErrorDialog("Unable to translate workflow",
