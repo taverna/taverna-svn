@@ -188,7 +188,15 @@ public class PeerDataManager implements DataManager {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+	public EntityListIdentifier registerList(EntityIdentifier... identifiers)
+			throws StorageException {
+		return dataManager.registerList(identifiers);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public EntityListIdentifier registerList(List<EntityIdentifier> identifiers)
 			throws StorageException {
 		return dataManager.registerList(identifiers);
 	}

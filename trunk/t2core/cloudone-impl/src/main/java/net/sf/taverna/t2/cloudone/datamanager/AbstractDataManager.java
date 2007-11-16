@@ -222,7 +222,7 @@ public abstract class AbstractDataManager implements DataManager {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+	public EntityListIdentifier registerList(EntityIdentifier... identifiers)
 			throws StorageException {
 		if (identifiers.length == 0) {
 			throw new IndexOutOfBoundsException(
@@ -232,6 +232,15 @@ public abstract class AbstractDataManager implements DataManager {
 		EntityList newList = new EntityList(id, Arrays.asList(identifiers));
 		storeEntity(newList);
 		return id;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public EntityListIdentifier registerList(List<EntityIdentifier> identifiers)
+			throws StorageException {
+		return registerList((EntityIdentifier[]) identifiers
+				.toArray(new EntityIdentifier[identifiers.size()]));
 	}
 
 	/**
@@ -270,7 +279,8 @@ public abstract class AbstractDataManager implements DataManager {
 					throw new AssertionError(
 							"Should never be trying to drill inside a data document identifier");
 				case Error:
-					newSet.add(new ContextualizedIdentifier(
+					newSet
+							.add(new ContextualizedIdentifier(
 									((ErrorDocumentIdentifier) ci.getDataRef())
 											.drill(),
 									addIndex(ci.getIndex(), 0)));

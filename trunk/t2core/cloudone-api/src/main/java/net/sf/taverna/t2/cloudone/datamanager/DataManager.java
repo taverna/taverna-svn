@@ -88,7 +88,8 @@ public interface DataManager {
 	 * manager's active namespace.
 	 * 
 	 * @see #registerDocument(Set)
-	 * @param references One or more {@link ReferenceScheme}s
+	 * @param references
+	 *            One or more {@link ReferenceScheme}s
 	 * @return Registered {@link DataDocumentIdentifier}
 	 */
 
@@ -171,16 +172,25 @@ public interface DataManager {
 			Throwable throwable) throws StorageException;
 
 	/**
-	 * Register a new list from an array of identifiers. Returns the identifier
-	 * of the new list, blocking until creation has finished and the list is
+	 * Register a new list from a varargs/array of identifiers. Returns the
+	 * identifier of the new list, blocking until creation has finished and the
+	 * list is available for resolution.
+	 * <p>
+	 * This method can't register empty lists, use
+	 * {@link #registerEmptyList(int)} instead.
+	 */
+	public EntityListIdentifier registerList(EntityIdentifier... identifiers)
+			throws StorageException;
+
+	/**
+	 * Register a new list from a list of identifiers. Returns the identifier of
+	 * the new list, blocking until creation has finished and the list is
 	 * available for resolution.
 	 * <p>
-	 * We require a depth parameter explicitly stated here to cope with
-	 * registration of empty lists, something that Taverna 1 had huge issues
-	 * with. A list is allowed to be empty and has a conceptual depth even in
-	 * this case.
+	 * This method can't register empty lists, use
+	 * {@link #registerEmptyList(int)} instead.
 	 */
-	public EntityListIdentifier registerList(EntityIdentifier[] identifiers)
+	public EntityListIdentifier registerList(List<EntityIdentifier> identifiers)
 			throws StorageException;
 
 	/**

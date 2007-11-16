@@ -91,12 +91,11 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException
 	 * @see #register(Object, int) for list of supported object types
 	 * 
 	 */
 	public EntityIdentifier register(Object obj) throws EmptyListException,
-			MalformedListException, UnsupportedObjectTypeException, IOException {
+			MalformedListException, UnsupportedObjectTypeException {
 		return register(obj, UNKNOWN_DEPTH);
 	}
 
@@ -141,11 +140,10 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException
 	 */
 	public EntityIdentifier register(Object obj, int unknownDepth)
 			throws EmptyListException, MalformedListException,
-			UnsupportedObjectTypeException, IOException {
+			UnsupportedObjectTypeException {
 		return register(obj, unknownDepth, null);
 	}
 
@@ -209,12 +207,11 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
 	public EntityIdentifier register(Object obj, int depth, String charSet)
 			throws EmptyListException, MalformedListException,
-			UnsupportedObjectTypeException, IOException {
+			UnsupportedObjectTypeException {
 		if (obj instanceof EntityIdentifier) {
 			return (EntityIdentifier) obj;
 		}
@@ -326,11 +323,10 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException
 	 */
 	public EntityIdentifier register(Object obj, String charSet)
 			throws EmptyListException, MalformedListException,
-			UnsupportedObjectTypeException, IOException {
+			UnsupportedObjectTypeException {
 		return register(obj, UNKNOWN_DEPTH, charSet);
 	}
 
@@ -499,11 +495,10 @@ public class DataFacade {
 	 *             If the list or any of it's sublists are malformed
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
-	 * @throws IOException
 	 */
 	private EntityIdentifier registerList(List<Object> list, int listDepth,
 			String charSet) throws EmptyListException, MalformedListException,
-			UnsupportedObjectTypeException, IOException {
+			UnsupportedObjectTypeException {
 		if (listDepth == 0) {
 			throw new MalformedListException("Can't register list of 0 depth");
 		}
