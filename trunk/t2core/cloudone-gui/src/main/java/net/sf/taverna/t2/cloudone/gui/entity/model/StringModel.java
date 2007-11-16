@@ -40,4 +40,8 @@ public class StringModel extends EntityModel implements Observable<StringModelEv
 		this.string = string;
 		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.ADDED, string));
 	}
+
+	public String getString() {
+		return string;
+	}
 }
