@@ -180,7 +180,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		
 		for (Processor processor : dataflow.getProcessors()) {
 			//find the string constant processor
-			if (processor.getLocalName().equals("List_Emmitter"))  {
+			if (processor.getLocalName().equals("List_Emitter"))  {
 				processor.fire("test");
 				break;
 			}
