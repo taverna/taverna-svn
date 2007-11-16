@@ -10,6 +10,7 @@ import org.embl.ebi.escience.scufl.DuplicatePortNameException;
 import org.embl.ebi.escience.scufl.InputPort;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
+import org.embl.ebi.escience.scufl.XScufl;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorker;
 import org.embl.ebi.escience.scuflworkers.java.LocalWorkerWithPorts;
@@ -23,7 +24,7 @@ import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
  * 
  * @author Bharathi Kattamuri
  */
-public class GridSamJSDLWorker implements  LocalWorker
+public class GridSamJSDLWorker implements  LocalWorker, XMLExtensible
 {
 	
 	public static String ftpServer = "ftp://rpc326.cs.man.ac.uk:19245";
@@ -104,6 +105,20 @@ public class GridSamJSDLWorker implements  LocalWorker
 			throw new TaskExecutionException(e);
 		}
 		
+	}
+
+	public void consumeXML(Element xml) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Element provideXML() {
+		Element extensions = new Element("extensions", XScufl.XScuflNS);
+		Element flattenList = new Element("ftpdserver", XScufl.XScuflNS);
+		flattenList.setAttribute("server", "ftp://rpc326.cs.man.ac.uk:19245",
+			XScufl.XScuflNS);
+		extensions.addContent(flattenList);
+		return extensions;
 	}
 
 	

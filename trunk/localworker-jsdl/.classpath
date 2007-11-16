@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry excluding="**/*.java" kind="src" path="src/main/resources"/>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="src/main/resources" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/baclava/baclava-core/1.6.2.0/baclava-core-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/taverna-bootstrap/1.6.2.0/taverna-bootstrap-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/raven/raven/1.6.2.0/raven-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/raven/raven-log4j/1.6.2.0/raven-log4j-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/taverna-scavenger/1.6.2.0/taverna-scavenger-1.6.2.0.jar"/>
-	<classpathentry kind="lib" path="/usr/local/jdk1.5.0_06/lib/tools.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/resources/freefluo/NO-VERSION/freefluo-NO-VERSION.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/taverna-core/1.6.2.0/taverna-core-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.12/log4j-1.2.12.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/processors/taverna-java-processor/1.6.2.0/taverna-java-processor-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/scufl/scufl-model/1.6.2.0/scufl-model-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/uk/org/mygrid/taverna/scufl/scufl-ui-api/1.6.2.0/scufl-ui-api-1.6.2.0.jar"/>
-	<classpathentry kind="var" path="M2_REPO/commons-io/commons-io/1.2/commons-io-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/javax/mail/mail/1.4/mail-1.4.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/4.3.1/junit-4.3.1.jar"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
