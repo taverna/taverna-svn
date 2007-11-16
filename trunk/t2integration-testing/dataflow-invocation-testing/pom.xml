@@ -32,7 +32,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${depJunit}</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>

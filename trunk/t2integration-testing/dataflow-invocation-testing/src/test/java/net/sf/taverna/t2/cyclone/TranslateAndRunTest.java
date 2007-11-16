@@ -4,22 +4,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -31,14 +26,6 @@ import org.junit.Test;
  */
 public class TranslateAndRunTest extends TranslatorTestHelper {
 
-	@SuppressWarnings("unchecked")
-	@Before
-	public void makeDataManager() {
-		dataManager = new InMemoryDataManager("namespace",
-				Collections.EMPTY_SET);
-		ContextManager.baseManager = dataManager;
-	}
-
 	@Test
 	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis2.xml");
@@ -48,22 +35,18 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
-
-		for (Processor processor : dataflow.getProcessors()) {
-			if (processor.getLocalName().equals("hsapiens_gene_ensembl")) {
-				System.out.println("fire MakeList");
-				processor.fire("test");
-				break;
-			}
-		}
-
-		waitForCompletion(eventHandlers);
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		for (Map.Entry<String, DummyEventHandler> entry : eventHandlers
-				.entrySet()) {
-			System.out.println("Values for port " + entry.getKey());
-			Object result = entry.getValue().getResult();
+		facade.fire();
+		
+		waitForCompletion(listener,120);
+		
+		for (DataflowOutputPort outputPort : dataflow.getOutputPorts()) {
+			System.out.println("Values for port " + outputPort.getName());
+			Object result = listener.getResult(outputPort.getName());
 			if (result instanceof List) {
 				for (Object element : (List<?>) result) {
 					System.out.println(element);
@@ -88,22 +71,16 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		facade.fire();
 		
-		for (Processor processor : dataflow.getProcessors()) {
-			//find the string constant processor
-			if (!processor.getLocalName().equals("Processor_A"))  {
-				processor.fire("test");
-				break;
-			}
-		}
+		waitForCompletion(listener);
 		
-		waitForCompletion(eventHandlers);
-		
-		DummyEventHandler handler = eventHandlers.get("out");
-		assertEquals("The output was incorrect","Some Data",handler.getResult());
+		assertEquals("The output was incorrect","Some Data",listener.getResult("out"));
 	
 	}
 	
@@ -117,22 +94,16 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		facade.fire();
 		
-		for (Processor processor : dataflow.getProcessors()) {
-			//find the string constant processor
-			if (!processor.getLocalName().equals("List_Emitter"))  {
-				processor.fire("test");
-				break;
-			}
-		}
+		waitForCompletion(listener,5);
 		
-		waitForCompletion(eventHandlers);
-		
-		DummyEventHandler handler = eventHandlers.get("out");
-		assertTrue("The result should be a list",handler.getResult() instanceof List);
+		assertTrue("The result should be a list",listener.getResult("out") instanceof List);
 		
 		//TODO: test that the error is passed through.
 	}
@@ -147,22 +118,16 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		facade.fire();
 		
-		for (Processor processor : dataflow.getProcessors()) {
-			//find the string constant processor
-			if (processor.getLocalName().equals("Make_gene_list"))  {
-				processor.fire("test");
-				break;
-			}
-		}
+		waitForCompletion(listener);
 		
-		waitForCompletion(eventHandlers);
-		
-		DummyEventHandler handler = eventHandlers.get("out");
-		assertTrue("The result should be a list",handler.getResult() instanceof List);
+		assertTrue("The result should be a list",listener.getResult("out") instanceof List);
 	}
 	
 	@Test
@@ -174,22 +139,16 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
+		facade.fire();
 		
-		for (Processor processor : dataflow.getProcessors()) {
-			//find the string constant processor
-			if (processor.getLocalName().equals("List_Emitter"))  {
-				processor.fire("test");
-				break;
-			}
-		}
+		waitForCompletion(listener);
 		
-		waitForCompletion(eventHandlers);
-		
-		DummyEventHandler handler = eventHandlers.get("out");
-		assertTrue("The result should be a list",handler.getResult() instanceof List);
+		assertTrue("The result should be a list",listener.getResult("out") instanceof List);
 		
 	}
 	
@@ -203,29 +162,29 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
-		
-		assertEquals("There should only be 1 eventHandler",1,eventHandlers.size());
-		
 		List<String> inputs = new ArrayList<String>();
 		inputs.add("one");
 		inputs.add("two");
 		inputs.add("three");
 		
-		DataFacade facade = new DataFacade(dataManager);
 		int i=0;
 		for (String input : inputs) {
-			EntityIdentifier entityId=facade.register(input);
+			
+			WorkflowInstanceFacade facade;
+			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+			CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+			facade.addResultListener(listener);
+			
+			facade.fire();
+			
+			EntityIdentifier entityId=dataFacade.register(input);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
-				port.receiveEvent(new WorkflowDataToken("test"+i,new int[0],entityId));
+				facade.pushData(entityId, new int[0], port.getName());
 			}
 			
-			waitForCompletion(eventHandlers);
+			waitForCompletion(listener);
 			
-			DummyEventHandler handler = eventHandlers.get("output");
-			assertEquals(input+"XXX", handler.getResult());
-			handler.reset();
-			i++;
+			assertEquals(input+"XXX", listener.getResult("output"));
 		}
 	}
 }

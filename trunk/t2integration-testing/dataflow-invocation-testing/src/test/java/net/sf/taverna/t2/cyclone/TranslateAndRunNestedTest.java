@@ -4,17 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -23,14 +19,6 @@ import org.junit.Test;
  *
  */
 public class TranslateAndRunNestedTest extends TranslatorTestHelper {
-
-	@SuppressWarnings("unchecked")
-	@Before
-	public void makeDataManager() {
-		dataManager = new InMemoryDataManager("namespace",
-				Collections.EMPTY_SET);
-		ContextManager.baseManager = dataManager;
-	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
@@ -42,21 +30,19 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
-
-		for (Processor processor : dataflow.getProcessors()) {
-			if (processor.getLocalName().equals("Beanshell_scripting_host")) {
-				processor.fire("test");
-				break;
-			}
-		}
-
-		waitForCompletion(eventHandlers);
-		DummyEventHandler handler = eventHandlers.get("out");
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertNotNull("There should have been an output event handler named 'out'",handler);
-		assertTrue("There result should be a list",handler.getResult() instanceof List);
-		List<String> result = (List<String>)handler.getResult();
+		facade.fire();
+		
+		waitForCompletion(listener);
+		
+		
+		assertNotNull("There should have been an output event handler named 'out'",listener.getResult("out"));
+		assertTrue("There result should be a list",listener.getResult("out") instanceof List);
+		List<String> result = (List<String>)listener.getResult("out");
 		assertEquals("one-x",result.get(0));
 		assertEquals("two-x",result.get(1));
 		assertEquals("three-x",result.get(2));
@@ -80,21 +66,18 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
-
-		for (Processor processor : dataflow.getProcessors()) {
-			if (processor.getLocalName().equals("Beanshell_scripting_host")) {
-				processor.fire("test");
-				break;
-			}
-		}
-
-		waitForCompletion(eventHandlers);
-		DummyEventHandler handler = eventHandlers.get("out");
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertNotNull("There should have been an output event handler named 'out'",handler);
-		assertTrue("There result should be a list",handler.getResult() instanceof List);
-		List<List> result = (List<List>)handler.getResult();
+		facade.fire();
+		
+		waitForCompletion(listener);
+		
+		assertNotNull("There should have been an output event handler named 'out'",listener.getResult("out"));
+		assertTrue("There result should be a list",listener.getResult("out") instanceof List);
+		List<List> result = (List<List>)listener.getResult("out");
 		assertTrue("The result should be a list of lists",result.get(0) instanceof List);
 		assertEquals("There should be 3 lists within the results",3,result.size());
 		for (List innerList : result) {
@@ -123,21 +106,18 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 
-		Map<String, DummyEventHandler> eventHandlers = addDummyEventHandlersToOutputs(dataflow);
-
-		for (Processor processor : dataflow.getProcessors()) {
-			if (processor.getLocalName().equals("Beanshell_scripting_host")) {
-				processor.fire("test");
-				break;
-			}
-		}
-
-		waitForCompletion(eventHandlers);
-		DummyEventHandler handler = eventHandlers.get("out");
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
 		
-		assertNotNull("There should have been an output event handler named 'out'",handler);
-		assertTrue("There result should be a list",handler.getResult() instanceof List);
-		List<String> result = (List<String>)handler.getResult();
+		facade.fire();
+		
+		waitForCompletion(listener);
+		
+		assertNotNull("There should have been an output event handler named 'out'",listener.getResult("out"));
+		assertTrue("There result should be a list",listener.getResult("out") instanceof List);
+		List<String> result = (List<String>)listener.getResult("out");
 		assertEquals("There should be 3 lists within the results",3,result.size());
 		assertTrue("The result should be a list of lists",result.get(0) instanceof String);
 		for (String resultItem : result) {

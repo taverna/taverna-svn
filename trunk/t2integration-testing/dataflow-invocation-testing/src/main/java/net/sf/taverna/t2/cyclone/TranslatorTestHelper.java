@@ -3,12 +3,15 @@ package net.sf.taverna.t2.cyclone;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -16,6 +19,7 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
@@ -30,6 +34,7 @@ import org.embl.ebi.escience.scufl.UnknownProcessorException;
 import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
+import org.junit.Before;
 
 /**
  * A helper class to support tests for the {@link WorkflowModelTranslator}
@@ -40,6 +45,16 @@ import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 public class TranslatorTestHelper {
 
 	protected AbstractDataManager dataManager;
+	protected DataFacade dataFacade;
+	
+	@SuppressWarnings("unchecked")
+	@Before
+	public void makeDataManager() {
+		dataManager = new InMemoryDataManager("namespace",
+				Collections.EMPTY_SET);
+		dataFacade=new DataFacade(dataManager);
+		ContextManager.baseManager = dataManager;
+	}
 
 	protected void setUpRavenRepository() throws IOException {
 		File tmpDir = File.createTempFile("taverna", "raven");
@@ -122,6 +137,32 @@ public class TranslatorTestHelper {
 
 	}
 
+	/**
+	 * 
+	 * Uses a default max time of 30 seconds
+	 * 
+	 * @param listener
+	 * @throws InterruptedException
+	 * @throws DataflowTimeoutException
+	 */
+	protected void waitForCompletion(CaptureResultsListener listener) throws InterruptedException, DataflowTimeoutException {
+		waitForCompletion(listener, 30);
+	}
+	
+	protected void waitForCompletion(CaptureResultsListener listener,int maxtimeSeconds) throws InterruptedException, DataflowTimeoutException{
+		float time=0;
+		int maxTime = maxtimeSeconds*1000;
+		int interval=100;
+		while (!listener.isFinished()) {
+			Thread.sleep(interval);
+			time+=interval;
+			if (time>maxTime) {
+				throw new DataflowTimeoutException("The max time of "
+						+ maxtimeSeconds
+						+ "s was exceed waiting for the results");
+			}
+		}
+	}
 	protected void waitForCompletion(
 			Map<String, DummyEventHandler> eventHandlers, int maxtimeSeconds)
 			throws InterruptedException, DataflowTimeoutException {
