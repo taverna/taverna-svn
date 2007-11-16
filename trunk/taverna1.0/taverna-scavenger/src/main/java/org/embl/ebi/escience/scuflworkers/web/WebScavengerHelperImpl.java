@@ -120,14 +120,14 @@ public class WebScavengerHelperImpl implements ScavengerHelper, WebScavengerHelp
 	 * Returns the defaults, determined by taverna.defaultweb within the mygrid.properties file.
 	 * This is specific to WebScavengerHelper since WebScavengers need ScavengerTree in their constuctor.
 	 */
-	public Set<Scavenger> getDefaults(ScavengerTree tree) {
+	public Set<Scavenger> getDefaults(DefaultTreeModel theModel) {
 		Set<Scavenger> result = new HashSet<Scavenger>();
 		String urlList = System.getProperty("taverna.defaultweb");
 		if (urlList != null) {
 			String[] urls = urlList.split("\\s*,\\s*");
 			for (int i = 0; i < urls.length; i++) {
 				try {
-					Scavenger scavenger = new WebScavenger(urls[i], (DefaultTreeModel) tree.getModel());
+					Scavenger scavenger = new WebScavenger(urls[i], theModel);
 					result.add(scavenger);
 				} catch (ScavengerCreationException sce) {
 					logger.error(sce);

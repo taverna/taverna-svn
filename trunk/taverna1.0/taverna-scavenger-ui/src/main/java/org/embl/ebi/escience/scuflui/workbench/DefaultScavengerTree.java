@@ -214,7 +214,7 @@ public class DefaultScavengerTree extends ExtendedJTree implements WorkflowModel
 //				web scavenger is a special case and requires ScavengerTree to construct the Scavengers
 			if (helper instanceof WebScavengerHelper) 
 			{
-				for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(this)) {
+				for (Scavenger scavenger : ((WebScavengerHelper)helper).getDefaults(this.treeModel)) {
 					addScavenger(scavenger);
 				}
 			}

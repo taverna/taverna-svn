@@ -3,8 +3,9 @@ package org.embl.ebi.escience.scuflworkers.web;
 
 import java.util.Set;
 
+import javax.swing.tree.DefaultTreeModel;
+
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 
 /**
  * An interface to specifically identify the WebScavengerHelper.
@@ -25,6 +26,6 @@ public interface WebScavengerHelper {
 	 * @param tree
 	 * @return
 	 */
-	public Set<Scavenger> getDefaults(ScavengerTree tree);
+	public Set<Scavenger> getDefaults(DefaultTreeModel tree);
 
 }
