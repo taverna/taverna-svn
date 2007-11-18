@@ -3,7 +3,11 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
 import org.biomoby.client.taverna.plugin.BiomobyProcessorFactory;
@@ -16,6 +20,15 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  */
 public final class BiomobyProcessor2FactoryDecoder extends
 		ProcessorFactoryDecoder<BiomobyProcessorFactory> {
+
+	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
+		{ add(CommonKey.ProcessorClassKey);
+		add(CommonKey.NameKey);
+		add(CommonKey.MobyAuthorityKey);
+		add(CommonKey.MobyEndpointKey);
+		}
+	};
+	
 
 	@Override
 	protected void fillInDetails(
@@ -32,6 +45,10 @@ public final class BiomobyProcessor2FactoryDecoder extends
 		return (targetClass.isAssignableFrom(BiomobyProcessorFactory.class) &&
 				BiomobyProcessorFactory.class.isAssignableFrom(sourceClass));
 		
+	}
+
+	public Set<PropertyKey> getPropertyKeyProfile() {
+		return keyProfile;
 	}
 
 }

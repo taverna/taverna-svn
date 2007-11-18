@@ -4,7 +4,11 @@
 package net.sf.taverna.t2.drizzle.activityregistry;
 
 
+import java.util.HashSet;
+import java.util.Set;
+
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerProcessorFactory;
@@ -15,6 +19,12 @@ import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerProcessorFactor
  */
 public final class APIConsumerProcessorFactoryDecoder extends ProcessorFactoryDecoder<APIConsumerProcessorFactory> {
 
+	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
+		{ add(CommonKey.ProcessorClassKey);
+		add(CommonKey.NameKey);
+		}
+	};
+	
 	@Override
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
@@ -25,6 +35,11 @@ public final class APIConsumerProcessorFactoryDecoder extends ProcessorFactoryDe
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		return (targetClass.isAssignableFrom(APIConsumerProcessorFactory.class) &&
 				APIConsumerProcessorFactory.class.isAssignableFrom(sourceClass));
+	}
+
+	public Set<PropertyKey> getPropertyKeyProfile() {
+		// TODO Auto-generated method stub
+		return keyProfile;
 	}
 
 }

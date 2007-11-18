@@ -10,17 +10,13 @@ import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreePath;
 
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.workbench.DefaultScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -35,11 +31,13 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 // ActivityPaletteModel.
 public final class ActivityPaletteModel {
 
-	private static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
+	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
 	private ActivityRegistry registry;
 
 	private Set<ActivityTabModel> tabModels;
+	
+	private List<ActivityPaletteModelListener> listeners;
 
 	/**
 	 * A list of the names of all the scavengers contained within this tree
@@ -47,48 +45,69 @@ public final class ActivityPaletteModel {
 	ArrayList<String> scavengerList = null;
 
 	public ActivityPaletteModel() {
-		tabModels = new HashSet<ActivityTabModel>();
-		scavengerList = new ArrayList<String> ();
-		registry = new ActivityRegistry();
-		initializeRegistry(registry);
+		this.tabModels = new HashSet<ActivityTabModel>();
+		this.scavengerList = new ArrayList<String> ();
+		this.registry = new ActivityRegistry();
+		this.listeners = new ArrayList<ActivityPaletteModelListener>();
 	}
 
+	public void initialize() {
+		initializeRegistry();
+	}
+	
+	public void addListener(final ActivityPaletteModelListener listener) {
+		if (!this.listeners.contains(listener)) {
+			this.listeners.add(listener);
+		}
+	}
 	/**
 	 * @param registry
 	 *            the registry to set
 	 */
 	public synchronized void setRegistry(final ActivityRegistry registry) {
 		if (registry == null) {
-			throw new NullPointerException("registry cannot be null");
+			throw new NullPointerException("registry cannot be null"); //$NON-NLS-1$
 		}
 		this.registry = registry;
 	}
-
-	public ActivityTabModel addImmediateQuery(ActivityQuery<?> query) {
-		if (query == null) {
-			throw new NullPointerException("query cannot be null");
+	
+	private void addTabModel (final ActivityTabModel tabModel) {
+		if (!this.tabModels.contains(tabModel)) {
+			this.tabModels.add(tabModel);
+			notifyListenersTabModelAdded(tabModel);
 		}
-		ActivityQueryRunIdentification ident = registry
+	}
+
+	private void notifyListenersTabModelAdded(final ActivityTabModel tabModel) {
+		for (ActivityPaletteModelListener listener : this.listeners) {
+			listener.tabModelAdded(this, tabModel);
+		}
+	}
+
+	private void addImmediateQuery(ActivityQuery<?> query) {
+		if (query == null) {
+			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
+		}
+		ActivityQueryRunIdentification ident = this.registry
 				.addImmediateQuery(query);
 		ActivityTabModel tabModel = new ActivityTabModel();
 		tabModel.setFilter(ident.getObjectFilter());
 		tabModel.setName(ident.getName());
-		tabModels.add(tabModel);
-		return tabModel;
+		addTabModel(tabModel);
 	}
 
 	public void removeTabModel(final ActivityTabModel tabModel) {
 		if (tabModel == null) {
-			throw new NullPointerException("tabModel cannot be null");
+			throw new NullPointerException("tabModel cannot be null"); //$NON-NLS-1$
 		}
-		tabModels.remove(tabModel);
+		this.tabModels.remove(tabModel);
 	}
 
 	private void addScavenger(final Scavenger theScavenger) {
-		synchronized (registry) {
+		synchronized (this.registry) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
-			if (!scavengerList.contains(newName)) {			
+			if (!this.scavengerList.contains(newName)) {			
 				this.scavengerList.add(theScavenger.getUserObject().toString());
 				addImmediateQuery(new ActivityScavengerQuery(theScavenger));
 			}
@@ -99,7 +118,7 @@ public final class ActivityPaletteModel {
 	 * Adapted from code in DefaultScavengerTree
 	 * 
 	 */
-	private void initializeRegistry(final ActivityRegistry registry) {
+	private void initializeRegistry() {
 		List<Scavenger> simpleScavengers = ScavengerRegistry.instance()
 				.getScavengers();
 		if (simpleScavengers.isEmpty() == false) {
@@ -114,7 +133,7 @@ public final class ActivityPaletteModel {
 				new RegistryListener() {
 
 					public void spiRegistryUpdated(SpiRegistry spiRegistry) {
-						logger.info("Registry updated for class:"
+						logger.info("Registry updated for class:" //$NON-NLS-1$
 								+ spiRegistry.getClassName());
 						new DefaultScavengerLoaderThread();
 					}
@@ -125,10 +144,11 @@ public final class ActivityPaletteModel {
 	class DefaultScavengerLoaderThread extends Thread {
 
 		public DefaultScavengerLoaderThread() {
-			super("Default scavenger loader");
+			super("Default scavenger loader"); //$NON-NLS-1$
 			start();
 		}
 
+		@Override
 		public void run() {
 			// scavengingStarting("Populating service list");
 
@@ -152,7 +172,7 @@ public final class ActivityPaletteModel {
 				}
 			}
 			else {
-				if (logger.isDebugEnabled()) logger.debug("Adding helper to thread pool...."+helper.getClass().getSimpleName());
+				if (logger.isDebugEnabled()) logger.debug("Adding helper to thread pool...."+helper.getClass().getSimpleName()); //$NON-NLS-1$
 				threadPool.addScavengerHelper(helper);
 				
 				//FIXME: this sleep sadly seems to be necessary to prevent linkage errors in Raven
@@ -166,21 +186,21 @@ public final class ActivityPaletteModel {
 		
 		while (!threadPool.isEmpty()) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(threadPool.remaining() +" threads still waiting to complete.");
-				logger.debug(threadPool.waiting() +" threads still waiting in the queue.");
+				logger.debug(threadPool.remaining() +" threads still waiting to complete."); //$NON-NLS-1$
+				logger.debug(threadPool.waiting() +" threads still waiting in the queue."); //$NON-NLS-1$
 			}
 			Set<Scavenger> completed = threadPool.getCompleted();
-			logger.debug(completed.size() +" completed scavenger threads found");
+			logger.debug(completed.size() +" completed scavenger threads found"); //$NON-NLS-1$
 			for (Scavenger scavenger : completed) {
 				addScavenger(scavenger);
 			}
 			try {
 				if (!threadPool.isEmpty()) Thread.sleep(2500);
 			} catch (InterruptedException e1) {
-				logger.error("Interruption while waiting sleeping",e1);
+				logger.error("Interruption while waiting sleeping",e1); //$NON-NLS-1$
 			}
 		}
-		logger.info("Scavenger thread pool completed");
+		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
 	}
 
 

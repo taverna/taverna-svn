@@ -9,7 +9,7 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 public class ActivityPalettePanelFactory implements UIComponentFactorySPI {
 
 	public String getName() {
-		return "Services palette";
+		return "Services palette"; //$NON-NLS-1$
 	}
 
 	public ImageIcon getIcon() {

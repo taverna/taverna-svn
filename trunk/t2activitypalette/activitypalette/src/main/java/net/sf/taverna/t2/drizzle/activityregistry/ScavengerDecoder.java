@@ -4,12 +4,12 @@
 package net.sf.taverna.t2.drizzle.activityregistry;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -21,6 +21,8 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public final class ScavengerDecoder implements
 		PropertyDecoder<Scavenger, ProcessorFactory> {
 
+	private Set<PropertyKey> keyProfile = new HashSet<PropertyKey>();
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -52,10 +54,15 @@ public final class ScavengerDecoder implements
 					userObject.getClass(), ProcessorFactory.class);
 			if (decoder != null) {
 				result.addAll(decoder.decode(targetSet, userObject));
+				keyProfile.addAll(decoder.getPropertyKeyProfile());
 			} else {
-				throw new NullPointerException ("No decoder found for " + userObject.getClass().getName());
+				throw new NullPointerException ("No decoder found for " + userObject.getClass().getName()); //$NON-NLS-1$
 			}			
 		}
 		return result;
+	}
+
+	public Set<PropertyKey> getPropertyKeyProfile() {
+		return this.keyProfile;
 	}
 }

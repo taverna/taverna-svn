@@ -11,6 +11,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 /**
  * @author alanrw
@@ -18,7 +19,7 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
  */
 public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 	
-	private Scavenger scavenger;
+	Scavenger scavenger;
 	private ActivityQueryRunIdentification lastRun = null;
 	
 	public ActivityScavengerQuery(Scavenger configuration) {
@@ -27,28 +28,28 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 
 	public void configure(Scavenger configuration) {
 		if (configuration == null) {
-			throw new NullPointerException ("configuration cannot be null");
+			throw new NullPointerException ("configuration cannot be null"); //$NON-NLS-1$
 		}
 		this.scavenger = configuration;
 	}
 
 	public ActivityQueryRunIdentification runQuery(PropertiedObjectSet<ProcessorFactory> targetSet) {
 		if (targetSet == null) {
-			throw new NullPointerException("targetSet cannot be null");
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
 		}
-		PropertyDecoder decoder = PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactory.class);
+		final PropertyDecoder<Scavenger, ProcessorFactory> decoder = PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactory.class);
 		if (decoder == null) {
-			throw new NullPointerException("No decoder found for " + this.scavenger.getClass().getName());
+			throw new NullPointerException("No decoder found for " + this.scavenger.getClass().getName()); //$NON-NLS-1$
 		}
 		final Set<ProcessorFactory> factories =
-			decoder.decode(targetSet, scavenger);
+			decoder.decode(targetSet, this.scavenger);
 		final PropertiedObjectFilter<ProcessorFactory> factoriesFilter = 
 			new ObjectMembershipFilter<ProcessorFactory>(factories);
 		final long timeOfRun = System.currentTimeMillis();
 		ActivityQueryRunIdentification result = new ActivityQueryRunIdentification () {
 
 			public String getName() {
-				return scavenger.toString();
+				return ActivityScavengerQuery.this.scavenger.toString();
 			}
 
 			public PropertiedObjectFilter<ProcessorFactory> getObjectFilter() {
@@ -58,9 +59,13 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 			public long getTimeOfRun() {
 				return timeOfRun;
 			}
+
+			public Set<PropertyKey> getPropertyKeyProfile() {
+				return decoder.getPropertyKeyProfile();
+			}
 			
 		};
-		lastRun = result;
+		this.lastRun = result;
 		return result;
 	}
 

@@ -17,12 +17,12 @@ public final class ActivityRegistry {
 	private PropertiedObjectSet<ProcessorFactory> registry;
 	
 	public ActivityRegistry() {
-		registry = ObjectFactory.getInstance(PropertiedObjectSet.class);
+		this.registry = ObjectFactory.getInstance(PropertiedObjectSet.class);
 	}
 
 	public synchronized ActivityQueryRunIdentification addImmediateQuery(ActivityQuery<?> query) {
 		ActivityQueryRunIdentification ident =
-			query.runQuery(registry);
+			query.runQuery(this.registry);
 		return ident;
 	}
 }

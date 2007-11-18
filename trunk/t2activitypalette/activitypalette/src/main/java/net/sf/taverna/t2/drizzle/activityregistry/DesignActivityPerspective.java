@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignActivityPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-16 18:24:15 $
+ * Last modified on   $Date: 2007-11-18 23:43:10 $
  *               by   $Author: alaninmcr $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -44,17 +44,19 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 
 public class DesignActivityPerspective extends AbstractPerspective implements WorkflowPerspective {	
 
+	@Override
 	public ImageIcon getButtonIcon() {
 		return TavernaIcons.editIcon;
 	}	
 
+	@Override
 	public String getText() {
-		return "Design with Activity Palette";
+		return "Design with Activity Palette"; //$NON-NLS-1$
 	}
 
 	@Override
 	protected InputStream getLayoutResourceStream() {
-		return DesignActivityPerspective.class.getResourceAsStream("/perspective-design-activity.xml");
+		return DesignActivityPerspective.class.getResourceAsStream("/perspective-design-activity.xml"); //$NON-NLS-1$
 	}
 
 	@Override

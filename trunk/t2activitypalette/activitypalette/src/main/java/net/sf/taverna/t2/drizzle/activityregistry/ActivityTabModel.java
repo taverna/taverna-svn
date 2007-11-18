@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 
 /**
@@ -10,14 +12,14 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
  *
  */
 public final class ActivityTabModel {
-	PropertiedObjectFilter filter = null;
+	PropertiedObjectFilter<ProcessorFactory> filter = null;
 	String name;
 
 	/**
 	 * @return the name
 	 */
 	public synchronized final String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -30,14 +32,14 @@ public final class ActivityTabModel {
 	/**
 	 * @return the filter
 	 */
-	public synchronized final PropertiedObjectFilter getFilter() {
-		return filter;
+	public synchronized final PropertiedObjectFilter<ProcessorFactory> getFilter() {
+		return this.filter;
 	}
 
 	/**
 	 * @param filter the filter to set
 	 */
-	public synchronized final void setFilter(final PropertiedObjectFilter filter) {
+	public synchronized final void setFilter(final PropertiedObjectFilter<ProcessorFactory> filter) {
 		this.filter = filter;
 	}
 
