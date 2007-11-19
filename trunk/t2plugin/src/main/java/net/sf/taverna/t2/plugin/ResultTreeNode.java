@@ -89,5 +89,9 @@ public class ResultTreeNode implements MutableTreeNode {
 	public void setUserObject(Object arg0) {
 		
 	}
+	
+	public String toString() {
+		return token.toString();
+	}
 
 }
