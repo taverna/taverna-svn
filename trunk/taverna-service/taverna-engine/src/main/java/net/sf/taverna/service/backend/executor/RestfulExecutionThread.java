@@ -301,8 +301,9 @@ public class RestfulExecutionThread extends Thread {
 		repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors",
 				"taverna-notification-processor", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact("biomoby.org",
-				"taverna-biomoby", BASE_TAVERNA_VERSION));
+                repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-biomoby-processor", BASE_TAVERNA_VERSION));
 
 		repository.addRemoteRepository(new URL(
 				"http://www.mygrid.org.uk/maven/repository/"));
