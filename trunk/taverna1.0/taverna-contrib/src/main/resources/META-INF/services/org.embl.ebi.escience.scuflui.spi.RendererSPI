@@ -1,2 +1,1 @@
-# Constructor does not follow the SPI
-#net.sourceforge.taverna.scuflui.renderers.SVGRenderer
+net.sourceforge.taverna.scuflui.renderers.SVGRenderer

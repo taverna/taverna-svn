@@ -1,22 +1,22 @@
 package net.sourceforge.taverna.scuflui.renderers;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.batik.swing.JSVGCanvas;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scuflui.renderers.RendererException;
 import org.embl.ebi.escience.scuflui.renderers.RendererRegistry;
 import org.embl.ebi.escience.scuflui.renderers.AbstractRenderer.ByPattern;
 import org.embl.ebi.escience.scuflui.spi.RendererSPI;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
@@ -25,19 +25,17 @@ import org.xml.sax.SAXException;
  * Last edited by $Author: stain $
  * 
  * @author Mark
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class SVGRenderer extends ByPattern implements RendererSPI {
 
 	private static Logger logger = Logger.getLogger(SVGRenderer.class);
 
-	/**
-	 * @param name
-	 * @param icon
-	 * @param pattern
-	 */
-	public SVGRenderer(String name, Icon icon, Pattern pattern) {
-		super(name, icon, pattern);
+	public SVGRenderer() {
+		 super("SVG Image",
+	              new ImageIcon(SVGRenderer.class.getClassLoader().getResource(
+	                "org/embl/ebi/escience/baclava/icons/image.png")),
+	              Pattern.compile(".*image/svg[+]xml.*"));
 	}
 
 	/**
@@ -60,28 +58,17 @@ public class SVGRenderer extends ByPattern implements RendererSPI {
 
 		Object data = dataThing.getDataObject();
 		String mimetype = dataThing.getSyntacticType();
-		logger.info(" *** mimeType: " + mimetype);
 		if (data != null && data instanceof String && !data.equals("")) {
-			if ("'image/svg+xml'".equals(mimetype)) {
 				String svgContent = (String) data;
-
-				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-				factory.setValidating(false);
-
-				// Create the builder and parse the file
-				Document svgDoc;
+				File tmpFile;
 				try {
-					svgDoc = factory.newDocumentBuilder().parse(svgContent);
-				} catch (SAXException e) {
-					throw new RendererException(e);
+					tmpFile = File.createTempFile("taverna", "svg");
+					tmpFile.deleteOnExit();
+					FileUtils.writeStringToFile(tmpFile, svgContent, "utf8");
 				} catch (IOException e) {
 					throw new RendererException(e);
-				} catch (ParserConfigurationException e) {
-					throw new RendererException(e);
 				}
-				// Document svgDoc =
-				svgCanvas.setDocument(svgDoc);
-			}
+				svgCanvas.setURI(tmpFile.toURI().toASCIIString());
 			return svgCanvas;
 		} else {
 			return null;
