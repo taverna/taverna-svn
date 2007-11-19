@@ -55,6 +55,11 @@ public class StringValue implements PropertyValue, Comparable<Object> {
 		return result;
 	}
 	
+	@Override
+	public int hashCode() {
+		return getValue().hashCode();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

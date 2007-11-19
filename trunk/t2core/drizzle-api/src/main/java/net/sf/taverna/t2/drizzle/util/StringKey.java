@@ -56,6 +56,11 @@ public final class StringKey implements PropertyKey, Comparable<Object> {
 		return result;
 	}
 	
+	@Override
+	public int hashCode() {
+		return getKey().hashCode();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
