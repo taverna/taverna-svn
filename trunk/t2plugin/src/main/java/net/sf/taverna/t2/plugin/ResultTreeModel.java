@@ -2,6 +2,7 @@ package net.sf.taverna.t2.plugin;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -68,7 +69,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	}
 
 	private void insertNewDataTokenNode(EntityIdentifier token, int[] index, String owningProcess) {
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) getRoot();
+		MutableTreeNode parent = (MutableTreeNode) getRoot();
 		if (index.length == depth) {
 			if (depth == 0) {
 				insertNodeInto(
@@ -78,7 +79,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 				parent = getChildAt(parent, 0);
 				parent.setUserObject("List...");
 				for (int indexElement = 0; indexElement < depth; indexElement++) {
-					DefaultMutableTreeNode child = getChildAt(parent,
+					MutableTreeNode child = getChildAt(parent,
 							index[indexElement]);
 					if (indexElement == (depth - 1)) { // leaf
 						
@@ -96,7 +97,10 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 							}
 						}
 						else {
-							child.setUserObject(token);
+							int childIndex = parent.getIndex(child);
+							child = new ResultTreeNode(token, new DataFacade(ContextManager.getDataManager(owningProcess)));
+							parent.remove(childIndex);
+							parent.insert(child, childIndex);
 						}
 						
 						
@@ -110,7 +114,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		}
 	}
 
-	private DefaultMutableTreeNode getChildAt(DefaultMutableTreeNode parent,
+	private MutableTreeNode getChildAt(MutableTreeNode parent,
 			int i) {
 		int childCount = getChildCount(parent);
 		if (childCount <= i) {
@@ -120,7 +124,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 			}
 		}
 
-		return (DefaultMutableTreeNode) parent.getChildAt(i);
+		return (MutableTreeNode) parent.getChildAt(i);
 	}
 
 }
