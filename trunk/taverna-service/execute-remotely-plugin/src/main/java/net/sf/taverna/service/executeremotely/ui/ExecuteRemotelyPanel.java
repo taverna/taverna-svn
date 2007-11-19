@@ -64,6 +64,8 @@ public class ExecuteRemotelyPanel extends JPanel implements
         
         private JButton removeButton;
         
+        private JButton connectButton;
+        
         public ExecuteRemotelyPanel() {
                 super(new GridBagLayout());
                 addHeader();
@@ -139,6 +141,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 DefaultComboBoxModel servicelist =
                         new DefaultComboBoxModel(conf.getServices());
                 services.setModel(servicelist);
+                connectButton.setEnabled(conf.getServices().length>0);
         }
         
         protected void addHeader() {
@@ -170,6 +173,10 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 services.addActionListener(new ServiceSelectionListener());
                 add(services, c);
                 c.weightx = 0;
+        
+                Action connectService = new ConnectServiceAction();
+                connectButton = new JButton(connectService);
+                add(connectButton,c);
                 
                 Action addService = new NewServiceAction();
                 add(new JButton(addService), c);
@@ -192,12 +199,11 @@ public class ExecuteRemotelyPanel extends JPanel implements
         }
         
         private void checkButtons() {
-                runButton.setEnabled(context != null && model != null);
+                //runButton.setEnabled(context != null && model != null);
                 refreshButton.setEnabled(context != null);
                 removeButton.setEnabled(context != null);
                 editButton.setEnabled(context != null);
                 
-                runButton.invalidate();
                 refreshButton.invalidate();
                 removeButton.invalidate();
                 editButton.invalidate();
@@ -251,17 +257,24 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 add(scrollPane, c);
         }
         
-        protected void setContext(RESTContext context) {
+        protected void setContext(RESTContext context,boolean connect) {
                 this.service = new RESTService(context); // copy
                 this.context = context;
                 conf.setSelected(context);
-                jobs.setContext(context);
+                if (connect) {
+                        jobs.setContext(context);
+                        runButton.setEnabled(context != null && model != null);
+                }
+                else {
+                        runButton.setEnabled(false);
+                        jobs.setContext(null);
+                }
                 checkButtons();
         }
         
         public class ServiceSelectionListener implements ActionListener {
                 public void actionPerformed(ActionEvent e) {
-                        setContext((RESTContext) services.getSelectedItem());
+                        setContext((RESTContext) services.getSelectedItem(),false);
                 }
         }
         
@@ -301,6 +314,20 @@ public class ExecuteRemotelyPanel extends JPanel implements
                         if (response==JOptionPane.OK_OPTION) {
                                 removeService(service);
                         }
+                }
+        }
+        
+        public class ConnectServiceAction extends AbstractAction {
+                public ConnectServiceAction() {
+                        putValue(SMALL_ICON,TavernaIcons.dataLinkIcon);
+                        putValue(NAME,"Connect");
+                        putValue(SHORT_DESCRIPTION,"Connect to the selected service location");
+                }
+           
+                public void actionPerformed(ActionEvent actionEvent) {
+                                if (services.getSelectedItem()!=null) {
+                                        setContext((RESTContext) services.getSelectedItem(),true);
+                                }
                 }
         }
         
