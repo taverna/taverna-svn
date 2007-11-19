@@ -12,6 +12,7 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectListener;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
+import net.sf.taverna.t2.drizzle.util.StringValue;
 
 /**
  * @author alanrw
@@ -280,4 +281,35 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		return PropertiedObjectBean.class;
 	}
 
+	@Override
+	public boolean equals (Object o) {
+		if (o instanceof PropertiedObject) {
+			return ((PropertiedObject)o).getObject().equals(this.getObject());
+		}
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int compareTo(Object arg0) {
+		int result = 0;
+		if (arg0 instanceof PropertiedObject) {
+			PropertiedObject<?> argPo = (PropertiedObject) arg0;
+			Object arg0Object = argPo.getObject();
+			if (getObject() instanceof Comparable) {
+				Comparable<Object> cObject = (Comparable<Object>) getObject();
+			result = cObject.compareTo(arg0Object);
+			}
+		}
+		else {
+			throw new ClassCastException ("Argument is not a PropertiedObject"); //$NON-NLS-1$
+		}
+		return result;
+	}
+	
+	@Override
+	public int hashCode() {
+		return getObject().hashCode();
+	}
 }

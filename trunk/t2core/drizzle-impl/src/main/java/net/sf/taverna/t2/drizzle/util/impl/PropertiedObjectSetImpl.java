@@ -101,6 +101,11 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 			for (PropertiedObjectListener pol : this.objectListeners) {
 				result.addListener(pol);
 			}
+		} else {
+			Set<O> keySet = this.propertiedObjectMap.keySet();
+			if (!keySet.contains(object)) {
+				throw new IllegalStateException ("Something is very funny here");
+			}
 		}
 	}
 

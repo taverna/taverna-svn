@@ -23,6 +23,7 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreeSeparatorNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
@@ -79,43 +80,52 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		if (settingIndex != this.keySettings.size()) {
 			PropertyKeySetting setting = this.keySettings.get(settingIndex);
 			PropertyKey key = setting.getPropertyKey();
-			Set<PropertyValue> values = this.propertiedGraphView.getValues(key);
+			if (key == null) {
+				// Then we create a separator node
+				PropertiedTreeSeparatorNode<O> subNode = new PropertiedTreeSeparatorNodeImpl<O>();
+				parent.addChild(subNode);
+				constructSubTree(subNode, settingIndex + 1, permittedObjects);
+			} else {
+				Set<PropertyValue> values = this.propertiedGraphView
+						.getValues(key);
 
-			// Note that a null compaarator is OK
-			TreeSet<PropertyValue> sortedValues = new TreeSet<PropertyValue>(
-					setting.getComparator());
-			sortedValues.addAll(values);
+				// Note that a null compaarator is OK
+				TreeSet<PropertyValue> sortedValues = new TreeSet<PropertyValue>(
+						setting.getComparator());
+				sortedValues.addAll(values);
 
-			Set<O> remainingObjects = new HashSet<O>(permittedObjects);
-			for (PropertyValue value : sortedValues) {
-				PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
-				subNode.setKey(key);
-				subNode.setValue(value);
-				Set<PropertiedGraphNode<O>> nodes = this.propertiedGraphView
-						.getEdge(key, value).getNodes();
-				Set<O> objectsWithValue = new HashSet<O>();
-				for (PropertiedGraphNode<O> node : nodes) {
-					O object = node.getObject();
-					if (permittedObjects.contains(object)) {
-						objectsWithValue.add(node.getObject());
+				Set<O> remainingObjects = new HashSet<O>(permittedObjects);
+				for (PropertyValue value : sortedValues) {
+					PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
+					subNode.setKey(key);
+					subNode.setValue(value);
+					Set<PropertiedGraphNode<O>> nodes = this.propertiedGraphView
+							.getEdge(key, value).getNodes();
+					Set<O> objectsWithValue = new HashSet<O>();
+					for (PropertiedGraphNode<O> node : nodes) {
+						O object = node.getObject();
+						if (permittedObjects.contains(object)) {
+							objectsWithValue.add(node.getObject());
+						}
+					}
+					remainingObjects.removeAll(objectsWithValue);
+
+					if (objectsWithValue.size() > 0) {
+						parent.addChild(subNode);
+
+						constructSubTree(subNode, settingIndex + 1,
+								objectsWithValue);
 					}
 				}
-				remainingObjects.removeAll(objectsWithValue);
 
-				if (objectsWithValue.size() > 0) {
+				if (remainingObjects.size() > 0) {
+					PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
+					subNode.setKey(key);
+					// value deliberately left as null
 					parent.addChild(subNode);
-
 					constructSubTree(subNode, settingIndex + 1,
-							objectsWithValue);
+							remainingObjects);
 				}
-			}
-
-			if (remainingObjects.size() > 0) {
-				PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
-				subNode.setKey(key);
-				// value deliberately left as null
-				parent.addChild(subNode);
-				constructSubTree(subNode, settingIndex + 1, remainingObjects);
 			}
 		} else {
 			// Note that a null comparator is OK
@@ -220,7 +230,8 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 				Set<O> containedObjects = containerNode.getAllObjects();
 
 				// If object is now filtered
-				if ((this.filter != null) && !(this.filter.acceptObject(object))) {
+				if ((this.filter != null)
+						&& !(this.filter.acceptObject(object))) {
 					containedObjects.remove(object);
 					this.nodeMap.remove(object);
 				}
@@ -259,7 +270,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		return (node.getChildCount() == 0);
 	}
 
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings( { "unchecked", "unused" })
 	private void notifyListenersTreeNodesChanged(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
@@ -272,7 +283,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		}
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings( { "unused", "unchecked" })
 	private void notifyListenersTreeNodesInserted(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
@@ -285,7 +296,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		}
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings( { "unused", "unchecked" })
 	private void notifyListenersTreeNodesRemoved(
 			TypedTreeModelEvent<PropertiedTreeNode<O>> e) {
 		if (e == null) {
