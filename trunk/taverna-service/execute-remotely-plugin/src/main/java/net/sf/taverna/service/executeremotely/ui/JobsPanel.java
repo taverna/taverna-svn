@@ -149,7 +149,13 @@ public class JobsPanel extends JPanel {
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		c.gridx = 0;
 		c.gridy = 0;
-		add(new ShadedLabel("Jobs at " + context, ShadedLabel.TAVERNA_BLUE), c);
+                if (context==null) {
+                    add(new ShadedLabel("Not connected.", ShadedLabel.TAVERNA_BLUE), c);
+                }
+                else {
+                    add(new ShadedLabel("Jobs at " + context, ShadedLabel.TAVERNA_BLUE), c);
+                }
+		
 
 	}
 
