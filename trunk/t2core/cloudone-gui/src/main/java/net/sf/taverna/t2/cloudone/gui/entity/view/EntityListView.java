@@ -63,7 +63,6 @@ public class EntityListView extends
 
 	public void addEntityToModel(EntityModel entityModel) {
 		getModel().addEntityModel(entityModel);
-		System.out.println("add");
 		try {
 			// Make it editable
 			edit(entityModel);
@@ -93,6 +92,7 @@ public class EntityListView extends
 	}
 
 	private JPanel createSchemeButtons() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		JPanel addSchemes = new JPanel();
 		addSchemes.setLayout(new GridBagLayout());
 		// addSchemes.setOpaque(false);
@@ -105,7 +105,7 @@ public class EntityListView extends
 		cButton.fill = GridBagConstraints.HORIZONTAL;
 		cButton.anchor = GridBagConstraints.LINE_END;
 
-		JLabel headerLabel = new JLabel("<html><strong>List</strong></html>");
+		//JLabel headerLabel = new JLabel("<html><strong>List</strong></html>");
 		RemoveAction removeAction = new RemoveAction();
 		CreatDataDocAction createDataDocAction = new CreatDataDocAction(
 				getModel());
@@ -115,7 +115,7 @@ public class EntityListView extends
 		CreateStringAction createStringAction = new CreateStringAction(getModel());
 		removeButton = new JButton(removeAction);
 		if (getParentView() != null) {
-			addSchemes.add(headerLabel, cLabel);
+			//addSchemes.add(headerLabel, cLabel);
 			addSchemes.add(removeButton,cLabel);
 		}
 		JLabel createLabel = new JLabel("Create:");
@@ -315,7 +315,6 @@ public class EntityListView extends
 	@Override
 	public void setEdit(boolean editable) {
 		if (! editable) {
-			System.out.println("aSD");
 			edit(null);
 		}
 	}

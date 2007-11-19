@@ -104,7 +104,7 @@ public class DataDocumentEditView
 	}
 
 	private void initialiseGui() {
-
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data Document", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		// panel inside panel for on-click activation
 		setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.BLUE));
@@ -146,8 +146,8 @@ public class DataDocumentEditView
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
 		
-		JLabel header = new JLabel("<html><strong>Data Document</strong></html>");
-		panel.add(header, c);
+		//JLabel header = new JLabel("<html><strong>Data Document</strong></html>");
+		//panel.add(header, c);
 		
 		c.gridy = 1;
 		

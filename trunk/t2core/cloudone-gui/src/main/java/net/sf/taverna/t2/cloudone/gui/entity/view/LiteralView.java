@@ -53,6 +53,7 @@ public class LiteralView extends
 	}
 
 	public void initialise() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Literal", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		editPanel = new JPanel();
 		setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -66,8 +67,7 @@ public class LiteralView extends
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		editPanel.add(new JLabel("<html><small>Literal</small></html>"),
-				headerC);
+		//editPanel.add(new JLabel("<html><small>Literal</small></html>"), headerC);
 		editPanel.add(comboBox);
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
@@ -147,7 +147,6 @@ public class LiteralView extends
 
 		public void actionPerformed(ActionEvent e) {
 			model.remove();
-			System.out.println("remove me");
 		}
 	}
 

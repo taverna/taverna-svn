@@ -40,6 +40,7 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 
 	private void initialise() {
 		// GUI stuff
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File Reference Scheme", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		setLayout(new GridBagLayout());
 		//setBorder(BorderFactory.createLineBorder(Color.GREEN));
 //		setOpaque(false);
@@ -49,7 +50,7 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		add(new JLabel("<html><small>File reference</small></html>"), headerC);
+		//add(new JLabel("<html><small>File reference</small></html>"), headerC);
 
 		GridBagConstraints fieldConstraints = new GridBagConstraints();
 		fieldConstraints.gridx = 0;

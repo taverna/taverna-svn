@@ -101,6 +101,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 	}
 
 	private void initialise() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Http Reference Scheme", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		setLayout(new GridBagLayout());
 		//setBorder(BorderFactory.createLineBorder(Color.RED));
 //		setOpaque(false);
@@ -111,7 +112,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		add(new JLabel("<html><small>HTTP reference</small></html>"), headerC);
+		//add(new JLabel("<html><small>HTTP reference</small></html>"), headerC);
 		
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;

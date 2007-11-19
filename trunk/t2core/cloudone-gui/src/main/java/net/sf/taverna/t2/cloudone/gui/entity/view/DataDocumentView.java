@@ -26,6 +26,7 @@ public class DataDocumentView extends
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(DataDocumentView.class);
 	private JPanel views;
+	private JLabel noRefs;
 
 	public DataDocumentView(DataDocumentModel model) {
 		super(model, null);
@@ -34,7 +35,14 @@ public class DataDocumentView extends
 	}
 
 	protected void initialise() {
+		noRefs = new JLabel("No Reference Schemes have been added");
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null,
+				"Reference Schemes",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
 		setLayout(new GridBagLayout());
+		add(noRefs);
 //		setOpaque(false);
 		// JPanel addSchemes = addSchemeButtons();
 		GridBagConstraints outerConstraint = new GridBagConstraints();
@@ -61,6 +69,7 @@ public class DataDocumentView extends
 	@SuppressWarnings("unchecked")
 	@Override
 	protected JComponent createModelView(final ReferenceSchemeModel refModel) {
+		noRefs.setVisible(false);
 		JPanel panel = new JPanel();
 		JButton removeRef = new JButton(new RemoveViewAction((refModel)));
 //		removeRef.setOpaque(false);
@@ -85,6 +94,9 @@ public class DataDocumentView extends
 	@Override
 	protected void removeViewComponent(JComponent refModel) {
 		views.remove(refModel);
+		if (getModel().getReferenceSchemeModels().isEmpty()) {
+			noRefs.setVisible(true);
+		}
 		views.revalidate();
 	}
 	

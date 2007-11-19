@@ -55,6 +55,7 @@ public class StringView extends
 	}
 
 	public void initialise() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "String", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
 		editPanel = new JPanel();
 		editPanel.setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -65,7 +66,7 @@ public class StringView extends
 		headerC.gridwidth = 4;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		editPanel.add(new JLabel("<html><small>String</small></html>"), headerC);
+		//editPanel.add(new JLabel("<html><small>String</small></html>"), headerC);
 
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
