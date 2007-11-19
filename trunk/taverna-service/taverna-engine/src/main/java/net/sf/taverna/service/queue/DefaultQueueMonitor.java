@@ -97,6 +97,7 @@ public class DefaultQueueMonitor extends Thread {
 		Queue queue=daoFactory.getQueueDAO().defaultQueue();
 		List<Job> completedJobs = findQueuedJobsByStatus(Status.COMPLETE);
 		completedJobs.addAll(findQueuedJobsByStatus(Status.CANCELLED));
+                completedJobs.addAll(findQueuedJobsByStatus(Status.FAILED));
 		for (Job job : completedJobs) {
 			QueueEntry entry=queue.removeJob(job);
 			daoFactory.getQueueEntryDAO().delete(entry);
