@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.stringconstant;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,9 +59,7 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 					callback.fail(e.getMessage(),e);
 				} catch (UnsupportedObjectTypeException e) {
 					callback.fail(e.getMessage(),e);
-				} catch (IOException e) {
-					callback.fail(e.getMessage(),e);
-				}
+				} 
 			}
 			
 		});

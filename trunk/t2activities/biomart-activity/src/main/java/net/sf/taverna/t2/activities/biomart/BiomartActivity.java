@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.biomart;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -122,8 +121,6 @@ public class BiomartActivity extends
 				} catch (MalformedListException e) {
 					callback.fail("Failure calling biomart", e);
 				} catch (UnsupportedObjectTypeException e) {
-					callback.fail("Failure calling biomart", e);
-				} catch (IOException e) {
 					callback.fail("Failure calling biomart", e);
 				}
 			}

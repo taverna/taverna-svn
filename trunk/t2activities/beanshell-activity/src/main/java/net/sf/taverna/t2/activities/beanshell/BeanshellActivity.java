@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.beanshell;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,9 +92,7 @@ public class BeanshellActivity extends
 					callback.fail("Error accessing beanshell input/output data", e);
 				} catch (NotFoundException e) {
 					callback.fail("Error accessing beanshell input/output data", e);
-				} catch (IOException e) {
-					callback.fail("Error accessing beanshell input/output data", e);
-				}
+				} 
 			}
 		});
 
