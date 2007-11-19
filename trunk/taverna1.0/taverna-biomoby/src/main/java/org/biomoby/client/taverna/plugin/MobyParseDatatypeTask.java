@@ -81,8 +81,12 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 						names = getNames(outputPortName);
 						if (outputPortName.endsWith("_ns")) {
 							type = ParseMobyXML.NAMESPACE;
+							if (names.size() > 1) // added nov15-2007
+								names.remove(names.size()-1);
 						} else if (outputPortName.endsWith("_id")) {
 							type = ParseMobyXML.ID;
+							if (names.size() > 1)//added nov15-2007
+                                                                names.remove(names.size()-1);
 						} else {
 							type = ParseMobyXML.VALUE;
 						}
@@ -131,8 +135,12 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 							names = getNames(outputPortName);
 							if (outputPortName.endsWith("_ns")) {
 								type = ParseMobyXML.NAMESPACE;
+								if (names.size() > 1)//added nov-15-07
+                                                                	names.remove(names.size()-1);
 							} else if (outputPortName.endsWith("_id")) {
 								type = ParseMobyXML.ID;
+								if (names.size() > 1)//added nov-15-07
+                                                                        names.remove(names.size()-1);
 							} else {
 								type = ParseMobyXML.VALUE;
 							}
