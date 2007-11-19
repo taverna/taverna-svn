@@ -4,7 +4,7 @@
       <split ratio="0.4192872117400419" orientation="horizontal">
         <right>
           <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent scroll="true">
+            <namedcomponent scroll="false">
                <name>T2 Panel</name>
              </namedcomponent>
           </znode>
