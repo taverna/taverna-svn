@@ -216,7 +216,6 @@ public class EntityListView extends
 			lastEditedView = null;
 		}
 		entityViews.revalidate();
-		System.out.println("removing");
 	}
 
 	/**
