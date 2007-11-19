@@ -31,8 +31,8 @@ public class Job extends AbstractOwned {
 	
 	public static final int MAX_CONSOLE_SIZE = 65535;
 
-	// 5 minutes in xsd:duration format, but for testing we'll say 5 seconds
-	public static final String DEFAULT_UPDATE_INTERVAL = "PT5S";
+	// 1 minutes in xsd:duration format.
+	public static final String DEFAULT_UPDATE_INTERVAL = "PT60S";
 
 	public static final String NAMED_QUERY_ALL = "allJobs";
 	
