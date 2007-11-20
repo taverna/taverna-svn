@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.drizzle.util;
 
+import javax.swing.table.TableModel;
+
 /**
  * @author alanrw
  *
@@ -8,5 +10,6 @@ package net.sf.taverna.t2.drizzle.util;
  * @param <O> The class of object that is encapsulated in nodes.
  */
 public interface PropertiedTreeSeparatorNode<O> extends PropertiedTreeNode<O> {
+	TableModel getTableModel();
 	// No additional methods
 }
