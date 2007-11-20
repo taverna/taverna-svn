@@ -31,6 +31,7 @@ public final class BiomartProcessorFactoryDecoder extends ProcessorFactoryDecode
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			BiomartProcessorFactory encodedFactory) {
 		// TODO martQuery
+		// TODO Ask Katy about what is sensible to pull out
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

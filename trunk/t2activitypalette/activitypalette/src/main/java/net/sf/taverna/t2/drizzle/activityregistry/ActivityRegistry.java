@@ -25,4 +25,11 @@ public final class ActivityRegistry {
 			query.runQuery(this.registry);
 		return ident;
 	}
+
+	/**
+	 * @return the registry
+	 */
+	public synchronized final PropertiedObjectSet<ProcessorFactory> getRegistry() {
+		return registry;
+	}
 }

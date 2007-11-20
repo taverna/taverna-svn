@@ -35,7 +35,7 @@ public final class ActivityPaletteModel {
 
 	private ActivityRegistry registry;
 
-	private Set<ActivityTabModel> tabModels;
+	private Set<ActivityRegistrySubsetModel> subsetModels;
 	
 	private List<ActivityPaletteModelListener> listeners;
 
@@ -45,7 +45,7 @@ public final class ActivityPaletteModel {
 	ArrayList<String> scavengerList = null;
 
 	public ActivityPaletteModel() {
-		this.tabModels = new HashSet<ActivityTabModel>();
+		this.subsetModels = new HashSet<ActivityRegistrySubsetModel>();
 		this.scavengerList = new ArrayList<String> ();
 		this.registry = new ActivityRegistry();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
@@ -71,16 +71,16 @@ public final class ActivityPaletteModel {
 		this.registry = registry;
 	}
 	
-	private void addTabModel (final ActivityTabModel tabModel) {
-		if (!this.tabModels.contains(tabModel)) {
-			this.tabModels.add(tabModel);
-			notifyListenersTabModelAdded(tabModel);
+	private void addSubsetModel (final ActivityRegistrySubsetModel subsetModel) {
+		if (!this.subsetModels.contains(subsetModel)) {
+			this.subsetModels.add(subsetModel);
+			notifyListenersSubsetModelAdded(subsetModel);
 		}
 	}
 
-	private void notifyListenersTabModelAdded(final ActivityTabModel tabModel) {
+	private void notifyListenersSubsetModelAdded(final ActivityRegistrySubsetModel subsetModel) {
 		for (ActivityPaletteModelListener listener : this.listeners) {
-			listener.tabModelAdded(this, tabModel);
+			listener.subsetModelAdded(this, subsetModel);
 		}
 	}
 
@@ -90,17 +90,19 @@ public final class ActivityPaletteModel {
 		}
 		ActivityQueryRunIdentification ident = this.registry
 				.addImmediateQuery(query);
-		ActivityTabModel tabModel = new ActivityTabModel();
-		tabModel.setFilter(ident.getObjectFilter());
-		tabModel.setName(ident.getName());
-		addTabModel(tabModel);
+		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
+		subsetModel.setFilter(ident.getObjectFilter());
+		subsetModel.setName(ident.getName());
+		subsetModel.setPropertyKeyProfile(ident.getPropertyKeyProfile());
+		subsetModel.setParentRegistry(this.registry);
+		addSubsetModel(subsetModel);
 	}
 
-	public void removeTabModel(final ActivityTabModel tabModel) {
-		if (tabModel == null) {
-			throw new NullPointerException("tabModel cannot be null"); //$NON-NLS-1$
+	public void removeSubsetModel(final ActivityRegistrySubsetModel subsetModel) {
+		if (subsetModel == null) {
+			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
-		this.tabModels.remove(tabModel);
+		this.subsetModels.remove(subsetModel);
 	}
 
 	private void addScavenger(final Scavenger theScavenger) {

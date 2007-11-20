@@ -16,7 +16,6 @@ public interface PropertyDecoder<Source, Target> {
 
 	boolean canDecode (Class<?> sourceClass, Class<?> targetClass);
 	
-	Set<Target> decode (PropertiedObjectSet<Target> target, Source encodedObject);
+	DecodeRunIdentification<Target> decode (PropertiedObjectSet<Target> target, Source encodedObject);
 	
-	Set<PropertyKey> getPropertyKeyProfile();
 }

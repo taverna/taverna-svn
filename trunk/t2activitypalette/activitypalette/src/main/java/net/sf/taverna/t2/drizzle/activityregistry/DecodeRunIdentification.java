@@ -5,44 +5,27 @@ package net.sf.taverna.t2.drizzle.activityregistry;
 
 import java.util.Set;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 /**
  * @author alanrw
  *
  */
-public final class ActivityQueryRunIdentification {
-	private String name;
-	private PropertiedObjectFilter<ProcessorFactory> objectFilter;
+public final class DecodeRunIdentification<O> {
+	private Set<O> affectedObjects;
 	private long timeOfRun;
 	private Set<PropertyKey> propertyKeyProfile;
 	/**
-	 * @return the name
+	 * @return the affectedObjects
 	 */
-	public synchronized final String getName() {
-		return name;
+	public synchronized final Set<O> getAffectedObjects() {
+		return affectedObjects;
 	}
 	/**
-	 * @param name the name to set
+	 * @param affectedObjects the affectedObjects to set
 	 */
-	public synchronized final void setName(String name) {
-		this.name = name;
-	}
-	/**
-	 * @return the objectFilter
-	 */
-	public synchronized final PropertiedObjectFilter<ProcessorFactory> getObjectFilter() {
-		return objectFilter;
-	}
-	/**
-	 * @param objectFilter the objectFilter to set
-	 */
-	public synchronized final void setObjectFilter(
-			PropertiedObjectFilter<ProcessorFactory> objectFilter) {
-		this.objectFilter = objectFilter;
+	public synchronized final void setAffectedObjects(Set<O> affectedObjects) {
+		this.affectedObjects = affectedObjects;
 	}
 	/**
 	 * @return the propertyKeyProfile

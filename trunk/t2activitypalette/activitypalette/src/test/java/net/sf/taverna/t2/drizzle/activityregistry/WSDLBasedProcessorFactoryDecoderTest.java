@@ -85,12 +85,11 @@ public class WSDLBasedProcessorFactoryDecoderTest {
 	public void testDecode() throws ScavengerCreationException {
 		WSDLBasedScavenger scavenger = new WSDLBasedScavenger(
 				TESTWSDL_BASE+"GUIDGenerator.wsdl");
-		Set<ProcessorFactory> factories;
-		
 		DefaultMutableTreeNode leaf = scavenger.getFirstLeaf();
 		Object userObject = leaf.getUserObject();
 		assertTrue(userObject instanceof WSDLBasedProcessorFactory);
-		factories = testDecoder.decode(targetSet, (WSDLBasedProcessorFactory) leaf.getUserObject());
+		DecodeRunIdentification<ProcessorFactory> ident = testDecoder.decode(targetSet, (WSDLBasedProcessorFactory) leaf.getUserObject());
+		Set<ProcessorFactory> factories = ident.getAffectedObjects();
 		Set<ProcessorFactory> objects = targetSet.getObjects();
 		assertEquals(1, objects.size());
 		ProcessorFactory factory = objects.iterator().next();

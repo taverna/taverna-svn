@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="drizzle-api/src/main/java"/>
+	<classpathentry kind="src" path="activitypalette/src/main/java"/>
+	<classpathentry kind="src" path="activitypalette/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="activitypalette/src/main/resources" path="activitypalette/src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry exported="true" kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

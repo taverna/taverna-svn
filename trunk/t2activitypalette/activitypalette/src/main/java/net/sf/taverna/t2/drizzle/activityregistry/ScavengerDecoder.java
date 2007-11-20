@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
@@ -21,8 +22,6 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public final class ScavengerDecoder implements
 		PropertyDecoder<Scavenger, ProcessorFactory> {
 
-	private Set<PropertyKey> keyProfile = new HashSet<PropertyKey>();
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -34,35 +33,40 @@ public final class ScavengerDecoder implements
 				.isAssignableFrom(sourceClass));
 	}
 
-	public Set<ProcessorFactory> decode(
+	public DecodeRunIdentification<ProcessorFactory> decode(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			Scavenger encodedObject) {
-		Set<ProcessorFactory> result = new HashSet<ProcessorFactory>();
-		result.addAll(decodeObject(targetSet, encodedObject.getUserObject()));
-		for (DefaultMutableTreeNode leaf = encodedObject.getFirstLeaf(); leaf != null; leaf = leaf
-				.getNextLeaf()) {
-			result.addAll(decodeObject(targetSet, leaf.getUserObject()));
-		}
-		return result;
+		DecodeRunIdentification<ProcessorFactory> ident = new DecodeRunIdentification<ProcessorFactory>();
+		ident.setAffectedObjects(new HashSet<ProcessorFactory> ());
+		ident.setPropertyKeyProfile(new HashSet<PropertyKey>());
+		ident.setTimeOfRun(System.currentTimeMillis());
+		decodeNode(targetSet, ident, encodedObject);
+
+		return ident;
 	}
 
-	private Set<ProcessorFactory> decodeObject(PropertiedObjectSet<ProcessorFactory> targetSet,
-			Object userObject) {
-		Set<ProcessorFactory> result = new HashSet<ProcessorFactory>();
+	private void decodeNode(PropertiedObjectSet<ProcessorFactory> targetSet,
+			DecodeRunIdentification<ProcessorFactory> ident,
+			TreeNode node) {
+		if (node instanceof DefaultMutableTreeNode) {
+		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
 		if ((userObject != null) && (userObject instanceof ProcessorFactory)) {
 			PropertyDecoder decoder = PropertyDecoderRegistry.getDecoder(
 					userObject.getClass(), ProcessorFactory.class);
 			if (decoder != null) {
-				result.addAll(decoder.decode(targetSet, userObject));
-				keyProfile.addAll(decoder.getPropertyKeyProfile());
+				DecodeRunIdentification<ProcessorFactory> subIdent =
+					decoder.decode(targetSet, userObject);
+				ident.getAffectedObjects().addAll(subIdent.getAffectedObjects());
+				ident.getPropertyKeyProfile().addAll(subIdent.getPropertyKeyProfile());
 			} else {
 				throw new NullPointerException ("No decoder found for " + userObject.getClass().getName()); //$NON-NLS-1$
 			}			
 		}
-		return result;
-	}
-
-	public Set<PropertyKey> getPropertyKeyProfile() {
-		return this.keyProfile;
-	}
+		}
+		int childCount = node.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			decodeNode(targetSet, ident, node.getChildAt(i));
+		}
 }
+
+	}

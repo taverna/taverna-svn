@@ -25,10 +25,13 @@ public class PropertiedTreeSeparatorNodeImpl<O> extends PropertiedTreeNodeImpl<O
 	
 	public TableModel getTableModel() {
 		int rowCount = this.getAllObjects().size();
-		int columnCount = -1;
+		int columnCount = -1; // -1 because of object node at leaves of tree
 		for (PropertiedTreeNode aNode = this; aNode.getActualChildCount() > 0;
 		aNode = aNode.getChild(0)) {
 			columnCount++;
+		}
+		if (columnCount <= 1) {
+			columnCount = 1;
 		}
 		DefaultTableModel result = new DefaultTableModel(rowCount, columnCount);
 		fillInDetails(this, result, 0, 0);

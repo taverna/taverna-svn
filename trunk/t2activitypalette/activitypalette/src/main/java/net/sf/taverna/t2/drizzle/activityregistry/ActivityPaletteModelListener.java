@@ -9,7 +9,7 @@ package net.sf.taverna.t2.drizzle.activityregistry;
  */
 public interface ActivityPaletteModelListener {
 
-	void tabModelAdded(final ActivityPaletteModel activityPaletteModel,
-			final ActivityTabModel tabModel);
+	void subsetModelAdded(final ActivityPaletteModel activityPaletteModel,
+			final ActivityRegistrySubsetModel tabModel);
 
 }

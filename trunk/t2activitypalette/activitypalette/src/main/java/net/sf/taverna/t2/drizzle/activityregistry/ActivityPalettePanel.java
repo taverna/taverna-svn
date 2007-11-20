@@ -69,9 +69,9 @@ ActivityPaletteModelListener {
 		
 	}
 
-	public void tabModelAdded(ActivityPaletteModel activityPaletteModel,
-			ActivityTabModel tabModel) {
-		this.tabbedPane.addTab (tabModel.getName(), new JLabel(tabModel.getName()));
+	public void subsetModelAdded(ActivityPaletteModel activityPaletteModel,
+			ActivityRegistrySubsetModel subsetModel) {
+		this.tabbedPane.addTab (subsetModel.getName(), new ActivityTabPanel(subsetModel));
 	}
 
 }
