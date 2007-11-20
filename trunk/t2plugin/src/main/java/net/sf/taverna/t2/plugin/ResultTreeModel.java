@@ -105,7 +105,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 						
 						
 					} else { // list
-						child.setUserObject("List: "+token.toString());
+						child.setUserObject("List...");
 					}
 					nodeChanged(child);
 					parent = child;
