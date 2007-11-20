@@ -98,10 +98,14 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public final int getChildCount() {
+	public int getChildCount() {
 		return this.children.size();
 	}
-
+	
+	public int getActualChildCount() {
+		return this.children.size();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

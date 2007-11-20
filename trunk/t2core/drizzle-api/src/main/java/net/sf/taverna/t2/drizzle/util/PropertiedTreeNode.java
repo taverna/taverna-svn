@@ -30,6 +30,8 @@ public interface PropertiedTreeNode<O> {
 	 * @return
 	 */
 	int getChildCount();
+	
+	int getActualChildCount();
 
 	/**
 	 * Return the index of the child node within the children of the current
