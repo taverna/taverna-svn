@@ -55,6 +55,7 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 			resultListeners.add(resultModel);
 			final JTree tree = new JTree(resultModel);
 			tree.setExpandsSelectedPaths(true);
+			tree.setLargeModel(true);
 			resultModel.addTreeModelListener(new TreeModelListener() {
 
 				public void treeNodesChanged(TreeModelEvent e) {
