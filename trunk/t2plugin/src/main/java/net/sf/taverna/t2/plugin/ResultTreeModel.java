@@ -72,9 +72,9 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		MutableTreeNode parent = (MutableTreeNode) getRoot();
 		if (index.length == depth) {
 			if (depth == 0) {
-				insertNodeInto(
-						new DefaultMutableTreeNode(token.toString()),
-						parent, 0);
+				MutableTreeNode child = getChildAt(parent,0);
+				child = updateChildNodeWithData(token, owningProcess, parent, child);
+				nodeChanged(child);
 			} else {
 				parent = getChildAt(parent, 0);
 				parent.setUserObject("List...");
@@ -82,28 +82,8 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 					MutableTreeNode child = getChildAt(parent,
 							index[indexElement]);
 					if (indexElement == (depth - 1)) { // leaf
-						
-						
-						if (token.getType()==IDType.Literal) {
-							try {
-								String value = (String)new DataFacade(ContextManager.getDataManager(owningProcess)).resolve(token,String.class);
-								child.setUserObject(value);
-							} catch (RetrievalException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (NotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						else {
-							int childIndex = parent.getIndex(child);
-							child = new ResultTreeNode(token, new DataFacade(ContextManager.getDataManager(owningProcess)));
-							parent.remove(childIndex);
-							parent.insert(child, childIndex);
-						}
-						
-						
+						child = updateChildNodeWithData(token, owningProcess,
+								parent, child);
 					} else { // list
 						child.setUserObject("List...");
 					}
@@ -112,6 +92,29 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 				}
 			}
 		}
+	}
+
+	private MutableTreeNode updateChildNodeWithData(EntityIdentifier token,
+			String owningProcess, MutableTreeNode parent, MutableTreeNode child) {
+		if (token.getType()==IDType.Literal) {
+			try {
+				String value = (String)new DataFacade(ContextManager.getDataManager(owningProcess)).resolve(token,String.class);
+				child.setUserObject(value);
+			} catch (RetrievalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			int childIndex = parent.getIndex(child);
+			child = new ResultTreeNode(token, new DataFacade(ContextManager.getDataManager(owningProcess)));
+			parent.remove(childIndex);
+			parent.insert(child, childIndex);
+		}
+		return child;
 	}
 
 	private MutableTreeNode getChildAt(MutableTreeNode parent,
