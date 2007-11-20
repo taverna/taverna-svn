@@ -15,6 +15,7 @@
 		<artifact groupId="net.sf.taverna.t2" artifactId="beanshell-activity-translator" version="0.1-SNAPSHOT" />
 		<artifact groupId="net.sf.taverna.t2" artifactId="biomart-activity" version="0.1-SNAPSHOT" />
 		<artifact groupId="net.sf.taverna.t2" artifactId="biomart-activity-translator" version="0.1-SNAPSHOT" />
+		<artifact groupId="net.sf.taverna.t2" artifactId="localworker-translator" version="0.1-SNAPSHOT" />
 		<artifact groupId="net.sf.taverna.t2" artifactId="soaplab-activity" version="0.1-SNAPSHOT" />
 		<artifact groupId="net.sf.taverna.t2" artifactId="soaplab-activity-translator" version="0.1-SNAPSHOT" />
 		<artifact groupId="net.sf.taverna.t2" artifactId="stringconstant-activity" version="0.1-SNAPSHOT" />

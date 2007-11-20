@@ -1,0 +1,10 @@
+List inputList = stringlist;
+String pattern = regex;
+List outputList = new ArrayList();
+for (Iterator i = inputList.iterator(); i.hasNext();) {
+	String item = (String) i.next();
+	if (item.matches(pattern)) {
+		outputList.add(item);
+	}
+}
+filteredlist = outputList;

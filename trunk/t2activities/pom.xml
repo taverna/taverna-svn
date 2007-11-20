@@ -17,6 +17,7 @@
   	<module>biomart-activity-translator</module>
   	<module>dataflow-activity</module>
   	<module>dataflow-activity-translator</module>
+  	<module>localworker-translator</module>
   	<module>soaplab-activity</module>
   	<module>soaplab-activity-translator</module>
   	<module>stringconstant-activity</module>

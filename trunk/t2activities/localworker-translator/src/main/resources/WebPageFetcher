@@ -1,0 +1,17 @@
+String NEWLINE = System.getProperty("line.separator");
+
+URL inputURL = null;
+if (base != void) {
+	inputURL = new URL(new URL(base), url);
+} else {
+	inputURL = new URL(url);
+}
+StringBuffer result = new StringBuffer();
+BufferedReader reader = new BufferedReader(new InputStreamReader(inputURL.openStream()));
+String line = null;
+while ((line = reader.readLine()) != null) {
+	result.append(line);
+	result.append(NEWLINE);
+}
+
+contents = result.toString();
