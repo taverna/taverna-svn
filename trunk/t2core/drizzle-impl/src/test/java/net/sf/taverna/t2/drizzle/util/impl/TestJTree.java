@@ -5,8 +5,9 @@ package net.sf.taverna.t2.drizzle.util.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -14,7 +15,6 @@ import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.event.ChangeEvent;
@@ -23,16 +23,17 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
+import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphView;
 import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
@@ -98,31 +99,43 @@ public final class TestJTree extends JFrame {
 	private PropertiedGraphView<StringObject> graphView = null;
 
 	TreeModel model = null;
-	
+
 	List<PropertyKeySetting> fullKeySettings = null;
 
 	private void initializeSet() {
 		this.graphView = new PropertiedGraphViewImpl<StringObject>();
 
-		this.testSet.setProperty(this.service1, this.providerKey, this.ebiValue);
+		this.testSet
+				.setProperty(this.service1, this.providerKey, this.ebiValue);
 		this.testSet.setProperty(this.service1, this.typeKey, this.wsdlValue);
-		this.testSet.setProperty(this.service1, this.domainKey, this.geneticsValue);
+		this.testSet.setProperty(this.service1, this.domainKey,
+				this.geneticsValue);
 		this.testSet.setProperty(this.service1, this.nameKey, this.blastValue);
 
-		this.testSet.setProperty(this.service2, this.providerKey, this.ebiValue);
-		this.testSet.setProperty(this.service2, this.typeKey, this.soaplabValue);
-		this.testSet.setProperty(this.service2, this.domainKey, this.geneticsValue);
+		this.testSet
+				.setProperty(this.service2, this.providerKey, this.ebiValue);
+		this.testSet
+				.setProperty(this.service2, this.typeKey, this.soaplabValue);
+		this.testSet.setProperty(this.service2, this.domainKey,
+				this.geneticsValue);
 		this.testSet.setProperty(this.service2, this.nameKey, this.emmaValue);
 
-		this.testSet.setProperty(this.service3, this.providerKey, this.ebiValue);
-		this.testSet.setProperty(this.service3, this.typeKey, this.soaplabValue);
-		this.testSet.setProperty(this.service3, this.domainKey, this.structureValue);
-		this.testSet.setProperty(this.service3, this.nameKey, this.fetchPdbValue);
+		this.testSet
+				.setProperty(this.service3, this.providerKey, this.ebiValue);
+		this.testSet
+				.setProperty(this.service3, this.typeKey, this.soaplabValue);
+		this.testSet.setProperty(this.service3, this.domainKey,
+				this.structureValue);
+		this.testSet.setProperty(this.service3, this.nameKey,
+				this.fetchPdbValue);
 
-		this.testSet.setProperty(this.service4, this.providerKey, this.manchesterValue);
+		this.testSet.setProperty(this.service4, this.providerKey,
+				this.manchesterValue);
 		this.testSet.setProperty(this.service4, this.typeKey, this.wsdlValue);
-		this.testSet.setProperty(this.service4, this.domainKey, this.structureValue);
-		this.testSet.setProperty(this.service4, this.nameKey, this.renderPdbValue);
+		this.testSet.setProperty(this.service4, this.domainKey,
+				this.structureValue);
+		this.testSet.setProperty(this.service4, this.nameKey,
+				this.renderPdbValue);
 
 		this.graphView.setPropertiedObjectSet(this.testSet);
 
@@ -148,34 +161,6 @@ public final class TestJTree extends JFrame {
 		return keySettings;
 	}
 
-	List<PropertyKeySetting> getTreeSettings
-		(final List<PropertyKeySetting> fullSettings1) {
-		List<PropertyKeySetting> result = new ArrayList<PropertyKeySetting>();
-		for (PropertyKeySetting pks : fullSettings1) {
-			if (pks.getPropertyKey() != null) {
-				result.add(pks);
-			}
-			else {
-				break;
-			}
-		}
-		return result;
-	}
-	
-	List<PropertyKeySetting> getTableSettings
-	(final List<PropertyKeySetting> fullSettings1) {
-		PropertyKeySetting[] fullArray = fullSettings1.toArray(new PropertyKeySetting[0]);
-		List<PropertyKeySetting> result = new ArrayList<PropertyKeySetting> ();
-		
-		int index = 0;
-		for (; fullArray[index].getPropertyKey() != null; index++) {
-			// Just loop
-		}
-		for (++index; index < fullArray.length; index++) {
-			result.add(fullArray[index]);
-		}
-		return result;
-	}
 	/**
 	 * Populate the PropertiedObjectSet and create a TreeModel over it
 	 * 
@@ -196,79 +181,6 @@ public final class TestJTree extends JFrame {
 		}
 	}
 
-	public class TableTreeCellRenderer extends JPanel implements TreeCellRenderer {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -8795507848377363512L;
-
-		private JTable table;
-		
-		private TreeCellRenderer defaultRenderer = new DefaultTreeCellRenderer();
-		
-		TableTreeCellRenderer() {
-			this.setLayout(new BorderLayout());
-			this.table = new JTable();
-			this.add(this.table, BorderLayout.CENTER);
-//			this.add(new JLabel("Hiya"), BorderLayout.NORTH);
-			setSize(275, 300);
-		}
-		
-		public Component getTreeCellRendererComponent(JTree tree, final Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-			Component result = null;
-			if (value instanceof PropertiedTreeObjectNode) {
-				this.table.setModel(new DefaultTableModel() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = 6622165324630089260L;
-					@Override
-					public int getRowCount() {
-						return 1;
-					}
-					@Override
-					public int getColumnCount() {
-						List<PropertyKeySetting> tableKeySettings =
-							getTableSettings(TestJTree.this.fullKeySettings);
-						int count = 1;
-						if (tableKeySettings.size() > count) {
-							count = tableKeySettings.size();
-						}
-						return count;
-					}
-					@SuppressWarnings("unchecked")
-					@Override
-					public Object getValueAt(int valueRow, int column) {
-						Object resultValue;
-						StringObject so = ((PropertiedTreeObjectNode<StringObject>) value).getObject();
-						List<PropertyKeySetting> tableKeySettings =
-							getTableSettings(TestJTree.this.fullKeySettings);
-						if (column == tableKeySettings.size()) {
-							resultValue = so.toString();
-						}
-						else {
-						PropertyKey key = tableKeySettings.get(column).getPropertyKey();
-						String valueString = "missing"; //$NON-NLS-1$
-						PropertyValue pv = TestJTree.this.testSet.getPropertyValue(so, key);
-						if (pv != null) {
-							valueString = pv.toString();
-						}
-						resultValue = valueString;
-						}
-						return resultValue;
-					}
-				});
-				this.table.doLayout();
-				result = this;
-			}
-			else {
-			result = this.defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-			}
-			return result;
-		}
-		
-	}
 	/**
 	 * Construct a TestJTree that takes a PropertiedObjectSet populated with
 	 * example data and shows it as a JTree. The effects of altering the
@@ -277,11 +189,12 @@ public final class TestJTree extends JFrame {
 	public TestJTree() {
 		initializeSet();
 		this.fullKeySettings = initializeSettings();
-		
-		this.model = createTree(getTreeSettings(this.fullKeySettings));
+
+		this.model = createTree(this.fullKeySettings);
 		Container content = getContentPane();
 		this.currentTree = new JTree(this.model);
-		this.currentTree.setCellRenderer (new TableTreeCellRenderer());
+		this.currentTree.setCellRenderer(new TableTreeCellRenderer());
+		this.currentTree.setRootVisible(false);
 		content.setLayout(new BorderLayout());
 		content.add(this.currentTree, BorderLayout.CENTER);
 		setSize(275, 300);
@@ -299,12 +212,44 @@ public final class TestJTree extends JFrame {
 			}
 		}
 		DefaultTableModel tableModel = new DefaultTableModel(keyNames, 0);
-		JTable table = new JTable(tableModel);
-		TableColumnModel columnModel = table.getColumnModel();
+		final JTable table = new JTable(tableModel);
+		final TableColumnModel columnModel = table.getColumnModel();
 		TableColumn edgeColumn = columnModel.getColumn(edgeIndex);
 		DefaultTableCellRenderer blackRenderer = new DefaultTableCellRenderer();
 		blackRenderer.setBackground(Color.BLACK);
 		edgeColumn.setHeaderRenderer(blackRenderer);
+		JTableHeader tableHeader = table.getTableHeader();
+//		tableHeader.addMouseListener(new MouseAdapter() {
+//			int fromIndex = -1;
+//
+//			@Override
+//			public void mousePressed(MouseEvent me) {
+//				this.fromIndex = columnModel.getColumnIndexAtX(me.getX());
+//			}
+//
+//			@Override
+//			public void mouseExited(MouseEvent me) {
+//	//			this.fromIndex = -1;
+//			}
+//
+//			@Override
+//			public void mouseReleased(MouseEvent me) {
+//				if (this.fromIndex != -1) {
+//					int toIndex = columnModel.getColumnIndexAtX(me.getX());
+//					if ((this.fromIndex != toIndex) &&(toIndex != -1)) {
+//						PropertyKeySetting movedKey = TestJTree.this.fullKeySettings
+//								.get(this.fromIndex);
+//						TestJTree.this.fullKeySettings.remove(this.fromIndex);
+//						TestJTree.this.fullKeySettings.add(toIndex, movedKey);
+//						TestJTree.this.model = createTree(TestJTree.this.fullKeySettings);
+//						TestJTree.this.currentTree
+//								.setModel(TestJTree.this.model);
+//						expandAll(TestJTree.this.currentTree);
+//					}
+//					this.fromIndex = -1;
+//				}
+//			}
+//		});
 		columnModel.addColumnModelListener(new TableColumnModelListener() {
 
 			public void columnAdded(TableColumnModelEvent arg0) {
@@ -320,13 +265,15 @@ public final class TestJTree extends JFrame {
 			public void columnMoved(TableColumnModelEvent arg0) {
 				int fromIndex = arg0.getFromIndex();
 				int toIndex = arg0.getToIndex();
-				PropertyKeySetting movedKey = TestJTree.this.fullKeySettings.get(fromIndex);
-				TestJTree.this.fullKeySettings.remove(fromIndex);
-				TestJTree.this.fullKeySettings.add(toIndex, movedKey);
-				TestJTree.this.model = createTree(getTreeSettings(TestJTree.this.fullKeySettings));
-				TestJTree.this.currentTree.setModel(TestJTree.this.model);
-				expandAll(TestJTree.this.currentTree);
-
+				if ((fromIndex != toIndex) && (table.getSelectedColumn() == -1)) {
+					PropertyKeySetting movedKey = TestJTree.this.fullKeySettings
+							.get(fromIndex);
+					TestJTree.this.fullKeySettings.remove(fromIndex);
+					TestJTree.this.fullKeySettings.add(toIndex, movedKey);
+					TestJTree.this.model = createTree(TestJTree.this.fullKeySettings);
+					TestJTree.this.currentTree.setModel(TestJTree.this.model);
+					expandAll(TestJTree.this.currentTree);
+				}
 			}
 
 			public void columnRemoved(TableColumnModelEvent arg0) {
@@ -340,46 +287,9 @@ public final class TestJTree extends JFrame {
 			}
 
 		});
-		content.add(table.getTableHeader(), BorderLayout.NORTH);
+		content.add(tableHeader, BorderLayout.NORTH);
 
 		validate();
-
-		Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				TestJTree.this.testSet.removeObject(TestJTree.this.service1);
-				expandAll(TestJTree.this.currentTree);
-			}
-		}, 10000);
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				TestJTree.this.testSet.setProperty(TestJTree.this.service2, TestJTree.this.typeKey, TestJTree.this.wsdlValue);
-				expandAll(TestJTree.this.currentTree);
-			}
-		}, 20000);
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				TestJTree.this.testSet.addObject(TestJTree.this.service1);
-				expandAll(TestJTree.this.currentTree);
-			}
-		}, 30000);
-		timer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.providerKey, TestJTree.this.ebiValue);
-				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.typeKey, TestJTree.this.wsdlValue);
-				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.domainKey, TestJTree.this.geneticsValue);
-				TestJTree.this.testSet.setProperty(TestJTree.this.service1, TestJTree.this.nameKey, TestJTree.this.blastValue);
-				expandAll(TestJTree.this.currentTree);
-			}
-		}, 40000);
-		 
 	}
 
 	/**
