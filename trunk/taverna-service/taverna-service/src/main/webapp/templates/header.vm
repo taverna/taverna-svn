@@ -1,4 +1,4 @@
-<h2>Remote Taverna Execution</h2>
+<h2>Remote Taverna Execution (v0.4.5) </h2>
 
 #if($authuser)
 #set($isAdmin=$authuser.admin)

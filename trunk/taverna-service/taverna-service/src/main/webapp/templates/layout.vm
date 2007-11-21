@@ -10,9 +10,5 @@
 		#parse("header.vm")
 		</div>
 		#parse($page_template)
-		
-		<div id="footer">
-		#parse("footer.vm")
-		</div>
 	</body>
 </html>
