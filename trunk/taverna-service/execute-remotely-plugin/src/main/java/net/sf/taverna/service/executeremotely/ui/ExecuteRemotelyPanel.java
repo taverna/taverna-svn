@@ -195,12 +195,13 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 c.gridx = 0;
                 c.gridy = ++row;
                 runButton = new JButton(new RunWorkflowAction());
+                runButton.setEnabled(false);
                 add(runButton, c);
         }
         
         private void checkButtons() {
                 //runButton.setEnabled(context != null && model != null);
-                refreshButton.setEnabled(context != null);
+                //refreshButton.setEnabled(context != null);
                 removeButton.setEnabled(context != null);
                 editButton.setEnabled(context != null);
                 
@@ -215,6 +216,7 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 c.gridy = row;
                 c.anchor = GridBagConstraints.WEST;
                 refreshButton = new JButton(new RefreshAction());
+                refreshButton.setEnabled(false);
                 add(refreshButton, c);
         }
         
@@ -263,10 +265,12 @@ public class ExecuteRemotelyPanel extends JPanel implements
                 conf.setSelected(context);
                 if (connect) {
                         jobs.setContext(context);
-                        runButton.setEnabled(context != null && model != null);
+                        runButton.setEnabled(model != null);
+                        refreshButton.setEnabled(true);
                 }
                 else {
                         runButton.setEnabled(false);
+                        refreshButton.setEnabled(false);
                         jobs.setContext(null);
                 }
                 checkButtons();
