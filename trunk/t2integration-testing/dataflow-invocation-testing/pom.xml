@@ -148,6 +148,12 @@
 		
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>localworker-translator</artifactId>
+			<version>${depT2core}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
