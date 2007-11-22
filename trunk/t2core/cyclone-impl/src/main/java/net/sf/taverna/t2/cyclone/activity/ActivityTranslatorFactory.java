@@ -6,6 +6,7 @@ import java.util.Map;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 
 /**
  * <p>
@@ -22,7 +23,7 @@ import org.embl.ebi.escience.scufl.Processor;
 public class ActivityTranslatorFactory {
 	
 
-	private static Map<Class<?>, ActivityTranslator<?>> translatorMap = new HashMap<Class<?>, ActivityTranslator<?>>();
+	private static Map<String, ActivityTranslator<?>> translatorMap = new HashMap<String, ActivityTranslator<?>>();
 
 	private static ActivityTranslatorSPIRegistry registry = new ActivityTranslatorSPIRegistry();
 	/**
@@ -38,11 +39,12 @@ public class ActivityTranslatorFactory {
 	 */
 	public static ActivityTranslator<?> getTranslator(Processor processor)
 			throws ActivityTranslatorNotFoundException {
-		if (!translatorMap.containsKey(processor.getClass())) {
+		String processorKey = generateProcessorKey(processor);
+		if (!translatorMap.containsKey(processorKey)) {
 			boolean foundTranslator = false;
 			for (ActivityTranslator<?> translator : getRegistry().getInstances()) {
 				if (translator.canHandle(processor)) {
-					translatorMap.put(processor.getClass(), translator);
+					translatorMap.put(processorKey, translator);
 					foundTranslator = true;
 					break;
 				}
@@ -54,7 +56,25 @@ public class ActivityTranslatorFactory {
 			}
 		}
 
-		return translatorMap.get(processor.getClass());
+		return translatorMap.get(processorKey);
+	}
+
+	/**
+	 * Normally the key is simply the fully qualified class name, unless it is a LocalServiceProcessor.
+	 * If a LocalServiceProcessor then the key is LocalServiceProcessor: plus the worker classname.
+	 * @param processor
+	 * @return the key
+	 */
+	protected static String generateProcessorKey(Processor processor) {
+		if (!(processor instanceof LocalServiceProcessor)) {
+			return processor.getClass().getName();
+		}
+		else {
+			//TODO: would be more desirable to do this through introspection to avoid the added dependency on taverna-java-processor
+			String key="LocalServiceProcessor:";
+			key+=((LocalServiceProcessor)processor).getWorkerClassName();
+			return key;
+		}
 	}
 
 	protected static ActivityTranslatorSPIRegistry getRegistry() {

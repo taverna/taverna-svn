@@ -2,9 +2,6 @@ package net.sf.taverna.t2.cyclone.activity;
 
 import static org.junit.Assert.assertEquals;
 import net.sf.taverna.t2.cyclone.TranslatorTestHelper;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorFactory;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslatorNotFoundException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -12,6 +9,8 @@ import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ProcessorCreationException;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor;
+import org.embl.ebi.escience.scuflworkers.java.ByteArrayToString;
+import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.junit.Test;
 
 public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
@@ -52,4 +51,15 @@ public class ActivityTranslatorFactoryTest extends TranslatorTestHelper {
 			super(null,"beanshell","",new String[]{},new String[]{});
 		}
 	};
+	
+	@Test
+	public void testGenerateProcessorKey() throws Exception {
+		Processor processor = new BeanshellProcessor(null,"beanshell","",new String[]{},new String[]{});
+		assertEquals("Incorrect key","org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessor",ActivityTranslatorFactory.generateProcessorKey(processor));
+		
+		processor = new LocalServiceProcessor(null,
+				"ByteArrayToString", new ByteArrayToString());
+		
+		assertEquals("Incorrect key for LocalServiceProcessor","LocalServiceProcessor:org.embl.ebi.escience.scuflworkers.java.ByteArrayToString",ActivityTranslatorFactory.generateProcessorKey(processor));
+	}
 }
