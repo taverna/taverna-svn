@@ -1,12 +1,14 @@
 package net.sf.taverna.t2.activities.beanshell;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -70,13 +72,12 @@ public class BeanshellActivity extends
 						// run
 						interpreter.eval(configurationBean.getScript());
 						// get and clear outputs
-						for (ActivityOutputPortDefinitionBean outputBean : configurationBean
-								.getOutputPortDefinitions()) {
-							String name = outputBean.getName();
+						for (OutputPort outputPort : getOutputPorts()) {
+							String name = outputPort.getName();
 							Object value = interpreter
 									.get(name);
 							if (value != null) {
-								outputData.put(name, dataFacade.register(value));
+								outputData.put(name, dataFacade.register(value, outputPort.getDepth()));
 							}
 							interpreter.unset(name);
 						}
