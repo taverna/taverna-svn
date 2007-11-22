@@ -1,5 +1,3 @@
-String NEWLINE = System.getProperty("line.separator");
-
 URL inputURL = null;
 if (base != void) {
 	inputURL = new URL(new URL(base), url);

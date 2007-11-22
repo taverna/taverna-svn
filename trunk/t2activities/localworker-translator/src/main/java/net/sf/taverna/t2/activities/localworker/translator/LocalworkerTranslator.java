@@ -28,12 +28,27 @@ public class LocalworkerTranslator extends
 	private static Map<String, String> localWorkerToScript = new HashMap<String, String>();
 	
 	static {
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.ByteArrayToString", "ByteArrayToString");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.DecodeBase64", "DecodeBase64");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.EchoList", "EchoList");
-		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringConcat", "StringConcat");
-		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebPageFetcher", "WebPageFetcher");
-		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebImageFetcher", "WebImageFetcher");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings", "EmitLotsOfStrings");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.EncodeBase64", "EncodeBase64");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks", "ExtractImageLinks");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.FailIfFalse", "FailIfFalse");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.FailIfTrue", "FailIfTrue");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.FilterStringList", "FilterStringList");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.PadNumber", "PadNumber");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList", "RegularExpressionStringList");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SplitByRegex", "SplitByRegex");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringConcat", "StringConcat");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringListMerge", "StringListMerge");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringSetDifference", "StringSetDifference");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringSetIntersection", "StringSetIntersection");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringSetUnion", "StringSetUnion");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringStripDuplicates", "StringStripDuplicates");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor", "TestAlwaysFailingProcessor");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebImageFetcher", "WebImageFetcher");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebPageFetcher", "WebPageFetcher");
 	}
 
 	@Override

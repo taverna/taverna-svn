@@ -1,17 +1,15 @@
-String content = document;
-String lowerCaseContent = content.toLowerCase();
+String lowerCaseContent = document.toLowerCase();
 int index = 0;
-List urlList = new ArrayList();
+List imagelinks = new ArrayList();
 while ((index = lowerCaseContent.indexOf("<img", index)) != -1) {
 	if ((index = lowerCaseContent.indexOf("src", index)) == -1)
 		break;
 	if ((index = lowerCaseContent.indexOf("=", index)) == -1)
 		break;
 	index++;
-	String remaining = content.substring(index);
+	String remaining = document.substring(index);
 	StringTokenizer st = new StringTokenizer(remaining, "\t\n\r\">#");
 	String strLink = st.nextToken();
-	urlList.add(strLink);
+	imagelinks.add(strLink);
 }
-imagelinks = urlList;
 
