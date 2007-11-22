@@ -1,9 +1,12 @@
 package net.sf.taverna.t2.activities.testutils;
 
+import java.io.ByteArrayInputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
@@ -32,11 +35,12 @@ public class ActivityInvoker {
 	 *            a List<String> of outputs to be examined
 	 * 
 	 * @return a Map<String,Object> of the outputs requested by requestedOutput
+	 *         or <code>null</code> if a failure occurs
 	 * @throws Exception
 	 */
 	public static Map<String, Object> invokeAsyncActivity(
 			AbstractAsynchronousActivity<?> activity,
-			Map<String, Object> inputs, List<String> requestedOutputs)
+			Map<String, Object> inputs, Collection<String> requestedOutputs)
 			throws Exception {
 		Map<String, Object> results = new HashMap<String, Object>();
 		InMemoryDataManager dataManager = new InMemoryDataManager("namespace",
@@ -52,13 +56,21 @@ public class ActivityInvoker {
 
 		activity.executeAsynch(inputEntities, callback);
 		callback.thread.join();
-		for (String outputName : requestedOutputs) {
-			EntityIdentifier id = callback.data.get(outputName);
-			if (id != null) {
-				results.put(outputName, dataFacade.resolve(id));
+
+		if (callback.failed) {
+			results = null;
+		} else {
+			for (String outputName : requestedOutputs) {
+				EntityIdentifier id = callback.data.get(outputName);
+				if (id != null) {
+					Object result = dataFacade.resolve(id);
+					if (result instanceof ByteArrayInputStream) {
+						result = IOUtils.toByteArray((ByteArrayInputStream) result);
+					}
+					results.put(outputName, result);
+				}
 			}
 		}
-
 		return results;
 	}
 }

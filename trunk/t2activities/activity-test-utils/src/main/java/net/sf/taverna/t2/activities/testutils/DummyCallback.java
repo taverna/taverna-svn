@@ -19,18 +19,20 @@ public class DummyCallback implements AsynchronousActivityCallback {
 	public Map<String, EntityIdentifier> data;
 	public Thread thread;
 
+	public boolean failed = false;
+	
 	public DummyCallback(InMemoryDataManager dataManager) {
 		this.dataManager = dataManager;
 	}
 
 	public void fail(String message, Throwable t) {
-		// TODO Auto-generated method stub
-
+		failed = true;
+		throw new RuntimeException(message, t);
 	}
 
 	public void fail(String message) {
-		// TODO Auto-generated method stub
-
+		failed = true;
+		throw new RuntimeException(message);
 	}
 
 	public DataManager getLocalDataManager() {
