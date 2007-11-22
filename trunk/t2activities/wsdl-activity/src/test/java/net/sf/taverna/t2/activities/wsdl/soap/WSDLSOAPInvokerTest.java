@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-12 17:30:09 $
+ * Last modified on   $Date: 2007-11-22 17:17:04 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -42,20 +42,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class WSDLSOAPInvokerTest {
+public class WSDLSOAPInvokerTest  implements LocationConstants {
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testPrimitive() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
 				+ "KEGG.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser
@@ -89,7 +89,7 @@ public class WSDLSOAPInvokerTest {
 	@Test
 	public void testComplexDocStyle() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
 				+ "eutils/eutils_lite.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser
@@ -127,7 +127,7 @@ public class WSDLSOAPInvokerTest {
 	//TODO: set up an equivalent test on Phoebus - this service is unreliable.
 	public void testComplexMultiRef() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
 				+ "ma.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser
@@ -159,7 +159,7 @@ public class WSDLSOAPInvokerTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultirefWithOutputNamespaced() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
 				+ "Annotation.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser
@@ -202,7 +202,7 @@ public class WSDLSOAPInvokerTest {
 	@Test
 	public void testDocumentNamespace() throws Exception {
 
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE
 				+ "CountryInfoService.wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser

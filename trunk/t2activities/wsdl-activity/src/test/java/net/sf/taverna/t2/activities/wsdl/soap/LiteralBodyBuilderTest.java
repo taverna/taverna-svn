@@ -1,22 +1,23 @@
 package net.sf.taverna.t2.activities.wsdl.soap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.w3c.dom.Node;
 
-public class LiteralBodyBuilderTest {
+public class LiteralBodyBuilderTest implements LocationConstants{
 
 	@Test
 	public void testUnqualifiedNamespaces() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"whatizit.wsdl", "queryPmid");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"whatizit.wsdl", "queryPmid");
 		
 		assertTrue("Is is the wrong type, it should be LiteralBodyBuilder",builder instanceof LiteralBodyBuilder);
 		
@@ -34,7 +35,7 @@ public class LiteralBodyBuilderTest {
 	
 	@Test
 	public void testQualifiedUnwrapped() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
 		
 		assertTrue("Is is the wrong type, it should be LiteralBodyBuilder",builder instanceof LiteralBodyBuilder);
 		Map<String,Object>inputMap = new HashMap<String, Object>();
@@ -47,7 +48,7 @@ public class LiteralBodyBuilderTest {
 	
 	@Test
 	public void testUnwrappedSimple() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countString");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		
@@ -62,7 +63,7 @@ public class LiteralBodyBuilderTest {
 	
 	@Test
 	public void testUnwrappedArray() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countStringArray");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl", "countStringArray");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		
@@ -81,7 +82,7 @@ public class LiteralBodyBuilderTest {
 	
 	@Test
 	public void testRPCLiteral() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"MyService-rpc-literal.wsdl", "countString");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"MyService-rpc-literal.wsdl", "countString");
 		
 		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
 		

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -21,8 +22,7 @@ import org.junit.Test;
  *
  * @author Stuart Owen
  */
-public class WSDLActivityTranslatorTest {
-    public static final String WSDL_TEST_BASE="http://www.mygrid.org.uk/taverna-tests/testwsdls/";
+public class WSDLActivityTranslatorTest  implements LocationConstants {
     private static WSDLBasedProcessor processor = null;
     
     @BeforeClass

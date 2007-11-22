@@ -5,12 +5,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.junit.Test;
 
-public class SOAPResponseParserFactoryTest {
+public class SOAPResponseParserFactoryTest  implements LocationConstants {
 
 	//tests that the factory always returns a SOAPResponseLiteralParser regardless of the 
 	//output mime type, if the use is set to 'literal' (unwrapped/literal)
@@ -18,7 +18,7 @@ public class SOAPResponseParserFactoryTest {
 	public void testLiteralUnwrappedParserForNonXMLOutput() throws Exception {
 		SOAPResponseParserFactory factory = SOAPResponseParserFactory.instance();
 		List<String> response = new ArrayList<String>();
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-unwrapped.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"TestServices-unwrapped.wsdl");
 		
 		SOAPResponseParser parser = factory.create(response, "literal", "document", wsdlParser.getOperationOutputParameters("getString"));
 		
@@ -30,7 +30,7 @@ public class SOAPResponseParserFactoryTest {
 	public void testLiteralUnwrappedAlternativeWSDL() throws Exception {
 		SOAPResponseParserFactory factory = SOAPResponseParserFactory.instance();
 		List<String> response = new ArrayList<String>();
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"prodoric.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"prodoric.wsdl");
 		
 		SOAPResponseParser parser = factory.create(response, "literal", "document", wsdlParser.getOperationOutputParameters("hello"));
 		

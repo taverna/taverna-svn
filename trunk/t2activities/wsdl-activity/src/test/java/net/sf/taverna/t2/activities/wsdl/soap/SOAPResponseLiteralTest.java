@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-19 16:22:04 $
+ * Last modified on   $Date: 2007-11-22 17:17:04 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -53,7 +53,7 @@ import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class SOAPResponseLiteralTest {
+public class SOAPResponseLiteralTest{
 
 	@SuppressWarnings("unchecked")
 	@Test

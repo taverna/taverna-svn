@@ -45,5 +45,17 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!-- TODO: Move this dependency to test after refactoring -->
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-wsdl-processor</artifactId>
+			<version>1.6.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 </project>

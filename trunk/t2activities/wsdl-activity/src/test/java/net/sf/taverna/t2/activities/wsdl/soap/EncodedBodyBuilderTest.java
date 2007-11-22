@@ -8,21 +8,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Test;
 
 
-public class EncodedBodyBuilderTest {
+public class EncodedBodyBuilderTest implements LocationConstants {
 
 	
 	@Test
 	public void testSimpleCase() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
 		
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countString");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countString");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		
@@ -38,7 +38,7 @@ public class EncodedBodyBuilderTest {
 	public void testStringArray() throws Exception {
 		Map<String,Object> inputMap = new HashMap<String, Object>();
 		
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countStringArray");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "countStringArray");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		List<String> array=new ArrayList<String>();
@@ -55,7 +55,7 @@ public class EncodedBodyBuilderTest {
 	
 	@Test
 	public void testComplexType() throws Exception {
-		BodyBuilder builder = createBuilder(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "personToString");
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl", "personToString");
 		
 		assertTrue("Wrong type of builder created",builder instanceof EncodedBodyBuilder);
 		

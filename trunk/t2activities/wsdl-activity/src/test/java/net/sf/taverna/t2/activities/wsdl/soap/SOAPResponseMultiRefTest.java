@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseMultiRefTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-19 16:22:04 $
+ * Last modified on   $Date: 2007-11-22 17:17:04 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -46,7 +46,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import net.sf.taverna.t2.activities.wsdl.WSDLTestConstants;
+import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
@@ -55,12 +55,12 @@ import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-public class SOAPResponseMultiRefTest {
+public class SOAPResponseMultiRefTest  implements LocationConstants {
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultiRef() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
 
 		List response = new ArrayList();
 
@@ -105,7 +105,7 @@ public class SOAPResponseMultiRefTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testMultiRefReturnNamespaced() throws Exception {
-		WSDLParser wsdlParser = new WSDLParser(WSDLTestConstants.WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
+		WSDLParser wsdlParser = new WSDLParser(WSDL_TEST_BASE+"TestServices-rpcencoded.wsdl");
 
 		List response = new ArrayList();
 
