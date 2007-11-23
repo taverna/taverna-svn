@@ -3,6 +3,15 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,13 +19,16 @@ import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
@@ -29,7 +41,7 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
  */
 // TODO consider if the ActivityRegistry really should be specific to the
 // ActivityPaletteModel.
-public final class ActivityPaletteModel {
+public final class ActivityPaletteModel implements ScavengerTree {
 
 	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
@@ -38,17 +50,25 @@ public final class ActivityPaletteModel {
 	private Set<ActivityRegistrySubsetModel> subsetModels;
 	
 	private List<ActivityPaletteModelListener> listeners;
+	
+	private ActivityPalettePanel representation;
 
 	/**
 	 * A list of the names of all the scavengers contained within this tree
 	 */
 	ArrayList<String> scavengerList = null;
 
-	public ActivityPaletteModel() {
+	private int scavengingInProgressCount = 0;
+
+	/*
+	 * representation should not be needed 
+	 */
+	public ActivityPaletteModel(final ActivityPalettePanel representation) {
 		this.subsetModels = new HashSet<ActivityRegistrySubsetModel>();
 		this.scavengerList = new ArrayList<String> ();
 		this.registry = new ActivityRegistry();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
+		this.representation = representation;
 	}
 
 	public void initialize() {
@@ -84,6 +104,18 @@ public final class ActivityPaletteModel {
 		}
 	}
 
+	private void notifyListenersScavengingStarted(final String message) {
+		for (ActivityPaletteModelListener listener : this.listeners) {
+			listener.scavengingStarted(this, message);
+		}
+	}
+
+	private void notifyListenersScavengingDone() {
+		for (ActivityPaletteModelListener listener : this.listeners) {
+			listener.scavengingDone(this);
+		}
+	}
+
 	private void addImmediateQuery(ActivityQuery<?> query) {
 		if (query == null) {
 			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
@@ -105,7 +137,7 @@ public final class ActivityPaletteModel {
 		this.subsetModels.remove(subsetModel);
 	}
 
-	private void addScavenger(final Scavenger theScavenger) {
+	public void addScavenger(final Scavenger theScavenger) {
 		synchronized (this.registry) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
@@ -152,11 +184,11 @@ public final class ActivityPaletteModel {
 
 		@Override
 		public void run() {
-			// scavengingStarting("Populating service list");
+			scavengingStarting("Populating service list");
 
 			addFromScavengerHelpers();
 
-			// scavengingDone();
+			scavengingDone();
 		}
 
 	}
@@ -203,6 +235,97 @@ public final class ActivityPaletteModel {
 			}
 		}
 		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
+	}
+
+	public void addScavengersFromModel() throws ScavengerCreationException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public Frame getContainingFrame() {
+		Container result = representation;
+		while ((result != null) && !(result instanceof Frame)) {
+			result = result.getParent();
+		}
+		return (Frame) result;
+	}
+
+	public TreeModel getModel() {
+		throw new UnsupportedOperationException("getModel is not available");
+	}
+
+	public int getNextCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean isPopulating() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void scavengingDone() {
+		scavengingInProgressCount --;
+		if (scavengingInProgressCount==0) {
+			notifyListenersScavengingDone();
+		}
+		
+	}
+
+	public void scavengingStarting(String message) {
+		if (scavengingInProgressCount==0) {
+			notifyListenersScavengingStarted(message);
+		}
+		scavengingInProgressCount++;
+	}
+
+	public void setPopulating(boolean populating) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void dragDropEnd(DragSourceDropEvent arg0) {
+		throw new UnsupportedOperationException("dragDropEnd is not available");
+	}
+
+	public void dragEnter(DragSourceDragEvent arg0) {
+		throw new UnsupportedOperationException("dragEnter is not available");
+	}
+
+	public void dragExit(DragSourceEvent arg0) {
+		throw new UnsupportedOperationException("dragExit is not available");
+	}
+
+	public void dragOver(DragSourceDragEvent arg0) {
+		throw new UnsupportedOperationException("dragOver is not available");
+	}
+
+	public void dropActionChanged(DragSourceDragEvent arg0) {
+		throw new UnsupportedOperationException("dropActionChanged is not available");
+	}
+
+	public void dragGestureRecognized(DragGestureEvent arg0) {
+		throw new UnsupportedOperationException("dragGestureRecognized is not available");
+	}
+
+	public void dragEnter(DropTargetDragEvent arg0) {
+		throw new UnsupportedOperationException("dragEnter is not available");
+	}
+
+	public void dragExit(DropTargetEvent arg0) {
+		throw new UnsupportedOperationException("dragExit is not available");
+	}
+
+	public void dragOver(DropTargetDragEvent arg0) {
+		throw new UnsupportedOperationException("dropOver is not available");
+	}
+
+	public void drop(DropTargetDropEvent arg0) {
+		throw new UnsupportedOperationException("drop is not available");
+	}
+
+	public void dropActionChanged(DropTargetDragEvent arg0) {
+		throw new UnsupportedOperationException("dropActionChanged is not available");
 	}
 
 

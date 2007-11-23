@@ -24,6 +24,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 		{ add(CommonKey.ProcessorClassKey);
 		add(CommonKey.NameKey);
 		add(CommonKey.SoaplabEndpointKey);
+		add(CommonKey.SoaplabCategoryKey);
 		}
 	};
 	
@@ -32,6 +33,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			SoaplabProcessorFactory encodedFactory) {
 		targetSet.setProperty(encodedFactory, CommonKey.SoaplabEndpointKey, new StringValue(encodedFactory.getEndpoint()));
+		targetSet.setProperty(encodedFactory, CommonKey.SoaplabCategoryKey, new StringValue(encodedFactory.getCategory()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

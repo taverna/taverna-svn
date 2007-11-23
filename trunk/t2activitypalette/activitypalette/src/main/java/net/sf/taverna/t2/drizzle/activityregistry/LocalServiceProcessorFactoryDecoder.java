@@ -24,6 +24,7 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 		{ add(CommonKey.ProcessorClassKey);
 		add(CommonKey.NameKey);
 		add(CommonKey.LocalServiceWorkerClassKey);
+		add(CommonKey.LocalServiceCategoryKey);
 		}
 	};
 	
@@ -32,6 +33,7 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			LocalServiceProcessorFactory encodedFactory) {
 		targetSet.setProperty(encodedFactory, CommonKey.LocalServiceWorkerClassKey, new StringValue(encodedFactory.getWorkerClassName()));
+		targetSet.setProperty(encodedFactory, CommonKey.LocalServiceCategoryKey, new StringValue(encodedFactory.getCategory()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

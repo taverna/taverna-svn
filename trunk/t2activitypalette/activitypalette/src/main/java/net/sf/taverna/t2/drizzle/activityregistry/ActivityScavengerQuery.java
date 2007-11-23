@@ -43,7 +43,14 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 	    PropertiedObjectFilter<ProcessorFactory> factoriesFilter = 
 			new ObjectMembershipFilter<ProcessorFactory>(ident.getAffectedObjects());
 	    ActivityQueryRunIdentification result = new ActivityQueryRunIdentification ();
-		result.setName(this.scavenger.toString());
+	    Object userObject = this.scavenger.getUserObject();
+	    String scavengerName = null;
+	    if (userObject instanceof ProcessorFactory) {
+	    	scavengerName = ((ProcessorFactory)userObject).getName();
+	    } else {
+	    	scavengerName = this.scavenger.toString();
+	    }
+		result.setName(scavengerName);
 		result.setObjectFilter(factoriesFilter);
 		result.setTimeOfRun(ident.getTimeOfRun());
 		result.setPropertyKeyProfile(ident.getPropertyKeyProfile());

@@ -23,7 +23,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
-import net.sf.taverna.t2.drizzle.util.PropertiedTreeSeparatorNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
@@ -81,51 +80,45 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 			PropertyKeySetting setting = this.keySettings.get(settingIndex);
 			PropertyKey key = setting.getPropertyKey();
 			if (key == null) {
-				// Then we create a separator node
-				PropertiedTreeSeparatorNode<O> subNode = new PropertiedTreeSeparatorNodeImpl<O>();
-				parent.addChild(subNode);
-				constructSubTree(subNode, settingIndex + 1, permittedObjects);
-			} else {
-				Set<PropertyValue> values = this.propertiedGraphView
-						.getValues(key);
+				throw new IllegalStateException("key cannot be null");
+			}
+			Set<PropertyValue> values = this.propertiedGraphView.getValues(key);
 
-				// Note that a null compaarator is OK
-				TreeSet<PropertyValue> sortedValues = new TreeSet<PropertyValue>(
-						setting.getComparator());
-				sortedValues.addAll(values);
+			// Note that a null compaarator is OK
+			TreeSet<PropertyValue> sortedValues = new TreeSet<PropertyValue>(
+					setting.getComparator());
+			sortedValues.addAll(values);
 
-				Set<O> remainingObjects = new HashSet<O>(permittedObjects);
-				for (PropertyValue value : sortedValues) {
-					PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
-					subNode.setKey(key);
-					subNode.setValue(value);
-					Set<PropertiedGraphNode<O>> nodes = this.propertiedGraphView
-							.getEdge(key, value).getNodes();
-					Set<O> objectsWithValue = new HashSet<O>();
-					for (PropertiedGraphNode<O> node : nodes) {
-						O object = node.getObject();
-						if (permittedObjects.contains(object)) {
-							objectsWithValue.add(node.getObject());
-						}
-					}
-					remainingObjects.removeAll(objectsWithValue);
-
-					if (objectsWithValue.size() > 0) {
-						parent.addChild(subNode);
-
-						constructSubTree(subNode, settingIndex + 1,
-								objectsWithValue);
+			Set<O> remainingObjects = new HashSet<O>(permittedObjects);
+			for (PropertyValue value : sortedValues) {
+				PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
+				subNode.setKey(key);
+				subNode.setValue(value);
+				Set<PropertiedGraphNode<O>> nodes = this.propertiedGraphView
+						.getEdge(key, value).getNodes();
+				Set<O> objectsWithValue = new HashSet<O>();
+				for (PropertiedGraphNode<O> node : nodes) {
+					O object = node.getObject();
+					if (permittedObjects.contains(object)) {
+						objectsWithValue.add(node.getObject());
 					}
 				}
+				remainingObjects.removeAll(objectsWithValue);
 
-				if (remainingObjects.size() > 0) {
-					PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
-					subNode.setKey(key);
-					// value deliberately left as null
+				if (objectsWithValue.size() > 0) {
 					parent.addChild(subNode);
+
 					constructSubTree(subNode, settingIndex + 1,
-							remainingObjects);
+							objectsWithValue);
 				}
+			}
+
+			if (remainingObjects.size() > 0) {
+				PropertiedTreePropertyValueNode<O> subNode = new PropertiedTreePropertyValueNodeImpl<O>();
+				subNode.setKey(key);
+				// value deliberately left as null
+				parent.addChild(subNode);
+				constructSubTree(subNode, settingIndex + 1, remainingObjects);
 			}
 		} else {
 			// Note that a null comparator is OK
