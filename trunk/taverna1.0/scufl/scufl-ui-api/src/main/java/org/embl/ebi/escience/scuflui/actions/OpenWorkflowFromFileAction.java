@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-26 15:11:52 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-11-23 14:23:27 $
+ *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.actions;
@@ -36,8 +36,10 @@ package org.embl.ebi.escience.scuflui.actions;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
@@ -56,6 +58,7 @@ import org.embl.ebi.escience.scuflui.shared.WorkflowChanges;
 /**
  * 
  * @author David Withers
+ *@author Stuart Owen
  */
 @SuppressWarnings("serial")
 public class OpenWorkflowFromFileAction extends AbstractAction {
@@ -105,7 +108,11 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 				logger.error("Malformed URL from file " + file, ex);
 				return;
 			}
-			openFromURL(url);
+                        try {
+                                openFromURL(url.openConnection());
+                        } catch (IOException ex) {
+                                ex.printStackTrace();
+                        }
 		}
 	}
 
@@ -119,7 +126,7 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 	 * 
 	 * @param url URL to workflow to load.
 	 */
-	public void openFromURL(final URL url) {
+	public void openFromURL(final URLConnection urlConnection) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				final ScuflModel model = getModel();
@@ -127,37 +134,37 @@ public class OpenWorkflowFromFileAction extends AbstractAction {
 				try {
 					// todo: does the update need running in the AWT thread?
 					// perhaps this thread should be spawned in populate?
-					XScuflParser.populate(url.openStream(), model,
+					XScuflParser.populate(urlConnection.getInputStream(), model,
 							null);
 					workflowOpened = true;
 				} catch (Exception ex) {
-					logger.warn("Can't open in online mode " + url, ex);
+					logger.warn("Can't open in online mode " + urlConnection.getURL().toExternalForm(), ex);
 					model.clear();
 					JOptionPane
 							.showMessageDialog(
 									parentComponent,
-									"Problem opening workflow from " + url + ": \n\n"
+									"Problem opening workflow from " + urlConnection.getURL().toExternalForm() + ": \n\n"
 											+ ex.getMessage()
 											+ "\n\nLoading workflow in offline mode, "
 											+ "this will allow you to remove any defunct operations.",
 									"Warning", JOptionPane.WARNING_MESSAGE);
 					try {
 						model.setOffline(true);
-						XScuflParser.populate(url.openStream(),
+						XScuflParser.populate(urlConnection.getInputStream(),
 								model, null);
 						workflowOpened = true;
 					} catch (Exception e) {
-						logger.error("Can't open in offline mode" + url, e);
+						logger.error("Can't open in offline mode" + urlConnection.getURL().toExternalForm(), e);
 						JOptionPane.showMessageDialog(parentComponent,
-								"Problem opening workflow from " + url + ": \n\n"
+								"Problem opening workflow from " + urlConnection.getURL().toExternalForm() + ": \n\n"
 										+ e.getMessage(), "Error",
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
 				if (workflowOpened) {
 					ScuflModelSet.getInstance().addModel(model);
-					if (url.getProtocol().equals("file")) {
-						File file = new File(url.getPath());
+					if (urlConnection.getURL().getProtocol().equals("file")) {
+						File file = new File(urlConnection.getURL().getPath());
 						WorkflowChanges.getInstance().syncedWithFile(model, file);
 					} else {
 						WorkflowChanges.getInstance().synced(model);
