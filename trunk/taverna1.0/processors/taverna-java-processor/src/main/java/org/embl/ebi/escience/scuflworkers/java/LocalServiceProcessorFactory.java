@@ -16,6 +16,8 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public class LocalServiceProcessorFactory extends ProcessorFactory {
 
 	private String className;
+	
+	private String category;
 
 	/**
 	 * Create a new factory configured with the specified worker class.
@@ -41,6 +43,14 @@ public class LocalServiceProcessorFactory extends ProcessorFactory {
 	 */
 	public Class getProcessorClass() {
 		return org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor.class;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+	public String getCategory() {
+		return this.category;
 	}
 
 }

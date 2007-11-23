@@ -105,9 +105,10 @@ public class LocalServiceScavenger extends Scavenger {
 						
 					}
 					if (!category.equalsIgnoreCase("hidden")) {
-						workerList.put(description, new Scavenger(
-								new LocalServiceProcessorFactory(worker.getClass()
-										.getName(), shortDescription)));
+						LocalServiceProcessorFactory pf = new LocalServiceProcessorFactory(worker.getClass().getName(),
+								shortDescription);
+						pf.setCategory(category);
+						workerList.put(description, new Scavenger(pf));
 					}
 				}
 			}
