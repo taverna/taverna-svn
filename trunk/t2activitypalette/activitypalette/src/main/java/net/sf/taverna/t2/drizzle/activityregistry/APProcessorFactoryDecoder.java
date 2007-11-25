@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class APProcessorFactoryDecoder extends ProcessorFactoryDecoder<APProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -38,6 +39,7 @@ public final class APProcessorFactoryDecoder extends ProcessorFactoryDecoder<APP
 				APProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

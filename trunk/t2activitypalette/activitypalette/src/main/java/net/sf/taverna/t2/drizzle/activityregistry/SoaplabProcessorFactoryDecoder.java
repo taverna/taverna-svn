@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecoder<SoaplabProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -41,6 +42,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 				SoaplabProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

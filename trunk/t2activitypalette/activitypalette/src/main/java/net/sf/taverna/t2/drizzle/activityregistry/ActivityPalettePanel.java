@@ -7,27 +7,19 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 /**
@@ -46,11 +38,11 @@ ActivityPaletteModelListener, ActionListener {
 	
 	private ActivityPaletteModel paletteModel = null;
 	
-	private JTabbedPane tabbedPane;
+	JTabbedPane tabbedPane;
 	
 	private JProgressBar progressBar;
 	
-	private ScuflModel currentWorkflow = null;
+	ScuflModel currentWorkflow = null;
 	
 	public ActivityPalettePanel() {
 		this.setLayout(new BorderLayout());
@@ -63,28 +55,28 @@ ActivityPaletteModelListener, ActionListener {
 		this.add(this.tabbedPane, BorderLayout.CENTER);
 		
 		JMenuBar menuBar = new JMenuBar();
-		JButton expandAllItem = new JButton("expand");
-		expandAllItem.setActionCommand("expandAll");
+		JButton expandAllItem = new JButton("expand"); //$NON-NLS-1$
+		expandAllItem.setActionCommand("expandAll"); //$NON-NLS-1$
 		expandAllItem.addActionListener(this);
 		menuBar.add(expandAllItem);
 		
-		JButton collapseAllItem = new JButton("collapse");
-		collapseAllItem.setActionCommand("collapseAll");
+		JButton collapseAllItem = new JButton("collapse"); //$NON-NLS-1$
+		collapseAllItem.setActionCommand("collapseAll"); //$NON-NLS-1$
 		collapseAllItem.addActionListener(this);
 		menuBar.add(collapseAllItem);
 		
-		JButton addScavengerItem = new JButton("add scavenger");
-		addScavengerItem.setActionCommand("addScavenger");
+		JButton addScavengerItem = new JButton("add scavenger"); //$NON-NLS-1$
+		addScavengerItem.setActionCommand("addScavenger"); //$NON-NLS-1$
 		addScavengerItem.addActionListener(this);
 		menuBar.add(addScavengerItem);
 		
 		menuBar.add(new ScavengerAdderPopupMenu(this));
 		
-		progressBar = new JProgressBar();
-		progressBar.setIndeterminate(true);
-		progressBar.setVisible(false);
-		progressBar.setOrientation(JProgressBar.VERTICAL);
-		this.add(progressBar, BorderLayout.EAST);
+		this.progressBar = new JProgressBar();
+		this.progressBar.setIndeterminate(true);
+		this.progressBar.setVisible(false);
+		this.progressBar.setOrientation(SwingConstants.VERTICAL);
+		this.add(this.progressBar, BorderLayout.EAST);
 		
 		this.add(menuBar, BorderLayout.SOUTH);
 		this.paletteModel.addListener(this);
@@ -93,12 +85,12 @@ ActivityPaletteModelListener, ActionListener {
 
 	public void attachToModel(ScuflModel model) {
 		if (this.currentWorkflow !=null) {
-			logger.warn("Did not detachFromModel() before attachToModel()");
+			logger.warn("Did not detachFromModel() before attachToModel()"); //$NON-NLS-1$
 			detachFromModel();
 		}
 		this.currentWorkflow = model;
-		for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
-			ActivityTabPanel tabPanel = (ActivityTabPanel) tabbedPane.getComponentAt(i);
+		for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
+			ActivityTabPanel tabPanel = (ActivityTabPanel) this.tabbedPane.getComponentAt(i);
 			tabPanel.setCurrentWorkflow(model);
 		}
 //TODO		model.addListener(eventListener);
@@ -106,8 +98,8 @@ ActivityPaletteModelListener, ActionListener {
 
 	public void detachFromModel() {
 		if (this.currentWorkflow != null) {
-			for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
-				ActivityTabPanel tabPanel = (ActivityTabPanel) tabbedPane.getComponentAt(i);
+			for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
+				ActivityTabPanel tabPanel = (ActivityTabPanel) this.tabbedPane.getComponentAt(i);
 				tabPanel.setCurrentWorkflow(null);
 			}
 //TODO			scuflModel.removeListener(eventListener);
@@ -137,11 +129,31 @@ ActivityPaletteModelListener, ActionListener {
 	}
 
 	public void subsetModelAdded(ActivityPaletteModel activityPaletteModel,
-			ActivityRegistrySubsetModel subsetModel) {
-		synchronized(tabbedPane) {
+			final ActivityRegistrySubsetModel subsetModel) {
+		Runnable addTabRunnable = new Runnable() {
+			public void run() {
+				ActivityTabPanel tabPanel = new ActivityTabPanel(subsetModel);
+				tabPanel.setCurrentWorkflow(ActivityPalettePanel.this.currentWorkflow);
+				int tabCount = ActivityPalettePanel.this.tabbedPane.getTabCount();
+				String subsetName = subsetModel.getName();
+				int position;
+				for (position = 0;
+					(position < tabCount) && (ActivityPalettePanel.this.tabbedPane.getTitleAt(position).compareTo(subsetName) < 0);
+					position++) {
+					// nowt to do
+				}
+				if (position == tabCount) {
+					ActivityPalettePanel.this.tabbedPane.add (new ActivityTabPanel(subsetModel));				
+				} else {
+					ActivityPalettePanel.this.tabbedPane.add(new ActivityTabPanel(subsetModel), position);
+				}				
+			}
+		};
+		SwingUtilities.invokeLater(addTabRunnable);
+/*		synchronized(tabbedPane) {
 			ActivityTabPanel tabPanel = new ActivityTabPanel(subsetModel);
 			tabPanel.setCurrentWorkflow(this.currentWorkflow);
-			int tabCount = tabbedPane.getComponentCount();
+			int tabCount = tabbedPane.getTabCount();
 			String subsetName = subsetModel.getName();
 			int position;
 			for (position = 0;
@@ -154,14 +166,14 @@ ActivityPaletteModelListener, ActionListener {
 			} else {
 				this.tabbedPane.add(new ActivityTabPanel(subsetModel), position);
 			}
-		}
+		}*/
 	}
 
 	/**
 	 * @return the paletteModel
 	 */
 	public synchronized final ActivityPaletteModel getPaletteModel() {
-		return paletteModel;
+		return this.paletteModel;
 	}
 
 	private ActivityTabPanel getCurrentTab() {
@@ -194,11 +206,11 @@ ActivityPaletteModelListener, ActionListener {
 	
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
-		if (command.equals("expandAll")) {
+		if (command.equals("expandAll")) { //$NON-NLS-1$
 			expandTab();
-		} else if (command.equals("collapseAll")) {
+		} else if (command.equals("collapseAll")) { //$NON-NLS-1$
 			collapseTab();
-		} else if (command.equals("addScavenger")) {
+		} else if (command.equals("addScavenger")) { //$NON-NLS-1$
 	           Component c = (Component) e.getSource();
 	           int py = c.getY() + c.getHeight() + 2;
 	 			showAddScavengerPopup(c, 0, py);
@@ -206,13 +218,13 @@ ActivityPaletteModelListener, ActionListener {
 	}
 
 	public void scavengingDone(ActivityPaletteModel model) {
-		progressBar.setVisible(false);
+		this.progressBar.setVisible(false);
 	}
 
 	public void scavengingStarted(ActivityPaletteModel model, String message) {
-		progressBar.setString(message);
-		progressBar.setStringPainted(true);
-		progressBar.setVisible(true);
+		this.progressBar.setString(message);
+		this.progressBar.setStringPainted(true);
+		this.progressBar.setVisible(true);
 	}
 
 }

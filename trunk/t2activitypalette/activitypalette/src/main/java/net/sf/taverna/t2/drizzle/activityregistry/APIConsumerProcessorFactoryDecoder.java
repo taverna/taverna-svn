@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.apiconsumer.APIConsumerProcessorFactor
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class APIConsumerProcessorFactoryDecoder extends ProcessorFactoryDecoder<APIConsumerProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -37,6 +38,7 @@ public final class APIConsumerProcessorFactoryDecoder extends ProcessorFactoryDe
 				APIConsumerProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		// TODO Auto-generated method stub
 		return keyProfile;

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -27,13 +26,18 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
  */
 public class ScavengerAdderPopupMenu extends JPopupMenu {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7610314984575558130L;
+
 	private static Logger logger = Logger
 			.getLogger(ScavengerAdderPopupMenu.class);
 
-	private ActivityPalettePanel parentPanel = null;
+	ActivityPalettePanel parentPanel = null;
 
 	public ScavengerAdderPopupMenu(ActivityPalettePanel parentPanel) {
-		super("Create new scavenger");
+		super("Create new scavenger"); //$NON-NLS-1$
 		this.parentPanel = parentPanel;
 
 		ScavengerHelper webScavengerHelper = null;
@@ -66,8 +70,7 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 					addScavengerHelperToMenu(this, scavengerHelper);
 				}
 			} catch (Exception ex) {
-				logger
-						.error("Exception adding scavenger helper to scavenger tree");
+				logger.error("Exception adding scavenger helper to scavenger tree"); //$NON-NLS-1$
 			}
 		}
 		// if (!parentPanel.getPaletteModel().isPopulating()) {
@@ -78,7 +81,7 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 			addScavengerHelperToMenu(this, webScavengerHelper);
 		}
 
-		JMenuItem collect = new JMenuItem("Collect scavengers from model",
+		JMenuItem collect = new JMenuItem("Collect scavengers from model", //$NON-NLS-1$
 				TavernaIcons.importIcon);
 		this.add(collect);
 		collect.addActionListener(new ActionListener() {
@@ -89,8 +92,8 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 				} catch (ScavengerCreationException sce) {
 					JOptionPane
 							.showMessageDialog(null,
-									"Unable to import scavengers!\n"
-											+ sce.getMessage(), "Exception!",
+									"Unable to import scavengers!\n" //$NON-NLS-1$
+											+ sce.getMessage(), "Exception!", //$NON-NLS-1$
 									JOptionPane.ERROR_MESSAGE);
 				}
 			}

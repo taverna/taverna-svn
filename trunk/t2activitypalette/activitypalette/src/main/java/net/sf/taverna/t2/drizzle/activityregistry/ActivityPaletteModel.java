@@ -184,7 +184,7 @@ public final class ActivityPaletteModel implements ScavengerTree {
 
 		@Override
 		public void run() {
-			scavengingStarting("Populating service list");
+			scavengingStarting("Populating service list"); //$NON-NLS-1$
 
 			addFromScavengerHelpers();
 
@@ -243,7 +243,7 @@ public final class ActivityPaletteModel implements ScavengerTree {
 	}
 
 	public Frame getContainingFrame() {
-		Container result = representation;
+		Container result = this.representation;
 		while ((result != null) && !(result instanceof Frame)) {
 			result = result.getParent();
 		}
@@ -251,7 +251,7 @@ public final class ActivityPaletteModel implements ScavengerTree {
 	}
 
 	public TreeModel getModel() {
-		throw new UnsupportedOperationException("getModel is not available");
+		throw new UnsupportedOperationException("getModel is not available"); //$NON-NLS-1$
 	}
 
 	public int getNextCount() {
@@ -265,18 +265,18 @@ public final class ActivityPaletteModel implements ScavengerTree {
 	}
 
 	public void scavengingDone() {
-		scavengingInProgressCount --;
-		if (scavengingInProgressCount==0) {
+		this.scavengingInProgressCount --;
+		if (this.scavengingInProgressCount==0) {
 			notifyListenersScavengingDone();
 		}
 		
 	}
 
 	public void scavengingStarting(String message) {
-		if (scavengingInProgressCount==0) {
+		if (this.scavengingInProgressCount==0) {
 			notifyListenersScavengingStarted(message);
 		}
-		scavengingInProgressCount++;
+		this.scavengingInProgressCount++;
 	}
 
 	public void setPopulating(boolean populating) {
@@ -285,47 +285,47 @@ public final class ActivityPaletteModel implements ScavengerTree {
 	}
 
 	public void dragDropEnd(DragSourceDropEvent arg0) {
-		throw new UnsupportedOperationException("dragDropEnd is not available");
+		throw new UnsupportedOperationException("dragDropEnd is not available"); //$NON-NLS-1$
 	}
 
 	public void dragEnter(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dragEnter is not available");
+		throw new UnsupportedOperationException("dragEnter is not available"); //$NON-NLS-1$
 	}
 
 	public void dragExit(DragSourceEvent arg0) {
-		throw new UnsupportedOperationException("dragExit is not available");
+		throw new UnsupportedOperationException("dragExit is not available"); //$NON-NLS-1$
 	}
 
 	public void dragOver(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dragOver is not available");
+		throw new UnsupportedOperationException("dragOver is not available"); //$NON-NLS-1$
 	}
 
 	public void dropActionChanged(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dropActionChanged is not available");
+		throw new UnsupportedOperationException("dropActionChanged is not available"); //$NON-NLS-1$
 	}
 
 	public void dragGestureRecognized(DragGestureEvent arg0) {
-		throw new UnsupportedOperationException("dragGestureRecognized is not available");
+		throw new UnsupportedOperationException("dragGestureRecognized is not available"); //$NON-NLS-1$
 	}
 
 	public void dragEnter(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dragEnter is not available");
+		throw new UnsupportedOperationException("dragEnter is not available"); //$NON-NLS-1$
 	}
 
 	public void dragExit(DropTargetEvent arg0) {
-		throw new UnsupportedOperationException("dragExit is not available");
+		throw new UnsupportedOperationException("dragExit is not available"); //$NON-NLS-1$
 	}
 
 	public void dragOver(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dropOver is not available");
+		throw new UnsupportedOperationException("dropOver is not available"); //$NON-NLS-1$
 	}
 
 	public void drop(DropTargetDropEvent arg0) {
-		throw new UnsupportedOperationException("drop is not available");
+		throw new UnsupportedOperationException("drop is not available"); //$NON-NLS-1$
 	}
 
 	public void dropActionChanged(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dropActionChanged is not available");
+		throw new UnsupportedOperationException("dropActionChanged is not available"); //$NON-NLS-1$
 	}
 
 

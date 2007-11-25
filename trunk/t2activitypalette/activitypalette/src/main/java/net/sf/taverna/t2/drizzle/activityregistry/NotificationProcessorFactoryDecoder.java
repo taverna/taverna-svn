@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.notification.NotificationProcessorFact
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class NotificationProcessorFactoryDecoder extends ProcessorFactoryDecoder<NotificationProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -37,6 +38,7 @@ public final class NotificationProcessorFactoryDecoder extends ProcessorFactoryD
 				NotificationProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

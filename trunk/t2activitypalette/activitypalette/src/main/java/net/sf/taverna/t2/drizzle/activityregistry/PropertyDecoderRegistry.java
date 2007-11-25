@@ -12,6 +12,7 @@ import net.sf.taverna.t2.spi.SPIRegistry;
  * @author alanrw
  *
  */
+@SuppressWarnings("unchecked")
 public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	private static PropertyDecoderRegistry instance = null;
 
@@ -43,6 +44,7 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	 *            Object to decode
 	 * @return A list of {@link PropertyDecoder}s
 	 */
+	@SuppressWarnings("unchecked")
 	public static <Source, Target> List<PropertyDecoder<Source,Target>> getDecoders(
 			Class<Source> sourceClass, Class<Target> targetClass) {
 		List<PropertyDecoder<Source,Target>> decoders = new ArrayList<PropertyDecoder<Source,Target>>();

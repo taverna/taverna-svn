@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class RshellProcessorFactoryDecoder extends ProcessorFactoryDecoder<RshellProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -37,6 +38,7 @@ public final class RshellProcessorFactoryDecoder extends ProcessorFactoryDecoder
 				RshellProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

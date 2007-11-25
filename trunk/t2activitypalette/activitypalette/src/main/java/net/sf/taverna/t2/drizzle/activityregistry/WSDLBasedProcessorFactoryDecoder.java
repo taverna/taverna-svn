@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class WSDLBasedProcessorFactoryDecoder extends ProcessorFactoryDecoder<WSDLBasedProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -43,6 +44,7 @@ public final class WSDLBasedProcessorFactoryDecoder extends ProcessorFactoryDeco
 				WSDLBasedProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

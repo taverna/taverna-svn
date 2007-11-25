@@ -3,10 +3,7 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
-import java.util.Set;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
-import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 /**
  * @author alanrw

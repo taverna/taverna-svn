@@ -4,7 +4,6 @@
 package net.sf.taverna.t2.drizzle.activityregistry;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -45,6 +44,7 @@ public final class ScavengerDecoder implements
 		return ident;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void decodeNode(PropertiedObjectSet<ProcessorFactory> targetSet,
 			DecodeRunIdentification<ProcessorFactory> ident,
 			TreeNode node) {

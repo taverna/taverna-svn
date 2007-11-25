@@ -53,7 +53,7 @@ public final class ActivityRegistrySubsetModel {
 	 * @return the propertyKeyProfile
 	 */
 	public synchronized final Set<PropertyKey> getPropertyKeyProfile() {
-		return propertyKeyProfile;
+		return this.propertyKeyProfile;
 	}
 
 	/**
@@ -68,7 +68,7 @@ public final class ActivityRegistrySubsetModel {
 	 * @return the parentRegistry
 	 */
 	public synchronized final ActivityRegistry getParentRegistry() {
-		return parentRegistry;
+		return this.parentRegistry;
 	}
 
 	/**

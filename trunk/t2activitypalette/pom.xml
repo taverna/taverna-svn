@@ -3,7 +3,7 @@
 	<name>Taverna 2 Core</name>
 	<groupId>net.sf.taverna.t2</groupId>
 	<version>0.1-SNAPSHOT</version>
-	<artifactId>t2activitypalette</artifactId>
+	<artifactId>activityregistry</artifactId>
 	<packaging>pom</packaging>
 	<dependencyManagement>
 		<dependencies>

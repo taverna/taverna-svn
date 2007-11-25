@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class BiomartProcessorFactoryDecoder extends ProcessorFactoryDecoder<BiomartProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -39,6 +40,7 @@ public final class BiomartProcessorFactoryDecoder extends ProcessorFactoryDecode
 				BiomartProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

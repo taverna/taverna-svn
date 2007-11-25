@@ -19,7 +19,7 @@ public final class DecodeRunIdentification<O> {
 	 * @return the affectedObjects
 	 */
 	public synchronized final Set<O> getAffectedObjects() {
-		return affectedObjects;
+		return this.affectedObjects;
 	}
 	/**
 	 * @param affectedObjects the affectedObjects to set
@@ -31,7 +31,7 @@ public final class DecodeRunIdentification<O> {
 	 * @return the propertyKeyProfile
 	 */
 	public synchronized final Set<PropertyKey> getPropertyKeyProfile() {
-		return propertyKeyProfile;
+		return this.propertyKeyProfile;
 	}
 	/**
 	 * @param propertyKeyProfile the propertyKeyProfile to set
@@ -44,7 +44,7 @@ public final class DecodeRunIdentification<O> {
 	 * @return the timeOfRun
 	 */
 	public synchronized final long getTimeOfRun() {
-		return timeOfRun;
+		return this.timeOfRun;
 	}
 	/**
 	 * @param timeOfRun the timeOfRun to set

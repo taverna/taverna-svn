@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class WorkflowProcessorFactoryDecoder extends ProcessorFactoryDecoder<WorkflowProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -39,6 +40,7 @@ public final class WorkflowProcessorFactoryDecoder extends ProcessorFactoryDecod
 				WorkflowProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

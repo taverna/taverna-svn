@@ -5,35 +5,34 @@ package net.sf.taverna.t2.drizzle.activityregistry;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.utility.TreeModelAdapter;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTreeRenderer;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
@@ -42,7 +41,14 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  */
 public final class ActivityTabPanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2864983295736168567L;
+
 	JTree currentTree;
+	
+	JTable currentTable;
 
 	List<PropertyKeySetting> fullKeySettings = null;
 	
@@ -66,12 +72,13 @@ public final class ActivityTabPanel extends JPanel {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	TreeModel createTreeModel (final ActivityRegistrySubsetModel subsetModel,
-			final List<PropertyKeySetting> keySettings) {
+			final List<PropertyKeySetting> theKeySettings) {
 		TreeModel result = null;
 		
 		PropertiedTreeModel<ProcessorFactory> propertiedTreeModel = ObjectFactory.getInstance(PropertiedTreeModel.class);
-		propertiedTreeModel.setPropertyKeySettings(fullKeySettings);
+		propertiedTreeModel.setPropertyKeySettings(theKeySettings);
 		propertiedTreeModel.setFilter(subsetModel.getFilter());
 		
 		propertiedTreeModel.setPropertiedGraphView(subsetModel.getParentRegistry().getGraphView());
@@ -85,29 +92,40 @@ public final class ActivityTabPanel extends JPanel {
 	 * example data and shows it as a JTree. The effects of altering the
 	 * PropertiedObjectSet are shown to be mirrored in the JTree.
 	 */
+	@SuppressWarnings("unchecked")
 	public ActivityTabPanel(final ActivityRegistrySubsetModel subsetModel) {
 		this.setName(subsetModel.getName());
 		setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(0,0));
 		this.fullKeySettings = initializeKeySettings (subsetModel.getPropertyKeyProfile());
 
-		this.currentTree = new JTree(createTreeModel(subsetModel, fullKeySettings));
+		TreeModel treeModel = createTreeModel(subsetModel, this.fullKeySettings);
+		this.currentTree = new JTree(treeModel);
 		this.currentTree.setRowHeight(0);
 		this.currentTree.setLargeModel(true);
 		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer());
 		this.currentTree.addMouseListener(new ActivityTreeListener(this));
-//		this.currentTree.addTreeSelectionListener(new ActivityTreeListener());
-		JScrollPane treePane = new JScrollPane(this.currentTree);
-		treePane.setPreferredSize(new Dimension(0,0));
-		this.add(treePane, BorderLayout.CENTER);
+		this.currentTree.addTreeSelectionListener(new TreeSelectionListener(){
 
-		expandAll();
+			public void valueChanged(TreeSelectionEvent arg0) {
+				return;
+			}});
+		JScrollPane treePane = new JScrollPane(this.currentTree);
+//		treePane.setPreferredSize(new Dimension(0,0));
+		collapseAll(); // As requested by users
+
+		this.currentTable = new JTable(((PropertiedTreeRootNode<ProcessorFactory>)treeModel.getRoot()).getTableModel());
+		JScrollPane tablePane = new JScrollPane(this.currentTable);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+				treePane, tablePane);
+		this.add(splitPane, BorderLayout.CENTER);
 		
 		Vector<String> keyNames = new Vector<String>();
 		for (PropertyKeySetting pks : this.fullKeySettings) {
 			PropertyKey pk = pks.getPropertyKey();
 			if (pk == null) {
-				throw new IllegalStateException("key cannot be null");
+				throw new IllegalStateException("key cannot be null"); //$NON-NLS-1$
 			}
 			keyNames.add(pk.toString());
 		}
@@ -134,8 +152,10 @@ public final class ActivityTabPanel extends JPanel {
 				PropertyKeySetting movedKey = ActivityTabPanel.this.fullKeySettings.get(fromIndex);
 				ActivityTabPanel.this.fullKeySettings.remove(fromIndex);
 				ActivityTabPanel.this.fullKeySettings.add(toIndex, movedKey);
-			ActivityTabPanel.this.currentTree.setModel(ActivityTabPanel.this.createTreeModel(subsetModel, ActivityTabPanel.this.fullKeySettings));
-				expandAll();
+				TreeModel newTreeModel = createTreeModel(subsetModel, ActivityTabPanel.this.fullKeySettings);
+			ActivityTabPanel.this.currentTree.setModel(newTreeModel);
+				collapseAll(); // As requested by users
+				ActivityTabPanel.this.currentTable.setModel(((PropertiedTreeRootNode<ProcessorFactory>)newTreeModel.getRoot()).getTableModel());
 				}
 			}
 
@@ -165,7 +185,7 @@ public final class ActivityTabPanel extends JPanel {
 	 * @return the currentWorkflow
 	 */
 	public synchronized final ScuflModel getCurrentWorkflow() {
-		return currentWorkflow;
+		return this.currentWorkflow;
 	}
 
 	/**
@@ -179,6 +199,6 @@ public final class ActivityTabPanel extends JPanel {
 	 * @return the currentTree
 	 */
 	public synchronized final JTree getCurrentTree() {
-		return currentTree;
+		return this.currentTree;
 	}
 }

@@ -36,14 +36,14 @@ public class ActivityInvocationListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			final ScuflModel m;
-			if (pf instanceof ScuflWorkflowProcessorFactory) {
-				ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) pf.createProcessor("workflow",
+			if (this.pf instanceof ScuflWorkflowProcessorFactory) {
+				ScuflWorkflowProcessor wp = (ScuflWorkflowProcessor) this.pf.createProcessor("workflow", //$NON-NLS-1$
 						new ScuflModel());
 				m = wp.getInternalModel();
 			} else {
 				m = new ScuflModel();
-				m.getDescription().setTitle(pf.getName());								
-				Processor p = pf.createProcessor("processor", m);
+				m.getDescription().setTitle(this.pf.getName());								
+				Processor p = this.pf.createProcessor("processor", m); //$NON-NLS-1$
 				// m.addProcessor(p);
 				// Iterate over all inputs and create
 				// workflow inputs, similarly for all
@@ -69,8 +69,8 @@ public class ActivityInvocationListener implements ActionListener {
 			
 			WorkflowInputPanelFactory.invokeWorkflow(m);
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(null, "Unable to run operation : \n" + ex.getMessage(),
-					"Exception!", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Unable to run operation : \n" + ex.getMessage(), //$NON-NLS-1$
+					"Exception!", JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
 			ex.printStackTrace();
 		}
 	}

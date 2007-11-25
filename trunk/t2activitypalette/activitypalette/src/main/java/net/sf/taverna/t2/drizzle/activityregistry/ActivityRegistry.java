@@ -18,10 +18,11 @@ public final class ActivityRegistry {
 	private PropertiedObjectSet<ProcessorFactory> registry;
 	private PropertiedGraphView<ProcessorFactory> graphView;
 	
+	@SuppressWarnings("unchecked")
 	public ActivityRegistry() {
 		this.registry = ObjectFactory.getInstance(PropertiedObjectSet.class);
 		this.graphView = ObjectFactory.getInstance(PropertiedGraphView.class);
-		this.graphView.setPropertiedObjectSet(registry);
+		this.graphView.setPropertiedObjectSet(this.registry);
 	}
 
 	public synchronized ActivityQueryRunIdentification addImmediateQuery(ActivityQuery<?> query) {
@@ -34,13 +35,13 @@ public final class ActivityRegistry {
 	 * @return the registry
 	 */
 	public synchronized final PropertiedObjectSet<ProcessorFactory> getRegistry() {
-		return registry;
+		return this.registry;
 	}
 
 	/**
 	 * @return the graphView
 	 */
 	public synchronized final PropertiedGraphView<ProcessorFactory> getGraphView() {
-		return graphView;
+		return this.graphView;
 	}
 }

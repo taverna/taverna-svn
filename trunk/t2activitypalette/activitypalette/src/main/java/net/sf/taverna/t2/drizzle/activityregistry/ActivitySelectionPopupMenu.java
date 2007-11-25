@@ -34,7 +34,11 @@ import org.jdom.Element;
  */
 public class ActivitySelectionPopupMenu extends JPopupMenu {
 
-	private static Logger logger = Logger
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7354581610284964171L;
+	static Logger logger = Logger
 			.getLogger(ActivitySelectionPopupMenu.class);
 
 	public ActivitySelectionPopupMenu(final ProcessorFactory pf,
@@ -43,23 +47,67 @@ public class ActivitySelectionPopupMenu extends JPopupMenu {
 		this.setName(pf.getName());
 		this.add(new ShadedLabel(pf.getName(), ShadedLabel.TAVERNA_GREEN));
 		this.addSeparator();
-		JMenuItem test = new JMenuItem("Invoke", TavernaIcons.windowRun);
+		JMenuItem test = new JMenuItem("Invoke", TavernaIcons.windowRun); //$NON-NLS-1$
 		test.addActionListener(new ActivityInvocationListener(pf));
 		this.add(test);
 
 		final ScuflModel currentWorkflow = parent.getCurrentWorkflow();
 		if (parent.getCurrentWorkflow() != null) {
-			JMenuItem add = new JMenuItem("Add to model",
+			JMenuItem add = new JMenuItem("Add to model", //$NON-NLS-1$
 					TavernaIcons.importIcon);
 			this.addSeparator();
 			this.add(add);
-			JMenuItem addWithName = new JMenuItem("Add to model with name...",
+			add.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					String defaultName = pf.getName();
+					String validName = currentWorkflow
+							.getValidProcessorName(defaultName);
+					try {
+						pf.createProcessor(validName, currentWorkflow);
+					} catch (ProcessorCreationException pce) {
+						logger.error("Problem creating processor", pce); //$NON-NLS-1$
+						JOptionPane.showMessageDialog(null,
+								"Processor creation exception : \n" //$NON-NLS-1$
+										+ pce.getMessage(), "Exception!", //$NON-NLS-1$
+								JOptionPane.ERROR_MESSAGE);
+					} catch (DuplicateProcessorNameException dpne) {
+						logger.error("Problem creating processor", dpne); //$NON-NLS-1$
+						JOptionPane.showMessageDialog(null,
+								"Duplicate name : \n" + dpne.getMessage(), //$NON-NLS-1$
+								"Exception!", JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+					}
+				}
+			});
+
+			JMenuItem addWithName = new JMenuItem("Add to model with name...", //$NON-NLS-1$
 					TavernaIcons.importIcon);
 			this.add(addWithName);
+			addWithName.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent ae) {
+					String name = (String) JOptionPane.showInputDialog(null,
+							"Name for the new processor?", "Name required", //$NON-NLS-1$ //$NON-NLS-2$
+							JOptionPane.QUESTION_MESSAGE, null, null, ""); //$NON-NLS-1$
+					if (name != null) {
+						try {
+							pf.createProcessor(name, currentWorkflow);
+						} catch (ProcessorCreationException pce) {
+							JOptionPane.showMessageDialog(null,
+									"Processor creation exception : \n" //$NON-NLS-1$
+											+ pce.getMessage(), "Exception!", //$NON-NLS-1$
+									JOptionPane.ERROR_MESSAGE);
+						} catch (DuplicateProcessorNameException dpne) {
+							JOptionPane.showMessageDialog(null,
+									"Duplicate name : \n" + dpne.getMessage(), //$NON-NLS-1$
+									"Exception!", JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$
+						}
+					}
+				}
+			});
+
 			// Prepare the 'add as alternate menu'
 			Processor[] processors = currentWorkflow.getProcessors();
 			if (processors.length > 0) {
-				JMenu processorList = new JMenu("Add as alternate to...");
+				JMenu processorList = new JMenu("Add as alternate to..."); //$NON-NLS-1$
 				for (int i = 0; i < processors.length; i++) {
 					JMenuItem processorItem = new JMenuItem(processors[i]
 							.getName(), ProcessorHelper
@@ -72,7 +120,7 @@ public class ActivitySelectionPopupMenu extends JPopupMenu {
 								int numberOfAlternates = theProcessor
 										.getAlternatesArray().length;
 								Processor alternateProcessor = pf
-										.createProcessor("alternate"
+										.createProcessor("alternate" //$NON-NLS-1$
 												+ (numberOfAlternates + 1),
 												null);
 								AlternateProcessor alternate = new AlternateProcessor(
@@ -94,9 +142,9 @@ public class ActivitySelectionPopupMenu extends JPopupMenu {
 								ex.printStackTrace();
 								JOptionPane
 										.showMessageDialog(null,
-												"Problem creating alternate : \n"
+												"Problem creating alternate : \n" //$NON-NLS-1$
 														+ ex.getMessage(),
-												"Exception!",
+												"Exception!", //$NON-NLS-1$
 												JOptionPane.ERROR_MESSAGE);
 							}
 						}
@@ -104,104 +152,53 @@ public class ActivitySelectionPopupMenu extends JPopupMenu {
 					});
 				}
 				this.add(processorList);
-
-				// If this is a workflow factory then we might as well give
-				// the user the option to import the complete workflow as
-				// well as to wrap it in a processor
-				if (pf instanceof ScuflWorkflowProcessorFactory) {
-					JMenuItem imp = new JMenuItem("Import workflow...",
-							TavernaIcons.webIcon);
-					final String definitionURL = ((ScuflWorkflowProcessorFactory) pf)
-							.getDefinitionURL();
-					final Element definitionElement = (Element) ((ScuflWorkflowProcessorFactory) pf)
-							.getDefinition();
-					imp.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent ae) {
-							try {
-								String prefix = (String) JOptionPane
-										.showInputDialog(
-												UIUtils
-														.getActionEventParentWindow(ae),
-												"Optional name prefix?",
-												"Prefix",
-												JOptionPane.QUESTION_MESSAGE,
-												null, null, "");
-								if (prefix != null) {
-									if (prefix.equals("")) {
-										prefix = null;
-									}
-									if (definitionURL != null) {
-										XScuflParser.populate((new URL(
-												definitionURL)).openStream(),
-												currentWorkflow, prefix);
-									} else {
-										// Is a literal definition
-										XScuflParser.populate(new Document(
-												(Element) definitionElement
-														.clone()),
-												currentWorkflow, prefix);
-									}
-								}
-							} catch (Exception ex) {
-								JOptionPane
-										.showMessageDialog(null,
-												"Problem opening XScufl from web : \n"
-														+ ex.getMessage(),
-												"Exception!",
-												JOptionPane.ERROR_MESSAGE);
-							}
-						}
-					});
-					this.add(imp);
-				}
-				addWithName.addActionListener(new ActionListener() {
+			}
+			// If this is a workflow factory then we might as well give
+			// the user the option to import the complete workflow as
+			// well as to wrap it in a processor
+			if (pf instanceof ScuflWorkflowProcessorFactory) {
+				JMenuItem imp = new JMenuItem("Import workflow...", //$NON-NLS-1$
+						TavernaIcons.webIcon);
+				final String definitionURL = ((ScuflWorkflowProcessorFactory) pf)
+						.getDefinitionURL();
+				final Element definitionElement = ((ScuflWorkflowProcessorFactory) pf)
+						.getDefinition();
+				imp.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent ae) {
-						String name = (String) JOptionPane.showInputDialog(
-								null,
-								"Name for the new processor?", "Name required",
-								JOptionPane.QUESTION_MESSAGE, null, null, "");
-						if (name != null) {
-							try {
-								pf.createProcessor(name, currentWorkflow);
-							} catch (ProcessorCreationException pce) {
-								JOptionPane
-										.showMessageDialog(null,
-												"Processor creation exception : \n"
-														+ pce.getMessage(),
-												"Exception!",
-												JOptionPane.ERROR_MESSAGE);
-							} catch (DuplicateProcessorNameException dpne) {
-								JOptionPane
-										.showMessageDialog(null,
-												"Duplicate name : \n"
-														+ dpne.getMessage(),
-												"Exception!",
-												JOptionPane.ERROR_MESSAGE);
-							}
-						}
-					}
-				});
-				add.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent ae) {
-						String defaultName = pf.getName();
-						String validName = currentWorkflow
-								.getValidProcessorName(defaultName);
 						try {
-							pf.createProcessor(validName, currentWorkflow);
-						} catch (ProcessorCreationException pce) {
-							logger.error("Problem creating processor", pce);
+							String prefix = (String) JOptionPane
+									.showInputDialog(UIUtils
+											.getActionEventParentWindow(ae),
+											"Optional name prefix?", "Prefix",  //$NON-NLS-1$//$NON-NLS-2$
+											JOptionPane.QUESTION_MESSAGE, null,
+											null, ""); //$NON-NLS-1$
+							if (prefix != null) {
+								if (prefix.equals("")) { //$NON-NLS-1$
+									prefix = null;
+								}
+								if (definitionURL != null) {
+									XScuflParser.populate((new URL(
+											definitionURL)).openStream(),
+											currentWorkflow, prefix);
+								} else {
+									// Is a literal definition
+									XScuflParser.populate(
+											new Document(
+													(Element) definitionElement
+															.clone()),
+											currentWorkflow, prefix);
+								}
+							}
+						} catch (Exception ex) {
 							JOptionPane.showMessageDialog(null,
-									"Processor creation exception : \n"
-											+ pce.getMessage(), "Exception!",
+									"Problem opening XScufl from web : \n" //$NON-NLS-1$
+											+ ex.getMessage(), "Exception!", //$NON-NLS-1$
 									JOptionPane.ERROR_MESSAGE);
-						} catch (DuplicateProcessorNameException dpne) {
-							logger.error("Problem creating processor", dpne);
-							JOptionPane.showMessageDialog(null,
-									"Duplicate name : \n" + dpne.getMessage(),
-									"Exception!", JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				});
+				this.add(imp);
+
 			}
 		}
 

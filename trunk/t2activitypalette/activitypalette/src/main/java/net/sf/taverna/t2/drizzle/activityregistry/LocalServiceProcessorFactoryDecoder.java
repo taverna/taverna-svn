@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryDecoder<LocalServiceProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -41,6 +42,7 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 				LocalServiceProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

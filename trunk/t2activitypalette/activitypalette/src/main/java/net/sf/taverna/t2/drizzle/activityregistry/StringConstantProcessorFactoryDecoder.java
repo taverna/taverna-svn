@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class StringConstantProcessorFactoryDecoder extends ProcessorFactoryDecoder<StringConstantProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -39,6 +40,7 @@ public final class StringConstantProcessorFactoryDecoder extends ProcessorFactor
 				StringConstantProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

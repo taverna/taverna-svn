@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.beanshell.BeanshellProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class BeanshellProcessorFactoryDecoder extends ProcessorFactoryDecoder<BeanshellProcessorFactory> {
 
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
@@ -38,6 +39,7 @@ public final class BeanshellProcessorFactoryDecoder extends ProcessorFactoryDeco
 				BeanshellProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}

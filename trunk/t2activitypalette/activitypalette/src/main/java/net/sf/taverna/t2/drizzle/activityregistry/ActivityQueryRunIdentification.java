@@ -23,7 +23,7 @@ public final class ActivityQueryRunIdentification {
 	 * @return the name
 	 */
 	public synchronized final String getName() {
-		return name;
+		return this.name;
 	}
 	/**
 	 * @param name the name to set
@@ -35,7 +35,7 @@ public final class ActivityQueryRunIdentification {
 	 * @return the objectFilter
 	 */
 	public synchronized final PropertiedObjectFilter<ProcessorFactory> getObjectFilter() {
-		return objectFilter;
+		return this.objectFilter;
 	}
 	/**
 	 * @param objectFilter the objectFilter to set
@@ -48,7 +48,7 @@ public final class ActivityQueryRunIdentification {
 	 * @return the propertyKeyProfile
 	 */
 	public synchronized final Set<PropertyKey> getPropertyKeyProfile() {
-		return propertyKeyProfile;
+		return this.propertyKeyProfile;
 	}
 	/**
 	 * @param propertyKeyProfile the propertyKeyProfile to set
@@ -61,7 +61,7 @@ public final class ActivityQueryRunIdentification {
 	 * @return the timeOfRun
 	 */
 	public synchronized final long getTimeOfRun() {
-		return timeOfRun;
+		return this.timeOfRun;
 	}
 	/**
 	 * @param timeOfRun the timeOfRun to set

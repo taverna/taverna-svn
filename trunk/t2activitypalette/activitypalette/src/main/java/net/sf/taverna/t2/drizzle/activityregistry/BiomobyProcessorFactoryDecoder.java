@@ -17,6 +17,7 @@ import org.embl.ebi.escience.scuflworkers.biomoby.BiomobyProcessorFactory;
  * @author alanrw
  *
  */
+@SuppressWarnings("serial")
 public final class BiomobyProcessorFactoryDecoder extends
 		ProcessorFactoryDecoder<BiomobyProcessorFactory> {
 
@@ -45,6 +46,7 @@ public final class BiomobyProcessorFactoryDecoder extends
 		
 	}
 
+	@Override
 	public Set<PropertyKey> getPropertyKeyProfile() {
 		return keyProfile;
 	}
