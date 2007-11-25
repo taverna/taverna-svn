@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -187,28 +188,29 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	
 	public TableModel getTableModel() {
 		int rowCount = this.getAllObjects().size();
-		int columnCount = -1; // -1 because of object node at leaves of tree
-		for (PropertiedTreeNode aNode = this; aNode.getActualChildCount() > 0;
+		Vector<String> columnNames = new Vector<String>();
+		for (PropertiedTreeNode<O> aNode = this; aNode.getActualChildCount() > 0;
 		aNode = aNode.getChild(0)) {
-			columnCount++;
+			if (aNode instanceof PropertiedTreePropertyValueNode) {
+				PropertiedTreePropertyValueNode<O> pvNode =
+					(PropertiedTreePropertyValueNode<O>) aNode;
+				columnNames.add(pvNode.getKey().toString());
+			}
 		}
-		if (columnCount <= 1) {
-			columnCount = 1;
-		}
-		DefaultTableModel result = new DefaultTableModel(rowCount, columnCount);
+		DefaultTableModel result = new DefaultTableModel(columnNames, rowCount);
 		fillInDetails(this, result, 0, 0);
 		return result;
 	}
 
-	private void fillInDetails(PropertiedTreeNode node, DefaultTableModel tableModel,
+	private void fillInDetails(PropertiedTreeNode<O> node, DefaultTableModel tableModel,
 			int rowOffset, int column) {
 		int childCount = node.getActualChildCount();
 		int row = rowOffset;
 		for (int i = 0; i < childCount; i++) {
-			PropertiedTreeNode childNode = node.getChild(i);
+			PropertiedTreeNode<O> childNode = node.getChild(i);
 			if (childNode instanceof PropertiedTreePropertyValueNode) {
-				PropertiedTreePropertyValueNode childPropertyValueNode =
-					(PropertiedTreePropertyValueNode) childNode;
+				PropertiedTreePropertyValueNode<O> childPropertyValueNode =
+					(PropertiedTreePropertyValueNode<O>) childNode;
 				int numberOfObjectsWithValue = childPropertyValueNode.getAllObjects().size();
 				fillInDetails(childPropertyValueNode, tableModel, row, column+1);
 				for (int j = 0; j < numberOfObjectsWithValue; j++) {
