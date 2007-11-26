@@ -23,6 +23,8 @@ import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
@@ -31,6 +33,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
@@ -137,6 +140,9 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		this.subsetModels.remove(subsetModel);
 	}
 
+	/**
+	 * In future this should not be needed.  It is only present to keep in concert with Taverna 1.
+	 */
 	public void addScavenger(final Scavenger theScavenger) {
 		synchronized (this.registry) {
 			// Check to see we don't already have a scavenger with this name
@@ -328,5 +334,16 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		throw new UnsupportedOperationException("dropActionChanged is not available"); //$NON-NLS-1$
 	}
 
-
+	public Set<ActivityRegistrySubsetModel> getSubsetModels() {
+		return this.subsetModels;
+	}
+	
+	public void addSubsetModelFromSelection (String name, Set<ProcessorFactory> selection, Set<PropertyKey> keyProfile) {
+		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
+		subsetModel.setFilter(new ObjectMembershipFilter<ProcessorFactory>(selection));
+		subsetModel.setName(name);
+		subsetModel.setPropertyKeyProfile(keyProfile);
+		subsetModel.setParentRegistry(this.registry);
+		addSubsetModel(subsetModel);
+	}
 }
