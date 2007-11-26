@@ -186,40 +186,4 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 		this.parent = parent;
 	}
 	
-	public TableModel getTableModel() {
-		int rowCount = this.getAllObjects().size();
-		Vector<String> columnNames = new Vector<String>();
-		for (PropertiedTreeNode<O> aNode = this; aNode.getActualChildCount() > 0;
-		aNode = aNode.getChild(0)) {
-			if (aNode instanceof PropertiedTreePropertyValueNode) {
-				PropertiedTreePropertyValueNode<O> pvNode =
-					(PropertiedTreePropertyValueNode<O>) aNode;
-				columnNames.add(pvNode.getKey().toString());
-			}
-		}
-		DefaultTableModel result = new DefaultTableModel(columnNames, rowCount);
-		fillInDetails(this, result, 0, 0);
-		return result;
-	}
-
-	private void fillInDetails(PropertiedTreeNode<O> node, DefaultTableModel tableModel,
-			int rowOffset, int column) {
-		int childCount = node.getActualChildCount();
-		int row = rowOffset;
-		for (int i = 0; i < childCount; i++) {
-			PropertiedTreeNode<O> childNode = node.getChild(i);
-			if (childNode instanceof PropertiedTreePropertyValueNode) {
-				PropertiedTreePropertyValueNode<O> childPropertyValueNode =
-					(PropertiedTreePropertyValueNode<O>) childNode;
-				int numberOfObjectsWithValue = childPropertyValueNode.getAllObjects().size();
-				fillInDetails(childPropertyValueNode, tableModel, row, column+1);
-				for (int j = 0; j < numberOfObjectsWithValue; j++) {
-					PropertyValue value = childPropertyValueNode.getValue();
-					if (value != null) {
-						tableModel.setValueAt(value.toString(), row++, column);
-					}
-				}
-			}
-		}
-	}
 }

@@ -107,5 +107,4 @@ public interface PropertiedTreeNode<O> {
 	 */
 	PropertiedTreeNode<O>[] getPath();
 
-	public TableModel getTableModel();
 }
