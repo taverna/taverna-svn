@@ -68,8 +68,8 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 	 */
 	@Override
 	public String toString() {
-		String keyString = Messages.getString("PropertiedTreePropertyValueNodeImpl.MISSING"); //$NON-NLS-1$
-		String valueString = Messages.getString("PropertiedTreePropertyValueNodeImpl.MISSING"); //$NON-NLS-1$
+		String keyString = "missing"; //$NON-NLS-1$
+		String valueString = "missing"; //$NON-NLS-1$
 		
 		if (this.key != null) {
 			keyString = this.key.toString();
@@ -78,6 +78,6 @@ public final class PropertiedTreePropertyValueNodeImpl<O> extends PropertiedTree
 			valueString = this.value.toString();
 		}
 		
-		return keyString + Messages.getString("PropertiedTreePropertyValueNodeImpl.EQUALS") +valueString; //$NON-NLS-1$
+		return keyString + "=" +valueString; //$NON-NLS-1$
 	}
 }
