@@ -33,6 +33,7 @@ import org.embl.ebi.escience.scuflworkers.java.EmitLotsOfStrings;
 import org.embl.ebi.escience.scuflworkers.java.EncodeBase64;
 import org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks;
 import org.embl.ebi.escience.scuflworkers.java.FilterStringList;
+import org.embl.ebi.escience.scuflworkers.java.FlattenList;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.embl.ebi.escience.scuflworkers.java.PadNumber;
 import org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList;
@@ -106,7 +107,7 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
-	@Ignore("Requires base64 dependency")
+//	@Ignore("Requires base64 dependency")
 	@Test
 	public void testDoTranslationDecodeBase64() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -225,6 +226,30 @@ public class LocalworkerTranslatorTest {
 		inputs.put("regex", ".n.");
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
 		expectedOutputs.put("filteredlist", Collections.singletonList("one"));
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationFlattenList() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"FlattenList", new FlattenList());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		List<List<String>> inputList = new ArrayList<List<String>>();
+		inputList.add(Collections.singletonList("one"));
+		inputList.add(Collections.singletonList("two"));
+		inputList.add(Collections.singletonList("three"));
+		List<String> outputList = new ArrayList<String>();
+		Collections.addAll(outputList, "one", "two", "three");
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("inputlist", inputList);
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("outputlist", outputList);
 
 		invoke(activity, inputs, expectedOutputs);
 	}
