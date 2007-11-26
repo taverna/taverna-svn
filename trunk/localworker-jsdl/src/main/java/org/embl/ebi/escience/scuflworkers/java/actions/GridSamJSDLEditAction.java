@@ -3,6 +3,8 @@ package org.embl.ebi.escience.scuflworkers.java.actions;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -12,6 +14,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
@@ -22,11 +27,17 @@ import uk.org.mygrid.taverna.processors.GridSamJSDLWorker;
 
 
 public class GridSamJSDLEditAction extends AbstractProcessorAction{
-
 	
+	private static Logger logger = 	Logger.getLogger(GridSamJSDLEditAction.class);
 	
-	private static Logger logger =
-		Logger.getLogger(GridSamJSDLEditAction.class);
+	JTextField ftpServerTextField =null;
+	JTextField myproxyServerTextField = null;
+	JTextField myproxyServerDNTextField = null;
+	JTextField proxyPortTextField = null;
+	JTextField proxyLifetimeField = null;
+	
+	JPanel panel = new JPanel();
+	
 
 	/**
 	 * Only handles {@link LocalServiceProcessor} based on {@link FlattenList}
@@ -61,11 +72,10 @@ public class GridSamJSDLEditAction extends AbstractProcessorAction{
 	 */
 	private String makeHelp() {
 		
-		String help = "<html>Constants:<br>" +		
-			"ftpServer = ftp://rpc326.cs.man.ac.uk:19245" +
-			"myproxyServer=myproxy.grid-support.ac.uk" +
-			"myproxyServerDN=/C=UK/O=eScience/OU=CLRC/L=DL/CN=host/myproxy.grid-support.ac.uk/E=a.j.richards@dl.ac.uk" +
-			"proxyPort=7512" + "proxyLifetime=7512";
+		String help = "<html> <small> <br>The above values can be changed <br> ftpserver value can be obtained from GridSAM administrator <br>"+
+					  "default myproxyserver value refer NGS myproxyserver, that supports e-Science Certificates<br>"+
+					  "proxylifetime is in seconds</small><html>";
+					  
 		return help;
 	}
 
@@ -73,35 +83,130 @@ public class GridSamJSDLEditAction extends AbstractProcessorAction{
 	@Override
 	public JComponent getComponent(Processor processor) {
 		
-		JPanel panel = new JPanel(new GridBagLayout());
 		if (!(processor instanceof LocalServiceProcessor)) {
 			logger.error("Processor not a LocalServiceProcessor");
 			return panel;
 		}
-		GridBagConstraints c = new GridBagConstraints();
-		c.anchor = GridBagConstraints.NORTH;
-		c.gridx = 0;
-		c.gridy = 0;
-
+		
+		JLabel ftpServerLabel = new JLabel("FtpServer:");
+		JLabel myproxyServerLabel = new JLabel("MyProxyServer:");
+		JLabel myproxyServerDNLabel =  new JLabel("MyProxyServerDN:");
+		JLabel proxyPortLabel =  new JLabel("ProxyPort:");
+		JLabel proxyLifetimeLabel = new JLabel("ProxyLifetime:");
+		
 		LocalServiceProcessor proc = (LocalServiceProcessor) processor;
-	//	final FlattenList flattener = (FlattenList) proc.getWorker();
+		final GridSamJSDLWorker jsdlWorker = (GridSamJSDLWorker) proc.getWorker();
 
-		panel.add(new JLabel("ftpServer: "), c);
-		c.gridx = 1;
-		JTextField ftpServer = new JTextField();
-		ftpServer.setText("ftp://rpc326.cs.man.ac.uk:19245 ");
-		panel.add(ftpServer, c);
+		DocumentListener documentListener = new JSDLDocumentListener(jsdlWorker);
+		ftpServerTextField = new JTextField("ftp://");
+		ftpServerTextField.getDocument().addDocumentListener(documentListener);
+		ftpServerTextField.getDocument().putProperty("name", "ftpserver");
 		
+		myproxyServerTextField = new JTextField(GridSamJSDLWorker.myproxyServer);
+		myproxyServerTextField.getDocument().addDocumentListener(documentListener);
+		myproxyServerTextField.getDocument().putProperty("name", "myproxyserver");
 		
+		myproxyServerDNTextField =  new JTextField(GridSamJSDLWorker.myproxyServerDN);
+		myproxyServerDNTextField.getDocument().addDocumentListener(documentListener);
+		myproxyServerDNTextField.getDocument().putProperty("name", "myproxyserverdn");
 		
-		String help = makeHelp();
-		final JLabel helpLabel = new JLabel(help);
-		c.gridy = 1;
-		c.gridx = 0;
-		c.gridwidth = 2;
-		panel.add(helpLabel, c);
+		proxyPortTextField = new JTextField(GridSamJSDLWorker.proxyPort);
+		proxyPortTextField.getDocument().addDocumentListener(documentListener);
+		proxyPortTextField.getDocument().putProperty("name", "proxyport");
+		
+		proxyLifetimeField = new JTextField(GridSamJSDLWorker.proxyLifetime);
+		proxyLifetimeField.getDocument().addDocumentListener(documentListener);
+		proxyLifetimeField.getDocument().putProperty("name", "proxylifetime");
+		
+		JLabel[] labels = {ftpServerLabel, myproxyServerLabel, myproxyServerDNLabel, proxyPortLabel, proxyLifetimeLabel};
+        JTextField[] textFields = {ftpServerTextField, myproxyServerTextField, myproxyServerDNTextField, proxyPortTextField, proxyLifetimeField};
+        
+        this.addToPanel(labels, textFields, panel);
 		
 		return panel;
 	}
 		
+	
+	private void addToPanel(JLabel[] labels,JTextField[] textFields,JPanel panel){
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		GridBagConstraints c = new GridBagConstraints();
+		panel.setLayout(gridBagLayout);
+		c.anchor = GridBagConstraints.NORTH;
+		int numLabels = labels.length;
+
+		for (int i = 0; i < numLabels; i++) {
+			
+				c.gridwidth = GridBagConstraints.RELATIVE; //next-to-last
+				c.fill = GridBagConstraints.NONE;      //reset to default
+				c.weightx = 0.0;                       //reset to default
+				panel.add(labels[i]);
+				
+				c.gridwidth = GridBagConstraints.REMAINDER;     //end row
+				c.fill = GridBagConstraints.HORIZONTAL;
+				c.weightx = 1.0;
+				gridBagLayout.setConstraints(textFields[i], c);
+				panel.add(textFields[i]);
+		}
+				JLabel help = new JLabel(this.makeHelp());
+				c.gridheight=GridBagConstraints.PAGE_END;
+				gridBagLayout.setConstraints(help,c);
+				panel.add(help);
+	}
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
+	public static void setLogger(Logger logger) {
+		GridSamJSDLEditAction.logger = logger;
+	}
+
+	
+	public JPanel getPanel() {
+		return panel;
+	}
+
+	public void setPanel(JPanel panel) {
+		this.panel = panel;
+	}
+	
+	private class JSDLDocumentListener implements DocumentListener{
+		
+		final GridSamJSDLWorker worker ;
+		JSDLDocumentListener(GridSamJSDLWorker worker){		
+			this.worker = worker;
+		}
+		
+		public void changedUpdate(DocumentEvent e) {
+			this.valuechange(e);
+		}
+
+		public void insertUpdate(DocumentEvent e) {
+			this.valuechange(e);
+		}
+
+		public void removeUpdate(DocumentEvent e) {
+			this.valuechange(e);
+		}
+		
+		private void valuechange(DocumentEvent e){
+			Document document = e.getDocument();
+			if (document.getProperty("name").equals("ftpserver")){
+				worker.setUserFtpServer(ftpServerTextField.getText());
+			}
+			if (document.getProperty("name").equals("myproxyserver")){
+				worker.setUserMyproxyServer(myproxyServerTextField.getText());
+			}
+			if (document.getProperty("name").equals("myproxyserverdn")){
+				worker.setUsermyproxyServerDN(myproxyServerDNTextField.getText());
+			}
+			if (document.getProperty("name").equals("proxyport")){
+				worker.setUserProxyPort(proxyPortTextField.getText());
+			}
+			if (document.getProperty("name").equals("proxylifetime")){
+				worker.setUserProxyLifetime(proxyLifetimeField.getText());
+			}
+		}
+	}
+	
 }	
