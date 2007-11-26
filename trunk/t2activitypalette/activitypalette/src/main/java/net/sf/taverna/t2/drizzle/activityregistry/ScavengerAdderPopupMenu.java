@@ -37,9 +37,9 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 	ActivityPalettePanel parentPanel = null;
 
 	public ScavengerAdderPopupMenu(ActivityPalettePanel parentPanel) {
-		super("Create new scavenger"); //$NON-NLS-1$
+		super("Add scavenger");
 		this.parentPanel = parentPanel;
-
+		
 		ScavengerHelper webScavengerHelper = null;
 		// Iterate over the scavenger creator list from the
 		// ProcessorHelper class

@@ -7,16 +7,20 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+
+import net.sf.taverna.t2.drizzle.util.PropertyKey;
+import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -70,13 +74,26 @@ ActivityPaletteModelListener, ActionListener {
 		addScavengerItem.addActionListener(this);
 		menuBar.add(addScavengerItem);
 		
-		menuBar.add(new ScavengerAdderPopupMenu(this));
+		JButton hideSubsetItem = new JButton("hide subset");
+		hideSubsetItem.setActionCommand("hideSubset");
+		hideSubsetItem.addActionListener(this);
+		menuBar.add(hideSubsetItem);
 		
-		this.progressBar = new JProgressBar();
-		this.progressBar.setIndeterminate(true);
-		this.progressBar.setVisible(false);
-		this.progressBar.setOrientation(SwingConstants.VERTICAL);
-		this.add(this.progressBar, BorderLayout.EAST);
+		JButton showSubsetItem = new JButton("show subset");
+		showSubsetItem.setActionCommand("showSubset");
+		showSubsetItem.addActionListener(this);
+		menuBar.add(showSubsetItem);
+		
+		JButton createSubsetItem = new JButton("create subset");
+		createSubsetItem.setActionCommand("createSubset");
+		createSubsetItem.addActionListener(this);
+		menuBar.add(createSubsetItem);
+		
+		progressBar = new JProgressBar();
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(false);
+		progressBar.setOrientation(JProgressBar.VERTICAL);
+		this.add(progressBar, BorderLayout.EAST);
 		
 		this.add(menuBar, BorderLayout.SOUTH);
 		this.paletteModel.addListener(this);
@@ -89,8 +106,8 @@ ActivityPaletteModelListener, ActionListener {
 			detachFromModel();
 		}
 		this.currentWorkflow = model;
-		for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-			ActivityTabPanel tabPanel = (ActivityTabPanel) this.tabbedPane.getComponentAt(i);
+		for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+			ActivitySubsetPanel tabPanel = (ActivitySubsetPanel) tabbedPane.getComponentAt(i);
 			tabPanel.setCurrentWorkflow(model);
 		}
 //TODO		model.addListener(eventListener);
@@ -98,8 +115,8 @@ ActivityPaletteModelListener, ActionListener {
 
 	public void detachFromModel() {
 		if (this.currentWorkflow != null) {
-			for (int i = 0; i < this.tabbedPane.getTabCount(); i++) {
-				ActivityTabPanel tabPanel = (ActivityTabPanel) this.tabbedPane.getComponentAt(i);
+			for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
+				ActivitySubsetPanel tabPanel = (ActivitySubsetPanel) tabbedPane.getComponentAt(i);
 				tabPanel.setCurrentWorkflow(null);
 			}
 //TODO			scuflModel.removeListener(eventListener);
@@ -129,29 +146,9 @@ ActivityPaletteModelListener, ActionListener {
 	}
 
 	public void subsetModelAdded(ActivityPaletteModel activityPaletteModel,
-			final ActivityRegistrySubsetModel subsetModel) {
-		Runnable addTabRunnable = new Runnable() {
-			public void run() {
-				ActivityTabPanel tabPanel = new ActivityTabPanel(subsetModel);
-				tabPanel.setCurrentWorkflow(ActivityPalettePanel.this.currentWorkflow);
-				int tabCount = ActivityPalettePanel.this.tabbedPane.getTabCount();
-				String subsetName = subsetModel.getName();
-				int position;
-				for (position = 0;
-					(position < tabCount) && (ActivityPalettePanel.this.tabbedPane.getTitleAt(position).compareTo(subsetName) < 0);
-					position++) {
-					// nowt to do
-				}
-				if (position == tabCount) {
-					ActivityPalettePanel.this.tabbedPane.add (new ActivityTabPanel(subsetModel));				
-				} else {
-					ActivityPalettePanel.this.tabbedPane.add(new ActivityTabPanel(subsetModel), position);
-				}				
-			}
-		};
-		SwingUtilities.invokeLater(addTabRunnable);
-/*		synchronized(tabbedPane) {
-			ActivityTabPanel tabPanel = new ActivityTabPanel(subsetModel);
+			ActivityRegistrySubsetModel subsetModel) {
+		synchronized(tabbedPane) {
+			ActivitySubsetPanel tabPanel = new ActivitySubsetPanel(subsetModel);
 			tabPanel.setCurrentWorkflow(this.currentWorkflow);
 			int tabCount = tabbedPane.getTabCount();
 			String subsetName = subsetModel.getName();
@@ -162,11 +159,11 @@ ActivityPaletteModelListener, ActionListener {
 				// nowt to do
 			}
 			if (position == tabCount) {
-				this.tabbedPane.add (new ActivityTabPanel(subsetModel));				
+				this.tabbedPane.add (tabPanel);				
 			} else {
-				this.tabbedPane.add(new ActivityTabPanel(subsetModel), position);
+				this.tabbedPane.add(tabPanel, position);
 			}
-		}*/
+		}
 	}
 
 	/**
@@ -176,24 +173,24 @@ ActivityPaletteModelListener, ActionListener {
 		return this.paletteModel;
 	}
 
-	private ActivityTabPanel getCurrentTab() {
-		ActivityTabPanel result = null;
+	private ActivitySubsetPanel getCurrentTab() {
+		ActivitySubsetPanel result = null;
 		Component selectedTab = this.tabbedPane.getSelectedComponent();
-		if (selectedTab instanceof ActivityTabPanel) {
-			result = (ActivityTabPanel) selectedTab;
+		if (selectedTab instanceof ActivitySubsetPanel) {
+			result = (ActivitySubsetPanel) selectedTab;
 		}
 		return result;
 	}
 	
 	private void expandTab() {
-		ActivityTabPanel currentTab = getCurrentTab();
+		ActivitySubsetPanel currentTab = getCurrentTab();
 		if (currentTab != null) {
 			currentTab.expandAll();
 		}		
 	}
 	
 	private void collapseTab() {
-		ActivityTabPanel currentTab = getCurrentTab();
+		ActivitySubsetPanel currentTab = getCurrentTab();
 		if (currentTab != null) {
 			currentTab.collapseAll();
 		}		
@@ -202,6 +199,41 @@ ActivityPaletteModelListener, ActionListener {
 	private void showAddScavengerPopup(Component c, int px, int py) {
 		JPopupMenu scavengerAdderPopupMenu = new ScavengerAdderPopupMenu(this);
 		scavengerAdderPopupMenu.show(c,px,py);
+	}
+	
+	private void showShowSubsetPopup(Component c, int px, int py) {
+		JPopupMenu showSubsetPopupMenu = new ShowSubsetPopupMenu(this);
+		showSubsetPopupMenu.show(c,px,py);
+	}
+	
+	private void showCreateSubsetPopup(Component c, int px, int py) {
+		String subsetName = (String) JOptionPane
+		.showInputDialog(c,
+				"Name of subset");
+		if ((subsetName == null) || (subsetName.length() == 0)) {
+			JOptionPane.showMessageDialog(c, "subset name must be specified");
+		}
+		boolean found = false;
+		for (ActivityRegistrySubsetModel subsetModel : paletteModel.getSubsetModels()) {
+			if (subsetModel.getName().equals(subsetName)) {
+				JOptionPane.showMessageDialog(c, "The name " + subsetName + " is already in use");
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			Component selectedComponent = tabbedPane.getSelectedComponent();
+			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
+				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
+				Set<PropertyKey> profile = new HashSet<PropertyKey>();
+				for (PropertyKeySetting setting : subsetPanel.getPropertyProfile()) {
+					profile.add(setting.getPropertyKey());
+				}
+				paletteModel.addSubsetModelFromSelection(subsetName,
+						subsetPanel.getSelectedObjects(),
+						profile);
+			}
+		}
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -214,7 +246,23 @@ ActivityPaletteModelListener, ActionListener {
 	           Component c = (Component) e.getSource();
 	           int py = c.getY() + c.getHeight() + 2;
 	 			showAddScavengerPopup(c, 0, py);
+		} else if (command.equals("hideSubset")) {
+			Component selectedComponent = tabbedPane.getSelectedComponent();
+			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
+				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
+				subsetPanel.destroy();
+				tabbedPane.remove(subsetPanel);
+			}
+		} else if (command.equals("showSubset")) {
+			Component c = (Component) e.getSource();
+			int py = c.getY() + c.getHeight() + 2;
+			showShowSubsetPopup(c,0,py);
+		} else if (command.equals("createSubset")) {
+			Component c = (Component) e.getSource();
+			int py = c.getY() + c.getHeight() + 2;
+			showCreateSubsetPopup(c,0,py);
 		}
+				
 	}
 
 	public void scavengingDone(ActivityPaletteModel model) {
@@ -225,6 +273,10 @@ ActivityPaletteModelListener, ActionListener {
 		this.progressBar.setString(message);
 		this.progressBar.setStringPainted(true);
 		this.progressBar.setVisible(true);
+	}
+	
+	public int getIndexOfTab(String tabName) {
+		return this.tabbedPane.indexOfTab(tabName);
 	}
 
 }

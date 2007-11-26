@@ -22,6 +22,6 @@ public final class CommonKey {
 	public static final PropertyKey NameKey = new StringKey("Name"); //$NON-NLS-1$
 	public static final PropertyKey MobyEndpointKey = new StringKey("Moby endpoint"); //$NON-NLS-1$
 	public static final PropertyKey MobyAuthorityKey = new StringKey("Moby authority"); //$NON-NLS-1$
-	protected static final PropertyKey LocalServiceCategoryKey = new StringKey("Category"); //$NON-NLS-1$
-	protected static final PropertyKey SoaplabCategoryKey = new StringKey("Category"); //$NON-NLS-1$
+	public static final PropertyKey LocalServiceCategoryKey = new StringKey("Category"); //$NON-NLS-1$
+	public static final PropertyKey SoaplabCategoryKey = new StringKey("Category"); //$NON-NLS-1$
 }

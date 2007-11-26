@@ -5,10 +5,10 @@ package net.sf.taverna.t2.drizzle.activityregistry;
 
 import java.util.Set;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
+
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * @author alanrw
@@ -77,6 +77,5 @@ public final class ActivityRegistrySubsetModel {
 	public synchronized final void setParentRegistry(ActivityRegistry parentRegistry) {
 		this.parentRegistry = parentRegistry;
 	}
-
 
 }
