@@ -6,12 +6,8 @@ package net.sf.taverna.t2.drizzle.util.impl;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -26,15 +22,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedGraphView;
-import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
-import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
-import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
@@ -147,6 +139,8 @@ public final class TestJTree extends JFrame {
 		PropertyKeySetting typeSetting = new PropertyKeySettingImpl();
 		typeSetting.setPropertyKey(this.typeKey);
 		keySettings.add(typeSetting);
+		PropertyKeySetting edgeSetting = new PropertyKeySettingImpl();
+		keySettings.add(edgeSetting);
 		PropertyKeySetting domainSetting = new PropertyKeySettingImpl();
 		domainSetting.setPropertyKey(this.domainKey);
 		keySettings.add(domainSetting);
@@ -156,8 +150,6 @@ public final class TestJTree extends JFrame {
 		PropertyKeySetting nameSetting = new PropertyKeySettingImpl();
 		nameSetting.setPropertyKey(this.nameKey);
 		keySettings.add(nameSetting);
-		PropertyKeySetting edgeSetting = new PropertyKeySettingImpl();
-		keySettings.add(edgeSetting);
 		return keySettings;
 	}
 
@@ -193,7 +185,8 @@ public final class TestJTree extends JFrame {
 		this.model = createTree(this.fullKeySettings);
 		Container content = getContentPane();
 		this.currentTree = new JTree(this.model);
-		this.currentTree.setCellRenderer(new TableTreeCellRenderer());
+//		this.currentTree.setCellRenderer(new TableTreeCellRenderer());
+		this.currentTree.setRowHeight(0);
 		this.currentTree.setRootVisible(false);
 		content.setLayout(new BorderLayout());
 		content.add(this.currentTree, BorderLayout.CENTER);
