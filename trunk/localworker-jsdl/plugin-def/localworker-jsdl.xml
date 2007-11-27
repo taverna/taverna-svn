@@ -1,17 +1,17 @@
 <plugin>
-	<name>localworker-jsdl</name>
-	<description>produces JSDL compatible with GridSAM-2.0.1 (omii-server3.4.0)WebService</description>
+	<name>JDSL Localworker</name>
+	<description>Produces JSDL compatible with GridSAM-2.0.1 (omii-server3.4.0) WebService</description>
 	<identifier>uk.org.mygrid.taverna.processors</identifier>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0</version>
 	<provider>uk.org.mygrid.taverna.processors</provider>
 	<repositories>
 		<repository>
-			<!-- add the url to the repository you have deployed your plugin to here, e.g. http://www.mygrid.org.uk/maven/repository -->
+		  <repository>http://www.mygrid.org.uk/maven/repository/</repository>
 		</repository>
 	</repositories>
 	<profile>
 		<artifact groupId="uk.org.mygrid.taverna.processors" artifactId="localworker-jsdl"
-			version="1.0-SNAPSHOT" />
+			version="1.0" />
 	</profile>
 	<taverna>
 		<version>1.6.2</version>
