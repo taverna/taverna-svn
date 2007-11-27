@@ -67,7 +67,7 @@ public class GridSamJSDLWorker implements  LocalWorker, XMLExtensible
 		return new String[] {"'text/plain'", "'text/plain'"};
 	}
 	
-	 // JSDL valid to invoke GridSAM-2.0.1 (omii-server3.4.0)WebService.  
+	 // Produces JSDL, compatible with  GridSAM-2.0.1 (omii-server3.4.0)WebService.  
 	public Map<String, DataThing> execute(Map inputs) throws TaskExecutionException {
 		
 		try {
