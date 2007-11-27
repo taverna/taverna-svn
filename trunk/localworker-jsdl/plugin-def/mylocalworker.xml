@@ -1,6 +1,6 @@
 <plugin>
-	<name>My Local Worker</name>
-	<description><!-- add a description here --></description>
+	<name>localworker-jsdl</name>
+	<description>produces JSDL compatible with GridSAM-2.0.1 (omii-server3.4.0)WebService</description>
 	<identifier>uk.org.mygrid.taverna.processors</identifier>
 	<version>1.0-SNAPSHOT</version>
 	<provider>uk.org.mygrid.taverna.processors</provider>
