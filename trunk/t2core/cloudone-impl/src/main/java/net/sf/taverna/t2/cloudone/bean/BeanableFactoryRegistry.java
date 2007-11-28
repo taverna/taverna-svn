@@ -24,7 +24,7 @@ public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 		return instance;
 	}
 
-	public BeanableFactory getFactory(String beanableClassName) {
+	public BeanableFactory getFactoryForBeanableType(String beanableClassName) {
 		for (BeanableFactory factory : getInstances()) {
 			if (factory.getBeanableType().getCanonicalName().equals(beanableClassName)) {
 				return factory;

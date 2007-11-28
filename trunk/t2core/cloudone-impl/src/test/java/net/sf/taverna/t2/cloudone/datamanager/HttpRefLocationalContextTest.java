@@ -16,7 +16,7 @@ import net.sf.taverna.t2.cloudone.peer.DataPeer;
 import net.sf.taverna.t2.cloudone.peer.DataPeerImpl;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceSchemeFactory;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceSchemeInfo;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
@@ -26,7 +26,7 @@ import org.junit.Test;
 
 /**
  * Tests the {@link LocationalContext} aspects of the {@link DataManager},
- * {@link DataPeer} and {@link HttpReferenceSchemeFactory}.  
+ * {@link DataPeer} and {@link HttpReferenceSchemeInfo}.  
  * 
  * @author Ian Dunlop
  * 
@@ -93,7 +93,7 @@ public class HttpRefLocationalContextTest {
 
 	@Test
 	public void URLRefSchemeFactoryTest() {
-		Map<String, Set<List<String>>> map = HttpReferenceSchemeFactory
+		Map<String, Set<List<String>>> map = HttpReferenceSchemeInfo
 				.getInstance().getRequiredKeys();
 		assertTrue(map.containsKey("MachineName"));
 	}

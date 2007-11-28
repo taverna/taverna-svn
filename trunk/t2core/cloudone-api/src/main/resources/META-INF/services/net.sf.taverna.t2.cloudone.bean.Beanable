@@ -1,6 +1,0 @@
-net.sf.taverna.t2.cloudone.entity.Literal
-net.sf.taverna.t2.cloudone.entity.EntityList
-net.sf.taverna.t2.cloudone.entity.ErrorDocument
-net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier
-net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier
-net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier

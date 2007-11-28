@@ -32,7 +32,7 @@ public class BeanSerialiser {
 
 	private static final String JAVA = "java";
 
-	private static BeanableRegistry beanableRegistry = BeanableRegistry
+	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
 	private static final String CLASS_NAME = "className";
@@ -159,12 +159,13 @@ public class BeanSerialiser {
 
 	@SuppressWarnings("unchecked")
 	public static <Bean> Beanable<?> beanableFromXML(Element elem) {
-		String className = elem.getAttributeValue(CLASS_NAME);
-		Beanable<Bean> beanable = beanableRegistry.getBeanable(className);
+		String beanableClassName = elem.getAttributeValue(CLASS_NAME);
+		BeanableFactory<? extends Beanable, Bean> beanableFactory = beanableFactoryRegistry
+				.getFactoryForBeanableType(beanableClassName);
 		Element beanElem = elem.getChild(JAVA);
-		Bean bean = beanable.getBeanClass().cast(
-				fromXML(beanElem, beanable.getBeanClass().getClassLoader()));
-		beanable.setFromBean(bean);
-		return beanable;
+		Class<Bean> beanType = beanableFactory.getBeanType();
+		Bean bean = beanableFactory.getBeanType().cast(
+				fromXML(beanElem, beanType.getClassLoader()));
+		return beanableFactory.createFromBean(bean);
 	}
 }
