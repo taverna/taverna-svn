@@ -9,10 +9,6 @@ import java.util.Map;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
-import net.sf.taverna.t2.activities.wsdl.parser.UnknownOperationException;
-import net.sf.taverna.t2.activities.wsdl.parser.WSDLParser;
-import net.sf.taverna.t2.activities.wsdl.soap.WSDLSOAPInvoker;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -21,6 +17,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
+import net.sf.taverna.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.wsdl.parser.UnknownOperationException;
+import net.sf.taverna.wsdl.parser.WSDLParser;
+import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 import org.xml.sax.SAXException;
 
 /**

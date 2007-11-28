@@ -9,28 +9,37 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
-import org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter;
+import org.embl.ebi.escience.scuflworkers.java.XMLExtensible;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
-public class XMLInputSplitterLocalWorkerTranslator extends AbstractActivityTranslator<XMLSplitterConfigurationBean>{
+/**
+ * A translator specifically targeted at the local worker XMLOutputSplitter.
+ * 
+ * It translates this type of local worker into a concrete Activity implementation rather than a beanshell script like most other versions.<br>
+ * The reason for this is that they need to know, during execution, output port details mime type, depth and name.
+ * 
+ * @author Stuart Owen
+ *
+ */
+public class XMLOutputSplitterLocalWorkerTranslator extends AbstractActivityTranslator<XMLSplitterConfigurationBean> {
 
-	
 	@Override
 	protected XMLSplitterConfigurationBean createConfigType(Processor processor)
 			throws ActivityTranslationException {
 		XMLSplitterConfigurationBean bean = new XMLSplitterConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
 		LocalServiceProcessor localServiceProcessor = (LocalServiceProcessor)processor;
-		XMLInputSplitter splitter = (XMLInputSplitter)localServiceProcessor.getWorker();
-		String xml = new XMLOutputter().outputString((Element)splitter.provideXML());
+		//TODO: doing this with introspection would remove the dependency on taverna-java-processor
+		Element element = ((XMLExtensible)localServiceProcessor.getWorker()).provideXML();
+		String xml = new XMLOutputter().outputString(element);
 		bean.setWrappedTypeXML(xml);
 		return bean;
 	}
-	
+
 	@Override
 	protected Activity<XMLSplitterConfigurationBean> createUnconfiguredActivity() {
-		return new XMLInputSplitterActivity();
+		return new XMLOutputSplitterActivity();
 	}
 
 	public boolean canHandle(Processor processor) {
@@ -39,7 +48,7 @@ public class XMLInputSplitterLocalWorkerTranslator extends AbstractActivityTrans
 			if (processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor")) {
 				try {
 					String localworkerClassName = getWorkerClassName(processor);
-					result = "org.embl.ebi.escience.scuflworkers.java.XMLInputSplitter".equals(localworkerClassName);
+					result = "org.embl.ebi.escience.scuflworkers.java.XMLOutputSplitter".equals(localworkerClassName);
 				}
 				catch(Exception e) {
 					result = false;

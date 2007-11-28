@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.localworker.xmlsplitter;
 
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -7,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.activities.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
@@ -20,11 +20,20 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousAc
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
+import net.sf.taverna.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.wsdl.xmlsplitter.XMLOutputSplitter;
+import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
+/**
+ * An activity that replicates the behaviour of the Taverna 1 XMLOutputSplitter.
+ * 
+ * @author Stuart Owen
+ *
+ */
 public class XMLOutputSplitterActivity extends AbstractAsynchronousActivity<XMLSplitterConfigurationBean>{
 
 	XMLSplitterConfigurationBean configBean;
