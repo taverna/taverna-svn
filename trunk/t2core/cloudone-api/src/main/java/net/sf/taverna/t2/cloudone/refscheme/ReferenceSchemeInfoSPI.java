@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Factory for reference provides mandatory keys for reference scheme
+ * Information for reference provides mandatory keys for reference scheme
  * validation.
  *
  * @author Tom Oinn
@@ -13,10 +13,10 @@ import java.util.Set;
  *
  * @param <RS> {@link ReferenceScheme} subclass
  */
-public interface ReferenceSchemeFactorySPI<RS extends ReferenceScheme> {
+public interface ReferenceSchemeInfoSPI<RS extends ReferenceScheme> {
 
 	/**
-	 * The keys that this reference scheme factory will require the DataManager
+	 * The keys that this reference scheme information will require the DataManager
 	 * instance to provide values for to handle requests for contextual
 	 * validation of reference scheme instances. The set contains lists of
 	 * strings, each list is interpreted as a path into a configuration tree -

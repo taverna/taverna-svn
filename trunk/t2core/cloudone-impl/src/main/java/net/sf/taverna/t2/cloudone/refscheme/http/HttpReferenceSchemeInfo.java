@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.cloudone.refscheme.http;
 
-import net.sf.taverna.t2.cloudone.refscheme.AbstractReferenceSchemeFactory;
+import net.sf.taverna.t2.cloudone.refscheme.AbstractReferenceSchemeInfo;
 
 /**
- * Reference scheme factory for the URLReferenceScheme. Defines the following
+ * Reference scheme info for the {@link HttpReferenceScheme}. Defines the following
  * context keys through metadata file:
  * <p>
  * MachineName = name
@@ -18,19 +18,19 @@ import net.sf.taverna.t2.cloudone.refscheme.AbstractReferenceSchemeFactory;
  * @author Matthew Pocock
  *
  */
-public class HttpReferenceSchemeFactory extends
-		AbstractReferenceSchemeFactory<HttpReferenceScheme> {
+public class HttpReferenceSchemeInfo extends
+		AbstractReferenceSchemeInfo<HttpReferenceScheme> {
 
-	private static HttpReferenceSchemeFactory urlRefSchemeFactory;
+	private static HttpReferenceSchemeInfo urlRefSchemeFactory;
 
-	public static HttpReferenceSchemeFactory getInstance() {
+	public static HttpReferenceSchemeInfo getInstance() {
 		if (urlRefSchemeFactory == null) {
-			urlRefSchemeFactory = new HttpReferenceSchemeFactory();
+			urlRefSchemeFactory = new HttpReferenceSchemeInfo();
 		}
 		return urlRefSchemeFactory;
 	}
 
-	protected HttpReferenceSchemeFactory() {
+	protected HttpReferenceSchemeInfo() {
 		super();
 	}
 
