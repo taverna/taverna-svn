@@ -31,14 +31,15 @@ import org.apache.log4j.Logger;
 public class DataflowActivity extends
 		AbstractAsynchronousActivity<DataflowActivityConfigurationBean> {
 
-	private static final Logger logger = Logger.getLogger(DataflowActivity.class);
+	private static final Logger logger = Logger
+			.getLogger(DataflowActivity.class);
 
 	private DataflowActivityConfigurationBean configurationBean;
 
 	private Dataflow dataflow;
 
 	private Edits edits = EditsRegistry.getEdits();
-	
+
 	@Override
 	public void configure(DataflowActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
@@ -46,7 +47,6 @@ public class DataflowActivity extends
 		this.dataflow = configurationBean.getDataflow();
 		buildInputPorts();
 		buildOutputPorts();
-
 	}
 
 	@Override
@@ -60,9 +60,10 @@ public class DataflowActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				
-				final WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(dataflow);
-				
+
+				final WorkflowInstanceFacade facade = edits
+						.createWorkflowInstanceFacade(dataflow);
+
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
@@ -70,26 +71,28 @@ public class DataflowActivity extends
 							int[] index, String port, String owningProcess) {
 						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 						outputData.put(port, id);
-						callback.receiveResult(outputData, index);	
+						callback.receiveResult(outputData, index);
 						if (index.length == 0) {
 							if (--outputPortCount == 0) {
 								facade.removeResultListener(this);
 							}
 						}
 					}
-					
+
 				});
-				
+
 				facade.fire();
-				
-				for (Map.Entry<String, EntityIdentifier> entry : data.entrySet()) {
+
+				for (Map.Entry<String, EntityIdentifier> entry : data
+						.entrySet()) {
 					try {
-						facade.pushData(entry.getValue(), new int[0], entry.getKey());
+						facade.pushData(entry.getValue(), new int[0], entry
+								.getKey());
 					} catch (TokenOrderException e) {
 						callback.fail("Failed to push data into facade", e);
 					}
 				}
-				
+
 			}
 
 		});

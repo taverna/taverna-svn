@@ -13,7 +13,7 @@ public class DataflowActivityConfigurationBean {
 
 	/**
 	 * Returns the dataflow.
-	 *
+	 * 
 	 * @return the dataflow
 	 */
 	public Dataflow getDataflow() {
@@ -22,11 +22,12 @@ public class DataflowActivityConfigurationBean {
 
 	/**
 	 * Sets the dataflow.
-	 *
-	 * @param dataflow the new dataflow
+	 * 
+	 * @param dataflow
+	 *            the new dataflow
 	 */
 	public void setDataflow(Dataflow dataflow) {
 		this.dataflow = dataflow;
 	}
-	
+
 }

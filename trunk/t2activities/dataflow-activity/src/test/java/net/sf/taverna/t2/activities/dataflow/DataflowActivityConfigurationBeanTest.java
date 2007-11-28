@@ -8,12 +8,18 @@ import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Dataflow Configuration Tests
+ * 
+ * @author David Withers
+ * 
+ */
 public class DataflowActivityConfigurationBeanTest {
 
 	private DataflowActivityConfigurationBean bean;
-	
+
 	private Dataflow dataflow;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		bean = new DataflowActivityConfigurationBean();

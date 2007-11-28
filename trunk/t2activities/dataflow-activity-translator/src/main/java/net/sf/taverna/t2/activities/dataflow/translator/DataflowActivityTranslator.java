@@ -9,18 +9,25 @@ import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
 import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
+import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
+/**
+ * An ActivityTranslator specifically for translating Taverna 1 Workflow
+ * Processors to a Taverna 2 Dataflow Activity
+ * 
+ * @see ActivityTranslator
+ * @author David Withers
+ */
 public class DataflowActivityTranslator extends
 		AbstractActivityTranslator<DataflowActivityConfigurationBean> {
 
 	@Override
-	protected Activity<DataflowActivityConfigurationBean> createUnconfiguredActivity() {
+	protected DataflowActivity createUnconfiguredActivity() {
 		return new DataflowActivity();
 	}
 
@@ -36,7 +43,7 @@ public class DataflowActivityTranslator extends
 				bean.setDataflow(dataflow);
 			} else {
 				throw new ActivityTranslationException(
-						"Error validating nested workflow");				
+						"Error validating nested workflow");
 			}
 		} catch (WorkflowTranslationException e) {
 			throw new ActivityTranslationException(
