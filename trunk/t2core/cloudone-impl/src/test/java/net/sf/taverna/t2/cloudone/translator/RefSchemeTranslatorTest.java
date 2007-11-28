@@ -53,7 +53,7 @@ public class RefSchemeTranslatorTest {
 	private DataPeer dataPeer;
 
 	@Before
-	public void setDataManager() {
+	public synchronized void setDataManager() {
 		dManager = new InMemoryDataManager(TEST_NS,
 				new HashSet<LocationalContext>());
 		dataPeer = new DataPeerImpl(dManager);
@@ -62,7 +62,7 @@ public class RefSchemeTranslatorTest {
 	}
 	
 	@Test
-	public void testFindBlobScheme() throws RetrievalException,
+	public void findBlobScheme() throws RetrievalException,
 			NotFoundException {
 		BlobReferenceScheme blobRef = new BlobReferenceSchemeImpl(TEST_NS, UUID
 				.randomUUID().toString());
@@ -74,10 +74,10 @@ public class RefSchemeTranslatorTest {
 	}
 
 	@Test
-	public void testMakeString() throws EmptyListException,
+	public void registerStringWasRegistered() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
-		DataDocumentIdentifier id = makeString();
+		DataDocumentIdentifier id = registerString();
 		DataDocument ddoc = (DataDocument) dManager.getEntity(id);
 		assertFalse("No reference schemes", ddoc.getReferenceSchemes()
 				.isEmpty());
@@ -93,7 +93,7 @@ public class RefSchemeTranslatorTest {
 	public void translateBlobToBlob() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
-		DataDocumentIdentifier id = makeString();
+		DataDocumentIdentifier id = registerString();
 		@SuppressWarnings("unused")
 		BlobReferenceScheme<?> originalRef = findBlobScheme(id);
 
@@ -122,7 +122,7 @@ public class RefSchemeTranslatorTest {
 	public void translateBlobToBlobInOrder() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
-		DataDocumentIdentifier id = makeString();
+		DataDocumentIdentifier id = registerString();
 		// We prefer HttpReferenceScheme (which id don't have), but it should
 		// not convert as long as we say we accept BlobReferenceScheme
 		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
@@ -178,7 +178,7 @@ public class RefSchemeTranslatorTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException,
 			DereferenceException {
-		DataDocumentIdentifier id = makeString();
+		DataDocumentIdentifier id = registerString();
 		// We prefer URLReferenceScheme (which id don't have), but it should not
 		// convert as long as we say we accept BlobReferenceScheme
 		List<TranslationPreference> preferences = new ArrayList<TranslationPreference>();
@@ -224,7 +224,7 @@ public class RefSchemeTranslatorTest {
 				"DataDocument didn't contain a BlobReferenceScheme: " + id);
 	}
 
-	private DataDocumentIdentifier makeString() throws EmptyListException,
+	private DataDocumentIdentifier registerString() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException, IOException {
 		EntityIdentifier entity = facade.register(LONG_STRING);
 		return (DataDocumentIdentifier) entity;
