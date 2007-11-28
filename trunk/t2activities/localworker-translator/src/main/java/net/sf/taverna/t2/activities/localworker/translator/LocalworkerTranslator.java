@@ -3,7 +3,10 @@ package net.sf.taverna.t2.activities.localworker.translator;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
@@ -27,6 +30,8 @@ public class LocalworkerTranslator extends
 	
 	private static Map<String, String> localWorkerToScript = new HashMap<String, String>();
 	
+	private static Map<String, List<String>> localWorkerToDependecies = new HashMap<String, List<String>>();
+	
 	static {
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.ByteArrayToString", "ByteArrayToString");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.DecodeBase64", "DecodeBase64");
@@ -40,6 +45,7 @@ public class LocalworkerTranslator extends
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.FlattenList", "FlattenList");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.PadNumber", "PadNumber");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList", "RegularExpressionStringList");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SendEmail", "SendEmail");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SplitByRegex", "SplitByRegex");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringConcat", "StringConcat");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringListMerge", "StringListMerge");
@@ -50,6 +56,13 @@ public class LocalworkerTranslator extends
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor", "TestAlwaysFailingProcessor");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebImageFetcher", "WebImageFetcher");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.WebPageFetcher", "WebPageFetcher");
+		
+		localWorkerToDependecies.put("org.embl.ebi.escience.scuflworkers.java.DecodeBase64", Collections.singletonList("commons-codec:commons-codec:1.3"));
+		localWorkerToDependecies.put("org.embl.ebi.escience.scuflworkers.java.EncodeBase64", Collections.singletonList("commons-codec:commons-codec:1.3"));
+		List<String> dependencies = new ArrayList<String>();
+		dependencies.add("javax.mail:mail:1.4");
+		dependencies.add("javax.activation:activation:1.1");
+		localWorkerToDependecies.put("org.embl.ebi.escience.scuflworkers.java.SendEmail", dependencies);
 	}
 
 	@Override
@@ -62,7 +75,11 @@ public class LocalworkerTranslator extends
 			Processor processor) throws ActivityTranslationException {
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
 		populateConfigurationBeanPortDetails(processor, bean);
-		bean.setScript(getScript(processor));
+		String workerClassName = getWorkerClassName(processor);
+		bean.setScript(getScript(workerClassName));
+		if (localWorkerToDependecies.containsKey(workerClassName)) {
+			bean.setDependencies(localWorkerToDependecies.get(workerClassName));
+		}
 		return bean;
 	}
 
@@ -81,8 +98,8 @@ public class LocalworkerTranslator extends
 		return result;
 	}
 
-	private String getScript(Processor processor) throws ActivityTranslationException {
-		String scriptName = localWorkerToScript.get(getWorkerClassName(processor));
+	private String getScript(String workerClassName) throws ActivityTranslationException {
+		String scriptName = localWorkerToScript.get(workerClassName);
 		if (scriptName == null) {
 			return null;
 		}

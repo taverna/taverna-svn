@@ -1,9 +1,12 @@
 package net.sf.taverna.t2.activities.beanshell;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
@@ -12,7 +15,6 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -43,6 +45,16 @@ public class BeanshellActivity extends
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
 		configurePorts(configurationBean);
+		if (configurationBean.getDependencies().size() > 0) {
+			List<Artifact> dependencies = new ArrayList<Artifact>();
+			for (String dependency : configurationBean.getDependencies()) {
+				String[] parts = dependency.split(":");
+				if (parts.length == 3) {
+					dependencies.add(new BasicArtifact(parts[0], parts[1], parts[2]));
+				}
+			}
+			interpreter.setClassLoader(new BeanshellClassloader(dependencies));
+		}
 	}
 
 	@Override

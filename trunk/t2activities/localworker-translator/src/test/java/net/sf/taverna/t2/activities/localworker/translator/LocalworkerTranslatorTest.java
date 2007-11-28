@@ -37,6 +37,7 @@ import org.embl.ebi.escience.scuflworkers.java.FlattenList;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor;
 import org.embl.ebi.escience.scuflworkers.java.PadNumber;
 import org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList;
+import org.embl.ebi.escience.scuflworkers.java.SendEmail;
 import org.embl.ebi.escience.scuflworkers.java.SplitByRegex;
 import org.embl.ebi.escience.scuflworkers.java.StringConcat;
 import org.embl.ebi.escience.scuflworkers.java.StringListMerge;
@@ -107,7 +108,6 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
-//	@Ignore("Requires base64 dependency")
 	@Test
 	public void testDoTranslationDecodeBase64() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -325,6 +325,16 @@ public class LocalworkerTranslatorTest {
 		expectedOutputs.put("split", output);
 
 		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationSendEmail() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"SendEmail", new SendEmail());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
 	}
 
 	@Test
