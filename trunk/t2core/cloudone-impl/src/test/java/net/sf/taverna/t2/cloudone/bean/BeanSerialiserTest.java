@@ -1,11 +1,10 @@
-package net.sf.taverna.t2.cloudone.util;
+package net.sf.taverna.t2.cloudone.bean;
 
 import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
-import net.sf.taverna.t2.cloudone.bean.SillyBean;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;

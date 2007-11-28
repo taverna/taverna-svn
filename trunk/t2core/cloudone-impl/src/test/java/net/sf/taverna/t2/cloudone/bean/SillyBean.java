@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.bean;
 
-import net.sf.taverna.t2.cloudone.util.BeanSerialiserTest;
 
 /**
  * A very simple bean for testing with {@link BeanTest} and

@@ -98,7 +98,7 @@ public class SPIRegistry<SPI> {
 	 *         the full classname and the value being the discovered {@link Class}?
 	 *         extends SPI> itself.
 	 * @deprecated This method will be removed once the
-	 *             {@link net.sf.taverna.t2.cloudone.util.BeanableRegistry} has
+	 *             {@link net.sf.taverna.t2.cloudone.bean.BeanableRegistry} has
 	 *             have been refactored to use factory classes (TAV-662).
 	 */
 	@Deprecated

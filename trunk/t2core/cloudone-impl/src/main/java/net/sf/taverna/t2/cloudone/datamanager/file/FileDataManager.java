@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
+import net.sf.taverna.t2.cloudone.bean.BeanSerialiser;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
@@ -23,7 +24,6 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
-import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.jdom.JDOMException;
 

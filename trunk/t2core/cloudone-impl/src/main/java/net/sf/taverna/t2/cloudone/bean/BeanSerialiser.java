@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.util;
+package net.sf.taverna.t2.cloudone.bean;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;

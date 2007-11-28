@@ -33,7 +33,6 @@ import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
-import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

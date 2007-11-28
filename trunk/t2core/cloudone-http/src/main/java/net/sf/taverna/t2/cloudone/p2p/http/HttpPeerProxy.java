@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.sf.taverna.t2.cloudone.bean.BeanSerialiser;
 import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.PeerProxy;
-import net.sf.taverna.t2.cloudone.util.BeanSerialiser;
 
 import org.apache.log4j.Logger;
 import org.jdom.Document;
