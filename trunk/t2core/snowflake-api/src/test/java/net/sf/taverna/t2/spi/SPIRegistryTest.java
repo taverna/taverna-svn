@@ -2,7 +2,6 @@ package net.sf.taverna.t2.spi;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -11,13 +10,6 @@ import org.junit.Test;
 public class SPIRegistryTest {
 
 	SPIRegistry<DummySPI> registry = new SPIRegistry<DummySPI>(DummySPI.class);
-
-	@Test
-	public void getClassNames() throws Exception {
-		Collection<String> classNames = registry.getClassNames();
-		assertEquals(4, classNames.size());
-		//Includes classes that can be found, but not necessarily instantiated.
-	}
 	
 	@Test
 	public void getClasses() {

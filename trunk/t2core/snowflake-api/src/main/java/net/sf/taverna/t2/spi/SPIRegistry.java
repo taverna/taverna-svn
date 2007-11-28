@@ -14,10 +14,12 @@ import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 /**
- * Simple SPI lookup (using META-INF/services/interfaceName) to discover run
- * time class implementations. Extend in other classes to use the SPI lookup.
+ * Simple SPI lookup (using META-INF/services/interfaceName) to discover
+ * run-time class implementations. Subclass or instantiate with given interface
+ * to use the SPI lookup.
  * 
- * This is based upon the InstanceRegistry and SpiRegistry contained in Raven.
+ * This is based upon the {@link InstanceRegistry} and {@link SpiRegistry} in
+ * Raven.
  * 
  * @author Stuart Owen
  * @author Stian Soiland
@@ -33,9 +35,9 @@ public class SPIRegistry<SPI> {
 		Log.setImplementation(log4jLog);
 	}
 
-	private InstanceRegistry<SPI> instanceRegistry;
-	private SpiRegistry ravenSPIRegistry;
-	Class<SPI> spi;
+	private InstanceRegistry<SPI> instanceRegistry = null;
+	private SpiRegistry ravenSPIRegistry = null;
+	private final Class<SPI> spi;
 
 	/**
 	 * Construct the SPI for the given interface.
@@ -48,30 +50,22 @@ public class SPIRegistry<SPI> {
 	}
 
 	/**
-	 * Resets the instanceRegistry causing it to be re-populated on the next
-	 * call to getInstances.
+	 * Reset the instanceRegistry causing it to be re-populated on the next call
+	 * to getInstances.
 	 */
 	public void refresh() {
 		this.instanceRegistry = null;
 		this.ravenSPIRegistry = null;
-		getInstances();
 	}
 
 	/**
-	 * @return a List of instances of the classes discovered by the registry
+	 * Get all discovered instances.
+	 * 
+	 * @return a {@link List} of instances of the classes discovered by the
+	 *         registry
 	 */
 	public List<SPI> getInstances() {
 		return getRegistry().getInstances();
-	}
-
-	/**
-	 * Returns instantiated implementations of the SPI.
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public Collection<String> getClassNames() {
-		return getClasses().keySet();
 	}
 
 	private synchronized InstanceRegistry<SPI> getRegistry() {
@@ -100,23 +94,33 @@ public class SPIRegistry<SPI> {
 	}
 
 	/**
-	 * @return a Map of classes, the key being the classname and the value being
-	 *         the Class<? extends SPI> itself.
-	 * @deprecated this method will be removed once the
+	 * @return a {@link Map} of discovered implementing classes, the key being
+	 *         the full classname and the value being the discovered {@link Class}?
+	 *         extends SPI> itself.
+	 * @deprecated This method will be removed once the
 	 *             {@link net.sf.taverna.t2.cloudone.util.BeanableRegistry} has
-	 *             have been refactored to use factory classes.
+	 *             have been refactored to use factory classes (TAV-662).
 	 */
 	@Deprecated
 	@SuppressWarnings("unchecked")
 	public Map<String, Class<? extends SPI>> getClasses() {
 		getRegistry();
 		List<Class> classes = ravenSPIRegistry.getClasses();
-		System.out.println("Found for " + spi + ": "  + classes);
+		System.out.println("Found for " + spi + ": " + classes);
 		Map<String, Class<? extends SPI>> result = new HashMap<String, Class<? extends SPI>>();
 		for (Class c : classes) {
 			result.put(c.getName(), c);
 		}
 		return result;
+	}
+
+	/**
+	 * Get the SPI instances found by this registry will be implementing.
+	 * 
+	 * @return The {@link Class} of the SPI interface
+	 */
+	public Class<SPI> getSpi() {
+		return spi;
 	}
 
 }
