@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 
 /**
  * Contains a (possibly partial) job description. A job is the smallest entity
@@ -29,7 +30,7 @@ public class Job extends Event {
 	 * @return
 	 */
 	public Job pushIndex() {
-		return new Job(getPushedOwningProcess(), new int[] {}, dataMap);
+		return new Job(getPushedOwningProcess(), new int[] {}, dataMap, context);
 	}
 
 	/**
@@ -38,7 +39,7 @@ public class Job extends Event {
 	 */
 	public Job popIndex() {
 		return new Job(owner.substring(0, owner.lastIndexOf(':')),
-				getPoppedIndex(), dataMap);
+				getPoppedIndex(), dataMap, context);
 	}
 
 	/**
@@ -62,15 +63,19 @@ public class Job extends Event {
 	 * @param index
 	 * @param data
 	 */
-	public Job(String owner, int[] index, Map<String, EntityIdentifier> data) {
+	public Job(String owner, int[] index, Map<String, EntityIdentifier> data, InvocationContext context) {
 		this.owner = owner;
 		this.index = index;
 		this.dataMap = data;
+		this.context = context;
 		if (index == null) {
 			throw new RuntimeException("Job index cannot be null");
 		}
 		if (owner == null) {
 			throw new RuntimeException("Owning process cannot be null");
+		}
+		if (context == null) {
+			throw new RuntimeException("Invocation context cannot be null");
 		}
 	}
 

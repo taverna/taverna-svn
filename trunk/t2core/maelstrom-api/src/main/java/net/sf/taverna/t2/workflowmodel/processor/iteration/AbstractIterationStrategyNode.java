@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
@@ -99,7 +100,7 @@ public abstract class AbstractIterationStrategyNode implements
 	 * @return whether the final completion event was sent
 	 */
 	protected final boolean receiveFinalCompletion(String owningProcess,
-			int inputIndex) {
+			int inputIndex, InvocationContext context) {
 		// Only interested in complete completion events, partials are
 		// of no use in this system as the way events combine means we
 		// can't draw any useful information from partial completion
@@ -122,7 +123,7 @@ public abstract class AbstractIterationStrategyNode implements
 			// Purge the caches and sent the 'everything done' message to
 			// the parent
 			ownerToCompletion.remove(owningProcess);
-			pushCompletion(new Completion(owningProcess, new int[0]));
+			pushCompletion(new Completion(owningProcess, new int[0], context));
 			return true;
 		} else {
 			return false;

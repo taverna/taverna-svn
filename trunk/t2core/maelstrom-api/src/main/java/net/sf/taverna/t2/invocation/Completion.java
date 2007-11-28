@@ -22,9 +22,10 @@ public class Completion extends Event {
 	 * @param owningProcess
 	 * @param completionIndex
 	 */
-	public Completion(String owningProcess, int[] completionIndex) {
+	public Completion(String owningProcess, int[] completionIndex, InvocationContext context) {
 		this.owner = owningProcess;
 		this.index = completionIndex;
+		this.context = context;
 	}
 
 	/**
@@ -33,8 +34,9 @@ public class Completion extends Event {
 	 * 
 	 * @param owningProcess
 	 */
-	public Completion(String owningProcess) {
+	public Completion(String owningProcess, InvocationContext context) {
 		this.owner = owningProcess;
+		this.context = context;
 		this.index = new int[0];
 	}
 	
@@ -68,7 +70,7 @@ public class Completion extends Event {
 	 * @return
 	 */
 	public Completion pushIndex() {
-		return new Completion(getPushedOwningProcess(), new int[] {});
+		return new Completion(getPushedOwningProcess(), new int[] {}, context);
 	}
 
 	/**
@@ -77,7 +79,7 @@ public class Completion extends Event {
 	 */
 	public Completion popIndex() {
 		return new Completion(owner.substring(0, owner.lastIndexOf(':')),
-				getPoppedIndex());
+				getPoppedIndex(), context);
 	}
 
 }

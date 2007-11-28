@@ -82,7 +82,7 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 				newDataMap.putAll(job1.getData());
 				newDataMap.putAll(job2.getData());
 				newSet.add(new Job(job1.getOwningProcess(), newIndex,
-						newDataMap));
+						newDataMap, job1.getContext()));
 			}
 		}
 		return newSet;
@@ -92,7 +92,7 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 			Completion completion) {
 		if (completion.isFinal()) {
 			boolean allDone = receiveFinalCompletion(completion
-					.getOwningProcess(), inputIndex);
+					.getOwningProcess(), inputIndex, completion.getContext());
 			if (allDone) {
 				ownerToCache.remove(completion.getOwningProcess());
 			}

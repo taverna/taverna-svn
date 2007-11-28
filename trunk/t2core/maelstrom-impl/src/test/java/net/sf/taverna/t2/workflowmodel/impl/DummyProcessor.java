@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -27,7 +28,7 @@ public class DummyProcessor implements Processor{
 		return false;
 	}
 
-	public void fire(String owningProcess) {
+	public void fire(String owningProcess, InvocationContext context) {
 		firedOwningProcess=owningProcess;
 		
 	}

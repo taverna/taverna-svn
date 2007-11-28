@@ -7,9 +7,9 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
@@ -108,8 +108,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire
 				// workflow system but it never hurts to generalize
-				final DataManager dManager = ContextManager.getDataManager(job
-						.getOwningProcess());
+				final DataManager dManager = job.getContext().getDataManager();
 
 				// Create a Map of EntityIdentifiers named appropriately given
 				// the activity mapping
@@ -138,13 +137,10 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						fail(message, null);
 					}
 
-					/**
-					 * Return the final datamanager from the surrounding context
-					 */
-					public DataManager getLocalDataManager() {
-						return dManager;
+					public InvocationContext getContext() {
+						return job.getContext();
 					}
-
+					
 					public void receiveCompletion(int[] completionIndex) {
 						if (sentJob) {
 							int[] newIndex;
@@ -162,7 +158,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 								}
 							}
 							Completion c = new Completion(job
-									.getOwningProcess(), newIndex);
+									.getOwningProcess(), newIndex, job.getContext());
 							getAbove().receiveResultCompletion(c);
 						} else {
 							// We haven't sent any 'real' data prior to
@@ -216,7 +212,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 							}
 						}
 						Job resultJob = new Job(job.getOwningProcess(),
-								newIndex, resultMap);
+								newIndex, resultMap, job.getContext());
 
 						// Push the modified data to the layer above in the
 						// dispatch stack

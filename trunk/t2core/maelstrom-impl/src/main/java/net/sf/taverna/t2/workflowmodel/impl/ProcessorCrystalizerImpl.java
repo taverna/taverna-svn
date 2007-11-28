@@ -6,6 +6,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
@@ -41,7 +42,7 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 		for (String outputPortName : outputJob.getData().keySet()) {
 			WorkflowDataToken token = new WorkflowDataToken(outputJob
 					.getOwningProcess(), outputJob.getIndex(), outputJob
-					.getData().get(outputPortName));
+					.getData().get(outputPortName), outputJob.getContext());
 			parent.getOutputPortWithName(outputPortName).receiveEvent(token);
 		}
 	}
@@ -53,7 +54,7 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 	 * node, i.e. the result of iterating over an empty collection structure of
 	 * some kind.
 	 */
-	public Job getEmptyJob(String owningProcess, int[] index) {
+	public Job getEmptyJob(String owningProcess, int[] index, InvocationContext context) {
 		int wrappingDepth = parent.resultWrappingDepth;
 		if (wrappingDepth < 0)
 			throw new RuntimeException(
@@ -66,13 +67,13 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 		int depth = wrappingDepth - index.length;
 		// TODO - why was this incrementing?
 		// depth++;
-		DataManager dManager = ContextManager.getDataManager(owningProcess);
+		DataManager dManager = context.getDataManager();
 		Map<String, EntityIdentifier> emptyJobMap = new HashMap<String, EntityIdentifier>();
 		for (OutputPort op : parent.getOutputPorts()) {
 			emptyJobMap.put(op.getName(), dManager.registerEmptyList(depth
 					+ op.getDepth()));
 		}
-		return new Job(owningProcess, index, emptyJobMap);
+		return new Job(owningProcess, index, emptyJobMap, context);
 	}
 
 }

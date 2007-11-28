@@ -1,7 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
@@ -10,6 +12,15 @@ import junit.framework.TestCase;
 
 public class PrefixDotProductTest extends TestCase {
 
+	InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			// Doesn't matter as this test doesn't use them
+			return null;
+		}
+		
+	};
+	
 	/**
 	 * Test that the prefix node copes when we feed it two inputs with different
 	 * cardinalities. Output should be four jobs with index arrays length 2
@@ -34,20 +45,20 @@ public class PrefixDotProductTest extends TestCase {
 		for (int i = 0; i < 2; i++) {
 			EntityListIdentifier dataReference = new EntityListIdentifier(
 					"urn:t2data:list://foo.bar/alist" + i + "/1");
-			is.receiveData("a", owningProcess, new int[] { i }, dataReference);
+			is.receiveData("a", owningProcess, new int[] { i }, dataReference, context);
 		}
-		is.receiveCompletion("a", owningProcess, new int[] {});
+		is.receiveCompletion("a", owningProcess, new int[] {}, context);
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
 				EntityListIdentifier dataReference = new EntityListIdentifier(
 						"urn:t2data:list://foo.bar/blist" + i + "-" + j + "/1");
 				is.receiveData("b", owningProcess, new int[] { i, j },
-						dataReference);
+						dataReference, context);
 			}
-			is.receiveCompletion("b", owningProcess, new int[] { i });
+			is.receiveCompletion("b", owningProcess, new int[] { i }, context);
 		}
-		is.receiveCompletion("b", owningProcess, new int[] {});
+		is.receiveCompletion("b", owningProcess, new int[] {}, context);
 		assertTrue(disn.jobsReceived("Process1") == 4);
 		System.out.println(disn);
 	}

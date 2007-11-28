@@ -2,8 +2,10 @@ package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.io.UnsupportedEncodingException;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
@@ -27,6 +29,15 @@ public class ConditionTest extends TestCase {
 	private Processor p1, p2;
 
 	private Edits edits = new EditsImpl();
+	
+	private InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	};
 
 	private Processor createProcessor() throws ActivityConfigurationException,
 			EditException {
@@ -71,7 +82,7 @@ public class ConditionTest extends TestCase {
 		create();
 		System.out.println("Lock (should produce no output) :");
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("A string"));
+				new int[0], Literal.buildLiteral("A string"), context);
 		p2.getInputPorts().get(0).receiveEvent(token);
 		// p1.getInputPorts().get(0).receiveEvent(token);
 		assertTrue(deh2.getEventCount() == 0);
@@ -84,7 +95,7 @@ public class ConditionTest extends TestCase {
 		System.out.println("Unlock (should produce both tokens) :");
 		Thread.sleep(200);
 		WorkflowDataToken token2 = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("Another string"));
+				new int[0], Literal.buildLiteral("Another string"),context);
 		p1.getInputPorts().get(0).receiveEvent(token2);
 		assertTrue(deh2.getEventCount() == 1);
 	}
@@ -96,10 +107,11 @@ public class ConditionTest extends TestCase {
 		System.out.println("Unlock with diffent process, only output from p1 :");
 		Thread.sleep(200);
 		WorkflowDataToken token2 = new WorkflowDataToken("outerProcess2",
-				new int[0], Literal.buildLiteral("Another string"));
+				new int[0], Literal.buildLiteral("Another string"),context);
 		p1.getInputPorts().get(0).receiveEvent(token2);
 		assertTrue(deh2.getEventCount() == 0);
 		assertTrue(deh1.getEventCount() == 1);
 	}
+
 
 }

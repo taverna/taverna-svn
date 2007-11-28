@@ -11,10 +11,10 @@ import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorInputPortImpl;
@@ -36,9 +36,17 @@ public class ProcessorLevelInvocationTest {
 	DiagnosticEventHandler deh;
 	ProcessorImpl processor;
 
-	DataManager dManager = new InMemoryDataManager("dataNS",
+	final DataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
 
+	InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			return dManager;
+		}
+		
+	};
+	
 	@Before
 	public void createProcessor() throws EditException, JDOMException,
 			IOException, ActivityConfigurationException,
@@ -49,9 +57,6 @@ public class ProcessorLevelInvocationTest {
 		activity.configure(new EchoConfig("blah"));
 		processor = Tools.buildFromActivity(activity);
 		deh = new DiagnosticEventHandler();
-
-		// Set up data manager
-		ContextManager.baseManager = this.dManager;
 
 		// Get an edit factory
 		Edits edits = new EditsImpl();
@@ -70,7 +75,7 @@ public class ProcessorLevelInvocationTest {
 		// System.out.println("Single token, 'A string'");
 		// Build an input data token
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("A string"));
+				new int[0], Literal.buildLiteral("A string"), context);
 		processor.getInputPorts().get(0).receiveEvent(token);
 		Thread.sleep(250);
 		assertEquals(1, deh.getEventCount());
@@ -81,11 +86,10 @@ public class ProcessorLevelInvocationTest {
 			throws MalformedIdentifierException, EditException, JDOMException,
 			IOException, ActivityConfigurationException, InterruptedException {
 		// System.out.println("Empty list");
-		EntityIdentifier listIdentifier = ContextManager.baseManager
-				.registerEmptyList(1);
+		EntityIdentifier listIdentifier = dManager.registerEmptyList(1);
 		// Build an input data token of a single list
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess2",
-				new int[0], listIdentifier);
+				new int[0], listIdentifier, context);
 
 		// This is not a public API! We're using it here because we need some
 		// way to push the configuration data into the processor that would
@@ -109,13 +113,13 @@ public class ProcessorLevelInvocationTest {
 			JDOMException, IOException, ActivityConfigurationException,
 			MalformedIdentifierException, InterruptedException {
 		// System.out.println("List with two items, 'foo' and 'bar'");
-		EntityIdentifier listIdentifier = ContextManager.baseManager
+		EntityIdentifier listIdentifier = dManager
 				.registerList(new EntityIdentifier[] {
 						Literal.buildLiteral("foo"),
 						Literal.buildLiteral("bar") });
 
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess3",
-				new int[0], listIdentifier);
+				new int[0], listIdentifier, context);
 		// Reconfigure processor to set the filter to level 1, i.e. consume
 		// lists and iterate over them using the data manager's traversal
 		// functionality
@@ -133,12 +137,12 @@ public class ProcessorLevelInvocationTest {
 			IOException, ActivityConfigurationException,
 			MalformedIdentifierException, InterruptedException {
 		// System.out.println("Top level empty list (depth 2)");
-		EntityIdentifier listIdentifier = ContextManager.baseManager
+		EntityIdentifier listIdentifier = dManager
 				.registerEmptyList(2);
 		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
 				.setFilterDepth(0);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess4",
-				new int[0], listIdentifier);
+				new int[0], listIdentifier, context);
 
 		// This is not a public API! We're using it here because we need some
 		// way to push the configuration data into the processor that would
@@ -157,20 +161,19 @@ public class ProcessorLevelInvocationTest {
 	public void testPartiallyEmptyCollection() throws EditException,
 			JDOMException, IOException, ActivityConfigurationException,
 			MalformedIdentifierException, InterruptedException {
-		EntityIdentifier emptyListIdentifier = ContextManager.baseManager
-				.registerEmptyList(1);
+		EntityIdentifier emptyListIdentifier = dManager.registerEmptyList(1);
 		// System.out.println("Partially empty collection : {{}{foo, bar}}");
-		EntityIdentifier populatedListIdentifier = ContextManager.baseManager
+		EntityIdentifier populatedListIdentifier = dManager
 				.registerList(new EntityIdentifier[] {
 						Literal.buildLiteral("foo"),
 						Literal.buildLiteral("bar") });
-		EntityIdentifier listIdentifier = ContextManager.baseManager
+		EntityIdentifier listIdentifier = dManager
 				.registerList(new EntityIdentifier[] { emptyListIdentifier,
 						populatedListIdentifier });
 		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
 				.setFilterDepth(2);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess5",
-				new int[0], listIdentifier);
+				new int[0], listIdentifier, context);
 
 		// This is not a public API! We're using it here because we need some
 		// way to push the configuration data into the processor that would
@@ -184,5 +187,5 @@ public class ProcessorLevelInvocationTest {
 		Thread.sleep(COMPLETION_SLEEP);
 		assertEquals(5, deh.getEventCount());
 	}
-
+	
 }

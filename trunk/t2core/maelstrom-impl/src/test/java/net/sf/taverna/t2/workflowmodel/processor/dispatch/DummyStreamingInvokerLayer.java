@@ -39,12 +39,12 @@ public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 						getAbove()
 								.receiveResult(
 										new Job(j.getOwningProcess(), newIndex,
-												dataMap));
+												dataMap, j.getContext()));
 						Thread.sleep(200);
 					}
 					getAbove().receiveResultCompletion(
 							new Completion(j.getOwningProcess(), j
-									.getIndex()));
+									.getIndex(), j.getContext()));
 				} catch (InterruptedException ie) {
 					//
 				}

@@ -19,8 +19,7 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
  */
 public class DummyInvokerLayer extends AbstractDispatchLayer<Object> {
 
-	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
-		final Job j = job;
+	public void receiveJob(final Job job, List<? extends Activity<?>> activities) {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -28,8 +27,8 @@ public class DummyInvokerLayer extends AbstractDispatchLayer<Object> {
 					Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 					dataMap.put("Result1", nextID());
 					getAbove().receiveResult(
-							new Job(j.getOwningProcess(), j.getIndex(),
-									dataMap));
+							new Job(job.getOwningProcess(), job.getIndex(),
+									dataMap, job.getContext()));
 				} catch (InterruptedException ie) {
 					//
 				}

@@ -11,6 +11,8 @@ public abstract class Event {
 
 	protected String owner;
 
+	protected InvocationContext context;
+	
 	protected int[] index;
 
 	/**
@@ -25,6 +27,10 @@ public abstract class Event {
 		return this.owner;
 	}
 
+	public InvocationContext getContext() {
+		return this.context;
+	}
+	
 	/**
 	 * Events have an index placing them in a conceptual tree structure. This
 	 * index is carried along with the event and used at various points to drive

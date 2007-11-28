@@ -5,13 +5,11 @@ import java.util.Map;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.invocation.InvocationContext;
 
 /**
  * The callback interface used by instances of AsynchronousActivity to push
  * results and failure messages back to the invocation layer.
- * 
- * TODO - add security hooks, i.e. some kind of 'getSecurityAgentProxies', need
- * to actually write the security agent framework first though!
  * 
  * @author Tom Oinn
  * 
@@ -19,32 +17,21 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 public interface AsynchronousActivityCallback {
 
 	/**
-	 * Activities use a DataManager instance to resolve the identifiers in the
-	 * input data and to store and register result data.
-	 * 
-	 * @return
+	 * The invocation context contains resources such as data managers, security
+	 * agents and provenance consumers to be used by the Activity as it runs.
+	 * This replaces the getLocalDataManager and getLocalSecurityManager calls.
 	 */
-	public DataManager getLocalDataManager();
+	public InvocationContext getContext();
 
 	/**
-	 * Activities access a SecurityAgentManager to handle authentication with the
-	 * external resource. The SecurityManager provides access to a set of
-	 * security agents, or will when it's actually implemented! In the meantime
-	 * this is just a placeholder and you can't actually do anything with it,
-	 * it's just here to prevent API churn when we implement the security layer
-	 * in the near future.
-	 */
-	public SecurityAgentManager getLocalSecurityManager();
-
-	/**
-	 * If an activity proxy wants to create a new thread of activity it should use
-	 * this method unless there is a very good reason not to. This allows the
-	 * workflow framework to control its own thread usage, possibly implementing
-	 * per user, per workflow or per processor thread limit policies. Exceptions
-	 * to this principle might include cases where the activity proxy is capable
-	 * of managing thread usage across all instances of that activity type and
-	 * therefore more efficiently (fewer threads) than if it let the workflow
-	 * manager perform this function.
+	 * If an activity proxy wants to create a new thread of activity it should
+	 * use this method unless there is a very good reason not to. This allows
+	 * the workflow framework to control its own thread usage, possibly
+	 * implementing per user, per workflow or per processor thread limit
+	 * policies. Exceptions to this principle might include cases where the
+	 * activity proxy is capable of managing thread usage across all instances
+	 * of that activity type and therefore more efficiently (fewer threads) than
+	 * if it let the workflow manager perform this function.
 	 * 
 	 * @param runMe
 	 *            a Runnable to implement the activity proxy logic.

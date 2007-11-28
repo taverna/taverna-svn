@@ -35,7 +35,7 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort impl
 		String newOwner = currentOwner.substring(0, currentOwner
 				.lastIndexOf(':'));
 		sendEvent(new WorkflowDataToken(newOwner, token
-					.getIndex(), token.getData()));
+					.getIndex(), token.getData(), token.getContext()));
 	}
 	
 	public Processor getProcessor() {

@@ -46,7 +46,7 @@ public class DotProduct extends AbstractIterationStrategyNode {
 			}
 		}
 		if (foundMatch) {
-			Job j = new Job(owningProcess, indexArray, newDataMap);
+			Job j = new Job(owningProcess, indexArray, newDataMap, newJob.getContext());
 			// Remove all copies of the job with this index from the cache,
 			// we'll never use it
 			// again and it pays to be tidy
@@ -66,7 +66,7 @@ public class DotProduct extends AbstractIterationStrategyNode {
 			Completion completion) {
 		if (completion.isFinal()) {
 			boolean allDone = receiveFinalCompletion(completion
-					.getOwningProcess(), inputIndex);
+					.getOwningProcess(), inputIndex, completion.getContext());
 			if (allDone) {
 				ownerToCache.remove(completion.getOwningProcess());
 				// BUG - the receiveFinalCompletion already did this! 

@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
@@ -29,7 +30,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 
 	private Map<String, CompletionAwareTreeCache> cacheMap = new HashMap<String, CompletionAwareTreeCache>();
 
-	public abstract Job getEmptyJob(String owningProcess, int[] index);
+	public abstract Job getEmptyJob(String owningProcess, int[] index, InvocationContext context);
 
 	/**
 	 * Receive a Job or Completion, Jobs are emitted unaltered and cached,
@@ -48,7 +49,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 		CompletionAwareTreeCache cache = null;
 		synchronized (cacheMap) {
 			if (!cacheMap.containsKey(owningProcess)) {
-				cache = new CompletionAwareTreeCache(owningProcess);
+				cache = new CompletionAwareTreeCache(owningProcess, e.getContext());
 				cacheMap.put(owningProcess, cache);
 			} else {
 				cache = cacheMap.get(owningProcess);
@@ -78,9 +79,11 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 	protected class CompletionAwareTreeCache extends TreeCache {
 
 		private String owningProcess;
+		private InvocationContext context;
 
-		public CompletionAwareTreeCache(String owningProcess) {
+		public CompletionAwareTreeCache(String owningProcess, InvocationContext context) {
 			super();
+			this.context = context;
 			this.owningProcess = owningProcess;
 		}
 
@@ -93,7 +96,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 				// We know what the list depth should be, so we can
 				// construct appropriate depth empty lists to fill in the
 				// gaps.
-				Job j = getEmptyJob(owningProcess, completionIndex);
+				Job j = getEmptyJob(owningProcess, completionIndex, context);
 				// System.out.println("Inserting new empty collection "+j);
 				insertJob(j);
 				jobCreated(j);
@@ -129,7 +132,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 							newIndex[i] = index[i];
 						}
 						newIndex[index.length] = pos++;
-						j = getEmptyJob(owningProcess, newIndex);
+						j = getEmptyJob(owningProcess, newIndex, context);
 						AbstractCrystalizer.this.jobCreated(j);
 					} else {
 
@@ -161,11 +164,10 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 				Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
 				for (String outputName : listItems.keySet()) {
 					List<EntityIdentifier> idlist = listItems.get(outputName);
-					newDataMap.put(outputName, ContextManager.getDataManager(
-							owningProcess).registerList(
+					newDataMap.put(outputName, context.getDataManager().registerList(
 							idlist.toArray(new EntityIdentifier[0])));
 				}
-				Job newJob = new Job(owningProcess, index, newDataMap);
+				Job newJob = new Job(owningProcess, index, newDataMap, context);
 				n.contents = newJob;
 				// Get rid of the children as we've now named this node
 				n.children.clear();

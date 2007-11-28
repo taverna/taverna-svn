@@ -5,6 +5,7 @@ import java.util.Iterator;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
@@ -38,9 +39,9 @@ public abstract class AbstractFilteringInputPort extends
 			int desiredDepth) {
 		if (dt.getData().getDepth() == desiredDepth) {
 			// System.out.println("** Job : "+dt.getData());
-			pushData(getName(), owningProcess, dt.getIndex(), dt.getData());
+			pushData(getName(), owningProcess, dt.getIndex(), dt.getData(), dt.getContext());
 		} else {
-			DataManager dManager = ContextManager.getDataManager(owningProcess);
+			DataManager dManager = dt.getContext().getDataManager();
 			Iterator<ContextualizedIdentifier> children = dManager.traverse(dt
 					.getData(), dt.getData().getDepth() - 1);
 			while (children.hasNext()) {
@@ -55,10 +56,10 @@ public abstract class AbstractFilteringInputPort extends
 					newIndex[i++] = indx;
 				}
 				pushToken(new WorkflowDataToken(owningProcess, newIndex, ci
-						.getDataRef()), owningProcess, desiredDepth);
+						.getDataRef(), dt.getContext()), owningProcess, desiredDepth);
 			}
 			// System.out.println("** Completion : "+dt.getData());
-			pushCompletion(getName(), owningProcess, dt.getIndex());
+			pushCompletion(getName(), owningProcess, dt.getIndex(), dt.getContext());
 		}
 	}
 
@@ -74,7 +75,7 @@ public abstract class AbstractFilteringInputPort extends
 					// Pass event straight through, the filter depth is the same
 					// as the desired input port depth
 					pushData(getName(), newOwner, token.getIndex(), token
-							.getData());
+							.getData(), token.getContext());
 				} else {
 					pushToken(token, newOwner, getDepth());
 					/**
@@ -97,7 +98,7 @@ public abstract class AbstractFilteringInputPort extends
 			} else if (tokenDepth > filterDepth) {
 				// Convert to a completion event and push into the iteration
 				// strategy
-				pushCompletion(getName(), newOwner, token.getIndex());
+				pushCompletion(getName(), newOwner, token.getIndex(), token.getContext());
 			} else if (tokenDepth < filterDepth) {
 				// Normally we can ignore these, but there is a special case
 				// where token depth is less than filter depth and there is no
@@ -106,8 +107,7 @@ public abstract class AbstractFilteringInputPort extends
 				// data manager to register a new single element collection and
 				// recurse.
 				if (token.getIndex().length == 0) {
-					DataManager dManager = ContextManager
-							.getDataManager(newOwner);
+					DataManager dManager = token.getContext().getDataManager();
 					EntityIdentifier ref = token.getData();
 					int currentDepth = tokenDepth;
 					while (currentDepth < filterDepth) {
@@ -115,7 +115,7 @@ public abstract class AbstractFilteringInputPort extends
 								.registerList(new EntityIdentifier[] { ref });
 						currentDepth++;
 					}
-					pushData(getName(), newOwner, new int[0], ref);
+					pushData(getName(), newOwner, new int[0], ref, token.getContext());
 				}
 			}
 		}
@@ -136,7 +136,7 @@ public abstract class AbstractFilteringInputPort extends
 	 * @param index
 	 */
 	protected abstract void pushCompletion(String portName,
-			String owningProcess, int[] index);
+			String owningProcess, int[] index, InvocationContext context);
 
 	/**
 	 * Action to take when a data event is created by the filter
@@ -147,7 +147,7 @@ public abstract class AbstractFilteringInputPort extends
 	 * @param data
 	 */
 	protected abstract void pushData(String portName, String owningProcess,
-			int[] index, EntityIdentifier data);
+			int[] index, EntityIdentifier data, InvocationContext context);
 
 	/**
 	 * Override this to transform owning process identifiers as they pass

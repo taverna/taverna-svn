@@ -13,7 +13,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 public class WorkflowDataToken extends Event {
 
 	private EntityIdentifier dataRef;
-
+	
 	/**
 	 * Construct a new data token with the specified owning process, conceptual
 	 * index array and data reference
@@ -22,23 +22,24 @@ public class WorkflowDataToken extends Event {
 	 * @param index
 	 * @param dataRef
 	 */
-	public WorkflowDataToken(String owningProcess, int[] index, EntityIdentifier dataRef) {
+	public WorkflowDataToken(String owningProcess, int[] index, EntityIdentifier dataRef, InvocationContext context) {
 		this.dataRef = dataRef;
 		this.index = index;
 		this.owner = owningProcess;
+		this.context = context;
 	}
 
 	@Override
 	public Event popIndex() {
 		return new WorkflowDataToken(getPushedOwningProcess(), new int[] {},
-				dataRef);
+				dataRef, this.context);
 	}
 
 	@Override
 	public Event pushIndex() {
 		return new WorkflowDataToken(
 				owner.substring(0, owner.lastIndexOf(':')), getPoppedIndex(),
-				dataRef);
+				dataRef, this.context);
 	}
 
 	/**

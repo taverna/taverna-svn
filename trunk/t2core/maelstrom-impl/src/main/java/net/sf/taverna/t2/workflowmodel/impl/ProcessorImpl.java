@@ -12,6 +12,7 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -337,9 +338,9 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 
 	/* Implementations of Processor interface */
 
-	public void fire(String enclosingProcess) {
+	public void fire(String enclosingProcess, InvocationContext context) {
 		Job newJob = new Job(enclosingProcess + ":" + this.name, new int[0],
-				new HashMap<String, EntityIdentifier>());
+				new HashMap<String, EntityIdentifier>(), context);
 		dispatchStack.receiveEvent(newJob);
 	}
 

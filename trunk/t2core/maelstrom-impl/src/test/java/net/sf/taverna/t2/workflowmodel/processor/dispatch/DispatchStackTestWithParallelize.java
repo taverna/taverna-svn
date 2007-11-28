@@ -6,13 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.impl.AbstractCrystalizer;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
@@ -22,6 +23,16 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
 
 public class DispatchStackTestWithParallelize extends TestCase {
 
+	public final DataManager dManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
+	
+	public InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			return dManager;
+		}
+		
+	};
+	
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		
 		private List<Activity<?>> activities;
@@ -115,7 +126,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DummyInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(1000);
 			System.out.println("--------------------------------------------------\n");
@@ -136,7 +147,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
 			System.out.println("--------------------------------------------------\n");
@@ -151,7 +162,6 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	 */
 	public void testSingleJobWithStreamAndCrystalize() {
 		System.out.println("Single job with streaming");
-		ContextManager.baseManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
 		final AbstractCrystalizer c = new AbstractCrystalizer() {
 		
 			public void completionCreated(Completion completion) {
@@ -163,7 +173,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 			}
 
 			@Override
-			public Job getEmptyJob(String owningProcess, int[] index) {
+			public Job getEmptyJob(String owningProcess, int[] index, InvocationContext context) {
 				// TODO Auto-generated method stub
 				return null;
 			}
@@ -178,7 +188,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DummyStreamingInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put("SingleJobInput", nextID());
-		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap));
+		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
 			System.out.println("--------------------------------------------------\n");
@@ -224,9 +234,9 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		for (int i = 0; i < jobs; i++) {
 			Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 			dataMap.put("Input1", nextID());
-			events.add(new Job(processID+":processorName", new int[] { i }, dataMap));
+			events.add(new Job(processID+":processorName", new int[] { i }, dataMap, context));
 		}
-		events.add(new Completion(processID+":processorName"));
+		events.add(new Completion(processID+":processorName", context));
 		return events;
 	}
 

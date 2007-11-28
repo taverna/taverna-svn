@@ -1,6 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
 import junit.framework.TestCase;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -9,6 +11,15 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
 
 public class NamedInputPortNodeTest extends TestCase {
 
+	InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			// Doesn't matter as this test doesn't use them
+			return null;
+		}
+		
+	};
+	
 	public void testBasic() {
 		NamedInputPortNode nipn = new NamedInputPortNode("Input", 0);
 		DiagnosticIterationStrategyNode disn = new DiagnosticIterationStrategyNode();
@@ -16,7 +27,7 @@ public class NamedInputPortNodeTest extends TestCase {
 		IterationStrategyImpl is = new IterationStrategyImpl();
 		is.addInput(nipn);
 		try {
-			is.receiveData("Input", "Process1", new int[]{}, nextID());
+			is.receiveData("Input", "Process1", new int[]{}, nextID(), context);
 		} catch (WorkflowStructureException e) {
 			fail("Should be able to find input named 'Input' in this test case");
 		}
@@ -30,9 +41,9 @@ public class NamedInputPortNodeTest extends TestCase {
 		IterationStrategyImpl is = new IterationStrategyImpl();
 		is.addInput(nipn);
 		try {
-			is.receiveData("Input", "Process1", new int[]{0}, nextID());
-			is.receiveData("Input", "Process1", new int[]{1}, nextID());
-			is.receiveData("Input", "Process2", new int[]{}, nextID());
+			is.receiveData("Input", "Process1", new int[]{0}, nextID(), context);
+			is.receiveData("Input", "Process1", new int[]{1}, nextID(), context);
+			is.receiveData("Input", "Process2", new int[]{}, nextID(), context);
 		} catch (WorkflowStructureException e) {
 			fail("Should be able to find input named 'Input' in this test case");
 		}

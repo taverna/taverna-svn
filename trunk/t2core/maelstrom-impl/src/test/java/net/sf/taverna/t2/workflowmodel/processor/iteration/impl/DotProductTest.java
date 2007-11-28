@@ -1,7 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
@@ -11,6 +13,15 @@ import junit.framework.TestCase;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
 public class DotProductTest extends TestCase {
+	
+	InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			// Doesn't matter as this test doesn't use them
+			return null;
+		}
+		
+	};
 	
 	public void testBasic() {
 		NamedInputPortNode nipn1 = new NamedInputPortNode("Input1", 0);
@@ -25,11 +36,11 @@ public class DotProductTest extends TestCase {
 		is.addInput(nipn1);
 		is.addInput(nipn2);
 		try {
-			is.receiveData("Input1", "Process1", new int[] {0}, nextID());
-			is.receiveCompletion("Input1", "Process1", new int[]{});
+			is.receiveData("Input1", "Process1", new int[] {0}, nextID(), context);
+			is.receiveCompletion("Input1", "Process1", new int[]{}, context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
-			is.receiveData("Input2", "Process1", new int[] {0}, nextID());
-			is.receiveCompletion("Input2", "Process1", new int[]{});
+			is.receiveData("Input2", "Process1", new int[] {0}, nextID(), context);
+			is.receiveCompletion("Input2", "Process1", new int[]{}, context);
 			assertTrue(disn.jobsReceived("Process1") == 1);
 			System.out.println(disn);
 		} catch (WorkflowStructureException e) {
@@ -50,15 +61,15 @@ public class DotProductTest extends TestCase {
 		is.addInput(nipn1);
 		is.addInput(nipn2);
 		try {
-			is.receiveData("Input1", "Process1", new int[] {}, nextID());
+			is.receiveData("Input1", "Process1", new int[] {}, nextID(), context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
-			is.receiveCompletion("Input1", "Process1", new int[]{});
-			is.receiveData("Input2", "Process2", new int[] {}, nextID());
+			is.receiveCompletion("Input1", "Process1", new int[]{}, context);
+			is.receiveData("Input2", "Process2", new int[] {}, nextID(), context);
 			assertTrue(disn.jobsReceived("Process1") == 0);
 			
-			is.receiveData("Input2", "Process1", new int[] {}, nextID());
+			is.receiveData("Input2", "Process1", new int[] {}, nextID(), context);
 			assertTrue(disn.jobsReceived("Process1") == 1);
-			is.receiveCompletion("Input2", "Process1", new int[]{});
+			is.receiveCompletion("Input2", "Process1", new int[]{}, context);
 			System.out.println(disn);
 		} catch (WorkflowStructureException e) {
 			fail("Unknown structure exception");
@@ -82,15 +93,15 @@ public class DotProductTest extends TestCase {
 		String owningProcess = "Process1";
 		for (int i = 0; i < 4; i++) {
 			EntityListIdentifier dataReference = new EntityListIdentifier("urn:t2data:list://foo.bar/alist"+i+"/1");
-			is.receiveData("a", owningProcess, new int[]{i}, dataReference);
+			is.receiveData("a", owningProcess, new int[]{i}, dataReference, context);
 		}
-		is.receiveCompletion("a", owningProcess, new int[]{});
+		is.receiveCompletion("a", owningProcess, new int[]{}, context);
 		
 		for (int i = 0; i < 4; i++) {
 			EntityListIdentifier dataReference = new EntityListIdentifier("urn:t2data:list://foo.bar/blist"+i+"/1");
-			is.receiveData("b", owningProcess, new int[]{i}, dataReference);
+			is.receiveData("b", owningProcess, new int[]{i}, dataReference, context);
 		}
-		is.receiveCompletion("b", owningProcess, new int[]{});
+		is.receiveCompletion("b", owningProcess, new int[]{}, context);
 		assertTrue(disn.jobsReceived("Process1")==4);
 		System.out.println(disn);
 	}

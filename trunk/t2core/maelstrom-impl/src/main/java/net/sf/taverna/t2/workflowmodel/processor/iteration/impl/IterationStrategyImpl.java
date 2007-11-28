@@ -16,8 +16,8 @@ import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
@@ -203,8 +203,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			String owningProcess = j.getOwningProcess();
 			for (String portName : j.getData().keySet()) {
 				EntityIdentifier dataRef = j.getData().get(portName);
-				DataManager manager = ContextManager.getDataManager(e
-						.getOwningProcess());
+				DataManager manager = e.getContext().getDataManager();
 				NamedInputPortNode ipn = nodeForName(portName);
 				int desiredDepth = ipn.getCardinality();
 				Iterator<ContextualizedIdentifier> ids = manager.traverse(
@@ -214,9 +213,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 					int[] indexArray = ci.getIndex();
 					EntityIdentifier childDataRef = ci.getDataRef();
 					receiveData(portName, owningProcess, indexArray,
-							childDataRef);
+							childDataRef, e.getContext());
 				}
-				receiveCompletion(portName, owningProcess, new int[] {});
+				receiveCompletion(portName, owningProcess, new int[] {}, e.getContext());
 			}
 		}
 		// Event was a completion event, push it through unmodified to the
@@ -241,18 +240,18 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @throws WorkflowStructureException
 	 */
 	public void receiveData(String inputPortName, String owningProcess,
-			int[] indexArray, EntityIdentifier dataReference)
+			int[] indexArray, EntityIdentifier dataReference, InvocationContext context)
 			throws WorkflowStructureException {
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put(inputPortName, dataReference);
-		Job newJob = new Job(owningProcess, indexArray, dataMap);
+		Job newJob = new Job(owningProcess, indexArray, dataMap, context);
 		nodeForName(inputPortName).receiveJob(0, newJob);
 	}
 
 	public void receiveCompletion(String inputPortName, String owningProcess,
-			int[] completionArray) throws WorkflowStructureException {
+			int[] completionArray, InvocationContext context) throws WorkflowStructureException {
 		nodeForName(inputPortName).receiveCompletion(0,
-				new Completion(owningProcess, completionArray));
+				new Completion(owningProcess, completionArray, context));
 	}
 
 	public void addInput(NamedInputPortNode nipn) {

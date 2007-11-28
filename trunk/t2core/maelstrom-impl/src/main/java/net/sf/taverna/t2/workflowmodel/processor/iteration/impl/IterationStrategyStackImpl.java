@@ -9,6 +9,7 @@ import org.jdom.Element;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
@@ -85,18 +86,18 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	}
 	
 	public void receiveData(String inputPortName, String owningProcess,
-			int[] indexArray, EntityIdentifier dataReference) {
+			int[] indexArray, EntityIdentifier dataReference, InvocationContext context) {
 		if (!strategies.isEmpty()) {
 			strategies.get(0).receiveData(inputPortName, owningProcess,
-					indexArray, dataReference);
+					indexArray, dataReference, context);
 		}
 	}
 
 	public void receiveCompletion(String inputPortName, String owningProcess,
-			int[] completionArray) {
+			int[] completionArray, InvocationContext context) {
 		if (!strategies.isEmpty()) {
 			strategies.get(0).receiveCompletion(inputPortName, owningProcess,
-					completionArray);
+					completionArray, context);
 		}
 	}
 

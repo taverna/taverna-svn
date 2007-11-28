@@ -54,7 +54,7 @@ public class PrefixDotProduct extends DotProduct {
 				newDataMap.putAll(newJob.getData());
 				newDataMap.putAll(job.getData());
 				Job mergedJob = new Job(owningProcess, job.getIndex(),
-						newDataMap);
+						newDataMap, newJob.getContext());
 				pushJob(mergedJob);
 			}
 		}
@@ -75,7 +75,7 @@ public class PrefixDotProduct extends DotProduct {
 					newDataMap.putAll(j.getData());
 					newDataMap.putAll(newJob.getData());
 					Job mergedJob = new Job(owningProcess, newJob.getIndex(),
-							newDataMap);
+							newDataMap, newJob.getContext());
 					pushJob(mergedJob);
 				}
 			}

@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
@@ -91,7 +92,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * Callers must ensure that an appropriate process identifier is specified,
 	 * the behaviour on missing or duplicate process identifiers is not defined.
 	 */
-	public void fire(String owningProcess);
+	public void fire(String owningProcess, InvocationContext context);
 
 	/**
 	 * A processor has zero or more preconditions explicitly declared. All such

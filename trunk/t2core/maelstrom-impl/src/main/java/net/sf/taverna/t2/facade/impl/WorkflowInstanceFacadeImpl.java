@@ -8,6 +8,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorNode;
@@ -26,6 +27,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 	private String instanceOwningProcessId;
 	private boolean pushDataCalled = false;
 	private ResultListener facadeResultListener;
+	private InvocationContext context;
 
 	public WorkflowInstanceFacadeImpl(Dataflow dataflow) {
 		this.dataflow = dataflow;
@@ -67,7 +69,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		for (Processor processor : dataflow.getProcessors()) {
 			if (processor.getInputPorts().size() == 0
 					&& processor.getPreconditionList().size() == 0) {
-				processor.fire(instanceOwningProcessId);
+				processor.fire(instanceOwningProcessId, context);
 			}
 		}
 	}
@@ -83,7 +85,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		// constraints.
 		for (DataflowInputPort port : dataflow.getInputPorts()) {
 			if (portName.equals(port.getName())) {
-				port.receiveEvent(new WorkflowDataToken(instanceOwningProcessId, index, token));
+				port.receiveEvent(new WorkflowDataToken(instanceOwningProcessId, index, token, context));
 			}
 		}
 		pushDataCalled = true;

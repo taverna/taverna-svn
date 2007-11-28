@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -12,7 +13,7 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -22,16 +23,24 @@ import junit.framework.TestCase;
 
 public class TestStagedIteration extends TestCase {
 
+	public final DataManager dManager = new InMemoryDataManager("foo.bar",
+			Collections.<LocationalContext> emptySet());
+	
+	public InvocationContext context = new InvocationContext() {
+
+		public DataManager getDataManager() {
+			return dManager;
+		}
+		
+	};
+	
+	
 	public void testStaging() throws MalformedIdentifierException {
 		IterationStrategyStackImpl iss = new IterationStrategyStackImpl() {
 			protected void receiveEventFromStrategy(Event e) {
 				System.out.println(e);
 			}
 		};
-
-		// Configure a dummy data manager to handle the traversal of collections
-		ContextManager.baseManager = new InMemoryDataManager("foo.bar",
-				Collections.<LocationalContext> emptySet());
 
 		IterationStrategyImpl is1 = new IterationStrategyImpl();
 		NamedInputPortNode nipn1 = new NamedInputPortNode("a", 1);
@@ -61,29 +70,29 @@ public class TestStagedIteration extends TestCase {
 		for (int i = 0; i < 4; i++) {
 			List<EntityIdentifier> idsInList = new ArrayList<EntityIdentifier>();
 			for (int j = 0; j < 2; j++) {
-				DataDocumentIdentifier ddocIdentifier = ContextManager.baseManager
+				DataDocumentIdentifier ddocIdentifier = context.getDataManager()
 						.registerDocument(Collections
 								.<ReferenceScheme> emptySet());
 				idsInList.add(ddocIdentifier);
 			}
-			EntityListIdentifier dataReference = ContextManager.baseManager.registerList(idsInList.toArray(new EntityIdentifier[0]));
-			is1.receiveData("a", owningProcess, new int[] { i }, dataReference);
+			EntityListIdentifier dataReference = context.getDataManager().registerList(idsInList.toArray(new EntityIdentifier[0]));
+			is1.receiveData("a", owningProcess, new int[] { i }, dataReference, context);
 		}
-		is1.receiveCompletion("a", owningProcess, new int[] {});
+		is1.receiveCompletion("a", owningProcess, new int[] {}, context);
 
 		for (int i = 0; i < 4; i++) {
 			List<EntityIdentifier> idsInList = new ArrayList<EntityIdentifier>();
 			for (int j = 0; j < 2; j++) {
-				DataDocumentIdentifier ddocIdentifier = ContextManager.baseManager
+				DataDocumentIdentifier ddocIdentifier = context.getDataManager()
 						.registerDocument(Collections
 								.<ReferenceScheme> emptySet());
 				idsInList.add(ddocIdentifier);
 			}
-			EntityListIdentifier dataReference = ContextManager.baseManager.registerList(idsInList.toArray(new EntityIdentifier[0]));
+			EntityListIdentifier dataReference = context.getDataManager().registerList(idsInList.toArray(new EntityIdentifier[0]));
 
-			is1.receiveData("b", owningProcess, new int[] { i }, dataReference);
+			is1.receiveData("b", owningProcess, new int[] { i }, dataReference, context);
 		}
-		is1.receiveCompletion("b", owningProcess, new int[] {});
+		is1.receiveCompletion("b", owningProcess, new int[] {}, context);
 
 	}
 

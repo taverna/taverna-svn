@@ -86,7 +86,7 @@ public class MergeImpl implements Merge {
 			newIndex[i + 1] = currentIndex[i];
 		}
 		output.sendEvent(new WorkflowDataToken(token.getOwningProcess(),
-				newIndex, token.getData()));
+				newIndex, token.getData(), token.getContext()));
 	}
 
 	/**
