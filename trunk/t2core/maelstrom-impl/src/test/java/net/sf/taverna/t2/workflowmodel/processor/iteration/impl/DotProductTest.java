@@ -1,10 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -14,14 +14,7 @@ import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProd
 
 public class DotProductTest extends TestCase {
 	
-	InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			// Doesn't matter as this test doesn't use them
-			return null;
-		}
-		
-	};
+	InvocationContext context = new TestInvocationContext();
 	
 	public void testBasic() {
 		NamedInputPortNode nipn1 = new NamedInputPortNode("Input1", 0);

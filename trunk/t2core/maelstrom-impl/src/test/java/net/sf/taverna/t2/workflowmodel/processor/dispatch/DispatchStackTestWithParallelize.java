@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import junit.framework.TestCase;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
@@ -25,13 +26,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 
 	public final DataManager dManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
 	
-	public InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			return dManager;
-		}
-		
-	};
+	public InvocationContext context = new TestInvocationContext();
 	
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
 		

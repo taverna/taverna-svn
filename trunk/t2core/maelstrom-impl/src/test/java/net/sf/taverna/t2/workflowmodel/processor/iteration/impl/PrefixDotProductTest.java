@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
@@ -12,14 +12,7 @@ import junit.framework.TestCase;
 
 public class PrefixDotProductTest extends TestCase {
 
-	InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			// Doesn't matter as this test doesn't use them
-			return null;
-		}
-		
-	};
+	InvocationContext context = new TestInvocationContext();
 	
 	/**
 	 * Test that the prefix node copes when we feed it two inputs with different

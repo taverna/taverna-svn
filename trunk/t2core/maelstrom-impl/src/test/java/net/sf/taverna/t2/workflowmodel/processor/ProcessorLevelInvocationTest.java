@@ -19,6 +19,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.impl.ProcessorInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 import org.jdom.JDOMException;
@@ -39,7 +40,7 @@ public class ProcessorLevelInvocationTest {
 	final DataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
 
-	InvocationContext context = new InvocationContext() {
+	InvocationContext context = new TestInvocationContext() {
 
 		public DataManager getDataManager() {
 			return dManager;

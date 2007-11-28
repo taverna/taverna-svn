@@ -11,10 +11,12 @@ import java.util.concurrent.atomic.AtomicLong;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyProcessor;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -24,12 +26,13 @@ public class WorkflowInstanceFacadeImplTest {
 	
 	private DummyDataflow dataflow;
 	private WorkflowInstanceFacadeImpl facade;
+	private InvocationContext context = new TestInvocationContext();
 	
 	@Before
 	public void createDataflow() {
 		dataflow=new DummyDataflow();
 		WorkflowInstanceFacadeImpl.owningProcessId = new AtomicLong(0);
-		facade = new WorkflowInstanceFacadeImpl(dataflow);
+		facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 	}
 
 	@Test
@@ -139,7 +142,7 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	public void testFireAllProcessors() throws Exception{
 		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow, context);
 		DummyProcessor processor1 = new DummyProcessor();
 		dummyDataflow.processors.add(processor1);
 		
@@ -188,7 +191,7 @@ public class WorkflowInstanceFacadeImplTest {
 
 	@Test
 	public void testRemoveResultListener() {
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
 					int[] index, String portName, String owningProcess) {	
@@ -216,7 +219,7 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	//tests that the listener is added and removed from the output ports
 	public void testResultListenerAndOutputPorts() {
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 		ResultListener listener = new ResultListener() {
 			public void resultTokenProduced(EntityIdentifier token,
 					int[] index, String portName, String owningProcess) {

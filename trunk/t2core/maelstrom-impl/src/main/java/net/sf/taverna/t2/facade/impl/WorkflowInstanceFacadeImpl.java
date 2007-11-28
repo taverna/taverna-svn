@@ -29,8 +29,9 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 	private ResultListener facadeResultListener;
 	private InvocationContext context;
 
-	public WorkflowInstanceFacadeImpl(Dataflow dataflow) {
+	public WorkflowInstanceFacadeImpl(Dataflow dataflow, InvocationContext context) {
 		this.dataflow = dataflow;
+		this.context = context;
 		instanceOwningProcessId = dataflow.getLocalName() + "_"
 				+ owningProcessId.getAndIncrement();
 

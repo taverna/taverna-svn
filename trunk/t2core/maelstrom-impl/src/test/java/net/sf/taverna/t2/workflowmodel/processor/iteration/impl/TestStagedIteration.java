@@ -14,6 +14,7 @@ import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
@@ -26,13 +27,7 @@ public class TestStagedIteration extends TestCase {
 	public final DataManager dManager = new InMemoryDataManager("foo.bar",
 			Collections.<LocationalContext> emptySet());
 	
-	public InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			return dManager;
-		}
-		
-	};
+	public InvocationContext context = new TestInvocationContext();
 	
 	
 	public void testStaging() throws MalformedIdentifierException {

@@ -2,23 +2,16 @@ package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.util.HashMap;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TreeCache;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import junit.framework.TestCase;
 
 public class TreeCacheTest extends TestCase {
 
-	InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	};
+	InvocationContext context = new TestInvocationContext();
 	
 	public void testStoreLoad() {
 		TreeCache tc = new TreeCache();

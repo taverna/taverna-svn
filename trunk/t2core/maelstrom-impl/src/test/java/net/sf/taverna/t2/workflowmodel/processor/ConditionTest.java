@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import junit.framework.TestCase;
 
@@ -30,14 +31,7 @@ public class ConditionTest extends TestCase {
 
 	private Edits edits = new EditsImpl();
 	
-	private InvocationContext context = new InvocationContext() {
-
-		public DataManager getDataManager() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	};
+	private InvocationContext context = new TestInvocationContext();
 
 	private Processor createProcessor() throws ActivityConfigurationException,
 			EditException {

@@ -7,6 +7,7 @@ import java.util.Set;
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
@@ -160,8 +161,8 @@ public class EditsImpl implements Edits {
 		return annotations;
 	}
 
-	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow) {
-		return new WorkflowInstanceFacadeImpl(dataflow);
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context) {
+		return new WorkflowInstanceFacadeImpl(dataflow, context);
 	}
 
 }
