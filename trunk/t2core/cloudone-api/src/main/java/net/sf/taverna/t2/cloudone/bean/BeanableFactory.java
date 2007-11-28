@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.bean;
 
-import org.apache.log4j.Logger;
 
 /**
  * A factory for reconstructing a {@link Beanable} given a bean previously
@@ -23,8 +22,7 @@ import org.apache.log4j.Logger;
  *            The bean type of the {@link Beanable}.
  */
 public abstract class BeanableFactory<BeanableType extends Beanable<BeanType>, BeanType> {
-	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(BeanableFactory.class);
+
 
 	private final Class<BeanableType> beanableType;
 	private final Class<BeanType> beanType;
@@ -61,13 +59,9 @@ public abstract class BeanableFactory<BeanableType extends Beanable<BeanType>, B
 		try {
 			beanable = getBeanableType().newInstance();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			logger.warn(e);
 			throw new IllegalStateException("Could not instantiate "
 					+ getBeanableType(), e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			logger.warn(e);
 			throw new IllegalStateException("Could not access "
 					+ getBeanableType(), e);
 		}
