@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>beanable-api</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Beanable API</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>util</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>Serialisation framework for t2</description>
+	<dependencies>
+
+	</dependencies>
+</project>
