@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.bean;
+package net.sf.taverna.t2.util.beanable;
 
 import java.io.InputStream;
 
@@ -96,7 +96,7 @@ public abstract class BeanableFactory<BeanableType extends Beanable<BeanType>, B
 	 * Get the JAXB Annotation Introduction for serialising beans of
 	 * {@link #getBeanType()}. The annotation should as a minimum provide a
 	 * unique namespace for the class of {@link #getBeanType()}. Example
-	 * annotation for {@link EntityListBean}:
+	 * annotation for {@link net.sf.taverna.t2.cloudone.bean.EntityListBean}:
 	 * 
 	 * <pre>
 	 * &lt;?xml version = &quot;1.0&quot; encoding = &quot;UTF-8&quot;?&gt;

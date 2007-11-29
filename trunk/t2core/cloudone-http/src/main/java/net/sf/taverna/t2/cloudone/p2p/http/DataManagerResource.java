@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
-import net.sf.taverna.t2.cloudone.bean.BeanSerialiser;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
@@ -8,6 +7,7 @@ import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;

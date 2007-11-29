@@ -4,11 +4,11 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.peer.DataPeer;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * A reference to data used in a DataDocument. In addition, the set of

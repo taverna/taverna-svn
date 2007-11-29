@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cloudone.bean;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.entity.EntityList;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Bean for serialising an {@link EntityList}. An EntityList is serialised as a

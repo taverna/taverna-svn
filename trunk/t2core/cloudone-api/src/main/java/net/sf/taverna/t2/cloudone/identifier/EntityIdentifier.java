@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Identifier within the data cloud system for a single DataDocument, error or

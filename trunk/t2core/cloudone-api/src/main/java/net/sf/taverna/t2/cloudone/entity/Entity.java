@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.cloudone.entity;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Super-interface for all entities within the data system. In the present

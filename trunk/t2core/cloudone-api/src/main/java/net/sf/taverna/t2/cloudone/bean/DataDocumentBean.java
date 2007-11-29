@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Bean for serialising a {@link DataDocument}. A DataDocument is serialised as

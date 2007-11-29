@@ -2,8 +2,8 @@ package net.sf.taverna.t2.drizzle.util;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * A PropertiedObjectSet is a context within which objects of the specified

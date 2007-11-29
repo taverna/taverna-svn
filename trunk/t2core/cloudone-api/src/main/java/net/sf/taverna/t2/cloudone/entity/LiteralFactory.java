@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.entity;
 
-import net.sf.taverna.t2.cloudone.bean.BeanableFactory;
+import net.sf.taverna.t2.util.beanable.BeanableFactory;
 
 public class LiteralFactory extends BeanableFactory<Literal, String> {
 

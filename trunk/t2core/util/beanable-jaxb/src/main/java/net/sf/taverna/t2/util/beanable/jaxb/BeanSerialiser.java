@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.bean;
+package net.sf.taverna.t2.util.beanable.jaxb;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -11,7 +11,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
+import net.sf.taverna.t2.util.beanable.Beanable;
+import net.sf.taverna.t2.util.beanable.BeanableFactory;
+import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
+
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;

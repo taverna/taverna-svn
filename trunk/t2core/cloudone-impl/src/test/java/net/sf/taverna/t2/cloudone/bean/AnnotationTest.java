@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.util.beanable.jaxb;
+package net.sf.taverna.t2.cloudone.bean;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,13 +15,13 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import net.sf.taverna.t2.cloudone.bean.BeanableFactory;
-import net.sf.taverna.t2.cloudone.bean.BeanableFactoryRegistry;
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
+import net.sf.taverna.t2.util.beanable.BeanableFactory;
+import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
 import org.apache.log4j.Logger;
 import org.jboss.jaxb.intros.IntroductionsAnnotationReader;

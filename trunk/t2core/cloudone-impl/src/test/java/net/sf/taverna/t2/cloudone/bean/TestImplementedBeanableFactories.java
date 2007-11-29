@@ -10,11 +10,14 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
+import net.sf.taverna.t2.util.beanable.Beanable;
+import net.sf.taverna.t2.util.beanable.BeanableFactory;
+import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
 import org.junit.Test;
 
 @SuppressWarnings("unchecked")
-public class TestBeanableFactoryRegistry {
+public class TestImplementedBeanableFactories {
 
 	BeanableFactoryRegistry registry = BeanableFactoryRegistry.getInstance();
 

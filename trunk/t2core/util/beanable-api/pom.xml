@@ -12,6 +12,19 @@
 	</parent>
 	<description>Serialisation framework for t2</description>
 	<dependencies>
-
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>snowflake-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

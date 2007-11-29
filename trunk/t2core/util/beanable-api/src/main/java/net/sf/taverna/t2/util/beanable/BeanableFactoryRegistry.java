@@ -1,6 +1,5 @@
-package net.sf.taverna.t2.cloudone.bean;
+package net.sf.taverna.t2.util.beanable;
 
-import net.sf.taverna.t2.cloudone.bean.BeanableFactory;
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 import org.apache.log4j.Logger;

@@ -11,6 +11,7 @@ import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
+import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;

@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone.bean;
 
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Bean for serialising {@link ErrorDocument}. An ErrorDocument is serialised

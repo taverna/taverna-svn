@@ -2,8 +2,8 @@ package net.sf.taverna.t2.drizzle.util;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * A PropertiedObject is the association of an Object with a set of PropertyKey +

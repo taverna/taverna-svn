@@ -7,10 +7,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.sf.taverna.t2.cloudone.bean.BeanSerialiser;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
+import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

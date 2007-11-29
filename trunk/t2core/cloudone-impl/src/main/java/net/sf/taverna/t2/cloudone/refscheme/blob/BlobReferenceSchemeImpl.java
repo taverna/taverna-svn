@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.t2.cloudone.bean.Beanable;
 import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
@@ -18,6 +17,7 @@ import net.sf.taverna.t2.cloudone.peer.DataPeer;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * A {@link BlobReferenceScheme} that is {@link Beanable} as a

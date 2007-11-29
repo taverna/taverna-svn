@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone.bean;
 
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.util.beanable.Beanable;
 
 /**
  * Abstract bean for serialising references, such as from

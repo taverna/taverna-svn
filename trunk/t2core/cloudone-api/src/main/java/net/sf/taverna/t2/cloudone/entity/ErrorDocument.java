@@ -150,7 +150,7 @@ public class ErrorDocument implements
 	 * was used.
 	 *
 	 * @see #getAsBean()
-	 * @see net.sf.taverna.t2.cloudone.bean.Beanable#getAsBean()
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#getAsBean()
 	 * @param bean
 	 *            The {@link ErrorDocumentBean} from where to initialise
 	 */

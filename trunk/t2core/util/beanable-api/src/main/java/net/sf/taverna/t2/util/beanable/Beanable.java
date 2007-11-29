@@ -1,12 +1,12 @@
-package net.sf.taverna.t2.cloudone.bean;
+package net.sf.taverna.t2.util.beanable;
 
 /**
  * Anything which you want to serialise with
- * {@link net.sf.taverna.t2.cloudone.bean.BeanSerialiser} should implement this
+ * {@link net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser} should implement this
  * interface. Expose required information as a bean from {@link #getAsBean()},
  * which can later be set using {@link #setFromBean(Object)}.
  * 
- * @see net.sf.taverna.t2.cloudone.bean.BeanSerialiser
+ * @see net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser
  * @author Ian Dunlop
  * @author Stian Soiland
  * @param <Bean>
