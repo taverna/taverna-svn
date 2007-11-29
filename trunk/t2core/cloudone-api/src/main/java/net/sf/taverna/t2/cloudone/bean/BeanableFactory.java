@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.bean;
 
+import java.io.InputStream;
 
 /**
  * A factory for reconstructing a {@link Beanable} given a bean previously
@@ -11,7 +12,7 @@ package net.sf.taverna.t2.cloudone.bean;
  * This abstract class is an SPI, and it's concrete instances can be found by
  * accessing {@link BeanableFactoryRegistry}. Implementations must be listed in
  * META-INF/services/net.sf.taverna.t2.cloudone.bean.BeanableFactory to be found
- * by the registry. 
+ * by the registry.
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
@@ -23,7 +24,8 @@ package net.sf.taverna.t2.cloudone.bean;
  */
 public abstract class BeanableFactory<BeanableType extends Beanable<BeanType>, BeanType> {
 
-
+	private static final String ANNOTATION_EXTENSION = ".xml";
+	protected static final String ANNOTATION_PATH = "/META-INF/annotations/";
 	private final Class<BeanableType> beanableType;
 	private final Class<BeanType> beanType;
 
@@ -88,6 +90,48 @@ public abstract class BeanableFactory<BeanableType extends Beanable<BeanType>, B
 	 */
 	public Class<BeanType> getBeanType() {
 		return beanType;
+	}
+
+	/**
+	 * Get the JAXB Annotation Introduction for serialising beans of
+	 * {@link #getBeanType()}. The annotation should as a minimum provide a
+	 * unique namespace for the class of {@link #getBeanType()}. Example
+	 * annotation for {@link EntityListBean}:
+	 * 
+	 * <pre>
+	 * &lt;?xml version = &quot;1.0&quot; encoding = &quot;UTF-8&quot;?&gt;
+	 * &lt;jaxb-intros xmlns=&quot;http://www.jboss.org/xsd/jaxb/intros&quot;&gt;
+	 *   &lt;Class name=&quot;net.sf.taverna.t2.cloudone.bean.EntityListBean&quot;&gt;
+	 *     &lt;XmlType namespace=&quot;http://taverna.sf.net/t2/cloudone/bean/&quot; name=&quot;entityList&quot;/&gt;
+	 *    &lt;XmlRootElement namespace=&quot;http://taverna.sf.net/t2/cloudone/bean/&quot; name=&quot;entityList&quot;/&gt;
+	 *   &lt;/Class&gt;
+	 * &lt;/jaxb-intros&gt;
+	 * </pre>
+	 * 
+	 * <p>
+	 * The default implementation of {@link #getAnnotationIntroduction()} will
+	 * construct a filename based on the canonical class name of the
+	 * {@link #getBeanableType()} and look it up using the classloader of the
+	 * beanable type. For example, if the {@link Beanable} subclass is
+	 * com.canonical.ClassName, the file
+	 * "/META-INF/annotations/com.canonical.ClassName.xml" would be searched for
+	 * in the classpath of ClassName's classloader.
+	 * 
+	 * @see http://wiki.jboss.org/wiki/Wiki.jsp?page=JAXBIntroductions
+	 * 
+	 * @return An InputStream
+	 */
+	public InputStream getAnnotationIntroduction() {
+		String name = getBeanableType().getCanonicalName();
+		String path = ANNOTATION_PATH + name + ANNOTATION_EXTENSION;
+		return getBeanableType().getResourceAsStream(path);
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + "<"
+				+ getBeanableType().getSimpleName() + ", "
+				+ getBeanType().getSimpleName() + ">";
 	}
 
 }
