@@ -53,6 +53,9 @@ public final class ScavengerDecoder implements
 		if ((userObject != null) && (userObject instanceof ProcessorFactory)) {
 			PropertyDecoder decoder = PropertyDecoderRegistry.getDecoder(
 					userObject.getClass(), ProcessorFactory.class);
+			if (decoder == null) {
+				decoder = DefaultProcessorFactoryDecoder.getInstance(userObject.getClass());
+			}
 			if (decoder != null) {
 				DecodeRunIdentification<ProcessorFactory> subIdent =
 					decoder.decode(targetSet, userObject);

@@ -81,6 +81,7 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 			addScavengerHelperToMenu(this, webScavengerHelper);
 		}
 
+		/*
 		JMenuItem collect = new JMenuItem("Collect scavengers from model", //$NON-NLS-1$
 				TavernaIcons.importIcon);
 		this.add(collect);
@@ -97,7 +98,7 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 									JOptionPane.ERROR_MESSAGE);
 				}
 			}
-		});
+		}); */
 	}
 
 	/**
@@ -110,7 +111,7 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 			JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription,
 					scavengerHelper.getIcon());
 			scavengerMenuItem.addActionListener(scavengerHelper
-					.getListener(this.parentPanel.getPaletteModel()));
+					.getListener(this.parentPanel.getPaletteModel().getAdapter()));
 			menu.add(scavengerMenuItem);
 		}
 	}

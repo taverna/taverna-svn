@@ -7,11 +7,14 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,7 +27,11 @@ import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scufl.ScuflModelEventListener;
+import org.embl.ebi.escience.scuflui.ScavengerTreePanel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
+import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 
 /**
  * @author alanrw
@@ -47,6 +54,8 @@ ActivityPaletteModelListener, ActionListener {
 	private JProgressBar progressBar;
 	
 	ScuflModel currentWorkflow = null;
+	
+	private boolean watchingWorkflow = true;
 	
 	public ActivityPalettePanel() {
 		this.setLayout(new BorderLayout());
@@ -89,6 +98,30 @@ ActivityPaletteModelListener, ActionListener {
 		createSubsetItem.addActionListener(this);
 		menuBar.add(createSubsetItem);
 		
+		JCheckBox watchingWorkflowItem = new JCheckBox("watch workflow", true);
+		watchingWorkflowItem.addItemListener(new ItemListener() {
+
+			public void itemStateChanged(ItemEvent arg0) {
+				if (arg0.getStateChange() == ItemEvent.DESELECTED) {
+					if (currentWorkflow != null) {
+						paletteModel.detachFromModel(currentWorkflow);
+					}
+					watchingWorkflow = false;
+				} else {
+					if (currentWorkflow != null) {
+						try {
+							paletteModel.attachToModel(currentWorkflow);
+						} catch (ScavengerCreationException e) {
+							// TODO Auto-generated catch block
+						}
+					}
+					watchingWorkflow = true;
+				}
+			}
+			
+		});
+		menuBar.add(watchingWorkflowItem);
+		
 		progressBar = new JProgressBar();
 		progressBar.setIndeterminate(true);
 		progressBar.setVisible(false);
@@ -110,7 +143,13 @@ ActivityPaletteModelListener, ActionListener {
 			ActivitySubsetPanel tabPanel = (ActivitySubsetPanel) tabbedPane.getComponentAt(i);
 			tabPanel.setCurrentWorkflow(model);
 		}
-//TODO		model.addListener(eventListener);
+		try {
+			if (watchingWorkflow) {
+				paletteModel.attachToModel(model);
+			}
+		} catch (ScavengerCreationException e) {
+			//TODO figure out what to do
+		}
 		}
 
 	public void detachFromModel() {
@@ -119,7 +158,9 @@ ActivityPaletteModelListener, ActionListener {
 				ActivitySubsetPanel tabPanel = (ActivitySubsetPanel) tabbedPane.getComponentAt(i);
 				tabPanel.setCurrentWorkflow(null);
 			}
-//TODO			scuflModel.removeListener(eventListener);
+			if (watchingWorkflow) {
+				paletteModel.detachFromModel(this.currentWorkflow);
+			}
 			this.currentWorkflow = null;
 		}
 	}
@@ -277,6 +318,13 @@ ActivityPaletteModelListener, ActionListener {
 	
 	public int getIndexOfTab(String tabName) {
 		return this.tabbedPane.indexOfTab(tabName);
+	}
+
+	/**
+	 * @return the currentWorkflow
+	 */
+	public synchronized final ScuflModel getCurrentWorkflow() {
+		return currentWorkflow;
 	}
 
 }

@@ -3,15 +3,6 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
-import java.awt.Container;
-import java.awt.Frame;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,7 +10,6 @@ import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
@@ -27,10 +17,10 @@ import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -44,7 +34,7 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
  */
 // TODO consider if the ActivityRegistry really should be specific to the
 // ActivityPaletteModel.
-public final class ActivityPaletteModel implements ScavengerTree {
+public final class ActivityPaletteModel {
 
 	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
@@ -62,7 +52,16 @@ public final class ActivityPaletteModel implements ScavengerTree {
 	ArrayList<String> scavengerList = null;
 
 	private int scavengingInProgressCount = 0;
+	
+	private ActivityPaletteModelToScavengerTreeAdapter adapter = null;
 
+	/**
+	 * @return the adapter
+	 */
+	public synchronized final ActivityPaletteModelToScavengerTreeAdapter getAdapter() {
+		return adapter;
+	}
+	
 	/*
 	 * representation should not be needed 
 	 */
@@ -72,6 +71,8 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		this.registry = new ActivityRegistry();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
 		this.representation = representation;
+		adapter = new ActivityPaletteModelToScavengerTreeAdapter(this, representation);
+
 	}
 
 	public void initialize() {
@@ -243,33 +244,66 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
 	}
 
-	public void addScavengersFromModel() throws ScavengerCreationException {
-		// TODO Auto-generated method stub
+	class ScavengersFromModelThread extends Thread {
 		
-	}
+		private ScuflModel theModel;
 
-	public Frame getContainingFrame() {
-		Container result = this.representation;
-		while ((result != null) && !(result instanceof Frame)) {
-			result = result.getParent();
+		public ScavengersFromModelThread(final ScuflModel theModel) {
+			super("Default scavenger loader"); //$NON-NLS-1$
+			this.theModel = theModel;
+			start();
 		}
-		return (Frame) result;
-	}
 
-	public TreeModel getModel() {
-		throw new UnsupportedOperationException("getModel is not available"); //$NON-NLS-1$
-	}
+		@Override
+		public void run() {
+			scavengingStarting("Populating service list"); //$NON-NLS-1$
 
-	public int getNextCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+			addScavengersFromModel(theModel);
 
-	public boolean isPopulating() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+			scavengingDone();
+		}
 
+	}
+	
+	public void createScavengersFromModelThread(final ScuflModel theModel) {
+		new ScavengersFromModelThread(theModel);
+	}
+	
+	protected void addScavengersFromModel(final ScuflModel theModel) {
+		List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
+		ScavengerHelperThreadPool threadPool = new ScavengerHelperThreadPool();
+		for (ScavengerHelper helper : helpers) {
+
+				if (logger.isDebugEnabled()) logger.debug("Adding helper to thread pool...."+helper.getClass().getSimpleName()); //$NON-NLS-1$
+				threadPool.addScavengerHelperForModel(helper, theModel);
+				
+				//FIXME: this sleep sadly seems to be necessary to prevent linkage errors in Raven
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					logger.error(e);
+				}
+			}
+		
+		while (!threadPool.isEmpty()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(threadPool.remaining() +" threads still waiting to complete."); //$NON-NLS-1$
+				logger.debug(threadPool.waiting() +" threads still waiting in the queue."); //$NON-NLS-1$
+			}
+			Set<Scavenger> completed = threadPool.getCompleted();
+			logger.debug(completed.size() +" completed scavenger threads found"); //$NON-NLS-1$
+			for (Scavenger scavenger : completed) {
+				addScavenger(scavenger);
+			}
+			try {
+				if (!threadPool.isEmpty()) Thread.sleep(2500);
+			} catch (InterruptedException e1) {
+				logger.error("Interruption while waiting sleeping",e1); //$NON-NLS-1$
+			}
+		}
+		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
+	}
+	
 	public void scavengingDone() {
 		this.scavengingInProgressCount --;
 		if (this.scavengingInProgressCount==0) {
@@ -285,55 +319,6 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		this.scavengingInProgressCount++;
 	}
 
-	public void setPopulating(boolean populating) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void dragDropEnd(DragSourceDropEvent arg0) {
-		throw new UnsupportedOperationException("dragDropEnd is not available"); //$NON-NLS-1$
-	}
-
-	public void dragEnter(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dragEnter is not available"); //$NON-NLS-1$
-	}
-
-	public void dragExit(DragSourceEvent arg0) {
-		throw new UnsupportedOperationException("dragExit is not available"); //$NON-NLS-1$
-	}
-
-	public void dragOver(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dragOver is not available"); //$NON-NLS-1$
-	}
-
-	public void dropActionChanged(DragSourceDragEvent arg0) {
-		throw new UnsupportedOperationException("dropActionChanged is not available"); //$NON-NLS-1$
-	}
-
-	public void dragGestureRecognized(DragGestureEvent arg0) {
-		throw new UnsupportedOperationException("dragGestureRecognized is not available"); //$NON-NLS-1$
-	}
-
-	public void dragEnter(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dragEnter is not available"); //$NON-NLS-1$
-	}
-
-	public void dragExit(DropTargetEvent arg0) {
-		throw new UnsupportedOperationException("dragExit is not available"); //$NON-NLS-1$
-	}
-
-	public void dragOver(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dropOver is not available"); //$NON-NLS-1$
-	}
-
-	public void drop(DropTargetDropEvent arg0) {
-		throw new UnsupportedOperationException("drop is not available"); //$NON-NLS-1$
-	}
-
-	public void dropActionChanged(DropTargetDragEvent arg0) {
-		throw new UnsupportedOperationException("dropActionChanged is not available"); //$NON-NLS-1$
-	}
-
 	public Set<ActivityRegistrySubsetModel> getSubsetModels() {
 		return this.subsetModels;
 	}
@@ -345,5 +330,13 @@ public final class ActivityPaletteModel implements ScavengerTree {
 		subsetModel.setPropertyKeyProfile(keyProfile);
 		subsetModel.setParentRegistry(this.registry);
 		addSubsetModel(subsetModel);
+	}
+
+	public void attachToModel(final ScuflModel model) throws ScavengerCreationException {
+		adapter.addScavengersFromModel();
+	}
+
+	public void detachFromModel(final ScuflModel model) {
+		// nothing to do
 	}
 }
