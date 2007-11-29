@@ -1,0 +1,12 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<jaxb-intros xmlns="http://www.jboss.org/xsd/jaxb/intros">
+
+	<Class name="net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean">
+		<XmlType namespace="http://taverna.sf.net/t2/cloudone/bean/"
+			name="errorDocument" />
+		<XmlRootElement
+			namespace="http://taverna.sf.net/t2/cloudone/bean/"
+			name="errorDocument" />
+
+	</Class>
+</jaxb-intros>

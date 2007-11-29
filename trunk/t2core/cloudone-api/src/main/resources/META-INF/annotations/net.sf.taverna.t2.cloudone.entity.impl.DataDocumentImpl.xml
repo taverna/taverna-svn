@@ -1,0 +1,20 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<jaxb-intros xmlns="http://www.jboss.org/xsd/jaxb/intros">
+
+	<Class name="net.sf.taverna.t2.cloudone.bean.DataDocumentBean">
+		<XmlType namespace="http://taverna.sf.net/t2/cloudone/bean/"
+			name="dataDocument" />
+		<XmlRootElement
+			namespace="http://taverna.sf.net/t2/cloudone/bean/"
+			name="dataDocument" />
+
+		<Method name="getReferences">
+			<XmlElement name="reference" />
+		</Method>
+
+	</Class>
+
+
+
+</jaxb-intros>
+
