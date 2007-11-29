@@ -187,24 +187,6 @@ public class WorkflowModelTranslator {
 
 	}
 
-	// if (!t1InputPort.isBound() && t1InputPort.hasDefaultValue()) {
-	// String processorName = t2Processor.getLocalName() + "_" +
-	// inputPort.getName() + "_defaultValue";
-	// try {
-	// Processor stringConstantProcessor = createProcessor(new
-	// StringConstantProcessor(scuflModel, processorName,
-	// t1InputPort.getDefaultValue()), dataflow);
-	// Datalink datalink =
-	// edits.createDatalink(findOutputPort(stringConstantProcessor, "value"),
-	// findInputPort(t2Processor, inputPort.getName()));
-	// edits.getConnectDatalinkEdit(datalink).doEdit();
-	// } catch (ProcessorCreationException e) {
-	// throw new WorkflowTranslationException(e);
-	// } catch (DuplicateProcessorNameException e) {
-	// throw new WorkflowTranslationException(e);
-	// }
-	// }
-
 	private void createInputs(Dataflow dataflow) throws EditException {
 		for (Port sourcePort : scuflModel.getWorkflowSourcePorts()) {
 			int portDepth = getPortDepth(sourcePort);
@@ -290,7 +272,7 @@ public class WorkflowModelTranslator {
 			edits.getAddActivityEdit(t2Processor, alternateActivity).doEdit();
 		}
 
-		addInputPorts(activity, t1Processor, t2Processor, dataflow);
+		addInputPorts(activity, t1Processor, t2Processor);
 
 		addOutputPorts(activity, t2Processor);
 
@@ -414,7 +396,7 @@ public class WorkflowModelTranslator {
 	 */
 	private void addInputPorts(Activity<?> activity,
 			org.embl.ebi.escience.scufl.Processor t1Processor,
-			Processor t2Processor, Dataflow dataflow) throws EditException,
+			Processor t2Processor) throws EditException,
 			ActivityTranslatorNotFoundException, ActivityTranslationException,
 			ActivityConfigurationException, WorkflowTranslationException {
 		Set<InputPort> inputPorts = activity.getInputPorts();
