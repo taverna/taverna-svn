@@ -18,19 +18,20 @@ import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
-import junit.framework.TestCase;
 
-public class TestStagedIteration extends TestCase {
+import org.junit.Ignore;
+import org.junit.Test;
+
+@Ignore
+public class TestStagedIteration  {
 
 	public final DataManager dManager = new InMemoryDataManager("foo.bar",
 			Collections.<LocationalContext> emptySet());
 	
 	public InvocationContext context = new TestInvocationContext();
 	
-	
-	public void testStaging() throws MalformedIdentifierException {
+	@Test
+	public void staging() throws MalformedIdentifierException {
 		IterationStrategyStackImpl iss = new IterationStrategyStackImpl() {
 			protected void receiveEventFromStrategy(Event e) {
 				System.out.println(e);
