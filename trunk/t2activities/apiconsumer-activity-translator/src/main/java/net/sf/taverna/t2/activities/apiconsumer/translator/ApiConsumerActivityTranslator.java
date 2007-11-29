@@ -22,7 +22,9 @@ public class ApiConsumerActivityTranslator extends AbstractActivityTranslator<Ap
 	}
 
 	public boolean canHandle(Processor processor) {
-		return (processor!=null && processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.apiconsumer.ApiConsumerProcessor"));
+		//forced to false as the activity is not yet implemented.
+		return false;
+		//return (processor!=null && processor.getClass().getName().equals("org.embl.ebi.escience.scuflworkers.apiconsumer.ApiConsumerProcessor"));
 	}
 
 }
