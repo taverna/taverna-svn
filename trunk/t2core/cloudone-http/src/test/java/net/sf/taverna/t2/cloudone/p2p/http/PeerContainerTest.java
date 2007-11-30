@@ -36,6 +36,7 @@ public class PeerContainerTest extends AbstractCloudOneServerTest {
 		tmpDir.mkdir();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void peer() throws Exception {
 		PeerContainer container = new HttpPeerContainer();

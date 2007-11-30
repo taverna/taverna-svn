@@ -61,6 +61,7 @@ public class RefSchemeTranslatorTest {
 		translator = new ReferenceSchemeTranslatorImpl(dataPeer);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void findBlobScheme() throws RetrievalException,
 			NotFoundException {
@@ -73,6 +74,7 @@ public class RefSchemeTranslatorTest {
 				findBlobScheme(id));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerStringWasRegistered() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -193,6 +195,7 @@ public class RefSchemeTranslatorTest {
 				.dereference(dManager), ASCII));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void translatePreferBlob() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -212,6 +215,7 @@ public class RefSchemeTranslatorTest {
 				findBlobScheme(id), refScheme);
 	}
 
+	@SuppressWarnings("unchecked")
 	private BlobReferenceScheme<?> findBlobScheme(DataDocumentIdentifier id)
 			throws RetrievalException, NotFoundException {
 		DataDocument ddoc = (DataDocument) dManager.getEntity(id);
@@ -235,6 +239,7 @@ public class RefSchemeTranslatorTest {
 	 * for testing with {@link #translateBlobToBlobPreferBlob()}
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	private DataDocumentIdentifier makeTwoFakeRefs() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException, IOException {
 		BlobReferenceScheme blobRef = new BlobReferenceSchemeImpl(TEST_NS, UUID

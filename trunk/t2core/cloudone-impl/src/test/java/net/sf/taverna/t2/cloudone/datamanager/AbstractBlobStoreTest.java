@@ -39,6 +39,7 @@ public abstract class AbstractBlobStoreTest {
 
 	protected DataManager dManager;
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerBlobAndDereference() throws DereferenceException,
 			IOException, RetrievalException, NotFoundException {

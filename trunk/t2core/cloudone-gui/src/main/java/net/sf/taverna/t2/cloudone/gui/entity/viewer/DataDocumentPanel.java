@@ -79,6 +79,7 @@ public class DataDocumentPanel extends AbstractEntityPanel {
 									+ blobString.substring(0, 20));
 					blobType.addMouseListener(new MouseAdapter() {
 
+						@Override
 						public void mouseClicked(MouseEvent e) {
 							JFileChooser fc = new JFileChooser();
 							Preferences prefs = Preferences

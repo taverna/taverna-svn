@@ -1,9 +1,10 @@
 package net.sf.taverna.t2.cloudone.datamanager.file;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.xml.bind.JAXBException;
 
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
@@ -24,8 +25,6 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
-
-import org.jdom.JDOMException;
 
 /**
  * File based {@link DataManager}. Entities are stored in a directory
@@ -189,17 +188,15 @@ public class FileDataManager extends AbstractDataManager {
 		if (!entityPath.isFile()) {
 			return null;
 		}
-		Object bean;
-		try {
-			bean = BeanSerialiser.fromXMLFile(entityPath, getClass().getClassLoader());
-		} catch (JDOMException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
+		Object bean = null;
 
+			try {
+				bean = BeanSerialiser.getInstance().fromXMLFile(entityPath);
+			} catch (JAXBException e) {
+				throw new RetrievalException(
+						"Could not retreive data for "
+								+ entityPath);
+			}
 		if (id.getType().equals(IDType.Data)) {
 			DataDocument entity = new DataDocumentImpl();
 			if (bean instanceof DataDocumentBean) {
@@ -251,8 +248,8 @@ public class FileDataManager extends AbstractDataManager {
 		// TODO: Could serialise in a more portable and less space-hungry
 		// format
 		try {
-			BeanSerialiser.toXMLFile(bean, entityPath);
-		} catch (IOException e) {
+			BeanSerialiser.getInstance().toXMLFile(bean, entityPath);
+		} catch (JAXBException e) {
 			throw new StorageException(
 					"Could not store entity to" + entityPath, e);
 		}

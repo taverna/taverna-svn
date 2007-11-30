@@ -486,6 +486,7 @@ public class DataFacadeTest {
 		facade.register(deepList, 3);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerStringArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -501,6 +502,7 @@ public class DataFacadeTest {
 		assertEquals(strings[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerObjectArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -515,6 +517,7 @@ public class DataFacadeTest {
 		assertEquals(objects[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerIntArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -529,6 +532,7 @@ public class DataFacadeTest {
 		assertEquals(ints[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerLongArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -543,6 +547,7 @@ public class DataFacadeTest {
 		assertEquals(longs[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerFloatArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -557,6 +562,7 @@ public class DataFacadeTest {
 		assertEquals(floats[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerDoubleArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -571,6 +577,7 @@ public class DataFacadeTest {
 		assertEquals(doubles[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerBoolArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,
@@ -585,6 +592,7 @@ public class DataFacadeTest {
 		assertEquals(bools[2], resolved.get(2));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerStringStringArray() throws EmptyListException,
 			MalformedListException, UnsupportedObjectTypeException,

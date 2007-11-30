@@ -84,6 +84,7 @@ public class TranslatorRegistrySPITest {
 
 	TranslatorRegistry registry = TranslatorRegistry.getInstance();
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getInstances() {
 		List<Translator> instances = registry.getInstances();

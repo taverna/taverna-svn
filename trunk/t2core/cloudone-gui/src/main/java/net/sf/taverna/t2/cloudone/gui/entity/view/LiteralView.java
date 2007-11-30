@@ -11,7 +11,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -43,6 +42,7 @@ public class LiteralView extends
 	private RemoveAction removeAction = new RemoveAction();
 	private JComboBox comboBox;
 	private JPanel editPanel;
+	@SuppressWarnings("unused")
 	private JPanel viewPanel;
 
 	public LiteralView(LiteralModel model, EntityListView parentView) {

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +54,7 @@ public abstract class AbstractDataManagerTest {
 		assertEquals(depth, list.getDepth());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void addDocumentToList() throws NotFoundException, StorageException,
 			RetrievalException {
@@ -234,9 +236,10 @@ public abstract class AbstractDataManagerTest {
 		assertEquals(2, listId.getDepth());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void registerDocument() throws NotFoundException, StorageException,
-			RetrievalException {
+			RetrievalException, MalformedURLException {
 		// not sure what a reference scheme is so empty one will have to do
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
 		DataDocumentIdentifier docId = dManager.registerDocument(references);

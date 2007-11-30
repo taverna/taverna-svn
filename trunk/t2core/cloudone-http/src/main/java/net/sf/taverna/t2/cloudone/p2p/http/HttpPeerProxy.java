@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.bind.JAXBException;
+
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.PeerProxy;
@@ -58,7 +61,13 @@ public class HttpPeerProxy implements PeerProxy {
 			throw new NotFoundException(identifier);
 		}
 		Element beanableElem = doc.getRootElement();
-		Beanable<?> beanable = BeanSerialiser.beanableFromXML(beanableElem);
+		Beanable<?> beanable;
+		try {
+			beanable = BeanSerialiser.getInstance().beanableFromXML(beanableElem);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new RetrievalException("Could not deserialise " + beanableElem);
+		}
 		return (Entity<?, ?>) beanable;
 	}
 

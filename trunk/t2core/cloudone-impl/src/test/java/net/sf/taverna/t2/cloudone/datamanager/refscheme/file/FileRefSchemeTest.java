@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.xml.bind.JAXBException;
+
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
@@ -45,13 +47,13 @@ public class FileRefSchemeTest {
 
 	@Test
 	public void fromSerialisedBean() throws IOException, InterruptedException,
-			DereferenceException {
+			DereferenceException, JAXBException {
 		File file = File.createTempFile("test", ".tmp");
 		FileReferenceScheme fileRef = new FileReferenceScheme(file);
 		assertEquals("retrieved file did not match", file, fileRef.getFile());
-		Element xml = BeanSerialiser.beanableToXML(fileRef);
+		Element xml = BeanSerialiser.getInstance().beanableToXML(fileRef);
 		FileReferenceScheme newRef = (FileReferenceScheme) BeanSerialiser
-				.beanableFromXML(xml);
+				.getInstance().beanableFromXML(xml);
 		assertEquals("reference was not the same after creating from bean",
 				newRef, fileRef);
 		assertNull(newRef.getCharset());
@@ -61,9 +63,9 @@ public class FileRefSchemeTest {
 	public void fromSerialisedWithCharset() throws Exception {
 		File file = File.createTempFile("test", ".tmp");
 		FileReferenceScheme fileRef = new FileReferenceScheme(file, "UTF-8");
-		Element xml = BeanSerialiser.beanableToXML(fileRef);
+		Element xml = BeanSerialiser.getInstance().beanableToXML(fileRef);
 		FileReferenceScheme newRef = (FileReferenceScheme) BeanSerialiser
-				.beanableFromXML(xml);
+				.getInstance().beanableFromXML(xml);
 		assertEquals("retrieved file did not match", file, newRef.getFile());
 		assertEquals("UTF-8", newRef.getCharset());
 	}

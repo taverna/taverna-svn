@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 public class StringModel extends EntityModel implements Observable<StringModelEvent>{
 	
 	private MultiCaster<StringModelEvent> multiCaster = new MultiCaster<StringModelEvent>(this);
+	@SuppressWarnings("unused")
 	private EntityListModel parentModel;
 	private String string;
 	
@@ -31,6 +32,7 @@ public class StringModel extends EntityModel implements Observable<StringModelEv
 		
 	}
 	
+	@Override
 	public void remove() {
 		super.remove();
 		multiCaster.notify(new StringModelEvent(StringModelEvent.EventType.REMOVED, string));

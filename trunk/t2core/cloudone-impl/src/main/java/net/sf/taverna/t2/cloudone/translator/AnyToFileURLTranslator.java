@@ -28,6 +28,7 @@ public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 	/**
 	 * Translate the {@link ReferenceScheme} to a {@link HttpReferenceScheme}
 	 */
+	@SuppressWarnings("unchecked")
 	public HttpReferenceScheme translate(DataPeer dataPeer,
 			ReferenceScheme ref, TranslationPreference preference) throws DereferenceException,
 			TranslatorException {
@@ -72,6 +73,7 @@ public class AnyToFileURLTranslator implements Translator<HttpReferenceScheme> {
 	 * 
 	 * @return true if <code>toType</code> is an {@link HttpReferenceScheme}
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean canTranslate(DataPeer dataPeer, ReferenceScheme fromScheme,
 			TranslationPreference preference) {
 		Class<? extends ReferenceScheme> toType = preference.getReferenceSchemeClass();

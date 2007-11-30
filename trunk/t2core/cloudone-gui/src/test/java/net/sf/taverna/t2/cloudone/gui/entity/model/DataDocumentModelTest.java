@@ -16,6 +16,7 @@ public class DataDocumentModelTest {
 
 	DataDocumentModel model = new DataDocumentModel(null);
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void add() throws Exception {
 		ReferenceSchemeModel refSchemeMod = new DummyRefSchemeModel();
@@ -38,6 +39,7 @@ public class DataDocumentModelTest {
 		assertNull(observer.lastEvent);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void remove() throws Exception {
 		ReferenceSchemeModel otherRefScheme = new DummyRefSchemeModel();

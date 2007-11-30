@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
+import javax.xml.bind.JAXBException;
+
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
@@ -26,7 +28,7 @@ import org.restlet.resource.Variant;
 public class DataManagerResource extends Resource {
 
 	private static Logger logger = Logger.getLogger(DataManagerResource.class);
-	
+
 	private String entityIdString;
 	private DataManager dataManager;
 	private EntityIdentifier entityId;
@@ -37,7 +39,7 @@ public class DataManagerResource extends Resource {
 		super(context, request, response);
 		getVariants().add(new Variant(MediaType.TEXT_XML));
 		entityIdString = request.getResourceRef().getRemainingPart();
-		
+
 		dataManager = (DataManager) context.getAttributes().get("dataManager");
 		try {
 			entityId = EntityIdentifiers.parse(entityIdString);
@@ -62,7 +64,13 @@ public class DataManagerResource extends Resource {
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		Element xml = BeanSerialiser.beanableToXML(entity);
+		Element xml;
+		try {
+			xml = BeanSerialiser.getInstance().beanableToXML(entity);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new RetrievalException("Could not retrieve " + entity);
+		}
 		String xmlString = new XMLOutputter(Format.getRawFormat())
 				.outputString(xml);
 		// TODO: Should use streaming

@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.gui.entity.model;
 
-import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;

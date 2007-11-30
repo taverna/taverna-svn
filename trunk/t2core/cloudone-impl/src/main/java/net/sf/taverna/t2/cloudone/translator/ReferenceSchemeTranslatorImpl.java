@@ -129,6 +129,7 @@ public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator 
 			this.preferences = preferences;
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		protected ReferenceScheme execute() throws RetrievalException,
 				NotFoundException, TranslatorException {

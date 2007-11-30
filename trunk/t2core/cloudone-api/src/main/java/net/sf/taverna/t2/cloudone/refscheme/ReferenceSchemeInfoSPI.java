@@ -13,6 +13,7 @@ import java.util.Set;
  *
  * @param <RS> {@link ReferenceScheme} subclass
  */
+@SuppressWarnings("unchecked")
 public interface ReferenceSchemeInfoSPI<RS extends ReferenceScheme> {
 
 	/**

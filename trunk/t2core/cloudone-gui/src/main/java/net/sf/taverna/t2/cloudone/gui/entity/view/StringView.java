@@ -1,37 +1,28 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
-import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
-import net.sf.taverna.t2.cloudone.gui.entity.model.StringModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.StringModel;
-import net.sf.taverna.t2.cloudone.gui.entity.view.LiteralView.EditAction;
-import net.sf.taverna.t2.cloudone.gui.entity.view.LiteralView.OKAction;
-import net.sf.taverna.t2.cloudone.gui.entity.view.LiteralView.RemoveAction;
+import net.sf.taverna.t2.cloudone.gui.entity.model.StringModelEvent;
 
 import org.apache.log4j.Logger;
 
 public class StringView extends
 		EntityView<StringModel, String, StringModelEvent> {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(StringView.class);
 	private EntityListView parentView;
 	private JTextArea textArea;
@@ -41,10 +32,13 @@ public class StringView extends
 	private OKAction okAction = new OKAction();
 	private EditAction editAction = new EditAction();
 	private RemoveAction removeAction = new RemoveAction();
+	@SuppressWarnings("unused")
 	private JComboBox comboBox;
 	private JPanel editPanel;
+	@SuppressWarnings("unused")
 	private JPanel viewPanel;
 	private StringModel model;
+	@SuppressWarnings("unused")
 	private String string;
 
 	public StringView(StringModel model, EntityListView parentView) {

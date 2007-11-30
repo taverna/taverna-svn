@@ -7,6 +7,7 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
  * @author Ian Dunlop
  * 
  */
+@SuppressWarnings("unchecked")
 public class DataDocumentModelEvent extends ModelEvent<ReferenceSchemeModel> {
 
 	/**

@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.JAXBException;
+
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
@@ -57,8 +59,9 @@ public class BeanTest {
 
 	XMLOutputter xo = new XMLOutputter();
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testDataDocument() throws JDOMException, IOException {
+	public void testDataDocument() throws JDOMException, IOException, JAXBException {
 		String urn = "urn:t2data:ddoc://dataNS/data0";
 
 		// Generate a set of two reference schemes
@@ -83,6 +86,7 @@ public class BeanTest {
 		assertEquals(3, doc.getReferenceSchemes().size());
 
 		DataDocumentBean bean = serialised(doc.getAsBean());
+		@SuppressWarnings("unused")
 		List<ReferenceBean> refs = bean.getReferences();
 		
 		DataDocument newDoc = new DataDocumentImpl();
@@ -97,7 +101,7 @@ public class BeanTest {
 	}
 
 	@Test
-	public void testDataDocumentIdentifier() {
+	public void testDataDocumentIdentifier() throws JAXBException {
 		DataDocumentIdentifier id = new DataDocumentIdentifier(
 				"urn:t2data:ddoc://dataNS/data0");
 		assertEquals("dataNS", id.getNamespace());
@@ -117,7 +121,7 @@ public class BeanTest {
 	}
 
 	@Test
-	public void testEntityList() {
+	public void testEntityList() throws JAXBException {
 		EntityListIdentifier id = new EntityListIdentifier(
 				"urn:t2data:list://myNS/list1/2");
 		EntityListIdentifier id2 = new EntityListIdentifier(
@@ -144,7 +148,7 @@ public class BeanTest {
 	}
 
 	@Test
-	public void testEntityListIdentifier() {
+	public void testEntityListIdentifier() throws JAXBException {
 		EntityListIdentifier id = new EntityListIdentifier(
 				"urn:t2data:list://fish/list5311/2");
 		assertEquals("fish", id.getNamespace());
@@ -163,7 +167,7 @@ public class BeanTest {
 	}
 
 	@Test
-	public void testErrorDocument() throws JDOMException, IOException {
+	public void testErrorDocument() throws JDOMException, IOException, JAXBException {
 		ErrorDocumentIdentifier id = new ErrorDocumentIdentifier(
 				"urn:t2data:error://fish/error1/3/2");
 		Throwable throwable = new Throwable("failure", new Exception(
@@ -185,7 +189,7 @@ public class BeanTest {
 	}
 
 	@Test
-	public void testErrorDocumentIdentifier() {
+	public void testErrorDocumentIdentifier() throws JAXBException {
 		ErrorDocumentIdentifier id = new ErrorDocumentIdentifier(
 				"urn:t2data:error://fish/error1/3/2");
 		assertEquals("fish", id.getNamespace());
@@ -207,7 +211,7 @@ public class BeanTest {
 
 	@Test
 	public void testLiteral() throws MalformedIdentifierException,
-			UnsupportedEncodingException {
+			UnsupportedEncodingException, JAXBException {
 		Literal id = new Literal(
 				"urn:t2data:literal://string.literal/Some%20funky%2Fcharacters");
 		assertEquals("string.literal", id.getNamespace());
@@ -227,7 +231,7 @@ public class BeanTest {
 
 	@Test
 	public void testLiteralFloat() throws MalformedIdentifierException,
-			UnsupportedEncodingException {
+			UnsupportedEncodingException, JAXBException {
 		Literal id = new Literal("urn:t2data:literal://float.literal/-15.87");
 		assertEquals("float.literal", id.getNamespace());
 		assertEquals(0, id.getDepth());
@@ -245,7 +249,7 @@ public class BeanTest {
 
 	@Test
 	public void testLiteralInfinity() throws MalformedIdentifierException,
-			UnsupportedEncodingException {
+			UnsupportedEncodingException, JAXBException {
 		Literal id = Literal.buildLiteral(Double.NEGATIVE_INFINITY);
 		assertEquals("double.literal", id.getNamespace());
 		assertEquals(0, id.getDepth());
@@ -264,7 +268,7 @@ public class BeanTest {
 
 	@Test
 	public void testLiteralMaxDouble() throws MalformedIdentifierException,
-			UnsupportedEncodingException {
+			UnsupportedEncodingException, JAXBException {
 		Literal id = Literal.buildLiteral(Double.MAX_VALUE);
 		assertEquals("double.literal", id.getNamespace());
 		assertEquals(0, id.getDepth());
@@ -283,7 +287,7 @@ public class BeanTest {
 
 	@Test
 	public void testURLReferenceScheme() throws IOException,
-			DereferenceException {
+			DereferenceException, JAXBException {
 		File newFile = File.createTempFile("test", ".txt");
 		FileUtils.writeStringToFile(newFile, "Test data\n", "utf8");
 		URL fileURL = newFile.toURI().toURL();
@@ -300,17 +304,18 @@ public class BeanTest {
 
 	/**
 	 * Serialise and deserialise using {@link BeanSerialiser}.
-	 *
+	 * 
 	 * @param bean
 	 *            Bean to be serialised
 	 * @return The deserialised bean
+	 * @throws JAXBException
 	 */
 	@SuppressWarnings("unchecked")
-	private <Bean> Bean serialised(Bean bean) {
+	private <Bean> Bean serialised(Bean bean) throws JAXBException {
 		ClassLoader cl = bean.getClass().getClassLoader();
 		Element elem;
-		elem = BeanSerialiser.toXML(bean);
-		return (Bean) BeanSerialiser.fromXML(elem, cl);
+		elem = BeanSerialiser.getInstance().toXML(bean);
+		return (Bean) BeanSerialiser.getInstance().fromXML(elem, cl);
 	}
 
 }

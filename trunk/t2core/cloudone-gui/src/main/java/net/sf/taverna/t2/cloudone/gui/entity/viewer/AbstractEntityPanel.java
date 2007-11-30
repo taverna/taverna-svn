@@ -82,6 +82,7 @@ public abstract class AbstractEntityPanel extends JPanel {
 	}
 
 	public class ToggleDetailsMouseListener extends MouseAdapter {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (details != null) {
 				// flip visible setting

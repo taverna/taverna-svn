@@ -1,6 +1,5 @@
-package net.sf.taverna.t2.cloudone.bean;
+package net.sf.taverna.t2.cloudone.util;
 
-import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.jboss.jaxb.intros.IntroductionsAnnotationReader;
 import org.jboss.jaxb.intros.IntroductionsConfigParser;
 import org.jboss.jaxb.intros.configmodel.JaxbIntros;
-import org.junit.Test;
+
 
 import com.sun.xml.bind.api.JAXBRIContext;
 
@@ -41,11 +40,15 @@ public class AnnotationTest {
 	
 	public static void main(String[] args) throws JAXBException, IOException {
 		AnnotationTest annotationTest = new AnnotationTest();
+		
 		annotationTest.annotateDataDoc();
 		annotationTest.annotateEntityList();
 		annotationTest.annotateErrorDoc();
+		System.exit(0);
 	}
-	@Test
+
+
+	
 	public void annotateDataDoc() throws JAXBException, IOException {
 
 		JAXBContext context = makeJAXBContext();
@@ -66,14 +69,9 @@ public class AnnotationTest {
 		marshaller.marshal(docBean, file);
 
 		Unmarshaller unmarshaller = context.createUnmarshaller();
+		@SuppressWarnings("unused")
 		DataDocumentBean retrDocBean = (DataDocumentBean) unmarshaller
 				.unmarshal(file);
-		assertEquals(docBean.getIdentifier(), retrDocBean.getIdentifier());
-		assertEquals(docBean.getReferences().size(), retrDocBean
-				.getReferences().size());
-		HttpReferenceBean retrRefBean = (HttpReferenceBean) retrDocBean
-				.getReferences().get(0);
-		assertEquals(url, retrRefBean.getUrl());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -90,6 +88,8 @@ public class AnnotationTest {
 						+ beanableFactory);
 				continue;
 			}
+			// SUPER-HACK
+//			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 			JaxbIntros beanableConfig = IntroductionsConfigParser
 					.parseConfig(annotationStream);
 			mergedConfig.getClazz().addAll(beanableConfig.getClazz());
@@ -109,7 +109,7 @@ public class AnnotationTest {
 		return context;
 	}
 
-	@Test
+
 	public void annotateErrorDoc() throws JAXBException {
 		
 		JAXBContext context = makeJAXBContext();
@@ -124,7 +124,6 @@ public class AnnotationTest {
 		marshaller.marshal(bean, System.out);
 	}
 	
-	@Test
 	public void annotateEntityList() throws JAXBException  {
 		JAXBContext context = makeJAXBContext();
 		EntityListBean bean = new EntityListBean();

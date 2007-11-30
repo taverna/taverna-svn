@@ -11,6 +11,7 @@ public class SPIRegistryTest {
 
 	SPIRegistry<DummySPI> registry = new SPIRegistry<DummySPI>(DummySPI.class);
 	
+	@SuppressWarnings("deprecation")
 	@Test
 	public void getClasses() {
 		Map<String, Class<? extends DummySPI>> classes = registry.getClasses();

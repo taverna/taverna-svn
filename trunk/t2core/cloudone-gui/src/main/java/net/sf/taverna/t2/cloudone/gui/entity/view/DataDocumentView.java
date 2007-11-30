@@ -1,12 +1,10 @@
 package net.sf.taverna.t2.cloudone.gui.entity.view;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -20,6 +18,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
+@SuppressWarnings("unchecked")
 public class DataDocumentView extends
 		EntityView<DataDocumentModel, ReferenceSchemeModel, DataDocumentModelEvent> {
 	

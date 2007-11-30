@@ -31,6 +31,7 @@ import org.junit.Test;
  */
 public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void checkDocumentCounter() throws NotFoundException, StorageException, RetrievalException {
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
@@ -49,6 +50,7 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 				.toString());
 	}
 	
+	@Override
 	@Before
 	public void setDataManager() {
 		dManager = new InMemoryDataManager(TEST_NS,
