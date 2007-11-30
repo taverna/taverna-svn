@@ -21,11 +21,12 @@ import javax.wsdl.PortType;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.sf.taverna.wsdl.parser.WSDLParser;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 import org.xml.sax.SAXException;
 
 /**

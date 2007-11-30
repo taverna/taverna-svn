@@ -23,6 +23,10 @@ import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.xml.namespace.QName;
 
+import net.sf.taverna.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.wsdl.parser.UnknownOperationException;
+import net.sf.taverna.wsdl.parser.WSDLParser;
+
 import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.WSIFOperation;
@@ -43,9 +47,6 @@ import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
 import org.embl.ebi.escience.scuflworkers.java.XMLSplittableInputPort;
 import org.embl.ebi.escience.scuflworkers.java.XMLSplittableOutputPort;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.UnknownOperationException;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 
 /**
  * A processor based on an operation defined within a WSDL file accessible to

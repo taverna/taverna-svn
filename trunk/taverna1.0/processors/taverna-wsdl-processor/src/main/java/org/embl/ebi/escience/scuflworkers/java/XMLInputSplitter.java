@@ -8,6 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
+import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
+import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
+import net.sf.taverna.wsdl.parser.TypeDescriptor;
+import net.sf.taverna.wsdl.parser.WSDLParser;
+import net.sf.taverna.wsdl.xmlsplitter.XMLSplitterSerialisationHelper;
+
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.Base64;
 import org.embl.ebi.escience.baclava.DataThing;
@@ -18,11 +25,6 @@ import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.PortCreationException;
 import org.embl.ebi.escience.scufl.SemanticMarkup;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.ArrayTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.BaseTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.ComplexTypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.TypeDescriptor;
-import org.embl.ebi.escience.scuflworkers.wsdl.parser.WSDLParser;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;

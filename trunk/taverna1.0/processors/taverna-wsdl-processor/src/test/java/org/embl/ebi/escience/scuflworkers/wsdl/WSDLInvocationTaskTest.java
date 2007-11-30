@@ -41,7 +41,7 @@ public class WSDLInvocationTaskTest extends WSDLBasedTestCase {
 				processor, new LogLevel(LogLevel.NONE), "bob", "ctx");
 		WSDLInvocationTask task = new WSDLInvocationTask(processor);
 		Map result = task.execute(new HashMap(), procTask);
-		assertEquals("incorrect number of results", 2, result.size());
+		assertEquals("incorrect number of results", 2, result.size(	));
 		DataThing thing = (DataThing) result.get("return");
 		assertTrue("guid returned should be a string",
 				thing.getDataObject() instanceof String);

@@ -7,8 +7,13 @@ package org.embl.ebi.escience.scuflworkers.wsdl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.EngineConfiguration;
@@ -18,10 +23,12 @@ import org.apache.axis.utils.ClassUtils;
 import org.apache.axis.utils.ClasspathUtils;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.IProcessorTask;
+import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.ProcessorTaskWorker;
-import org.embl.ebi.escience.scuflworkers.wsdl.soap.WSDLSOAPInvoker;
 import org.w3c.dom.Element;
 
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
@@ -75,13 +82,22 @@ public class WSDLInvocationTask implements ProcessorTaskWorker {
 	 */
 	public Map execute(Map inputMap, IProcessorTask parentTask)
 			throws TaskExecutionException {
-		Map result = null;
-		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor);
+		Map<String,DataThing> result = new HashMap<String, DataThing>();
+		
+		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(processor.parser,processor.operationName,Arrays.asList(processor.outNames));
 		try {
+			Map<String,Object> resultObjects = new HashMap<String, Object>();
+			Map<String,Object> inputObjectMap = new HashMap<String, Object>();
+			for (String key : ((Map<String,Object>)inputMap).keySet()) {
+				inputObjectMap.put(key, ((DataThing)inputMap.get(key)).getDataObject());
+			}
 			if (isSecureService()) {
-				result = invoker.invoke(inputMap, securityConfiguration);
+				resultObjects = invoker.invoke(inputObjectMap, securityConfiguration);
 			} else {
-				result = invoker.invoke(inputMap);
+				resultObjects = invoker.invoke(inputObjectMap);
+			}
+			for (String key : resultObjects.keySet()) {
+				result.put(key, DataThingFactory.bake(resultObjects.get(key)));
 			}
 		} catch (AxisFault af) {
 			String reason = af.getFaultReason();
