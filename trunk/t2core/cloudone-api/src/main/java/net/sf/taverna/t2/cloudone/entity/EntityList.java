@@ -14,10 +14,10 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 /**
  * A named list of entity identifiers. Represents a single list within the data
  * manager system.
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  */
 public class EntityList implements
 		Entity<EntityListIdentifier, EntityListBean>, List<EntityIdentifier> {
@@ -29,7 +29,7 @@ public class EntityList implements
 	/**
 	 * Construct an EntityList that must immediately be populated by
 	 * {@link #setFromBean(EntityListBean)}.
-	 *
+	 * 
 	 */
 	public EntityList() {
 		identifier = null;
@@ -39,7 +39,7 @@ public class EntityList implements
 	/**
 	 * Construct an EntityList identified by an {@link EntityListIdentifier}
 	 * containing a {@link List} of {@link EntityIdentifier}s.
-	 *
+	 * 
 	 * @param identifier
 	 *            The identifying {@link EntityListIdentifier}
 	 * @param list
@@ -116,7 +116,7 @@ public class EntityList implements
 
 	/**
 	 * Check equality against <code>obj</code>.
-	 *
+	 * 
 	 * @param obj
 	 * @return true if and only if <code>obj</code> is an {@link EntityList}
 	 *         and its {@link #getIdentifier()} equals this
@@ -255,7 +255,7 @@ public class EntityList implements
 	 * Populate from an {@link EntityListBean}. The EntityList must have been
 	 * constructed using {@link #EntityList()}, and this method can only be
 	 * called once.
-	 *
+	 * 
 	 */
 	public void setFromBean(EntityListBean bean) {
 		if (identifier != null || !list.isEmpty()) {
@@ -264,8 +264,10 @@ public class EntityList implements
 		}
 		identifier = (EntityListIdentifier) EntityIdentifiers.parse(bean
 				.getIdentifier());
-		for (String id : bean.getContent()) {
-			list.add(EntityIdentifiers.parse(id));
+		if (bean.getContent() != null) {
+			for (String id : bean.getContent()) {
+				list.add(EntityIdentifiers.parse(id));
+			}
 		}
 	}
 
