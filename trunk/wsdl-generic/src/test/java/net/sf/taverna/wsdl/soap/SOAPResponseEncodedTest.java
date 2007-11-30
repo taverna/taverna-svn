@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseEncodedTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
+ * Last modified on   $Date: 2007-11-30 12:13:37 $
  *               by   $Author: sowen70 $
  * Created on 08-May-2006
  *****************************************************************/
@@ -45,7 +45,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
-import net.sf.taverna.wsdl.soap.SOAPResponseEncodedParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.apache.axis.message.SOAPBodyElement;

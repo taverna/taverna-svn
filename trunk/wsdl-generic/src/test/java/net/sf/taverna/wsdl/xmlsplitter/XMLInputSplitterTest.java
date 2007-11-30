@@ -1,15 +1,16 @@
 package net.sf.taverna.wsdl.xmlsplitter;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
-import net.sf.taverna.wsdl.xmlsplitter.XMLInputSplitter;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class XMLInputSplitterTest implements LocationConstants{
 

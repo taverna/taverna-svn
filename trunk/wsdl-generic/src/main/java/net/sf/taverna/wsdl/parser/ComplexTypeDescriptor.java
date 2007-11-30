@@ -3,8 +3,6 @@ package net.sf.taverna.wsdl.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.wsdl.parser.TypeDescriptor;
-
 /**
  * A TypeDescriptor that specifically describes a complex type
  * 

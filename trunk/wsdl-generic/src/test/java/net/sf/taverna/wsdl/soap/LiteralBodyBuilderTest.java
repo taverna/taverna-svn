@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
-import net.sf.taverna.wsdl.soap.BodyBuilder;
-import net.sf.taverna.wsdl.soap.BodyBuilderFactory;
-import net.sf.taverna.wsdl.soap.LiteralBodyBuilder;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.apache.axis.message.SOAPBodyElement;

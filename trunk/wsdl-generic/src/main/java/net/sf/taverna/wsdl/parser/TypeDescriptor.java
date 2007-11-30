@@ -6,10 +6,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
-import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
-import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
-
 
 /**
  * Base class for all descriptors for type

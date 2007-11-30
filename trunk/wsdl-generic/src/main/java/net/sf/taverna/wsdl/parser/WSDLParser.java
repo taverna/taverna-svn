@@ -36,13 +36,6 @@ import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
-
-import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
-import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
-import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
-import net.sf.taverna.wsdl.parser.TypeDescriptor;
-import net.sf.taverna.wsdl.parser.UnknownOperationException;
-
 import org.xml.sax.SAXException;
 
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;

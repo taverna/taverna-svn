@@ -8,12 +8,6 @@ import java.util.List;
 
 import javax.wsdl.Operation;
 
-import net.sf.taverna.wsdl.parser.ArrayTypeDescriptor;
-import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
-import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
-import net.sf.taverna.wsdl.parser.TypeDescriptor;
-import net.sf.taverna.wsdl.parser.WSDLParser;
-
 import org.junit.Test;
 
 public class WSDLParserTest {

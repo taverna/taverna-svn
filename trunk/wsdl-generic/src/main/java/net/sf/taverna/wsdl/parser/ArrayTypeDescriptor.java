@@ -1,6 +1,5 @@
 package net.sf.taverna.wsdl.parser;
 
-import net.sf.taverna.wsdl.parser.TypeDescriptor;
 
 /**
  * A TypeDescriptor that specifically describes an array type

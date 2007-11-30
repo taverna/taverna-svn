@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SOAPResponseLiteralTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
+ * Last modified on   $Date: 2007-11-30 12:13:37 $
  *               by   $Author: sowen70 $
  * Created on 11-May-2006
  *****************************************************************/
@@ -48,8 +48,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import net.sf.taverna.wsdl.parser.BaseTypeDescriptor;
 import net.sf.taverna.wsdl.parser.ComplexTypeDescriptor;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
-import net.sf.taverna.wsdl.soap.SOAPResponseLiteralParser;
-import net.sf.taverna.wsdl.soap.SOAPResponsePrimitiveLiteralParser;
 
 import org.apache.axis.message.SOAPBodyElement;
 import org.junit.Test;

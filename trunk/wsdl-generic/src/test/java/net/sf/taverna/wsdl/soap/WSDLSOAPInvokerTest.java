@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-28 16:05:45 $
+ * Last modified on   $Date: 2007-11-30 12:13:37 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -44,7 +44,6 @@ import java.util.Map;
 
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.WSDLParser;
-import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.junit.Ignore;

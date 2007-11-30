@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
-import net.sf.taverna.wsdl.soap.SOAPResponseParser;
-import net.sf.taverna.wsdl.soap.SOAPResponseParserFactory;
-import net.sf.taverna.wsdl.soap.SOAPResponsePrimitiveLiteralParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
 
 import org.junit.Test;
