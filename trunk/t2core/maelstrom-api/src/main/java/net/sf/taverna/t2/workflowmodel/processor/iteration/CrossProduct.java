@@ -20,7 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * @author Tom Oinn
  * 
  */
-public class CrossProduct extends AbstractIterationStrategyNode {
+public class CrossProduct extends CompletionHandlingAbstractIterationStrategyNode {
 
 	private Map<String, List<Set<Job>>> ownerToCache = new HashMap<String, List<Set<Job>>>();
 
@@ -28,7 +28,7 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 	 * Receive a job, emit jobs corresponding to the orthogonal join of the new
 	 * job with all jobs in all other input lists.
 	 */
-	public synchronized void receiveJob(int inputIndex, Job newJob) {
+	public synchronized void innerReceiveJob(int inputIndex, Job newJob) {
 		if (!ownerToCache.containsKey(newJob.getOwningProcess())) {
 			List<Set<Job>> perInputCache = new ArrayList<Set<Job>>();
 			for (int i = 0; i < getChildCount(); i++) {
@@ -88,16 +88,13 @@ public class CrossProduct extends AbstractIterationStrategyNode {
 		return newSet;
 	}
 
-	public synchronized void receiveCompletion(int inputIndex,
+	public synchronized void innerReceiveCompletion(int inputIndex,
 			Completion completion) {
-		if (completion.isFinal()) {
-			boolean allDone = receiveFinalCompletion(completion
-					.getOwningProcess(), inputIndex, completion.getContext());
-			if (allDone) {
-				ownerToCache.remove(completion.getOwningProcess());
-			}
-		}
+		// Do nothing, let the superclass handle final completion events
+	}
 
+	protected final synchronized void cleanUp(String owningProcess) {
+		ownerToCache.remove(owningProcess);
 	}
 
 	public synchronized int getIterationDepth(Map<String, Integer> inputDepths)

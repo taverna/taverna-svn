@@ -16,11 +16,11 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
  * @author Tom Oinn
  * 
  */
-public class DotProduct extends AbstractIterationStrategyNode {
+public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode {
 
 	Map<String, TreeCache[]> ownerToCache = new HashMap<String, TreeCache[]>();
 
-	public synchronized void receiveJob(int inputIndex, Job newJob) {
+	public synchronized void innerReceiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
 		if (!ownerToCache.containsKey(owningProcess)) {
 			TreeCache[] caches = new TreeCache[getChildCount()];
@@ -46,7 +46,8 @@ public class DotProduct extends AbstractIterationStrategyNode {
 			}
 		}
 		if (foundMatch) {
-			Job j = new Job(owningProcess, indexArray, newDataMap, newJob.getContext());
+			Job j = new Job(owningProcess, indexArray, newDataMap, newJob
+					.getContext());
 			// Remove all copies of the job with this index from the cache,
 			// we'll never use it
 			// again and it pays to be tidy
@@ -62,17 +63,15 @@ public class DotProduct extends AbstractIterationStrategyNode {
 	 * the completion event is a final one. We can potentially implement finer
 	 * grained logic here in the future.
 	 */
-	public synchronized void receiveCompletion(int inputIndex,
+	public synchronized void innerReceiveCompletion(int inputIndex,
 			Completion completion) {
-		if (completion.isFinal()) {
-			boolean allDone = receiveFinalCompletion(completion
-					.getOwningProcess(), inputIndex, completion.getContext());
-			if (allDone) {
-				ownerToCache.remove(completion.getOwningProcess());
-				// BUG - the receiveFinalCompletion already did this! 
-				// pushCompletion(completion);
-			}
-		}
+		// Do nothing, let the superclass handle final completion events, ignore
+		// others for now (although in theory we should be able to do better
+		// than this really)
+	}
+
+	protected synchronized void cleanUp(String owningProcess) {
+		ownerToCache.remove(owningProcess);
 	}
 
 	public int getIterationDepth(Map<String, Integer> inputDepths)

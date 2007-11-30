@@ -24,9 +24,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 public abstract class AbstractIterationStrategyNode implements
 		IterationStrategyNode {
 
+	
 	private IterationStrategyNode parent = null;
-
-	private Map<String, boolean[]> ownerToCompletion = new HashMap<String, boolean[]>();
 
 	private List<IterationStrategyNode> children;
 
@@ -34,16 +33,26 @@ public abstract class AbstractIterationStrategyNode implements
 		children = new ArrayList<IterationStrategyNode>();
 	}
 
+	
+	/**
+	 * Implements IterationStrategyNode
+	 */
 	public final List<IterationStrategyNode> getChildren() {
 		return this.children;
 	}
 
-	protected final synchronized void addChild(AbstractIterationStrategyNode newChild) {
+	/**
+	 * Implements IterationStrategyNode
+	 */
+	protected final synchronized void addChild(
+			AbstractIterationStrategyNode newChild) {
 		newChild.setParent(this);
 	}
 
-	public final synchronized void setParent(
-			IterationStrategyNode newParent) {
+	/**
+	 * Implements IterationStrategyNode
+	 */
+	public final synchronized void setParent(IterationStrategyNode newParent) {
 		if (newParent != null) {
 			this.parent = newParent;
 			if (newParent.getChildren().contains(this) == false) {
@@ -89,45 +98,6 @@ public abstract class AbstractIterationStrategyNode implements
 	public final void clear() {
 		children.clear();
 		this.parent = null;
-	}
-
-	/**
-	 * Receive a total completion event, this is functionality that all
-	 * subclasses must provide. The logic is that when all inputs for a given
-	 * job receive a completion event with an empty index the node must emit a
-	 * corresponding total completion event.
-	 * 
-	 * @return whether the final completion event was sent
-	 */
-	protected final boolean receiveFinalCompletion(String owningProcess,
-			int inputIndex, InvocationContext context) {
-		// Only interested in complete completion events, partials are
-		// of no use in this system as the way events combine means we
-		// can't draw any useful information from partial completion
-		// when iterating in this manner
-		if (!ownerToCompletion.containsKey(owningProcess)) {
-			ownerToCompletion.put(owningProcess, new boolean[getChildCount()]);
-			for (int i = 0; i < ownerToCompletion.get(owningProcess).length; i++) {
-				ownerToCompletion.get(owningProcess)[i] = false;
-			}
-		}
-		boolean[] completionStatus = ownerToCompletion.get(owningProcess);
-		completionStatus[inputIndex] = true;
-		boolean complete = true;
-		for (int i = 0; i < completionStatus.length; i++) {
-			if (completionStatus[i] == false) {
-				complete = false;
-			}
-		}
-		if (complete) {
-			// Purge the caches and sent the 'everything done' message to
-			// the parent
-			ownerToCompletion.remove(owningProcess);
-			pushCompletion(new Completion(owningProcess, new int[0], context));
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	/**
