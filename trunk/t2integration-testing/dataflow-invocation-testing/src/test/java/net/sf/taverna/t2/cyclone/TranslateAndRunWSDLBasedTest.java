@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.cyclone;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.StringReader;
 import java.util.List;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
@@ -12,10 +12,6 @@ import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.junit.Test;
-
-import com.sun.mail.iap.ByteArray;
-
-import static org.junit.Assert.*;
 
 public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 
@@ -33,7 +29,7 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -79,7 +75,7 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		

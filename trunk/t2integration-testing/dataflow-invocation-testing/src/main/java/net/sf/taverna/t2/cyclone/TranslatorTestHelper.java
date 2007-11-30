@@ -11,7 +11,9 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -19,7 +21,6 @@ import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
@@ -46,6 +47,7 @@ public class TranslatorTestHelper {
 
 	protected AbstractDataManager dataManager;
 	protected DataFacade dataFacade;
+	protected InvocationContext context;
 	
 	@SuppressWarnings("unchecked")
 	@Before
@@ -53,7 +55,11 @@ public class TranslatorTestHelper {
 		dataManager = new InMemoryDataManager("namespace",
 				Collections.EMPTY_SET);
 		dataFacade=new DataFacade(dataManager);
-		ContextManager.baseManager = dataManager;
+		context =  new InvocationContext() {
+			public DataManager getDataManager() {
+				return dataManager;
+			}
+		};
 	}
 
 	protected void setUpRavenRepository() throws IOException {

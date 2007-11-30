@@ -36,7 +36,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -72,7 +72,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -95,7 +95,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -119,7 +119,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -151,7 +151,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		for (String input : inputs) {
 			
 			WorkflowInstanceFacade facade;
-			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow);
+			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
 			CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 			facade.addResultListener(listener);
 			
