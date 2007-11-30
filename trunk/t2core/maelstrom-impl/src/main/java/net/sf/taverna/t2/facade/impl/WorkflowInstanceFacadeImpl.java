@@ -37,11 +37,10 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
 		facadeResultListener = new ResultListener() {
 
-			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName, String owningProcess) {
+			public void resultTokenProduced(WorkflowDataToken token, String portName, String owningProcess) {
 				if (instanceOwningProcessId.equals(owningProcess)) {
 					for (ResultListener resultListener : resultListeners.toArray(new ResultListener[resultListeners.size()])) {
-						resultListener.resultTokenProduced(token, index,
+						resultListener.resultTokenProduced(token,
 								portName, owningProcess);
 					}
 				}

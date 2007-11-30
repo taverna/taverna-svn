@@ -8,10 +8,10 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflow;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.impl.DummyDataflowOutputPort;
@@ -58,8 +58,7 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	public void testAddResultListener() {
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token, String portName, String owningProcess) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -193,8 +192,7 @@ public class WorkflowInstanceFacadeImplTest {
 	public void testRemoveResultListener() {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -203,8 +201,7 @@ public class WorkflowInstanceFacadeImplTest {
 		facade.addResultListener(listener);
 		
 		ResultListener listener2 = new ResultListener() {
-			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {	
 			}
 		};
 		
@@ -221,8 +218,7 @@ public class WorkflowInstanceFacadeImplTest {
 	public void testResultListenerAndOutputPorts() {
 		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(EntityIdentifier token,
-					int[] index, String portName, String owningProcess) {
+			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {
 			}
 		};
 		DummyDataflowOutputPort outPort = new DummyDataflowOutputPort("test_output",dataflow);

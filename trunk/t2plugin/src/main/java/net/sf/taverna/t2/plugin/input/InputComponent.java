@@ -39,8 +39,8 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
 
 public class InputComponent<InputType extends DataflowInputPort> extends JPanel {
 
@@ -50,6 +50,7 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	private DataManager dataManager;
 	private DataFacade dataFacade;
 	private final InputComponentCallback<InputType> runMethod;
+	private InvocationContext context;
 
 	/**
 	 * Method to be invoked 
@@ -66,9 +67,10 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 		public String getButtonText();
 	}
 	
-	public InputComponent(List<InputType> inputPorts, InputComponentCallback<InputType> runMethod) {
+	public InputComponent(List<InputType> inputPorts, InputComponentCallback<InputType> runMethod, InvocationContext context) {
 		this.inputPorts = inputPorts;
 		this.runMethod = runMethod;
+		this.context=context;
 		initialise();
 	}
 
@@ -95,7 +97,7 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	}
 
 	private DataManager getDataManager() {
-		return ContextManager.getDataManager("");
+		return context.getDataManager();
 	}
 
 	private Component createEntityPanel(InputType dataflowInputPort) {

@@ -9,6 +9,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.TokenOrderException;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -69,12 +70,11 @@ public class DataflowActivity extends
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
-					public void resultTokenProduced(EntityIdentifier id,
-							int[] index, String port, String owningProcess) {
+					public void resultTokenProduced(WorkflowDataToken dataToken, String port, String owningProcess) {
 						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
-						outputData.put(port, id);
-						callback.receiveResult(outputData, index);
-						if (index.length == 0) {
+						outputData.put(port, dataToken.getData());
+						callback.receiveResult(outputData, dataToken.getIndex());
+						if (dataToken.getIndex().length == 0) {
 							if (--outputPortCount == 0) {
 								facade.removeResultListener(this);
 							}

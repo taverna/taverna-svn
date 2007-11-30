@@ -12,7 +12,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.facade.ResultListener;
-import net.sf.taverna.t2.workflowmodel.impl.ContextManager;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 
 import org.apache.log4j.Logger;
 
@@ -31,18 +31,21 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		this.depth = depth;
 	}
 
-	public void resultTokenProduced(EntityIdentifier token, int[] index,
-			String portName, String owningProcess) {
+	public void resultTokenProduced(WorkflowDataToken dataToken,String portName, String owningProcess) {
+		int [] index=dataToken.getIndex();
 		if (this.portName.equals(portName)) {
 			if (depthSeen == -1)
 				depthSeen = index.length;
 
 			if (index.length>=depthSeen) {
+				DataFacade dataFacade = new DataFacade(dataToken.getContext().getDataManager());
+				EntityIdentifier entityToken = dataToken.getData();
 			
-				if (token.getType()==IDType.List) {
-					EntityListIdentifier tokenList = (EntityListIdentifier)token;
+				if (entityToken.getType()==IDType.List) {
+					EntityListIdentifier tokenList = (EntityListIdentifier)entityToken;
 					try {
-						EntityList list = (EntityList)ContextManager.getDataManager(owningProcess).getEntity(tokenList);
+						
+						EntityList list = (EntityList)dataToken.getContext().getDataManager().getEntity(tokenList);
 						int [] elementIndex=new int[index.length+1];
 						for (int indexElement=0 ; indexElement< index.length ; indexElement++) {
 							elementIndex[indexElement]=index[indexElement];
@@ -50,7 +53,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 						int c=0;
 						for (EntityIdentifier id : list) {
 							elementIndex[index.length]=c;
-							resultTokenProduced(id, elementIndex, portName, owningProcess);
+							resultTokenProduced(new WorkflowDataToken(owningProcess,elementIndex,id,dataToken.getContext()), portName, owningProcess);
 							c++;
 						}
 						//TODO: display to user.
@@ -61,19 +64,19 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 					}
 				}
 				else  {
-					insertNewDataTokenNode(token, index, owningProcess);
+					insertNewDataTokenNode(entityToken, index, owningProcess,dataFacade);
 				}
 			}
 		}
 
 	}
 
-	private void insertNewDataTokenNode(EntityIdentifier token, int[] index, String owningProcess) {
+	private void insertNewDataTokenNode(EntityIdentifier token, int[] index, String owningProcess, DataFacade dataFacade) {
 		MutableTreeNode parent = (MutableTreeNode) getRoot();
 		if (index.length == depth) {
 			if (depth == 0) {
 				MutableTreeNode child = getChildAt(parent,0);
-				child = updateChildNodeWithData(token, owningProcess, parent, child);
+				child = updateChildNodeWithData(token, owningProcess, parent, child,dataFacade);
 				nodeChanged(child);
 			} else {
 				parent = getChildAt(parent, 0);
@@ -83,7 +86,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 							index[indexElement]);
 					if (indexElement == (depth - 1)) { // leaf
 						child = updateChildNodeWithData(token, owningProcess,
-								parent, child);
+								parent, child,dataFacade);
 					} else { // list
 						child.setUserObject("List...");
 					}
@@ -95,10 +98,10 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	}
 
 	private MutableTreeNode updateChildNodeWithData(EntityIdentifier token,
-			String owningProcess, MutableTreeNode parent, MutableTreeNode child) {
+			String owningProcess, MutableTreeNode parent, MutableTreeNode child, DataFacade dataFacade) {
 		if (token.getType()==IDType.Literal) {
 			try {
-				String value = (String)new DataFacade(ContextManager.getDataManager(owningProcess)).resolve(token,String.class);
+				String value = (String)dataFacade.resolve(token,String.class);
 				child.setUserObject(value);
 			} catch (RetrievalException e) {
 				// TODO Auto-generated catch block
@@ -110,7 +113,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		}
 		else {
 			int childIndex = parent.getIndex(child);
-			child = new ResultTreeNode(token, new DataFacade(ContextManager.getDataManager(owningProcess)));
+			child = new ResultTreeNode(token, dataFacade);
 			parent.remove(childIndex);
 			parent.insert(child, childIndex);
 		}
