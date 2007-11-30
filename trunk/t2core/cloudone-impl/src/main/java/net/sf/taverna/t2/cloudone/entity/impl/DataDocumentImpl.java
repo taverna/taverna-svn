@@ -18,16 +18,20 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import org.apache.log4j.Logger;
 
 public class DataDocumentImpl implements DataDocument {
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(DataDocumentImpl.class);
 
 	private DataDocumentIdentifier identifier;
+	@SuppressWarnings("unchecked")
 	private Set<ReferenceScheme> referenceSchemes;
 
+	@SuppressWarnings("unchecked")
 	public DataDocumentImpl() {
 		identifier = null;
 		referenceSchemes = new HashSet<ReferenceScheme>();
 	}
 
+	@SuppressWarnings("unchecked")
 	public DataDocumentImpl(DataDocumentIdentifier identifier,
 			Set<ReferenceScheme> references) {
 		this.identifier = identifier;
@@ -49,6 +53,7 @@ public class DataDocumentImpl implements DataDocument {
 		return identifier;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<ReferenceScheme> getReferenceSchemes() {
 		return referenceSchemes;
 	}
@@ -60,21 +65,24 @@ public class DataDocumentImpl implements DataDocument {
 		}
 		identifier = EntityIdentifiers.parseDocumentIdentifier(bean
 				.getIdentifier());
-		for (ReferenceBean refBean : bean.getReferences()) {
-			Class<? extends ReferenceScheme> ownerClass = refBean
-					.getOwnerClass();
-			ReferenceScheme refScheme;
-			try {
-				refScheme = ownerClass.newInstance();
-			} catch (InstantiationException e) {
-				throw new RuntimeException("Can't instantiate reference scheme "
-						+ ownerClass, e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException("Can't access reference scheme "
-						+ ownerClass, e);
+		if (bean.getReferences() != null) {
+			for (ReferenceBean refBean : bean.getReferences()) {
+				Class<? extends ReferenceScheme> ownerClass = refBean
+						.getOwnerClass();
+				ReferenceScheme refScheme;
+				try {
+					refScheme = ownerClass.newInstance();
+				} catch (InstantiationException e) {
+					throw new RuntimeException(
+							"Can't instantiate reference scheme " + ownerClass,
+							e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException("Can't access reference scheme "
+							+ ownerClass, e);
+				}
+				refScheme.setFromBean(refBean);
+				referenceSchemes.add(refScheme);
 			}
-			refScheme.setFromBean(refBean);
-			referenceSchemes.add(refScheme);
 		}
 	}
 
@@ -82,6 +90,7 @@ public class DataDocumentImpl implements DataDocument {
 		this.identifier = identifier;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setReferenceSchemes(Set<ReferenceScheme> referenceSchemes) {
 		this.referenceSchemes = referenceSchemes;
 	}
