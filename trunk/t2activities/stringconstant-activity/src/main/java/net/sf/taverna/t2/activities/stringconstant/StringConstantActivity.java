@@ -9,8 +9,10 @@ import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 /**
@@ -47,7 +49,7 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade=new DataFacade(callback.getLocalDataManager());
+				DataFacade dataFacade=new DataFacade(callback.getContext().getDataManager());
 				try {
 					EntityIdentifier id=dataFacade.register(value);
 					Map<String,EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
@@ -64,6 +66,10 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 			
 		});
 		
+	}
+	
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 
 }

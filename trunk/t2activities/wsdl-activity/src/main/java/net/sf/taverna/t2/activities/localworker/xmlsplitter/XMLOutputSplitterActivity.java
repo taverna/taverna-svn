@@ -15,9 +15,11 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
@@ -63,7 +65,7 @@ public class XMLOutputSplitterActivity extends AbstractAsynchronousActivity<XMLS
 
 			public void run() {
 				try {
-					DataFacade dataFacade = new DataFacade(callback.getLocalDataManager());
+					DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
 					XMLOutputSplitter splitter = createSplitter();
 					Map<String,String> inputMap = buildInputMap(data,dataFacade);
 					Map<String,Object> outputMap = splitter.execute(inputMap);
@@ -119,4 +121,7 @@ public class XMLOutputSplitterActivity extends AbstractAsynchronousActivity<XMLS
 		return configBean;
 	}
 
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+	}
 }

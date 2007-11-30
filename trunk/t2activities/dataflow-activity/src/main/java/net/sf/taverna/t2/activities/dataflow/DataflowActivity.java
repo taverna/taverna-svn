@@ -15,8 +15,10 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowPort;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 import org.apache.log4j.Logger;
@@ -62,7 +64,7 @@ public class DataflowActivity extends
 			public void run() {
 
 				final WorkflowInstanceFacade facade = edits
-						.createWorkflowInstanceFacade(dataflow);
+						.createWorkflowInstanceFacade(dataflow,callback.getContext());
 
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
@@ -116,6 +118,10 @@ public class DataflowActivity extends
 	private List<String> getMimeTypes(DataflowPort outputPort) {
 		// TODO get the mime types from the annotation
 		return new ArrayList<String>();
+	}
+	
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 
 }

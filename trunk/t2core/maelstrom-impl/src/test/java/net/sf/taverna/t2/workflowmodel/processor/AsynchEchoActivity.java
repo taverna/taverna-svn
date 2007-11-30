@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
@@ -36,5 +37,11 @@ public class AsynchEchoActivity extends
 	public EchoConfig getConfiguration() {
 		return config;
 	}
+
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Everything is hunky dorey");
+	}
+	
+	
 
 }

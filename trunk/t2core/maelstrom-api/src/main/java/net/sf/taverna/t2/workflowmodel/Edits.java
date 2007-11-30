@@ -36,6 +36,7 @@ public interface Edits {
 	/**
 	 * Build a new WorkflowInstanceFacade using the supplied Dataflow
 	 * @param dataflow
+	 * @param context
 	 * @return an instance of a WorkflowInstanceFacade
 	 * 
 	 * @see WorkflowInstanceFacade

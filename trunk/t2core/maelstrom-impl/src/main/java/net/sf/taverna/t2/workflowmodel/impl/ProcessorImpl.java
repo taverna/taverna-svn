@@ -17,10 +17,12 @@ import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorHealthReport;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
@@ -379,5 +381,15 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	public String getLocalName() {
 		return this.name;
 	}
+
+	public ProcessorHealthReport checkProcessorHealth() {
+		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
+		for (Activity<?> a : getActivityList()) {
+			activityReports.add(a.checkActivityHealth());
+		}
+		return new ProcessorHealthReportImpl(activityReports);
+	}
+	
+	
 
 }

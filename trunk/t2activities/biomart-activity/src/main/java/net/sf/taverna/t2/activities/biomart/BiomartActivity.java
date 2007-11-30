@@ -12,8 +12,10 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 import org.biomart.martservice.MartQuery;
@@ -64,8 +66,7 @@ public class BiomartActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback
-						.getLocalDataManager());
+				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
@@ -166,5 +167,9 @@ public class BiomartActivity extends
 			addOutput(name, 0, 0, Collections.singletonList(MartServiceUtils
 					.getMimeTypeForFormatter(formatter)));
 		}
+	}
+	
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 }

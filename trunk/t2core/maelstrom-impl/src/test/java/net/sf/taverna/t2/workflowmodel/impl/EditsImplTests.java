@@ -17,7 +17,6 @@ public class EditsImplTests {
 		edits=new EditsImpl();
 	}
 	
-	
 	@Test
 	public void createWorkflowInstanceFacade() {
 		WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(new DummyDataflow(), new TestInvocationContext());

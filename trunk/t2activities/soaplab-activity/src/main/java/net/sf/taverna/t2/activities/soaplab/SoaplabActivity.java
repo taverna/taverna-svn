@@ -19,9 +19,11 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 import org.apache.axis.client.Call;
@@ -68,8 +70,7 @@ public class SoaplabActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback
-						.getLocalDataManager());
+				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
@@ -359,6 +360,10 @@ public class SoaplabActivity extends
 			// manifests in the Talisman soaplab clients.
 			generatePorts();
 		}
+	}
+	
+	public ActivityHealthReport checkActivityHealth() {
+		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 
 }
