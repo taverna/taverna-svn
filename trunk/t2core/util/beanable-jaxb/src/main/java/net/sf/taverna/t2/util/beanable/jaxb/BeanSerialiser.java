@@ -2,24 +2,36 @@ package net.sf.taverna.t2.util.beanable.jaxb;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
+import org.apache.log4j.Logger;
+import org.jboss.jaxb.intros.IntroductionsAnnotationReader;
+import org.jboss.jaxb.intros.IntroductionsConfigParser;
+import org.jboss.jaxb.intros.configmodel.JaxbIntros;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+
+import com.sun.xml.bind.api.JAXBRIContext;
 
 /**
  * Serialise or deserialise a bean (normally produced by a {@link Beanable}) as
@@ -33,13 +45,28 @@ import org.jdom.output.XMLOutputter;
 
 public class BeanSerialiser {
 
+	public static final String DEFAULT_NAMESPACE = "http://taverna.sf.net/t2/cloudone/bean/unknown/";
+
+	private static JAXBContext jaxbContext;
+
 	private static final String JAVA = "java";
+
+	private static Logger logger = Logger.getLogger(BeanSerialiser.class);
 
 	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
 	private static final String CLASS_NAME = "className";
 	private static final String BEANABLE = "beanable";
+
+	private static BeanSerialiser instance;
+
+	public static BeanSerialiser getInstance() throws JAXBException {
+		if (instance == null) {
+			instance = new BeanSerialiser();
+		}
+		return instance;
+	}
 
 	/**
 	 * Deserialise bean from XML element.
@@ -53,7 +80,7 @@ public class BeanSerialiser {
 	 *            {@link ClassLoader} from where to construct bean classes
 	 * @return Deserialised bean
 	 */
-	public static Object fromXML(Element element, ClassLoader classLoader) {
+	public Object fromXML(Element element, ClassLoader classLoader) {
 		String configAsString = new XMLOutputter(Format.getRawFormat())
 				.outputString(element);
 		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(
@@ -74,18 +101,18 @@ public class BeanSerialiser {
 	 *            {@link ClassLoader} from where to construct bean classes
 	 * @return Deserialised bean
 	 */
-	public static Object fromXMLFile(File file, ClassLoader classLoader)
-			throws JDOMException, IOException {
-		BufferedInputStream stream = new BufferedInputStream(
-				new FileInputStream(file));
+	public Object fromXMLFile(File file) {
+		Unmarshaller unmarshaller;
+		Object bean;
 		try {
-			XMLDecoder decoder = new XMLDecoder(stream, null, null, classLoader);
-			Object obj = decoder.readObject();
-			decoder.close();
-			return obj;
-		} finally {
-			stream.close();
+			unmarshaller = jaxbContext.createUnmarshaller();
+			bean = unmarshaller.unmarshal(file);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new RuntimeException("Could not de-serialise " + file + " "
+					+ e);
 		}
+		return bean;
 
 	}
 
@@ -100,7 +127,7 @@ public class BeanSerialiser {
 	 *            Bean to serialise
 	 * @return XML {@link Element} of serialised bean
 	 */
-	public static Element toXML(Object bean) {
+	public Element toXML(Object bean) {
 		// TODO: Support Beanable directly, and Beans containing Beanable's
 		// TODO: Serialise Raven classloaders
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -134,34 +161,53 @@ public class BeanSerialiser {
 	 *            File where to store XML
 	 * @throws IOException
 	 *             If the file could not be written to
+	 * @throws JAXBException
 	 */
-	public static void toXMLFile(Object bean, File file) throws IOException {
-		BufferedOutputStream stream = new BufferedOutputStream(
-				new FileOutputStream(file));
+	public void toXMLFile(Object bean, File file) {
+		Marshaller marshaller;
 		try {
-			XMLEncoder xenc = new XMLEncoder(stream);
-			xenc.writeObject(bean);
-			xenc.close();
-		} finally {
-			stream.close();
+			marshaller = jaxbContext.createMarshaller();
+			marshaller.marshal(bean, file);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new RuntimeException("Could not serialise bean " + bean + " "
+					+ e);
 		}
 	}
 
 	/**
-	 * Protected constructor, use static methods only.
+	 * Private constructor, use {@link #getInstance()}
+	 * 
+	 * @throws JAXBException
 	 */
-	protected BeanSerialiser() {
+	private BeanSerialiser() throws JAXBException {
+		makeJAXBContext();
 	}
 
-	public static Element beanableToXML(Beanable<?> beanable) {
+	/**
+	 * Given a beanable entity return as XML with the class name as an element
+	 * 
+	 * @param beanable
+	 * @return XML
+	 */
+	public Element beanableToXML(Beanable<?> beanable) {
 		Element elem = new Element(BEANABLE);
 		elem.setAttribute(CLASS_NAME, beanable.getClass().getCanonicalName());
 		elem.addContent(toXML(beanable.getAsBean()));
 		return elem;
 	}
 
+	/**
+	 * Given an XML representation of a beanable entity (see
+	 * {@link #beanableToXML(Beanable)}), use the {@link BeanableFactory} to
+	 * return the beanable
+	 * 
+	 * @param <Bean>
+	 * @param elem
+	 * @return The Beanable entity contained in the XML
+	 */
 	@SuppressWarnings("unchecked")
-	public static <Bean> Beanable<?> beanableFromXML(Element elem) {
+	public <Bean> Beanable<?> beanableFromXML(Element elem) {
 		String beanableClassName = elem.getAttributeValue(CLASS_NAME);
 		BeanableFactory<? extends Beanable, Bean> beanableFactory = beanableFactoryRegistry
 				.getFactoryForBeanableType(beanableClassName);
@@ -170,5 +216,44 @@ public class BeanSerialiser {
 		Bean bean = beanableFactory.getBeanType().cast(
 				fromXML(beanElem, beanType.getClassLoader()));
 		return beanableFactory.createFromBean(bean);
+	}
+
+	/**
+	 * Use the {@link BeanableFactory} to find the SPI'd JAXB annotations for
+	 * each of the Entity Beans and create the JAXBContext
+	 * 
+	 * @throws JAXBException
+	 */
+	@SuppressWarnings("unchecked")
+	public void makeJAXBContext() throws JAXBException {
+		List<Class> beanClasses = new ArrayList<Class>();
+		JaxbIntros mergedConfig = new JaxbIntros();
+		for (BeanableFactory beanableFactory : beanableFactoryRegistry
+				.getInstances()) {
+			InputStream annotationStream = beanableFactory
+					.getAnnotationIntroduction();
+			beanClasses.add(beanableFactory.getBeanType());
+			if (annotationStream == null) {
+				logger.info("No annotation introduction found for "
+						+ beanableFactory);
+				continue;
+			}
+			JaxbIntros beanableConfig = IntroductionsConfigParser
+					.parseConfig(annotationStream);
+			mergedConfig.getClazz().addAll(beanableConfig.getClazz());
+		}
+
+		IntroductionsAnnotationReader reader = new IntroductionsAnnotationReader(
+				mergedConfig);
+
+		Map<String, Object> jaxbConfig = new HashMap<String, Object>();
+		jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
+
+		jaxbConfig
+				.put(JAXBRIContext.DEFAULT_NAMESPACE_REMAP, DEFAULT_NAMESPACE);
+
+		JAXBContext context = JAXBContext.newInstance(beanClasses
+				.toArray(new Class[0]), jaxbConfig);
+		jaxbContext = context;
 	}
 }
