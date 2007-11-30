@@ -12,6 +12,7 @@ import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,10 +36,13 @@ public class ActivityPaletteModelToScavengerTreeAdapter implements ScavengerTree
 	
 	private ActivityPalettePanel representation;
 	
+	private HashSet<ScuflModel> seenModels;
+	
 	public ActivityPaletteModelToScavengerTreeAdapter(final ActivityPaletteModel paletteModel,
 			final ActivityPalettePanel representation) {
 		this.paletteModel = paletteModel;
 		this.representation = representation;
+		this.seenModels = new HashSet<ScuflModel>();
 	}
 
 	public void addScavenger(Scavenger theScavenger) {
@@ -46,8 +50,11 @@ public class ActivityPaletteModelToScavengerTreeAdapter implements ScavengerTree
 	}
 
 	public void addScavengersFromModel() throws ScavengerCreationException {
-		if (representation.getCurrentWorkflow() != null) {
-			paletteModel.createScavengersFromModelThread(representation.getCurrentWorkflow());
+		ScuflModel currentWorkflow = representation.getCurrentWorkflow();
+		if ((currentWorkflow != null) && !seenModels.contains(currentWorkflow)){
+			
+			paletteModel.createScavengersFromModelThread(currentWorkflow);
+			seenModels.add(currentWorkflow);
 		}
 	}
 	

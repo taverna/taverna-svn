@@ -109,18 +109,19 @@ public final class ActivitySubsetPanel extends JPanel {
 				.getPropertyKeyProfile());
 
 		TreeModel treeModel = createTreeModel(subsetModel, this.fullKeySettings);
-		this.currentTree = new JTree(treeModel);
+		this.currentTree = new ActivitySubsetTree(treeModel);
 		this.currentTree.setRowHeight(0);
 		this.currentTree.setLargeModel(true);
 		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer());
 		this.currentTree.addMouseListener(new ActivitySubsetListener(this));
+		this.currentTree.setDragEnabled(true);
+//		this.currentTree.setTransferHandler(new ActivitySubsetTransferHandler());
 		JScrollPane treePane = new JScrollPane(this.currentTree);
-		// treePane.setPreferredSize(new Dimension(0,0));
 		collapseAll(); // As requested by users
 
 		ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
 				((PropertiedTreeRootNode<ProcessorFactory>) treeModel.getRoot()));
-		this.currentTable = new JTable(activitiesTableModel);
+		this.currentTable = new ActivitySubsetTable(activitiesTableModel);
 		this.currentTable.addMouseListener(new ActivitySubsetListener(this));
 		JScrollPane tablePane = new JScrollPane(this.currentTable);
 		final ListSelectionModel tableSelectionModel = this.currentTable
@@ -163,6 +164,7 @@ public final class ActivitySubsetPanel extends JPanel {
 				}
 			}
 		});
+
 
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 				treePane, tablePane);
