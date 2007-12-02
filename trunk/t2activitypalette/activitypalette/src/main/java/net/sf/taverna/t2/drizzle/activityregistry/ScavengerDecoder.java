@@ -28,6 +28,12 @@ public final class ScavengerDecoder implements
 	 *      java.lang.Class)
 	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(ProcessorFactory.class) && Scavenger.class
 				.isAssignableFrom(sourceClass));
 	}
@@ -35,7 +41,12 @@ public final class ScavengerDecoder implements
 	public DecodeRunIdentification<ProcessorFactory> decode(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			Scavenger encodedObject) {
-		DecodeRunIdentification<ProcessorFactory> ident = new DecodeRunIdentification<ProcessorFactory>();
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedObject == null) {
+			throw new NullPointerException("encodedObject cannot be null"); //$NON-NLS-1$
+		}		DecodeRunIdentification<ProcessorFactory> ident = new DecodeRunIdentification<ProcessorFactory>();
 		ident.setAffectedObjects(new HashSet<ProcessorFactory> ());
 		ident.setPropertyKeyProfile(new HashSet<PropertyKey>());
 		ident.setTimeOfRun(System.currentTimeMillis());
@@ -48,6 +59,15 @@ public final class ScavengerDecoder implements
 	private void decodeNode(PropertiedObjectSet<ProcessorFactory> targetSet,
 			DecodeRunIdentification<ProcessorFactory> ident,
 			TreeNode node) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (ident == null) {
+			throw new NullPointerException("ident cannot be null"); //$NON-NLS-1$
+		}
+		if (node == null) {
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
+		}
 		if (node instanceof DefaultMutableTreeNode) {
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
 		if ((userObject != null) && (userObject instanceof ProcessorFactory)) {

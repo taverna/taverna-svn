@@ -32,10 +32,22 @@ public final class WorkflowProcessorFactoryDecoder extends ProcessorFactoryDecod
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			WorkflowProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		targetSet.setProperty(encodedFactory, CommonKey.WorkflowDefinitionURLKey, new StringValue(encodedFactory.getDefinitionURL()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(WorkflowProcessorFactory.class) &&
 				WorkflowProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

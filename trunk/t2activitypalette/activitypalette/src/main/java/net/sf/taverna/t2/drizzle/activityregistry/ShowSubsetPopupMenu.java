@@ -10,17 +10,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
-import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
-import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 
 /**
  * @author alanrw
@@ -28,14 +21,19 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
  */
 public class ShowSubsetPopupMenu extends JPopupMenu {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7649573101214082985L;
+
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(ShowSubsetPopupMenu.class);
 
-	private ActivityPalettePanel parentPanel = null;
-
 	public ShowSubsetPopupMenu(final ActivityPalettePanel parentPanel) {
-		super("Add subset");
-		this.parentPanel = parentPanel;
-
+		super("Add subset"); //$NON-NLS-1$
+		if (parentPanel == null) {
+			throw new NullPointerException("parentPanel cannot be null"); //$NON-NLS-1$
+		}
 		List<ActivityRegistrySubsetModel> subsets = new ArrayList<ActivityRegistrySubsetModel>(
 				parentPanel.getPaletteModel().getSubsetModels());
 

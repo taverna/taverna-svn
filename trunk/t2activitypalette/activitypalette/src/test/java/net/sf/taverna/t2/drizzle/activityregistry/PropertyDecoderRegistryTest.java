@@ -30,6 +30,7 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		// nothing to do
 	}
 
 	/**
@@ -37,6 +38,7 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		// nothing to do
 	}
 
 	/**
@@ -44,6 +46,7 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		// nothing to do
 	}
 
 	/**
@@ -51,6 +54,7 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// nothing to do
 	}
 
 	/**
@@ -58,13 +62,14 @@ public class PropertyDecoderRegistryTest {
 	 */
 	@Test
 	public void testGetInstance() {
-		testRegistry = PropertyDecoderRegistry.getInstance();
-		assertNotNull(testRegistry);
+		this.testRegistry = PropertyDecoderRegistry.getInstance();
+		assertNotNull(this.testRegistry);
 	}
 
 	/**
 	 * Test method for {@link net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoderRegistry#getDecoders(java.lang.Object)}.
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetDecoders() {
 		List<PropertyDecoder<WSDLBasedProcessorFactory,ProcessorFactory>> decoders = PropertyDecoderRegistry.getDecoders(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
@@ -78,7 +83,7 @@ public class PropertyDecoderRegistryTest {
 		PropertyDecoder<WSDLBasedProcessorFactory, ProcessorFactory> decoder = PropertyDecoderRegistry.getDecoder(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
 		assertNotNull(decoder);
 		
-		WSDLBasedProcessorFactory factory = new WSDLBasedProcessorFactory("", "", new QName(""));
+		WSDLBasedProcessorFactory factory = new WSDLBasedProcessorFactory("", "", new QName("")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		Object o = factory;
 		PropertyDecoder<?, ProcessorFactory> objectDecoder = PropertyDecoderRegistry.getDecoder(o.getClass(), ProcessorFactory.class);
 		assertNotNull(objectDecoder);

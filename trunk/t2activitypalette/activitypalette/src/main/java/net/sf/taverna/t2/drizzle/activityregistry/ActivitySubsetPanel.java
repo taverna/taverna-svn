@@ -17,6 +17,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.TableColumnModelEvent;
@@ -24,6 +25,7 @@ import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -60,6 +62,9 @@ public final class ActivitySubsetPanel extends JPanel {
 	
 	private List<PropertyKeySetting> initializeKeySettings(
 			final Set<PropertyKey> propertyKeyProfile) {
+		if (propertyKeyProfile == null) {
+			throw new NullPointerException("propertyKeyProfile cannot be null"); //$NON-NLS-1$
+		}
 		List<PropertyKeySetting> keySettings = new ArrayList<PropertyKeySetting>();
 
 		for (PropertyKey key : propertyKeyProfile) {
@@ -81,6 +86,12 @@ public final class ActivitySubsetPanel extends JPanel {
 	@SuppressWarnings("unchecked")
 	TreeModel createTreeModel(final ActivityRegistrySubsetModel subsetModel,
 			final List<PropertyKeySetting> theKeySettings) {
+		if (subsetModel == null) {
+			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
+		}
+		if (theKeySettings == null) {
+			throw new NullPointerException("theKeySettings cannot be null"); //$NON-NLS-1$
+		}
 		TreeModel result = null;
 
 		PropertiedTreeModel<ProcessorFactory> propertiedTreeModel = ObjectFactory
@@ -102,6 +113,9 @@ public final class ActivitySubsetPanel extends JPanel {
 	 */
 	@SuppressWarnings("unchecked")
 	public ActivitySubsetPanel(final ActivityRegistrySubsetModel subsetModel) {
+		if (subsetModel == null) {
+			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
+		}
 		this.setName(subsetModel.getName());
 		setLayout(new BorderLayout());
 		this.setPreferredSize(new Dimension(0, 0));
@@ -131,7 +145,7 @@ public final class ActivitySubsetPanel extends JPanel {
 
 			public void valueChanged(TreeSelectionEvent arg0) {
 				TreePath[] paths = arg0.getPaths();
-				ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) currentTable
+				ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) ActivitySubsetPanel.this.currentTable
 						.getModel();
 				/**
 				 * Note that this has to be done as two separate iterations
@@ -180,9 +194,12 @@ public final class ActivitySubsetPanel extends JPanel {
 			keyNames.add(pk.toString());
 		}
 
-		DefaultTableModel keyNamesTableModel = new DefaultTableModel(keyNames,
-				0);
+		Vector dummyContents = new Vector();
+		dummyContents.add(keyNames);
+		DefaultTableModel keyNamesTableModel = new DefaultTableModel(dummyContents, keyNames);
 		JTable keyNamesTable = new JTable(keyNamesTableModel);
+		keyNamesTable.doLayout();
+		JTableHeader keyNamesTableHeader = keyNamesTable.getTableHeader();
 		TableColumnModel columnModel = keyNamesTable.getColumnModel();
 		columnModel.addColumnModelListener(new TableColumnModelListener() {
 
@@ -228,7 +245,9 @@ public final class ActivitySubsetPanel extends JPanel {
 			}
 
 		});
-		this.add(keyNamesTable.getTableHeader(), BorderLayout.NORTH);
+		this.add(keyNamesTableHeader, BorderLayout.NORTH);
+		keyNamesTableHeader.setToolTipText("Move the cells to re-order the tree and table"); //$NON-NLS-1$
+		ToolTipManager.sharedInstance().registerComponent(keyNamesTableHeader);
 
 		validate();
 	}
@@ -248,7 +267,7 @@ public final class ActivitySubsetPanel extends JPanel {
 
 	/**
 	 * @param currentWorkflow
-	 *            the currentWorkflow to set
+	 *            the currentWorkflow to set, can be null
 	 */
 	public synchronized final void setCurrentWorkflow(ScuflModel currentWorkflow) {
 		this.currentWorkflow = currentWorkflow;
@@ -269,13 +288,13 @@ public final class ActivitySubsetPanel extends JPanel {
 	 * @return the fullKeySettings
 	 */
 	public synchronized final List<PropertyKeySetting> getPropertyProfile() {
-		return fullKeySettings;
+		return this.fullKeySettings;
 	}
 
 	public Set<ProcessorFactory> getSelectedObjects() {
 		Set<ProcessorFactory> result = new HashSet<ProcessorFactory> ();
-		int[] selectedRows = currentTable.getSelectedRows();
-		ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) currentTable.getModel();
+		int[] selectedRows = this.currentTable.getSelectedRows();
+		ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) this.currentTable.getModel();
 		for (int i = 0; i < selectedRows.length; i++) {
 			int row = selectedRows[i];
 			ProcessorFactory pf = tableModel.getRowObject(row);

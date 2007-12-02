@@ -29,6 +29,9 @@ public final class ActivityQueryRunIdentification {
 	 * @param name the name to set
 	 */
 	public synchronized final void setName(String name) {
+		if (name == null) {
+			throw new NullPointerException("name cannot be null"); //$NON-NLS-1$
+		}
 		this.name = name;
 	}
 	/**
@@ -42,6 +45,9 @@ public final class ActivityQueryRunIdentification {
 	 */
 	public synchronized final void setObjectFilter(
 			PropertiedObjectFilter<ProcessorFactory> objectFilter) {
+		if (objectFilter == null) {
+			throw new NullPointerException("objectFilter cannot be null"); //$NON-NLS-1$
+		}
 		this.objectFilter = objectFilter;
 	}
 	/**
@@ -55,6 +61,9 @@ public final class ActivityQueryRunIdentification {
 	 */
 	public synchronized final void setPropertyKeyProfile(
 			Set<PropertyKey> propertyKeyProfile) {
+		if (propertyKeyProfile == null) {
+			throw new NullPointerException("propertyKeyProfile cannot be null"); //$NON-NLS-1$
+		}
 		this.propertyKeyProfile = propertyKeyProfile;
 	}
 	/**

@@ -33,11 +33,23 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			SoaplabProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		targetSet.setProperty(encodedFactory, CommonKey.SoaplabEndpointKey, new StringValue(encodedFactory.getEndpoint()));
 		targetSet.setProperty(encodedFactory, CommonKey.SoaplabCategoryKey, new StringValue(encodedFactory.getCategory()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(SoaplabProcessorFactory.class) &&
 				SoaplabProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

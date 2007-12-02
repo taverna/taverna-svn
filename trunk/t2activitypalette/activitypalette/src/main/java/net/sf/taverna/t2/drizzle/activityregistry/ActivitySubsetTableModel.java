@@ -8,14 +8,13 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
+
+import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * @author alanrw
@@ -23,10 +22,17 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  */
 public class ActivitySubsetTableModel extends DefaultTableModel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3947839087479059276L;
 	private List<ProcessorFactory> rowObjects;
 	
 	public ActivitySubsetTableModel(final PropertiedTreeNode<ProcessorFactory> node) {
 		super();
+		if (node == null) {
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
+		}
 		int rowCount = node.getAllObjects().size();
 		Vector<String> columnNames = new Vector<String>();
 		for (PropertiedTreeNode<ProcessorFactory> aNode = node; aNode.getActualChildCount() > 0;
@@ -40,12 +46,15 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 		this.setColumnCount(columnNames.size());
 		this.setColumnIdentifiers(columnNames);
 		this.setRowCount(rowCount);
-		rowObjects = new ArrayList<ProcessorFactory>();
+		this.rowObjects = new ArrayList<ProcessorFactory>();
 		fillInDetails(node, 0, 0);
 	}
 
 	private void fillInDetails(PropertiedTreeNode<ProcessorFactory> node,
 			int rowOffset, int column) {
+		if (node == null) {
+			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
+		}
 		int childCount = node.getActualChildCount();
 		int row = rowOffset;
 		for (int i = 0; i < childCount; i++) {
@@ -64,19 +73,23 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 			} else if (childNode instanceof PropertiedTreeObjectNode) {
 				PropertiedTreeObjectNode<ProcessorFactory> childObjectNode =
 					(PropertiedTreeObjectNode<ProcessorFactory>) childNode;
-				rowObjects.add(childObjectNode.getObject());
+				this.rowObjects.add(childObjectNode.getObject());
 			}
 		}
 	}
 	
 	public ProcessorFactory getRowObject(int row) {
-		return rowObjects.get(row);
+		return this.rowObjects.get(row);
 	}
 	
 	public int getObjectIndex(ProcessorFactory pf) {
-		return rowObjects.indexOf(pf);
+		if (pf == null) {
+			throw new NullPointerException("pf cannot be null"); //$NON-NLS-1$
+		}
+		return this.rowObjects.indexOf(pf);
 	}
 	
+	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;
 	}

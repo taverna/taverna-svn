@@ -44,8 +44,6 @@ public final class ActivityPaletteModel {
 	
 	private List<ActivityPaletteModelListener> listeners;
 	
-	private ActivityPalettePanel representation;
-
 	/**
 	 * A list of the names of all the scavengers contained within this tree
 	 */
@@ -59,19 +57,21 @@ public final class ActivityPaletteModel {
 	 * @return the adapter
 	 */
 	public synchronized final ActivityPaletteModelToScavengerTreeAdapter getAdapter() {
-		return adapter;
+		return this.adapter;
 	}
 	
 	/*
 	 * representation should not be needed 
 	 */
 	public ActivityPaletteModel(final ActivityPalettePanel representation) {
+		if (representation == null) {
+			throw new NullPointerException ("representation cannot be null"); //$NON-NLS-1$
+		}
 		this.subsetModels = new HashSet<ActivityRegistrySubsetModel>();
 		this.scavengerList = new ArrayList<String> ();
 		this.registry = new ActivityRegistry();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
-		this.representation = representation;
-		adapter = new ActivityPaletteModelToScavengerTreeAdapter(this, representation);
+		this.adapter = new ActivityPaletteModelToScavengerTreeAdapter(this, representation);
 
 	}
 
@@ -80,6 +80,9 @@ public final class ActivityPaletteModel {
 	}
 	
 	public void addListener(final ActivityPaletteModelListener listener) {
+		if (listener == null) {
+			throw new NullPointerException ("listener cannot be null"); //$NON-NLS-1$
+		}
 		if (!this.listeners.contains(listener)) {
 			this.listeners.add(listener);
 		}
@@ -96,6 +99,9 @@ public final class ActivityPaletteModel {
 	}
 	
 	private void addSubsetModel (final ActivityRegistrySubsetModel subsetModel) {
+		if (subsetModel == null) {
+			throw new NullPointerException ("subsetModel cannot be null"); //$NON-NLS-1$
+		}
 		if (!this.subsetModels.contains(subsetModel)) {
 			this.subsetModels.add(subsetModel);
 			notifyListenersSubsetModelAdded(subsetModel);
@@ -145,6 +151,9 @@ public final class ActivityPaletteModel {
 	 * In future this should not be needed.  It is only present to keep in concert with Taverna 1.
 	 */
 	public void addScavenger(final Scavenger theScavenger) {
+		if (theScavenger == null) {
+			throw new NullPointerException ("theScavenger cannot be null"); //$NON-NLS-1$
+		}
 		synchronized (this.registry) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
@@ -258,7 +267,7 @@ public final class ActivityPaletteModel {
 		public void run() {
 			scavengingStarting("Populating service list"); //$NON-NLS-1$
 
-			addScavengersFromModel(theModel);
+			addScavengersFromModel(this.theModel);
 
 			scavengingDone();
 		}
@@ -270,6 +279,9 @@ public final class ActivityPaletteModel {
 	}
 	
 	protected void addScavengersFromModel(final ScuflModel theModel) {
+		if (theModel == null) {
+			throw new NullPointerException ("theModel cannot be null"); //$NON-NLS-1$
+		}
 		List<ScavengerHelper> helpers = ScavengerHelperRegistry.instance().getScavengerHelpers();
 		ScavengerHelperThreadPool threadPool = new ScavengerHelperThreadPool();
 		for (ScavengerHelper helper : helpers) {
@@ -324,6 +336,15 @@ public final class ActivityPaletteModel {
 	}
 	
 	public void addSubsetModelFromSelection (String name, Set<ProcessorFactory> selection, Set<PropertyKey> keyProfile) {
+		if (name == null) {
+			throw new NullPointerException("name cannot be null"); //$NON-NLS-1$
+		}
+		if (selection == null) {
+			throw new NullPointerException("selection cannot be null"); //$NON-NLS-1$
+		}
+		if (keyProfile == null) {
+			throw new NullPointerException("keyProfile cannot be null"); //$NON-NLS-1$
+		}
 		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
 		subsetModel.setFilter(new ObjectMembershipFilter<ProcessorFactory>(selection));
 		subsetModel.setName(name);
@@ -332,11 +353,19 @@ public final class ActivityPaletteModel {
 		addSubsetModel(subsetModel);
 	}
 
-	public void attachToModel(final ScuflModel model) throws ScavengerCreationException {
-		adapter.addScavengersFromModel();
+	public void attachToModel(@SuppressWarnings("unused")
+	final ScuflModel model) throws ScavengerCreationException {
+		if (model == null) {
+			throw new NullPointerException("model cannot be null"); //$NON-NLS-1$
+		}
+		this.adapter.addScavengersFromModel();
 	}
 
-	public void detachFromModel(final ScuflModel model) {
+	public void detachFromModel(@SuppressWarnings("unused")
+	final ScuflModel model) {
+		if (model == null) {
+			throw new NullPointerException("model cannot be null"); //$NON-NLS-1$
+		}
 		// nothing to do
 	}
 }

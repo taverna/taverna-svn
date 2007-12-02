@@ -32,6 +32,9 @@ public final class ActivityRegistrySubsetModel {
 	 * @param name the name to set
 	 */
 	public synchronized final void setName(final String name) {
+		if (name == null) {
+			throw new NullPointerException("name cannot be null"); //$NON-NLS-1$
+		}
 		this.name = name;
 	}
 
@@ -46,6 +49,9 @@ public final class ActivityRegistrySubsetModel {
 	 * @param filter the filter to set
 	 */
 	public synchronized final void setFilter(final PropertiedObjectFilter<ProcessorFactory> filter) {
+		if (filter == null) {
+			throw new NullPointerException("filter cannot be null"); //$NON-NLS-1$
+		}
 		this.filter = filter;
 	}
 
@@ -61,6 +67,9 @@ public final class ActivityRegistrySubsetModel {
 	 */
 	public synchronized final void setPropertyKeyProfile(final 
 			Set<PropertyKey> propertyKeyProfile) {
+		if (propertyKeyProfile == null) {
+			throw new NullPointerException("propertyKeyProfile cannot be null"); //$NON-NLS-1$
+		}
 		this.propertyKeyProfile = propertyKeyProfile;
 	}
 
@@ -75,6 +84,9 @@ public final class ActivityRegistrySubsetModel {
 	 * @param parentRegistry the parentRegistry to set
 	 */
 	public synchronized final void setParentRegistry(ActivityRegistry parentRegistry) {
+		if (parentRegistry == null) {
+			throw new NullPointerException("parentRegistry cannot be null"); //$NON-NLS-1$
+		}
 		this.parentRegistry = parentRegistry;
 	}
 

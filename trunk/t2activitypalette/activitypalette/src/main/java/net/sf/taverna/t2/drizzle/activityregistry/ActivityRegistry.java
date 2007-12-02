@@ -26,6 +26,9 @@ public final class ActivityRegistry {
 	}
 
 	public synchronized ActivityQueryRunIdentification addImmediateQuery(ActivityQuery<?> query) {
+		if (query == null) {
+			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
+		}
 		ActivityQueryRunIdentification ident =
 			query.runQuery(this.registry);
 		return ident;

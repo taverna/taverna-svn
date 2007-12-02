@@ -31,11 +31,22 @@ public final class BeanshellProcessorFactoryDecoder extends ProcessorFactoryDeco
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			BeanshellProcessorFactory encodedFactory) {
-		//TODO details from prototype
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}		//TODO details from prototype
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
-		return (targetClass.isAssignableFrom(BeanshellProcessorFactory.class) &&
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
+	return (targetClass.isAssignableFrom(BeanshellProcessorFactory.class) &&
 				BeanshellProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 

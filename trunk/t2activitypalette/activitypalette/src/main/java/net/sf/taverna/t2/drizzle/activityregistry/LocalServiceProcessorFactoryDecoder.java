@@ -33,11 +33,23 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			LocalServiceProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		targetSet.setProperty(encodedFactory, CommonKey.LocalServiceWorkerClassKey, new StringValue(encodedFactory.getWorkerClassName()));
 		targetSet.setProperty(encodedFactory, CommonKey.LocalServiceCategoryKey, new StringValue(encodedFactory.getCategory()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(LocalServiceProcessorFactory.class) &&
 				LocalServiceProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

@@ -23,6 +23,12 @@ public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFacto
 	public DecodeRunIdentification<ProcessorFactory> decode(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			FactoryType encodedObject) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedObject == null) {
+			throw new NullPointerException("encodedObject cannot be null"); //$NON-NLS-1$
+		}
 		DecodeRunIdentification<ProcessorFactory> result = new DecodeRunIdentification<ProcessorFactory>();
 		Set<ProcessorFactory> affectedObjects = new HashSet<ProcessorFactory>();
 		affectedObjects.add(encodedObject);

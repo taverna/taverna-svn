@@ -27,6 +27,9 @@ public class ActivityInvocationListener implements ActionListener {
 	private ProcessorFactory pf;
 
 	public ActivityInvocationListener(final ProcessorFactory pf) {
+		if (pf == null) {
+			throw new NullPointerException ("pf cannot be null"); //$NON-NLS-1$
+		}
 		this.pf = pf;
 	}
 
@@ -34,6 +37,9 @@ public class ActivityInvocationListener implements ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent arg0) {
+		if (arg0 == null) {
+			throw new NullPointerException("arg0 cannot be null"); //$NON-NLS-1$
+		}
 		try {
 			final ScuflModel m;
 			if (this.pf instanceof ScuflWorkflowProcessorFactory) {

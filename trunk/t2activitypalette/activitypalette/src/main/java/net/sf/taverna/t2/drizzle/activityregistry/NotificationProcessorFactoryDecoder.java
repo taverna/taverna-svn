@@ -30,10 +30,22 @@ public final class NotificationProcessorFactoryDecoder extends ProcessorFactoryD
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			NotificationProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		// Nothing to do
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(NotificationProcessorFactory.class) &&
 				NotificationProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

@@ -35,6 +35,12 @@ public final class BiomobyProcessor2FactoryDecoder extends
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			BiomobyProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		targetSet.setProperty(encodedFactory, CommonKey.MobyAuthorityKey,
 				new StringValue(encodedFactory.getAuthorityName()));
 		targetSet.setProperty(encodedFactory, CommonKey.MobyEndpointKey,
@@ -43,6 +49,12 @@ public final class BiomobyProcessor2FactoryDecoder extends
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(BiomobyProcessorFactory.class) &&
 				BiomobyProcessorFactory.class.isAssignableFrom(sourceClass));
 		

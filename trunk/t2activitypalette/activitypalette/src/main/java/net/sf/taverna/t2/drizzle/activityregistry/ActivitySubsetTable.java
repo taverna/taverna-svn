@@ -13,8 +13,10 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JTable;
+import javax.swing.ToolTipManager;
 
 import org.embl.ebi.escience.scuflui.dnd.FactorySpecFragment;
 import org.embl.ebi.escience.scuflui.dnd.SpecFragmentTransferable;
@@ -28,16 +30,28 @@ import org.jdom.Element;
 public final class ActivitySubsetTable extends JTable implements
 		DragGestureListener, DragSourceListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6721017677971353107L;
+
 	public ActivitySubsetTable(final ActivitySubsetTableModel tableModel) {
 		super(tableModel);
+		if (tableModel == null) {
+			throw new NullPointerException("tableModel cannot be null"); //$NON-NLS-1$
+		}
 		DragSource dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 
 	/* (non-Javadoc)
 	 * @see java.awt.dnd.DragGestureListener#dragGestureRecognized(java.awt.dnd.DragGestureEvent)
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge) {
+		if (dge == null) {
+			throw new NullPointerException("dge cnanot be null"); //$NON-NLS-1$
+		}
 		Point l = dge.getDragOrigin();
 		int dragSourceRow = rowAtPoint(l);
 		if (dragSourceRow != -1) {
@@ -90,4 +104,18 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
+	@Override
+	public String getToolTipText(MouseEvent evt) {
+		if (evt == null) {
+			throw new NullPointerException("evt cannot be null"); //$NON-NLS-1$
+		}
+		String result = "No description available"; //$NON-NLS-1$
+		Point l = evt.getPoint();
+		int dragSourceRow = rowAtPoint(l);
+		if (dragSourceRow != -1) {
+			ProcessorFactory pf = ((ActivitySubsetTableModel) getModel()).getRowObject(dragSourceRow);
+			result = ActivitySubsetTree.getProcessorFactoryDescription(pf);
+		}
+		return result;
+	}
 }

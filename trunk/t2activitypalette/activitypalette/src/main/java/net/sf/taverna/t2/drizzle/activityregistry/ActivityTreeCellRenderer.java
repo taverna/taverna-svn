@@ -32,6 +32,12 @@ public class ActivityTreeCellRenderer extends DefaultTreeCellRenderer {
 			boolean selected, boolean expanded,
 			boolean leaf, int row, @SuppressWarnings("hiding")
 			boolean hasFocus) {
+		if (tree == null) {
+			throw new NullPointerException("tree cannot be null"); //$NON-NLS-1$
+		}
+		if (value == null) {
+			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
+		}
 		super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		if (value instanceof PropertiedTreeObjectNode) {
 			PropertiedTreeObjectNode<ProcessorFactory> objectNode = (PropertiedTreeObjectNode<ProcessorFactory>) value;

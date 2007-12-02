@@ -31,11 +31,22 @@ public final class BiomartProcessorFactoryDecoder extends ProcessorFactoryDecode
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			BiomartProcessorFactory encodedFactory) {
-		// TODO martQuery
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}		// TODO martQuery
 		// TODO Ask Katy about what is sensible to pull out
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(BiomartProcessorFactory.class) &&
 				BiomartProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

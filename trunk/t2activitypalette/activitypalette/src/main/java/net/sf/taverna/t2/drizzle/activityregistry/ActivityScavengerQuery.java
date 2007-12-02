@@ -20,6 +20,9 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 	private ActivityQueryRunIdentification lastRun = null;
 	
 	public ActivityScavengerQuery(Scavenger configuration) {
+		if (configuration == null) {
+			throw new NullPointerException("configuration cannot be null"); //$NON-NLS-1$
+		}
 		configure(configuration);
 	}
 

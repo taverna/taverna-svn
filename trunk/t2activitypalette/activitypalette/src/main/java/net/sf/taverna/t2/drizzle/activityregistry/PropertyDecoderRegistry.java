@@ -47,6 +47,12 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	@SuppressWarnings("unchecked")
 	public static <Source, Target> List<PropertyDecoder<Source,Target>> getDecoders(
 			Class<Source> sourceClass, Class<Target> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		List<PropertyDecoder<Source,Target>> decoders = new ArrayList<PropertyDecoder<Source,Target>>();
 		for (PropertyDecoder<?,?> decoder : getInstance().getInstances()) {
 			if (decoder.canDecode(sourceClass, targetClass)) {
@@ -57,6 +63,12 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	}
 	
 	public static <Source,Target> PropertyDecoder<Source,Target> getDecoder(Class<Source> sourceClass, Class<Target> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		PropertyDecoder<Source,Target> result = null;
 		List<PropertyDecoder<Source,Target>> decoders = getDecoders(sourceClass, targetClass);
 		if (decoders.size() > 0) {

@@ -3,19 +3,14 @@
  */
 package net.sf.taverna.t2.drizzle.activityregistry;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.TavernaIcons;
-import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
@@ -37,7 +32,10 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 	ActivityPalettePanel parentPanel = null;
 
 	public ScavengerAdderPopupMenu(ActivityPalettePanel parentPanel) {
-		super("Add scavenger");
+		super("Add scavenger"); //$NON-NLS-1$
+		if (parentPanel == null) {
+			throw new NullPointerException("parentPanel cannot be null"); //$NON-NLS-1$
+		}
 		this.parentPanel = parentPanel;
 		
 		ScavengerHelper webScavengerHelper = null;
@@ -106,6 +104,12 @@ public class ScavengerAdderPopupMenu extends JPopupMenu {
 	 */
 	private void addScavengerHelperToMenu(JPopupMenu menu,
 			ScavengerHelper scavengerHelper) {
+		if (menu == null) {
+			throw new NullPointerException("menu cannot be null"); //$NON-NLS-1$
+		}
+		if (scavengerHelper == null) {
+			throw new NullPointerException("scavengerHelper cannot be null"); //$NON-NLS-1$
+		}
 		String scavengerDescription = scavengerHelper.getScavengerDescription();
 		if (scavengerDescription != null) {
 			JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription,

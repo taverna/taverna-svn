@@ -31,10 +31,22 @@ public final class APProcessorFactoryDecoder extends ProcessorFactoryDecoder<APP
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			APProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		// Nothing to do
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(APProcessorFactory.class) &&
 				APProcessorFactory.class.isAssignableFrom(sourceClass));
 	}

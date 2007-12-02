@@ -32,10 +32,22 @@ public final class StringConstantProcessorFactoryDecoder extends ProcessorFactor
 	protected void fillInDetails(
 			PropertiedObjectSet<ProcessorFactory> targetSet,
 			StringConstantProcessorFactory encodedFactory) {
+		if (targetSet == null) {
+			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
+		}
+		if (encodedFactory == null) {
+			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
+		}
 		targetSet.setProperty(encodedFactory, CommonKey.StringConstantValueKey, new StringValue(encodedFactory.getValue()));
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
+		if (sourceClass == null) {
+			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
+		}
+		if (targetClass == null) {
+			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
+		}
 		return (targetClass.isAssignableFrom(StringConstantProcessorFactory.class) &&
 				StringConstantProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
