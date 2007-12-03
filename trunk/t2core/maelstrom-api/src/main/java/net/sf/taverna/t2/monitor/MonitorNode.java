@@ -19,7 +19,9 @@ public interface MonitorNode {
 	 * to be a workflow or processor but could be anything.
 	 * 
 	 * @return the workflow object providing this node's properties, or null if
-	 *         there is no directly corresponding workflow object
+	 *         there is no directly corresponding workflow object. Note that
+	 *         this workflow object can be anything, and may not be a top level
+	 *         workflow object at all.
 	 */
 	public Object getWorkflowObject();
 
