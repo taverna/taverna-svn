@@ -1,7 +1,12 @@
 package net.sf.taverna.t2.cloudone.refscheme.file;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
+@XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/refscheme/file/", name = "fileReferenceScheme")
+@XmlType(namespace = "http://taverna.sf.net/t2/cloudone/refscheme/file/", name = "fileReferenceScheme")
 public class FileReferenceBean extends ReferenceBean {
 
 	private String file;
@@ -27,6 +32,5 @@ public class FileReferenceBean extends ReferenceBean {
 	public String getCharset() {
 		return charset;
 	}
-	
 
 }

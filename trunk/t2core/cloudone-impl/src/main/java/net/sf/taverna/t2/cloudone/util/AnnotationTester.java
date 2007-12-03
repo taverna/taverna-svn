@@ -2,12 +2,13 @@ package net.sf.taverna.t2.cloudone.util;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -23,23 +24,17 @@ import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
 import org.apache.log4j.Logger;
-import org.jboss.jaxb.intros.IntroductionsAnnotationReader;
-import org.jboss.jaxb.intros.IntroductionsConfigParser;
-import org.jboss.jaxb.intros.configmodel.JaxbIntros;
 
-
-import com.sun.xml.bind.api.JAXBRIContext;
-
-public class AnnotationTest {
+public class AnnotationTester {
 	public static final String DEFAULT_NAMESPACE = "http://taverna.sf.net/t2/cloudone/bean/unknown/";
 	@SuppressWarnings("unused")
-	private static Logger logger = Logger.getLogger(AnnotationTest.class);
+	private static Logger logger = Logger.getLogger(AnnotationTester.class);
 	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
 	
 	public static void main(String[] args) throws JAXBException, IOException {
-		AnnotationTest annotationTest = new AnnotationTest();
+		AnnotationTester annotationTest = new AnnotationTester();
 		
 		annotationTest.annotateDataDoc();
 		annotationTest.annotateEntityList();
@@ -65,47 +60,29 @@ public class AnnotationTest {
 
 		Marshaller marshaller = context.createMarshaller();
 		File file = File.createTempFile("annotationTest", ".xml");
+		OutputStream outputStream = new FileOutputStream(file);
 		marshaller.marshal(docBean, System.out);
-		marshaller.marshal(docBean, file);
+		marshaller.marshal(docBean, outputStream);
+		outputStream.close();
+		InputStream inputStream = new FileInputStream(file);
 
 		Unmarshaller unmarshaller = context.createUnmarshaller();
 		@SuppressWarnings("unused")
 		DataDocumentBean retrDocBean = (DataDocumentBean) unmarshaller
-				.unmarshal(file);
+				.unmarshal(inputStream);
 	}
 
 	@SuppressWarnings("unchecked")
 	public JAXBContext makeJAXBContext() throws JAXBException {
 		List<Class> beanClasses = new ArrayList<Class>();
-		JaxbIntros mergedConfig = new JaxbIntros();
 		for (BeanableFactory beanableFactory : beanableFactoryRegistry
 				.getInstances()) {
-			InputStream annotationStream = beanableFactory
-					.getAnnotationIntroduction();
 			beanClasses.add(beanableFactory.getBeanType());
-			if (annotationStream == null) {
-				logger.info("No annotation introduction found for "
-						+ beanableFactory);
-				continue;
-			}
-			// SUPER-HACK
-//			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			JaxbIntros beanableConfig = IntroductionsConfigParser
-					.parseConfig(annotationStream);
-			mergedConfig.getClazz().addAll(beanableConfig.getClazz());
 		}
 
-		IntroductionsAnnotationReader reader = new IntroductionsAnnotationReader(
-				mergedConfig);
-
-		Map<String, Object> jaxbConfig = new HashMap<String, Object>();
-		jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
-
-		jaxbConfig
-				.put(JAXBRIContext.DEFAULT_NAMESPACE_REMAP, DEFAULT_NAMESPACE);
 
 		JAXBContext context = JAXBContext.newInstance(beanClasses
-				.toArray(new Class[0]), jaxbConfig);
+				.toArray(new Class[0]));
 		return context;
 	}
 

@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.cloudone.bean;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.util.beanable.Beanable;
 
@@ -14,6 +17,8 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @author Stian Soiland
  *
  */
+@XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "errorDocument")
+@XmlType(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "errorDocument")
 public class ErrorDocumentBean {
 	private String identifier;
 	private String message;

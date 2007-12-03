@@ -90,7 +90,6 @@ public class BeanTest {
 		assertNotSame("Did not reconstruct set", retrievedRefs, refSchemes);
 		// Fails due to lacking blob support
 		assertEquals(3, retrievedRefs.size());
-		System.out.println(retrievedRefs.iterator().next());
 		assertTrue(retrievedRefs.containsAll(refSchemes));
 	}
 

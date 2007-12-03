@@ -5,10 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -22,16 +21,11 @@ import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
 import org.apache.log4j.Logger;
-import org.jboss.jaxb.intros.IntroductionsAnnotationReader;
-import org.jboss.jaxb.intros.IntroductionsConfigParser;
-import org.jboss.jaxb.intros.configmodel.JaxbIntros;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-
-import com.sun.xml.bind.api.JAXBRIContext;
 
 /**
  * Serialise or deserialise a bean (normally produced by a {@link Beanable}) as
@@ -49,15 +43,10 @@ public class BeanSerialiser {
 
 	private static JAXBContext jaxbContext;
 
-	private static final String JAVA = "java";
-
 	private static Logger logger = Logger.getLogger(BeanSerialiser.class);
 
 	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
-
-	private static final String CLASS_NAME = "className";
-	private static final String BEANABLE = "beanable";
 
 	private static BeanSerialiser instance;
 
@@ -101,7 +90,7 @@ public class BeanSerialiser {
 	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #toXML(Object)
-	 * @param file
+	 * @param inputStream
 	 *            File containing XML serialisation of bean using
 	 *            {@link #toXML(Object)}
 	 * @param classLoader
@@ -110,16 +99,17 @@ public class BeanSerialiser {
 	 *             If the bean could not be deserialised
 	 * @return Deserialised bean
 	 */
-	public Object fromXMLFile(File file) throws RetrievalException {
+	public Object fromXMLStream(InputStream inputStream)
+			throws RetrievalException {
 		Unmarshaller unmarshaller;
 		Object bean;
 		try {
 			unmarshaller = jaxbContext.createUnmarshaller();
-			bean = unmarshaller.unmarshal(file);
+			bean = unmarshaller.unmarshal(inputStream);
 		} catch (JAXBException e) {
 			logger.warn(e);
-			throw new RetrievalException("Could not de-serialise " + file + " "
-					+ e);
+			throw new RetrievalException("Could not de-serialise "
+					+ inputStream + " " + e);
 		}
 		return bean;
 
@@ -131,7 +121,7 @@ public class BeanSerialiser {
 	 * {@link #fromXML(Element, ClassLoader)}.
 	 * 
 	 * @see #fromXML(Element, ClassLoader)
-	 * @see #toXMLFile(Object, File)
+	 * @see #toXMLStream(Object, OutputStream)
 	 * @param bean
 	 *            Bean to serialise
 	 * @return XML {@link Element} of serialised bean
@@ -170,19 +160,21 @@ public class BeanSerialiser {
 	 * using {@link #fromXMLFile(File, ClassLoader)}.
 	 * 
 	 * @see #fromXML(Element, ClassLoader)
-	 * @see #toXMLFile(Object, File)
+	 * @see #toXMLStream(Object, OutputStream)
 	 * @param bean
 	 *            Bean to serialise
-	 * @param file
+	 * @param outputStream
 	 *            File where to store XML
 	 * @throws StorageException
 	 *             If the bean could not be serialised
 	 */
-	public void toXMLFile(Object bean, File file) throws StorageException {
+	public void toXMLStream(Object bean, OutputStream outputStream)
+			throws StorageException {
+		// needs changed
 		Marshaller marshaller;
 		try {
 			marshaller = jaxbContext.createMarshaller();
-			marshaller.marshal(bean, file);
+			marshaller.marshal(bean, outputStream);
 		} catch (JAXBException e) {
 			logger.warn(e);
 			throw new StorageException("Could not serialise bean " + bean + " "
@@ -236,33 +228,36 @@ public class BeanSerialiser {
 	@SuppressWarnings("unchecked")
 	public void makeJAXBContext() throws JAXBException {
 		List<Class> beanClasses = new ArrayList<Class>();
-		JaxbIntros mergedConfig = new JaxbIntros();
+		// JaxbIntros mergedConfig = new JaxbIntros();
 		for (BeanableFactory beanableFactory : beanableFactoryRegistry
 				.getInstances()) {
-			InputStream annotationStream = beanableFactory
-					.getAnnotationIntroduction();
+			// InputStream annotationStream = beanableFactory
+			// .getAnnotationIntroduction();
 			beanClasses.add(beanableFactory.getBeanType());
-			if (annotationStream == null) {
-				logger.info("No annotation introduction found for "
-						+ beanableFactory);
-				continue;
-			}
-			JaxbIntros beanableConfig = IntroductionsConfigParser
-					.parseConfig(annotationStream);
-			mergedConfig.getClazz().addAll(beanableConfig.getClazz());
+			// if (annotationStream == null) {
+			// logger.info("No annotation introduction found for "
+			// + beanableFactory);
+			// continue;
+			// }
+			// JaxbIntros beanableConfig = IntroductionsConfigParser
+			// .parseConfig(annotationStream);
+			// mergedConfig.getClazz().addAll(beanableConfig.getClazz());
 		}
 
-		IntroductionsAnnotationReader reader = new IntroductionsAnnotationReader(
-				mergedConfig);
+		// IntroductionsAnnotationReader reader = new
+		// IntroductionsAnnotationReader(
+		// mergedConfig);
 
-		Map<String, Object> jaxbConfig = new HashMap<String, Object>();
-		jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
+		// Map<String, Object> jaxbConfig = new HashMap<String, Object>();
+		// jaxbConfig.put(JAXBRIContext.ANNOTATION_READER, reader);
+		//
+		// jaxbConfig
+		// .put(JAXBRIContext.DEFAULT_NAMESPACE_REMAP, DEFAULT_NAMESPACE);
 
-		jaxbConfig
-				.put(JAXBRIContext.DEFAULT_NAMESPACE_REMAP, DEFAULT_NAMESPACE);
-
+		// JAXBContext context = JAXBContext.newInstance(beanClasses
+		// .toArray(new Class[0]), jaxbConfig);
 		JAXBContext context = JAXBContext.newInstance(beanClasses
-				.toArray(new Class[0]), jaxbConfig);
+				.toArray(new Class[0]));
 		jaxbContext = context;
 	}
 }

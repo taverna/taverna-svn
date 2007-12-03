@@ -3,6 +3,9 @@ package net.sf.taverna.t2.cloudone.entity;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
@@ -11,12 +14,12 @@ import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
  * Represents a single error document within the data manager. The error
  * document contains a {@link Throwable} and a message, either of which may be
  * <code>null</code>, but not both.
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class ErrorDocument implements
 		Entity<ErrorDocumentIdentifier, ErrorDocumentBean> {
@@ -31,7 +34,7 @@ public class ErrorDocument implements
 	/**
 	 * Construct an ErrorDocument that is to be configured from
 	 * {@link #setFromBean(ErrorDocumentBean)}.
-	 *
+	 * 
 	 */
 	public ErrorDocument() {
 		identifier = null;
@@ -43,9 +46,10 @@ public class ErrorDocument implements
 	 * Construct an ErrorDocument from an identifier, message and/or cause.
 	 * Either of <code>message</code> and <code>cause</code> can be
 	 * <code>null</code>, but not both.
-	 *
+	 * 
 	 * @param identifier
-	 *            The identifier as created by the {@link net.sf.taverna.t2.cloudone.datamanager.DataManager}
+	 *            The identifier as created by the
+	 *            {@link net.sf.taverna.t2.cloudone.datamanager.DataManager}
 	 * @param message
 	 *            The optional error message
 	 * @param cause
@@ -74,7 +78,7 @@ public class ErrorDocument implements
 	/**
 	 * Check equality with another object. Two {@link ErrorDocument}s are
 	 * considered equal if they have the same {@link #getIdentifier()}.
-	 *
+	 * 
 	 * @param obj
 	 *            The object to check equality against
 	 * @return true if and only if <code>obj</code> is an
@@ -102,7 +106,7 @@ public class ErrorDocument implements
 	 * Get as a serialisable {@link ErrorDocumentBean}. Note that
 	 * {@link #getCause()} will not be serialised, although it's
 	 * {@link #getStackTrace()} will.
-	 *
+	 * 
 	 * @return A serialisable {@link ErrorDocumentBean} configured from this
 	 *         ErrorDocument.
 	 */
@@ -130,7 +134,7 @@ public class ErrorDocument implements
 	 * Get the stacktrace from the cause of this error. The stacktrace might be
 	 * available even if {@link #getCause()} is null, as the cause is not
 	 * serialised by {@link #getAsBean()}.
-	 *
+	 * 
 	 * @return The stacktrace of the cause, or null if no cause was set.
 	 */
 	public String getStackTrace() {
@@ -142,13 +146,11 @@ public class ErrorDocument implements
 		return stackTrace;
 	}
 
-
-
 	/**
 	 * Initialise from an {@link ErrorDocumentBean}. This method can only be
 	 * called once and only if the empty constructor {@link #ErrorDocument()}
 	 * was used.
-	 *
+	 * 
 	 * @see #getAsBean()
 	 * @see net.sf.taverna.t2.util.beanable.Beanable#getAsBean()
 	 * @param bean
@@ -163,6 +165,5 @@ public class ErrorDocument implements
 		message = bean.getMessage();
 		stackTrace = bean.getStackTrace();
 	}
-
 
 }

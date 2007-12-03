@@ -5,6 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.util.beanable.Beanable;
@@ -14,23 +18,26 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * a String identifier from {@link #getIdentifier()}, and a list of
  * {@link ReferenceBean}s (serialised {@link ReferenceScheme}s) from
  * {@link #getReferences()}
- *
+ * 
  * @see Beanable
  * @see DataDocument
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
+@XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "dataDocument")
+@XmlType(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "dataDocument")
 public class DataDocumentBean {
 
 	private String identifier;
 
 	private List<ReferenceBean> references = new ArrayList<ReferenceBean>();
-	
+
 	public String getIdentifier() {
 		return identifier;
 	}
 
+	@XmlElement(name = "reference")
 	public List<ReferenceBean> getReferences() {
 		return references;
 	}

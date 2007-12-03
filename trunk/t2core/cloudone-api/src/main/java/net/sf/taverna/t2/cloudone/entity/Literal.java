@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 import net.sf.taverna.t2.cloudone.bean.EntityListBean;
 import net.sf.taverna.t2.cloudone.bean.LiteralBean;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -22,6 +25,7 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * @author Tom Oinn
  * 
  */
+
 public class Literal extends EntityIdentifier implements
 		Entity<Literal, LiteralBean> {
 
@@ -127,7 +131,7 @@ public class Literal extends EntityIdentifier implements
 	public Literal() {
 		super();
 	}
-	
+
 	/**
 	 * Construct a Literal from an identifier string. Note that to create a
 	 * Literal representing a string, use the static

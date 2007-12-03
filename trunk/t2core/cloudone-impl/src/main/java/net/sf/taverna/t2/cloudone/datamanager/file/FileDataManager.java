@@ -1,6 +1,11 @@
 package net.sf.taverna.t2.cloudone.datamanager.file;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -12,6 +17,7 @@ import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
@@ -29,7 +35,7 @@ import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 /**
  * File based {@link DataManager}. Entities are stored in a directory
  * structure:
- *
+ * 
  * <pre>
  * 	namespace1/
  * 		ddoc/
@@ -56,20 +62,20 @@ import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
  * 			0b/
  * 				0b8f4572-49d7-25d5-160a-a8049df690a4.blob
  * </pre>
- *
+ * 
  * <p>
  * The {@link UUID} is set in {@link EntityIdentifier#getName()}, and the
  * entities are separated into different directories depending on their type.
  * </p>
  * <p>
  * Entities themselves, or more correctly, their beans as returned by
- * {@link Beanable#getAsBean()}, are serialised by {@link BeanSerialiser}.
- * On deserialisation the entities are reconstructed from their bean.
+ * {@link Beanable#getAsBean()}, are serialised by {@link BeanSerialiser}. On
+ * deserialisation the entities are reconstructed from their bean.
  * </p>
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class FileDataManager extends AbstractDataManager {
 
@@ -81,7 +87,7 @@ public class FileDataManager extends AbstractDataManager {
 
 	/**
 	 * Construct a FileDataManager for a given namespace.
-	 *
+	 * 
 	 * @param namespace
 	 *            The namespace of assigned identifiers
 	 * @param contexts
@@ -134,7 +140,7 @@ public class FileDataManager extends AbstractDataManager {
 
 	/**
 	 * Find directory for a given namespace.
-	 *
+	 * 
 	 * @param namespace
 	 *            Namespace which directory to find
 	 * @return Directory for namespace
@@ -146,7 +152,7 @@ public class FileDataManager extends AbstractDataManager {
 	/**
 	 * Find the subdirectory for the start of the identifier name. For instance
 	 * eg with name "651375b7-8ce1-4d05-95ed-7b4912a50d0c" would find "a3/"
-	 *
+	 * 
 	 * @param namespace
 	 *            Namespace containing identifier
 	 * @param type
@@ -162,7 +168,7 @@ public class FileDataManager extends AbstractDataManager {
 
 	/**
 	 * Find directory for a given type within a given namespace.
-	 *
+	 * 
 	 * @param ns
 	 * @param type
 	 * @return
@@ -188,15 +194,20 @@ public class FileDataManager extends AbstractDataManager {
 		if (!entityPath.isFile()) {
 			return null;
 		}
+		InputStream stream;
+		try {
+			stream = new FileInputStream(entityPath);
+		} catch (FileNotFoundException e1) {
+			return null;
+		}
 		Object bean = null;
 
-			try {
-				bean = BeanSerialiser.getInstance().fromXMLFile(entityPath);
-			} catch (JAXBException e) {
-				throw new RetrievalException(
-						"Could not retreive data for "
-								+ entityPath);
-			}
+		try {
+			bean = BeanSerialiser.getInstance().fromXMLStream(stream);
+		} catch (JAXBException e) {
+			throw new RetrievalException("Could not retreive data for "
+					+ entityPath, e);
+		}
 		if (id.getType().equals(IDType.Data)) {
 			DataDocument entity = new DataDocumentImpl();
 			if (bean instanceof DataDocumentBean) {
@@ -247,8 +258,15 @@ public class FileDataManager extends AbstractDataManager {
 		entityPath.getParentFile().mkdirs();
 		// TODO: Could serialise in a more portable and less space-hungry
 		// format
+		OutputStream stream;
 		try {
-			BeanSerialiser.getInstance().toXMLFile(bean, entityPath);
+			stream = new FileOutputStream(entityPath);
+		} catch (FileNotFoundException e1) {
+			throw new StorageException(
+					"Could not store entity to" + entityPath, e1);
+		}
+		try {
+			BeanSerialiser.getInstance().toXMLStream(bean, stream);
 		} catch (JAXBException e) {
 			throw new StorageException(
 					"Could not store entity to" + entityPath, e);
