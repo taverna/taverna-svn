@@ -334,10 +334,6 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public Class<PropertiedObjectSetBean> getBeanClass() {
-		return PropertiedObjectSetBean.class;
-	}
 
 	public Set<PropertyKey> getPropertyKeys(O object) {
 		if (object == null) {

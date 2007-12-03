@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.util.beanable;
 
+
 /**
  * Anything which you want to serialise with
  * {@link net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser} should implement this
@@ -32,5 +33,5 @@ public interface Beanable<Bean> {
 	 *            Previously serialised bean
 	 */
 	public void setFromBean(Bean bean) throws IllegalArgumentException;
-
+	
 }

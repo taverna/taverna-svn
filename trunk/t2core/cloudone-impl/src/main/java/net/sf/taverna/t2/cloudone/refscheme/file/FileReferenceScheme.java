@@ -74,10 +74,6 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		return bean;
 	}
 
-	public Class<FileReferenceBean> getBeanClass() {
-		return FileReferenceBean.class;
-	}
-
 	public synchronized void setFromBean(FileReferenceBean bean)
 			throws IllegalArgumentException {
 		if (file != null) {

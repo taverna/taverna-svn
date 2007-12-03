@@ -277,9 +277,6 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 		}
 	}
 
-	public Class<PropertiedObjectBean> getBeanClass() {
-		return PropertiedObjectBean.class;
-	}
 
 	@Override
 	public boolean equals (Object o) {

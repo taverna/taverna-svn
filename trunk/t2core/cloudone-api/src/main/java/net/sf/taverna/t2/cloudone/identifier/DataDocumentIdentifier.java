@@ -13,14 +13,6 @@ public class DataDocumentIdentifier extends EntityIdentifier {
 	private String name;
 
 	/**
-	 * Constructor for immediate population using {@link #setFromBean(String)}.
-	 * 
-	 */
-	public DataDocumentIdentifier() {
-		super();
-	}
-
-	/**
 	 * Construct a DataDocumentIdentifier from a given URI.
 	 * 
 	 * @param id
@@ -54,8 +46,4 @@ public class DataDocumentIdentifier extends EntityIdentifier {
 		name = identifierString;
 	}
 
-	@Override
-	public Class<String> getBeanClass() {
-		return String.class;
-	}
 }

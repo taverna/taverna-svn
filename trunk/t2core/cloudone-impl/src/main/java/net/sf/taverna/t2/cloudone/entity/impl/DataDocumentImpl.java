@@ -40,7 +40,7 @@ public class DataDocumentImpl implements DataDocument {
 
 	public DataDocumentBean getAsBean() {
 		DataDocumentBean bean = new DataDocumentBean();
-		bean.setIdentifier(identifier.getAsBean());
+		bean.setIdentifier(identifier.getAsURI());
 		List<ReferenceBean> references = new ArrayList<ReferenceBean>();
 		for (ReferenceScheme<? extends ReferenceBean> refSchema : referenceSchemes) {
 			references.add(refSchema.getAsBean());
@@ -65,25 +65,24 @@ public class DataDocumentImpl implements DataDocument {
 		}
 		identifier = EntityIdentifiers.parseDocumentIdentifier(bean
 				.getIdentifier());
-		if (bean.getReferences() != null) {
-			for (ReferenceBean refBean : bean.getReferences()) {
-				Class<? extends ReferenceScheme> ownerClass = refBean
-						.getOwnerClass();
-				ReferenceScheme refScheme;
-				try {
-					refScheme = ownerClass.newInstance();
-				} catch (InstantiationException e) {
-					throw new RuntimeException(
-							"Can't instantiate reference scheme " + ownerClass,
-							e);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException("Can't access reference scheme "
-							+ ownerClass, e);
-				}
-				refScheme.setFromBean(refBean);
-				referenceSchemes.add(refScheme);
+
+		for (ReferenceBean refBean : bean.getReferences()) {
+			Class<? extends ReferenceScheme> ownerClass = refBean
+					.getOwnerClass();
+			ReferenceScheme refScheme;
+			try {
+				refScheme = ownerClass.newInstance();
+			} catch (InstantiationException e) {
+				throw new RuntimeException(
+						"Can't instantiate reference scheme " + ownerClass, e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("Can't access reference scheme "
+						+ ownerClass, e);
 			}
+			refScheme.setFromBean(refBean);
+			referenceSchemes.add(refScheme);
 		}
+
 	}
 
 	public void setIdentifier(DataDocumentIdentifier identifier) {
@@ -95,7 +94,4 @@ public class DataDocumentImpl implements DataDocument {
 		this.referenceSchemes = referenceSchemes;
 	}
 
-	public Class<DataDocumentBean> getBeanClass() {
-		return DataDocumentBean.class;
-	}
 }

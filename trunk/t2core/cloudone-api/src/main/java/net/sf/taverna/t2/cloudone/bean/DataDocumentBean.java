@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.cloudone.bean;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
@@ -22,8 +25,8 @@ public class DataDocumentBean {
 
 	private String identifier;
 
-	private List<ReferenceBean> references;
-
+	private List<ReferenceBean> references = new ArrayList<ReferenceBean>();
+	
 	public String getIdentifier() {
 		return identifier;
 	}

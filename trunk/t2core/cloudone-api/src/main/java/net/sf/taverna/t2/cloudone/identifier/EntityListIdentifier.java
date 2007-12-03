@@ -14,14 +14,6 @@ public class EntityListIdentifier extends EntityIdentifier {
 	private int depth;
 
 	private String name;
-
-	/**
-	 * Constructor for immediate population using {@link #setFromBean(String)}.
-	 * 
-	 */
-	public EntityListIdentifier() {
-		super();
-	}
 	
 	/**
 	 * Construct an EntityListIdentifier from an identifier string.
@@ -66,11 +58,6 @@ public class EntityListIdentifier extends EntityIdentifier {
 					"Depth of list must be at least 1 in " + identifierString);
 		}
 		name = parts[0];
-	}
-
-	@Override
-	public Class<String> getBeanClass() {
-		return String.class;
 	}
 
 }

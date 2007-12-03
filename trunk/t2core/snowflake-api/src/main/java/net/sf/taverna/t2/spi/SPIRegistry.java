@@ -1,8 +1,6 @@
 package net.sf.taverna.t2.spi;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
@@ -90,27 +88,6 @@ public class SPIRegistry<SPI> {
 
 	private ClassLoader getClassLoader() {
 		return getClass().getClassLoader();
-	}
-
-	/**
-	 * @return a {@link Map} of discovered implementing classes, the key being
-	 *         the full classname and the value being the discovered {@link Class}?
-	 *         extends SPI> itself.
-	 * @deprecated This method will be removed once the
-	 *             {@link net.sf.taverna.t2.cloudone.bean.BeanableRegistry} has
-	 *             have been refactored to use factory classes (TAV-662).
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public Map<String, Class<? extends SPI>> getClasses() {
-		getRegistry();
-		List<Class> classes = ravenSPIRegistry.getClasses();
-		System.out.println("Found for " + spi + ": " + classes);
-		Map<String, Class<? extends SPI>> result = new HashMap<String, Class<? extends SPI>>();
-		for (Class c : classes) {
-			result.put(c.getName(), c);
-		}
-		return result;
 	}
 
 	/**

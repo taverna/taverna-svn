@@ -239,11 +239,6 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 	public URL getUrl() {
 		return url;
 	}
-
-	public Class<HttpReferenceBean> getBeanClass() {
-		return HttpReferenceBean.class;
-	}
-
 	public String getCharset() throws DereferenceException {
 		if (!url.getProtocol().equals("http")) {
 			return null; // Don't know

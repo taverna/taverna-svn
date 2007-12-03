@@ -147,13 +147,6 @@ public class BlobReferenceSchemeImpl implements
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public Class<BlobReferenceBean> getBeanClass() {
-		return BlobReferenceBean.class;
-	}
-
-	/**
 	 * Get the character set for interpreting this blob as a {@link String}, or
 	 * <code>null</code> if blob is a binary or the character set is unknown.
 	 * 

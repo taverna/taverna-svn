@@ -66,10 +66,6 @@ public class TranslatorRegistrySPITest {
 			return null;
 		}
 
-		public Class<ReferenceBean> getBeanClass() {
-			return null;
-		}
-
 		public void setFromBean(ReferenceBean bean)
 				throws IllegalArgumentException {
 		}

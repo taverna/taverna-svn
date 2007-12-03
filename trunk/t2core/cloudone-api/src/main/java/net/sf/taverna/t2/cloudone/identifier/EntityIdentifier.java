@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
-import net.sf.taverna.t2.util.beanable.Beanable;
+import net.sf.taverna.t2.cloudone.bean.LiteralBean;
 
 /**
  * Identifier within the data cloud system for a single DataDocument, error or
@@ -10,7 +10,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @author Matthew Pocock
  * 
  */
-public abstract class EntityIdentifier implements Beanable<String> {
+public abstract class EntityIdentifier {
 
 	/**
 	 * Check if a string is a <em>valid name</em>. A valid name is not null,
@@ -35,16 +35,6 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	private String namespace;
 
 	/**
-	 * Constructor for immediate population using {@link #setFromBean(String)}.
-	 * 
-	 */
-	public EntityIdentifier() {
-		identifier = null;
-		type = null;
-		namespace = null;
-	}
-
-	/**
 	 * Construct from a valid identifier.
 	 * 
 	 * @param identifier
@@ -54,7 +44,15 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	 */
 	public EntityIdentifier(String identifier)
 			throws MalformedIdentifierException {
-		setFromBean(identifier);
+		setFromURI(identifier);
+	}
+
+	/**
+	 * Construct an {@link EntityIdentifier} that must immediately be populated
+	 * by {@link #setFromURI(String)}
+	 * 
+	 */
+	protected EntityIdentifier() {
 	}
 
 	/**
@@ -76,13 +74,13 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	}
 
 	/**
-	 * Get as a serialisable bean, suitable for deserialisation using
-	 * {@link #setFromBean(String)}. The bean is a String URI that is the same
-	 * identifier as passed to {@link #EntityIdentifier(String)}.
+	 * Get as a String URI that is the same identifier as passed to
+	 * {@link #EntityIdentifier(String)}. An {@link EntityIdentifier} can be
+	 * reconstructed from this URI using {@link EntityIdentifiers#parse(String)}.
 	 * 
 	 * @return A String (URI) serialising this EntityIdentifier.
 	 */
-	public String getAsBean() {
+	public String getAsURI() {
 		return identifier;
 	}
 
@@ -135,15 +133,14 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	 * {@link #EntityIdentifier()}.
 	 * 
 	 * @param id
-	 *            The identifier as earlier serialised using
-	 *            {@link #getAsBean()}
+	 *            The identifier as earlier serialised using {@link #getAsURI()}
 	 * @throws IllegalStateException
 	 *             If the method is called twice or if object was not
 	 *             constructed using {@link #EntityIdentifier()}
 	 * @throws MalformedIdentifierException
 	 *             if the string was not a valid identifier
 	 */
-	public void setFromBean(String id) throws MalformedIdentifierException {
+	protected void setFromURI(String id) throws MalformedIdentifierException {
 		if (identifier != null) {
 			throw new IllegalStateException("Can't populate twice");
 		}
@@ -169,7 +166,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 	/**
 	 * Return a string version of the identifier. This is the same URI as given
-	 * by {@link #getAsBean()} and the string passed to the constructor
+	 * by {@link #getAsURI()} and the string passed to the constructor
 	 * {@link #EntityIdentifier(String)}.
 	 */
 	@Override
@@ -179,7 +176,7 @@ public abstract class EntityIdentifier implements Beanable<String> {
 
 	/**
 	 * Validate the specified identifier and extract any extra information.
-	 * Called by the constructor and {@link #setFromBean(String)}. At minimum
+	 * Called by the constructor and {@link #setFromURI(String)}. At minimum
 	 * this would normally populate {@link #getName()}.
 	 * 
 	 * @param identifierString
@@ -189,9 +186,5 @@ public abstract class EntityIdentifier implements Beanable<String> {
 	 */
 	protected abstract void validate(String identifierString)
 			throws MalformedIdentifierException;
-
-	public Class<String> getBeanClass() {
-		return String.class;
-	}
 
 }

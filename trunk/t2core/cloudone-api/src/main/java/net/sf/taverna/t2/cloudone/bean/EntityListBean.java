@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.bean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.entity.EntityList;
@@ -19,7 +20,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
 public class EntityListBean {
 	private String identifier;
 
-	private List<String> content;
+	private List<String> content = new ArrayList<String>();
 
 	public List<String> getContent() {
 		return content;

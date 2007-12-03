@@ -6,6 +6,9 @@
 		<XmlType
 			namespace="http://taverna.sf.net/t2/cloudone/refscheme/blob/"
 			name="blobReferenceScheme" />
+		<XmlRootElement
+			namespace="http://taverna.sf.net/t2/cloudone/refscheme/blob/"
+			name="blobReferenceScheme" />
 	</Class>
 
 </jaxb-intros>

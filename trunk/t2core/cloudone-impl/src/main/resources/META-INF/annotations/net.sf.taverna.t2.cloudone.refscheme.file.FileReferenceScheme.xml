@@ -6,6 +6,9 @@
 		<XmlType
 			namespace="http://taverna.sf.net/t2/cloudone/refscheme/file/"
 			name="fileReferenceScheme" />
+		<XmlRootElement
+			namespace="http://taverna.sf.net/t2/cloudone/refscheme/file/"
+			name="fileReferenceScheme" />
 	</Class>
 
 </jaxb-intros>

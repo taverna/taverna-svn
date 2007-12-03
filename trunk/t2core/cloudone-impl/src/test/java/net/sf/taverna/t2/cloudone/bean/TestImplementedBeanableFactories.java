@@ -22,9 +22,6 @@ public class TestImplementedBeanableFactories {
 	BeanableFactoryRegistry registry = BeanableFactoryRegistry.getInstance();
 
 	Class<? extends Beanable>[] beanableClasses = new Class[]{
-			DataDocumentIdentifier.class,
-			EntityListIdentifier.class,
-			ErrorDocumentIdentifier.class,
 			Literal.class,
 			HttpReferenceScheme.class,
 			BlobReferenceSchemeImpl.class,

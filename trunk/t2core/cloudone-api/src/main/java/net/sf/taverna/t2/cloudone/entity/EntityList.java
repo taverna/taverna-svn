@@ -156,11 +156,11 @@ public class EntityList implements
 	 */
 	public EntityListBean getAsBean() {
 		EntityListBean bean = new EntityListBean();
-		bean.setIdentifier(identifier.getAsBean());
+		bean.setIdentifier(identifier.getAsURI());
 
 		List<String> content = new ArrayList<String>();
 		for (EntityIdentifier child : list) {
-			content.add(child.getAsBean());
+			content.add(child.getAsURI());
 		}
 		bean.setContent(content);
 
@@ -264,10 +264,8 @@ public class EntityList implements
 		}
 		identifier = (EntityListIdentifier) EntityIdentifiers.parse(bean
 				.getIdentifier());
-		if (bean.getContent() != null) {
-			for (String id : bean.getContent()) {
-				list.add(EntityIdentifiers.parse(id));
-			}
+		for (String id : bean.getContent()) {
+			list.add(EntityIdentifiers.parse(id));
 		}
 	}
 
@@ -297,10 +295,6 @@ public class EntityList implements
 	 */
 	public <T> T[] toArray(T[] a) {
 		return list.toArray(a);
-	}
-
-	public Class<EntityListBean> getBeanClass() {
-		return EntityListBean.class;
 	}
 
 }

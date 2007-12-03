@@ -44,7 +44,7 @@ public class HttpPeerProxy implements PeerProxy {
 			throws NotFoundException {
 		URL url;
 		try {
-			url = new URL(baseUrl + identifier.getAsBean());
+			url = new URL(baseUrl + identifier.getAsURI());
 		} catch (MalformedURLException e) {
 			throw new NotFoundException("Invalid URL from identifier "
 					+ identifier, e);

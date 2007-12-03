@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.util.beanable.jaxb;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,6 +15,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
@@ -37,7 +37,7 @@ import com.sun.xml.bind.api.JAXBRIContext;
  * Serialise or deserialise a bean (normally produced by a {@link Beanable}) as
  * XML. Code based on
  * {@link net.sf.taverna.t2.workflowmodel.impl.Tools#beanAsElement(Object)}.
- * Currently beans are serialised to XML using {@link XMLEncoder}.
+ * Currently beans are serialised to XML using JAXB.
  * 
  * @author Stian Soiland
  * @author Ian Dunlop
@@ -76,17 +76,24 @@ public class BeanSerialiser {
 	 * @param element
 	 *            Element containing serialisation of bean using
 	 *            {@link #toXML(Object)}
-	 * @param classLoader
-	 *            {@link ClassLoader} from where to construct bean classes
 	 * @return Deserialised bean
 	 */
-	public Object fromXML(Element element, ClassLoader classLoader) {
+	public Object fromXML(Element element) {
 		String configAsString = new XMLOutputter(Format.getRawFormat())
 				.outputString(element);
-		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(
-				configAsString.getBytes()), null, null, classLoader);
-		Object configObject = decoder.readObject();
-		return configObject;
+		InputStream inputStream = new ByteArrayInputStream(configAsString
+				.getBytes());
+		Unmarshaller unmarshaller;
+		Object bean;
+		try {
+			unmarshaller = jaxbContext.createUnmarshaller();
+			bean = unmarshaller.unmarshal(inputStream);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new RetrievalException("Could not de-serialise " + element
+					+ " " + e);
+		}
+		return bean;
 	}
 
 	/**
@@ -99,9 +106,11 @@ public class BeanSerialiser {
 	 *            {@link #toXML(Object)}
 	 * @param classLoader
 	 *            {@link ClassLoader} from where to construct bean classes
+	 * @throws RetrievalException
+	 *             If the bean could not be deserialised
 	 * @return Deserialised bean
 	 */
-	public Object fromXMLFile(File file) {
+	public Object fromXMLFile(File file) throws RetrievalException {
 		Unmarshaller unmarshaller;
 		Object bean;
 		try {
@@ -109,7 +118,7 @@ public class BeanSerialiser {
 			bean = unmarshaller.unmarshal(file);
 		} catch (JAXBException e) {
 			logger.warn(e);
-			throw new RuntimeException("Could not de-serialise " + file + " "
+			throw new RetrievalException("Could not de-serialise " + file + " "
 					+ e);
 		}
 		return bean;
@@ -131,9 +140,16 @@ public class BeanSerialiser {
 		// TODO: Support Beanable directly, and Beans containing Beanable's
 		// TODO: Serialise Raven classloaders
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		XMLEncoder xenc = new XMLEncoder(bos);
-		xenc.writeObject(bean);
-		xenc.close();
+		Marshaller marshaller;
+		try {
+			marshaller = jaxbContext.createMarshaller();
+			marshaller.marshal(bean, bos);
+		} catch (JAXBException e) {
+			logger.warn(e);
+			throw new StorageException("Could not serialise bean " + bean + " "
+					+ e);
+		}
+
 		byte[] bytes = bos.toByteArray();
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		Element configElement;
@@ -159,18 +175,17 @@ public class BeanSerialiser {
 	 *            Bean to serialise
 	 * @param file
 	 *            File where to store XML
-	 * @throws IOException
-	 *             If the file could not be written to
-	 * @throws JAXBException
+	 * @throws StorageException
+	 *             If the bean could not be serialised
 	 */
-	public void toXMLFile(Object bean, File file) {
+	public void toXMLFile(Object bean, File file) throws StorageException {
 		Marshaller marshaller;
 		try {
 			marshaller = jaxbContext.createMarshaller();
 			marshaller.marshal(bean, file);
 		} catch (JAXBException e) {
 			logger.warn(e);
-			throw new RuntimeException("Could not serialise bean " + bean + " "
+			throw new StorageException("Could not serialise bean " + bean + " "
 					+ e);
 		}
 	}
@@ -191,10 +206,7 @@ public class BeanSerialiser {
 	 * @return XML
 	 */
 	public Element beanableToXML(Beanable<?> beanable) {
-		Element elem = new Element(BEANABLE);
-		elem.setAttribute(CLASS_NAME, beanable.getClass().getCanonicalName());
-		elem.addContent(toXML(beanable.getAsBean()));
-		return elem;
+		return toXML(beanable.getAsBean());
 	}
 
 	/**
@@ -208,13 +220,10 @@ public class BeanSerialiser {
 	 */
 	@SuppressWarnings("unchecked")
 	public <Bean> Beanable<?> beanableFromXML(Element elem) {
-		String beanableClassName = elem.getAttributeValue(CLASS_NAME);
+		Object beanObject = fromXML(elem);
 		BeanableFactory<? extends Beanable, Bean> beanableFactory = beanableFactoryRegistry
-				.getFactoryForBeanableType(beanableClassName);
-		Element beanElem = elem.getChild(JAVA);
-		Class<Bean> beanType = beanableFactory.getBeanType();
-		Bean bean = beanableFactory.getBeanType().cast(
-				fromXML(beanElem, beanType.getClassLoader()));
+				.getFactoryForBeanType(beanObject.getClass());
+		Bean bean = beanableFactory.getBeanType().cast(beanObject);
 		return beanableFactory.createFromBean(bean);
 	}
 

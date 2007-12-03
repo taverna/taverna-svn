@@ -25,7 +25,6 @@ import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.IDType;
@@ -33,7 +32,6 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
@@ -47,10 +45,10 @@ import org.junit.Test;
 
 /**
  * Test bean serialisation of {@link Beanable}s using {@link BeanSerialiser}.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class BeanTest {
 
@@ -61,7 +59,8 @@ public class BeanTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDataDocument() throws JDOMException, IOException, JAXBException {
+	public void testDataDocument() throws JDOMException, IOException,
+			JAXBException {
 		String urn = "urn:t2data:ddoc://dataNS/data0";
 
 		// Generate a set of two reference schemes
@@ -82,16 +81,11 @@ public class BeanTest {
 		refSchemes.add(new HttpReferenceScheme(url4));
 		DataDocument doc = new DataDocumentImpl(id, refSchemes);
 
-		assertEquals(urn, doc.getIdentifier().getAsBean());
+		assertEquals(urn, doc.getIdentifier().getAsURI());
 		assertEquals(3, doc.getReferenceSchemes().size());
 
-		DataDocumentBean bean = serialised(doc.getAsBean());
-		@SuppressWarnings("unused")
-		List<ReferenceBean> refs = bean.getReferences();
-		
-		DataDocument newDoc = new DataDocumentImpl();
-		newDoc.setFromBean(bean);
-		assertEquals(urn, newDoc.getIdentifier().getAsBean());
+		DataDocument newDoc = serialisedBeanable(doc);
+		assertEquals(urn, newDoc.getIdentifier().getAsURI());
 		final Set<ReferenceScheme> retrievedRefs = newDoc.getReferenceSchemes();
 		assertNotSame("Did not reconstruct set", retrievedRefs, refSchemes);
 		// Fails due to lacking blob support
@@ -100,25 +94,6 @@ public class BeanTest {
 		assertTrue(retrievedRefs.containsAll(refSchemes));
 	}
 
-	@Test
-	public void testDataDocumentIdentifier() throws JAXBException {
-		DataDocumentIdentifier id = new DataDocumentIdentifier(
-				"urn:t2data:ddoc://dataNS/data0");
-		assertEquals("dataNS", id.getNamespace());
-		assertEquals(0, id.getDepth());
-		assertEquals(IDType.Data, id.getType());
-		assertEquals("data0", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		DataDocumentIdentifier newId = (DataDocumentIdentifier) EntityIdentifiers
-				.parse(bean);
-		assertEquals("dataNS", newId.getNamespace());
-		assertEquals(0, newId.getDepth());
-		assertEquals(IDType.Data, newId.getType());
-		assertEquals("data0", newId.getName());
-		assertEquals(bean, newId.getAsBean());
-
-	}
 
 	@Test
 	public void testEntityList() throws JAXBException {
@@ -137,9 +112,7 @@ public class BeanTest {
 		assertEquals(id3, list.get(1));
 		assertEquals(id, list.getIdentifier());
 
-		EntityListBean bean = serialised(list.getAsBean());
-		EntityList newList = new EntityList();
-		newList.setFromBean(bean);
+		EntityList newList = serialisedBeanable(list);
 		assertEquals(list, newList);
 		assertEquals(2, newList.size());
 		assertEquals(id2, newList.get(0));
@@ -147,67 +120,28 @@ public class BeanTest {
 		assertEquals(id, newList.getIdentifier());
 	}
 
-	@Test
-	public void testEntityListIdentifier() throws JAXBException {
-		EntityListIdentifier id = new EntityListIdentifier(
-				"urn:t2data:list://fish/list5311/2");
-		assertEquals("fish", id.getNamespace());
-		assertEquals(2, id.getDepth());
-		assertEquals(IDType.List, id.getType());
-		assertEquals("list5311", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		EntityListIdentifier newId = (EntityListIdentifier) EntityIdentifiers
-				.parse(bean);
-		assertEquals("fish", newId.getNamespace());
-		assertEquals(2, newId.getDepth());
-		assertEquals(IDType.List, newId.getType());
-		assertEquals("list5311", newId.getName());
-		assertEquals(bean, newId.getAsBean());
-	}
 
 	@Test
-	public void testErrorDocument() throws JDOMException, IOException, JAXBException {
+	public void testErrorDocument() throws JDOMException, IOException,
+			JAXBException {
 		ErrorDocumentIdentifier id = new ErrorDocumentIdentifier(
 				"urn:t2data:error://fish/error1/3/2");
 		Throwable throwable = new Throwable("failure", new Exception(
 				"total failure"));
 		ErrorDocument doc = new ErrorDocument(id, "did not work", throwable);
 		assertEquals("urn:t2data:error://fish/error1/3/2", doc.getIdentifier()
-				.getAsBean());
+				.getAsURI());
 		assertEquals(throwable, doc.getCause());
 		assertEquals("did not work", doc.getMessage());
 
-		ErrorDocumentBean bean = serialised(doc.getAsBean());
-		ErrorDocument newDoc = new ErrorDocument();
-		newDoc.setFromBean(bean);
+		ErrorDocument newDoc = serialisedBeanable(doc);
 		assertEquals("urn:t2data:error://fish/error1/3/2", newDoc
-				.getIdentifier().getAsBean());
+				.getIdentifier().getAsURI());
 		// null because we can't serialise a Throwable
 		assertNull(newDoc.getCause());
 		assertEquals("did not work", newDoc.getMessage());
 	}
 
-	@Test
-	public void testErrorDocumentIdentifier() throws JAXBException {
-		ErrorDocumentIdentifier id = new ErrorDocumentIdentifier(
-				"urn:t2data:error://fish/error1/3/2");
-		assertEquals("fish", id.getNamespace());
-		assertEquals(3, id.getDepth());
-		assertEquals(2, id.getImplicitDepth());
-		assertEquals(IDType.Error, id.getType());
-		assertEquals("error1", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		ErrorDocumentIdentifier newId = (ErrorDocumentIdentifier) EntityIdentifiers
-				.parse(bean);
-		assertEquals("fish", newId.getNamespace());
-		assertEquals(3, newId.getDepth());
-		assertEquals(2, newId.getImplicitDepth());
-		assertEquals(IDType.Error, newId.getType());
-		assertEquals("error1", newId.getName());
-		assertEquals(bean, newId.getAsBean());
-	}
 
 	@Test
 	public void testLiteral() throws MalformedIdentifierException,
@@ -218,14 +152,12 @@ public class BeanTest {
 		assertEquals(0, id.getDepth());
 		assertEquals(IDType.Literal, id.getType());
 		assertEquals("Some%20funky%2Fcharacters", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		
+		Literal newId = (Literal) serialisedBeanable(id);
 		assertEquals("string.literal", newId.getNamespace());
 		assertEquals(0, newId.getDepth());
 		assertEquals(IDType.Literal, newId.getType());
 		assertEquals("Some%20funky%2Fcharacters", newId.getName());
-		assertEquals(bean, newId.getAsBean());
 		assertEquals("Some funky/characters", newId.getValue());
 	}
 
@@ -237,14 +169,12 @@ public class BeanTest {
 		assertEquals(0, id.getDepth());
 		assertEquals(IDType.Literal, id.getType());
 		assertEquals("-15.87", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		
+		Literal newId = (Literal) serialisedBeanable(id);
 		assertEquals("float.literal", newId.getNamespace());
 		assertEquals(0, newId.getDepth());
 		assertEquals(IDType.Literal, newId.getType());
 		assertEquals("-15.87", newId.getName());
-		assertEquals(bean, newId.getAsBean());
 	}
 
 	@Test
@@ -255,14 +185,12 @@ public class BeanTest {
 		assertEquals(0, id.getDepth());
 		assertEquals(IDType.Literal, id.getType());
 		assertEquals("-Infinity", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		
+		Literal newId = (Literal) serialisedBeanable(id);
 		assertEquals("double.literal", newId.getNamespace());
 		assertEquals(0, newId.getDepth());
 		assertEquals(IDType.Literal, newId.getType());
 		assertEquals("-Infinity", newId.getName());
-		assertEquals(bean, newId.getAsBean());
 		assertEquals(Double.NEGATIVE_INFINITY, newId.getValue());
 	}
 
@@ -274,14 +202,12 @@ public class BeanTest {
 		assertEquals(0, id.getDepth());
 		assertEquals(IDType.Literal, id.getType());
 		assertEquals("1.7976931348623157E308", id.getName());
-		String bean = serialised(id.getAsBean());
-
-		Literal newId = (Literal) EntityIdentifiers.parse(bean);
+		
+		Literal newId = (Literal) serialisedBeanable(id);
 		assertEquals("double.literal", newId.getNamespace());
 		assertEquals(0, newId.getDepth());
 		assertEquals(IDType.Literal, newId.getType());
 		assertEquals("1.7976931348623157E308", newId.getName());
-		assertEquals(bean, newId.getAsBean());
 		assertEquals(Double.MAX_VALUE, newId.getValue());
 	}
 
@@ -295,9 +221,7 @@ public class BeanTest {
 		InputStream stream = urlRef.dereference(dManager);
 		assertEquals("Test data\n", IOUtils.toString(stream, "utf8"));
 
-		HttpReferenceBean bean = serialised(urlRef.getAsBean());
-		HttpReferenceScheme newUrlRef = new HttpReferenceScheme();
-		newUrlRef.setFromBean(bean);
+		HttpReferenceScheme newUrlRef = serialisedBeanable(urlRef);
 		InputStream newStream = newUrlRef.dereference(dManager);
 		assertEquals("Test data\n", IOUtils.toString(newStream, "utf8"));
 	}
@@ -311,11 +235,12 @@ public class BeanTest {
 	 * @throws JAXBException
 	 */
 	@SuppressWarnings("unchecked")
-	private <Bean> Bean serialised(Bean bean) throws JAXBException {
-		ClassLoader cl = bean.getClass().getClassLoader();
-		Element elem;
-		elem = BeanSerialiser.getInstance().toXML(bean);
-		return (Bean) BeanSerialiser.getInstance().fromXML(elem, cl);
+	private <BeanableType extends Beanable> BeanableType serialisedBeanable(
+			BeanableType bean) throws JAXBException {
+		BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
+		Element elem = beanSerialiser.beanableToXML(bean);
+		return (BeanableType) beanSerialiser.beanableFromXML(elem);
 	}
+
 
 }

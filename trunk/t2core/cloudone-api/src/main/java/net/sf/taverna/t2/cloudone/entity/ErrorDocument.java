@@ -108,7 +108,7 @@ public class ErrorDocument implements
 	 */
 	public ErrorDocumentBean getAsBean() {
 		ErrorDocumentBean bean = new ErrorDocumentBean();
-		bean.setIdentifier(identifier.getAsBean());
+		bean.setIdentifier(identifier.getAsURI());
 		bean.setMessage(message);
 		bean.setStackTrace(getStackTrace());
 		return bean;
@@ -164,8 +164,5 @@ public class ErrorDocument implements
 		stackTrace = bean.getStackTrace();
 	}
 
-	public Class<ErrorDocumentBean> getBeanClass() {
-		return ErrorDocumentBean.class;
-	}
 
 }

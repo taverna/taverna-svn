@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
+import net.sf.taverna.t2.cloudone.bean.EntityListBean;
+import net.sf.taverna.t2.cloudone.bean.LiteralBean;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 
@@ -14,14 +16,14 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
  * <p>
  * This class is both an {@link EntityIdentifier} and an {@link Entity},
  * attempts to resolve it through the
- * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager} or get its identity through
- * the {@link Entity} interface will both return self.
- *
+ * {@link net.sf.taverna.t2.cloudone.datamanager.DataManager} or get its
+ * identity through the {@link Entity} interface will both return self.
+ * 
  * @author Tom Oinn
- *
+ * 
  */
 public class Literal extends EntityIdentifier implements
-		Entity<Literal, String> {
+		Entity<Literal, LiteralBean> {
 
 	private static final String ENCODING = "UTF-8";
 	private static final String LITERAL = ".literal/";
@@ -35,7 +37,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new boolean literal.
-	 *
+	 * 
 	 * @param value
 	 *            The boolean value
 	 * @return A boolean Literal
@@ -46,7 +48,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new double literal.
-	 *
+	 * 
 	 * @param value
 	 *            The double value
 	 * @return A double Literal
@@ -57,7 +59,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Float literal.
-	 *
+	 * 
 	 * @param value
 	 *            The float value
 	 * @return A float Literal
@@ -68,7 +70,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Integer literal.
-	 *
+	 * 
 	 * @param value
 	 *            The integer value
 	 * @return An integer Literal
@@ -79,7 +81,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Build a new Long literal.
-	 *
+	 * 
 	 * @param value
 	 *            The Long value
 	 * @return A Long Literal
@@ -92,11 +94,12 @@ public class Literal extends EntityIdentifier implements
 	 * Build a new String literal. The string is URL encoded using UTF-8.
 	 * Although there is no upper limit to the length of an URL, URLs should
 	 * generally not be longer than say 250 characters. Use a
-	 * {@link net.sf.taverna.t2.cloudone.datamanager.BlobStore} to store larger strings.
+	 * {@link net.sf.taverna.t2.cloudone.datamanager.BlobStore} to store larger
+	 * strings.
 	 * {@link net.sf.taverna.t2.cloudone.datamanager.DataFacade#register(Object)}
 	 * will do this automatically depending on
 	 * {@link import net.sf.taverna.t2.cloudone.DataManager#getMaxIDLength()}.
-	 *
+	 * 
 	 * @param value
 	 *            A string
 	 * @return A String Literal.
@@ -112,14 +115,14 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * The URI for this Literal. Parsed by {@link #getValue()}.
-	 *
+	 * 
 	 */
 	private String value;
 
 	/**
-	 * Constructor for immediate population using
-	 * {@link #setFromBean(String)}.
-	 *
+	 * Construct a Literal that must immediately be populated by
+	 * {@link #setFromBean(LiteralBean)}.
+	 * 
 	 */
 	public Literal() {
 		super();
@@ -129,7 +132,7 @@ public class Literal extends EntityIdentifier implements
 	 * Construct a Literal from an identifier string. Note that to create a
 	 * Literal representing a string, use the static
 	 * {@link #buildLiteral(String)}.
-	 *
+	 * 
 	 * @param id
 	 *            The literal identifier
 	 * @throws MalformedIdentifierException
@@ -141,12 +144,12 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Check equality against an object.
-	 *
+	 * 
 	 * @param obj
 	 *            Object to check against.
 	 * @return true if and only if <code>obj</code> is a {@link Literal} and
 	 *         it's value is the same as the value of this Literal.
-	 *
+	 * 
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -188,7 +191,7 @@ public class Literal extends EntityIdentifier implements
 	 * Return the value which this literal represents. Strings are decoded using
 	 * the UTF-8 encoding; boolean, int, float, double and long are returned as
 	 * their respective object wrapper types.
-	 *
+	 * 
 	 * @return underlying value for this literal
 	 */
 	public Object getValue() {
@@ -217,7 +220,7 @@ public class Literal extends EntityIdentifier implements
 
 	/**
 	 * Get the type of object this literal represents.
-	 *
+	 * 
 	 * @return the Class of the object that would be returned by getValue()
 	 */
 	public Class<?> getValueType() {
@@ -243,7 +246,7 @@ public class Literal extends EntityIdentifier implements
 	/**
 	 * Calculate the hashcode. The hashcode is based on the URI in
 	 * {@link #getName()}.
-	 *
+	 * 
 	 */
 	@Override
 	public int hashCode() {
@@ -258,6 +261,16 @@ public class Literal extends EntityIdentifier implements
 							+ identifierString);
 		}
 		value = identifierString;
+	}
+
+	public LiteralBean getAsBean() {
+		LiteralBean bean = new LiteralBean();
+		bean.setLiteral(getAsURI());
+		return bean;
+	}
+
+	public void setFromBean(LiteralBean bean) throws IllegalArgumentException {
+		setFromURI(bean.getLiteral());
 	}
 
 }
