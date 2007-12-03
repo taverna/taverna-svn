@@ -4,9 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import javax.swing.AbstractAction;
@@ -23,6 +25,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
@@ -144,6 +147,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		button.addActionListener(new ActionListener() {
 
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent arg0) {
 				if (model.getProcessors().length > 0
 						&& model.getWorkflowSinkPorts().length > 0) {
@@ -178,11 +182,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 											public void invoke(
 													Map<DataflowInputPort, EntityIdentifier> entities) {
 												try {
-													System.out
-															.println("Running with "
+													logger
+															.info("Running workflow with "
 																	+ entities);
 													runWorkflow(dataflow,
-															entities,context);
+															entities, context);
 												} catch (EditException e) {
 													logger.error(e);
 													updateStatus("failed\n");
@@ -193,13 +197,13 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 												}
 											}
 
-										},context);
+										}, context);
 								dialog.add(inputComp);
 								dialog.setSize(640, 480);
 								dialog.setVisible(true);
 								return;
 							}
-							runWorkflow(dataflow, null,context);
+							runWorkflow(dataflow, null, context);
 						} else {
 							updateStatus("failed\n");
 							showErrorDialog("Unable to translate workflow",
@@ -275,8 +279,13 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	protected InvocationContext createContext() {
-		final DataManager dataManager = new InMemoryDataManager("namespace",
-				Collections.EMPTY_SET);
+		// final DataManager dataManager = new InMemoryDataManager("namespace",
+		// Collections.EMPTY_SET);
+		String tavHome = System.getProperty("taverna.home");
+		File dataManagerDir = new File(tavHome, "t2-datamanager");
+		final DataManager dataManager = new FileDataManager(UUID.randomUUID()
+				.toString(), Collections.EMPTY_SET, dataManagerDir);
+
 		InvocationContext context = new InvocationContext() {
 			public DataManager getDataManager() {
 				return dataManager;
@@ -284,10 +293,10 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		};
 		return context;
 	}
-	
+
 	protected void runWorkflow(final Dataflow dataflow,
-			Map<DataflowInputPort, EntityIdentifier> entities,InvocationContext context)
-			throws EditException {
+			Map<DataflowInputPort, EntityIdentifier> entities,
+			InvocationContext context) throws EditException {
 
 		facade = new WorkflowInstanceFacadeImpl(dataflow, context);
 		facade.addResultListener(new ResultListener() {
@@ -303,8 +312,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 						results = 0;
 					}
 				}
-				updateStatus("Result " + indexString(token.getIndex()) + " for port "
-						+ portName + "\n");
+				updateStatus("Result " + indexString(token.getIndex())
+						+ " for port " + portName + "\n");
 			}
 
 		});
