@@ -48,7 +48,7 @@
     <dependency>
       <groupId>biomoby.org</groupId>
       <artifactId>jmoby</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>biomoby.org</groupId>
       <artifactId>jmoby-others</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -113,7 +113,7 @@
     <dependency>
       <groupId>biomoby.org</groupId>
       <artifactId>jmoby-dashboard</artifactId>
-      <version>1.1</version>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
