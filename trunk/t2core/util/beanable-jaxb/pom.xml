@@ -20,6 +20,11 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>cloudone-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.jaxb.intros</groupId>
 			<artifactId>jaxbintros</artifactId>
 			<version>1.0.0.beta3</version>
