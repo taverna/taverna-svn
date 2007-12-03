@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -33,6 +34,7 @@ import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.plugin.input.InputComponent;
 import net.sf.taverna.t2.plugin.input.InputComponent.InputComponentCallback;
+import net.sf.taverna.t2.plugin.pretest.HealthCheckReportPanel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -51,6 +53,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private ScuflModel model;
 
 	private JButton runButton;
+	
+	private JButton testButton;
 
 	private JButton stopButton;
 
@@ -67,7 +71,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	public T2Component() {
 		setLayout(new BorderLayout());
-
+		testButton = createTestButton();
 		runButton = createRunButton();
 		stopButton = new JButton(new AbstractAction("Stop") {
 
@@ -88,6 +92,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		runStatusScrollPane = new JScrollPane(runStatusPanel);
 
 		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(testButton);
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
 
@@ -97,6 +102,41 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		add(buttonPanel, BorderLayout.NORTH);
 		add(midPanel, BorderLayout.CENTER);
+	}
+
+	private JButton createTestButton() {
+		JButton button = new JButton("Test");
+		
+		button.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				runHealthCheck();
+			}
+		}
+		);
+		return button;
+	}
+
+	protected void runHealthCheck() {
+		if (model!=null) {
+			
+			JFrame reportFrame = new JFrame();
+			final HealthCheckReportPanel panel = new HealthCheckReportPanel(model);
+			reportFrame.getContentPane().add(panel);
+			reportFrame.setLocationRelativeTo(this);
+			reportFrame.setPreferredSize(new Dimension(500,400));
+			reportFrame.pack();
+			reportFrame.setVisible(true);
+			
+			Runnable reportThread = new Runnable() {
+				public void run() {
+					panel.start();
+				}	
+			};
+			
+			new Thread(reportThread).start();
+			
+		}
 	}
 
 	private JButton createRunButton() {
