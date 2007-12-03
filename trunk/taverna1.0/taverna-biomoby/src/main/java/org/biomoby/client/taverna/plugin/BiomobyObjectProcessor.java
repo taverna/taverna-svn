@@ -264,7 +264,9 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                     || parent.equalsIgnoreCase("Integer")
                     || parent.equalsIgnoreCase("float")
                     || parent.equalsIgnoreCase("DateTime")
+                    || parent.equalsIgnoreCase("Boolean")
                     || serviceName.equalsIgnoreCase("String")
+                    || serviceName.equalsIgnoreCase("Boolean")
                     || serviceName.equalsIgnoreCase("Integer")
                     || serviceName.equalsIgnoreCase("float")
                     || serviceName.equalsIgnoreCase("DateTime")) {
@@ -305,6 +307,8 @@ public class BiomobyObjectProcessor extends Processor implements Serializable {
                     || parent.equalsIgnoreCase("Integer")
                     || parent.equalsIgnoreCase("float")
                     || serviceName.equalsIgnoreCase("String")
+                     || parent.equalsIgnoreCase("Boolean")
+                    || serviceName.equalsIgnoreCase("Boolean")
                     || serviceName.equalsIgnoreCase("Integer")
                     || serviceName.equalsIgnoreCase("float")) {
                 input_port = new InputPort(this, "value");
