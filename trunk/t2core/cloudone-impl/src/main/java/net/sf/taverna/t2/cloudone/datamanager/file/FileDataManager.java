@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
@@ -17,7 +18,6 @@ import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.BlobStore;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
@@ -31,6 +31,8 @@ import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
+
+import org.apache.log4j.Logger;
 
 /**
  * File based {@link DataManager}. Entities are stored in a directory
@@ -79,6 +81,8 @@ import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
  */
 public class FileDataManager extends AbstractDataManager {
 
+	private static Logger logger = Logger.getLogger(FileDataManager.class);
+	
 	private static final int MAX_ID_LENGTH = 80; // for debug reasons
 
 	private File path;
@@ -207,6 +211,12 @@ public class FileDataManager extends AbstractDataManager {
 		} catch (JAXBException e) {
 			throw new RetrievalException("Could not retreive data for "
 					+ entityPath, e);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				logger.warn("Can't close stream read from " + entityPath, e);
+			}
 		}
 		if (id.getType().equals(IDType.Data)) {
 			DataDocument entity = new DataDocumentImpl();
@@ -270,6 +280,12 @@ public class FileDataManager extends AbstractDataManager {
 		} catch (JAXBException e) {
 			throw new StorageException(
 					"Could not store entity to" + entityPath, e);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				logger.warn("Can't close stream for " + entityPath, e);
+			}
 		}
 	}
 
