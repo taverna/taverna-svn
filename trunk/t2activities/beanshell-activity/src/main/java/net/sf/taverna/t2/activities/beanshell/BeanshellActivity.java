@@ -65,7 +65,7 @@ public class BeanshellActivity extends
 	}
 	
 	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport("Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		return new ActivityHealthReport(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.SEVERE);
 	}
 
 	@Override
