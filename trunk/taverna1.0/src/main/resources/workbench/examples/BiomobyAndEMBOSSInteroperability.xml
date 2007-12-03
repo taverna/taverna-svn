@@ -10,7 +10,7 @@
   <s:processor name="FASTA_to_Seq_Object">
     <s:description>This service consumes a FASTA formatted sequence (FASTA or child object) and converts it into a child of Generic Sequence based on the type of sequence in the FATSA file.  This is guessed using the BioPerl _guess_alphabet subroutine.  The output is either a DNASequence, RNASequence, or AminoAcidSequence object, as appropriate.</s:description>
     <s:biomobywsdl>
-      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
       <s:serviceName>FASTA2HighestGenericSequenceObject</s:serviceName>
       <s:authorityName>bioinfo.icapture.ubc.ca</s:authorityName>
     </s:biomobywsdl>
@@ -18,7 +18,7 @@
   <s:processor name="Blast_against_Snapdragon">
     <s:description>Perform blast analysis against the Dragon database using fasta text as input.</s:description>
     <s:biomobywsdl>
-      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
       <s:serviceName>getDragonBlastText</s:serviceName>
       <s:authorityName>antirrhinum.net</s:authorityName>
       <s:Parameter s:name="evalue">10</s:Parameter>
@@ -29,7 +29,7 @@
 or PDB identifier and returns the equivalent genbank record as a 
 FASTA object</s:description>
     <s:biomobywsdl>
-      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
       <s:serviceName>MOBYSHoundGetGenBankFasta</s:serviceName>
       <s:authorityName>bioinfo.icapture.ubc.ca</s:authorityName>
     </s:biomobywsdl>
@@ -37,7 +37,7 @@ FASTA object</s:description>
   <s:processor name="Object">
     <s:description>an object</s:description>
     <s:biomobyobject>
-      <s:mobyEndpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:mobyEndpoint>
+      <s:mobyEndpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:mobyEndpoint>
       <s:serviceName>Object</s:serviceName>
       <s:authorityName />
     </s:biomobyobject>
@@ -45,7 +45,7 @@ FASTA object</s:description>
   <s:processor name="Parse_MOBY_FASTA">
     <s:description>Processor to parse the datatype FASTA</s:description>
     <s:biomobyparser>
-      <s:endpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:endpoint>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
       <s:datatype>FASTA</s:datatype>
       <s:articleName>fasta</s:articleName>
       <s:description>Processor to parse the datatype FASTA</s:description>
@@ -54,7 +54,7 @@ FASTA object</s:description>
   <s:processor name="Parse_Moby_Data_GenericSequence">
     <s:description>Processor to parse the datatype GenericSequence</s:description>
     <s:biomobyparser>
-      <s:endpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:endpoint>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
       <s:datatype>GenericSequence</s:datatype>
       <s:articleName>sequence_object</s:articleName>
       <s:description>Processor to parse the datatype GenericSequence</s:description>
@@ -63,7 +63,7 @@ FASTA object</s:description>
   <s:processor name="Parse_Moby_Data_NCBI_BLAST_Text">
     <s:description>Processor to parse the datatype NCBI_BLAST_Text</s:description>
     <s:biomobyparser>
-      <s:endpoint>http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl</s:endpoint>
+      <s:endpoint>http://moby.ucalgary.ca/moby/MOBY-Central.pl</s:endpoint>
       <s:datatype>NCBI_BLAST_Text</s:datatype>
       <s:articleName>blast</s:articleName>
       <s:description>Processor to parse the datatype NCBI_BLAST_Text</s:description>
