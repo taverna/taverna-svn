@@ -19,8 +19,8 @@ import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 public class BiomobyScavengerDialog extends JPanel {
 
 	private static final long serialVersionUID = -57047613557546674L;
-	private JTextField registryEndpoint = new JTextField("http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl");
-	private JTextField registryURI = new JTextField("http://mobycentral.icapture.ubc.ca/MOBY/Central");
+	private JTextField registryEndpoint = new JTextField("http://moby.ucalgary.ca/moby/MOBY-Central.pl");
+	private JTextField registryURI = new JTextField("http://moby.ucalgary.ca/MOBY/Central");
 
     /**
      * Default constructor.

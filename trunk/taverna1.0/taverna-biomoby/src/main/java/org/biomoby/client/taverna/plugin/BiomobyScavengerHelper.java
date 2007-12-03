@@ -42,9 +42,9 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 	private static Logger logger = Logger.getLogger(BiomobyScavengerHelper.class);
 
     @SuppressWarnings("unused")
-	private String uri = "http://mobycentral.icapture.ubc.ca/MOBY/Central";
+	private String uri = "http://moby.ucalgary.ca/MOBY/Central";
 
-    private String endpoint = "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl";
+    private String endpoint = "http://moby.ucalgary.ca/moby/MOBY-Central.pl";
 
     public String getScavengerDescription() {
         return "Add new Biomoby scavenger...";

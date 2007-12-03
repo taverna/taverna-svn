@@ -97,11 +97,11 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 						if (XMLUtilities.isCollection(invocation)) {
 							String[] simples = XMLUtilities.getAllSimplesByArticleName(proc.getArticleNameUsedByService(), invocation);
 							for (int j = 0; j < simples.length; j++) {
-								ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, XMLUtilities.createMobyDataElementWrapper(simples[j],"a1", null));
+								ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, XMLUtilities.createMobyDataElementWrapper(simples[j],"a1", null), proc.getRegistryEndpoint());
 								stuff.addAll(content);
 							}
 						} else {
-							ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, invocations[i]);
+							ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, invocations[i],proc.getRegistryEndpoint());
 							stuff.addAll(content);
 						}
 					}
@@ -151,11 +151,11 @@ public class MobyParseDatatypeTask implements ProcessorTaskWorker {
 							if (XMLUtilities.isCollection(invocation)) {
 								String[] simples = XMLUtilities.getAllSimplesByArticleName(proc.getArticleNameUsedByService(), invocation);
 								for (int j = 0; j < simples.length; j++) {
-									ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, XMLUtilities.createMobyDataElementWrapper(simples[j],"a1", null));
+									ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, XMLUtilities.createMobyDataElementWrapper(simples[j],"a1", null),proc.getRegistryEndpoint());
 									stuff.addAll(content);
 								}
 							} else {
-								ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, invocations[i]);
+								ArrayList<String> content = ParseMobyXML.getContentForDataType(names, type, invocations[i],proc.getRegistryEndpoint());
 								stuff.addAll(content);
 							}
 						}

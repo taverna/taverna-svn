@@ -40,7 +40,7 @@ import org.biomoby.shared.MobyException;
  * <p>
  * 
  * @author <A HREF="mailto:martin.senger@gmail.com">Martin Senger</A>
- * @version $Id: CacheImpl.java,v 1.1 2007-04-04 14:29:54 edwardkawas Exp $
+ * @version $Id: CacheImpl.java,v 1.2 2007-12-03 14:19:15 edwardkawas Exp $
  */
 
 public class CacheImpl {
@@ -69,10 +69,10 @@ public class CacheImpl {
 	public static final String CACHE_PROP_LOCATION = "cache-loc";
 
 	// DEFAULT registry
-	private String MOBYCENTRAL_REGISTRY_URL = "http://mobycentral.icapture.ubc.ca/cgi-bin/MOBY05/mobycentral.pl";
+	private String MOBYCENTRAL_REGISTRY_URL = "http://moby.ucalgary.ca/moby/MOBY-Central.pl";
 
 	// Default Endpoint
-	private String MOBYCENTRAL_REGISTRY_URI = "http://mobycentral.icapture.ubc.ca/MOBY/Central";
+	private String MOBYCENTRAL_REGISTRY_URI = "http://moby.ucalgary.ca/MOBY/Central";
 
 	// cache location
 	private String cacheDir; // as defined in the constructor
