@@ -291,7 +291,7 @@ public class WorkflowLauncherWrapper {
 	 * <ul>
 	 * <li>http://www.mygrid.org.uk/maven/repository/ - the myGrid artifact
 	 * repository</li>
-	 * <li>http://mobycentral.icapture.ubc.ca/maven/ - Biomoby specific
+	 * <li>http://moby.ucalgary.ca/moby/moby_maven/ - Biomoby specific
 	 * artifacts</li>
 	 * <li>http://www.ibiblio.org/maven2/ - the central Maven repository and/or
 	 * any mirrors</li>
@@ -322,7 +322,7 @@ public class WorkflowLauncherWrapper {
 		result.add(new URL("http://www.mygrid.org.uk/maven/repository/"));
 		result.add(new URL("http://mirrors.sunsite.dk/maven2/"));
 		result.add(new URL("http://www.ibiblio.org/maven2/"));
-		result.add(new URL("http://mobycentral.icapture.ubc.ca/maven/"));
+		result.add(new URL("http://moby.ucalgary.ca/moby/moby_maven/"));
 		result.add(new URL(
 			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
 		return result;
