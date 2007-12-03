@@ -39,7 +39,7 @@ public class AsynchEchoActivity extends
 	}
 
 	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport("Everything is hunky dorey");
+		return new ActivityHealthReport("AsynchEchoActivity","Everything is hunky dorey");
 	}
 	
 	

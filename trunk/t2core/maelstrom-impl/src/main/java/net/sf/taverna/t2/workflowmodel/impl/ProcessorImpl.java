@@ -387,9 +387,6 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		for (Activity<?> a : getActivityList()) {
 			activityReports.add(a.checkActivityHealth());
 		}
-		return new ProcessorHealthReportImpl(activityReports);
+		return new ProcessorHealthReportImpl(getLocalName(),activityReports);
 	}
-	
-	
-
 }

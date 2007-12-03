@@ -21,7 +21,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
 public class DummyProcessor implements Processor{
 
 	public ProcessorHealthReport checkProcessorHealth() {
-		return new ProcessorHealthReportImpl(new ArrayList<ActivityHealthReport>());
+		return new ProcessorHealthReportImpl("",new ArrayList<ActivityHealthReport>());
 	}
 
 	public String firedOwningProcess = null;

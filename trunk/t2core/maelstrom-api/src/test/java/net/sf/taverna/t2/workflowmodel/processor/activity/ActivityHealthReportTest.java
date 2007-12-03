@@ -13,21 +13,23 @@ public class ActivityHealthReportTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		report = new ActivityHealthReport("a message",Status.WARNING);
+		report = new ActivityHealthReport("a subject","a message",Status.WARNING);
 	}
 
 	@Test
 	public void testActivityHealthReportString() {
-		ActivityHealthReport report = new ActivityHealthReport("string");
+		ActivityHealthReport report = new ActivityHealthReport("the subject","string");
 		assertEquals("string",report.getMessage());
 		assertEquals(Status.OK,report.getStatus());
+		assertEquals("the subject",report.getSubject());
 	}
 
 	@Test
 	public void testActivityHealthReportStringStatus() {
-		report = new ActivityHealthReport("a string",Status.SEVERE);
+		report = new ActivityHealthReport("the subject","a string",Status.SEVERE);
 		assertEquals("a string",report.getMessage());
 		assertEquals(Status.SEVERE,report.getStatus());
+		assertEquals("the subject",report.getSubject());
 	}
 
 	@Test
@@ -38,6 +40,11 @@ public class ActivityHealthReportTest {
 	@Test
 	public void testGetStatus() {
 		assertEquals(Status.WARNING,report.getStatus());
+	}
+	
+	@Test
+	public void testGetSubject() {
+		assertEquals("a subject",report.getSubject());
 	}
 
 }

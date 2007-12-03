@@ -11,8 +11,10 @@ public class ProcessorHealthReportImpl implements ProcessorHealthReport {
 	private List<ActivityHealthReport> activityHealthReports;
 	private Status status;
 	private String message;
+	private String subject;
 	
-	public ProcessorHealthReportImpl(List<ActivityHealthReport> activityHealthReports) {
+	public ProcessorHealthReportImpl(String subject,List<ActivityHealthReport> activityHealthReports) {
+		this.subject=subject;
 		this.activityHealthReports=activityHealthReports;
 		status = Status.OK;
 		int severeCount = 0;
@@ -35,6 +37,10 @@ public class ProcessorHealthReportImpl implements ProcessorHealthReport {
 
 	public Status getStatus() {
 		return status;
+	}
+	
+	public String getSubject() {
+		return subject;
 	}
 
 }

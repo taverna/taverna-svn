@@ -11,15 +11,17 @@ public class ActivityHealthReport implements HealthReport {
 
 	private String message;
 	private Status status;
+	private String subject;
 	
-	public ActivityHealthReport(String message) {
-		this(message,Status.OK);
+	public ActivityHealthReport(String subject,String message) {
+		this(subject,message,Status.OK);
 	}
 
-	public ActivityHealthReport(String message, Status status) {
+	public ActivityHealthReport(String subject,String message, Status status) {
 		super();
 		this.message = message;
 		this.status = status;
+		this.subject = subject;
 	}
 
 	public String getMessage() {
@@ -29,5 +31,11 @@ public class ActivityHealthReport implements HealthReport {
 	public Status getStatus() {
 		return status;
 	}
+
+	public String getSubject() {
+		return subject;
+	}
+	
+	
 	
 }

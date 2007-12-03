@@ -20,11 +20,11 @@ public class ProcessorHealthReportImplTest {
 	@Before
 	public void setUp() throws Exception {
 		activityReports = new ArrayList<ActivityHealthReport>();
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
 		
-		report = new ProcessorHealthReportImpl(activityReports);
+		report = new ProcessorHealthReportImpl("processor subject",activityReports);
 	}
 
 	@Test
@@ -49,11 +49,11 @@ public class ProcessorHealthReportImplTest {
 	@Test
 	public void testGetStatusAllOK() {
 		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
 		
-		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl(activityReports);
+		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl("processor subject",activityReports);
 		
 		assertEquals("the status should be OK",Status.OK,report.getStatus());
 	}
@@ -61,11 +61,11 @@ public class ProcessorHealthReportImplTest {
 	@Test
 	public void testGetStatusContainsWarning() {
 		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.WARNING));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.WARNING));
 		
-		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl(activityReports);
+		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl("processor subject",activityReports);
 		
 		assertEquals("the status should be WARNING",Status.WARNING,report.getStatus());
 	}
@@ -73,11 +73,11 @@ public class ProcessorHealthReportImplTest {
 	@Test
 	public void testGetStatusContainsSevere() {
 		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
-		activityReports.add(new ActivityHealthReport("",Status.OK));
-		activityReports.add(new ActivityHealthReport("",Status.SEVERE));
-		activityReports.add(new ActivityHealthReport("",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
+		activityReports.add(new ActivityHealthReport("","",Status.SEVERE));
+		activityReports.add(new ActivityHealthReport("","",Status.OK));
 		
-		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl(activityReports);
+		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl("",activityReports);
 		
 		assertEquals("the status should be WARNING",Status.WARNING,report.getStatus());
 	}
@@ -85,12 +85,17 @@ public class ProcessorHealthReportImplTest {
 	@Test
 	public void testGetStatusAllSevere() {
 		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
-		activityReports.add(new ActivityHealthReport("",Status.SEVERE));
-		activityReports.add(new ActivityHealthReport("",Status.SEVERE));
-		activityReports.add(new ActivityHealthReport("",Status.SEVERE));
+		activityReports.add(new ActivityHealthReport("","",Status.SEVERE));
+		activityReports.add(new ActivityHealthReport("","",Status.SEVERE));
+		activityReports.add(new ActivityHealthReport("","",Status.SEVERE));
 		
-		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl(activityReports);
+		ProcessorHealthReportImpl report = new ProcessorHealthReportImpl("",activityReports);
 		
 		assertEquals("the status should be SEVERE",Status.SEVERE,report.getStatus());
+	}
+	
+	@Test
+	public void testGetSubject() {
+		assertEquals("processor subject",report.getSubject());
 	}
 }

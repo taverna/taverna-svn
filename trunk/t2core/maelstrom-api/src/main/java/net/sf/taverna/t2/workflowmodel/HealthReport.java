@@ -9,4 +9,5 @@ public interface HealthReport {
 	public enum Status { OK, WARNING, SEVERE }; 
 	public Status getStatus();
 	public String getMessage();
+	public String getSubject();
 }
