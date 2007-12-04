@@ -3,10 +3,11 @@ package net.sf.taverna.t2.activities.apiconsumer;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 public class ApiConsumerActivity extends AbstractAsynchronousActivity<ApiConsumerActivityConfigBean> {
@@ -31,7 +32,7 @@ public class ApiConsumerActivity extends AbstractAsynchronousActivity<ApiConsume
 		return null;
 	}
 
-	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+	public HealthReport checkActivityHealth() {
+		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 }

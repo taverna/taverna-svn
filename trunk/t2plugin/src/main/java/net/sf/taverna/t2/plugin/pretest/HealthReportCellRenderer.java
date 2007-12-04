@@ -1,15 +1,12 @@
 package net.sf.taverna.t2.plugin.pretest;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
@@ -36,8 +33,8 @@ public class HealthReportCellRenderer implements TreeCellRenderer {
 		Component result=null;
 		if (value instanceof HealthReport) {
 			HealthReport report = (HealthReport)value;
-			String message = report.getMessage()!=null ? report.getMessage() : report.getStatus().toString();
-			result = new JLabel(report.getSubject()+":"+message,iconForStatus(report.getStatus()),JLabel.LEFT);
+			String message = report.getMessage()!=null ? ":"+report.getMessage() : "";
+			result = new JLabel(report.getSubject()+message,iconForStatus(report.getStatus()),JLabel.LEFT);
 		}
 		else {
 			result = defaultRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);

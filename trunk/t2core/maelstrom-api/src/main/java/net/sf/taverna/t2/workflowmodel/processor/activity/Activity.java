@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
@@ -80,8 +81,8 @@ public interface Activity<ConfigurationType> extends Annotated<Activity<?>> {
 	 * Checks the current health of the Activity, useful for checking before a Dataflow
 	 * is invoked. The implementation will check things like whether the endpoint is alive.
 	 * 
-	 * @return an ActivityHealthReport that describes the health of the activity.
+	 * @return a HealthReport that describes the health of the activity.
 	 */
-	public ActivityHealthReport checkActivityHealth();
+	public HealthReport checkActivityHealth();
 
 }

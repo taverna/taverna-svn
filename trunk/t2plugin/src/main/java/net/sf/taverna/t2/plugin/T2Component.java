@@ -126,9 +126,9 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			JFrame reportFrame = new JFrame();
 			final HealthCheckReportPanel panel = new HealthCheckReportPanel(model);
 			reportFrame.getContentPane().add(panel);
-			reportFrame.setLocationRelativeTo(this);
 			reportFrame.setPreferredSize(new Dimension(500,400));
 			reportFrame.pack();
+			reportFrame.setLocationRelativeTo(this);
 			reportFrame.setVisible(true);
 			
 			Runnable reportThread = new Runnable() {

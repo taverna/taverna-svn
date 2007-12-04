@@ -16,10 +16,11 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowPort;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 
 import org.apache.log4j.Logger;
@@ -119,8 +120,8 @@ public class DataflowActivity extends
 		return new ArrayList<String>();
 	}
 	
-	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+	public HealthReport checkActivityHealth() {
+		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 
 }

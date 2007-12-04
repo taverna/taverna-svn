@@ -12,11 +12,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
@@ -146,7 +147,7 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 		
 	}
 
-	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+	public HealthReport checkActivityHealth() {
+		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
 	}
 }

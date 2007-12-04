@@ -8,20 +8,19 @@ import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Edit;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.ProcessorHealthReport;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
 public class DummyProcessor implements Processor{
 
-	public ProcessorHealthReport checkProcessorHealth() {
-		return new ProcessorHealthReportImpl("",new ArrayList<ActivityHealthReport>());
+	public HealthReport checkProcessorHealth() {
+		return new ProcessorHealthReport("",new ArrayList<HealthReport>());
 	}
 
 	public String firedOwningProcess = null;

@@ -14,15 +14,14 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Condition;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.ProcessorHealthReport;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
@@ -382,11 +381,12 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		return this.name;
 	}
 
-	public ProcessorHealthReport checkProcessorHealth() {
-		List<ActivityHealthReport> activityReports = new ArrayList<ActivityHealthReport>();
+	public HealthReport checkProcessorHealth() {
+		List<HealthReport> activityReports = new ArrayList<HealthReport>();
 		for (Activity<?> a : getActivityList()) {
 			activityReports.add(a.checkActivityHealth());
 		}
-		return new ProcessorHealthReportImpl(getLocalName(),activityReports);
+		HealthReport processorHealthReport = new ProcessorHealthReport(getLocalName()+" Processor",activityReports);
+		return processorHealthReport;
 	}
 }

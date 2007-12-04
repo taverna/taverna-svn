@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.beanshell;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,14 +12,17 @@ import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityHealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import bsh.EvalError;
 import bsh.Interpreter;
+import bsh.ParseException;
+import bsh.Parser;
 
 /**
  * <p>
@@ -64,8 +68,14 @@ public class BeanshellActivity extends
 		return configurationBean;
 	}
 	
-	public ActivityHealthReport checkActivityHealth() {
-		return new ActivityHealthReport(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.SEVERE);
+	public HealthReport checkActivityHealth() {
+		Parser parser = new Parser(new StringReader(getConfiguration().getScript()));
+		try {
+			while (!parser.Line());
+		} catch (ParseException e) {
+			return new HealthReportImpl("Beanshell Activity",e.getMessage(),Status.SEVERE);
+		}
+		return new HealthReportImpl("Beanshell Acitivity","OK",Status.OK);
 	}
 
 	@Override

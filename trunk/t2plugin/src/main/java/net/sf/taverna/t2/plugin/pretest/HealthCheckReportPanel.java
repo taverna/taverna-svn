@@ -14,6 +14,7 @@ import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 
@@ -43,28 +44,6 @@ public class HealthCheckReportPanel extends JPanel {
 		reportTreeModel = new HealthReportTreeModel();
 		reportTree = new JTree(reportTreeModel);
 		reportTree.setCellRenderer(new HealthReportCellRenderer());
-		reportTree.setExpandsSelectedPaths(true);
-		//reportTree.setRowHeight(0);
-		
-//		reportTreeModel.addTreeModelListener(new TreeModelListener() {
-//
-//			public void treeNodesChanged(TreeModelEvent e) {
-//				reportTree.setSelectionPath(e.getTreePath());
-//			}
-//
-//			public void treeNodesInserted(TreeModelEvent e) {
-//				reportTree.setSelectionPath(e.getTreePath());
-//			}
-//
-//			public void treeNodesRemoved(TreeModelEvent e) {
-//				
-//			}
-//
-//			public void treeStructureChanged(TreeModelEvent e) {
-//				
-//			}
-//			
-//		});
 		
 		add(new JScrollPane(reportTree), BorderLayout.CENTER);
 
@@ -73,6 +52,7 @@ public class HealthCheckReportPanel extends JPanel {
 
 	public void start() {
 		Dataflow dataflow = doTranslation();
+		reportTree.expandPath(reportTree.getPathForRow(0));
 		if (dataflow != null) {
 			if (doValidation(dataflow)) {
 				checkProcessors(dataflow);
@@ -121,34 +101,6 @@ public class HealthCheckReportPanel extends JPanel {
 		}
 		reportTreeModel.addHealthReport(report);
 		return dataflow;
-
-	}
-
-	class HealthReportImpl implements HealthReport {
-		private String message;
-		private Status status;
-		private String subject;
-
-		public HealthReportImpl(String subject,String message, Status status) {
-			super();
-			this.message = message;
-			this.status = status;
-			this.subject = subject;
-		}
-
-		public String getMessage() {
-			return message;
-		}
-
-		public Status getStatus() {
-			return status;
-		}
-
-		public String getSubject() {
-			return subject;
-		}
-		
-		
 
 	}
 

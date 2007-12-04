@@ -7,6 +7,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.junit.Test;
 

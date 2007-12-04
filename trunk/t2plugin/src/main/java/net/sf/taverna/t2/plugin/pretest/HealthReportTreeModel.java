@@ -9,7 +9,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.ProcessorHealthReport;
 
 public class HealthReportTreeModel implements TreeModel {
 	private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
@@ -28,8 +27,8 @@ public class HealthReportTreeModel implements TreeModel {
 		if (parent.equals(getRoot())) {
 			return healthReports.get(index);
 		}
-		else if (parent instanceof ProcessorHealthReport){
-			return ((ProcessorHealthReport)parent).getActivityHealthReports().get(index);
+		else if (parent instanceof HealthReport){
+			return ((HealthReport)parent).getSubReports().get(index);
 		}
 		return null;
 	}
@@ -38,8 +37,8 @@ public class HealthReportTreeModel implements TreeModel {
 		if (parent.equals(getRoot())) {
 			return healthReports.size();
 		}
-		else if (parent instanceof ProcessorHealthReport){
-			return ((ProcessorHealthReport)parent).getActivityHealthReports().size();
+		else if (parent instanceof HealthReport){
+			return ((HealthReport)parent).getSubReports().size();
 		}
 		return 0;
 	}
@@ -48,8 +47,8 @@ public class HealthReportTreeModel implements TreeModel {
 		if (parent.equals(getRoot())) {
 			return healthReports.indexOf(child);
 		}
-		else if (parent instanceof ProcessorHealthReport){
-			return ((ProcessorHealthReport)parent).getActivityHealthReports().indexOf(child);
+		else if (parent instanceof HealthReport){
+			return ((HealthReport)parent).getSubReports().indexOf(child);
 		}
 		return -1;
 	}
@@ -62,9 +61,10 @@ public class HealthReportTreeModel implements TreeModel {
 		if (getRoot().equals(node)) {
 			return healthReports.size()==0;
 		}
-		else {
-			return (!(node instanceof ProcessorHealthReport));
+		else if (node instanceof HealthReport){
+			return ((HealthReport)node).getSubReports().size()==0;
 		}
+		return true;
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {
@@ -78,9 +78,12 @@ public class HealthReportTreeModel implements TreeModel {
 	}
 	
 	private void fireNodeInserted(HealthReport report) {
-		Object [] path = new Object[] {getRoot(),report};
+		int [] childIndices = new int[]{healthReports.indexOf(report)};
+		Object [] children = new Object[]{report};
+		
+		Object [] path = new Object[] {getRoot()};
 		for (TreeModelListener listener : listeners.toArray(new TreeModelListener[]{})) {
-			TreeModelEvent event = new TreeModelEvent(this,path);
+			TreeModelEvent event = new TreeModelEvent(this,path,childIndices,children);
 			listener.treeNodesInserted(event);
 		}
 	}
