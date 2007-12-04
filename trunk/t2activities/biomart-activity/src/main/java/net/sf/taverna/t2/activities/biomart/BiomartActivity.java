@@ -1,5 +1,11 @@
 package net.sf.taverna.t2.activities.biomart;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -171,6 +177,33 @@ public class BiomartActivity extends
 	}
 	
 	public HealthReport checkActivityHealth() {
-		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		String location = biomartQuery.getMartService().getLocation();
+		Status status = Status.OK;
+		String message = "Responded OK";
+		try {
+			URL url = new URL(location);
+			URLConnection connection = url.openConnection();
+			if (connection instanceof HttpURLConnection) {
+				HttpURLConnection httpConnection = (HttpURLConnection) connection;
+				httpConnection.setRequestMethod("HEAD");
+				httpConnection.setReadTimeout(10000);
+				httpConnection.connect();
+				if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+					status = Status.WARNING;
+					message = "Responded with : " + httpConnection.getResponseMessage();
+				}
+				httpConnection.disconnect();
+			}
+		} catch (MalformedURLException e) {
+			status = Status.SEVERE;
+			message = "Location is not a valid URL";
+		} catch (SocketTimeoutException e) {
+			status = Status.SEVERE;
+			message = "Failed to respond within 10s";			
+		} catch (IOException e) {
+			status = Status.SEVERE;
+			message = "Error connecting : " + e.getMessage();			
+		}
+		return new HealthReportImpl("Biomart Activity [" + location + "]", message, status);
 	}
 }

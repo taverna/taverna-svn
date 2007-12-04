@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
+import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -121,7 +122,23 @@ public class DataflowActivity extends
 	}
 	
 	public HealthReport checkActivityHealth() {
-		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		Status status = Status.OK;
+		String message = "Everything seems fine";
+		List<HealthReport> subReports = new ArrayList<HealthReport>();
+		for (Processor processor : dataflow.getProcessors()) {
+			HealthReport subReport = processor.checkProcessorHealth();
+			if (subReport.getStatus().equals(Status.WARNING)) {
+				if (status.equals(Status.OK)) {
+					status = Status.WARNING;
+					message = "Some warnings reported";
+				}
+			} else if (subReport.getStatus().equals(Status.SEVERE)) {
+				status = Status.SEVERE;
+				message = "We have a problem";
+			}
+			subReports.add(subReport);
+		}
+		return new HealthReportImpl("Dataflow Activity", message, status, subReports);
 	}
 
 }
