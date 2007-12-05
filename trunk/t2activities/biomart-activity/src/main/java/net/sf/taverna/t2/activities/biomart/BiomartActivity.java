@@ -189,7 +189,11 @@ public class BiomartActivity extends
 				httpConnection.setReadTimeout(10000);
 				httpConnection.connect();
 				if (httpConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-					status = Status.WARNING;
+					if (httpConnection.getResponseCode() >= 400) {
+						status = Status.SEVERE;
+					} else {
+						status = Status.WARNING;
+					}
 					message = "Responded with : " + httpConnection.getResponseMessage();
 				}
 				httpConnection.disconnect();
