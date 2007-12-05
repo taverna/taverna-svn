@@ -28,6 +28,12 @@
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-text-area" version="1.6.2.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-tree" version="1.6.2.0"/>
 	
+	<!-- JAXB for serialisation -->
+	<artifact groupId="com.sun.xml.bind" artifactId="jaxb-impl" version="2.0.3" system="true"/>
+	<artifact groupId="javax.xml.bind" artifactId="jaxb-api" version="2.0" system="true"/>
+	<artifact groupId="javax.activation" artifactId="activation" version="1.1" system="true"/>
+	<artifact groupId="javax.xml.stream" artifactId="stax-api" version="1.0-2" system="true"/>
+	
 	<!-- perspectives -->
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-design" version="1.6.2.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-enact" version="1.6.2.0"/>
