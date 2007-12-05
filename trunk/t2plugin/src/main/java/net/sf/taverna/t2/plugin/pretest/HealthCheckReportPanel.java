@@ -28,6 +28,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 
 public class HealthCheckReportPanel extends JPanel {
 
+	private static final long serialVersionUID = 3317933644645279003L;
+
 	private JLabel statusText;
 	private HealthReportTreeModel reportTreeModel;
 	private JTree reportTree;

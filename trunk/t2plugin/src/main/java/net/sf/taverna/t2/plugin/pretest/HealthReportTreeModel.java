@@ -9,14 +9,20 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.workflowmodel.HealthReport;
+import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
+import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 
 public class HealthReportTreeModel implements TreeModel {
 	private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
-	private List<HealthReport> healthReports = new ArrayList<HealthReport>();
+	private HealthReportImpl overallReport = new HealthReportImpl("Health Report","",Status.OK);
 	
 	public void addHealthReport(HealthReport report) {
-		healthReports.add(report);
+		overallReport.getSubReports().add(report);
 		fireNodeInserted(report);
+		if (report.getStatus().compareTo(overallReport.getStatus())>0) {
+			overallReport.setStatus(report.getStatus());
+			fireRootChanged();
+		}
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
@@ -24,47 +30,23 @@ public class HealthReportTreeModel implements TreeModel {
 	}
 
 	public Object getChild(Object parent, int index) {
-		if (parent.equals(getRoot())) {
-			return healthReports.get(index);
-		}
-		else if (parent instanceof HealthReport){
-			return ((HealthReport)parent).getSubReports().get(index);
-		}
-		return null;
+		return ((HealthReport)parent).getSubReports().get(index);
 	}
 
 	public int getChildCount(Object parent) {
-		if (parent.equals(getRoot())) {
-			return healthReports.size();
-		}
-		else if (parent instanceof HealthReport){
-			return ((HealthReport)parent).getSubReports().size();
-		}
-		return 0;
+		return ((HealthReport)parent).getSubReports().size();
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
-		if (parent.equals(getRoot())) {
-			return healthReports.indexOf(child);
-		}
-		else if (parent instanceof HealthReport){
-			return ((HealthReport)parent).getSubReports().indexOf(child);
-		}
-		return -1;
+		return ((HealthReport)parent).getSubReports().indexOf(child);
 	}
 
 	public Object getRoot() {
-		return "Report";
+		return overallReport;
 	}
 
 	public boolean isLeaf(Object node) {
-		if (getRoot().equals(node)) {
-			return healthReports.size()==0;
-		}
-		else if (node instanceof HealthReport){
-			return ((HealthReport)node).getSubReports().size()==0;
-		}
-		return true;
+		return ((HealthReport)node).getSubReports().size()==0;
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {
@@ -78,13 +60,20 @@ public class HealthReportTreeModel implements TreeModel {
 	}
 	
 	private void fireNodeInserted(HealthReport report) {
-		int [] childIndices = new int[]{healthReports.indexOf(report)};
+		int [] childIndices = new int[]{overallReport.getSubReports().indexOf(report)};
 		Object [] children = new Object[]{report};
 		
 		Object [] path = new Object[] {getRoot()};
 		for (TreeModelListener listener : listeners.toArray(new TreeModelListener[]{})) {
 			TreeModelEvent event = new TreeModelEvent(this,path,childIndices,children);
 			listener.treeNodesInserted(event);
+		}
+	}
+	
+	private void fireRootChanged() {
+		for (TreeModelListener listener : listeners.toArray(new TreeModelListener[]{})) {
+			TreeModelEvent event = new TreeModelEvent(this,new Object[]{getRoot()});
+			listener.treeNodesChanged(event);
 		}
 	}
 
