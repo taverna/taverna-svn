@@ -95,23 +95,25 @@ public class WSDLHealthReporter {
 	}
 
 	private HealthReport testStyleAndUse() {
-		List<HealthReport> reports = new ArrayList<HealthReport>();
+		HealthReport report;
 		String style = parser.getStyle().toLowerCase();
 		String use = "?";
 		try {
 			use = parser.getUse(operationName).toLowerCase();
 			if (use.equals("literal") && style.equals("rpc")) {
-				reports.add(new HealthReportImpl("Style and Use",
+				report = new HealthReportImpl("Style and Use",
 						"RPC/Literal is not officially supported by Taverna",
-						Status.SEVERE));
+						Status.SEVERE);
+			}
+			else {
+				report = new HealthReportImpl ("Style and Use",style+"/"+use +" is OK",Status.OK);
 			}
 		} catch (UnknownOperationException e) {
-			reports.add(new HealthReportImpl("Style and Use",
+			report = new HealthReportImpl("Style and Use",
 					"Unable to find use for operation:" + operationName,
-					Status.SEVERE));
+					Status.SEVERE);
 		}
-		Status status = highestStatus(reports);
-		return new HealthReportImpl("Style and Use", style + "/" + use, status);
+		return report;
 	}
 
 	private HealthReport testEndpoint() {
