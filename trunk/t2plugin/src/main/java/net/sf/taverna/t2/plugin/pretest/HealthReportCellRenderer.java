@@ -33,7 +33,7 @@ public class HealthReportCellRenderer implements TreeCellRenderer {
 		Component result=null;
 		if (value instanceof HealthReport) {
 			HealthReport report = (HealthReport)value;
-			String message = report.getMessage()!=null ? ":"+report.getMessage() : "";
+			String message = report.getMessage()!=null && report.getMessage().trim().length()>0 ? ":"+report.getMessage() : "";
 			result = new JLabel(report.getSubject()+message,iconForStatus(report.getStatus()),JLabel.LEFT);
 		}
 		else {
