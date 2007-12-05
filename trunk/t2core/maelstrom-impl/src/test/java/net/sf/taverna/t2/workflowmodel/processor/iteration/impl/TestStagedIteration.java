@@ -22,16 +22,19 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
 public class TestStagedIteration  {
 
 	public final DataManager dManager = new InMemoryDataManager("foo.bar",
 			Collections.<LocationalContext> emptySet());
 	
-	public InvocationContext context = new TestInvocationContext();
+	public InvocationContext context = new TestInvocationContext() {
+		public DataManager getDataManager() {
+			return dManager;
+		}
+	};
 	
 	@Test
-	public void staging() throws MalformedIdentifierException {
+	public void testStaging() throws MalformedIdentifierException {
 		IterationStrategyStackImpl iss = new IterationStrategyStackImpl() {
 			protected void receiveEventFromStrategy(Event e) {
 				System.out.println(e);
