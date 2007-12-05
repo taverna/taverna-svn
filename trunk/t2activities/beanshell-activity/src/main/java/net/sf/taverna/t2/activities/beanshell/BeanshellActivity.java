@@ -75,7 +75,7 @@ public class BeanshellActivity extends
 		} catch (ParseException e) {
 			return new HealthReportImpl("Beanshell Activity",e.getMessage(),Status.SEVERE);
 		}
-		return new HealthReportImpl("Beanshell Acitivity","OK",Status.OK);
+		return new HealthReportImpl("Beanshell Acitivity","Parsed OK",Status.OK);
 	}
 
 	@Override

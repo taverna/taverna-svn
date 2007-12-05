@@ -1,6 +1,11 @@
 package net.sf.taverna.t2.activities.soaplab;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +52,7 @@ public class SoaplabActivity extends
 	private static final int INVOCATION_TIMEOUT = 0;
 
 	private SoaplabActivityConfigurationBean configurationBean;
-	
+
 	private Map<String, Class<?>> inputTypeMap = new HashMap<String, Class<?>>();
 
 	public SoaplabActivity() {
@@ -71,7 +76,8 @@ public class SoaplabActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
+				DataFacade dataFacade = new DataFacade(callback.getContext()
+						.getDataManager());
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
@@ -82,10 +88,13 @@ public class SoaplabActivity extends
 					Map<String, Object> soaplabInputMap = new HashMap<String, Object>();
 					for (Map.Entry<String, EntityIdentifier> entry : data
 							.entrySet()) {
-						logger.info("Resolving " + entry.getKey() + " to " + inputTypeMap.get(entry.getKey()));
-						soaplabInputMap.put(entry.getKey(), dataFacade
-								.resolve(entry.getValue(), inputTypeMap.get(entry.getKey())));
-						logger.info("  Value = " + soaplabInputMap.get(entry.getKey()));
+						logger.info("Resolving " + entry.getKey() + " to "
+								+ inputTypeMap.get(entry.getKey()));
+						soaplabInputMap.put(entry.getKey(), dataFacade.resolve(
+								entry.getValue(), inputTypeMap.get(entry
+										.getKey())));
+						logger.info("  Value = "
+								+ soaplabInputMap.get(entry.getKey()));
 					}
 
 					// Invoke the web service...
@@ -203,9 +212,10 @@ public class SoaplabActivity extends
 							for (byte[] byteArray : (byte[][]) outputObject) {
 								list.add(byteArray);
 							}
-							outputData.put(parameterName, dataFacade.register(list));
-//							outputData.put(parameterName, dataFacade
-//									.register(Arrays.asList(outputObject)));
+							outputData.put(parameterName, dataFacade
+									.register(list));
+							// outputData.put(parameterName, dataFacade
+							// .register(Arrays.asList(outputObject)));
 						} else if (outputObject instanceof List) {
 							List<?> convertedList = convertList((List<?>) outputObject);
 							outputData.put(parameterName, dataFacade
@@ -243,9 +253,10 @@ public class SoaplabActivity extends
 	}
 
 	public boolean isPollingDefined() {
-		return configurationBean != null && (configurationBean.getPollingInterval() != 0
-				|| configurationBean.getPollingBackoff() != 1.0 || configurationBean
-				.getPollingIntervalMax() != 0);
+		return configurationBean != null
+				&& (configurationBean.getPollingInterval() != 0
+						|| configurationBean.getPollingBackoff() != 1.0 || configurationBean
+						.getPollingIntervalMax() != 0);
 	}
 
 	private List<?> convertList(List<?> theList) {
@@ -362,9 +373,59 @@ public class SoaplabActivity extends
 			generatePorts();
 		}
 	}
-	
+
 	public HealthReport checkActivityHealth() {
-		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		return testEndpoint();
+	}
+
+	private int pingURL(HttpURLConnection httpConnection, int timeout)
+			throws IOException {
+		httpConnection.setRequestMethod("HEAD");
+		httpConnection.connect();
+		httpConnection.setReadTimeout(timeout);
+		return httpConnection.getResponseCode();
+	}
+
+	private HealthReport testEndpoint() {
+		HealthReport report;
+		String endpoint = getConfiguration().getEndpoint();
+
+		try {
+			URL url = new URL(endpoint);
+			URLConnection connection = url.openConnection();
+			if (connection instanceof HttpURLConnection) {
+				int code = pingURL((HttpURLConnection) connection, 15000);
+				if (code == 200) {
+					report = new HealthReportImpl("SOAPLab Activity",
+							"The endpoint [" + endpoint
+									+ "] responded with a response code of "
+									+ code, Status.OK);
+
+				} else {
+					report = new HealthReportImpl("SOAPLab Activity",
+							"The endpoint [" + endpoint
+									+ "] responded, but a response code of "
+									+ code, Status.WARNING);
+				}
+			}
+			else {
+				return new HealthReportImpl("SOAPLab Activity","The endpoint["+endpoint+"] is not Http based and could not be tested for a http response",Status.OK);
+			}
+		} catch (MalformedURLException e) {
+			report = new HealthReportImpl("SOAPLab Activity",
+					"There was a problem with the endpoint[" + endpoint
+							+ "] URL:" + e.getMessage(), Status.SEVERE);
+		} catch (SocketTimeoutException e) {
+			report = new HealthReportImpl("SOAPLab Activity", "The endpoint["
+					+ endpoint + "] took more than 15 seconds to respond",
+					Status.SEVERE);
+		} catch (IOException e) {
+			report = new HealthReportImpl("SOAPLab Activity",
+					"There was an error contacting the endpoint[" + endpoint
+							+ "]:" + e.getMessage(), Status.SEVERE);
+		}
+
+		return report;
 	}
 
 }
