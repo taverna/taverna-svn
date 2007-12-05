@@ -2,9 +2,16 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
+import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -522,6 +529,124 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 				target.add(targetObject);
 			}
 		}
+	}
+
+	/**
+	 * The active process identifiers correspond to current strands of data
+	 * running through this dataflow. The keys are process identifiers, the
+	 * values are sets of output port names for which final events have been
+	 * received.
+	 */
+	private Map<String, Set<String>> activeProcessIdentifiers = new HashMap<String, Set<String>>();
+
+	/**
+	 * Called when a token is received or the dataflow is fired, checks to see
+	 * whether the process identifier is already known (in which case we assume
+	 * it's been registered and can ignore it) or registers it with the monitor
+	 * along with all child entities. The method is called with the ID of the
+	 * new process, that is to say the ID of the token with ':'getLocalName()
+	 * appended.
+	 * 
+	 * @param owningProcess
+	 * 
+	 * @return true if the owning process specified was already in the active
+	 *         process identifier set, false otherwise
+	 */
+	protected boolean tokenReceived(String owningProcess) {
+		synchronized (activeProcessIdentifiers) {
+			if (activeProcessIdentifiers.keySet().contains(owningProcess) == false) {
+				MonitorImpl.getMonitor().registerNode(this,
+						owningProcess.split(":"),
+						new HashSet<MonitorableProperty<?>>());
+				for (ProcessorImpl p : getEntities(ProcessorImpl.class)) {
+					String childProcessName = owningProcess + ":"
+							+ p.getLocalName();
+					MonitorImpl.getMonitor()
+							.registerNode(
+									p,
+									(owningProcess + ":" + p.getLocalName())
+											.split(":"),
+									p.getPropertySet(childProcessName));
+				}
+				activeProcessIdentifiers.put(owningProcess,
+						new HashSet<String>());
+				return false;
+			}
+			return true;
+		}
+	}
+
+	public void fire(String owningProcess, InvocationContext context) {
+		String newOwningProcess = owningProcess + ":" + getLocalName();
+		if (tokenReceived(newOwningProcess)) {
+			// This is not good - should ideally handle it as it means the
+			// workflow has been fired when in a state where this wasn't
+			// sensible, i.e. already having been fired on this process
+			// identifier. For now we'll ignore it (ho hum, release deadline
+			// etc!)
+		}
+		for (Processor p : getEntities(Processor.class)) {
+			if (p.getInputPorts().isEmpty()) {
+				p.fire(newOwningProcess, context);
+			}
+		}
+	}
+
+	/**
+	 * Called when a token with index array length zero is sent from a dataflow
+	 * output port.
+	 * 
+	 * TODO - use this to deregister from the monitor!
+	 * 
+	 * @param portName
+	 */
+	public void sentFinalToken(String portName, String owningProcess) {
+		synchronized (activeProcessIdentifiers) {
+			Set<String> alreadyReceivedPortNames = activeProcessIdentifiers
+					.get(owningProcess);
+			if (alreadyReceivedPortNames == null) {
+				throw new RuntimeException(
+						"Workflow's broken in some way, received an output token for process '"
+								+ owningProcess + "' that shouldn't exist!");
+			}
+			if (alreadyReceivedPortNames.contains(portName)) {
+				throw new RuntimeException(
+						"Received duplicate final events on port name '"
+								+ portName + "' for process '" + owningProcess
+								+ "', this is not a good thing");
+			}
+
+			// No duplicates and the set wasn't null, add this port name to the
+			// set of ports which have sent final events.
+			alreadyReceivedPortNames.add(portName);
+
+			// Check - if we have no duplicates and the set of output ports
+			// which have sent final events in this data thread is the same size
+			// as the number of output ports then we've finished and can
+			// deregister from the monitor
+			if (alreadyReceivedPortNames.size() == getOutputPorts().size()) {
+
+				// request deregistration of processor nodes (arguably we don't
+				// need
+				// to do this and could just deregister the dataflow node in the
+				// tree as that'll by definition detach all the child nodes but
+				// this
+				// seems cleaner)
+				for (Processor p : getEntities(Processor.class)) {
+					MonitorImpl.getMonitor()
+							.deregisterNode(
+									(owningProcess + ":" + p.getLocalName())
+											.split(":"));
+				}
+				MonitorImpl.getMonitor().deregisterNode(
+						owningProcess.split(":"));
+
+				// Remove this entry from the active process map
+				activeProcessIdentifiers.remove(owningProcess);
+				
+			}
+		}
+
 	}
 
 }

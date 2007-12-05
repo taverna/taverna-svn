@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -76,6 +77,12 @@ public class DummyDataflow implements Dataflow{
 
 	public String getLocalName() {
 		return "test_dataflow";
+	}
+
+
+	public void fire(String owningProcess, InvocationContext context) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

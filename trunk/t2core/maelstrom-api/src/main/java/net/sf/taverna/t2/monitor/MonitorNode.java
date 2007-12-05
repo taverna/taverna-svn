@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.monitor;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -36,6 +37,11 @@ public interface MonitorNode {
 	 * Each monitor node exposes a set of properties, which may or may not be
 	 * mutable
 	 */
-	public Set<MonitorableProperty<?>> getProperties();
+	public Set<? extends MonitorableProperty<?>> getProperties();
+	
+	/**
+	 * Each node has a creation date
+	 */
+	public Date getCreationDate();
 
 }

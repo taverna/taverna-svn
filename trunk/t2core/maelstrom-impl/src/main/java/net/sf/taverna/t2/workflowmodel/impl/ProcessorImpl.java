@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
@@ -13,6 +15,7 @@ import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.InputPort;
@@ -388,5 +391,11 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		}
 		HealthReport processorHealthReport = new ProcessorHealthReport(getLocalName()+" Processor",activityReports);
 		return processorHealthReport;
+	}
+
+	public Set<? extends MonitorableProperty<?>> getPropertySet(
+			String childProcessName) {
+		// TODO - actually return some properties here!
+		return new HashSet<MonitorableProperty<?>>();
 	}
 }

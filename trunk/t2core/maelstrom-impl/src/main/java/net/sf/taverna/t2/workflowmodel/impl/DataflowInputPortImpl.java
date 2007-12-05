@@ -14,7 +14,7 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	private int granularInputDepth;
 
 	private Dataflow dataflow;
-	
+
 	DataflowInputPortImpl(String name, int depth, int granularDepth, Dataflow df) {
 		super(name, depth);
 		granularInputDepth = granularDepth;
@@ -36,8 +36,21 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	 * connected entities
 	 */
 	public void receiveEvent(WorkflowDataToken t) {
+		WorkflowDataToken transformedToken = new WorkflowDataToken(t
+				.getOwningProcess()
+				+ ":" + dataflow.getLocalName(), t.getIndex(), t.getData(), t
+				.getContext());
+		// I'd rather avoid casting to the implementation but in this
+		// case we're in the same package - the only reason to do this
+		// is to allow dummy implementations of parts of this
+		// infrastructure during testing, in 'real' use this should
+		// always be a dataflowimpl
+		if (dataflow instanceof DataflowImpl) {
+			((DataflowImpl) dataflow).tokenReceived(transformedToken
+					.getOwningProcess());
+		}
 		for (Datalink dl : internalOutput.getOutgoingLinks()) {
-			dl.getSink().receiveEvent(t);
+			dl.getSink().receiveEvent(transformedToken);
 		}
 	}
 

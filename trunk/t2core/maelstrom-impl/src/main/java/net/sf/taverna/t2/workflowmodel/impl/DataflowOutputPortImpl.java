@@ -17,18 +17,38 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 
 	private Dataflow dataflow;
 
-	DataflowOutputPortImpl(String portName, Dataflow dataflow) {
+	DataflowOutputPortImpl(final String portName, final Dataflow dataflow) {
 		super(portName, -1, -1);
 		this.dataflow = dataflow;
 		this.internalInput = new AbstractEventHandlingInputPort(name, -1) {
 			/**
-			 * Forward the event through the output port
-			 * Also informs any ResultListeners on the output port to the new token.
+			 * Forward the event through the output port Also informs any
+			 * ResultListeners on the output port to the new token.
 			 */
 			public void receiveEvent(WorkflowDataToken token) {
-				sendEvent(token);
-				for (ResultListener listener : resultListeners.toArray(new ResultListener[]{})) {
-					listener.resultTokenProduced(token, this.getName(), token.getOwningProcess());
+				// Pull the dataflow process identifier from the owning process
+				// and push the modified token out
+				// I'd rather avoid casting to the implementation but in this
+				// case we're in the same package - the only reason to do this
+				// is to allow dummy implementations of parts of this
+				// infrastructure during testing, in 'real' use this should
+				// always be a dataflowimpl
+				if (token.getIndex().length == 0
+						&& dataflow instanceof DataflowImpl) {
+					((DataflowImpl) dataflow).sentFinalToken(portName, token
+							.getOwningProcess());
+				}
+				String strippedProcessIdentifier = token
+						.getOwningProcess()
+						.substring(0, token.getOwningProcess().lastIndexOf(':'));
+				WorkflowDataToken newToken = new WorkflowDataToken(
+						strippedProcessIdentifier, token.getIndex(), token
+								.getData(), token.getContext());
+				sendEvent(newToken);
+				for (ResultListener listener : resultListeners
+						.toArray(new ResultListener[] {})) {
+					listener.resultTokenProduced(newToken, this.getName(),
+							newToken.getOwningProcess());
 				}
 			}
 

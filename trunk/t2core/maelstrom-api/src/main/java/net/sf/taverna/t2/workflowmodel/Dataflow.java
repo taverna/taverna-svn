@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.invocation.InvocationContext;
 
 /**
  * Top level definition object for a dataflow workflow. Currently Taverna only
@@ -72,5 +73,14 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * @return validation report
 	 */
 	public DataflowValidationReport checkValidity();
+
+	/**
+	 * A dataflow with no inputs cannot be driven by the supply of data tokens
+	 * as it has nowhere to receive such tokens. This method allows a dataflow
+	 * to fire on an empty input set, in this case the owning process identifier
+	 * must be passed explicitly to the dataflow. This method then calls the
+	 * fire methods of any Processor instances with no input ports.
+	 */
+	public void fire(String owningProcess, InvocationContext context);
 
 }
