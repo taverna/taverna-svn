@@ -1,15 +1,18 @@
 package net.sf.taverna.t2.plugin.pretest;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.border.CompoundBorder;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
@@ -30,6 +33,7 @@ public class HealthCheckReportPanel extends JPanel {
 	private JTree reportTree;
 	private ScuflModel scuflModel;
 	private JProgressBar progressBar;
+	private boolean closed = false;
 
 	public HealthCheckReportPanel(ScuflModel scuflModel) {
 		super();
@@ -41,15 +45,22 @@ public class HealthCheckReportPanel extends JPanel {
 		add(statusText, BorderLayout.NORTH);
 
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new BorderLayout());
-		buttonPanel.setBorder(new EmptyBorder(10, 10, 5, 10));
+		JButton cancelButton = new JButton("Close");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				close();
+			}
+		});
+		buttonPanel.add(cancelButton);
+
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
-		buttonPanel.add(progressBar, BorderLayout.CENTER);
-		JButton cancelButton = new JButton("Cancel");
-		buttonPanel.add(cancelButton, BorderLayout.EAST);
-		add(buttonPanel, BorderLayout.SOUTH);
 
+		JPanel bottomPanel = new JPanel(new BorderLayout());
+		bottomPanel.add(progressBar, BorderLayout.NORTH);
+		bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+		add(bottomPanel, BorderLayout.SOUTH);
+		
 		reportTreeModel = new HealthReportTreeModel();
 		reportTree = new JTree(reportTreeModel);
 		reportTree.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,8 +76,8 @@ public class HealthCheckReportPanel extends JPanel {
 		progressBar.setIndeterminate(true);
 		Dataflow dataflow = doTranslation();
 		reportTree.expandPath(reportTree.getPathForRow(0));
-		if (dataflow != null) {
-			if (doValidation(dataflow)) {
+		if (dataflow != null && !closed) {
+			if (doValidation(dataflow) && !closed) {
 				checkProcessors(dataflow);
 			}
 		}
@@ -77,6 +88,15 @@ public class HealthCheckReportPanel extends JPanel {
 		}
 	}
 
+
+	private void close() {
+		closed = true;
+		JFrame frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
+		if (frame != null) {
+			frame.setVisible(false);
+		}
+	}
+	
 	private void checkProcessors(Dataflow dataflow) {
 		List<? extends Processor> processors = dataflow.getProcessors();
 		if (processors.size() > 0) {
@@ -85,6 +105,9 @@ public class HealthCheckReportPanel extends JPanel {
 			progressBar.setValue(processorsChecked);
 			progressBar.setIndeterminate(false);
 			for (Processor processor : processors) {
+				if (closed) {
+					break;
+				}
 				setStatus("Checking health for processor:"
 						+ processor.getLocalName());
 				HealthReport report = processor.checkProcessorHealth();
