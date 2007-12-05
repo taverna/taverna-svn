@@ -37,31 +37,18 @@ public class HealthCheckReportPanel extends JPanel {
 	private JProgressBar progressBar;
 	private boolean closed = false;
 
-	public HealthCheckReportPanel(ScuflModel scuflModel) {
+	public HealthCheckReportPanel() {
 		super();
-		this.scuflModel = scuflModel;
 		setLayout(new BorderLayout());
 
 		statusText = new JLabel("About to start ...");
 		statusText.setBorder(new EmptyBorder(5, 5, 5, 5));
 		add(statusText, BorderLayout.NORTH);
 
-		JPanel buttonPanel = new JPanel();
-		JButton cancelButton = new JButton("Close");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				close();
-			}
-		});
-		buttonPanel.add(cancelButton);
-
 		progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
 
-		JPanel bottomPanel = new JPanel(new BorderLayout());
-		bottomPanel.add(progressBar, BorderLayout.NORTH);
-		bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
-		add(bottomPanel, BorderLayout.SOUTH);
+		add(progressBar, BorderLayout.SOUTH);
 		
 		reportTreeModel = new HealthReportTreeModel();
 		reportTree = new JTree(reportTreeModel);
@@ -72,6 +59,12 @@ public class HealthCheckReportPanel extends JPanel {
 		add(new JScrollPane(reportTree), BorderLayout.CENTER);
 
 		revalidate();
+	}
+	
+	public void setModel(ScuflModel scuflModel) {
+		this.scuflModel = scuflModel;
+		reportTreeModel = new HealthReportTreeModel();
+		reportTree.setModel(reportTreeModel);
 	}
 
 	public void start() {
