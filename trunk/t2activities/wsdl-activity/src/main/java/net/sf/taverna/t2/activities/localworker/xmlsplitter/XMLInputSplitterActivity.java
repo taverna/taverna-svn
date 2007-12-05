@@ -123,7 +123,12 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 	}
 
 	public HealthReport checkActivityHealth() {
-		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		if (typeDescriptor==null) {
+			return new HealthReportImpl("XMLInputSplitter Activity","The splitter does not describe a valid datatype",Status.SEVERE);
+		}
+		else {
+			return new HealthReportImpl("XMLInputSplitter Activity","",Status.OK);
+		}
 	}
 
 }

@@ -85,8 +85,7 @@ public class WSDLActivityTest implements LocationConstants {
 
 	@Test
 	public void testCheckActivityHealth() {
-		// dummy test until we come to implement this.
-		assertEquals(Status.WARNING, activity.checkActivityHealth().getStatus());
+		assertEquals(Status.OK, activity.checkActivityHealth().getStatus());
 	}
 
 }

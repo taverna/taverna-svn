@@ -1,12 +1,22 @@
 package net.sf.taverna.t2.activities.wsdl;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.wsdl.Binding;
+import javax.wsdl.Port;
+import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
@@ -148,6 +158,8 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 	}
 
 	public HealthReport checkActivityHealth() {
-		return new HealthReportImpl(getClass().getSimpleName(),"Checking the health of this type of Activity is not yet implemented.",Status.WARNING);
+		return new WSDLHealthReporter(getConfiguration().getWsdl(),getConfiguration().getOperation(),parser).checkHealth();
 	}
+
+	
 }
