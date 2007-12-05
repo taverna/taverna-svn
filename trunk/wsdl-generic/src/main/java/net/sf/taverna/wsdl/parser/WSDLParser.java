@@ -2,6 +2,7 @@ package net.sf.taverna.wsdl.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,9 +16,12 @@ import javax.wsdl.Definition;
 import javax.wsdl.Import;
 import javax.wsdl.Operation;
 import javax.wsdl.Part;
+import javax.wsdl.Port;
 import javax.wsdl.PortType;
+import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.wsdl.extensions.ExtensibilityElement;
+import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPBody;
 import javax.xml.namespace.QName;
@@ -141,6 +145,27 @@ public class WSDLParser {
 	 */
 	public Definition getDefinition() {
 		return getSymbolTable().getDefinition();
+	}
+	
+	public List<String> getOperationEndpointLocations(String operationName) {
+		List<String> result = new ArrayList<String>();
+		Collection<Service> services = getDefinition().getServices().values();
+		Binding binding = getBinding(operationName);
+		for (Service service : services) {
+			Collection<Port> ports = service.getPorts().values();
+			for (Port port : ports) {
+				if (port.getBinding().equals(binding)) {
+					for (Object obj : port.getExtensibilityElements()) {
+						if (obj instanceof SOAPAddress) {
+							SOAPAddress address = (SOAPAddress)obj;
+							String endpoint=address.getLocationURI();
+							result.add(endpoint);
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	private Binding getBinding(String operationName) {
