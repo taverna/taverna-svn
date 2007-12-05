@@ -41,9 +41,14 @@ public class BlobLocationalContextTest {
 	private static File tmpDir3;
 
 	@AfterClass
-	public static void deleteTmp() throws IOException {
-		FileUtils.deleteDirectory(tmpDir);
-		FileUtils.deleteDirectory(tmpDir3);
+	public static void deleteTmp() {
+		try {
+			FileUtils.deleteDirectory(tmpDir);
+			FileUtils.deleteDirectory(tmpDir3);
+		} catch (IOException ioe) {
+			// Ignore - this sometimes happens on windows machines
+			// according to http://issues.apache.org/jira/browse/IO-17
+		}
 	}
 
 	@BeforeClass
@@ -96,10 +101,11 @@ public class BlobLocationalContextTest {
 				.equals(bytes, retrievedBytes));
 	}
 
-	@Test(expected=NotFoundException.class)
+	@Test(expected = NotFoundException.class)
 	public void exportDifferentBlobStore() throws RetrievalException,
 			IllegalArgumentException, EmptyListException,
-			MalformedListException, UnsupportedObjectTypeException, IOException, NotFoundException {
+			MalformedListException, UnsupportedObjectTypeException,
+			IOException, NotFoundException {
 		String string = "qwertyuiop";
 		byte[] bytes = string.getBytes();
 		DataDocumentIdentifier id = (DataDocumentIdentifier) facade1
@@ -109,8 +115,7 @@ public class BlobLocationalContextTest {
 		DataPeer peer3 = new DataPeerImpl(dManager3);
 		DataDocument doc;
 		try {
-			doc = peer1.exportDataDocument(peer3
-					.getLocationalContexts(), id);
+			doc = peer1.exportDataDocument(peer3.getLocationalContexts(), id);
 		} catch (NotFoundException e) {
 			fail("Could not export");
 			return;
@@ -122,5 +127,4 @@ public class BlobLocationalContextTest {
 		facade3.resolve(doc.getIdentifier(), byte[].class);
 	}
 
-	
 }

@@ -26,18 +26,23 @@ import org.junit.Test;
  * Test {@link FileDataManager} using the tests of
  * {@link AbstractDataManagerTest} in addition to testing that generated IDs are
  * UUIDs.
- *
+ * 
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 public class FileDataManagerTest extends AbstractDataManagerTest {
 
 	private static File tmpDir;
 
 	@AfterClass
-	public static void deleteTmp() throws IOException {
-		FileUtils.deleteDirectory(tmpDir);
+	public static void deleteTmp() {
+		try {
+			FileUtils.deleteDirectory(tmpDir);
+		} catch (IOException ioe) {
+			// Ignore, sometimes happens on windows machines,
+			// see http://issues.apache.org/jira/browse/IO-17
+		}
 	}
 
 	@BeforeClass
@@ -75,7 +80,6 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 		UUID uuid = UUID.fromString(dataId.getName());
 		assertEquals(4, uuid.version()); // random
 	}
-
 
 	@Test
 	public void nextErrorIdentifierUUID() {
