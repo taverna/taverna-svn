@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
@@ -94,6 +95,7 @@ public class BeanshellActivity extends
 						for (String inputName : data.keySet()) {
 							Object input = dataFacade.resolve(data
 									.get(inputName),String.class);
+							inputName = sanatisePortName(inputName);
 							interpreter.set(inputName, input);
 						}
 						// run
@@ -121,6 +123,27 @@ public class BeanshellActivity extends
 				} catch (NotFoundException e) {
 					callback.fail("Error accessing beanshell input/output data", e);
 				} 
+			}
+
+			/**
+			 * Removes any invalid characters from the port name.
+			 * For example, xml-text would become xmltext.
+			 * 
+			 * 
+			 * @param name
+			 * @return
+			 */
+			private String sanatisePortName(String name) {
+				String result=name;
+				if (Pattern.matches("\\w++", name) == false) {
+					result="";
+					for (char c : name.toCharArray()) {
+						if (Character.isLetterOrDigit(c) || c=='_') {
+							result+=c;
+						}
+					}
+				}
+				return result;
 			}
 		});
 

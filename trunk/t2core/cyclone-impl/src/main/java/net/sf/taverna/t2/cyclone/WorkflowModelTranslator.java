@@ -4,6 +4,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.swing.tree.MutableTreeNode;
 
@@ -164,7 +165,7 @@ public class WorkflowModelTranslator {
 				if (!t1InputPort.isBound()
 						&& t1InputPort.getDefaultValue() != null) {
 					String processorName = t1Processor.getName() + "_"
-							+ t1InputPort.getName() + "_defaultValue";
+							+ sanitiseName(t1InputPort.getName()) + "_defaultValue";
 					try {
 						org.embl.ebi.escience.scufl.Processor stringConstantProcessor = new StringConstantProcessor(
 								scuflModel, processorName, t1InputPort
@@ -185,6 +186,28 @@ public class WorkflowModelTranslator {
 			}
 		}
 
+	}
+
+	/**
+	 * Checks that the name does not have any characters that are invalid for a processor
+	 * name. 
+	 * 
+	 * The name must contain only the chars[A-Za-z_0-9].
+	 * 
+	 * @param name the original name
+	 * @return the sanitised name
+	 */
+	private String sanitiseName(String name) {
+		String result=name;
+		if (Pattern.matches("\\w++", name) == false) {
+			result="";
+			for (char c : name.toCharArray()) {
+				if (Character.isLetterOrDigit(c) || c=='_') {
+					result+=c;
+				}
+			}
+		}
+		return result;
 	}
 
 	private void createInputs(Dataflow dataflow) throws EditException {

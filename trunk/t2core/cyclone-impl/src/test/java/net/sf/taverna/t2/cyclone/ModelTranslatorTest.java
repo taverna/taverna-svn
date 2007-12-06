@@ -404,5 +404,4 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		// test that input_2 doesn't.
 		assertFalse(inputPort_2.getIncomingLink().getSource() instanceof MergeOutputPortImpl);
 	}
-
 }

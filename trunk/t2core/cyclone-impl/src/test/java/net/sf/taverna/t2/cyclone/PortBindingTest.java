@@ -138,4 +138,31 @@ public class PortBindingTest extends TranslatorTestHelper {
 		ScuflModel model = loadScufl(resourceName);
 		return WorkflowModelTranslator.doTranslation(model);
 	}
+	
+	/**
+	 * A default port is converted into an upstream StringConstant, whose name is based upon
+	 * the original port name. However, its possible to name a port with a char that is invalid for
+	 * a processor, e.g '-'. This test checks that this is handled by stripping out the offending character.
+	 * @throws Exception
+	 */
+	@Test
+	public void testInvalidDefaultPortName() throws Exception {
+		Dataflow dataflow = loadAndTranslateWorkflow("port_with_badly_named_default.xml");
+		Processor processor_A = null;
+		Processor processorStringConstant = null;
+		
+		assertEquals("There should be 2 processors",2,dataflow.getProcessors().size());
+		for (Processor p : dataflow.getProcessors()) {
+			if (p.getLocalName().equals("Processor_A")) {
+				processor_A = p;
+			}
+			else {
+				processorStringConstant = p;
+			}
+		}
+		
+		assertNotNull("There should be a processor named processor_A",processor_A);
+		assertNotNull("There should be a string constant processor",processorStringConstant);
+		assertEquals("The String Constant processor is named incorrectly","Processor_A_input_defaultValue",processorStringConstant.getLocalName());
+	}
 }

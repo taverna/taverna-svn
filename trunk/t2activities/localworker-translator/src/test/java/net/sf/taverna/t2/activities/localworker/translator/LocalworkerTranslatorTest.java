@@ -22,6 +22,7 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -107,6 +108,8 @@ public class LocalworkerTranslatorTest {
 
 		invoke(activity, inputs, expectedOutputs);
 	}
+	
+	
 
 	@Test
 	public void testDoTranslationDecodeBase64() throws Exception {
@@ -606,6 +609,36 @@ public class LocalworkerTranslatorTest {
 			assertTrue(port.getName() + " is not a valid output port",
 					outputPorts.remove(port.getName()));
 		}
+	}
+	
+	//Contrib local workers
+	
+	//XPath workers
+	@Test
+	public void testDoTranslationXPathFromText() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"XPathTextWorker", new XPathTextWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+		
+		assertNotNull("The script is null",activity.getConfiguration().getScript());
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("xpath","//test");
+		inputs.put("xml-text","<a><test>111</test><test>222</test></a>");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		List<String> outputNodeList=new ArrayList<String>();
+		List<String> outputNodeListAsXML=new ArrayList<String>();
+		outputNodeList.add("111");
+		outputNodeList.add("222");
+		outputNodeListAsXML.add("<test>111</test>");
+		outputNodeListAsXML.add("<test>222</test>");
+		expectedOutputs.put("nodelist", outputNodeList);
+		expectedOutputs.put("nodelistAsXML",outputNodeListAsXML);
+
+		invoke(activity, inputs, expectedOutputs);
 	}
 
 }

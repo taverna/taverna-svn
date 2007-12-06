@@ -63,6 +63,12 @@ public class LocalworkerTranslator extends
 		dependencies.add("javax.mail:mail:1.4");
 		dependencies.add("javax.activation:activation:1.1");
 		localWorkerToDependecies.put("org.embl.ebi.escience.scuflworkers.java.SendEmail", dependencies);
+		
+		//xml:XPathText
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker", "XPathTextWorker");
+		dependencies=new ArrayList<String>();
+		dependencies.add("dom4j:dom4j:1.6");
+		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker", dependencies);
 	}
 
 	@Override
@@ -101,7 +107,7 @@ public class LocalworkerTranslator extends
 	private String getScript(String workerClassName) throws ActivityTranslationException {
 		String scriptName = localWorkerToScript.get(workerClassName);
 		if (scriptName == null) {
-			return null;
+			throw new ActivityTranslationException("Unable to find the script for:"+workerClassName); 
 		}
 		return readScript(scriptName);
 	}
