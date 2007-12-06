@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.dispatch;
+package net.sf.taverna.t2.workflowmodel.processor.dispatch.description;
 
 /**
  * Enumeration of the possible message types passed between layers of the
@@ -13,7 +13,7 @@ public enum DispatchMessageType {
 	 * A reference to a queue of Job objects waiting to be used as input along
 	 * with a list of activities to process them.
 	 */
-	JOBQUEUE,
+	JOB_QUEUE,
 
 	/**
 	 * A Job object and list of activities to be used to process the data in the
@@ -33,12 +33,12 @@ public enum DispatchMessageType {
 	 * completed. Not all dispatch stack layers are compatible with this mode of
 	 * operation, for example retry and recursion do not play well here!
 	 */
-	RESULTCOMPLETION,
+	RESULT_COMPLETION,
 
 	/**
 	 * A failure message sent by the layer below to denote some kind of failure
 	 * (surprisingly)
 	 */
 	ERROR;
-
+	
 }

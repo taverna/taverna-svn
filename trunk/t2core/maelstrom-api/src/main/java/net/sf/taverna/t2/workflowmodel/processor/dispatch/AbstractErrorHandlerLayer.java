@@ -8,6 +8,8 @@ import java.util.Map;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
+
 
 /**
  * Superclass of error handling dispatch layers (for example retry and
@@ -51,26 +53,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 		AbstractDispatchLayer<ConfigurationType> {
 
-	/**
-	 * Sets action on ERROR to ACT by default and on JOB to OBSERVE, as the
-	 * common pattern for subclasses of this type is to observe jobs going down,
-	 * making a record of the state in the JobState class and to then respond to
-	 * errors coming back up based on that state model.
-	 * <p>
-	 * Many subclasses will in fact rewrite the JOB message, for example the
-	 * failover behaviour relies on a rewrite of the activity set.
-	 * <p>
-	 * This also sets the property that the layer can actively produce new JOB
-	 * events as failure management layers by default will react to failure
-	 * messages by producing new JOBs and sending them back down.
-	 * 
-	 */
 	protected AbstractErrorHandlerLayer() {
 		super();
-		messageActions.put(DispatchMessageType.ERROR, DispatchLayerAction.ACT);
-		messageActions
-				.put(DispatchMessageType.JOB, DispatchLayerAction.OBSERVE);
-		producesMessage.put(DispatchMessageType.JOB, true);
 	}
 
 	/**
