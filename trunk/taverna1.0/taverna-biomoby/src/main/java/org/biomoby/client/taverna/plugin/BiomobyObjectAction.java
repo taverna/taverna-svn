@@ -48,6 +48,7 @@ import org.biomoby.shared.MobyService;
 import org.biomoby.shared.data.MobyDataInstance;
 import org.biomoby.shared.data.MobyDataObject;
 import org.biomoby.shared.data.MobyDataObjectSet;
+import org.biomoby.registry.meta.Registry;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -119,7 +120,8 @@ public class BiomobyObjectAction extends AbstractProcessorAction {
 				name = name.substring(name.lastIndexOf(":") + 1);
 			}
 			// initialize a data object to pass into the service template
-			MobyDataObject data = new MobyDataObject("");
+			Registry mRegistry = new Registry(central.getRegistryEndpoint(),central.getRegistryEndpoint(),"http://domain.com/MOBY/Central");
+			MobyDataObject data = new MobyDataObject("", mRegistry);
 			data.setDataType(new MobyDataType(name));
 			data.setXmlMode(MobyDataInstance.CENTRAL_XML_MODE);
 			if (action.namespaces != null)
