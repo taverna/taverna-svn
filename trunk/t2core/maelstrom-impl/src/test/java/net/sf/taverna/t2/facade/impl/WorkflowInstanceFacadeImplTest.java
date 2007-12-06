@@ -75,7 +75,7 @@ public class WorkflowInstanceFacadeImplTest {
 		dataflow.processors.add(processor);
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_0",processor.firedOwningProcess);
+		assertEquals("test_dataflow_0:test_dataflow",processor.firedOwningProcess);
 	}
 
 	@Ignore("Not implemented")
@@ -121,7 +121,7 @@ public class WorkflowInstanceFacadeImplTest {
 		
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_0",processor.firedOwningProcess);
+		assertEquals("test_dataflow_0:test_dataflow",processor.firedOwningProcess);
 		assertNull(port1.tokenOwningProcess);
 	}
 	
@@ -157,9 +157,9 @@ public class WorkflowInstanceFacadeImplTest {
 		assertNotNull(processor2.firedOwningProcess);
 		assertNotNull(processor3.firedOwningProcess);
 		
-		assertEquals("test_dataflow_1",processor1.firedOwningProcess);
-		assertEquals("test_dataflow_1",processor2.firedOwningProcess);
-		assertEquals("test_dataflow_1",processor3.firedOwningProcess);
+		assertEquals("test_dataflow_1:test_dataflow",processor1.firedOwningProcess);
+		assertEquals("test_dataflow_1:test_dataflow",processor2.firedOwningProcess);
+		assertEquals("test_dataflow_1:test_dataflow",processor3.firedOwningProcess);
 	}
 	
 	@Test

@@ -16,7 +16,6 @@ import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.Processor;
 
 public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
@@ -66,12 +65,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		if (pushDataCalled)
 			throw new IllegalStateException(
 					"Data has already been pushed, fire must be called first!");
-		for (Processor processor : dataflow.getProcessors()) {
-			if (processor.getInputPorts().size() == 0
-					&& processor.getPreconditionList().size() == 0) {
-				processor.fire(instanceOwningProcessId, context);
-			}
-		}
+		dataflow.fire(instanceOwningProcessId, context);
 	}
 
 	public TypedTreeModel<MonitorNode> getStateModel() {

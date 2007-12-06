@@ -81,8 +81,12 @@ public class DummyDataflow implements Dataflow{
 
 
 	public void fire(String owningProcess, InvocationContext context) {
-		// TODO Auto-generated method stub
-		
+		String newOwningProcess = owningProcess + ":" + getLocalName();
+		for (Processor p : processors) {
+			if (p.getInputPorts().isEmpty()) {
+				p.fire(newOwningProcess, context);
+			}
+		}
 	}
 
 }
