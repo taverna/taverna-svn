@@ -16,10 +16,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
-import net.sf.taverna.t2.cloudone.bean.EntityListBean;
-import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
-import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceBean;
 import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;

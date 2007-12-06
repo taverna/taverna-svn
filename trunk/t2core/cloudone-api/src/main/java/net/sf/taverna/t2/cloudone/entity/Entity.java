@@ -9,10 +9,10 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * Super-interface for all entities within the data system. In the present
  * specification an entity is either a data document, an error document or a
  * list of entities. The enumeration of possible types is held in IDType.
- *
+ * 
  * @author Tom Oinn
  * @author Matthew Pocock
- *
+ * 
  * @param <ID>
  *            {@link EntityIdentifier} subclass, for instance
  *            {@link EntityListIdentifier}
@@ -24,7 +24,7 @@ public interface Entity<ID extends EntityIdentifier, Bean> extends
 
 	/**
 	 * Get the identifier for the entity.
-	 *
+	 * 
 	 * @return The identifier
 	 */
 	public ID getIdentifier();

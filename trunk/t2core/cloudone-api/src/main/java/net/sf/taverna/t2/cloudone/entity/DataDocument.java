@@ -2,9 +2,6 @@ package net.sf.taverna.t2.cloudone.entity;
 
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import net.sf.taverna.t2.cloudone.bean.DataDocumentBean;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;

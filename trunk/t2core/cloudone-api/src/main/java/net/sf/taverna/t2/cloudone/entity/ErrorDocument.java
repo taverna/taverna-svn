@@ -3,9 +3,6 @@ package net.sf.taverna.t2.cloudone.entity;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
 import net.sf.taverna.t2.cloudone.bean.ErrorDocumentBean;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
 import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;

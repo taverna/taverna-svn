@@ -10,12 +10,12 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * Bean for serialising {@link ErrorDocument}. An ErrorDocument is serialised
  * as a String identifier from {@link #getIdentifier()}, an optional message in
  * {@link #getMessage()} and optional stack trace in {@link #getStackTrace()}.
- *
+ * 
  * @see Beanable
  * @see ErrorDocument
  * @author Ian Dunlop
  * @author Stian Soiland
- *
+ * 
  */
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "errorDocument")
 @XmlType(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "errorDocument")
