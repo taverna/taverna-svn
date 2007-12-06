@@ -14,7 +14,7 @@ import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
-public abstract class EntityView<ParentModelType extends Observable<Event>, ChildModelType, Event extends ModelEvent<ChildModelType>>
+public abstract class EntityView<MyModelType extends Observable<Event>, ChildModelType, Event extends ModelEvent<ChildModelType>>
 		extends JPanel {
 
 	@SuppressWarnings("unused")
@@ -26,7 +26,7 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 	 */
 	protected Map<ChildModelType, JComponent> modelViews = new HashMap<ChildModelType, JComponent>();
 
-	private final ParentModelType parentModel;
+	private final MyModelType myModel;
 
 	protected final ModelObserver modelObserver;
 
@@ -35,25 +35,25 @@ public abstract class EntityView<ParentModelType extends Observable<Event>, Chil
 
 	private EntityListView parentView;
 
-	public EntityView(ParentModelType parentModel, EntityListView parentView) {
+	public EntityView(MyModelType myModel, EntityListView parentView) {
 		this.parentView = parentView;		
-		this.parentModel = parentModel;
+		this.myModel = myModel;
 		this.modelObserver = makeModelObserver();
 		// TODO: removeObserver on window close
-		parentModel.registerObserver(modelObserver);
+		myModel.registerObserver(modelObserver);
 	}
 
-	public ParentModelType getModel() {
-		return parentModel;
+	public MyModelType getModel() {
+		return myModel;
 	}
 
-	protected void addModelView(ChildModelType refModel) {
-		JComponent view = createModelView(refModel);
+	protected void addModelView(ChildModelType childModel) {
+		JComponent view = createModelView(childModel);
 		if (view == null) { 
 			return;
 		}
 		view.setOpaque(false);
-		modelViews.put(refModel, view);
+		modelViews.put(childModel, view);
 		placeViewComponent(view);
 	}
 

@@ -3,8 +3,11 @@ package net.sf.taverna.t2.cloudone.gui.entity.view;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -27,21 +30,22 @@ public class EntityListView extends
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(EntityListView.class);
 
-	private JButton dataDocButton;
-
 	private JPanel entityViews;
-	
-	private JButton literalButton;
-	
+
 	private JButton removeButton;
 
 	@SuppressWarnings("unchecked")
 	private EntityView lastEditedView;
 
-	private JButton listButton;
+	protected CreateDataDocAction createDataDocAction;
 
-	private JButton stringButton;
+	protected CreateListAction createListAction;
 
+	protected CreateLiteralAction createLiteralAction;
+
+	protected CreateStringAction createStringAction;
+
+	protected JPanel addSchemesPanel;
 
 	public EntityListView(EntityListModel entityListModel,
 			EntityListView parentView) {
@@ -85,50 +89,70 @@ public class EntityListView extends
 		revalidate();
 	}
 
-	private JPanel createSchemeButtons() {
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
-		JPanel addSchemes = new JPanel();
-		addSchemes.setLayout(new GridBagLayout());
+	private JPanel createAddSchemePanel() {
+
+		JPanel addSchemesPanel = new JPanel();
+		addSchemesPanel.setLayout(new GridBagLayout());
 		// addSchemes.setOpaque(false);
 		GridBagConstraints cLabel = new GridBagConstraints();
 		cLabel.gridy = 0;
-//		cLabel.fill = GridBagConstraints.HORIZONTAL;
+		// cLabel.fill = GridBagConstraints.HORIZONTAL;
 
 		GridBagConstraints cButton = new GridBagConstraints();
 		cButton.gridy = 1;
 		cButton.fill = GridBagConstraints.HORIZONTAL;
 		cButton.anchor = GridBagConstraints.LINE_END;
 
-		//JLabel headerLabel = new JLabel("<html><strong>List</strong></html>");
+		// JLabel headerLabel = new
+		// JLabel("<html><strong>List</strong></html>");
 		RemoveAction removeAction = new RemoveAction();
-		CreatDataDocAction createDataDocAction = new CreatDataDocAction(
-				getModel());
-		CreateListAction createListAction = new CreateListAction(
-				getModel());
-		CreateLiteralAction createLiteralAction = new CreateLiteralAction(getModel());
-		CreateStringAction createStringAction = new CreateStringAction(getModel());
+
 		removeButton = new JButton(removeAction);
-		if (getParentView() != null) {
-			//addSchemes.add(headerLabel, cLabel);
-			addSchemes.add(removeButton,cLabel);
+		if (getModel().isRemovable()) {
+			// addSchemes.add(headerLabel, cLabel);
+			addSchemesPanel.add(removeButton, cLabel);
 		}
+
 		JLabel createLabel = new JLabel("Create:");
-		addSchemes.add(createLabel, cButton);
+		addSchemesPanel.add(createLabel, cButton);
 		cButton.anchor = GridBagConstraints.LINE_START;
+		for (Action createAction : getCreateActions()) {
+			JButton createButton = new JButton(createAction);
+			addSchemesPanel.add(createButton, cButton);
+		}
+		return addSchemesPanel;
+	}
 
-		
-		dataDocButton = new JButton(createDataDocAction);
-		// dataDocButton.setOpaque(false);
-		listButton = new JButton(createListAction);
-		// listButton.setOpaque(false);
-		literalButton = new JButton(createLiteralAction);
-		stringButton = new JButton(createStringAction);
+	protected void setDefaultBorder() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "List",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
+	}
 
-		addSchemes.add(dataDocButton, cButton);
-		addSchemes.add(listButton, cButton);
-		addSchemes.add(literalButton, cButton);
-		addSchemes.add(stringButton, cButton);
-		return addSchemes;
+	protected List<Action> getCreateActions() {
+		List<Action> createActions = new ArrayList<Action>();
+
+		// Note: on UNKNOWN_DEPTH we get all actions, otherwise either just the
+		// list, or all the 0-depth ones (literal/data/string)
+		int depth = getModel().getDepth();
+		System.out.println(depth);
+		if (depth == EntityModel.UNKNOWN_DEPTH || depth > 1) {
+			createActions.add(createListAction);
+		}
+		if (depth == EntityModel.UNKNOWN_DEPTH || depth == 1) {
+			createActions.add(createDataDocAction);
+			createActions.add(createLiteralAction);
+			createActions.add(createStringAction);
+		}
+		return createActions;
+	}
+
+	protected void makeCreateActions() {
+		createDataDocAction = new CreateDataDocAction(getModel());
+		createListAction = new CreateListAction(getModel());
+		createLiteralAction = new CreateLiteralAction(getModel());
+		createStringAction = new CreateStringAction(getModel());
 	}
 
 	private JPanel createEntityViewsPanel() {
@@ -142,16 +166,18 @@ public class EntityListView extends
 	}
 
 	private void initialise() {
+		makeCreateActions();
+		setDefaultBorder();
 		setLayout(new GridBagLayout());
 
-		JPanel addSchemes = createSchemeButtons();
+		addSchemesPanel = createAddSchemePanel();
 		GridBagConstraints schemeC = new GridBagConstraints();
 		schemeC.gridx = 0;
 		schemeC.gridy = 0;
 		schemeC.gridwidth = 2;
 		// schemeC.fill = GridBagConstraints.HORIZONTAL;
 		schemeC.anchor = GridBagConstraints.FIRST_LINE_START;
-		add(addSchemes, schemeC);
+		add(addSchemesPanel, schemeC);
 
 		GridBagConstraints viewsC = new GridBagConstraints();
 		viewsC.gridx = 1;
@@ -183,7 +209,7 @@ public class EntityListView extends
 			view = new EntityListView((EntityListModel) model, this);
 		} else if (model instanceof LiteralModel) {
 			view = new LiteralView((LiteralModel) model, this);
-		} else if (model instanceof StringModel){
+		} else if (model instanceof StringModel) {
 			view = new StringView((StringModel) model, this);
 		} else {
 			// TODO: Strings and literals
@@ -220,12 +246,12 @@ public class EntityListView extends
 	 * @author Ian Dunlop
 	 * 
 	 */
-	public class CreatDataDocAction extends AbstractAction {
+	public class CreateDataDocAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
 		private EntityListModel entityListModel;
 
-		public CreatDataDocAction(EntityListModel entityListModel) {
+		public CreateDataDocAction(EntityListModel entityListModel) {
 			super("Data Document");
 			this.entityListModel = entityListModel;
 		}
@@ -260,7 +286,7 @@ public class EntityListView extends
 			addEntityToModel(entityListModel);
 		}
 	}
-	
+
 	public class CreateLiteralAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -276,7 +302,7 @@ public class EntityListView extends
 			addEntityToModel(literalModel);
 		}
 	}
-	
+
 	public class CreateStringAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -292,7 +318,7 @@ public class EntityListView extends
 			addEntityToModel(stringModel);
 		}
 	}
-	
+
 	public class RemoveAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -308,7 +334,7 @@ public class EntityListView extends
 
 	@Override
 	public void setEdit(boolean editable) {
-		if (! editable) {
+		if (!editable) {
 			edit(null);
 		}
 	}
