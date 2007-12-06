@@ -6,59 +6,28 @@ import java.util.List;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.*;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
  * Failure handling dispatch layer, consumes job events with multiple activities
  * and emits the same job but with only the first activity. On failures the job
- * is resent to the layer below with a new activity list containing the second in
- * the original list and so on. If a failure is received and there are no
- * further activities to use the job fails and the failure is sent back up to the
- * layer above. * <table>
- * <tr>
- * <th>DispatchMessageType</th>
- * <th>DispatchLayerAction</th>
- * <th>canProduce</th>
- * </tr>
- * <tr>
- * <td>ERROR</td>
- * <td>ACT</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>JOB</td>
- * <td>REWRITE</td>
- * <td>true</td>
- * </tr> *
- * <tr>
- * <td>JOBQUEUE</td>
- * <td>FORBIDDEN</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULT</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULTCOMPLETION</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr>
- * </table>
+ * is resent to the layer below with a new activity list containing the second
+ * in the original list and so on. If a failure is received and there are no
+ * further activities to use the job fails and the failure is sent back up to
+ * the layer above.
  * 
  * @author Tom Oinn
  * 
  */
+@DispatchLayerErrorReaction(emits = { JOB }, relaysUnmodified = true, stateEffects = {
+		UPDATE_LOCAL_STATE, REMOVE_LOCAL_STATE })
+@DispatchLayerJobReaction(emits = {}, relaysUnmodified = true, stateEffects = { CREATE_LOCAL_STATE })
+@DispatchLayerResultReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_LOCAL_STATE })
 public class Failover extends AbstractErrorHandlerLayer<Object> {
-
-	public Failover() {
-		super();
-		messageActions
-				.put(DispatchMessageType.JOB, DispatchLayerAction.REWRITE);
-
-	}
 
 	@Override
 	protected JobState getStateObject(Job j,
@@ -73,8 +42,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void receiveJob(Job job,
-			List<? extends Activity<?>> activities) {
+	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {

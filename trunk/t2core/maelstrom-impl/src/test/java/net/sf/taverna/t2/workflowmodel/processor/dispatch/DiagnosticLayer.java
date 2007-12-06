@@ -15,7 +15,6 @@ public class DiagnosticLayer extends AbstractDispatchLayer<Object> {
 
 	public DiagnosticLayer() {
 		super();
-		messageActions.put(DispatchMessageType.JOBQUEUE, DispatchLayerAction.PASSTHROUGH);
 	}
 	
 	public void receiveResult(Job j) {

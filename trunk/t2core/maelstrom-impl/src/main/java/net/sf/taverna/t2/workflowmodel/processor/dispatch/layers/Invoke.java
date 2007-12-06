@@ -1,5 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.CREATE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.REMOVE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.UPDATE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.JOB;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,13 +15,13 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
  * Context free invoker layer, does not pass index arrays of jobs into activity
@@ -26,61 +31,20 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
  * any sane dispatch stack will have narrowed this down to a single item list by
  * this point, i.e. by the insertion of a failover layer.
  * <p>
- * Currently only handles activities implementing {@link AsynchronousActivity}. <table>
- * <tr>
- * <th>DispatchMessageType</th>
- * <th>DispatchLayerAction</th>
- * <th>canProduce</th>
- * </tr>
- * <tr>
- * <td>ERROR</td>
- * <td>FORBIDDEN</td>
- * <td>true</td>
- * </tr> *
- * <tr>
- * <td>JOB</td>
- * <td>ACTNORELAY</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>JOBQUEUE</td>
- * <td>FORBIDDEN</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULT</td>
- * <td>FORBIDDEN</td>
- * <td>true</td>
- * </tr> *
- * <tr>
- * <td>RESULTCOMPLETION</td>
- * <td>FORBIDDEN</td>
- * <td>true</td>
- * </tr>
- * </table>
+ * Currently only handles activities implementing {@link AsynchronousActivity}.
  * 
  * @author Tom Oinn
  * 
  */
+@DispatchLayerJobReaction(emits = { ERROR, RESULT_COMPLETION, RESULT }, relaysUnmodified = false, stateEffects = {})
 public class Invoke extends AbstractDispatchLayer<Object> {
 
 	static int threadCount = 0;
-	
+
 	public Invoke() {
 		super();
-		messageActions.put(DispatchMessageType.JOB,
-				DispatchLayerAction.ACTNORELAY);
-		messageActions.put(DispatchMessageType.RESULT,
-				DispatchLayerAction.FORBIDDEN);
-		messageActions.put(DispatchMessageType.RESULTCOMPLETION,
-				DispatchLayerAction.FORBIDDEN);
-		messageActions.put(DispatchMessageType.ERROR,
-				DispatchLayerAction.FORBIDDEN);
-		producesMessage.put(DispatchMessageType.ERROR, true);
-		producesMessage.put(DispatchMessageType.RESULT, true);
-		producesMessage.put(DispatchMessageType.RESULTCOMPLETION, true);
 	}
-	int errorCount = 0;
+
 	@Override
 	/**
 	 * Receive a job from the layer above and pick the first concrete activity
@@ -94,12 +58,14 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job, final List<? extends Activity<?>> activities) {
+	public void receiveJob(final Job job,
+			final List<? extends Activity<?>> activities) {
 		for (Activity<?> a : activities) {
-			
+
 			if (a instanceof AsynchronousActivity) {
 
-				// The activity is an AsynchronousActivity so we invoke it with an
+				// The activity is an AsynchronousActivity so we invoke it with
+				// an
 				// AsynchronousActivityCallback object containing appropriate
 				// callback methods to push results, completions and failures
 				// back to the invocation layer.
@@ -127,7 +93,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				AsynchronousActivityCallback callback = new AsynchronousActivityCallback() {
 
 					private boolean sentJob = false;
-					
+
 					public void fail(String message, Throwable t) {
 						getAbove().receiveError(job.getOwningProcess(),
 								job.getIndex(), message, t);
@@ -140,7 +106,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					public InvocationContext getContext() {
 						return job.getContext();
 					}
-					
+
 					public void receiveCompletion(int[] completionIndex) {
 						if (sentJob) {
 							int[] newIndex;
@@ -158,7 +124,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 								}
 							}
 							Completion c = new Completion(job
-									.getOwningProcess(), newIndex, job.getContext());
+									.getOwningProcess(), newIndex, job
+									.getContext());
 							getAbove().receiveResultCompletion(c);
 						} else {
 							// We haven't sent any 'real' data prior to
@@ -228,7 +195,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					// TODO - this is a naive implementation, we can use this
 					// hook to implement thread limit and reuse policies
-					
+
 					public void requestRun(Runnable runMe) {
 						String newThreadName = job.toString();
 						new Thread(runMe, newThreadName).start();

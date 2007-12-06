@@ -1,5 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.CREATE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.REMOVE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.UPDATE_LOCAL_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.JOB;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -7,6 +12,9 @@ import java.util.TimerTask;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
 
 /**
  * Implements retry policy with delay between retries and exponential backoff
@@ -22,6 +30,10 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLa
  * @author Tom Oinn
  * 
  */
+@DispatchLayerErrorReaction(emits = { JOB }, relaysUnmodified = true, stateEffects = {
+		UPDATE_LOCAL_STATE, REMOVE_LOCAL_STATE })
+@DispatchLayerJobReaction(emits = {}, relaysUnmodified = true, stateEffects = { CREATE_LOCAL_STATE })
+@DispatchLayerResultReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_LOCAL_STATE })
 public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 
 	private RetryConfig config = new RetryConfig();

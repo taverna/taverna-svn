@@ -10,54 +10,33 @@ import java.util.concurrent.LinkedBlockingQueue;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayerAction;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchMessageType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobQueueReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultCompletionReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.SupportsStreamedResult;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.*;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
  * Dispatch layer which consumes a queue of events and fires off a fixed number
  * of simultaneous jobs to the layer below. It observes failure, data and
  * completion events coming up and uses these to determine when to push more
  * jobs downwards into the stack as well as when it can safely emit completion
- * events from the queue. <table>
- * <tr>
- * <th>DispatchMessageType</th>
- * <th>DispatchLayerAction</th>
- * <th>canProduce</th>
- * </tr>
- * <tr>
- * <td>ERROR</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>JOB</td>
- * <td>FORBIDDEN</td>
- * <td>true</td>
- * </tr> *
- * <tr>
- * <td>JOBQUEUE</td>
- * <td>ACTNORELAY</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULT</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULTCOMPLETION</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr>
- * </table>
+ * events from the queue.
  * 
  * @author Tom Oinn
  * 
  */
+@DispatchLayerErrorReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
+@DispatchLayerJobQueueReaction(emits = { JOB }, relaysUnmodified = false, stateEffects = { CREATE_PROCESS_STATE })
+@DispatchLayerResultReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
+@DispatchLayerResultCompletionReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
+@SupportsStreamedResult
 public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		implements NotifiableLayer {
 
@@ -69,11 +48,6 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	public Parallelize() {
 		super();
-		messageActions.put(DispatchMessageType.JOBQUEUE,
-				DispatchLayerAction.ACTNORELAY);
-		messageActions.put(DispatchMessageType.JOB,
-				DispatchLayerAction.FORBIDDEN);
-		producesMessage.put(DispatchMessageType.JOB, true);
 	}
 
 	/**
@@ -85,10 +59,6 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	public Parallelize(int maxJobs) {
 		super();
 		config.setMaximumJobs(maxJobs);
-	}
-
-	public DispatchLayerAction getReceiveJobQueueAction() {
-		return DispatchLayerAction.ACT;
 	}
 
 	public void eventAdded(String owningProcess) {
@@ -103,8 +73,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue,
-			List<? extends Activity<?>> activities) {
+			BlockingQueue<Event> queue, List<? extends Activity<?>> activities) {
 		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(owningProcess, queue, activities,
 				config.getMaximumJobs());
@@ -112,12 +81,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		model.fillFromQueue();
 	}
 
-	public DispatchLayerAction getReceiveJobAction() {
-		return DispatchLayerAction.FORBIDDEN;
-	}
-
-	public void receiveJob(Job job,
-			List<? extends Activity<?>> activities) {
+	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
 		throw new WorkflowStructureException(
 				"Parallelize layer cannot handle job events");
 	}
@@ -186,8 +150,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 *            given point
 		 */
 		protected StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends Activity<?>> activities,
-				int maxJobs) {
+				List<? extends Activity<?>> activities, int maxJobs) {
 			this.queue = queue;
 			this.activities = activities;
 			this.maximumJobs = maxJobs;
