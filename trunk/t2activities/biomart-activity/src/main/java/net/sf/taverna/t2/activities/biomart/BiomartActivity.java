@@ -20,6 +20,7 @@ import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -45,8 +46,10 @@ public class BiomartActivity extends
 		AbstractAsynchronousActivity<BiomartActivityConfigurationBean> {
 
 	private BiomartActivityConfigurationBean configurationBean;
+	
+	private Map<String, OutputPort> outputMap;
 
-//	private QueryListener queryListener;
+	// private QueryListener queryListener;
 
 	private MartQuery biomartQuery;
 
@@ -60,6 +63,7 @@ public class BiomartActivity extends
 		biomartQuery = configurationBean.getQuery();
 		buildInputPorts();
 		buildOutputPorts();
+		buildOutputPortMap();
 	}
 
 	@Override
@@ -73,7 +77,8 @@ public class BiomartActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
+				DataFacade dataFacade = new DataFacade(callback.getContext()
+						.getDataManager());
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
@@ -90,31 +95,39 @@ public class BiomartActivity extends
 						String name = filter.getQualifiedName();
 						if (data.containsKey(name + "_filter")) {
 							Object filterValue = dataFacade.resolve(data
-									.get(name + "_filter"),String.class);
+									.get(name + "_filter"), String.class);
 							if (filterValue instanceof String) {
 								filter.setValue((String) filterValue);
 							} else if (filterValue instanceof List) {
 								List<?> idList = (List<?>) filterValue;
-								filter.setValue(QueryConfigUtils.listToCsv(idList));
+								filter.setValue(QueryConfigUtils
+										.listToCsv(idList));
 							}
 						}
 					}
 
-					Object[] resultList = biomartQuery.getMartService().executeQuery(
-							query);
+					Object[] resultList = biomartQuery.getMartService()
+							.executeQuery(query);
 					if (biomartQuery.getQuery().getFormatter() == null) {
 						// shouldn't need to reorder attributes for MartJ 0.5
-						List<Attribute> attributes = biomartQuery.getAttributesInLinkOrder();
+						List<Attribute> attributes = biomartQuery
+								.getAttributesInLinkOrder();
 						assert resultList.length == attributes.size();
 						for (int i = 0; i < resultList.length; i++) {
 							Attribute attribute = attributes.get(i);
-							outputData.put(attribute.getQualifiedName(), dataFacade.register(
-									resultList[i]));
+							String outputName = attribute.getQualifiedName();
+							int outputDepth = outputMap.get(outputName).getDepth();
+							outputData.put(outputName, dataFacade.register(
+									resultList[i], outputDepth));
 						}
 					} else {
 						assert resultList.length == 1;
-						Dataset dataset = biomartQuery.getQuery().getDatasets().get(0);
-						outputData.put(dataset.getName(), dataFacade.register(resultList[0]));
+						Dataset dataset = biomartQuery.getQuery().getDatasets()
+								.get(0);
+						String outputName = dataset.getName();
+						int outputDepth = outputMap.get(outputName).getDepth();
+						outputData.put(outputName, dataFacade.register(
+								resultList[0], outputDepth));
 					}
 
 					callback.receiveResult(outputData, new int[0]);
@@ -138,8 +151,7 @@ public class BiomartActivity extends
 	}
 
 	private void buildInputPorts() {
-		List<Filter> filters = biomartQuery.getQuery()
-				.getFilters();
+		List<Filter> filters = biomartQuery.getQuery().getFilters();
 		// Create new input ports corresponding to filters
 		for (Filter filter : filters) {
 			String name = filter.getQualifiedName() + "_filter";
@@ -175,7 +187,14 @@ public class BiomartActivity extends
 					.getMimeTypeForFormatter(formatter)));
 		}
 	}
-	
+
+	private void buildOutputPortMap() {
+		outputMap = new HashMap<String, OutputPort>();
+		for (OutputPort outputPort : getOutputPorts()) {
+			outputMap.put(outputPort.getName(), outputPort);
+		}
+	}
+
 	public HealthReport checkActivityHealth() {
 		String location = biomartQuery.getMartService().getLocation();
 		Status status = Status.OK;
@@ -194,7 +213,8 @@ public class BiomartActivity extends
 					} else {
 						status = Status.WARNING;
 					}
-					message = "Responded with : " + httpConnection.getResponseMessage();
+					message = "Responded with : "
+							+ httpConnection.getResponseMessage();
 				}
 				httpConnection.disconnect();
 			}
@@ -203,11 +223,12 @@ public class BiomartActivity extends
 			message = "Location is not a valid URL";
 		} catch (SocketTimeoutException e) {
 			status = Status.SEVERE;
-			message = "Failed to respond within 10s";			
+			message = "Failed to respond within 10s";
 		} catch (IOException e) {
 			status = Status.SEVERE;
-			message = "Error connecting : " + e.getMessage();			
+			message = "Error connecting : " + e.getMessage();
 		}
-		return new HealthReportImpl("Biomart Activity [" + location + "]", message, status);
+		return new HealthReportImpl("Biomart Activity [" + location + "]",
+				message, status);
 	}
 }
