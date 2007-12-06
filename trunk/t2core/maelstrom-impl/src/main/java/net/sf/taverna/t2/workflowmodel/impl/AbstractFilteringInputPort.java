@@ -124,7 +124,7 @@ public abstract class AbstractFilteringInputPort extends
 	public void setFilterDepth(int filterDepth) {
 		this.filterDepth = filterDepth;
 		if (filterDepth < getDepth()) {
-			filterDepth = getDepth();
+			this.filterDepth = getDepth();
 		}
 	}
 
