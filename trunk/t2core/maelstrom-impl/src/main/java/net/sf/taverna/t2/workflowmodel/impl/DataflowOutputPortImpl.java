@@ -38,12 +38,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 					((DataflowImpl) dataflow).sentFinalToken(portName, token
 							.getOwningProcess());
 				}
-				String strippedProcessIdentifier = token
-						.getOwningProcess()
-						.substring(0, token.getOwningProcess().lastIndexOf(':'));
-				WorkflowDataToken newToken = new WorkflowDataToken(
-						strippedProcessIdentifier, token.getIndex(), token
-								.getData(), token.getContext());
+				WorkflowDataToken newToken = token.popOwningProcess();
 				sendEvent(newToken);
 				for (ResultListener listener : resultListeners
 						.toArray(new ResultListener[] {})) {

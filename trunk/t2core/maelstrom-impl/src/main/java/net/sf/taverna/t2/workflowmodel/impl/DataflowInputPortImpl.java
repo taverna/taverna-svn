@@ -36,10 +36,7 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	 * connected entities
 	 */
 	public void receiveEvent(WorkflowDataToken t) {
-		WorkflowDataToken transformedToken = new WorkflowDataToken(t
-				.getOwningProcess()
-				+ ":" + dataflow.getLocalName(), t.getIndex(), t.getData(), t
-				.getContext());
+		WorkflowDataToken transformedToken = t.pushOwningProcess(dataflow.getLocalName());
 		// I'd rather avoid casting to the implementation but in this
 		// case we're in the same package - the only reason to do this
 		// is to allow dummy implementations of parts of this

@@ -31,11 +31,7 @@ public class ProcessorOutputPortImpl extends BasicEventForwardingOutputPort impl
 	 * 
 	 */
 	protected void receiveEvent(WorkflowDataToken token) {
-		String currentOwner = token.getOwningProcess();
-		String newOwner = currentOwner.substring(0, currentOwner
-				.lastIndexOf(':'));
-		sendEvent(new WorkflowDataToken(newOwner, token
-					.getIndex(), token.getData(), token.getContext()));
+		sendEvent(token.popOwningProcess());
 	}
 	
 	public Processor getProcessor() {
