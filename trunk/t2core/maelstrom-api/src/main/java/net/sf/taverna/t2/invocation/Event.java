@@ -96,63 +96,14 @@ public abstract class Event<EventType extends Event<?>> {
 	}
 
 	/**
-	 * Pop a previously pushed index array off the process name and append the
-	 * current index array to create the new index array. This is applied to a
-	 * new instance of an Event subclass and does not modify the target.
-	 * 
-	 * @return new Event subclass with modified owning process and index
-	 */
-	public abstract EventType popIndex();
-
-	/**
-	 * Push the index array onto the owning process name and return the new
-	 * Event subclass object. Does not modify this object, the method creates a
-	 * new Event subclass with the modified index array and owning process.
-	 * 
-	 */
-	public abstract EventType pushIndex();
-
-	/**
-	 * Helper method for the pushIndex operation
+	 * Helper method for implementations of popOwningProcess, this constructs
+	 * the appropriate process identifier after the leaf has been removed and
+	 * returns it. If there is no leaf to remove, i.e. the current process
+	 * identifier is the empty string, then ProcessIdentifierException is thrown
 	 * 
 	 * @return
+	 * @throws ProcessIdentifierException
 	 */
-	protected final String getPushedOwningProcess() {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < index.length; i++) {
-			if (i != 0) {
-				sb.append(",");
-			}
-			sb.append(index[i]);
-		}
-		String indexArrayAsString = sb.toString();
-		return (owner + ":" + indexArrayAsString);
-	}
-
-	/**
-	 * Helper method for the popIndex operation, returns the modified index
-	 * array. Subclasses must still implement logic to get the modified owning
-	 * process but that's relatively easy : <code>
-	 * return new <Event subclass>(owner.substring(0, owner.lastIndexOf(':')),getPoppedIndex(), dataMap);
-	 * </code>
-	 * 
-	 * @return
-	 */
-	protected final int[] getPoppedIndex() {
-		int lastLocation = owner.lastIndexOf(':');
-		String indexArrayAsString = owner.substring(lastLocation + 1);
-		String[] parts = indexArrayAsString.split(",");
-		int[] newIndexArray = new int[index.length + parts.length];
-		int pos = 0;
-		for (String part : parts) {
-			newIndexArray[pos++] = Integer.parseInt(part);
-		}
-		for (int i : index) {
-			newIndexArray[pos++] = i;
-		}
-		return newIndexArray;
-	}
-
 	protected final String popOwner() throws ProcessIdentifierException {
 		// Empty string already, can't pop from here, throw exception
 		if (owner.equals("")) {
@@ -166,6 +117,17 @@ public abstract class Event<EventType extends Event<?>> {
 		return owner.substring(0, owner.lastIndexOf(':'));
 	}
 
+	/**
+	 * Helper method for implementations of pushOwningProcess, appends the
+	 * specified local name to the current owning process identifier and returns
+	 * the new id. This doesn't change the current process identifier. If there
+	 * is a colon ':' in the specified name this is invalid and will throw
+	 * ProcessIdentifierException at you.
+	 * 
+	 * @param newLocalProcess
+	 * @return
+	 * @throws ProcessIdentifierException
+	 */
 	protected final String pushOwner(String newLocalProcess)
 			throws ProcessIdentifierException {
 		if (newLocalProcess.contains(":")) {

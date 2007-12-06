@@ -28,19 +28,6 @@ public class WorkflowDataToken extends Event<WorkflowDataToken> {
 	}
 
 	@Override
-	public WorkflowDataToken popIndex() {
-		return new WorkflowDataToken(getPushedOwningProcess(), new int[] {},
-				dataRef, this.context);
-	}
-
-	@Override
-	public WorkflowDataToken pushIndex() {
-		return new WorkflowDataToken(
-				owner.substring(0, owner.lastIndexOf(':')), getPoppedIndex(),
-				dataRef, this.context);
-	}
-
-	@Override
 	public WorkflowDataToken popOwningProcess()
 			throws ProcessIdentifierException {
 		return new WorkflowDataToken(popOwner(), index, dataRef, context);

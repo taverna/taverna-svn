@@ -13,7 +13,7 @@ package net.sf.taverna.t2.invocation;
  * @author Tom Oinn
  * 
  */
-public class Completion extends Event<Completion> {
+public class Completion extends IterationInternalEvent<Completion> {
 
 	/**
 	 * Construct a new optionally partial completion event with the specified

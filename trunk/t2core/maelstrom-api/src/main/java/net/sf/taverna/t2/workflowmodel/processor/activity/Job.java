@@ -5,6 +5,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
 
 /**
@@ -19,7 +20,7 @@ import net.sf.taverna.t2.invocation.ProcessIdentifierException;
  * @author Tom Oinn
  * 
  */
-public class Job extends Event<Job> {
+public class Job extends IterationInternalEvent<Job> {
 
 	private Map<String, EntityIdentifier> dataMap;
 
@@ -30,6 +31,7 @@ public class Job extends Event<Job> {
 	 * 
 	 * @return
 	 */
+	@Override
 	public Job pushIndex() {
 		return new Job(getPushedOwningProcess(), new int[] {}, dataMap, context);
 	}
@@ -38,6 +40,7 @@ public class Job extends Event<Job> {
 	 * Pull the index array previous pushed to the owning process name and
 	 * prepend it to the current index array
 	 */
+	@Override
 	public Job popIndex() {
 		return new Job(owner.substring(0, owner.lastIndexOf(':')),
 				getPoppedIndex(), dataMap, context);
