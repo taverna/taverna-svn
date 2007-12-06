@@ -13,7 +13,7 @@ package net.sf.taverna.t2.invocation;
  * @author Tom Oinn
  * 
  */
-public class Completion extends Event {
+public class Completion extends Event<Completion> {
 
 	/**
 	 * Construct a new optionally partial completion event with the specified
@@ -22,10 +22,9 @@ public class Completion extends Event {
 	 * @param owningProcess
 	 * @param completionIndex
 	 */
-	public Completion(String owningProcess, int[] completionIndex, InvocationContext context) {
-		this.owner = owningProcess;
-		this.index = completionIndex;
-		this.context = context;
+	public Completion(String owningProcess, int[] completionIndex,
+			InvocationContext context) {
+		super(owningProcess, completionIndex, context);
 	}
 
 	/**
@@ -35,20 +34,10 @@ public class Completion extends Event {
 	 * @param owningProcess
 	 */
 	public Completion(String owningProcess, InvocationContext context) {
-		this.owner = owningProcess;
-		this.context = context;
-		this.index = new int[0];
-	}
-	
-	/**
-	 * A completion event is final if its index array is zero length
-	 * 
-	 * @return true if indexarray.length==0
-	 */
-	public boolean isFinal() {
-		return (index.length == 0);
+		super(owningProcess, new int[0], context);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Cmp(" + owner + ")[");
@@ -69,6 +58,7 @@ public class Completion extends Event {
 	 * 
 	 * @return
 	 */
+	@Override
 	public Completion pushIndex() {
 		return new Completion(getPushedOwningProcess(), new int[] {}, context);
 	}
@@ -77,9 +67,21 @@ public class Completion extends Event {
 	 * Pull the index array previous pushed to the owning process name and
 	 * prepend it to the current index array
 	 */
+	@Override
 	public Completion popIndex() {
 		return new Completion(owner.substring(0, owner.lastIndexOf(':')),
 				getPoppedIndex(), context);
+	}
+
+	@Override
+	public Completion popOwningProcess() throws ProcessIdentifierException {
+		return new Completion(popOwner(), index, context);
+	}
+
+	@Override
+	public Completion pushOwningProcess(String localProcessName)
+			throws ProcessIdentifierException {
+		return new Completion(pushOwner(localProcessName), index, context);
 	}
 
 }

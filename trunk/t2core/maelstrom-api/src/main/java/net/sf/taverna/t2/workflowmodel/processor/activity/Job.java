@@ -5,6 +5,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.ProcessIdentifierException;
 
 /**
  * Contains a (possibly partial) job description. A job is the smallest entity
@@ -18,7 +19,7 @@ import net.sf.taverna.t2.invocation.InvocationContext;
  * @author Tom Oinn
  * 
  */
-public class Job extends Event {
+public class Job extends Event<Job> {
 
 	private Map<String, EntityIdentifier> dataMap;
 
@@ -64,19 +65,9 @@ public class Job extends Event {
 	 * @param data
 	 */
 	public Job(String owner, int[] index, Map<String, EntityIdentifier> data, InvocationContext context) {
-		this.owner = owner;
-		this.index = index;
+		super(owner, index, context);
 		this.dataMap = data;
-		this.context = context;
-		if (index == null) {
-			throw new RuntimeException("Job index cannot be null");
-		}
-		if (owner == null) {
-			throw new RuntimeException("Owning process cannot be null");
-		}
-		if (context == null) {
-			throw new RuntimeException("Invocation context cannot be null");
-		}
+		
 	}
 
 	/**
@@ -107,6 +98,17 @@ public class Job extends Event {
 		}
 		sb.append("}");
 		return sb.toString();
+	}
+
+	@Override
+	public Job popOwningProcess() throws ProcessIdentifierException {
+		return new Job(popOwner(), index, dataMap, context);
+	}
+
+	@Override
+	public Job pushOwningProcess(String localProcessName)
+			throws ProcessIdentifierException {
+		return new Job(pushOwner(localProcessName), index, dataMap, context);
 	}
 
 }

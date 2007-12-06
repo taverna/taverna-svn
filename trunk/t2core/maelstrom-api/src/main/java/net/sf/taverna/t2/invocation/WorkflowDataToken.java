@@ -10,7 +10,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * @author Tom Oinn
  * 
  */
-public class WorkflowDataToken extends Event {
+public class WorkflowDataToken extends Event<WorkflowDataToken> {
 
 	private EntityIdentifier dataRef;
 	
@@ -23,25 +23,36 @@ public class WorkflowDataToken extends Event {
 	 * @param dataRef
 	 */
 	public WorkflowDataToken(String owningProcess, int[] index, EntityIdentifier dataRef, InvocationContext context) {
+		super(owningProcess, index, context);
 		this.dataRef = dataRef;
-		this.index = index;
-		this.owner = owningProcess;
-		this.context = context;
 	}
 
 	@Override
-	public Event popIndex() {
+	public WorkflowDataToken popIndex() {
 		return new WorkflowDataToken(getPushedOwningProcess(), new int[] {},
 				dataRef, this.context);
 	}
 
 	@Override
-	public Event pushIndex() {
+	public WorkflowDataToken pushIndex() {
 		return new WorkflowDataToken(
 				owner.substring(0, owner.lastIndexOf(':')), getPoppedIndex(),
 				dataRef, this.context);
 	}
 
+	@Override
+	public WorkflowDataToken popOwningProcess()
+			throws ProcessIdentifierException {
+		return new WorkflowDataToken(popOwner(), index, dataRef, context);
+	}
+
+	@Override
+	public WorkflowDataToken pushOwningProcess(String localProcessName)
+			throws ProcessIdentifierException {
+		return new WorkflowDataToken(pushOwner(localProcessName), index, dataRef, context);
+	}
+
+	
 	/**
 	 * Return the ID of the data this event represents
 	 * 
@@ -74,4 +85,5 @@ public class WorkflowDataToken extends Event {
 		return sb.toString();
 	}
 
+	
 }
