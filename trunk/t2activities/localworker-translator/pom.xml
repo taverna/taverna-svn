@@ -39,6 +39,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>uk.org.mygrid.taverna</groupId>
+			<artifactId>taverna-contrib</artifactId>
+			<version>1.6.2.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
 			<version>0.1-SNAPSHOT</version>
