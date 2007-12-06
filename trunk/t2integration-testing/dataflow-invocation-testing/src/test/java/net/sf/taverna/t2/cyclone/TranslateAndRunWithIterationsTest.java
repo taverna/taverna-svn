@@ -16,6 +16,29 @@ import org.junit.Test;
 public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
 
 	@Test
+	
+	//Tests a dataflow that passes a list of lists to a processor that expects a list, so should iterate for each inner list. 
+	public void testIterateListOfLists() throws Exception {
+		Dataflow dataflow = translateScuflFile("test_iterate_list_of_lists.xml");
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
+		
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
+		
+		facade.fire();
+		
+		waitForCompletion(listener);
+		
+		assertTrue("The result should be a list",listener.getResult("out") instanceof List);
+	}
+	
+	@Test
 	public void testIterateOverList() throws Exception {
 		Dataflow dataflow = translateScuflFile("lists_iterate.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
