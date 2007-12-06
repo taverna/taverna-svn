@@ -26,4 +26,9 @@ public abstract class AbstractPort extends AbstractAnnotatedThing<Port> implemen
 		return this.name;
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " " + getName() + " (" + getDepth() + ")";
+	}
+	
 }
