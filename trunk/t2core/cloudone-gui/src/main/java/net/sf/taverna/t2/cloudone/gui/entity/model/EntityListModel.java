@@ -15,8 +15,16 @@ public class EntityListModel extends EntityModel implements
 
 	private List<EntityModel> entityModels = new ArrayList<EntityModel>();
 
+	private int depth = UNKNOWN_DEPTH;
+
 	public EntityListModel(EntityListModel parentModel) {
 		super(parentModel);
+		if (parentModel != null) {
+			int parentDepth = parentModel.getDepth();
+			if (parentDepth != UNKNOWN_DEPTH) {
+				setDepth(parentDepth - 1);
+			}
+		}
 	}
 
 	public void registerObserver(Observer<EntityListModelEvent> observer) {
@@ -57,12 +65,19 @@ public class EntityListModel extends EntityModel implements
 		super.remove();
 	}
 
-	@Override
 	public void setDepth(int depth) {
 		if (depth == 0) {
 			throw new IllegalArgumentException("List depth can't be zero");
 		}
-		super.setDepth(depth);
+		if (depth < UNKNOWN_DEPTH) {
+			throw new IllegalArgumentException("Invalid depth: " + depth);
+		}
+		this.depth = depth;
+	}
+	
+	@Override
+	public int getDepth() {
+		return depth;
 	}
 
 }

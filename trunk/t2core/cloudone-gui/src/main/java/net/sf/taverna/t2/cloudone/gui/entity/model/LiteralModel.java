@@ -66,4 +66,5 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 	public Object getLiteral() {
 		return literal;
 	}
+	
 }
