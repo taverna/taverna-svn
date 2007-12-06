@@ -7,9 +7,11 @@ import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
-public class EntityListModel extends EntityModel implements Observable<EntityListModelEvent> {
-	
-	private MultiCaster<EntityListModelEvent> multiCaster = new MultiCaster<EntityListModelEvent>(this);
+public class EntityListModel extends EntityModel implements
+		Observable<EntityListModelEvent> {
+
+	private MultiCaster<EntityListModelEvent> multiCaster = new MultiCaster<EntityListModelEvent>(
+			this);
 
 	private List<EntityModel> entityModels = new ArrayList<EntityModel>();
 
@@ -24,31 +26,43 @@ public class EntityListModel extends EntityModel implements Observable<EntityLis
 	public void removeObserver(Observer<EntityListModelEvent> observer) {
 		multiCaster.removeObserver(observer);
 	}
-	
+
 	public void addEntityModel(EntityModel entityModel) {
-		entityModels.add(entityModel);
-		multiCaster.notify(new EntityListModelEvent(
-				ModelEvent.EventType.ADDED, entityModel));
+		synchronized (this) {
+			entityModels.add(entityModel);
+		}
+		multiCaster.notify(new EntityListModelEvent(ModelEvent.EventType.ADDED,
+				entityModel));
 	}
-	
+
 	public void removeEntityModel(EntityModel entityModel) {
-		entityModels.remove(entityModel);
+		synchronized (this) {
+			entityModels.remove(entityModel);
+		}
 		multiCaster.notify(new EntityListModelEvent(
 				ModelEvent.EventType.REMOVED, entityModel));
 	}
 
 	public List<EntityModel> getEntityModels() {
-		return new ArrayList<EntityModel>(entityModels);
+		synchronized (this) {
+			return new ArrayList<EntityModel>(entityModels);
+		}
 	}
 
 	@Override
 	public void remove() {
-		for (EntityModel entModel:getEntityModels()) {
+		for (EntityModel entModel : getEntityModels()) {
 			entModel.remove();
 		}
 		super.remove();
 	}
-	
-	
-	
+
+	@Override
+	public void setDepth(int depth) {
+		if (depth == 0) {
+			throw new IllegalArgumentException("List depth can't be zero");
+		}
+		super.setDepth(depth);
+	}
+
 }
