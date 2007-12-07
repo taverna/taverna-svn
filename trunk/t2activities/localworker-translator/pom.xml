@@ -62,5 +62,11 @@
 			<version>1.4</version>
  			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.resources</groupId>
+			<artifactId>biojava</artifactId>
+			<version>1.4pre1</version>
+			<scope>test</scope>
+    </dependency>
 	</dependencies>
 </project>

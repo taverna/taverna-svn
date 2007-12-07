@@ -69,6 +69,18 @@ public class LocalworkerTranslator extends
 		dependencies=new ArrayList<String>();
 		dependencies.add("dom4j:dom4j:1.6");
 		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker", dependencies);
+		
+		//biojava
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.biojava.GenBankParserWorker", "GenBankParserWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker", "ReverseCompWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker", "SwissProtParserWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker", "TranscribeWorker");
+
+		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.GenBankParserWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
+		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
+		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
+		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
+		
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +23,14 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sourceforge.taverna.scuflworkers.biojava.GenBankParserWorker;
+import net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker;
+import net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker;
+import net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker;
 import net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.java.ByteArrayToString;
@@ -108,8 +114,6 @@ public class LocalworkerTranslatorTest {
 
 		invoke(activity, inputs, expectedOutputs);
 	}
-	
-	
 
 	@Test
 	public void testDoTranslationDecodeBase64() throws Exception {
@@ -558,6 +562,136 @@ public class LocalworkerTranslatorTest {
 
 	}
 
+	//Contrib local workers
+	
+	//XPath workers
+	@Test
+	public void testDoTranslationXPathFromText() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"XPathTextWorker", new XPathTextWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+		
+		assertNotNull("The script is null",activity.getConfiguration().getScript());
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("xpath","//test");
+		inputs.put("xml-text","<a><test>111</test><test>222</test></a>");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		List<String> outputNodeList=new ArrayList<String>();
+		List<String> outputNodeListAsXML=new ArrayList<String>();
+		outputNodeList.add("111");
+		outputNodeList.add("222");
+		outputNodeListAsXML.add("<test>111</test>");
+		outputNodeListAsXML.add("<test>222</test>");
+		expectedOutputs.put("nodelist", outputNodeList);
+		expectedOutputs.put("nodelistAsXML",outputNodeListAsXML);
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	// biojava
+
+	@Test
+	public void testDoTranslationGenBankParserWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"GenBankParserWorker", new GenBankParserWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
+				"/AY069118.gb").getFile());
+		String expectedOutput = IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/AY069118.xml"));
+
+		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+				activity, inputs, Collections.singletonList("genbankdata"));
+		assertEquals(1, outputs.size());
+
+		Object output = outputs.get("genbankdata");
+		if (output instanceof byte[]) {
+			output = new String((byte[]) output);
+		}
+		assertTrue(output instanceof String);
+		assertTrue(((String) output).substring(0, 100).equals(expectedOutput.substring(0, 100)));
+	}
+
+	@Test
+	public void testDoTranslationSwissProtParserWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"SwissProtParserWorker", new SwissProtParserWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("fileUrl", LocalworkerTranslator.class.getResource(
+				"/AAC4_HUMAN.sp").getFile());
+		String expectedOutput = IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/AAC4_HUMAN.xml"));
+
+		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+				activity, inputs, Collections.singletonList("results"));
+		assertEquals(1, outputs.size());
+
+		Object output = outputs.get("results");
+		if (output instanceof byte[]) {
+			output = new String((byte[]) output);
+		}
+		assertTrue(output instanceof String);
+		assertTrue(((String) output).substring(0, 100).equals(expectedOutput.substring(0, 100)));
+	}
+
+	@Test
+	public void testDoTranslationTranscribeWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"TranscribeWorker", new TranscribeWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("dna_seq", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/varC4-2.dna")));
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("rna_seq", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/varC4-2.rna")));
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationReverseCompWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"ReverseCompWorker", new ReverseCompWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("rawSeq", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/varC4-2.dna")));
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("revSeq", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/varC4-2.rdna")));
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
 	private void invoke(AbstractAsynchronousActivity<?> activity,
 			Map<String, Object> inputs, Map<String, Object> expectedOutputs)
 			throws Exception {
@@ -568,11 +702,14 @@ public class LocalworkerTranslatorTest {
 			for (Map.Entry<String, Object> output : expectedOutputs.entrySet()) {
 				assertTrue("No output for port " + output.getKey(), outputs
 						.containsKey(output.getKey()));
-				if (output.getValue().getClass().isAssignableFrom(byte[].class)
-						&& outputs.get(output.getKey()).getClass()
-								.isAssignableFrom(byte[].class)) {
+				if (output.getValue() instanceof byte[]
+						&& outputs.get(output.getKey()) instanceof byte[]) {
 					assertTrue(Arrays.equals((byte[]) output.getValue(),
 							(byte[]) outputs.get(output.getKey())));
+				} else if (output.getValue() instanceof String
+						&& outputs.get(output.getKey()) instanceof byte[]) {
+					assertEquals(output.getValue(), new String((byte[]) outputs
+							.get(output.getKey())));
 				} else {
 					assertEquals(output.getValue(), outputs
 							.get(output.getKey()));
@@ -609,36 +746,6 @@ public class LocalworkerTranslatorTest {
 			assertTrue(port.getName() + " is not a valid output port",
 					outputPorts.remove(port.getName()));
 		}
-	}
-	
-	//Contrib local workers
-	
-	//XPath workers
-	@Test
-	public void testDoTranslationXPathFromText() throws Exception {
-		LocalServiceProcessor processor = new LocalServiceProcessor(null,
-				"XPathTextWorker", new XPathTextWorker());
-		BeanshellActivity activity = (BeanshellActivity) translator
-				.doTranslation(processor);
-		
-		assertNotNull("The script is null",activity.getConfiguration().getScript());
-
-		verifyPorts(processor, activity);
-
-		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("xpath","//test");
-		inputs.put("xml-text","<a><test>111</test><test>222</test></a>");
-		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
-		List<String> outputNodeList=new ArrayList<String>();
-		List<String> outputNodeListAsXML=new ArrayList<String>();
-		outputNodeList.add("111");
-		outputNodeList.add("222");
-		outputNodeListAsXML.add("<test>111</test>");
-		outputNodeListAsXML.add("<test>222</test>");
-		expectedOutputs.put("nodelist", outputNodeList);
-		expectedOutputs.put("nodelistAsXML",outputNodeListAsXML);
-
-		invoke(activity, inputs, expectedOutputs);
 	}
 
 }
