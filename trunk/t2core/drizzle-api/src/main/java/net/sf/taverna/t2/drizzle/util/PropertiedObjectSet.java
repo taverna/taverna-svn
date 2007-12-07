@@ -20,7 +20,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @param <O>
  */
 @SuppressWarnings("unchecked")
-public interface PropertiedObjectSet<O> extends
+public interface PropertiedObjectSet<O extends Beanable> extends
 		Beanable<PropertiedObjectSetBean> {
 
 	/**

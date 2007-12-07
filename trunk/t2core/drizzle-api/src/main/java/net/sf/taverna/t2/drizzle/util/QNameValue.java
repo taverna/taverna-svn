@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 
@@ -10,6 +12,8 @@ import javax.xml.namespace.QName;
  * @author alanrw
  *
  */
+@XmlRootElement(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "qNameValue")
+@XmlType(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "qNameValue")
 public class QNameValue implements PropertyValue, Comparable<Object> {
 	private QName value;
 	

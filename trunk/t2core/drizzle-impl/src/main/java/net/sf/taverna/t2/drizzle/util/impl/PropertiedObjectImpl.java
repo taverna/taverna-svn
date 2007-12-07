@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.taverna.t2.drizzle.bean.HashMapBean;
+import net.sf.taverna.t2.drizzle.bean.HashMapEntryBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
 import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectListener;
@@ -228,8 +230,9 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	@SuppressWarnings("unchecked")
 	public PropertiedObjectBean getAsBean() {
 		PropertiedObjectBean result = new PropertiedObjectBean();
-		HashMap<PropertyKey, PropertyValue> beanedProperties = (HashMap<PropertyKey, PropertyValue>) this.properties
-				.clone();
+		HashMapBean<PropertyKey, PropertyValue> beanedProperties =
+			new HashMapBean((HashMap<PropertyKey, PropertyValue>) this.properties
+				.clone());
 
 		result.setProperties(beanedProperties);
 
@@ -246,8 +249,11 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 			throw new IllegalStateException("Cannot initialize twice"); //$NON-NLS-1$
 		}
 
-		this.properties = (HashMap<PropertyKey, PropertyValue>) bean
-				.getProperties().clone();
+		this.properties = new HashMap<PropertyKey, PropertyValue>();
+		HashMapBean<PropertyKey, PropertyValue> beanedProperties = bean.getProperties();
+		for (HashMapEntryBean<PropertyKey, PropertyValue> entryBean : beanedProperties.getEntry()) {
+			this.properties.put(entryBean.getKey(), entryBean.getValue());
+		}
 	}
 
 	/**

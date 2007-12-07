@@ -5,6 +5,9 @@ package net.sf.taverna.t2.drizzle.bean;
 
 import java.util.HashMap;
 
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
@@ -17,13 +20,15 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * @author alanrw
  * 
  */
+@XmlRootElement()
 public class PropertiedObjectBean {
-	private HashMap<PropertyKey, PropertyValue> properties;
+	private HashMapBean<PropertyKey, PropertyValue> properties;
 
 	/**
 	 * @return the properties
 	 */
-	public HashMap<PropertyKey, PropertyValue> getProperties() {
+	@XmlAnyElement
+	public HashMapBean<PropertyKey, PropertyValue> getProperties() {
 		return this.properties;
 	}
 
@@ -32,7 +37,7 @@ public class PropertiedObjectBean {
 	 *            the properties to set
 	 */
 	public void setProperties(
-			HashMap<PropertyKey, PropertyValue> properties) {
+			HashMapBean<PropertyKey, PropertyValue> properties) {
 		this.properties = properties;
 	}
 

@@ -3,6 +3,8 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 
 /**
  * @author alanrw
@@ -11,7 +13,7 @@ package net.sf.taverna.t2.drizzle.util;
  *            The class of Object in the PropertiedGraphSet of which the
  *            PropertiedGraphView which is being listened to is a view.
  */
-public interface PropertiedGraphViewListener<O> {
+public interface PropertiedGraphViewListener<O extends Beanable<?>> {
 
 	/**
 	 * Hear that an edge connected to a node has been added to the specified

@@ -5,6 +5,8 @@ package net.sf.taverna.t2.drizzle.util;
 
 import java.util.Set;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * A PropertiedGraphView is a view of a PropertiedObjectSet.
  * 
@@ -21,7 +23,7 @@ import java.util.Set;
  *            The class of Object in the PropertiedObjectSet of which this is a
  *            view.
  */
-public interface PropertiedGraphView<O> {
+public interface PropertiedGraphView<O extends Beanable<?>> {
 	/**
 	 * Specify the PropertiedObjectSet of which the PropertiedGraphView is a
 	 * view.

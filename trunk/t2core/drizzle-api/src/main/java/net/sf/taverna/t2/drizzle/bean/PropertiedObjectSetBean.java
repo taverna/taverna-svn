@@ -18,20 +18,20 @@ import java.util.HashMap;
  * @param <O> The object class that can be contained by the PropertiedObjectSet
  */
 public class PropertiedObjectSetBean <O>{
-	HashMap<O, PropertiedObjectBean> propertiedObjectMap;
+	HashMapBean<Object, PropertiedObjectBean> propertiedObjectMap;
 	
 	/**
 	 * 
 	 */
 	public PropertiedObjectSetBean () {
 		super();
-		this.propertiedObjectMap = new HashMap<O, PropertiedObjectBean>();
+		this.propertiedObjectMap = new HashMapBean<Object, PropertiedObjectBean>();
 	}
 
 	/**
 	 * @return the propertiedObjectMap
 	 */
-	public HashMap<O, PropertiedObjectBean> getPropertiedObjectMap() {
+	public HashMapBean<Object, PropertiedObjectBean> getPropertiedObjectMap() {
 		return this.propertiedObjectMap;
 	}
 
@@ -39,7 +39,7 @@ public class PropertiedObjectSetBean <O>{
 	 * @param propertiedObjectMap the propertiedObjectMap to set
 	 */
 	public void setPropertiedObjectMap(
-			HashMap<O, PropertiedObjectBean> propertiedObjectMap) {
+			HashMapBean<Object, PropertiedObjectBean> propertiedObjectMap) {
 		this.propertiedObjectMap = propertiedObjectMap;
 	}
 

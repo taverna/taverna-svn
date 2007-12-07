@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.taverna.t2.drizzle.bean.HashMapBean;
+import net.sf.taverna.t2.drizzle.bean.HashMapEntryBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
 import net.sf.taverna.t2.drizzle.util.PropertiedObject;
@@ -16,6 +18,8 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSetListener;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * PropertiedObjectSetImpl is an implementation of the PropertiedObjectSet
  * interface.
@@ -24,7 +28,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  * 
  * @param <O> The class of object within the PropertiedObjectSet.
  */
-public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> {
+public final class PropertiedObjectSetImpl<O extends Beanable<?>> implements PropertiedObjectSet<O> {
 
 	/**
 	 * The propertiedObjectMap maps between objects and the corresponding
@@ -281,15 +285,17 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 	 */
 	public PropertiedObjectSetBean<O> getAsBean() {
 		PropertiedObjectSetBean<O> result = new PropertiedObjectSetBean<O>();
-		HashMap<O, PropertiedObjectBean> beanedPropertiedObjectMap =
-			new HashMap<O, PropertiedObjectBean> ();
+		HashMap<Object, PropertiedObjectBean> beanedPropertiedObjectMap =
+			new HashMap<Object, PropertiedObjectBean> ();
 		
 		for (O o : getObjects()) {
 			PropertiedObjectBean beanedPropertiedObject =
 				getPropertiedObject(o).getAsBean();
-			beanedPropertiedObjectMap.put(o, beanedPropertiedObject);
+			beanedPropertiedObjectMap.put(o.getAsBean(), beanedPropertiedObject);
 		}
-		result.setPropertiedObjectMap(beanedPropertiedObjectMap);
+		HashMapBean<Object, PropertiedObjectBean> beanedHashMap =
+			new HashMapBean<Object, PropertiedObjectBean>(beanedPropertiedObjectMap);
+		result.setPropertiedObjectMap(beanedHashMap);
 		
 		return result;
 	}
@@ -303,13 +309,16 @@ public final class PropertiedObjectSetImpl<O> implements PropertiedObjectSet<O> 
 				(this.objectListeners.size() != 0)) {
 			throw new IllegalStateException("Cannot initialise twice"); //$NON-NLS-1$
 		}
-		HashMap<O, PropertiedObjectBean> beanedPropertiedObjectMap =
+		HashMapBean<Object, PropertiedObjectBean> beanedPropertiedObjectMap =
 			bean.getPropertiedObjectMap();
-		for (O object : beanedPropertiedObjectMap.keySet()) {
-			this.addObject(object);
-			PropertiedObject<O> po = getPropertiedObject(object);
-			PropertiedObjectBean beanedPo = beanedPropertiedObjectMap.get(object);
-			po.setFromBean (beanedPo);
+		for (HashMapEntryBean<Object, PropertiedObjectBean> entryBean: beanedPropertiedObjectMap.getEntry()) {
+			Object beanObject = entryBean.getKey();
+			O object = null; // How to do new O();
+			// How to do this? object.setFromBean(beanObject);
+//			this.addObject(object);
+//			PropertiedObject<O> po = getPropertiedObject(object);
+//			PropertiedObjectBean beanedPo = beanedPropertiedObjectMap.get(object);
+//			po.setFromBean (beanedPo);
 		}
 	}
 

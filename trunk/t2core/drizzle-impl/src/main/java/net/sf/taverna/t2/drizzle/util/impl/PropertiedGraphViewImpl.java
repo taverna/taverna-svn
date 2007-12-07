@@ -17,6 +17,8 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSetListener;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * PropertiedGraphViewImpl is an implementation of the PropertiedGraphView
  * interface.
@@ -27,7 +29,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyValue;
  *            The class of Object within the PropertiedObjectSet of which the
  *            PropertiedGraphView is a view.
  */
-public final class PropertiedGraphViewImpl<O> implements PropertiedGraphView<O> {
+public final class PropertiedGraphViewImpl<O extends Beanable<?>> implements PropertiedGraphView<O> {
 
 	/**
 	 * propertiedObjectSet holds the PropertiesObjectSet of which the

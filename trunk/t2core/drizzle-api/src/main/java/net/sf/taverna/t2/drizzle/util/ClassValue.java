@@ -3,11 +3,16 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
 
 /**
  * @author alanrw
  *
  */
+@XmlRootElement(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "classValue")
+@XmlType(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "classValue")
 public class ClassValue implements PropertyValue, Comparable<Object> {
 	private Class value;
 	

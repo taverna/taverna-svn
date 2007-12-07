@@ -3,6 +3,11 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * PropertyKey is an interface that all classes used as the key for property
  * values should implement.

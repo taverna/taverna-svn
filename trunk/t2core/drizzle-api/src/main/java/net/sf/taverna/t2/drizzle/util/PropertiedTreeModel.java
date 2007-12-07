@@ -6,6 +6,7 @@ package net.sf.taverna.t2.drizzle.util;
 import java.util.Comparator;
 import java.util.List;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 
 /**
@@ -19,7 +20,7 @@ import net.sf.taverna.t2.utility.TypedTreeModel;
  *            The class of Object that is in the PropertiedObjectSet over which
  *            this is a model.
  */
-public interface PropertiedTreeModel<O> extends
+public interface PropertiedTreeModel<O extends Beanable<?>> extends
 		TypedTreeModel<PropertiedTreeNode<O>> {
 	/**
 	 * Return the list of PropertyKeySetting used to order the tree.

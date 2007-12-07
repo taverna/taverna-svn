@@ -20,12 +20,14 @@ import net.sf.taverna.t2.drizzle.util.PropertiedGraphViewListener;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
-import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
+import net.sf.taverna.t2.drizzle.util.TwigConstructor;
+import net.sf.taverna.t2.drizzle.util.TwigConstructorRegistry;
+import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.utility.TypedTreeModelEvent;
 import net.sf.taverna.t2.utility.TypedTreeModelListener;
 
@@ -36,7 +38,7 @@ import net.sf.taverna.t2.utility.TypedTreeModelListener;
  *            The class of object within the PropertiedObjectSet of which this
  *            is a tree model.
  */
-public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> {
+public final class PropertiedTreeModelImpl<O extends Beanable<?>> implements PropertiedTreeModel<O> {
 
 	private List<PropertyKeySetting> keySettings;
 
@@ -50,7 +52,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 
 	private Comparator<O> objectComparator;
 
-	private HashMap<O, PropertiedTreeObjectNode<O>> nodeMap;
+	private HashMap<O, PropertiedTreeNode<O>> nodeMap;
 
 	private PropertiedGraphViewListener<O> posl;
 
@@ -60,7 +62,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 	public PropertiedTreeModelImpl() {
 		this.root = new PropertiedTreeRootNodeImpl<O>();
 		this.listeners = new HashSet<TypedTreeModelListener<PropertiedTreeNode<O>>>();
-		this.nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
+		this.nodeMap = new HashMap<O, PropertiedTreeNode<O>>();
 	}
 
 	/**
@@ -121,16 +123,39 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 				constructSubTree(subNode, settingIndex + 1, remainingObjects);
 			}
 		} else {
-			// Note that a null comparator is OK
+			if (this.objectComparator != null) {
 			TreeSet<O> sortedObjects = new TreeSet<O>(this.objectComparator);
-			sortedObjects.addAll(permittedObjects);
+			for (O object : permittedObjects) {
+				try {
+					sortedObjects.add(object);
+				} catch (ClassCastException e) {
+					throw (e);
+					// Here we are
+				}
+			}
+//			sortedObjects.addAll(permittedObjects);
 			for (O object : sortedObjects) {
-				PropertiedTreeObjectNode<O> subNode = new PropertiedTreeObjectNodeImpl<O>();
-				subNode.setObject(object);
+				PropertiedTreeNode<O> subNode = createTwig(object);
 				parent.addChild(subNode);
 				this.nodeMap.put(object, subNode);
 			}
+		} else {
+			for (O object : permittedObjects) {
+				PropertiedTreeNode<O> subNode = createTwig(object);
+				parent.addChild(subNode);
+				this.nodeMap.put(object, subNode);				
+			}
 		}
+		}
+	}
+	
+	private PropertiedTreeNode<O> createTwig(O object) {
+		TwigConstructor constructor = TwigConstructorRegistry.getTwigConstructor(object.getClass());
+		if (constructor == null) {
+			constructor = DefaultTwigConstructor.getInstance();
+		}
+		PropertiedTreeNode<O> subNode = constructor.createTwig(object);
+		return subNode;
 	}
 
 	private void generateTree() {
@@ -139,7 +164,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 		} else {
 			this.root.removeAllChildren();
 		}
-		this.nodeMap = new HashMap<O, PropertiedTreeObjectNode<O>>();
+		this.nodeMap = new HashMap<O, PropertiedTreeNode<O>>();
 		Set<O> filteredObjects = new HashSet<O>();
 		Set<PropertiedGraphNode<O>> graphNodes = this.propertiedGraphView
 				.getNodes();
@@ -215,7 +240,7 @@ public final class PropertiedTreeModelImpl<O> implements PropertiedTreeModel<O> 
 			PropertiedGraphNode<O> node) {
 		O object = node.getObject();
 		if (this.nodeMap.containsKey(object)) {
-			PropertiedTreeObjectNode<O> treeNode = this.nodeMap.get(object);
+			PropertiedTreeNode<O> treeNode = this.nodeMap.get(object);
 			PropertyKey key = edge.getKey();
 			PropertiedTreeNode<O> ancestor = treeNode.getAncestorWithKey(key);
 			if (ancestor != null) {
