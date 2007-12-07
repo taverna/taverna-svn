@@ -15,6 +15,7 @@ import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;
@@ -90,7 +91,8 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		// Create iteration stack, configure it to send jobs and completion
 		// events to the dispatch stack.
 		iterationStack = new IterationStrategyStackImpl() {
-			protected void receiveEventFromStrategy(Event e) {
+			@Override
+			protected void receiveEventFromStrategy(IterationInternalEvent e) {
 				// System.out.println("Sending event to dispatch stack "+e);
 				dispatchStack.receiveEvent(e);
 			}

@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLa
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
 
 /**
  * Implements retry policy with delay between retries and exponential backoff
@@ -57,8 +58,8 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 
 		int currentRetryCount = 0;
 
-		public RetryState(Job job, List<? extends Activity<?>> activities) {
-			super(job, activities);
+		public RetryState(DispatchJobEvent jobEvent) {
+			super(jobEvent);
 		}
 
 		/**
@@ -81,7 +82,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 				@Override
 				public void run() {
 					currentRetryCount++;
-					getBelow().receiveJob(job, activities);
+					getBelow().receiveJob(jobEvent);
 				}
 
 			};
@@ -92,8 +93,8 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 	}
 
 	@Override
-	protected JobState getStateObject(Job j, List<? extends Activity<?>> activities) {
-		return new RetryState(j, activities);
+	protected JobState getStateObject(DispatchJobEvent jobEvent) {
+		return new RetryState(jobEvent);
 	}
 
 	public void configure(RetryConfig config) {

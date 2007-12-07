@@ -1,8 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.events;
 
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
 
 /**
  * Message within the dispatch stack representing a single error report. This
@@ -14,7 +14,8 @@ import net.sf.taverna.t2.invocation.ProcessIdentifierException;
  * @author Tom Oinn
  * 
  */
-public class DispatchErrorEvent extends Event<DispatchErrorEvent> {
+public class DispatchErrorEvent extends
+		AbstractDispatchEvent<DispatchErrorEvent> {
 
 	private Throwable cause;
 	private String message;
@@ -66,6 +67,14 @@ public class DispatchErrorEvent extends Event<DispatchErrorEvent> {
 			throws ProcessIdentifierException {
 		return new DispatchErrorEvent(pushOwner(localProcessName), index,
 				context, message, cause);
+	}
+
+	/**
+	 * DispatchMessageType.ERROR
+	 */
+	@Override
+	public DispatchMessageType getMessageType() {
+		return DispatchMessageType.ERROR;
 	}
 
 }

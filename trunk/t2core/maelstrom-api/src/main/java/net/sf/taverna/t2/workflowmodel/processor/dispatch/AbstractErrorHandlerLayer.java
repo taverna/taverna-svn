@@ -9,43 +9,14 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
-
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 /**
  * Superclass of error handling dispatch layers (for example retry and
  * failover). Provides generic functionality required by this class of layers.
- * <table>
- * <tr>
- * <th>DispatchMessageType</th>
- * <th>DispatchLayerAction</th>
- * <th>canProduce</th>
- * </tr>
- * <tr>
- * <td>ERROR</td>
- * <td>ACT</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>JOB</td>
- * <td>OBSERVE</td>
- * <td>true</td>
- * </tr> *
- * <tr>
- * <td>JOBQUEUE</td>
- * <td>FORBIDDEN</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULT</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr> *
- * <tr>
- * <td>RESULTCOMPLETION</td>
- * <td>PASSTHROUGH</td>
- * <td>false</td>
- * </tr>
- * </table>
  * 
  * @author Tom Oinn
  * 
@@ -63,14 +34,12 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	protected Map<String, List<JobState>> stateMap = new HashMap<String, List<JobState>>();
 
 	/**
-	 * Generate an appropriate state object from the specified job and list of
-	 * activities. The state object is a concrete subclass of JobState.
-	 * 
-	 * @param j
-	 * @param activities
+	 * Generate an appropriate state object from the specified job event. The
+	 * state object is a concrete subclass of JobState.
+	 *
 	 * @return
 	 */
-	protected abstract JobState getStateObject(Job j, List<? extends Activity<?>> activities);
+	protected abstract JobState getStateObject(DispatchJobEvent jobEvent);
 
 	/**
 	 * Abstract superclass of all state models for pending failure handlers.
@@ -82,13 +51,10 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * 
 	 */
 	protected abstract class JobState {
-		protected Job job;
+		protected DispatchJobEvent jobEvent;
 
-		protected List<? extends Activity<?>> activities;
-
-		protected JobState(Job job, List<? extends Activity<?>> activities) {
-			this.job = job;
-			this.activities = activities;
+		protected JobState(DispatchJobEvent jobEvent) {
+			this.jobEvent = jobEvent;
 		}
 
 		/**
@@ -114,18 +80,18 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
+	public void receiveJob(DispatchJobEvent jobEvent) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
-			stateList = stateMap.get(job.getOwningProcess());
+			stateList = stateMap.get(jobEvent.getOwningProcess());
 			if (stateList == null) {
 				stateList = new ArrayList<JobState>();
-				stateMap.put(job.getOwningProcess(), stateList);
+				stateMap.put(jobEvent.getOwningProcess(), stateList);
 			}
 		}
-		stateList.add(getStateObject(job, activities));
-		getBelow().receiveJob(job, activities);
+		stateList.add(getStateObject(jobEvent));
+		getBelow().receiveJob(jobEvent);
 	}
 
 	/**
@@ -133,17 +99,15 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * above for further processing.
 	 */
 	@Override
-	public void receiveError(String owningProcess, int[] index,
-			String errorMessage, Throwable detail) {
-		List<JobState> activeJobs = stateMap.get(owningProcess);
+	public void receiveError(DispatchErrorEvent errorEvent) {
+		List<JobState> activeJobs = stateMap.get(errorEvent.getOwningProcess());
 		// Take a copy of the list so we don't modify it while iterating over it
 		for (JobState rs : new ArrayList<JobState>(activeJobs)) {
-			if (identicalIndex(rs.job.getIndex(), index)) {
+			if (identicalIndex(rs.jobEvent.getIndex(), errorEvent.getIndex())) {
 				boolean handled = rs.handleError();
 				if (!handled) {
 					activeJobs.remove(rs);
-					getAbove().receiveError(owningProcess, index, errorMessage,
-							detail);
+					getAbove().receiveError(errorEvent);
 					return;
 				}
 			}
@@ -155,7 +119,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * retry state we can safely forget that state object
 	 */
 	@Override
-	public void receiveResult(Job j) {
+	public void receiveResult(DispatchResultEvent j) {
 		forget(j.getOwningProcess(), j.getIndex());
 		getAbove().receiveResult(j);
 	}
@@ -165,7 +129,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	 * current retry state we can safely forget that state object
 	 */
 	@Override
-	public void receiveResultCompletion(Completion c) {
+	public void receiveResultCompletion(DispatchCompletionEvent c) {
 		forget(c.getOwningProcess(), c.getIndex());
 		getAbove().receiveResultCompletion(c);
 	}
@@ -188,7 +152,7 @@ public abstract class AbstractErrorHandlerLayer<ConfigurationType> extends
 	private void forget(String owningProcess, int[] index) {
 		List<JobState> activeJobs = stateMap.get(owningProcess);
 		for (JobState rs : new ArrayList<JobState>(activeJobs)) {
-			if (identicalIndex(rs.job.getIndex(), index)) {
+			if (identicalIndex(rs.jobEvent.getIndex(), index)) {
 				activeJobs.remove(rs);
 			}
 		}

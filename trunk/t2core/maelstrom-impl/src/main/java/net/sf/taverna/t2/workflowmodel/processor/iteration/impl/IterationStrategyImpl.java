@@ -17,6 +17,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
@@ -73,7 +74,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			pushEvent(completion);
 		}
 
-		private void pushEvent(Event e) {
+		private void pushEvent(IterationInternalEvent e) {
 			// System.out.println("Tnode : "+e);
 			if (stack != null) {
 				IterationStrategyImpl below = stack

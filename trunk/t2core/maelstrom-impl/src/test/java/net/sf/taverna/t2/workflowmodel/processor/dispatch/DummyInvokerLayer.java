@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
 /**
@@ -27,8 +28,9 @@ public class DummyInvokerLayer extends AbstractDispatchLayer<Object> {
 					Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 					dataMap.put("Result1", nextID());
 					getAbove().receiveResult(
-							new Job(job.getOwningProcess(), job.getIndex(),
-									dataMap, job.getContext()));
+							new DispatchResultEvent(job.getOwningProcess(),
+									job.getIndex(), job.getContext(), dataMap,
+									false));
 				} catch (InterruptedException ie) {
 					//
 				}

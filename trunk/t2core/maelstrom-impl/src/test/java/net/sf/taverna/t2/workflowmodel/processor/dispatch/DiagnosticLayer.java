@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 /**
  * Debug dispatch stack layer, prints to stdout when it receives a result or
@@ -16,15 +18,21 @@ public class DiagnosticLayer extends AbstractDispatchLayer<Object> {
 	public DiagnosticLayer() {
 		super();
 	}
-	
-	public void receiveResult(Job j) {
-		System.out.println("  "+j);
-		getAbove().receiveResult(j);
+
+	public void receiveResult(DispatchResultEvent resultEvent) {
+		System.out.println("  "
+				+ new Job(resultEvent.getOwningProcess(), resultEvent
+						.getIndex(), resultEvent.getData(), resultEvent
+						.getContext()));
+		getAbove().receiveResult(resultEvent);
 	}
 
-	public void receiveResultCompletion(Completion c) {
-		System.out.println("  "+c);
-		getAbove().receiveResultCompletion(c);
+	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
+		System.out.println("  "
+				+ new Completion(completionEvent.getOwningProcess(),
+						completionEvent.getIndex(), completionEvent
+								.getContext()));
+		getAbove().receiveResultCompletion(completionEvent);
 	}
 
 	public void finishedWith(String process) {

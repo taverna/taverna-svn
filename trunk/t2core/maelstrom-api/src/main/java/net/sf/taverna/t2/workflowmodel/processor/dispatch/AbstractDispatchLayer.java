@@ -8,6 +8,11 @@ import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobQueueEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 /**
  * Convenience abstract implementation of DispatchLayer
@@ -19,9 +24,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 		DispatchLayer<ConfigurationType> {
 
 	public void setDispatchStack(DispatchStack parentStack) {
-
 		this.dispatchStack = parentStack;
-
 	}
 
 	private DispatchStack dispatchStack;
@@ -34,43 +37,41 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 		return this.dispatchStack.layerBelow(this);
 	}
 
-	public void receiveError(String owningProcess, int[] errorIndex,
-			String errorMessage, Throwable detail) {
+	public void receiveError(DispatchErrorEvent errorEvent) {
 		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
-			above.receiveError(owningProcess, errorIndex, errorMessage, detail);
+			above.receiveError(errorEvent);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
+	public void receiveJob(DispatchJobEvent jobEvent) {
 		DispatchLayer<?> below = dispatchStack.layerBelow(this);
 		if (below != null) {
-			below.receiveJob(job, activities);
+			below.receiveJob(jobEvent);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends Activity<?>> activities) {
+	public void receiveJobQueue(DispatchJobQueueEvent jobQueueEvent) {
 		DispatchLayer below = dispatchStack.layerBelow(this);
 		if (below != null) {
-			below.receiveJobQueue(owningProcess, queue, activities);
+			below.receiveJobQueue(jobQueueEvent);
 		}
 
 	}
 
-	public void receiveResult(Job job) {
+	public void receiveResult(DispatchResultEvent resultEvent) {
 		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
-			above.receiveResult(job);
+			above.receiveResult(resultEvent);
 		}
 	}
 
-	public void receiveResultCompletion(Completion completion) {
+	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
 		DispatchLayer<?> above = dispatchStack.layerAbove(this);
 		if (above != null) {
-			above.receiveResultCompletion(completion);
+			above.receiveResultCompletion(completionEvent);
 		}
 
 	}

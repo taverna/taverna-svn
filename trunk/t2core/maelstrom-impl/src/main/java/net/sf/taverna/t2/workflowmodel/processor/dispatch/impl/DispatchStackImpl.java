@@ -14,6 +14,7 @@ import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
@@ -21,6 +22,9 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobQueueEvent;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -38,12 +42,12 @@ import org.jdom.JDOMException;
  * @author Tom Oinn
  * 
  */
-public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchStack>
-		implements DispatchStack {
+public abstract class DispatchStackImpl extends
+		AbstractAnnotatedThing<DispatchStack> implements DispatchStack {
 
 	private static Logger logger = Logger.getLogger(DispatchStackImpl.class);
-	
-	private Map<String, BlockingQueue<Event>> queues = new HashMap<String, BlockingQueue<Event>>();
+
+	private Map<String, BlockingQueue<IterationInternalEvent>> queues = new HashMap<String, BlockingQueue<IterationInternalEvent>>();
 
 	private List<DispatchLayer<?>> dispatchLayers = new ArrayList<DispatchLayer<?>>();
 
@@ -139,19 +143,26 @@ public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchS
 		// the top layer of the dispatch stack it's trouble and probably fails
 		// this process
 		@Override
-		public void receiveError(String owningProcess, int[] errorIndex,
-				String errorMessage, Throwable detail) {
-			System.out.println("Error : " + owningProcess + " " + errorMessage
-					+ " " + Thread.currentThread().getName() + queues.get(owningProcess).size());
-			logger.error("Error received in dispatch stack on owningProcess:"+owningProcess+", msg:"+errorMessage,detail);
-			if (errorIndex.length == 0) {
-				
+		public void receiveError(DispatchErrorEvent errorEvent) {
+			System.out.println("Error : " + errorEvent.getOwningProcess() + " "
+					+ errorEvent.getMessage() + " "
+					+ Thread.currentThread().getName()
+					+ queues.get(errorEvent.getOwningProcess()).size());
+			logger.error("Error received in dispatch stack on owningProcess:"
+					+ errorEvent.getOwningProcess() + ", msg:"
+					+ errorEvent.getMessage(), errorEvent.getCause());
+			if (errorEvent.getIndex().length == 0) {
+
 				// System.out.println(" - sent purge");
-				sendCachePurge(owningProcess);
+				sendCachePurge(errorEvent.getOwningProcess());
 			}
 		}
 
-		public void receiveResultCompletion(Completion c) {
+		@Override
+		public void receiveResultCompletion(
+				DispatchCompletionEvent completionEvent) {
+			Completion c = new Completion(completionEvent.getOwningProcess(),
+					completionEvent.getIndex(), completionEvent.getContext());
 			DispatchStackImpl.this.pushEvent(c);
 			if (c.isFinal()) {
 				sendCachePurge(c.getOwningProcess());
@@ -191,22 +202,23 @@ public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchS
 	 * @param e
 	 */
 	@SuppressWarnings("unchecked")
-	public void receiveEvent(Event e) {
-		BlockingQueue<Event> queue = null;
+	public void receiveEvent(IterationInternalEvent e) {
+		BlockingQueue<IterationInternalEvent> queue = null;
 		String owningProcess = e.getOwningProcess();
 		synchronized (queues) {
 			String enclosingProcess = owningProcess.substring(0, owningProcess
 					.lastIndexOf(':'));
 			if (queues.containsKey(owningProcess) == false) {
-				queue = new LinkedBlockingQueue<Event>();
+				queue = new LinkedBlockingQueue<IterationInternalEvent>();
 				queues.put(owningProcess, queue);
 				queue.add(e);
 
 				// If all preconditions are satisfied push the queue to the
 				// dispatch layer
 				if (conditionsSatisfied(enclosingProcess)) {
-					dispatchLayers.get(0).receiveJobQueue(owningProcess, queue,
-							getActivities());
+					dispatchLayers.get(0).receiveJobQueue(
+							new DispatchJobQueueEvent(owningProcess, e
+									.getContext(), queue, getActivities()));
 				}
 			} else {
 				queue = queues.get(owningProcess);
@@ -246,8 +258,14 @@ public abstract class DispatchStackImpl extends AbstractAnnotatedThing<DispatchS
 					// At least one event has been received with this process ID
 					// and
 					// a queue exists for it.
-					dispatchLayers.get(0).receiveJobQueue(owningProcess,
-							queues.get(owningProcess), getActivities());
+
+					dispatchLayers.get(0)
+							.receiveJobQueue(
+									new DispatchJobQueueEvent(owningProcess,
+											queues.get(owningProcess).peek()
+													.getContext(), queues
+													.get(owningProcess),
+											getActivities()));
 				} else {
 					// Do nothing, if the conditions are satisfied before any
 					// jobs

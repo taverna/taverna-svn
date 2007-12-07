@@ -21,6 +21,10 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
@@ -45,7 +49,6 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 		super();
 	}
 
-	@Override
 	/**
 	 * Receive a job from the layer above and pick the first concrete activity
 	 * from the list to invoke. Invoke this activity, creating a callback which
@@ -58,9 +61,9 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 * so any sane dispatch stack will have narrowed this down to a single item
 	 * list by this point, i.e. by the insertion of a failover layer.
 	 */
-	public void receiveJob(final Job job,
-			final List<? extends Activity<?>> activities) {
-		for (Activity<?> a : activities) {
+	@Override
+	public void receiveJob(final DispatchJobEvent jobEvent) {
+		for (Activity<?> a : jobEvent.getActivities()) {
 
 			if (a instanceof AsynchronousActivity) {
 
@@ -74,17 +77,18 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire
 				// workflow system but it never hurts to generalize
-				final DataManager dManager = job.getContext().getDataManager();
+				final DataManager dManager = jobEvent.getContext()
+						.getDataManager();
 
 				// Create a Map of EntityIdentifiers named appropriately given
 				// the activity mapping
 				Map<String, EntityIdentifier> inputData = new HashMap<String, EntityIdentifier>();
-				for (String inputName : job.getData().keySet()) {
+				for (String inputName : jobEvent.getData().keySet()) {
 					String activityInputName = as.getInputPortMapping().get(
 							inputName);
 					if (activityInputName != null) {
-						inputData.put(activityInputName, job.getData().get(
-								inputName));
+						inputData.put(activityInputName, jobEvent.getData()
+								.get(inputName));
 					}
 				}
 
@@ -95,8 +99,11 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					private boolean sentJob = false;
 
 					public void fail(String message, Throwable t) {
-						getAbove().receiveError(job.getOwningProcess(),
-								job.getIndex(), message, t);
+						getAbove().receiveError(
+								new DispatchErrorEvent(jobEvent
+										.getOwningProcess(), jobEvent
+										.getIndex(), jobEvent.getContext(),
+										message, t));
 					}
 
 					public void fail(String message) {
@@ -104,28 +111,28 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					}
 
 					public InvocationContext getContext() {
-						return job.getContext();
+						return jobEvent.getContext();
 					}
 
 					public void receiveCompletion(int[] completionIndex) {
 						if (sentJob) {
 							int[] newIndex;
 							if (completionIndex.length == 0) {
-								newIndex = job.getIndex();
+								newIndex = jobEvent.getIndex();
 							} else {
-								newIndex = new int[job.getIndex().length
+								newIndex = new int[jobEvent.getIndex().length
 										+ completionIndex.length];
 								int i = 0;
-								for (int indexValue : job.getIndex()) {
+								for (int indexValue : jobEvent.getIndex()) {
 									newIndex[i++] = indexValue;
 								}
 								for (int indexValue : completionIndex) {
 									newIndex[i++] = indexValue;
 								}
 							}
-							Completion c = new Completion(job
-									.getOwningProcess(), newIndex, job
-									.getContext());
+							DispatchCompletionEvent c = new DispatchCompletionEvent(
+									jobEvent.getOwningProcess(), newIndex,
+									jobEvent.getContext());
 							getAbove().receiveResultCompletion(c);
 						} else {
 							// We haven't sent any 'real' data prior to
@@ -165,25 +172,28 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						// non zero length, otherwise just use the original
 						// job's index array (means we're not streaming)
 						int[] newIndex;
+						boolean streaming = false;
 						if (index.length == 0) {
-							newIndex = job.getIndex();
+							newIndex = jobEvent.getIndex();
 						} else {
-							newIndex = new int[job.getIndex().length
+							streaming = true;
+							newIndex = new int[jobEvent.getIndex().length
 									+ index.length];
 							int i = 0;
-							for (int indexValue : job.getIndex()) {
+							for (int indexValue : jobEvent.getIndex()) {
 								newIndex[i++] = indexValue;
 							}
 							for (int indexValue : index) {
 								newIndex[i++] = indexValue;
 							}
 						}
-						Job resultJob = new Job(job.getOwningProcess(),
-								newIndex, resultMap, job.getContext());
+						DispatchResultEvent resultEvent = new DispatchResultEvent(
+								jobEvent.getOwningProcess(), newIndex, jobEvent
+										.getContext(), resultMap, streaming);
 
 						// Push the modified data to the layer above in the
 						// dispatch stack
-						getAbove().receiveResult(resultJob);
+						getAbove().receiveResult(resultEvent);
 
 						sentJob = true;
 					}
@@ -197,7 +207,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					// hook to implement thread limit and reuse policies
 
 					public void requestRun(Runnable runMe) {
-						String newThreadName = job.toString();
+						String newThreadName = jobEvent.toString();
 						new Thread(runMe, newThreadName).start();
 					}
 

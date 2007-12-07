@@ -19,6 +19,11 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLa
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultCompletionReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.SupportsStreamedResult;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobQueueEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.*;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
@@ -32,10 +37,13 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
  * @author Tom Oinn
  * 
  */
-@DispatchLayerErrorReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
+@DispatchLayerErrorReaction(emits = {}, relaysUnmodified = true, stateEffects = {
+		REMOVE_PROCESS_STATE, NO_EFFECT })
 @DispatchLayerJobQueueReaction(emits = { JOB }, relaysUnmodified = false, stateEffects = { CREATE_PROCESS_STATE })
-@DispatchLayerResultReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
-@DispatchLayerResultCompletionReaction(emits = {}, relaysUnmodified = true, stateEffects = { REMOVE_PROCESS_STATE, NO_EFFECT })
+@DispatchLayerResultReaction(emits = {}, relaysUnmodified = true, stateEffects = {
+		REMOVE_PROCESS_STATE, NO_EFFECT })
+@DispatchLayerResultCompletionReaction(emits = {}, relaysUnmodified = true, stateEffects = {
+		REMOVE_PROCESS_STATE, NO_EFFECT })
 @SupportsStreamedResult
 public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		implements NotifiableLayer {
@@ -72,12 +80,10 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		}
 	}
 
-	public void receiveJobQueue(String owningProcess,
-			BlockingQueue<Event> queue, List<? extends Activity<?>> activities) {
+	public void receiveJobQueue(DispatchJobQueueEvent queueEvent) {
 		// System.out.println("Creating state for " + owningProcess);
-		StateModel model = new StateModel(owningProcess, queue, activities,
-				config.getMaximumJobs());
-		stateMap.put(owningProcess, model);
+		StateModel model = new StateModel(queueEvent, config.getMaximumJobs());
+		stateMap.put(queueEvent.getOwningProcess(), model);
 		model.fillFromQueue();
 	}
 
@@ -86,18 +92,17 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 				"Parallelize layer cannot handle job events");
 	}
 
-	public void receiveError(String owningProcess, int[] index,
-			String errorMessage, Throwable detail) {
+	public void receiveError(DispatchErrorEvent errorEvent) {
 		// System.out.println(sentJobsCount);
-		StateModel model = stateMap.get(owningProcess);
-		getAbove().receiveError(owningProcess, index, errorMessage, detail);
-		model.finishWith(index);
+		StateModel model = stateMap.get(errorEvent.getOwningProcess());
+		getAbove().receiveError(errorEvent);
+		model.finishWith(errorEvent.getIndex());
 	}
 
-	public void receiveResult(Job j) {
-		StateModel model = stateMap.get(j.getOwningProcess());
-		getAbove().receiveResult(j);
-		model.finishWith(j.getIndex());
+	public void receiveResult(DispatchResultEvent resultEvent) {
+		StateModel model = stateMap.get(resultEvent.getOwningProcess());
+		getAbove().receiveResult(resultEvent);
+		model.finishWith(resultEvent.getIndex());
 	}
 
 	/**
@@ -105,10 +110,10 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	 * which case we need to handle all completion events and pass them up the
 	 * stack.
 	 */
-	public void receiveResultCompletion(Completion c) {
-		StateModel model = stateMap.get(c.getOwningProcess());
-		getAbove().receiveResultCompletion(c);
-		model.finishWith(c.getIndex());
+	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
+		StateModel model = stateMap.get(completionEvent.getOwningProcess());
+		getAbove().receiveResultCompletion(completionEvent);
+		model.finishWith(completionEvent.getIndex());
 	}
 
 	public void finishedWith(String owningProcess) {
@@ -124,9 +129,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	 */
 	class StateModel {
 
-		private BlockingQueue<Event> queue;
-
-		private List<? extends Activity<?>> activities;
+		private DispatchJobQueueEvent queueEvent;
 
 		private BlockingQueue<Event> pendingEvents = new LinkedBlockingQueue<Event>();
 
@@ -149,10 +152,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 *            maximum number of concurrent jobs to keep 'hot' at any
 		 *            given point
 		 */
-		protected StateModel(String owningProcess, BlockingQueue<Event> queue,
-				List<? extends Activity<?>> activities, int maxJobs) {
-			this.queue = queue;
-			this.activities = activities;
+		protected StateModel(DispatchJobQueueEvent queueEvent, int maxJobs) {
+			this.queueEvent = queueEvent;
 			this.maximumJobs = maxJobs;
 		}
 
@@ -172,14 +173,17 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 */
 		protected void fillFromQueue() {
 			synchronized (this) {
-				while (queue.peek() != null && activeJobs < maximumJobs) {
-					final Event e = queue.remove();
+				while (queueEvent.getQueue().peek() != null
+						&& activeJobs < maximumJobs) {
+					final Event e = queueEvent.getQueue().remove();
 
 					if (e instanceof Completion && pendingEvents.peek() == null) {
 						new Thread(new Runnable() {
 							public void run() {
 								getAbove().receiveResultCompletion(
-										(Completion) e);
+										new DispatchCompletionEvent(e
+												.getOwningProcess(), e
+												.getIndex(), e.getContext()));
 							}
 						}).start();
 						// getAbove().receiveResultCompletion((Completion) e);
@@ -191,7 +195,13 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 							activeJobs++;
 						}
 						// sentJobsCount++;
-						getBelow().receiveJob((Job) e, activities);
+						getBelow()
+								.receiveJob(
+										new DispatchJobEvent(e
+												.getOwningProcess(), e
+												.getIndex(), e.getContext(),
+												((Job) e).getData(), queueEvent
+														.getActivities()));
 					}
 				}
 			}
@@ -225,7 +235,10 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 									&& pendingEvents.peek() instanceof Completion) {
 								Completion c = (Completion) pendingEvents
 										.remove();
-								getAbove().receiveResultCompletion(c);
+								getAbove().receiveResultCompletion(
+										new DispatchCompletionEvent(c
+												.getOwningProcess(), c
+												.getIndex(), c.getContext()));
 
 							}
 							// Refresh from the queue; as we've just decremented

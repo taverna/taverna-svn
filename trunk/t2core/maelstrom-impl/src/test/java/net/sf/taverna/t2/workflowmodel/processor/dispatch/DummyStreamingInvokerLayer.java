@@ -10,6 +10,8 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 /**
  * Acts as a fake invocation layer as with the DummyInvokerLayer but this one
@@ -38,12 +40,12 @@ public class DummyStreamingInvokerLayer extends AbstractDispatchLayer<Object> {
 						newIndex[j.getIndex().length] = i;
 						getAbove()
 								.receiveResult(
-										new Job(j.getOwningProcess(), newIndex,
-												dataMap, j.getContext()));
+										new DispatchResultEvent(j.getOwningProcess(), newIndex,
+												j.getContext(), dataMap, true));
 						Thread.sleep(200);
 					}
 					getAbove().receiveResultCompletion(
-							new Completion(j.getOwningProcess(), j
+							new DispatchCompletionEvent(j.getOwningProcess(), j
 									.getIndex(), j.getContext()));
 				} catch (InterruptedException ie) {
 					//

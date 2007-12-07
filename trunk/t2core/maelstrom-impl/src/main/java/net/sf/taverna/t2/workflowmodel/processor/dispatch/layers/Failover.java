@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractErrorHandlerLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.*;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
@@ -30,9 +30,8 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
 public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 	@Override
-	protected JobState getStateObject(Job j,
-			List<? extends Activity<?>> activities) {
-		return new FailoverState(j, activities);
+	protected JobState getStateObject(DispatchJobEvent jobEvent) {
+		return new FailoverState(jobEvent);
 	}
 
 	/**
@@ -42,20 +41,23 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void receiveJob(Job job, List<? extends Activity<?>> activities) {
+	public void receiveJob(DispatchJobEvent jobEvent) {
 
 		List<JobState> stateList = null;
 		synchronized (stateMap) {
-			stateList = stateMap.get(job.getOwningProcess());
+			stateList = stateMap.get(jobEvent.getOwningProcess());
 			if (stateList == null) {
 				stateList = new ArrayList<JobState>();
-				stateMap.put(job.getOwningProcess(), stateList);
+				stateMap.put(jobEvent.getOwningProcess(), stateList);
 			}
 		}
-		stateList.add(getStateObject(job, activities));
+		stateList.add(getStateObject(jobEvent));
 		List<Activity<?>> newActivityList = new ArrayList<Activity<?>>();
-		newActivityList.add(activities.get(0));
-		getBelow().receiveJob(job, newActivityList);
+		newActivityList.add(jobEvent.getActivities().get(0));
+		getBelow().receiveJob(
+				new DispatchJobEvent(jobEvent.getOwningProcess(), jobEvent
+						.getIndex(), jobEvent.getContext(), jobEvent.getData(),
+						newActivityList));
 
 	}
 
@@ -63,23 +65,26 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 
 		int currentActivityIndex = 0;
 
-		public FailoverState(Job j, List<? extends Activity<?>> activities) {
-			super(j, activities);
+		public FailoverState(DispatchJobEvent jobEvent) {
+			super(jobEvent);
 		}
 
 		@SuppressWarnings("unchecked")
 		public boolean handleError() {
 			currentActivityIndex++;
-			if (currentActivityIndex == activities.size()) {
+			if (currentActivityIndex == jobEvent.getActivities().size()) {
 				return false;
 			} else {
 				List<Activity<?>> newActivityList = new ArrayList<Activity<?>>();
-				newActivityList.add(activities.get(currentActivityIndex));
-				getBelow().receiveJob(job, newActivityList);
+				newActivityList.add(jobEvent.getActivities().get(
+						currentActivityIndex));
+				getBelow().receiveJob(
+						new DispatchJobEvent(jobEvent.getOwningProcess(),
+								jobEvent.getIndex(), jobEvent.getContext(),
+								jobEvent.getData(), newActivityList));
 				return true;
 			}
 		}
-
 	}
 
 	public void configure(Object config) {

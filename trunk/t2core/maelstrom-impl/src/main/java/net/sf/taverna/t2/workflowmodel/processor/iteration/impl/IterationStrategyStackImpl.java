@@ -10,6 +10,7 @@ import org.jdom.Element;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
@@ -140,7 +141,7 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	 * 
 	 * @param e
 	 */
-	protected void receiveEventFromStrategy(Event e) {
+	protected void receiveEventFromStrategy(IterationInternalEvent e) {
 		// TODO - push events onto dispatch queue
 	}
 
