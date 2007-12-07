@@ -558,15 +558,12 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 				MonitorImpl.getMonitor().registerNode(this,
 						owningProcess.split(":"),
 						new HashSet<MonitorableProperty<?>>());
+				// Message each processor within the dataflow and instruct it to
+				// register any properties with the monitor including any
+				// processor level properties it can aggregate from its dispatch
+				// stack.
 				for (ProcessorImpl p : getEntities(ProcessorImpl.class)) {
-					String childProcessName = owningProcess + ":"
-							+ p.getLocalName();
-					MonitorImpl.getMonitor()
-							.registerNode(
-									p,
-									(owningProcess + ":" + p.getLocalName())
-											.split(":"),
-									p.getPropertySet(childProcessName));
+					p.registerWithMonitor(owningProcess);
 				}
 				activeProcessIdentifiers.put(owningProcess,
 						new HashSet<String>());
@@ -643,7 +640,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 
 				// Remove this entry from the active process map
 				activeProcessIdentifiers.remove(owningProcess);
-				
+
 			}
 		}
 

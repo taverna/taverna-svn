@@ -14,6 +14,7 @@ import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.workflowmodel.impl.AbstractCrystalizer;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -65,6 +66,12 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		@Override
 		protected String getProcessName() {
 			return "process";
+		}
+
+		public void receiveMonitorableProperty(MonitorableProperty<?> prop,
+				String processID) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}

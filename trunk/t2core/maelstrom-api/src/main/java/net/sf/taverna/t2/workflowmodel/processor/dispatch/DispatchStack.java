@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
 
 /**
  * The dispatch stack is responsible for consuming a queue of jobs from the
@@ -50,5 +51,17 @@ public interface DispatchStack extends Annotated<DispatchStack> {
 	 * @return
 	 */
 	public DispatchLayer<?> layerBelow(DispatchLayer<?> layer);
+
+	/**
+	 * The dispatch stack acts as an aggregator for monitorable properties
+	 * exposed by the dispatch layers. This is distinct from layers which are
+	 * capable of rewriting the process idenfitier of tokens - these require
+	 * their own nodes in the monitor in addition to any contributed properties.
+	 * 
+	 * @param prop
+	 * @param processID
+	 */
+	public void receiveMonitorableProperty(MonitorableProperty<?> prop,
+			String processID);
 
 }

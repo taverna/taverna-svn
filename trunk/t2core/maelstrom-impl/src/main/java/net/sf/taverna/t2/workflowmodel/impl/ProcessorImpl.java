@@ -17,6 +17,7 @@ import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -31,6 +32,8 @@ import net.sf.taverna.t2.workflowmodel.health.impl.HealthCheckerFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.PropertyContributingDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
@@ -72,13 +75,16 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 
 	public transient int resultWrappingDepth = -1;
 
+	protected transient Map<String, Set<MonitorableProperty<?>>> monitorables = new HashMap<String, Set<MonitorableProperty<?>>>();
+
 	/**
 	 * <p>
 	 * Create a new processor implementation with default blank iteration
 	 * strategy and dispatch stack.
 	 * </p>
 	 * <p>
-	 * This constructor is protected to enforce that an instance can only be created via the {@link EditsImpl#createProcessor(String)} method.
+	 * This constructor is protected to enforce that an instance can only be
+	 * created via the {@link EditsImpl#createProcessor(String)} method.
 	 * </p>
 	 */
 
@@ -151,6 +157,19 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 					}
 				}
 
+			}
+
+			public void receiveMonitorableProperty(MonitorableProperty<?> prop,
+					String processID) {
+				synchronized (monitorables) {
+					Set<MonitorableProperty<?>> props = monitorables
+							.get(processID);
+					if (props == null) {
+						props = new HashSet<MonitorableProperty<?>>();
+						monitorables.put(processID, props);
+					}
+					props.add(prop);
+				}
 			}
 		};
 
@@ -303,7 +322,8 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		activityList.clear();
 		for (Element activityElement : (List<Element>) e.getChild("activities")
 				.getChildren("activitycontainer")) {
-			Activity sac = Tools.buildActivity(activityElement.getChild("activity"));
+			Activity sac = Tools.buildActivity(activityElement
+					.getChild("activity"));
 			// Pick up annotations on activity container
 			Tools.populateAnnotationsFromParent(activityElement, sac);
 			activityList.add(sac);
@@ -331,19 +351,19 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	private Map<String, ProcessorOutputPortImpl> outputPortNameCache = new HashMap<String, ProcessorOutputPortImpl>();
 
 	protected ProcessorOutputPortImpl getOutputPortWithName(String name) {
-//		synchronized (outputPortNameCache) {
-//			if (outputPortNameCache.isEmpty()) {
-				for (ProcessorOutputPortImpl p : outputPorts) {
-					String portName = p.getName();
-					if (portName.equals(name)) {
-						return p;
-					}
-//					outputPortNameCache.put(portName, p);
-				}
-				return null;
-//			}
-//		}
-//		return outputPortNameCache.get(name);
+		// synchronized (outputPortNameCache) {
+		// if (outputPortNameCache.isEmpty()) {
+		for (ProcessorOutputPortImpl p : outputPorts) {
+			String portName = p.getName();
+			if (portName.equals(name)) {
+				return p;
+			}
+			// outputPortNameCache.put(portName, p);
+		}
+		return null;
+		// }
+		// }
+		// return outputPortNameCache.get(name);
 	}
 
 	/* Implementations of Processor interface */
@@ -393,21 +413,70 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	public HealthReport checkProcessorHealth() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
 		for (Activity<?> a : getActivityList()) {
-			HealthChecker checker = HealthCheckerFactory.getInstance().getHealthCheckerForObject(a);
-			if (checker!=null) {
+			HealthChecker checker = HealthCheckerFactory.getInstance()
+					.getHealthCheckerForObject(a);
+			if (checker != null) {
 				activityReports.add(checker.checkHealth(a));
-			}
-			else {
-				activityReports.add(new HealthReport("Activity ","No health checker for:"+a.getClass().getName(),Status.WARNING));
+			} else {
+				activityReports.add(new HealthReport("Activity ",
+						"No health checker for:" + a.getClass().getName(),
+						Status.WARNING));
 			}
 		}
-		HealthReport processorHealthReport = new ProcessorHealthReport(getLocalName()+" Processor",activityReports);
+		HealthReport processorHealthReport = new ProcessorHealthReport(
+				getLocalName() + " Processor", activityReports);
 		return processorHealthReport;
 	}
 
-	public Set<? extends MonitorableProperty<?>> getPropertySet(
-			String childProcessName) {
-		// TODO - actually return some properties here!
-		return new HashSet<MonitorableProperty<?>>();
+	/**
+	 * Called by the DataflowImpl containing this processor requesting that it
+	 * register itself with the monitor tree under the specified process
+	 * identifier.
+	 * 
+	 * @param dataflowOwningProcess
+	 *            the process identifier of the parent dataflow, the processor
+	 *            must register with this as the base path plus the local name
+	 */
+	void registerWithMonitor(String dataflowOwningProcess) {
+		// Given the dataflow process identifier, so append local name to get
+		// the process identifier that will be applied to incoming data tokens
+		String processID = dataflowOwningProcess + ":" + getLocalName();
+
+		// The set of monitorable (and steerable) properties for this processor
+		// level monitor node
+		Set<MonitorableProperty<?>> properties = new HashSet<MonitorableProperty<?>>();
+
+		// If any dispatch layers implement PropertyContributingDispatchLayer
+		// then message them to push their properties into the property store
+		// within the dispatch stack. In this case the anonymous inner class
+		// implements this by storing them in a protected map within
+		// ProcessoImpl from where they can be recovered after the iteration has
+		// finished.
+		for (DispatchLayer<?> layer : dispatchStack.getLayers()) {
+			if (layer instanceof PropertyContributingDispatchLayer) {
+				((PropertyContributingDispatchLayer<?>) layer)
+						.injectPropertiesFor(processID);
+			}
+		}
+		// All layers have now injected properties into the parent dispatch
+		// stack, which has responded by building an entry in the monitorables
+		// map in this class. We can pull everything out of it and remove the
+		// entry quite safely at this point.
+		synchronized (monitorables) {
+			Set<MonitorableProperty<?>> layerProps = monitorables
+					.get(processID);
+			if (layerProps != null) {
+				for (MonitorableProperty<?> prop : layerProps) {
+					properties.add(prop);
+				}
+				monitorables.remove(processID);
+			}
+		}
+
+		// Register the node with the monitor tree, including any aggregated
+		// properties from layers.
+		String[] processIDlist = (dataflowOwningProcess + ":" + getLocalName())
+				.split(":");
+		MonitorImpl.getMonitor().registerNode(this, processIDlist, properties);
 	}
 }
