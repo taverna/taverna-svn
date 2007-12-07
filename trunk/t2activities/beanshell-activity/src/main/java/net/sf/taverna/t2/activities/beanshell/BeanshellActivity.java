@@ -12,6 +12,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
@@ -27,7 +28,7 @@ import bsh.Parser;
 
 /**
  * <p>
- * An Activity providing Beanshell functionality. 
+ * An Activity providing Beanshell functionality.
  * </p>
  * 
  * @author David Withers
@@ -41,7 +42,7 @@ public class BeanshellActivity extends
 	private Interpreter interpreter;
 
 	public BeanshellActivity() {
-		// TODO do we need an interpreter per activity or per execution? 
+		// TODO do we need an interpreter per activity or per execution?
 		interpreter = new Interpreter();
 		// TODO decide how to get the beanshell's class loader
 		// interpreter.setClassLoader(classLoader);
@@ -57,7 +58,8 @@ public class BeanshellActivity extends
 			for (String dependency : configurationBean.getDependencies()) {
 				String[] parts = dependency.split(":");
 				if (parts.length == 3) {
-					dependencies.add(new BasicArtifact(parts[0], parts[1], parts[2]));
+					dependencies.add(new BasicArtifact(parts[0], parts[1],
+							parts[2]));
 				}
 			}
 			interpreter.setClassLoader(new BeanshellClassloader(dependencies));
@@ -68,15 +70,19 @@ public class BeanshellActivity extends
 	public BeanshellActivityConfigurationBean getConfiguration() {
 		return configurationBean;
 	}
-	
+
 	public HealthReport checkActivityHealth() {
-		Parser parser = new Parser(new StringReader(getConfiguration().getScript()));
+		Parser parser = new Parser(new StringReader(getConfiguration()
+				.getScript()));
 		try {
-			while (!parser.Line());
+			while (!parser.Line())
+				;
 		} catch (ParseException e) {
-			return new HealthReportImpl("Beanshell Activity",e.getMessage(),Status.SEVERE);
+			return new HealthReportImpl("Beanshell Activity", e.getMessage(),
+					Status.SEVERE);
 		}
-		return new HealthReportImpl("Beanshell Acitivity","Parsed OK",Status.OK);
+		return new HealthReportImpl("Beanshell Acitivity", "Parsed OK",
+				Status.OK);
 	}
 
 	@Override
@@ -85,7 +91,8 @@ public class BeanshellActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
+				DataFacade dataFacade = new DataFacade(callback.getContext()
+						.getDataManager());
 
 				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
@@ -93,8 +100,17 @@ public class BeanshellActivity extends
 					synchronized (interpreter) {
 						// set inputs
 						for (String inputName : data.keySet()) {
-							Object input = dataFacade.resolve(data
-									.get(inputName),String.class);
+							// TODO determine the correct type to be resolved
+							// this is a nasty hack that tries String and then
+							// byte[]
+							Object input;
+							try {
+								input = dataFacade.resolve(data.get(inputName),
+										String.class);
+							} catch (RetrievalException e) {
+								input = dataFacade.resolve(data.get(inputName),
+										byte[].class);
+							}
 							inputName = sanatisePortName(inputName);
 							interpreter.set(inputName, input);
 						}
@@ -103,10 +119,10 @@ public class BeanshellActivity extends
 						// get and clear outputs
 						for (OutputPort outputPort : getOutputPorts()) {
 							String name = outputPort.getName();
-							Object value = interpreter
-									.get(name);
+							Object value = interpreter.get(name);
 							if (value != null) {
-								outputData.put(name, dataFacade.register(value, outputPort.getDepth()));
+								outputData.put(name, dataFacade.register(value,
+										outputPort.getDepth()));
 							}
 							interpreter.unset(name);
 						}
@@ -119,12 +135,14 @@ public class BeanshellActivity extends
 				} catch (EvalError e) {
 					callback.fail("Error evaluating the beanshell script", e);
 				} catch (DataManagerException e) {
-					callback.fail("Error accessing beanshell input/output data", e);
+					callback.fail(
+							"Error accessing beanshell input/output data", e);
 				} catch (NotFoundException e) {
-					callback.fail("Error accessing beanshell input/output data", e);
-				} 
+					callback.fail(
+							"Error accessing beanshell input/output data", e);
+				}
 			}
-
+			
 			/**
 			 * Removes any invalid characters from the port name.
 			 * For example, xml-text would become xmltext.
