@@ -25,6 +25,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobQueueEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -132,10 +133,14 @@ public abstract class DispatchStackImpl extends
 	}
 
 	private DispatchLayer<Object> topLayer = new AbstractDispatchLayer<Object>() {
-		public void receiveResult(Job j) {
-			DispatchStackImpl.this.pushEvent(j);
-			if (j.getIndex().length == 0) {
-				sendCachePurge(j.getOwningProcess());
+
+		@Override
+		public void receiveResult(DispatchResultEvent resultEvent) {
+			DispatchStackImpl.this.pushEvent(new Job(resultEvent
+					.getOwningProcess(), resultEvent.getIndex(), resultEvent
+					.getData(), resultEvent.getContext()));
+			if (resultEvent.getIndex().length == 0) {
+				sendCachePurge(resultEvent.getOwningProcess());
 			}
 		}
 

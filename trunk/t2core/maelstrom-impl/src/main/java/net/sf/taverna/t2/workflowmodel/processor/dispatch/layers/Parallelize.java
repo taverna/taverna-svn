@@ -13,6 +13,7 @@ import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobQueueReaction;
@@ -99,9 +100,11 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		model.finishWith(errorEvent.getIndex());
 	}
 
+	@SuppressWarnings("unchecked")
 	public void receiveResult(DispatchResultEvent resultEvent) {
 		StateModel model = stateMap.get(resultEvent.getOwningProcess());
-		getAbove().receiveResult(resultEvent);
+		DispatchLayer above = getAbove();
+		above.receiveResult(resultEvent);
 		model.finishWith(resultEvent.getIndex());
 	}
 

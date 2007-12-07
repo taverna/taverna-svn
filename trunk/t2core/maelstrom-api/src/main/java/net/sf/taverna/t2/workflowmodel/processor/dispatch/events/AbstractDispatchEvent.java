@@ -10,7 +10,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMe
  * @author Tom Oinn
  * 
  */
-public abstract class AbstractDispatchEvent<EventType extends AbstractDispatchEvent>
+public abstract class AbstractDispatchEvent<EventType extends AbstractDispatchEvent<EventType>>
 		extends Event<EventType> {
 
 	protected AbstractDispatchEvent(String owner, int[] index,
