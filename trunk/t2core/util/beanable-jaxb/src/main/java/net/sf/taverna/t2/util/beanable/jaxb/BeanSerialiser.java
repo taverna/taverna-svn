@@ -49,7 +49,7 @@ public class BeanSerialiser {
 
 	private static BeanSerialiser instance;
 
-	private static JAXBContext jaxbContext;
+	private JAXBContext jaxbContext;
 
 	private static Logger logger = Logger.getLogger(BeanSerialiser.class);
 
