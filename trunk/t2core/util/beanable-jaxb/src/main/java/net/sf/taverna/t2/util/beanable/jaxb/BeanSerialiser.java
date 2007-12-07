@@ -21,7 +21,10 @@ import javax.xml.bind.Unmarshaller;
 
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.spi.SPIRegistry;
+import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
@@ -44,7 +47,7 @@ import org.jdom.output.XMLOutputter;
  */
 
 public class BeanSerialiser {
-	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
+	private BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
 	private static BeanSerialiser instance;
@@ -90,6 +93,17 @@ public class BeanSerialiser {
 		} catch (JAXBException e) {
 			throw new RuntimeException("Can't initialise JAXB context", e);
 		}
+		beanableFactoryRegistry.addObserver(refreshBindingsObserver);
+	}
+	private RefreshBindingsObserver refreshBindingsObserver = new RefreshBindingsObserver();
+	
+	public class RefreshBindingsObserver implements Observer<SPIRegistryEvent> {
+
+		public void notify(Observable<SPIRegistryEvent> sender,
+				SPIRegistryEvent message) throws Exception {
+			refreshBindings();
+		}
+		
 	}
 
 	/**
