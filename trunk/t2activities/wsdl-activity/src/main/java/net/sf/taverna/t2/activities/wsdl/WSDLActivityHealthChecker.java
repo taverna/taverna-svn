@@ -65,38 +65,39 @@ public class WSDLActivityHealthChecker implements HealthChecker<WSDLActivity> {
 	}
 
 	private HealthReport testWSDL(String wsdl) {
-		List<HealthReport> reports = new ArrayList<HealthReport>();
+		HealthReport report;
 		try {
 			URL url = new URL(wsdl);
 			URLConnection connection = url.openConnection();
 			if (connection instanceof HttpURLConnection) {
 				int code = pingURL((HttpURLConnection) connection, 15000);
 				if (code != 200) {
-					reports.add(new HealthReport("WSDL Test",
+					report = new HealthReport("WSDL Test",
 							"Pinging the WSDL did not responded with " + code
-									+ " rather than 200", Status.WARNING));
+									+ " rather than 200", Status.WARNING);
 				} else {
-					reports.add(new HealthReport("WSDL Test", "The WSDL ["
-							+ wsdl + "] repsonded OK", Status.OK));
+					report = new HealthReport("WSDL Test", "The WSDL ["
+							+ wsdl + "] repsonded OK", Status.OK);
 				}
 			}
+			else {
+				report = new HealthReport("WSDL Test","The WSDL is not HTTP based which may affect workflow portability",Status.WARNING);
+			}
 		} catch (MalformedURLException e) {
-			reports.add(new HealthReport("WSDL Test",
+			report = new HealthReport("WSDL Test",
 					"There was a problem with the WSDL URL:" + e.getMessage(),
-					Status.SEVERE));
+					Status.SEVERE);
 		} catch (SocketTimeoutException e) {
-			reports
-					.add(new HealthReport(
+			report = new HealthReport(
 							"WSDL Test",
 							"Reading the WSDL tool longer than 15 seconds to get a response",
-							Status.WARNING));
+							Status.WARNING);
 		} catch (IOException e) {
-			reports.add(new HealthReport("WSDL Test",
+			report = new HealthReport("WSDL Test",
 					"There was an error opening the WSDL:" + e.getMessage(),
-					Status.WARNING));
+					Status.WARNING);
 		}
-		Status status = highestStatus(reports);
-		return new HealthReport("WSDL Tests", wsdl, status, reports);
+		return report;
 	}
 
 	private Status highestStatus(List<HealthReport> reports) {
@@ -182,7 +183,15 @@ public class WSDLActivityHealthChecker implements HealthChecker<WSDLActivity> {
 		}
 
 		Status status = highestStatus(reports);
-		return new HealthReport("Endpoint tests", "", status, reports);
+		if (reports.size()==1) {
+			return reports.get(0);
+		}
+		else if (reports.size()==0) {
+			return new HealthReport("Enpoint test","No service endpoint could be determined from the WSDL",Status.SEVERE);
+		}
+		else {
+			return new HealthReport("Endpoint tests", "", status, reports);
+		}
 	}
 
 }

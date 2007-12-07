@@ -10,7 +10,7 @@ public class HealthReport {
 	private String message;
 	private Status status;
 	private String subject;
-	private List<HealthReport> subReports;
+	private List<HealthReport> subReports = new ArrayList<HealthReport>();
 	
 	public HealthReport(String subject, String message, Status status) {
 		this(subject,message,status,new ArrayList<HealthReport>());
@@ -28,8 +28,13 @@ public class HealthReport {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+	
 	public Status getStatus() {
-		return status;
+		Status result = status;
+		for (HealthReport report : subReports) {
+			if (report.getStatus().compareTo(result)>0) result=report.getStatus();
+		}
+		return result;
 	}
 	public void setStatus(Status status) {
 		this.status = status;

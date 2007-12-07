@@ -53,5 +53,15 @@ public class HealthReportTest {
 		assertEquals("There should be 1 report",1,subreports.size());
 		assertEquals("Wrong subject","sub subject",subreports.get(0).getSubject());
 	}
+	
+	@Test 
+	public void testStatusHighestIncludingSubReports() {
+		report = new HealthReport("parent","set to ok",Status.OK);
+		assertEquals("should be OK",Status.OK,report.getStatus());
+		report.getSubReports().add(new HealthReport("child1","set to warning",Status.WARNING));
+		assertEquals("should be WARNING",Status.WARNING,report.getStatus());
+		report.getSubReports().add(new HealthReport("child1","set to severe",Status.SEVERE));
+		assertEquals("should be SEVERE",Status.SEVERE,report.getStatus());
+	}
 
 }

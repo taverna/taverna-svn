@@ -5,11 +5,13 @@
 	<classpathentry kind="src" path="apiconsumer-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="beanshell-activity/src/main/java"/>
 	<classpathentry kind="src" path="beanshell-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="beanshell-activity/src/main/resources" path="beanshell-activity/src/main/resources"/>
 	<classpathentry kind="src" path="beanshell-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="beanshell-activity-translator/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="beanshell-activity-translator/src/main/resources" path="beanshell-activity-translator/src/main/resources"/>
 	<classpathentry kind="src" path="biomart-activity/src/main/java"/>
 	<classpathentry kind="src" path="biomart-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="biomart-activity/src/main/resources" path="biomart-activity/src/main/resources"/>
 	<classpathentry excluding="**" kind="src" output="biomart-activity/src/test/resources" path="biomart-activity/src/test/resources"/>
 	<classpathentry kind="src" path="biomart-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="biomart-activity-translator/src/test/java"/>
@@ -17,6 +19,7 @@
 	<classpathentry excluding="**" kind="src" output="biomart-activity-translator/src/test/resources" path="biomart-activity-translator/src/test/resources"/>
 	<classpathentry kind="src" path="dataflow-activity/src/main/java"/>
 	<classpathentry kind="src" path="dataflow-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="dataflow-activity/src/main/resources" path="dataflow-activity/src/main/resources"/>
 	<classpathentry kind="src" path="dataflow-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="dataflow-activity-translator/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="dataflow-activity-translator/src/main/resources" path="dataflow-activity-translator/src/main/resources"/>
@@ -26,20 +29,23 @@
 	<classpathentry excluding="**" kind="src" output="localworker-translator/src/test/resources" path="localworker-translator/src/test/resources"/>
 	<classpathentry kind="src" path="soaplab-activity/src/main/java"/>
 	<classpathentry kind="src" path="soaplab-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="soaplab-activity/src/main/resources" path="soaplab-activity/src/main/resources"/>
 	<classpathentry kind="src" path="soaplab-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="soaplab-activity-translator/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="soaplab-activity-translator/src/main/resources" path="soaplab-activity-translator/src/main/resources"/>
 	<classpathentry excluding="**" kind="src" output="soaplab-activity-translator/src/test/resources" path="soaplab-activity-translator/src/test/resources"/>
 	<classpathentry kind="src" path="stringconstant-activity/src/main/java"/>
 	<classpathentry kind="src" path="stringconstant-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="stringconstant-activity/src/main/resources" path="stringconstant-activity/src/main/resources"/>
 	<classpathentry kind="src" path="stringconstant-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="stringconstant-activity-translator/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="stringconstant-activity-translator/src/main/resources" path="stringconstant-activity-translator/src/main/resources"/>
 	<classpathentry kind="src" path="wsdl-activity/src/main/java"/>
+	<classpathentry kind="src" path="wsdl-activity/src/test/java"/>
+	<classpathentry excluding="**" kind="src" output="wsdl-activity/src/main/resources" path="wsdl-activity/src/main/resources"/>
 	<classpathentry kind="src" path="wsdl-activity-translator/src/main/java"/>
 	<classpathentry kind="src" path="wsdl-activity-translator/src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="wsdl-activity-translator/src/main/resources" path="wsdl-activity-translator/src/main/resources"/>
-	<classpathentry kind="src" path="wsdl-activity/src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER/modules/noworkspace"/>
 	<classpathentry kind="output" path="target/classes"/>

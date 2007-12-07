@@ -1,6 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.health.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 
@@ -16,12 +18,16 @@ public class HealthCheckerFactoryTest {
 	@Test
 	public void testGetHealthCheckerForObject() {
 		String str = "A String";
-		HealthChecker<?> checker = HealthCheckerFactory.getInstance().getHealthCheckerForObject(str);
-		assertNotNull("The factory should find a StringHealthChecker",checker);
+		List<HealthChecker<?>> checkers = HealthCheckerFactory.getInstance().getHealthCheckersForObject(str);
+		assertEquals("There should be 1 checker for String",1,checkers.size());
 		
 		Long l = new Long(123);
-		checker = HealthCheckerFactory.getInstance().getHealthCheckerForObject(l);
-		assertNull("The factory should not find a checker for a Long",checker);
+		checkers = HealthCheckerFactory.getInstance().getHealthCheckersForObject(l);
+		assertEquals("There should be 0 checkers for Long",0,checkers.size());
+		
+		Float f = new Float(2.5f);
+		checkers = HealthCheckerFactory.getInstance().getHealthCheckersForObject(f);
+		assertEquals("There should be 2 checkers for Float",2,checkers.size());
 	}
 
 }

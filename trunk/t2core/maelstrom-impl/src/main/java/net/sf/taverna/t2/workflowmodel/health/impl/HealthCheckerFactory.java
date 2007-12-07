@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.health.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 
 public class HealthCheckerFactory {
@@ -15,12 +18,13 @@ public class HealthCheckerFactory {
 		return instance;
 	}
 
-	public HealthChecker<?> getHealthCheckerForObject(Object subject) {
+	public List<HealthChecker<?>> getHealthCheckersForObject(Object subject) {
+		List<HealthChecker<?>> result = new ArrayList<HealthChecker<?>>();
 		for (HealthChecker<?> checker : registry.getInstances()) {
 			if (checker.canHandle(subject)) {
-				return checker;
+				result.add(checker);
 			}
 		}
-		return null;
+		return result;
 	}
 }

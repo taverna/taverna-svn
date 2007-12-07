@@ -16,7 +16,7 @@ import org.jdom.input.SAXBuilder;
 public class XMLOutputSplitterHealthChecker implements HealthChecker<XMLOutputSplitterActivity> {
 
 	public boolean canHandle(Object subject) {
-		return subject!=null && subject instanceof XMLInputSplitterActivity;
+		return subject!=null && subject instanceof XMLOutputSplitterActivity;
 	}
 
 	public HealthReport checkHealth(XMLOutputSplitterActivity activity) {
