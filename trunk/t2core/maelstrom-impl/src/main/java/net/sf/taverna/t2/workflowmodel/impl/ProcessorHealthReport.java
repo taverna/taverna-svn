@@ -2,10 +2,10 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.List;
 
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 
-public class ProcessorHealthReport extends HealthReportImpl {
+public class ProcessorHealthReport extends HealthReport {
 
 	public ProcessorHealthReport(String subject,List<HealthReport> activityHealthReports) {
 		super(subject,"",Status.OK,activityHealthReports);

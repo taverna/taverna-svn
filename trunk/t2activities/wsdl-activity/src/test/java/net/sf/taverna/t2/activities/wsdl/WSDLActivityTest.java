@@ -6,7 +6,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Map;
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -81,11 +79,6 @@ public class WSDLActivityTest implements LocationConstants {
 
 		assertTrue("the xml is not what was expected", xml
 				.contains("<DbName>pubmed</DbName>"));
-	}
-
-	@Test
-	public void testCheckActivityHealth() {
-		assertEquals(Status.OK, activity.checkActivityHealth().getStatus());
 	}
 
 }

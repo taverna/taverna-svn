@@ -3,6 +3,8 @@ package net.sf.taverna.t2.activities.localworker.xmlsplitter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLInputSplitterActivity;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;

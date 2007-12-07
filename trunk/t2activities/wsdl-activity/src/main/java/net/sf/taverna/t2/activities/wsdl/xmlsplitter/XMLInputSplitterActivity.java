@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.localworker.xmlsplitter;
+package net.sf.taverna.t2.activities.wsdl.xmlsplitter;
 
 
 import java.io.IOException;
@@ -15,10 +15,7 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -121,14 +118,4 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 	public XMLSplitterConfigurationBean getConfiguration() {
 		return configBean;
 	}
-
-	public HealthReport checkActivityHealth() {
-		if (typeDescriptor==null) {
-			return new HealthReportImpl("XMLInputSplitter Activity","The datatype is NULL",Status.SEVERE);
-		}
-		else {
-			return new HealthReportImpl("XMLInputSplitter Activity","The datatype is declared OK",Status.OK);
-		}
-	}
-
 }

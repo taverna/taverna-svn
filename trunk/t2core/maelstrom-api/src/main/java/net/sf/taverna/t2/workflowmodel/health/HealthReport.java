@@ -1,19 +1,21 @@
-package net.sf.taverna.t2.workflowmodel;
+package net.sf.taverna.t2.workflowmodel.health;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HealthReportImpl implements HealthReport {
+public class HealthReport {
+	
+	public enum Status {OK,WARNING,SEVERE};
 
 	private String message;
 	private Status status;
 	private String subject;
 	private List<HealthReport> subReports;
 	
-	public HealthReportImpl(String subject, String message, Status status) {
+	public HealthReport(String subject, String message, Status status) {
 		this(subject,message,status,new ArrayList<HealthReport>());
 	}
-	public HealthReportImpl(String subject, String message,Status status,  List<HealthReport> subReports) {
+	public HealthReport(String subject, String message,Status status,  List<HealthReport> subReports) {
 		this.subject=subject;
 		this.status=status;
 		this.message=message;

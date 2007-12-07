@@ -16,10 +16,6 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowPort;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
-import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -119,26 +115,6 @@ public class DataflowActivity extends
 	private List<String> getMimeTypes(DataflowPort outputPort) {
 		// TODO get the mime types from the annotation
 		return new ArrayList<String>();
-	}
-	
-	public HealthReport checkActivityHealth() {
-		Status status = Status.OK;
-		String message = "Everything seems fine";
-		List<HealthReport> subReports = new ArrayList<HealthReport>();
-		for (Processor processor : dataflow.getProcessors()) {
-			HealthReport subReport = processor.checkProcessorHealth();
-			if (subReport.getStatus().equals(Status.WARNING)) {
-				if (status.equals(Status.OK)) {
-					status = Status.WARNING;
-					message = "Some warnings reported";
-				}
-			} else if (subReport.getStatus().equals(Status.SEVERE)) {
-				status = Status.SEVERE;
-				message = "We have a problem";
-			}
-			subReports.add(subReport);
-		}
-		return new HealthReportImpl("Dataflow Activity", message, status, subReports);
 	}
 
 }

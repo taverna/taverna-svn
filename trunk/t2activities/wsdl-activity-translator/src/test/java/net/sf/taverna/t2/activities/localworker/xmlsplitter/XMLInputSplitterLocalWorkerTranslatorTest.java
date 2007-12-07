@@ -3,10 +3,10 @@ package net.sf.taverna.t2.activities.localworker.xmlsplitter;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import net.sf.taverna.t2.activities.localworker.xmlsplitter.XMLInputSplitterActivity;
-import net.sf.taverna.t2.activities.localworker.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLInputSplitterActivity;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;

@@ -6,27 +6,26 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class HealthReportImplTest {
+public class HealthReportTest {
 
 	HealthReport report;
 	
 	@Before
 	public void setUp() throws Exception {
 		List<HealthReport> subreports = new ArrayList<HealthReport>();
-		subreports.add(new HealthReportImpl("sub subject","this is a subreport",Status.OK));
-		report = new HealthReportImpl("a subject","a message",Status.WARNING,subreports);
+		subreports.add(new HealthReport("sub subject","this is a subreport",Status.OK));
+		report = new HealthReport("a subject","a message",Status.WARNING,subreports);
 	}
 
 	@Test
 	public void testActivityHealthReportStringStatus() {
-		report = new HealthReportImpl("the subject","a string",Status.SEVERE);
+		report = new HealthReport("the subject","a string",Status.SEVERE);
 		assertEquals("a string",report.getMessage());
 		assertEquals(Status.SEVERE,report.getStatus());
 		assertEquals("the subject",report.getSubject());

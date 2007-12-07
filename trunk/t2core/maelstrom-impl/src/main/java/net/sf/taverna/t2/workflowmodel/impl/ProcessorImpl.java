@@ -17,12 +17,16 @@ import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.workflowmodel.Condition;
-import net.sf.taverna.t2.workflowmodel.HealthReport;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.impl.HealthCheckerFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
@@ -387,7 +391,13 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	public HealthReport checkProcessorHealth() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
 		for (Activity<?> a : getActivityList()) {
-			activityReports.add(a.checkActivityHealth());
+			HealthChecker checker = HealthCheckerFactory.getInstance().getHealthCheckerForObject(a);
+			if (checker!=null) {
+				activityReports.add(checker.checkHealth(a));
+			}
+			else {
+				activityReports.add(new HealthReport("Activity ","No health checker for:"+a.getClass().getName(),Status.WARNING));
+			}
 		}
 		HealthReport processorHealthReport = new ProcessorHealthReport(getLocalName()+" Processor",activityReports);
 		return processorHealthReport;

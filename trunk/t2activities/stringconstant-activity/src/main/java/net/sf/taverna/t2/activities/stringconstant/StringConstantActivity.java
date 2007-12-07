@@ -9,9 +9,6 @@ import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -67,16 +64,6 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 			
 		});
 		
-	}
-	
-	public HealthReport checkActivityHealth() {
-		if (value==null) {
-			return new HealthReportImpl("StringConstant Activity","The value is null",Status.SEVERE);
-		}
-		if ("edit me!".equals(value)) {
-			return new HealthReportImpl("StringConstant Activity","The value is still the default",Status.WARNING);
-		}
-		return new HealthReportImpl("StringConstant Activity","OK",Status.OK);
 	}
 
 }

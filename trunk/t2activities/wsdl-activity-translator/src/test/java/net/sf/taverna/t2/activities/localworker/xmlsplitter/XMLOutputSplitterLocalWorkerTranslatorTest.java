@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLOutputSplitterActivity;
+import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLSplitterConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;

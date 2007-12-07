@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.localworker.xmlsplitter;
+package net.sf.taverna.t2.activities.wsdl.xmlsplitter;
 
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDefinitionBean;

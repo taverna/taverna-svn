@@ -7,9 +7,9 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,9 +23,9 @@ public class ProcessorHealthReportTest {
 	@Before
 	public void setUp() throws Exception {
 		activityReports = new ArrayList<HealthReport>();
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
 		
 		report = new ProcessorHealthReport("processor subject",activityReports);
 	}
@@ -52,9 +52,9 @@ public class ProcessorHealthReportTest {
 	@Test
 	public void testGetStatusAllOK() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
 		
 		ProcessorHealthReport report = new ProcessorHealthReport("processor subject",activityReports);
 		
@@ -64,9 +64,9 @@ public class ProcessorHealthReportTest {
 	@Test
 	public void testGetStatusContainsWarning() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.WARNING));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.WARNING));
 		
 		ProcessorHealthReport report = new ProcessorHealthReport("processor subject",activityReports);
 		
@@ -76,9 +76,9 @@ public class ProcessorHealthReportTest {
 	@Test
 	public void testGetStatusContainsSevere() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
-		activityReports.add(new HealthReportImpl("","",Status.OK));
-		activityReports.add(new HealthReportImpl("","",Status.SEVERE));
-		activityReports.add(new HealthReportImpl("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.OK));
+		activityReports.add(new HealthReport("","",Status.SEVERE));
+		activityReports.add(new HealthReport("","",Status.OK));
 		
 		ProcessorHealthReport report = new ProcessorHealthReport("",activityReports);
 		
@@ -88,9 +88,9 @@ public class ProcessorHealthReportTest {
 	@Test
 	public void testGetStatusAllSevere() {
 		List<HealthReport> activityReports = new ArrayList<HealthReport>();
-		activityReports.add(new HealthReportImpl("","",Status.SEVERE));
-		activityReports.add(new HealthReportImpl("","",Status.SEVERE));
-		activityReports.add(new HealthReportImpl("","",Status.SEVERE));
+		activityReports.add(new HealthReport("","",Status.SEVERE));
+		activityReports.add(new HealthReport("","",Status.SEVERE));
+		activityReports.add(new HealthReport("","",Status.SEVERE));
 		
 		ProcessorHealthReport report = new ProcessorHealthReport("",activityReports);
 		
