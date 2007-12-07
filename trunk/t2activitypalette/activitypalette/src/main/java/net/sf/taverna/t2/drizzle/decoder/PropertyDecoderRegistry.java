@@ -8,6 +8,8 @@ import java.util.List;
 
 import net.sf.taverna.t2.spi.SPIRegistry;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * @author alanrw
  *
@@ -45,7 +47,7 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	 * @return A list of {@link PropertyDecoder}s
 	 */
 	@SuppressWarnings("unchecked")
-	public static <Source, Target> List<PropertyDecoder<Source,Target>> getDecoders(
+	public static <Source, Target extends Beanable> List<PropertyDecoder<Source,Target>> getDecoders(
 			Class<Source> sourceClass, Class<Target> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
@@ -62,7 +64,7 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 		return decoders;
 	}
 	
-	public static <Source,Target> PropertyDecoder<Source,Target> getDecoder(Class<Source> sourceClass, Class<Target> targetClass) {
+	public static <Source,Target extends Beanable> PropertyDecoder<Source,Target> getDecoder(Class<Source> sourceClass, Class<Target> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
 		}

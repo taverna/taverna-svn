@@ -19,8 +19,8 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  */
 // TODO should this be forced to be a singleton?
 public final class ActivityRegistry {
-	private PropertiedObjectSet<ProcessorFactory> registry;
-	private PropertiedGraphView<ProcessorFactory> graphView;
+	private PropertiedObjectSet<ProcessorFactoryAdapter> registry;
+	private PropertiedGraphView<ProcessorFactoryAdapter> graphView;
 	
 	@SuppressWarnings("unchecked")
 	public ActivityRegistry() {
@@ -41,14 +41,14 @@ public final class ActivityRegistry {
 	/**
 	 * @return the registry
 	 */
-	public synchronized final PropertiedObjectSet<ProcessorFactory> getRegistry() {
+	public synchronized final PropertiedObjectSet<ProcessorFactoryAdapter> getRegistry() {
 		return this.registry;
 	}
 
 	/**
 	 * @return the graphView
 	 */
-	public synchronized final PropertiedGraphView<ProcessorFactory> getGraphView() {
+	public synchronized final PropertiedGraphView<ProcessorFactoryAdapter> getGraphView() {
 		return this.graphView;
 	}
 	

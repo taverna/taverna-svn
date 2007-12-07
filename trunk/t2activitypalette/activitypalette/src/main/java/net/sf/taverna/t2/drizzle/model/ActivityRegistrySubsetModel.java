@@ -31,7 +31,7 @@ public final class ActivityRegistrySubsetModel {
 	/**
 	 * @return the filter
 	 */
-	public synchronized final PropertiedObjectFilter<ProcessorFactory> getFilter() {
+	public synchronized final PropertiedObjectFilter<ProcessorFactoryAdapter> getFilter() {
 		return ident.getObjectFilter();
 	}
 
@@ -74,7 +74,7 @@ public final class ActivityRegistrySubsetModel {
 		this.ident = ident;
 	}
 
-	public void addOredFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
+	public void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		ident.addOredFilter(additionalFilter);
 	}
 
@@ -96,7 +96,7 @@ public final class ActivityRegistrySubsetModel {
 		ident.clearSubset();
 	}
 
-	public final void addAndedFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
+	public final void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		ident.addAndedFilter(additionalFilter);
 	}
 

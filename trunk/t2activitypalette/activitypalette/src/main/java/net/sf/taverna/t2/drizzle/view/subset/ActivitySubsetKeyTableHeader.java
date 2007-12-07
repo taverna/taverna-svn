@@ -24,6 +24,7 @@ import javax.swing.tree.TreeModel;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
@@ -93,7 +94,7 @@ public final class ActivitySubsetKeyTableHeader {
 					currentTree.setModel(newTreeModel);
 //					collapseAll(); // As requested by users
 					ActivitySubsetTableModel newActivitiesTableModel = new ActivitySubsetTableModel(
-							((PropertiedTreeRootNode<ProcessorFactory>) newTreeModel
+							((PropertiedTreeRootNode<ProcessorFactoryAdapter>) newTreeModel
 									.getRoot()));
 					currentTable
 							.setModel(newActivitiesTableModel);
@@ -128,7 +129,7 @@ public final class ActivitySubsetKeyTableHeader {
 		}
 		TreeModel result = null;
 
-		PropertiedTreeModel<ProcessorFactory> propertiedTreeModel = ObjectFactory
+		PropertiedTreeModel<ProcessorFactoryAdapter> propertiedTreeModel = ObjectFactory
 				.getInstance(PropertiedTreeModel.class);
 		propertiedTreeModel.setPropertyKeySettings(theKeySettings);
 		propertiedTreeModel.setFilter(subsetModel.getFilter());

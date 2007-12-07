@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import javax.swing.table.DefaultTableModel;
 
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
@@ -26,31 +27,31 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 	 * 
 	 */
 	private static final long serialVersionUID = -3947839087479059276L;
-	private List<ProcessorFactory> rowObjects;
+	private List<ProcessorFactoryAdapter> rowObjects;
 	
-	public ActivitySubsetTableModel(final PropertiedTreeNode<ProcessorFactory> node) {
+	public ActivitySubsetTableModel(final PropertiedTreeNode<ProcessorFactoryAdapter> node) {
 		super();
 		if (node == null) {
 			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
 		}
 		int rowCount = node.getAllObjects().size();
 		Vector<String> columnNames = new Vector<String>();
-		for (PropertiedTreeNode<ProcessorFactory> aNode = node; aNode.getActualChildCount() > 0;
+		for (PropertiedTreeNode<ProcessorFactoryAdapter> aNode = node; aNode.getActualChildCount() > 0;
 		aNode = aNode.getChild(0)) {
 			if (aNode instanceof PropertiedTreePropertyValueNode) {
-				PropertiedTreePropertyValueNode<ProcessorFactory> pvNode =
-					(PropertiedTreePropertyValueNode<ProcessorFactory>) aNode;
+				PropertiedTreePropertyValueNode<ProcessorFactoryAdapter> pvNode =
+					(PropertiedTreePropertyValueNode<ProcessorFactoryAdapter>) aNode;
 				columnNames.add(pvNode.getKey().toString());
 			}
 		}
 		this.setColumnCount(columnNames.size());
 		this.setColumnIdentifiers(columnNames);
 		this.setRowCount(rowCount);
-		this.rowObjects = new ArrayList<ProcessorFactory>();
+		this.rowObjects = new ArrayList<ProcessorFactoryAdapter>();
 		fillInDetails(node, 0, 0);
 	}
 
-	private void fillInDetails(PropertiedTreeNode<ProcessorFactory> node,
+	private void fillInDetails(PropertiedTreeNode<ProcessorFactoryAdapter> node,
 			int rowOffset, int column) {
 		if (node == null) {
 			throw new NullPointerException("node cannot be null"); //$NON-NLS-1$
@@ -58,10 +59,10 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 		int childCount = node.getActualChildCount();
 		int row = rowOffset;
 		for (int i = 0; i < childCount; i++) {
-			PropertiedTreeNode<ProcessorFactory> childNode = node.getChild(i);
+			PropertiedTreeNode<ProcessorFactoryAdapter> childNode = node.getChild(i);
 			if (childNode instanceof PropertiedTreePropertyValueNode) {
-				PropertiedTreePropertyValueNode<ProcessorFactory> childPropertyValueNode =
-					(PropertiedTreePropertyValueNode<ProcessorFactory>) childNode;
+				PropertiedTreePropertyValueNode<ProcessorFactoryAdapter> childPropertyValueNode =
+					(PropertiedTreePropertyValueNode<ProcessorFactoryAdapter>) childNode;
 				int numberOfObjectsWithValue = childPropertyValueNode.getAllObjects().size();
 				fillInDetails(childPropertyValueNode, row, column+1);
 				for (int j = 0; j < numberOfObjectsWithValue; j++) {
@@ -71,14 +72,14 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 					}
 				}
 			} else if (childNode instanceof PropertiedTreeObjectNode) {
-				PropertiedTreeObjectNode<ProcessorFactory> childObjectNode =
-					(PropertiedTreeObjectNode<ProcessorFactory>) childNode;
+				PropertiedTreeObjectNode<ProcessorFactoryAdapter> childObjectNode =
+					(PropertiedTreeObjectNode<ProcessorFactoryAdapter>) childNode;
 				this.rowObjects.add(childObjectNode.getObject());
 			}
 		}
 	}
 	
-	public ProcessorFactory getRowObject(int row) {
+	public ProcessorFactoryAdapter getRowObject(int row) {
 		return this.rowObjects.get(row);
 	}
 	

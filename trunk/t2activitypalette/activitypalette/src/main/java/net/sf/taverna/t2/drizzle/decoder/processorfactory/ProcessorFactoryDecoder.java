@@ -10,6 +10,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.query.DecodeRunIdentification;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
@@ -19,12 +20,12 @@ import net.sf.taverna.t2.drizzle.util.StringValue;
  * @author alanrw
  *
  */
-public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFactory> implements PropertyDecoder<FactoryType,ProcessorFactory> {
+public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFactory> implements PropertyDecoder<FactoryType,ProcessorFactoryAdapter> {
 
-	protected abstract void fillInDetails(PropertiedObjectSet<ProcessorFactory> targetSet, FactoryType encodedFactory);
+	protected abstract void fillInDetails(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet, ProcessorFactoryAdapter adapter, FactoryType encodedFactory);
 
-	public DecodeRunIdentification<ProcessorFactory> decode(
-			PropertiedObjectSet<ProcessorFactory> targetSet,
+	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
+			PropertiedObjectSet targetSet,
 			FactoryType encodedObject) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
@@ -32,31 +33,32 @@ public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFacto
 		if (encodedObject == null) {
 			throw new NullPointerException("encodedObject cannot be null"); //$NON-NLS-1$
 		}
-		DecodeRunIdentification<ProcessorFactory> result = new DecodeRunIdentification<ProcessorFactory>();
-		Set<ProcessorFactory> affectedObjects = new HashSet<ProcessorFactory>();
-		affectedObjects.add(encodedObject);
+		DecodeRunIdentification<ProcessorFactoryAdapter> result = new DecodeRunIdentification<ProcessorFactoryAdapter>();
+		Set<ProcessorFactoryAdapter> affectedObjects = new HashSet<ProcessorFactoryAdapter>();
+		ProcessorFactoryAdapter adapter = new ProcessorFactoryAdapter(encodedObject);
+		affectedObjects.add(adapter);
 		result.setAffectedObjects(affectedObjects);
 		result.setPropertyKeyProfile(this.getPropertyKeyProfile());
 		result.setTimeOfRun(System.currentTimeMillis());
-		targetSet.addObject(encodedObject);
+		targetSet.addObject(adapter);
 		Class<?> processorClass = encodedObject.getProcessorClass();
 		if (processorClass == null) {
-			targetSet.setProperty(encodedObject, CommonKey.ProcessorClassKey,
+			targetSet.setProperty(adapter, CommonKey.ProcessorClassKey,
 					new StringValue("no processor class")); //$NON-NLS-1$
 		} else {
 			String processorClassName = encodedObject.getProcessorClass().getName();
 			if (processorClassName == null) {
-				targetSet.setProperty(encodedObject, CommonKey.ProcessorClassKey,
+				targetSet.setProperty(adapter, CommonKey.ProcessorClassKey,
 						new StringValue("processor class with no name")); //$NON-NLS-1$
 			} else {
-			targetSet.setProperty(encodedObject, CommonKey.ProcessorClassKey,
+			targetSet.setProperty(adapter, CommonKey.ProcessorClassKey,
 					new StringValue("processor classs with name" + encodedObject.getProcessorClass().getName()));	 //$NON-NLS-1$
 			}
 		}
-		targetSet.setProperty(encodedObject, CommonKey.ProcessorClassKey,
+		targetSet.setProperty(adapter, CommonKey.ProcessorClassKey,
 				new StringValue(encodedObject.getProcessorClass().getName()));
-		targetSet.setProperty(encodedObject, CommonKey.NameKey, new StringValue(encodedObject.getName()));
-		fillInDetails(targetSet, encodedObject);
+		targetSet.setProperty(adapter, CommonKey.NameKey, new StringValue(encodedObject.getName()));
+		fillInDetails(targetSet, adapter, encodedObject);
 		return result;
 	}
 	

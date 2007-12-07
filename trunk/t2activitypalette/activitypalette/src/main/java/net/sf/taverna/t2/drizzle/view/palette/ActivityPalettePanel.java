@@ -7,52 +7,45 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModelListener;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectNotFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
-import net.sf.taverna.t2.drizzle.util.PropertyKey;
-import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
 import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
+import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
-import net.sf.taverna.t2.util.beanable.jaxb.BeanSerializer;
 /**
  * @author alanrw
  *
@@ -439,10 +432,10 @@ ActivityPaletteModelListener, ActionListener {
 			Component selectedComponent = this.tabbedPane.getSelectedComponent();
 			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)) {
 				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
-				PropertiedObjectFilter<ProcessorFactory> positiveFilter =
-					new ObjectMembershipFilter<ProcessorFactory>(subsetPanel.getSelectedObjects());
-				PropertiedObjectFilter<ProcessorFactory> negativeFilter = 
-					new ObjectNotFilter<ProcessorFactory>(positiveFilter);
+				PropertiedObjectFilter<ProcessorFactoryAdapter> positiveFilter =
+					new ObjectMembershipFilter<ProcessorFactoryAdapter>(subsetPanel.getSelectedObjects());
+				PropertiedObjectFilter<ProcessorFactoryAdapter> negativeFilter = 
+					new ObjectNotFilter<ProcessorFactoryAdapter>(positiveFilter);
 				subsetPanel.getSubsetModel().addAndedFilter(negativeFilter);
 				subsetPanel.setModels();
 			}
@@ -453,7 +446,15 @@ ActivityPaletteModelListener, ActionListener {
 			int returnVal = chooser.showSaveDialog(c);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File saveFile = chooser.getSelectedFile();
-				BeanSerialiser.getInstance().beanableToXMLFile(paletteModel, saveFile);
+				try {
+					BeanSerialiser.getInstance().beanableToXMLFile(paletteModel, saveFile);
+				} catch (StorageException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		}
 				

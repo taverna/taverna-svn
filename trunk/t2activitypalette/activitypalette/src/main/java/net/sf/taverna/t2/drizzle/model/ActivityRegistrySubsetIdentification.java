@@ -17,7 +17,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public abstract class ActivityRegistrySubsetIdentification {
 
 	private String name;
-	private PropertiedObjectFilter<ProcessorFactory> objectFilter;
+	private PropertiedObjectFilter<ProcessorFactoryAdapter> objectFilter;
 	private Set<PropertyKey> propertyKeyProfile;
 	private String kind;
 
@@ -55,14 +55,14 @@ public abstract class ActivityRegistrySubsetIdentification {
 	/**
 	 * @return the objectFilter
 	 */
-	public final synchronized PropertiedObjectFilter<ProcessorFactory> getObjectFilter() {
+	public final synchronized PropertiedObjectFilter<ProcessorFactoryAdapter> getObjectFilter() {
 		return this.objectFilter;
 	}
 
 	/**
 	 * @param objectFilter the objectFilter to set
 	 */
-	public final synchronized void setObjectFilter(PropertiedObjectFilter<ProcessorFactory> objectFilter) {
+	public final synchronized void setObjectFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> objectFilter) {
 		if (objectFilter == null) {
 			throw new NullPointerException("objectFilter cannot be null"); //$NON-NLS-1$
 		}
@@ -88,8 +88,8 @@ public abstract class ActivityRegistrySubsetIdentification {
 
 	public abstract void clearSubset();
 
-	public abstract void addOredFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter);
+	public abstract void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter);
 
-	public abstract void addAndedFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter);
+	public abstract void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter);
 
 }

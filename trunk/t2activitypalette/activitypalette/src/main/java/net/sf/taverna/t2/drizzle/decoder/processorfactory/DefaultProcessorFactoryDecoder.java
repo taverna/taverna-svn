@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringKey;
@@ -69,7 +70,8 @@ public final class DefaultProcessorFactoryDecoder extends
 
 	@Override
 	protected void fillInDetails(
-			PropertiedObjectSet<ProcessorFactory> targetSet,
+			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
+			ProcessorFactoryAdapter adapter,
 			ProcessorFactory encodedFactory) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
@@ -84,7 +86,7 @@ public final class DefaultProcessorFactoryDecoder extends
 				if (methodResult != null) {
 					StringValue value = new StringValue(methodResult.toString());
 					PropertyKey key = this.descriptorToKeyMap.get(pd);
-					targetSet.setProperty(encodedFactory, key, value);
+					targetSet.setProperty(adapter, key, value);
 				}
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
@@ -111,7 +113,7 @@ public final class DefaultProcessorFactoryDecoder extends
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		return targetClass.isAssignableFrom(ProcessorFactory.class);
+		return targetClass.isAssignableFrom(ProcessorFactoryAdapter.class);
 	}
 
 }

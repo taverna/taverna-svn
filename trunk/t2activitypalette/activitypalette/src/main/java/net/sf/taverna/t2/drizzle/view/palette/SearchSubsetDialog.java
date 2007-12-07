@@ -22,6 +22,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectAndFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
@@ -36,7 +37,7 @@ import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
  */
 public final class SearchSubsetDialog extends JDialog {
 
-	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactory> registry) {
+	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
 		this.setLayout(new GridLayout(0, 1));
 
 		JPanel keyPanel = new JPanel();
@@ -78,12 +79,12 @@ public final class SearchSubsetDialog extends JDialog {
 				}
 				ActivityRegistrySubsetModel searchResults =
 					ActivityPaletteModel.getSearchResultsSubsetModel();
-				HashSet<PropertiedObjectFilter<ProcessorFactory>> filters =
-					new HashSet<PropertiedObjectFilter<ProcessorFactory>>();
+				HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters =
+					new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
 				filters.add(subsetPanel.getSubsetModel().getFilter());
-				filters.add(new PropertyPatternFilter<ProcessorFactory>(selectedKey, pattern, registry));
-				PropertiedObjectFilter<ProcessorFactory> additionalFilter =
-					new ObjectAndFilter<ProcessorFactory>(filters);
+				filters.add(new PropertyPatternFilter<ProcessorFactoryAdapter>(selectedKey, pattern, registry));
+				PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter =
+					new ObjectAndFilter<ProcessorFactoryAdapter>(filters);
 
 				searchResults.addOredFilter(additionalFilter);
 				SearchSubsetDialog.this.dispose();

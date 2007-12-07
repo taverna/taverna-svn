@@ -12,6 +12,7 @@ import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 
@@ -73,17 +74,17 @@ public class ActivitySubsetListener extends MouseAdapter {
 			JTree sourceTree = (JTree) source;
 			TreePath path = sourceTree.getPathForLocation(e.getX(), e.getY());
 			if (path != null) {
-				final PropertiedTreeNode<ProcessorFactory> node = (PropertiedTreeNode<ProcessorFactory>) (path.getLastPathComponent());
+				final PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) (path.getLastPathComponent());
 				if ((node != null) && (node instanceof PropertiedTreeObjectNode)) {
-					PropertiedTreeObjectNode<ProcessorFactory> objectNode = (PropertiedTreeObjectNode<ProcessorFactory>) node;
-					pf = objectNode.getObject();
+					PropertiedTreeObjectNode<ProcessorFactoryAdapter> objectNode = (PropertiedTreeObjectNode<ProcessorFactoryAdapter>) node;
+					pf = objectNode.getObject().getTheFactory();
 				}
 			}
 		} else if (source instanceof JTable) {
 			JTable sourceTable = (JTable) source;
 			int row = sourceTable.rowAtPoint(e.getPoint());
 			ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) sourceTable.getModel();
-			pf = tableModel.getRowObject(row);
+			pf = tableModel.getRowObject(row).getTheFactory();
 		}
 		if (pf != null) {
 			JPopupMenu menu = new ActivitySelectionPopupMenu(pf, this.parent);

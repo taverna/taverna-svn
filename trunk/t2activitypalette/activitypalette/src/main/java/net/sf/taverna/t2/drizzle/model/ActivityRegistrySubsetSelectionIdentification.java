@@ -22,26 +22,26 @@ public final class ActivityRegistrySubsetSelectionIdentification extends
 
 	@Override
 	public void clearSubset() {
-		this.setObjectFilter(new FalseFilter<ProcessorFactory>());
+		this.setObjectFilter(new FalseFilter<ProcessorFactoryAdapter>());
 	}
 
 	@Override
-	public void addOredFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
-		PropertiedObjectFilter<ProcessorFactory> oldFilter = this.getObjectFilter();
-		HashSet<PropertiedObjectFilter<ProcessorFactory>> filters = new HashSet<PropertiedObjectFilter<ProcessorFactory>>();
+	public void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
+		PropertiedObjectFilter<ProcessorFactoryAdapter> oldFilter = this.getObjectFilter();
+		HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters = new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
 		filters.add(oldFilter);
 		filters.add(additionalFilter);
-		ObjectOrFilter<ProcessorFactory> newFilter = new ObjectOrFilter<ProcessorFactory>(filters);
+		ObjectOrFilter<ProcessorFactoryAdapter> newFilter = new ObjectOrFilter<ProcessorFactoryAdapter>(filters);
 		this.setObjectFilter(newFilter);
 	}
 
 	@Override
-	public void addAndedFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
-		PropertiedObjectFilter<ProcessorFactory> oldFilter = this.getObjectFilter();
-		HashSet<PropertiedObjectFilter<ProcessorFactory>> filters = new HashSet<PropertiedObjectFilter<ProcessorFactory>>();
+	public void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
+		PropertiedObjectFilter<ProcessorFactoryAdapter> oldFilter = this.getObjectFilter();
+		HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters = new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
 		filters.add(oldFilter);
 		filters.add(additionalFilter);
-		ObjectAndFilter<ProcessorFactory> newFilter = new ObjectAndFilter<ProcessorFactory>(filters);
+		ObjectAndFilter<ProcessorFactoryAdapter> newFilter = new ObjectAndFilter<ProcessorFactoryAdapter>(filters);
 		this.setObjectFilter(newFilter);
 	}
 

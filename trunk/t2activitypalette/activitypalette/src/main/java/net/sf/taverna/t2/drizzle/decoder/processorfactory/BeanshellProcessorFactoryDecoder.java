@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
@@ -30,7 +31,8 @@ public final class BeanshellProcessorFactoryDecoder extends ProcessorFactoryDeco
 
 	@Override
 	protected void fillInDetails(
-			PropertiedObjectSet<ProcessorFactory> targetSet,
+			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
+			ProcessorFactoryAdapter adapter,
 			BeanshellProcessorFactory encodedFactory) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
@@ -47,7 +49,7 @@ public final class BeanshellProcessorFactoryDecoder extends ProcessorFactoryDeco
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-	return (targetClass.isAssignableFrom(BeanshellProcessorFactory.class) &&
+	return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) &&
 				BeanshellProcessorFactory.class.isAssignableFrom(sourceClass));
 	}
 

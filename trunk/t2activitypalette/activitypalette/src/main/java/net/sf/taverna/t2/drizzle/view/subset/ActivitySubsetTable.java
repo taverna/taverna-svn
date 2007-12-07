@@ -51,7 +51,7 @@ public final class ActivitySubsetTable extends JTable implements
 		Point l = dge.getDragOrigin();
 		int dragSourceRow = rowAtPoint(l);
 		if (dragSourceRow != -1) {
-			ProcessorFactory pf = ((ActivitySubsetTableModel) getModel()).getRowObject(dragSourceRow);
+			ProcessorFactory pf = ((ActivitySubsetTableModel) getModel()).getRowObject(dragSourceRow).getTheFactory();
 				Element el = pf.getXMLFragment();
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
@@ -109,7 +109,7 @@ public final class ActivitySubsetTable extends JTable implements
 		Point l = evt.getPoint();
 		int dragSourceRow = rowAtPoint(l);
 		if (dragSourceRow != -1) {
-			ProcessorFactory pf = ((ActivitySubsetTableModel) getModel()).getRowObject(dragSourceRow);
+			ProcessorFactory pf = ((ActivitySubsetTableModel) getModel()).getRowObject(dragSourceRow).getTheFactory();
 			result = ActivitySubsetTree.getProcessorFactoryDescription(pf);
 		}
 		return result;

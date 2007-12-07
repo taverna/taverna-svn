@@ -11,6 +11,7 @@ import javax.swing.tree.TreeNode;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry;
 import net.sf.taverna.t2.drizzle.decoder.processorfactory.DefaultProcessorFactoryDecoder;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.query.DecodeRunIdentification;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
@@ -23,7 +24,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
  * 
  */
 public final class ScavengerDecoder implements
-		PropertyDecoder<Scavenger, ProcessorFactory> {
+		PropertyDecoder<Scavenger, ProcessorFactoryAdapter> {
 
 	/*
 	 * (non-Javadoc)
@@ -38,20 +39,21 @@ public final class ScavengerDecoder implements
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		return (targetClass.isAssignableFrom(ProcessorFactory.class) && Scavenger.class
+		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) && Scavenger.class
 				.isAssignableFrom(sourceClass));
 	}
 
-	public DecodeRunIdentification<ProcessorFactory> decode(
-			PropertiedObjectSet<ProcessorFactory> targetSet,
+	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
+			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
 			Scavenger encodedObject) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
 		}
 		if (encodedObject == null) {
 			throw new NullPointerException("encodedObject cannot be null"); //$NON-NLS-1$
-		}		DecodeRunIdentification<ProcessorFactory> ident = new DecodeRunIdentification<ProcessorFactory>();
-		ident.setAffectedObjects(new HashSet<ProcessorFactory> ());
+		}
+		DecodeRunIdentification<ProcessorFactoryAdapter> ident = new DecodeRunIdentification<ProcessorFactoryAdapter>();
+		ident.setAffectedObjects(new HashSet<ProcessorFactoryAdapter> ());
 		ident.setPropertyKeyProfile(new HashSet<PropertyKey>());
 		ident.setTimeOfRun(System.currentTimeMillis());
 		decodeNode(targetSet, ident, encodedObject);
@@ -60,8 +62,8 @@ public final class ScavengerDecoder implements
 	}
 
 	@SuppressWarnings("unchecked")
-	private void decodeNode(PropertiedObjectSet<ProcessorFactory> targetSet,
-			DecodeRunIdentification<ProcessorFactory> ident,
+	private void decodeNode(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
+			DecodeRunIdentification<ProcessorFactoryAdapter> ident,
 			TreeNode node) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
@@ -76,12 +78,12 @@ public final class ScavengerDecoder implements
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
 		if ((userObject != null) && (userObject instanceof ProcessorFactory)) {
 			PropertyDecoder decoder = PropertyDecoderRegistry.getDecoder(
-					userObject.getClass(), ProcessorFactory.class);
+					userObject.getClass(), ProcessorFactoryAdapter.class);
 			if (decoder == null) {
 				decoder = DefaultProcessorFactoryDecoder.getInstance(userObject.getClass());
 			}
 			if (decoder != null) {
-				DecodeRunIdentification<ProcessorFactory> subIdent =
+				DecodeRunIdentification<ProcessorFactoryAdapter> subIdent =
 					decoder.decode(targetSet, userObject);
 				ident.getAffectedObjects().addAll(subIdent.getAffectedObjects());
 				ident.getPropertyKeyProfile().addAll(subIdent.getPropertyKeyProfile());

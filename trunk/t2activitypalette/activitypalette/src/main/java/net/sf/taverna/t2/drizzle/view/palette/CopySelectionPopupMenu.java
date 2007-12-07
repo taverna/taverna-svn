@@ -17,6 +17,7 @@ import javax.swing.JPopupMenu;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetIdentification;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetSelectionIdentification;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 
@@ -37,7 +38,7 @@ public class CopySelectionPopupMenu extends JPopupMenu {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(CopySelectionPopupMenu.class);
 
-	public CopySelectionPopupMenu(final ActivityPalettePanel parentPanel, final Set<ProcessorFactory> selectedObjects) {
+	public CopySelectionPopupMenu(final ActivityPalettePanel parentPanel, final Set<ProcessorFactoryAdapter> selectedObjects) {
 		super("Copy selection"); //$NON-NLS-1$
 		if (parentPanel == null) {
 			throw new NullPointerException("parentPanel cannot be null"); //$NON-NLS-1$
@@ -63,7 +64,7 @@ public class CopySelectionPopupMenu extends JPopupMenu {
 				subsetItem.addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent arg0) {
-						PropertiedObjectFilter<ProcessorFactory> newFilter = new ObjectMembershipFilter<ProcessorFactory>(selectedObjects);
+						PropertiedObjectFilter<ProcessorFactoryAdapter> newFilter = new ObjectMembershipFilter<ProcessorFactoryAdapter>(selectedObjects);
 						subset.addOredFilter(newFilter);
 					}
 

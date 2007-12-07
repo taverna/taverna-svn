@@ -46,6 +46,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
@@ -143,7 +144,7 @@ public final class ActivitySubsetPanel extends JPanel {
 					subsetModel, keySettings);
 			this.currentTree.setModel(treeModel);
 			ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
-					((PropertiedTreeRootNode<ProcessorFactory>) treeModel
+					((PropertiedTreeRootNode<ProcessorFactoryAdapter>) treeModel
 							.getRoot()));
 			this.currentTable.setModel(activitiesTableModel);
 		}
@@ -305,14 +306,14 @@ public final class ActivitySubsetPanel extends JPanel {
 		// TODO
 	}
 
-	public Set<ProcessorFactory> getSelectedObjects() {
-		Set<ProcessorFactory> result = new HashSet<ProcessorFactory>();
+	public Set<ProcessorFactoryAdapter> getSelectedObjects() {
+		Set<ProcessorFactoryAdapter> result = new HashSet<ProcessorFactoryAdapter>();
 		int[] selectedRows = this.currentTable.getSelectedRows();
 		ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) this.currentTable
 				.getModel();
 		for (int i = 0; i < selectedRows.length; i++) {
 			int row = selectedRows[i];
-			ProcessorFactory pf = tableModel.getRowObject(row);
+			ProcessorFactoryAdapter pf = tableModel.getRowObject(row);
 			result.add(pf);
 		}
 		return result;

@@ -402,7 +402,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	public void addSubsetModelFromUser(String subsetName, String subsetKind, boolean newKind) {
 		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
 		ActivityRegistrySubsetSelectionIdentification ident = new ActivityRegistrySubsetSelectionIdentification();
-		ident.setObjectFilter(new ObjectMembershipFilter<ProcessorFactory>(new HashSet<ProcessorFactory>()));
+		ident.setObjectFilter(new ObjectMembershipFilter<ProcessorFactoryAdapter>(new HashSet<ProcessorFactoryAdapter>()));
 		ident.setName(subsetName);
 		if (newKind) {
 
@@ -436,7 +436,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	private void addSearchResultsSubsetModel() {
 		searchResultsSubsetModel = new ActivityRegistrySubsetModel();
 		ActivityRegistrySubsetSelectionIdentification ident = new ActivityRegistrySubsetSelectionIdentification();
-		ident.setObjectFilter(new FalseFilter<ProcessorFactory>());
+		ident.setObjectFilter(new FalseFilter<ProcessorFactoryAdapter>());
 
 		ident.setName("Search results");
 
@@ -463,8 +463,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 
 	public ActivityPaletteModelBean getAsBean() {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityPaletteModelBean result = new ActivityPaletteModelBean();
+		result.setRegistryBean(getActivityRegistry().getRegistry().getAsBean());
+		return result;
 	}
 
 	public void setFromBean(ActivityPaletteModelBean arg0) throws IllegalArgumentException {

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringValue;
@@ -34,7 +35,8 @@ public final class BiomobyProcessor2FactoryDecoder extends
 
 	@Override
 	protected void fillInDetails(
-			PropertiedObjectSet<ProcessorFactory> targetSet,
+			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
+			ProcessorFactoryAdapter adapter,
 			BiomobyProcessorFactory encodedFactory) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
@@ -42,9 +44,9 @@ public final class BiomobyProcessor2FactoryDecoder extends
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
-		targetSet.setProperty(encodedFactory, CommonKey.MobyAuthorityKey,
+		targetSet.setProperty(adapter, CommonKey.MobyAuthorityKey,
 				new StringValue(encodedFactory.getAuthorityName()));
-		targetSet.setProperty(encodedFactory, CommonKey.MobyEndpointKey,
+		targetSet.setProperty(adapter, CommonKey.MobyEndpointKey,
 				new StringValue(encodedFactory.getMobyEndpoint()));
 
 	}
@@ -56,7 +58,7 @@ public final class BiomobyProcessor2FactoryDecoder extends
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		return (targetClass.isAssignableFrom(BiomobyProcessorFactory.class) &&
+		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) &&
 				BiomobyProcessorFactory.class.isAssignableFrom(sourceClass));
 		
 	}

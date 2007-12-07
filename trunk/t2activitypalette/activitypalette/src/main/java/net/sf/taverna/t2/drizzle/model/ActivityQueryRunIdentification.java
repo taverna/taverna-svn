@@ -35,11 +35,11 @@ public final class ActivityQueryRunIdentification extends ActivityRegistrySubset
 		throw new UnsupportedOperationException();
 	}
 	@Override
-	public void addOredFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
+	public void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		throw new UnsupportedOperationException();
 	}
 	@Override
-	public void addAndedFilter(PropertiedObjectFilter<ProcessorFactory> additionalFilter) {
+	public void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		throw new UnsupportedOperationException();
 	}
 }
