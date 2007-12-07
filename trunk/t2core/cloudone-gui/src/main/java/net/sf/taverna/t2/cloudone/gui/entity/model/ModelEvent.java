@@ -2,6 +2,15 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Defines the type of events what can happen to an {@link EntityModel}.
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ * @param <Model>
+ *            What type of {@link EntityModel} the event will represent
+ */
 public class ModelEvent<Model> {
 
 	@SuppressWarnings("unused")
@@ -11,12 +20,14 @@ public class ModelEvent<Model> {
 	protected final EventType eventType;
 
 	/**
+	 * What happened and to who
+	 * 
 	 * @param eventType
+	 *            ADDED or REMOVED
 	 * @param entityModel
+	 *            the model which has the event
 	 */
-	public ModelEvent(
-			EventType eventType,
-			Model entityModel) {
+	public ModelEvent(EventType eventType, Model entityModel) {
 		this.eventType = eventType;
 		this.entityModel = entityModel;
 	}
@@ -33,7 +44,7 @@ public class ModelEvent<Model> {
 	public EventType getEventType() {
 		return eventType;
 	}
-	
+
 	@Override
 	public String toString() {
 		return getEventType() + ": " + getModel();

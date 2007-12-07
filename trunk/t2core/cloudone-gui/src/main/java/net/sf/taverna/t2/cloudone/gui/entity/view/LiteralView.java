@@ -15,11 +15,20 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModelEvent;
 
 import org.apache.log4j.Logger;
 
+/**
+ * A view (in MVC terms) for a {@link Literal}. Does not handle string
+ * literals, this is done by {@link StringView}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class LiteralView extends
 		EntityView<LiteralModel, Object, LiteralModelEvent> {
 
@@ -28,7 +37,7 @@ public class LiteralView extends
 	private static final String DOUBLE = Double.class.getSimpleName();
 	private static final String LONG = Long.class.getSimpleName();
 	private static final String INTEGER = Integer.class.getSimpleName();
-	
+
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LiteralView.class);
 	private LiteralModel model;
@@ -53,13 +62,15 @@ public class LiteralView extends
 	}
 
 	public void initialise() {
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Literal", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Literal",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
 		editPanel = new JPanel();
 		setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
 		// setOpaque(false);
-		String[] literalChoices = { INTEGER, LONG, DOUBLE, FLOAT, BOOLEAN,
-				};
+		String[] literalChoices = { INTEGER, LONG, DOUBLE, FLOAT, BOOLEAN, };
 		comboBox = new JComboBox(literalChoices);
 		GridBagConstraints headerC = new GridBagConstraints();
 		headerC.gridx = 0;
@@ -67,7 +78,8 @@ public class LiteralView extends
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		//editPanel.add(new JLabel("<html><small>Literal</small></html>"), headerC);
+		// editPanel.add(new JLabel("<html><small>Literal</small></html>"),
+		// headerC);
 		editPanel.add(comboBox);
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
@@ -121,6 +133,14 @@ public class LiteralView extends
 		}
 	}
 
+	/**
+	 * After entering the details and clicking OK this handles the Controller
+	 * (in MVC terms) aspects
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class OKAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -131,12 +151,19 @@ public class LiteralView extends
 		public void actionPerformed(ActionEvent e) {
 			try {
 				parentView.edit(null);
-			} catch (IllegalStateException e1){
-				//warned already
+			} catch (IllegalStateException e1) {
+				// warned already
 			}
 		}
 	}
 
+	/**
+	 * Remove the literal from the view
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class RemoveAction extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;
@@ -156,6 +183,9 @@ public class LiteralView extends
 		return null;
 	}
 
+	/**
+	 * Check that the user entered value for the {@link Literal} is valid
+	 */
 	public void setLiteralFromField() {
 		// is it a string etc
 		String type = comboBox.getSelectedItem().toString();
@@ -206,20 +236,23 @@ public class LiteralView extends
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	protected void addModelView(Object literalModel) {
 		textField.setText(literalModel.toString());
 		comboBox.setSelectedItem(literalModel.getClass().getSimpleName());
 	}
-	
+
 	@Override
 	protected void removeModelView(Object refModel) {
 		textField.setText("");
 		comboBox.setSelectedIndex(0);
 	}
-	
 
+	/**
+	 * Check that the {@link Literal} is valid using
+	 * {@link #setLiteralFromField()}
+	 */
 	@Override
 	public void setEdit(boolean editable) throws IllegalStateException {
 		if (!editable) {

@@ -9,11 +9,25 @@ import javax.swing.JPanel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ModelEvent.EventType;
+import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Extend this class in other parent Views.
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ * @param <MyModelType>
+ *            the model which the view represents
+ * @param <ChildModelType>
+ *            the type of models which can be added to MyModelType
+ * @param <Event>
+ *            the event representing changes to MyModelType
+ */
 public abstract class EntityView<MyModelType extends Observable<Event>, ChildModelType, Event extends ModelEvent<ChildModelType>>
 		extends JPanel {
 
@@ -35,21 +49,33 @@ public abstract class EntityView<MyModelType extends Observable<Event>, ChildMod
 
 	private EntityListView parentView;
 
+	/**
+	 * Create the view and register MyModelType with the ChildType
+	 * {@link MultiCaster} for observing changes
+	 * 
+	 * @param myModel
+	 * @param parentView
+	 */
 	public EntityView(MyModelType myModel, EntityListView parentView) {
-		this.parentView = parentView;		
+		this.parentView = parentView;
 		this.myModel = myModel;
 		this.modelObserver = makeModelObserver();
 		// TODO: removeObserver on window close
 		myModel.addObserver(modelObserver);
 	}
 
+	/**
+	 * What type of model represents the view
+	 * 
+	 * @return the model which represents this view
+	 */
 	public MyModelType getModel() {
 		return myModel;
 	}
 
 	protected void addModelView(ChildModelType childModel) {
 		JComponent view = createModelView(childModel);
-		if (view == null) { 
+		if (view == null) {
 			return;
 		}
 		view.setOpaque(false);
@@ -74,6 +100,13 @@ public abstract class EntityView<MyModelType extends Observable<Event>, ChildMod
 		}
 	}
 
+	/**
+	 * The parent (MyModelType) uses this to observe events on the ChildType
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class ModelObserver implements Observer<Event> {
 		public void notify(Observable<Event> sender, Event event) {
 			EventType eventType = event.getEventType();

@@ -8,61 +8,91 @@ import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
-
-public class LiteralModel extends EntityModel implements Observable<LiteralModelEvent>{
-	
+/**
+ * Model (in MVC terms) for the {@link Literal} being added or removed from a
+ * {@link LiteralView}. Interested parties can register with it (delegated to
+ * the {@link MultiCaster}) to receive notifications when this model changes.
+ * String literals are handled by the {@link StringModel} since they can be
+ * either {@link Literal}s or {@link BlobReferenceScheme}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
+public class LiteralModel extends EntityModel implements
+		Observable<LiteralModelEvent> {
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(LiteralModel.class);
-	
-	private MultiCaster<LiteralModelEvent> multiCaster = new MultiCaster<LiteralModelEvent>(this);
-	
+	/*
+	 * Notifies changes to the model to whoever is registered with it
+	 */
+	private MultiCaster<LiteralModelEvent> multiCaster = new MultiCaster<LiteralModelEvent>(
+			this);
+	/*
+	 * The Literal that this model represents
+	 */
 	private Object literal = null;
 	@SuppressWarnings("unused")
+	/*
+	 * The parent 'container' for this Literal
+	 */
 	private EntityListModel parentModel;
-	
+
 	public LiteralModel(EntityListModel parentModel) {
 		super(parentModel);
 		this.parentModel = parentModel;
 	}
-	
+
+	/**
+	 * If you want to be notified of changes to the model. Uses the
+	 * {@link MultiCaster}
+	 */
 	public void addObserver(Observer<LiteralModelEvent> observer) {
 		multiCaster.addObserver(observer);
 	}
 
+	/**
+	 * If you no longer want notified of changes. Use the {@link MultiCaster}
+	 */
 	public void removeObserver(Observer<LiteralModelEvent> observer) {
 		multiCaster.removeObserver(observer);
 	}
-	
+
 	@Override
 	public void remove() {
 		super.remove();
-		multiCaster.notify(new LiteralModelEvent(LiteralModelEvent.EventType.REMOVED, literal));
+		multiCaster.notify(new LiteralModelEvent(
+				LiteralModelEvent.EventType.REMOVED, literal));
 	}
-	
+
 	public void setLiteral(Integer literal) {
 		setLiteralObject(literal);
 	}
-	
+
 	public void setLiteral(Float literal) {
 		setLiteralObject(literal);
 	}
+
 	public void setLiteral(Double literal) {
 		setLiteralObject(literal);
 	}
+
 	public void setLiteral(Boolean literal) {
 		setLiteralObject(literal);
 	}
+
 	public void setLiteral(Long literal) {
 		setLiteralObject(literal);
 	}
-	
+
 	private void setLiteralObject(Object literal) {
 		if (literal == null) {
 			throw new NullPointerException();
 		}
 		this.literal = literal;
-		multiCaster.notify(new LiteralModelEvent(ModelEvent.EventType.ADDED, literal));
+		multiCaster.notify(new LiteralModelEvent(ModelEvent.EventType.ADDED,
+				literal));
 	}
 
 	public Object getLiteral() {
@@ -72,5 +102,5 @@ public class LiteralModel extends EntityModel implements Observable<LiteralModel
 	public List<Observer<LiteralModelEvent>> getObservers() {
 		return multiCaster.getObservers();
 	}
-	
+
 }

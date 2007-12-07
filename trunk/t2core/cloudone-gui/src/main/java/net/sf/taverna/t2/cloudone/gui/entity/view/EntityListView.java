@@ -13,6 +13,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.cloudone.entity.EntityList;
+import net.sf.taverna.t2.cloudone.entity.Literal;
+import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
@@ -24,6 +27,13 @@ import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.apache.log4j.Logger;
 
+/**
+ * The View (in MVC terms) for an {@link EntityList}.
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class EntityListView extends
 		EntityView<EntityListModel, EntityModel, EntityListModelEvent> {
 
@@ -69,6 +79,13 @@ public class EntityListView extends
 		}
 	}
 
+	/**
+	 * Check whether the selected type of {@link EntityModel} can be added and if
+	 * so add the appropriate {@link EntityView}
+	 * 
+	 * @param model
+	 * @throws IllegalStateException
+	 */
 	@SuppressWarnings("unchecked")
 	public void edit(EntityModel model) throws IllegalStateException {
 		// Might return null, which is OK
@@ -240,7 +257,7 @@ public class EntityListView extends
 
 	/**
 	 * The Controller (in Model-View-Controller terms) for adding a
-	 * {@link HttpReferenceScheme} via clicking the appropriate button
+	 * {@link DataDocumentModel}
 	 * 
 	 * @author Stian Soiland
 	 * @author Ian Dunlop
@@ -265,7 +282,7 @@ public class EntityListView extends
 
 	/**
 	 * The Controller (in Model-View-Controller terms) for adding a
-	 * {@link FileReferenceScheme} via clicking the appropriate button
+	 * {@link EntityList}
 	 * 
 	 * @author Stian Soiland
 	 * @author Ian Dunlop
@@ -287,6 +304,14 @@ public class EntityListView extends
 		}
 	}
 
+	/**
+	 * The Controller (in Model-View-Controller terms) for adding a
+	 * {@link LiteralModel}
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class CreateLiteralAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -303,6 +328,14 @@ public class EntityListView extends
 		}
 	}
 
+	/**
+	 * The Controller (in Model-View-Controller terms) for adding a
+	 * {@link StringModel}
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class CreateStringAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 

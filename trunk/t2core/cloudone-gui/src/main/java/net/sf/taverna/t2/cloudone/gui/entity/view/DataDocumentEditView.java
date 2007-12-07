@@ -20,7 +20,9 @@ import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import org.apache.log4j.Logger;
 
 /**
- * View (in MVC terms) for a Data Document builder GUI.
+ * View (in MVC terms) for a Data Document builder GUI. This is the editable
+ * version (a button in the gui toggles editable status on or off), the
+ * non-editable is {@link DataDocumentView}
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
@@ -40,7 +42,7 @@ public class DataDocumentEditView
 	private JButton fileButton;
 
 	private JButton httpButton;
-	
+
 	private JButton removeButton;
 
 	/** What {@link RefSchemeView} was the last one to be edited */
@@ -102,11 +104,15 @@ public class DataDocumentEditView
 	}
 
 	private void initialiseGui() {
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Data Document", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null,
+				"Data Document",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
 		// panel inside panel for on-click activation
 		setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.BLUE));
-		//setBackground(new Color(180, 240, 160, 64));
+		// setBackground(new Color(180, 240, 160, 64));
 
 		// JPanel addSchemes = addSchemeButtons();
 		GridBagConstraints outerConstraint = new GridBagConstraints();
@@ -117,11 +123,9 @@ public class DataDocumentEditView
 		outerPanel = outerPanel();
 		add(outerPanel, outerConstraint);
 		// add(addSchemes, outerConstraint);
-		
 
 		nonEditPanel = createNonEditView();
 		add(nonEditPanel, outerConstraint);
-	
 
 		refViews = createdRefs();
 		add(refViews, outerConstraint);
@@ -132,7 +136,7 @@ public class DataDocumentEditView
 		outerConstraint.weightx = 0.1;
 		outerConstraint.fill = GridBagConstraints.BOTH;
 		JPanel filler = new JPanel();
-		//filler.setOpaque(false);
+		// filler.setOpaque(false);
 		// filler.setBorder(BorderFactory.createEtchedBorder());
 		add(filler, outerConstraint);
 		// panel which is switched in/out on edit button click
@@ -143,23 +147,24 @@ public class DataDocumentEditView
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		c.gridy = 0;
-		
-		//JLabel header = new JLabel("<html><strong>Data Document</strong></html>");
-		//panel.add(header, c);
-		
+
+		// JLabel header = new JLabel("<html><strong>Data
+		// Document</strong></html>");
+		// panel.add(header, c);
+
 		c.gridy = 1;
-		
+
 		RemoveAction removeAction = new RemoveAction();
 		removeButton = new JButton(removeAction);
 		panel.add(removeButton, c);
-		
-		//outerPanel.setOpaque(false);
+
+		// outerPanel.setOpaque(false);
 		EditPanelAction editPanelAction = new EditPanelAction();
 		editButton = new JButton(editPanelAction);
 		editButton.setText("Edit");
-		//editButton.setOpaque(false);
+		// editButton.setOpaque(false);
 		panel.add(editButton, c);
-		
+
 		actionPanel = addSchemeButtons();
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.gridx = 0;
@@ -195,10 +200,8 @@ public class DataDocumentEditView
 		GridBagConstraints cButton = new GridBagConstraints();
 		cButton.fill = GridBagConstraints.HORIZONTAL;
 
-		CreateHttpAction createHttpAction = new CreateHttpAction(
-				getModel());
-		CreateFileAction createFileAction = new CreateFileAction(
-				getModel());
+		CreateHttpAction createHttpAction = new CreateHttpAction(getModel());
+		CreateFileAction createFileAction = new CreateFileAction(getModel());
 		httpButton = new JButton(createHttpAction);
 		fileButton = new JButton(createFileAction);
 
@@ -295,6 +298,14 @@ public class DataDocumentEditView
 		}
 	}
 
+	/**
+	 * The Controller (in Model-View-Controller terms) for toggling the editable
+	 * status
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class EditPanelAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -317,7 +328,15 @@ public class DataDocumentEditView
 			}
 		}
 	}
-	
+
+	/**
+	 * The Controller (in Model-View-Controller terms) for removing the model &
+	 * view from the parent
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class RemoveAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -331,6 +350,11 @@ public class DataDocumentEditView
 		}
 	}
 
+	/**
+	 * Set whether the panel can be edited or not. Used to check whether the
+	 * view can lose the focus in-case any required information has not been
+	 * filled in
+	 */
 	@Override
 	public void setEdit(boolean editable) {
 		if (!editable) {
@@ -349,6 +373,5 @@ public class DataDocumentEditView
 		revalidate();
 
 	}
-
 
 }

@@ -13,9 +13,17 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import net.sf.taverna.t2.cloudone.gui.entity.model.FileRefSchemeModel;
+import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 
+/**
+ * A View (in MVC terms) representing a {@link FileReferenceScheme}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 
 	private static final long serialVersionUID = 1L;
@@ -26,28 +34,40 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 	private BrowseAction browseAction = new BrowseAction();
 	private RemoveAction removeAction = new RemoveAction();
 
+	/**
+	 * Link the {@link FileRefSchemeView} with it's {@link FileRefSchemeModel}
+	 * and register for event notifications
+	 * 
+	 * @param model
+	 * @param parentView
+	 */
 	public FileRefSchemeView(FileRefSchemeModel model,
 			DataDocumentEditView parentView) {
 		this.model = model;
 		this.parentView = parentView;
 		model.addObserver(this);
 		initialise();
-		
+
 	}
 
 	private void initialise() {
 		// GUI stuff
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "File Reference Scheme", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null,
+				"File Reference Scheme",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
 		setLayout(new GridBagLayout());
-		//setBorder(BorderFactory.createLineBorder(Color.GREEN));
-//		setOpaque(false);
+		// setBorder(BorderFactory.createLineBorder(Color.GREEN));
+		// setOpaque(false);
 		GridBagConstraints headerC = new GridBagConstraints();
 		headerC.gridx = 0;
 		headerC.gridy = 0;
 		headerC.gridwidth = 2;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		//add(new JLabel("<html><small>File reference</small></html>"), headerC);
+		// add(new JLabel("<html><small>File reference</small></html>"),
+		// headerC);
 
 		GridBagConstraints fieldConstraints = new GridBagConstraints();
 		fieldConstraints.gridx = 0;
@@ -67,6 +87,13 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 		add(removeButton, buttonConstraints);
 	}
 
+	/**
+	 * What local {@link File} does this {@link FileRefSchemeView} and
+	 * {@link FileRefSchemeModel} represent
+	 * 
+	 * @param selectedFile
+	 * @return
+	 */
 	public File chooseFile(File selectedFile) {
 		JFileChooser fileChooser = new JFileChooser() {
 			@Override
@@ -99,6 +126,13 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 		textField.setText(path);
 	}
 
+	/**
+	 * Switch on editing of the file
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class BrowseAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -111,6 +145,13 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 		}
 	}
 
+	/**
+	 * Remove the view and the model
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class RemoveAction extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;

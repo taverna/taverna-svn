@@ -8,9 +8,18 @@ import net.sf.taverna.t2.lang.observer.Observer;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Represents a Literal String or a Blob containing a string
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class StringModel extends EntityModel implements
 		Observable<StringModelEvent> {
-
+	/*
+	 * Sends notifications of events to registered observers
+	 */
 	private MultiCaster<StringModelEvent> multiCaster = new MultiCaster<StringModelEvent>(
 			this);
 	@SuppressWarnings("unused")
@@ -25,11 +34,19 @@ public class StringModel extends EntityModel implements
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(StringModel.class);
 
+	/**
+	 * If you want to be notified of events regarding this model. Uses the
+	 * {@link MultiCaster}
+	 */
 	public void addObserver(Observer<StringModelEvent> observer) {
 		multiCaster.addObserver(observer);
 
 	}
 
+	/**
+	 * If you no longer wish to be informed of events regarding this model. Uses
+	 * the {@link MultiCaster}
+	 */
 	public void removeObserver(Observer<StringModelEvent> observer) {
 		multiCaster.removeObserver(observer);
 
@@ -42,6 +59,11 @@ public class StringModel extends EntityModel implements
 				StringModelEvent.EventType.REMOVED, string));
 	}
 
+	/**
+	 * Set the string and notify observers of the change
+	 * 
+	 * @param string
+	 */
 	public void setString(String string) {
 		this.string = string;
 		multiCaster.notify(new StringModelEvent(

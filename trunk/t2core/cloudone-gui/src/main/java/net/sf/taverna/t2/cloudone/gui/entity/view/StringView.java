@@ -19,6 +19,13 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.StringModelEvent;
 
 import org.apache.log4j.Logger;
 
+/**
+ * A View (in MVC terms) for a {@link String}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class StringView extends
 		EntityView<StringModel, String, StringModelEvent> {
 
@@ -41,6 +48,12 @@ public class StringView extends
 	@SuppressWarnings("unused")
 	private String string;
 
+	/**
+	 * Set the {@link StringModel} and the parent view.
+	 * 
+	 * @param model
+	 * @param parentView
+	 */
 	public StringView(StringModel model, EntityListView parentView) {
 		super(model, parentView);
 		this.parentView = parentView;
@@ -48,8 +61,11 @@ public class StringView extends
 		initialise();
 	}
 
-	public void initialise() {
-		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "String", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Lucida Grande", 1, 12)));
+	private void initialise() {
+		setBorder(javax.swing.BorderFactory.createTitledBorder(null, "String",
+				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+				new java.awt.Font("Lucida Grande", 1, 12)));
 		editPanel = new JPanel();
 		editPanel.setLayout(new GridBagLayout());
 		// setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -60,7 +76,8 @@ public class StringView extends
 		headerC.gridwidth = 4;
 		headerC.anchor = GridBagConstraints.LAST_LINE_START;
 		headerC.ipadx = 4;
-		//editPanel.add(new JLabel("<html><small>String</small></html>"), headerC);
+		// editPanel.add(new JLabel("<html><small>String</small></html>"),
+		// headerC);
 
 		GridBagConstraints fieldC = new GridBagConstraints();
 		fieldC.gridx = 0;
@@ -110,6 +127,9 @@ public class StringView extends
 
 	}
 
+	/**
+	 * Check whether this view can lose the focus or not
+	 */
 	@Override
 	public void setEdit(boolean editable) {
 		if (!editable) {
@@ -142,6 +162,14 @@ public class StringView extends
 		textArea.setText("");
 	}
 
+	/**
+	 * A Controller (in MVC terms) to set the view to editable and allow the
+	 * user to enter a new value for the {@link String}
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class EditAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -154,6 +182,14 @@ public class StringView extends
 		}
 	}
 
+	/**
+	 * After entering the value for the {@link String} the user clicks OK and
+	 * this Controller is used to set the editable state
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class OKAction extends AbstractAction {
 		private static final long serialVersionUID = 1L;
 
@@ -170,6 +206,13 @@ public class StringView extends
 		}
 	}
 
+	/**
+	 * Remove this View and the associated Model
+	 * 
+	 * @author Ian Dunlop
+	 * @author Stian Soiland
+	 * 
+	 */
 	public class RemoveAction extends AbstractAction {
 
 		private static final long serialVersionUID = 1L;
