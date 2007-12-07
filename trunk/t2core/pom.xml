@@ -99,6 +99,15 @@
 			<name>Restlet repository</name>
 			<url>http://maven.restlet.org</url>
 		</repository>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-mirror</id>
+			<name>myGrid maven proxy server</name>
+			<url>http://www.mygrid.org.uk/maven/proxy/repository</url>
+		</repository>
 	</repositories>
 	<reporting>
 		<plugins>
