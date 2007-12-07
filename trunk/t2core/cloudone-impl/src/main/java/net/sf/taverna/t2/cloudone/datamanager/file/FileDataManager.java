@@ -84,6 +84,8 @@ public class FileDataManager extends AbstractDataManager {
 	private static Logger logger = Logger.getLogger(FileDataManager.class);
 	
 	private static final int MAX_ID_LENGTH = 80; // for debug reasons
+	
+	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
 
 	private File path;
 
@@ -195,62 +197,10 @@ public class FileDataManager extends AbstractDataManager {
 	protected <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id)
 			throws RetrievalException {
 		File entityPath = asPath(id);
-		if (!entityPath.isFile()) {
-			return null;
-		}
-		InputStream stream;
 		try {
-			stream = new FileInputStream(entityPath);
-		} catch (FileNotFoundException e1) {
+			return (Entity<ID, ?>) beanSerialiser.beanableFromXMLFile(entityPath);
+		} catch (FileNotFoundException e) {
 			return null;
-		}
-		Object bean = null;
-
-		try {
-			bean = BeanSerialiser.getInstance().fromXMLStream(stream);
-		} catch (JAXBException e) {
-			throw new RetrievalException("Could not retreive data for "
-					+ entityPath, e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				logger.warn("Can't close stream read from " + entityPath, e);
-			}
-		}
-		if (id.getType().equals(IDType.Data)) {
-			DataDocument entity = new DataDocumentImpl();
-			if (bean instanceof DataDocumentBean) {
-				entity.setFromBean((DataDocumentBean) bean);
-				return (Entity<ID, ?>) entity;
-			} else {
-				throw new RetrievalException(
-						"Data integrity failure, data type changed for "
-								+ entityPath);
-			}
-		} else if (id.getType().equals(IDType.List)) {
-			EntityList entity = new EntityList();
-			if (bean instanceof EntityListBean) {
-				entity.setFromBean((EntityListBean) bean);
-				return (Entity<ID, ?>) entity;
-			} else {
-				throw new RetrievalException(
-						"Data integrity failure, data type changed for "
-								+ entityPath);
-			}
-		} else if (id.getType().equals(IDType.Error)) {
-			ErrorDocument entity = new ErrorDocument();
-			if (bean instanceof ErrorDocumentBean) {
-				entity.setFromBean((ErrorDocumentBean) bean);
-				return (Entity<ID, ?>) entity;
-			} else {
-				throw new RetrievalException(
-						"Data integrity failure, data type changed for "
-								+ entityPath);
-			}
-		} else {
-			throw new IllegalArgumentException("Data type not recognised for "
-					+ entityPath);
 		}
 	}
 
@@ -264,28 +214,12 @@ public class FileDataManager extends AbstractDataManager {
 			throw new IllegalStateException("Already exists: "
 					+ entity.getIdentifier());
 		}
-		Bean bean = entity.getAsBean();
+	
 		entityPath.getParentFile().mkdirs();
-		// TODO: Could serialise in a more portable and less space-hungry
-		// format
-		OutputStream stream;
 		try {
-			stream = new FileOutputStream(entityPath);
-		} catch (FileNotFoundException e1) {
-			throw new StorageException(
-					"Could not store entity to" + entityPath, e1);
-		}
-		try {
-			BeanSerialiser.getInstance().toXMLStream(bean, stream);
-		} catch (JAXBException e) {
-			throw new StorageException(
-					"Could not store entity to" + entityPath, e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-				logger.warn("Can't close stream for " + entityPath, e);
-			}
+			beanSerialiser.beanableToXMLFile(entity, entityPath);
+		} catch (IOException e) {
+			throw new StorageException("Could not store entity to " + entityPath, e);
 		}
 	}
 

@@ -26,6 +26,8 @@ public class HttpPeerProxy implements PeerProxy {
 
 	private String baseUrl;
 
+	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
+
 	public HttpPeerProxy(String namespace) {
 		String[] splitted = namespace.split("http2p_", 2);
 		if (!(splitted.length == 2)) {
@@ -41,7 +43,7 @@ public class HttpPeerProxy implements PeerProxy {
 	}
 
 	public Entity<?, ?> export(EntityIdentifier identifier)
-			throws NotFoundException {
+			throws NotFoundException, RetrievalException {
 		URL url;
 		try {
 			url = new URL(baseUrl + identifier.getAsURI());
@@ -49,24 +51,12 @@ public class HttpPeerProxy implements PeerProxy {
 			throw new NotFoundException("Invalid URL from identifier "
 					+ identifier, e);
 		}
-		SAXBuilder builder = new SAXBuilder();
-		Document doc;
-		try {
-			doc = builder.build(url);
-		} catch (JDOMException e) {
-			logger.warn("Could not parse beanable from " + url, e);
-			throw new NotFoundException(identifier);
-		} catch (IOException e) {
-			logger.warn("Could not read beanable from " + url, e);
-			throw new NotFoundException(identifier);
-		}
-		Element beanableElem = doc.getRootElement();
+
 		Beanable<?> beanable;
 		try {
-			beanable = BeanSerialiser.getInstance().beanableFromXML(beanableElem);
-		} catch (JAXBException e) {
-			logger.warn(e);
-			throw new RetrievalException("Could not deserialise " + beanableElem);
+			beanable = beanSerialiser.beanableFromXMLStream(url.openStream());
+		} catch (IOException e) {
+			throw new RetrievalException("Can't read " + url, e);
 		}
 		return (Entity<?, ?>) beanable;
 	}

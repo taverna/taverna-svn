@@ -34,6 +34,8 @@ public class DataManagerResource extends Resource {
 	private EntityIdentifier entityId;
 	private Entity<EntityIdentifier, ?> entity;
 
+	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
+
 	public DataManagerResource(Context context, Request request,
 			Response response) {
 		super(context, request, response);
@@ -65,12 +67,7 @@ public class DataManagerResource extends Resource {
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		Element xml;
-		try {
-			xml = BeanSerialiser.getInstance().beanableToXML(entity);
-		} catch (JAXBException e) {
-			logger.warn(e);
-			throw new RetrievalException("Could not retrieve " + entity);
-		}
+		xml = beanSerialiser .beanableToXMLElement(entity);
 		String xmlString = new XMLOutputter(Format.getRawFormat())
 				.outputString(xml);
 		// TODO: Should use streaming

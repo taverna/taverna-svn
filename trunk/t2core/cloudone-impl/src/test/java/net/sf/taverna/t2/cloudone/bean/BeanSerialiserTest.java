@@ -29,13 +29,14 @@ import org.junit.Test;
  */
 public class BeanSerialiserTest {
 
-//	private static final String SILLY = "I'm silly";
-//
-//	private ClassLoader classLoader = BeanSerialiserTest.class.getClassLoader();
+	// private static final String SILLY = "I'm silly";
 
+	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
+	
 	InMemoryDataManager dManager = new InMemoryDataManager("dataNS",
 			new HashSet<LocationalContext>());
-	//Removed after JAXB re-factoring
+
+	// Removed after JAXB re-factoring
 	// @Test
 	// public void serialiseAsFile() throws IOException, JDOMException,
 	// JAXBException {
@@ -73,9 +74,9 @@ public class BeanSerialiserTest {
 		bean.setUrl("http://taverna.sf.net/");
 		urlRef.setFromBean(bean);
 
-		Element elem = BeanSerialiser.getInstance().beanableToXML(urlRef);
-		HttpReferenceScheme retrievedUrlRef = (HttpReferenceScheme) BeanSerialiser
-				.getInstance().beanableFromXML(elem);
+		Element elem = beanSerialiser.beanableToXMLElement(urlRef);
+		HttpReferenceScheme retrievedUrlRef = (HttpReferenceScheme) beanSerialiser
+				.beanableFromXMLElement(elem);
 		assertEquals(urlRef.getUrl().toString(), retrievedUrlRef.getUrl()
 				.toString());
 	}
@@ -88,9 +89,9 @@ public class BeanSerialiserTest {
 		assertEquals("ns1", blobRef.getNamespace());
 		assertEquals("an-id", blobRef.getId());
 		assertNull(blobRef.getCharset());
-		Element elem = BeanSerialiser.getInstance().beanableToXML(blobRef);
-		BlobReferenceSchemeImpl retrievedBlobRef = (BlobReferenceSchemeImpl) BeanSerialiser
-				.getInstance().beanableFromXML(elem);
+		Element elem = beanSerialiser.beanableToXMLElement(blobRef);
+		BlobReferenceSchemeImpl retrievedBlobRef = (BlobReferenceSchemeImpl) beanSerialiser
+				.beanableFromXMLElement(elem);
 		assertEquals(blobRef.getNamespace(), retrievedBlobRef.getNamespace());
 		assertEquals(blobRef.getId(), retrievedBlobRef.getId());
 		assertEquals(blobRef.getCharset(), retrievedBlobRef.getCharset());
@@ -104,9 +105,9 @@ public class BeanSerialiserTest {
 		assertEquals("ns1", blobRef.getNamespace());
 		assertEquals("an-id", blobRef.getId());
 		assertEquals("utf-8", blobRef.getCharset());
-		Element elem = BeanSerialiser.getInstance().beanableToXML(blobRef);
-		BlobReferenceSchemeImpl retrievedBlobRef = (BlobReferenceSchemeImpl) BeanSerialiser
-				.getInstance().beanableFromXML(elem);
+		Element elem = beanSerialiser.beanableToXMLElement(blobRef);
+		BlobReferenceSchemeImpl retrievedBlobRef = (BlobReferenceSchemeImpl) beanSerialiser
+				.beanableFromXMLElement(elem);
 		assertEquals(blobRef.getNamespace(), retrievedBlobRef.getNamespace());
 		assertEquals(blobRef.getId(), retrievedBlobRef.getId());
 		assertEquals(blobRef.getCharset(), retrievedBlobRef.getCharset());

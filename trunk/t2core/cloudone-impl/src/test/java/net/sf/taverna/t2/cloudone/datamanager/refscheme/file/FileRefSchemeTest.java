@@ -22,6 +22,7 @@ import org.junit.Test;
 
 public class FileRefSchemeTest {
 
+	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
 	private InMemoryDataManager dManager;
 
 	@Before
@@ -51,9 +52,8 @@ public class FileRefSchemeTest {
 		File file = File.createTempFile("test", ".tmp");
 		FileReferenceScheme fileRef = new FileReferenceScheme(file);
 		assertEquals("retrieved file did not match", file, fileRef.getFile());
-		Element xml = BeanSerialiser.getInstance().beanableToXML(fileRef);
-		FileReferenceScheme newRef = (FileReferenceScheme) BeanSerialiser
-				.getInstance().beanableFromXML(xml);
+		Element xml = beanSerialiser.beanableToXMLElement(fileRef);
+		FileReferenceScheme newRef = (FileReferenceScheme) beanSerialiser.beanableFromXMLElement(xml);
 		assertEquals("reference was not the same after creating from bean",
 				newRef, fileRef);
 		assertNull(newRef.getCharset());
@@ -63,9 +63,8 @@ public class FileRefSchemeTest {
 	public void fromSerialisedWithCharset() throws Exception {
 		File file = File.createTempFile("test", ".tmp");
 		FileReferenceScheme fileRef = new FileReferenceScheme(file, "UTF-8");
-		Element xml = BeanSerialiser.getInstance().beanableToXML(fileRef);
-		FileReferenceScheme newRef = (FileReferenceScheme) BeanSerialiser
-				.getInstance().beanableFromXML(xml);
+		Element xml = beanSerialiser.beanableToXMLElement(fileRef);
+		FileReferenceScheme newRef = (FileReferenceScheme) beanSerialiser.beanableFromXMLElement(xml);
 		assertEquals("retrieved file did not match", file, newRef.getFile());
 		assertEquals("UTF-8", newRef.getCharset());
 	}

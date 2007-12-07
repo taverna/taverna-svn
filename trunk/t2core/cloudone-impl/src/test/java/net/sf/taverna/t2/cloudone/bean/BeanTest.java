@@ -237,8 +237,8 @@ public class BeanTest {
 	private <BeanableType extends Beanable> BeanableType serialisedBeanable(
 			BeanableType bean) throws JAXBException {
 		BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
-		Element elem = beanSerialiser.beanableToXML(bean);
-		return (BeanableType) beanSerialiser.beanableFromXML(elem);
+		Element elem = beanSerialiser.beanableToXMLElement(bean);
+		return (BeanableType) beanSerialiser.beanableFromXMLElement(elem);
 	}
 
 
