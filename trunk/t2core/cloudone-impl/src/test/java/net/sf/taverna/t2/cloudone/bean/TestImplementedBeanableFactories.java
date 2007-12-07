@@ -16,7 +16,7 @@ import org.junit.Test;
 @SuppressWarnings("unchecked")
 public class TestImplementedBeanableFactories {
 
-	BeanableFactoryRegistry registry = BeanableFactoryRegistry.getInstance();
+	private BeanableFactoryRegistry registry = BeanableFactoryRegistry.getInstance();
 
 	Class<? extends Beanable>[] beanableClasses = new Class[]{
 			Literal.class,
