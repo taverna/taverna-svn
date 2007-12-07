@@ -8,7 +8,12 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.EclipseRepository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.spi.InstanceRegistry;
+import net.sf.taverna.raven.spi.InstanceRegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
+import net.sf.taverna.t2.lang.observer.MultiCaster;
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 
 /**
  * Simple SPI lookup (using META-INF/services/interfaceName) to discover
@@ -24,7 +29,29 @@ import net.sf.taverna.raven.spi.SpiRegistry;
  * @param <SPI>
  *            The interface type that the SPI classes implement
  */
-public class SPIRegistry<SPI> {
+public class SPIRegistry<SPI> implements Observable<SPIRegistryEvent> {
+
+	public class RegistryListenerAdapter implements InstanceRegistryListener {
+
+		@SuppressWarnings("unchecked")
+		public void instanceRegistryUpdated(InstanceRegistry registry) {
+			if (registry != instanceRegistry) {
+				return;
+			}
+			multiCaster.notify(UPDATED);
+		}
+
+	}
+
+	public static class SPIRegistryEvent {
+	}
+
+	/**
+	 * Sent to {@link Observer}<{@link SPIRegistryEvent}>s when this SPI
+	 * registry has been updated.
+	 * 
+	 */
+	public static final SPIRegistryEvent UPDATED = new SPIRegistryEvent();
 
 	static {
 		// Set log4j logger for Raven
@@ -33,7 +60,12 @@ public class SPIRegistry<SPI> {
 	}
 
 	private InstanceRegistry<SPI> instanceRegistry = null;
+	private InstanceRegistryListener instanceRegistryListener = new RegistryListenerAdapter();
+	private MultiCaster<SPIRegistryEvent> multiCaster = new MultiCaster<SPIRegistryEvent>(
+			this);
+
 	private SpiRegistry ravenSPIRegistry = null;
+
 	private final Class<SPI> spi;
 
 	/**
@@ -46,13 +78,12 @@ public class SPIRegistry<SPI> {
 		this.spi = spi;
 	}
 
-	/**
-	 * Reset the instanceRegistry causing it to be re-populated on the next call
-	 * to getInstances.
-	 */
-	public void refresh() {
-		this.instanceRegistry = null;
-		this.ravenSPIRegistry = null;
+	public void addObserver(Observer<SPIRegistryEvent> observer) {
+		multiCaster.addObserver(observer);
+	}
+
+	private ClassLoader getClassLoader() {
+		return getClass().getClassLoader();
 	}
 
 	/**
@@ -65,6 +96,10 @@ public class SPIRegistry<SPI> {
 		return getRegistry().getInstances();
 	}
 
+	public List<Observer<SPIRegistryEvent>> getObservers() {
+		return multiCaster.getObservers();
+	}
+
 	private synchronized InstanceRegistry<SPI> getRegistry() {
 		if (instanceRegistry == null) {
 			ravenSPIRegistry = new SpiRegistry(getRepository(), spi.getName(),
@@ -72,6 +107,7 @@ public class SPIRegistry<SPI> {
 			instanceRegistry = new InstanceRegistry<SPI>(ravenSPIRegistry,
 					new Object[0]);
 		}
+		instanceRegistry.addRegistryListener(instanceRegistryListener);
 		return instanceRegistry;
 	}
 
@@ -86,10 +122,6 @@ public class SPIRegistry<SPI> {
 		}
 	}
 
-	private ClassLoader getClassLoader() {
-		return getClass().getClassLoader();
-	}
-
 	/**
 	 * Get the SPI instances found by this registry will be implementing.
 	 * 
@@ -97,6 +129,22 @@ public class SPIRegistry<SPI> {
 	 */
 	public Class<SPI> getSpi() {
 		return spi;
+	}
+
+	/**
+	 * Reset the instanceRegistry causing it to be re-populated on the next call
+	 * to getInstances.
+	 */
+	public void refresh() {
+		if (instanceRegistry != null) {
+			instanceRegistry.removeRegistryListener(instanceRegistryListener);
+		}
+		instanceRegistry = null;
+		ravenSPIRegistry = null;
+	}
+
+	public void removeObserver(Observer<SPIRegistryEvent> observer) {
+		multiCaster.removeObserver(observer);
 	}
 
 }
