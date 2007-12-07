@@ -29,7 +29,7 @@ public class AnnotationTester {
 	public static final String DEFAULT_NAMESPACE = "http://taverna.sf.net/t2/cloudone/bean/unknown/";
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(AnnotationTester.class);
-	private static BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
+	private BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
 	

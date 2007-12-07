@@ -78,7 +78,7 @@ public class TranslatorRegistrySPITest {
 		urlRef = new HttpReferenceScheme(new URL("http://localhost/test.txt"));
 	}
 
-	TranslatorRegistry registry = TranslatorRegistry.getInstance();
+	private TranslatorRegistry registry = TranslatorRegistry.getInstance();
 
 	@SuppressWarnings("unchecked")
 	@Test

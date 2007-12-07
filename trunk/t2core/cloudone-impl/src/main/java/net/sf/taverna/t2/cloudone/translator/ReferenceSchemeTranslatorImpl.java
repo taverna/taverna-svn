@@ -23,8 +23,7 @@ import net.sf.taverna.t2.cloudone.util.AbstractAsynchRunnable;
  */
 public class ReferenceSchemeTranslatorImpl implements ReferenceSchemeTranslator {
 
-	private static TranslatorRegistry translatorReg = TranslatorRegistry
-			.getInstance();
+	private TranslatorRegistry translatorReg = TranslatorRegistry.getInstance();
 	private DataManager dataManager;
 	private DataPeer dataPeer;
 
