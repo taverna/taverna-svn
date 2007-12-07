@@ -27,7 +27,7 @@ public class TranslatorRegistry extends SPIRegistry<Translator> {
 	 * 
 	 * @return The {@link TranslatorRegistry} instance.
 	 */
-	public static TranslatorRegistry getInstance() {
+	public static synchronized TranslatorRegistry getInstance() {
 		if (instance == null) {
 			instance = new TranslatorRegistry();
 		}
@@ -35,11 +35,11 @@ public class TranslatorRegistry extends SPIRegistry<Translator> {
 	}
 
 	/**
-	 * Private constructor, use {@link #getInstance()}
+	 * Protected constructor, use {@link #getInstance()}
 	 * 
 	 * @see #getInstance()
 	 */
-	private TranslatorRegistry() {
+	protected TranslatorRegistry() {
 		super(Translator.class);
 	}
 

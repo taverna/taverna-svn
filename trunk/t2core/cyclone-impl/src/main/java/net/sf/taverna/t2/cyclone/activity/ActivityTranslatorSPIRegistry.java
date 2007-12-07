@@ -10,19 +10,29 @@ import net.sf.taverna.t2.spi.SPIRegistry;
  * @see SPIRegistry
  * 
  * @author Stuart Owen
- *
+ * 
  */
-@SuppressWarnings("unchecked") 
-public class ActivityTranslatorSPIRegistry extends SPIRegistry<ActivityTranslator> {
+@SuppressWarnings("unchecked")
+public class ActivityTranslatorSPIRegistry extends
+		SPIRegistry<ActivityTranslator> {
+
+	private static ActivityTranslatorSPIRegistry instance = null;
+
+	public static synchronized ActivityTranslatorSPIRegistry getInstance() {
+		if (instance == null) {
+			instance = new ActivityTranslatorSPIRegistry();
+		}
+		return instance;
+	}
 
 	/**
-	 * Constructs the ActivityTranslatorSPIRegistry to be an SPIRegsistry based upon the ActivityTransator class 
+	 * Protected constructor, use {@link #getInstance()} instead.
+	 * <p>
+	 * Construct the ActivityTranslatorSPIRegistry to be an SPIRegistry based
+	 * upon the ActivityTransator SPI interface.
 	 */
-	public ActivityTranslatorSPIRegistry() {
+	protected ActivityTranslatorSPIRegistry() {
 		super(ActivityTranslator.class);
 	}
 
-	
-
-	
 }

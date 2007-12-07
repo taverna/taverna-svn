@@ -7,13 +7,16 @@ import net.sf.taverna.t2.spi.SPIRegistry;
 @SuppressWarnings("unchecked")
 public class EditsRegistry extends SPIRegistry<Edits> {
 
-	private static EditsRegistry instance = new EditsRegistry();
-
-	private EditsRegistry() {
+	private static EditsRegistry instance;
+	
+	protected EditsRegistry() {
 		super(Edits.class);
 	}
 
-	public static EditsRegistry getInstance() {
+	public static synchronized EditsRegistry getInstance() {
+		if (instance == null) {
+			instance = new EditsRegistry();
+		}
 		return instance;
 	}
 
