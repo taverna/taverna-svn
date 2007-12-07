@@ -8,13 +8,12 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 public class HealthReportTreeModel implements TreeModel {
 	private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
-	private HealthReportImpl overallReport = new HealthReportImpl("Health Report","",Status.OK);
+	private HealthReport overallReport = new HealthReport("Health Report","",Status.OK);
 	
 	public void addHealthReport(HealthReport report) {
 		overallReport.getSubReports().add(report);

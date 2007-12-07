@@ -1,11 +1,8 @@
 package net.sf.taverna.t2.plugin.pretest;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,10 +16,9 @@ import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
 import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.HealthReport;
-import net.sf.taverna.t2.workflowmodel.HealthReportImpl;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport;
+import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 
@@ -116,10 +112,10 @@ public class HealthCheckReportPanel extends JPanel {
 		setStatus("Validating dataflow");
 		DataflowValidationReport validationReport = dataflow.checkValidity();
 		if (validationReport.isValid()) {
-			reportTreeModel.addHealthReport(new HealthReportImpl(dataflow.getLocalName(),
+			reportTreeModel.addHealthReport(new HealthReport(dataflow.getLocalName(),
 					"Validated OK", Status.OK));
 		} else {
-			reportTreeModel.addHealthReport(new HealthReportImpl(dataflow.getLocalName(),
+			reportTreeModel.addHealthReport(new HealthReport(dataflow.getLocalName(),
 					"There was a problem validating the dataflow",
 					Status.SEVERE));
 		}
@@ -137,9 +133,9 @@ public class HealthCheckReportPanel extends JPanel {
 		HealthReport report;
 		try {
 			dataflow = WorkflowModelTranslator.doTranslation(scuflModel);
-			report = new HealthReportImpl(scuflModel.getDescription().getTitle(),"Translated successfully", Status.OK);
+			report = new HealthReport(scuflModel.getDescription().getTitle(),"Translated successfully", Status.OK);
 		} catch (WorkflowTranslationException e) {
-			report = new HealthReportImpl(scuflModel.getDescription().getTitle(),"This workflow cannot be translated:"
+			report = new HealthReport(scuflModel.getDescription().getTitle(),"This workflow cannot be translated:"
 					+ e.getMessage(), Status.SEVERE);
 		}
 		reportTreeModel.addHealthReport(report);
