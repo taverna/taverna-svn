@@ -3,6 +3,9 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import net.sf.taverna.t2.cloudone.gui.entity.model.ModelEvent.EventType;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -29,7 +32,7 @@ public class DataDocumentModelTest {
 
 	@Before
 	public void attachObserver() {
-		model.registerObserver(observer);
+		model.addObserver(observer);
 	}
 
 	@Test
@@ -58,20 +61,16 @@ public class DataDocumentModelTest {
 		@Override
 		public void remove() {
 		}
-
 		@Override
 		public String getStringRepresentation() {
 			return null;
 		}
-
-		public void registerObserver(Observer<String> observer) {
-			// TODO Auto-generated method stub
-			
+		public void addObserver(Observer<String> observer) {
 		}
-
-		public void removeObserver(Observer<String> observer) {
-			// TODO Auto-generated method stub
-			
+		public void removeObserver(Observer<String> observer) {	
+		}
+		public List<Observer<String>> getObservers() {
+			return null;
 		}
 	}
 

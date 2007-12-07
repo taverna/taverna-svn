@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.cloudone.gui.entity.model;
 
 import java.io.File;
+import java.util.List;
 
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -15,8 +16,8 @@ public class FileRefSchemeModel extends ReferenceSchemeModel<File>{
 		this.parentModel = parentModel;
 	}
 
-	public void registerObserver(Observer<File> observer) {
-		multiCaster.registerObserver(observer);
+	public void addObserver(Observer<File> observer) {
+		multiCaster.addObserver(observer);
 	}
 
 	public void removeObserver(Observer<File> observer) {
@@ -47,6 +48,10 @@ public class FileRefSchemeModel extends ReferenceSchemeModel<File>{
 			return "(none)";
 		}
 		return file.toString();
+	}
+
+	public List<Observer<File>> getObservers() {
+		return multiCaster.getObservers();
 	}
 
 }

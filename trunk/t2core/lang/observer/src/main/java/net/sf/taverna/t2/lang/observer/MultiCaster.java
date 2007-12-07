@@ -11,7 +11,7 @@ public class MultiCaster<Message> implements Observable<Message> {
 
 	private Observable<Message> observable;
 
-	List<Observer<Message>> observers = new ArrayList<Observer<Message>>();
+	protected List<Observer<Message>> observers = new ArrayList<Observer<Message>>();
 
 	public MultiCaster(Observable<Message> observable) {
 		this.observable = observable;
@@ -19,9 +19,8 @@ public class MultiCaster<Message> implements Observable<Message> {
 
 	@SuppressWarnings("unchecked")
 	public void notify(Message message) {
-		// Make a copy that can be iterated even if register/remove is called
-		Observer<Message>[] observersCopy = observers.toArray(new Observer[0]);
-		for (Observer<Message> observer : observersCopy) {
+		// Use a copy that can be iterated even if register/remove is called
+		for (Observer<Message> observer : getObservers()) {
 			try {
 				observer.notify(observable, message);
 			} catch (Exception ex) {
@@ -30,12 +29,16 @@ public class MultiCaster<Message> implements Observable<Message> {
 		}
 	}
 
-	public void registerObserver(Observer<Message> observer) {
+	public synchronized void addObserver(Observer<Message> observer) {
 		observers.add(observer);
 	}
 
-	public void removeObserver(Observer<Message> observer) {
+	public synchronized void removeObserver(Observer<Message> observer) {
 		observers.remove(observer);
+	}
+
+	public synchronized List<Observer<Message>> getObservers() {
+		return new ArrayList<Observer<Message>>(observers);
 	}
 
 }

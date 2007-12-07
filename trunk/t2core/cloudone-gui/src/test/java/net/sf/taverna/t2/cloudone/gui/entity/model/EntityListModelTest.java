@@ -28,7 +28,7 @@ public class EntityListModelTest {
 
 	@Before
 	public void attachObserver() {
-		model.registerObserver(observer);
+		model.addObserver(observer);
 	}
 
 	@Test

@@ -30,7 +30,7 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 			DataDocumentEditView parentView) {
 		this.model = model;
 		this.parentView = parentView;
-		model.registerObserver(this);
+		model.addObserver(this);
 		initialise();
 		
 	}

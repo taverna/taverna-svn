@@ -57,8 +57,8 @@ public class DataDocumentModel extends EntityModel implements Observable<DataDoc
 	 * Register with the {@link DataDocumentModel} to receive notifications when
 	 * a {@link ReferenceSchemeModel} is added or removed
 	 */
-	public void registerObserver(Observer<DataDocumentModelEvent> observer) {
-		multiCaster.registerObserver(observer);
+	public void addObserver(Observer<DataDocumentModelEvent> observer) {
+		multiCaster.addObserver(observer);
 	}
 
 	/**
@@ -89,6 +89,10 @@ public class DataDocumentModel extends EntityModel implements Observable<DataDoc
 			refModel.remove();
 		}
 		super.remove();
+	}
+
+	public List<Observer<DataDocumentModelEvent>> getObservers() {
+		return multiCaster.getObservers();
 	}
 	
 }

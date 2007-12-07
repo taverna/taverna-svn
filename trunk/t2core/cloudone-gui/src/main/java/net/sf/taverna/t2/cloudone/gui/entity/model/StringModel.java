@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.cloudone.gui.entity.model;
 
+import java.util.List;
+
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -23,8 +25,8 @@ public class StringModel extends EntityModel implements
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(StringModel.class);
 
-	public void registerObserver(Observer<StringModelEvent> observer) {
-		multiCaster.registerObserver(observer);
+	public void addObserver(Observer<StringModelEvent> observer) {
+		multiCaster.addObserver(observer);
 
 	}
 
@@ -48,5 +50,9 @@ public class StringModel extends EntityModel implements
 
 	public String getString() {
 		return string;
+	}
+
+	public List<Observer<StringModelEvent>> getObservers() {
+		return multiCaster.getObservers();
 	}
 }

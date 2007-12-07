@@ -23,7 +23,7 @@ public class RunDocumentView {
 		DataDocumentModel model = new DataDocumentModel(null);
 		DataDocumentEditView view = new DataDocumentEditView(model, null);
 
-		model.registerObserver(new Observer<DataDocumentModelEvent>() {
+		model.addObserver(new Observer<DataDocumentModelEvent>() {
 			public void notify(Observable<DataDocumentModelEvent> sender,
 					DataDocumentModelEvent message) {
 				System.out.println(message.getEventType() + " "

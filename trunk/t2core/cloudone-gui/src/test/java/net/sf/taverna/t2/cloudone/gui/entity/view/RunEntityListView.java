@@ -26,7 +26,7 @@ public class RunEntityListView {
 	public static void main(String[] args) {
 		EntityListModel model = new EntityListModel(null);
 		EntityListView view = new EntityListView(model);
-		model.registerObserver(new Observer<EntityListModelEvent>() {
+		model.addObserver(new Observer<EntityListModelEvent>() {
 
 			public void notify(Observable<EntityListModelEvent> sender,
 					EntityListModelEvent message) {

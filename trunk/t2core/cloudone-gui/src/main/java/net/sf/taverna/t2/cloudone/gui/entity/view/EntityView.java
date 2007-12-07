@@ -40,7 +40,7 @@ public abstract class EntityView<MyModelType extends Observable<Event>, ChildMod
 		this.myModel = myModel;
 		this.modelObserver = makeModelObserver();
 		// TODO: removeObserver on window close
-		myModel.registerObserver(modelObserver);
+		myModel.addObserver(modelObserver);
 	}
 
 	public MyModelType getModel() {

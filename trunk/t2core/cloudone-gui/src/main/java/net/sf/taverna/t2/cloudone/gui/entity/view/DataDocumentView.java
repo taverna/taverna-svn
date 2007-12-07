@@ -73,7 +73,7 @@ public class DataDocumentView extends
 		JButton removeRef = new JButton(new RemoveViewAction((refModel)));
 //		removeRef.setOpaque(false);
 		JLabel label = new  JLabel(refModel.getStringRepresentation());
-		refModel.registerObserver(new RefSchemeObserver(label));
+		refModel.addObserver(new RefSchemeObserver(label));
 		panel.add(label);
 		panel.add(removeRef);
 		return panel;

@@ -27,8 +27,8 @@ public class EntityListModel extends EntityModel implements
 		}
 	}
 
-	public void registerObserver(Observer<EntityListModelEvent> observer) {
-		multiCaster.registerObserver(observer);
+	public void addObserver(Observer<EntityListModelEvent> observer) {
+		multiCaster.addObserver(observer);
 	}
 
 	public void removeObserver(Observer<EntityListModelEvent> observer) {
@@ -78,6 +78,10 @@ public class EntityListModel extends EntityModel implements
 	@Override
 	public int getDepth() {
 		return depth;
+	}
+
+	public List<Observer<EntityListModelEvent>> getObservers() {
+		return multiCaster.getObservers();
 	}
 
 }

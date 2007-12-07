@@ -2,6 +2,7 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import net.sf.taverna.t2.cloudone.gui.entity.view.HttpRefSchemeView;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
@@ -48,8 +49,8 @@ public class HttpRefSchemeModel extends ReferenceSchemeModel<URL> {
 	/**
 	 * Register as an observer to be informed of changes to this model
 	 */
-	public void registerObserver(Observer<URL> observer) {
-		multiCaster.registerObserver(observer);
+	public void addObserver(Observer<URL> observer) {
+		multiCaster.addObserver(observer);
 
 	}
 
@@ -87,6 +88,10 @@ public class HttpRefSchemeModel extends ReferenceSchemeModel<URL> {
 			return "(none)";
 		}
 		return url.toString();
+	}
+
+	public List<Observer<URL>> getObservers() {
+		return multiCaster.getObservers();
 	}
 
 }

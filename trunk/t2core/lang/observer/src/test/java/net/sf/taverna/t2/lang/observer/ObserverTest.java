@@ -2,6 +2,8 @@ package net.sf.taverna.t2.lang.observer;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -18,7 +20,7 @@ public class ObserverTest {
 
 		observable.triggerEvent(); // don't notify, but increase count
 		assertNull(observer1.lastMessage);
-		observable.registerObserver(observer1);
+		observable.addObserver(observer1);
 		assertNull(observer1.lastMessage);
 		assertNull(observer2.lastMessage);
 		assertNull(observer1.lastSender);
@@ -28,7 +30,7 @@ public class ObserverTest {
 		assertSame(observable, observer1.lastSender);
 		assertNull(observer2.lastSender);
 
-		observable.registerObserver(observer2);
+		observable.addObserver(observer2);
 		assertNull(observer2.lastMessage);
 		observable.triggerEvent();
 		assertEquals("This is message 2", observer1.lastMessage);
@@ -37,7 +39,7 @@ public class ObserverTest {
 		assertSame(observable, observer2.lastSender);
 
 		MyObservable otherObservable = new MyObservable();
-		otherObservable.registerObserver(observer2);
+		otherObservable.addObserver(observer2);
 		otherObservable.triggerEvent();
 		// New instance, should start from 0
 		assertEquals("This is message 0", observer2.lastMessage);
@@ -49,13 +51,26 @@ public class ObserverTest {
 
 	}
 
+	@Test
+	public void concurrencyTest() {
+		MyObservable observable = new MyObservable();
+		MyObserver dummyObserver = new MyObserver();
+		SelvRemovingObserver selfRemoving = new SelvRemovingObserver();
+		observable.addObserver(dummyObserver);
+		observable.addObserver(selfRemoving);
+		assertEquals(2, observable.getObservers().size());
+		observable.triggerEvent();
+		
+		
+	}
+	
 	public class MyObservable implements Observable<String> {
 
 		private int counter = 0;
 		MultiCaster<String> multiCaster = new MultiCaster<String>(this);
 
-		public void registerObserver(Observer<String> observer) {
-			multiCaster.registerObserver(observer);
+		public void addObserver(Observer<String> observer) {
+			multiCaster.addObserver(observer);
 		}
 
 		public void removeObserver(Observer<String> observer) {
@@ -64,6 +79,10 @@ public class ObserverTest {
 
 		public void triggerEvent() {
 			multiCaster.notify("This is message " + counter++);
+		}
+
+		public List<Observer<String>> getObservers() {
+			return multiCaster.getObservers();
 		}
 	}
 
@@ -75,6 +94,20 @@ public class ObserverTest {
 			lastSender = sender;
 			lastMessage = message;
 		}
+	}
+	
+	public class SelvRemovingObserver implements Observer<String> {
+
+		public int called=0;
+		
+		public void notify(Observable<String> sender, String message) {
+			called++;
+			if (called > 1) {
+				fail("Did not remove itself");
+			}
+			sender.removeObserver(this);
+		}
+		
 	}
 
 }

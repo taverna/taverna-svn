@@ -53,7 +53,7 @@ public class HttpRefSchemeView extends RefSchemeView implements Observer<URL> {
 			DataDocumentEditView parentView) {
 		this.model = model;
 		this.parentView = parentView;
-		model.registerObserver(this);
+		model.addObserver(this);
 		initialise();
 	}
 

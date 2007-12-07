@@ -27,7 +27,7 @@ public class RunSingletonListView {
 	public static void main(String[] args) {
 		SingletonListModel model = new SingletonListModel(0);
 		SingletonListView view = new SingletonListView(model);
-		model.registerObserver(new Observer<EntityListModelEvent>() {
+		model.addObserver(new Observer<EntityListModelEvent>() {
 
 			public void notify(Observable<EntityListModelEvent> sender,
 					EntityListModelEvent message) {
