@@ -1,8 +1,11 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import static net.sf.taverna.t2.annotation.HierarchyRole.CHILD;
+
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -17,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
  * @author Tom Oinn
  * 
  */
+@ControlBoundary
 public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 
 	/**
@@ -29,6 +33,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 *         staging partial iteration strategies together is the only way to
 	 *         get the desired combination of inputs
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public IterationStrategyStack getIterationStrategy();
 
 	/**
@@ -48,6 +53,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * 
 	 * @return List of named input ports
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends ProcessorInputPort> getInputPorts();
 
 	/**
@@ -59,6 +65,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * 
 	 * @return List of named output ports
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends ProcessorOutputPort> getOutputPorts();
 
 	/**
@@ -68,6 +75,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * 
 	 * @return the DispatchStackImpl for this processor
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public DispatchStack getDispatchStack();
 
 	/**
@@ -81,6 +89,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * 
 	 * @return list of Activity instances
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Activity<?>> getActivityList();
 
 	/**
@@ -104,6 +113,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * @return a List of Condition objects defining constraints on this
 	 *         processor's execution
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Condition> getPreconditionList();
 
 	/**
@@ -113,6 +123,7 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * @return a List of Condition objects for which this is the controlling
 	 *         processor
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Condition> getControlledPreconditionList();
 
 	/**

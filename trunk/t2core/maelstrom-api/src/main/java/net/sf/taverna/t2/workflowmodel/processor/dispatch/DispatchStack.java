@@ -1,8 +1,11 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
+import static net.sf.taverna.t2.annotation.HierarchyRole.CHILD;
+
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 
 /**
@@ -26,6 +29,7 @@ public interface DispatchStack extends Annotated<DispatchStack> {
 	 * dispatch stack configuration)
 	 * 
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<DispatchLayer<?>> getLayers();
 
 	/**

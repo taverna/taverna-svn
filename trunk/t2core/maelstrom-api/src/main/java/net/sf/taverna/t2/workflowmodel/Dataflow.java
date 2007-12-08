@@ -2,7 +2,9 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import static net.sf.taverna.t2.annotation.HierarchyRole.*;
 
 /**
  * Top level definition object for a dataflow workflow. Currently Taverna only
@@ -12,6 +14,7 @@ import net.sf.taverna.t2.invocation.InvocationContext;
  * @author Tom Oinn
  * 
  */
+@ControlBoundary
 public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 
 	/**
@@ -20,6 +23,7 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * 
 	 * @return list of all processors in the dataflow
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Processor> getProcessors();
 
 	/**
@@ -30,6 +34,7 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * 
 	 * @return list of dataflow input port instances
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends DataflowInputPort> getInputPorts();
 
 	/**
@@ -55,6 +60,7 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * 
 	 * @return list of dataflow output port instances
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends DataflowOutputPort> getOutputPorts();
 
 	/**
@@ -63,6 +69,7 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * 
 	 * @return list of Datalink implementations
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Datalink> getLinks();
 
 	/**

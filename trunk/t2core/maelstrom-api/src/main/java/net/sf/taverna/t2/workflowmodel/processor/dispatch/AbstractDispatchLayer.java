@@ -19,7 +19,7 @@ public abstract class AbstractDispatchLayer<ConfigurationType> implements
 		this.dispatchStack = parentStack;
 	}
 
-	private DispatchStack dispatchStack;
+	protected DispatchStack dispatchStack;
 
 	protected final DispatchLayer<?> getAbove() {
 		return this.dispatchStack.layerAbove(this);

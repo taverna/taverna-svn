@@ -1,9 +1,12 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity;
 
+import static net.sf.taverna.t2.annotation.HierarchyRole.CHILD;
+
 import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
@@ -45,6 +48,7 @@ public interface Activity<ConfigurationType> extends Annotated<Activity<?>> {
 	 * 
 	 * @return the set of input ports for this activity
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public Set<InputPort> getInputPorts();
 
 	/**
@@ -63,6 +67,7 @@ public interface Activity<ConfigurationType> extends Annotated<Activity<?>> {
 	 * 
 	 * @return
 	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public Set<OutputPort> getOutputPorts();
 
 	/**
