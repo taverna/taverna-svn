@@ -3,8 +3,6 @@
  */
 package net.sf.taverna.t2.drizzle.bean;
 
-import java.util.HashMap;
-
 /**
  * This should really deal with ObjectBean rather than Object. It is not clear
  * how this should be done.

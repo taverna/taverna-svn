@@ -3,8 +3,6 @@
  */
 package net.sf.taverna.t2.drizzle.bean;
 
-import java.util.HashMap;
-
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
