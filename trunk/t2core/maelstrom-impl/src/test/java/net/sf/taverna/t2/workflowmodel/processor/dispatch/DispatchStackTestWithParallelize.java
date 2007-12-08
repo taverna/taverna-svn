@@ -11,7 +11,6 @@ import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
@@ -52,7 +51,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		}
 
 		@Override
-		protected void pushEvent(Event e) {
+		protected void pushEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 			// TODO Auto-generated method stub
 			
 		}
@@ -82,7 +81,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
-		for (IterationInternalEvent e : generateLotsOfEvents("Process1", 10)) {
+		for (IterationInternalEvent<?> e : generateLotsOfEvents("Process1", 10)) {
 			d.receiveEvent(e);
 		}
 		try {
@@ -100,10 +99,10 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
-		for (IterationInternalEvent e : generateLotsOfEvents("Process1", 10)) {
+		for (IterationInternalEvent<?> e : generateLotsOfEvents("Process1", 10)) {
 			d.receiveEvent(e);
 		}
-		for (IterationInternalEvent e : generateLotsOfEvents("Process2", 6)) {
+		for (IterationInternalEvent<?> e : generateLotsOfEvents("Process2", 6)) {
 			d.receiveEvent(e);
 		}
 		try {
@@ -182,7 +181,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 			}
 		};
 		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Activity<?>>()) {
-			protected void pushEvent(Event e) {
+			protected void pushEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 				c.receiveEvent(e);
 			}
 		};
@@ -210,7 +209,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
-		for (IterationInternalEvent e : generateLotsOfEvents("Process1", 4)) {
+		for (IterationInternalEvent<?> e : generateLotsOfEvents("Process1", 4)) {
 			d.receiveEvent(e);
 		}
 		try {
@@ -232,8 +231,8 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	 * @param jobs
 	 * @return
 	 */
-	private List<IterationInternalEvent> generateLotsOfEvents(String processID, int jobs) {
-		List<IterationInternalEvent> events = new ArrayList<IterationInternalEvent>();
+	private List<IterationInternalEvent<?>> generateLotsOfEvents(String processID, int jobs) {
+		List<IterationInternalEvent<?>> events = new ArrayList<IterationInternalEvent<?>>();
 		for (int i = 0; i < jobs; i++) {
 			Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 			dataMap.put("Input1", nextID());

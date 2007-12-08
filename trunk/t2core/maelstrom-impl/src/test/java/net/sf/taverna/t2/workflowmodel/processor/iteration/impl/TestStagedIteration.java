@@ -12,14 +12,13 @@ import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestStagedIteration  {
@@ -33,10 +32,12 @@ public class TestStagedIteration  {
 		}
 	};
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testStaging() throws MalformedIdentifierException {
 		IterationStrategyStackImpl iss = new IterationStrategyStackImpl() {
-			protected void receiveEventFromStrategy(Event e) {
+			@Override
+			protected void receiveEventFromStrategy(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 				System.out.println(e);
 			}
 		};

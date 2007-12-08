@@ -18,7 +18,7 @@ import net.sf.taverna.raven.spi.SpiRegistry;
  */
 public final class ObjectFactory {
 
-	private static Map<Class,SpiRegistry> registryMap = new HashMap<Class,SpiRegistry>();
+	private static Map<Class<?>,SpiRegistry> registryMap = new HashMap<Class<?>,SpiRegistry>();
 	
 	public static <C> C getInstance(Class<C> objectClass) {
 		if (objectClass == null) {

@@ -14,14 +14,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "classValue")
 @XmlType(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "classValue")
 public class ClassValue implements PropertyValue, Comparable<Object> {
-	private Class value;
+	private Class<?> value;
 	
 	/**
 	 * Construct a new StringValue
 	 * 
 	 * @param value
 	 */
-	public ClassValue(final Class value) {
+	public ClassValue(final Class<?> value) {
 		this.value = value;
 	}
 	
@@ -30,7 +30,7 @@ public class ClassValue implements PropertyValue, Comparable<Object> {
 	 * 
 	 * @return
 	 */
-	public Class getValue() {
+	public Class<?> getValue() {
 		return this.value;
 	}
 	

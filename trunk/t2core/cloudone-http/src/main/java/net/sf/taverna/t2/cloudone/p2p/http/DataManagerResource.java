@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.cloudone.p2p.http;
 
-import javax.xml.bind.JAXBException;
-
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;

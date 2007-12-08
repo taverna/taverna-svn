@@ -1,13 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-
-import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;

@@ -2,14 +2,10 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 

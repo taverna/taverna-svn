@@ -31,6 +31,10 @@ public class DataDocumentView
 		extends
 		EntityView<DataDocumentModel, ReferenceSchemeModel, DataDocumentModelEvent> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1597320335876228073L;
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(DataDocumentView.class);
 	private JPanel views;

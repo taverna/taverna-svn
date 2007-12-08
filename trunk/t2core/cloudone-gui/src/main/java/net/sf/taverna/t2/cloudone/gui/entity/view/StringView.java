@@ -29,6 +29,10 @@ import org.apache.log4j.Logger;
 public class StringView extends
 		EntityView<StringModel, String, StringModelEvent> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6732819222408128223L;
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(StringView.class);
 	private EntityListView parentView;

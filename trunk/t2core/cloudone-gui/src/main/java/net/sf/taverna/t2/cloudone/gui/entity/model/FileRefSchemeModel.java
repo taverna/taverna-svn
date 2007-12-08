@@ -4,9 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.gui.entity.view.FileRefSchemeView;
-import net.sf.taverna.t2.cloudone.gui.entity.view.HttpRefSchemeView;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
-import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observer;
 

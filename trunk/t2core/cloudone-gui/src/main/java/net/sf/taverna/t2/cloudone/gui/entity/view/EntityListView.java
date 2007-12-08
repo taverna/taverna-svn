@@ -14,17 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.cloudone.entity.EntityList;
-import net.sf.taverna.t2.cloudone.entity.Literal;
-import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.gui.entity.model.DataDocumentModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.StringModel;
-import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
-import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -36,6 +31,11 @@ import org.apache.log4j.Logger;
  */
 public class EntityListView extends
 		EntityView<EntityListModel, EntityModel, EntityListModelEvent> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8759220294605298180L;
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(EntityListView.class);

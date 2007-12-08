@@ -13,7 +13,6 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -48,7 +47,7 @@ public abstract class DispatchStackImpl extends
 
 	private static Logger logger = Logger.getLogger(DispatchStackImpl.class);
 
-	private Map<String, BlockingQueue<IterationInternalEvent>> queues = new HashMap<String, BlockingQueue<IterationInternalEvent>>();
+	private Map<String, BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>> queues = new HashMap<String, BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>>();
 
 	private List<DispatchLayer<?>> dispatchLayers = new ArrayList<DispatchLayer<?>>();
 
@@ -66,7 +65,8 @@ public abstract class DispatchStackImpl extends
 	 * 
 	 * @param e
 	 */
-	protected abstract void pushEvent(Event e);
+	protected abstract void pushEvent(
+			IterationInternalEvent<? extends IterationInternalEvent<?>> e);
 
 	/**
 	 * Called to determine whether all the preconditions for this dispatch stack
@@ -208,13 +208,13 @@ public abstract class DispatchStackImpl extends
 	 */
 	@SuppressWarnings("unchecked")
 	public void receiveEvent(IterationInternalEvent e) {
-		BlockingQueue<IterationInternalEvent> queue = null;
+		BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> queue = null;
 		String owningProcess = e.getOwningProcess();
 		synchronized (queues) {
 			String enclosingProcess = owningProcess.substring(0, owningProcess
 					.lastIndexOf(':'));
 			if (queues.containsKey(owningProcess) == false) {
-				queue = new LinkedBlockingQueue<IterationInternalEvent>();
+				queue = new LinkedBlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
 				queues.put(owningProcess, queue);
 				queue.add(e);
 

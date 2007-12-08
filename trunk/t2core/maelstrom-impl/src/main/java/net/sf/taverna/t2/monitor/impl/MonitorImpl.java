@@ -92,7 +92,7 @@ public final class MonitorImpl implements Monitor {
 	 * some (slightly) later time as determined by the removalDelay property.
 	 */
 	public void deregisterNode(String[] owningProcess) {
-		if (this.isEnabled) {
+		if (isEnabled) {
 			final MutableTreeNode nodeToRemove = nodeAtProcessPath(
 					owningProcess, -1);
 			nodeRemovalTimer.schedule(new TimerTask() {
@@ -112,7 +112,7 @@ public final class MonitorImpl implements Monitor {
 	public void registerNode(final Object workflowObject,
 			final String[] owningProcess,
 			final Set<? extends MonitorableProperty<?>> properties) {
-		if (this.isEnabled) {
+		if (isEnabled) {
 
 			// Create a new MonitorNode
 			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(

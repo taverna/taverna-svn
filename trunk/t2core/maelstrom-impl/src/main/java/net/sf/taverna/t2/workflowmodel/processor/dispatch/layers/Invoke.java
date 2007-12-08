@@ -1,24 +1,15 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.CREATE_LOCAL_STATE;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.REMOVE_LOCAL_STATE;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.UPDATE_LOCAL_STATE;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.JOB;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
@@ -196,11 +187,6 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						getAbove().receiveResult(resultEvent);
 
 						sentJob = true;
-					}
-
-					public SecurityAgentManager getLocalSecurityManager() {
-						// TODO Auto-generated method stub
-						return null;
 					}
 
 					// TODO - this is a naive implementation, we can use this

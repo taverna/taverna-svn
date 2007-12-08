@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
@@ -19,18 +19,18 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 public class DiagnosticIterationStrategyNode extends
 		AbstractIterationStrategyNode {
 
-	private Map<String, List<Event>> ownerToJobList;
+	private Map<String, List<IterationInternalEvent<? extends IterationInternalEvent<?>>>> ownerToJobList;
 
 	public DiagnosticIterationStrategyNode() {
-		this.ownerToJobList = new HashMap<String, List<Event>>();
+		this.ownerToJobList = new HashMap<String, List<IterationInternalEvent<? extends IterationInternalEvent<?>>>>();
 	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		for (String owner : ownerToJobList.keySet()) {
 			sb.append(owner + "\n");
-			List<Event> jobs = ownerToJobList.get(owner);
-			for (Event w : jobs) {
+			List<IterationInternalEvent<? extends IterationInternalEvent<?>>> jobs = ownerToJobList.get(owner);
+			for (IterationInternalEvent<?> w : jobs) {
 				sb.append("  " + w.toString() + "\n");
 			}
 		}
@@ -42,7 +42,7 @@ public class DiagnosticIterationStrategyNode extends
 			return 0;
 		}
 		int number = 0;
-		for (Event w : ownerToJobList.get(string)) {
+		for (IterationInternalEvent<?> w : ownerToJobList.get(string)) {
 			if (w instanceof Job) {
 				number++;
 			}
@@ -51,11 +51,11 @@ public class DiagnosticIterationStrategyNode extends
 	}
 
 	public boolean containsJob(String owningProcess, int[] jobIndex) {
-		List<Event> jobs = ownerToJobList.get(owningProcess);
+		List<IterationInternalEvent<?>> jobs = ownerToJobList.get(owningProcess);
 		if (jobs == null) {
 			return false;
 		}
-		for (Event w : jobs) {
+		for (IterationInternalEvent<?> w : jobs) {
 			if (w instanceof Job) {
 				Job j = (Job)w;
 				if (compareArrays(j.getIndex(), jobIndex)
@@ -82,18 +82,18 @@ public class DiagnosticIterationStrategyNode extends
 	public synchronized void receiveCompletion(int inputIndex,
 			Completion completion) {
 		String owningProcess = completion.getOwningProcess();
-		List<Event> jobs = ownerToJobList.get(owningProcess);
+		List<IterationInternalEvent<?>> jobs = ownerToJobList.get(owningProcess);
 		if (jobs == null) {
-			jobs = new ArrayList<Event>();
+			jobs = new ArrayList<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
 			ownerToJobList.put(owningProcess, jobs);
 		}
 		jobs.add(completion);
 	}
 
 	public synchronized void receiveJob(int inputIndex, Job newJob) {
-		List<Event> jobs = ownerToJobList.get(newJob.getOwningProcess());
+		List<IterationInternalEvent<? extends IterationInternalEvent<?>>> jobs = ownerToJobList.get(newJob.getOwningProcess());
 		if (jobs == null) {
-			jobs = new ArrayList<Event>();
+			jobs = new ArrayList<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
 			ownerToJobList.put(newJob.getOwningProcess(), jobs);
 		}
 		jobs.add(newJob);

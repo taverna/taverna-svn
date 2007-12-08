@@ -32,6 +32,10 @@ import org.apache.log4j.Logger;
 public class LiteralView extends
 		EntityView<LiteralModel, Object, LiteralModelEvent> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4812283598872330172L;
 	private static final String BOOLEAN = Boolean.class.getSimpleName();
 	private static final String FLOAT = Float.class.getSimpleName();
 	private static final String DOUBLE = Double.class.getSimpleName();

@@ -7,8 +7,8 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.invocation.TreeCache;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
@@ -44,7 +44,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 	 * 
 	 * @param e
 	 */
-	public void receiveEvent(Event e) {
+	public void receiveEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 		String owningProcess = e.getOwningProcess();
 		CompletionAwareTreeCache cache = null;
 		synchronized (cacheMap) {

@@ -7,15 +7,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
-import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
 /**
  * @author alanrw

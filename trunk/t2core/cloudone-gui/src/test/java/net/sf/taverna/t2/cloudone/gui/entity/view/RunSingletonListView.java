@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
-import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.EntityListModelEvent;
 import net.sf.taverna.t2.cloudone.gui.entity.model.SingletonListModel;
 import net.sf.taverna.t2.lang.observer.Observable;

@@ -13,7 +13,6 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
@@ -116,7 +115,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 			 * stack. In this case we pass it into the crystalizer.
 			 */
 			@Override
-			protected void pushEvent(Event e) {
+			protected void pushEvent(IterationInternalEvent e) {
 				// System.out.println("Sending event to crystalizer : "+e);
 				crystalizer.receiveEvent(e);
 			}
@@ -330,39 +329,25 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	}
 
 	/* Utility methods */
-
-	// Used as temp caches for output and input names to port instances
-	private Map<String, ProcessorInputPortImpl> inputPortNameCache = new HashMap<String, ProcessorInputPortImpl>();
-
+	
 	protected ProcessorInputPortImpl getInputPortWithName(String name) {
-		synchronized (inputPortNameCache) {
-			if (inputPortNameCache.isEmpty()) {
-				for (ProcessorInputPortImpl p : inputPorts) {
-					String portName = p.getName();
-					inputPortNameCache.put(portName, p);
-				}
+		for (ProcessorInputPortImpl p : inputPorts) {
+			String portName = p.getName();
+			if (portName.equals(name)) {
+				return p;
 			}
 		}
-		return inputPortNameCache.get(name);
+		return null;
 	}
 
-	// Used as temp caches for output and input names to port instances
-	private Map<String, ProcessorOutputPortImpl> outputPortNameCache = new HashMap<String, ProcessorOutputPortImpl>();
-
 	protected ProcessorOutputPortImpl getOutputPortWithName(String name) {
-		// synchronized (outputPortNameCache) {
-		// if (outputPortNameCache.isEmpty()) {
 		for (ProcessorOutputPortImpl p : outputPorts) {
 			String portName = p.getName();
 			if (portName.equals(name)) {
 				return p;
 			}
-			// outputPortNameCache.put(portName, p);
 		}
 		return null;
-		// }
-		// }
-		// return outputPortNameCache.get(name);
 	}
 
 	/* Implementations of Processor interface */

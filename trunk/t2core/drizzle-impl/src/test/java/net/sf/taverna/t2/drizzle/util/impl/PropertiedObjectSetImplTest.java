@@ -10,7 +10,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
-import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectListener;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSetListener;

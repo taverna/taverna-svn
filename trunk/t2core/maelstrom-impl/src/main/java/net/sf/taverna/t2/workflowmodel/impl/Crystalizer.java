@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
@@ -26,7 +26,7 @@ public interface Crystalizer {
 	 * be recursive in nature if the completion event's index implies nested
 	 * lists which have not been registered.
 	 */
-	public void receiveEvent(Event event);
+	public void receiveEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> event);
 
 	/**
 	 * This method is called when a new Job has been handled by the

@@ -14,7 +14,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObject;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectListener;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
-import net.sf.taverna.t2.drizzle.util.StringValue;
 
 /**
  * @author alanrw

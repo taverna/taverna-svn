@@ -96,6 +96,11 @@ public class FileRefSchemeView extends RefSchemeView implements Observer<File> {
 	 */
 	public File chooseFile(File selectedFile) {
 		JFileChooser fileChooser = new JFileChooser() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1764126995351013988L;
+
 			@Override
 			public void approveSelection() {
 				File file = getSelectedFile();

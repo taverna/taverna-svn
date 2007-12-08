@@ -3,7 +3,6 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.events;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
@@ -21,7 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMe
 public class DispatchJobQueueEvent extends
 		AbstractDispatchEvent<DispatchJobQueueEvent> {
 
-	private BlockingQueue<IterationInternalEvent> queue;
+	private BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> queue;
 	private List<? extends Activity<?>> activities;
 
 	/**
@@ -35,14 +34,14 @@ public class DispatchJobQueueEvent extends
 	 * @param activities
 	 */
 	public DispatchJobQueueEvent(String owner, InvocationContext context,
-			BlockingQueue<IterationInternalEvent> queue,
+			BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> queue,
 			List<? extends Activity<?>> activities) {
 		super(owner, new int[] {}, context);
 		this.queue = queue;
 		this.activities = activities;
 	}
 
-	public BlockingQueue<IterationInternalEvent> getQueue() {
+	public BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> getQueue() {
 		return this.queue;
 	}
 

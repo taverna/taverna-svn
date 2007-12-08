@@ -6,7 +6,6 @@ import java.util.Set;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 
 /**
  * Defines a single abstract or concrete invokable activity. Each Processor

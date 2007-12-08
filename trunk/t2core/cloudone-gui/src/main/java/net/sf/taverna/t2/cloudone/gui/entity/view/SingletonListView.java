@@ -16,6 +16,10 @@ import org.apache.log4j.Logger;
  * 
  */
 public class SingletonListView extends EntityListView {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4750583911881618270L;
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(SingletonListView.class);
 

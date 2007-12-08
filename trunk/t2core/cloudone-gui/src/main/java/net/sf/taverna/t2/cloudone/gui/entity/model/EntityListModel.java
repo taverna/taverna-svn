@@ -3,7 +3,6 @@ package net.sf.taverna.t2.cloudone.gui.entity.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.gui.entity.view.DataDocumentEditView;
 import net.sf.taverna.t2.cloudone.gui.entity.view.EntityListView;
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;

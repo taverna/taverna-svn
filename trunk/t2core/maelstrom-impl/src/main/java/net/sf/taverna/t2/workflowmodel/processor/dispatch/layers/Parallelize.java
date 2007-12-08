@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.t2.invocation.Completion;
-import net.sf.taverna.t2.invocation.Event;
+import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
@@ -134,7 +134,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private DispatchJobQueueEvent queueEvent;
 
-		private BlockingQueue<Event> pendingEvents = new LinkedBlockingQueue<Event>();
+		private BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> pendingEvents = new LinkedBlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
 
 		private int activeJobs = 0;
 
@@ -178,7 +178,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 			synchronized (this) {
 				while (queueEvent.getQueue().peek() != null
 						&& activeJobs < maximumJobs) {
-					final Event e = queueEvent.getQueue().remove();
+					final IterationInternalEvent<? extends IterationInternalEvent<?>> e = queueEvent
+							.getQueue().remove();
 
 					if (e instanceof Completion && pendingEvents.peek() == null) {
 						new Thread(new Runnable() {
@@ -221,7 +222,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		protected boolean finishWith(int[] index) {
 			synchronized (this) {
 
-				for (Event e : new ArrayList<Event>(pendingEvents)) {
+				for (IterationInternalEvent<? extends IterationInternalEvent<?>> e : new ArrayList<IterationInternalEvent<? extends IterationInternalEvent<?>>>(
+						pendingEvents)) {
 					if (e instanceof Job) {
 						Job j = (Job) e;
 						if (arrayEquals(j.getIndex(), index)) {

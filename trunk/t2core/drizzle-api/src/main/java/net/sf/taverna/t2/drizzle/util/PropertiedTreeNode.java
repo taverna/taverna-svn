@@ -6,8 +6,6 @@ package net.sf.taverna.t2.drizzle.util;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.table.TableModel;
-
 /**
  * @author alanrw
  * 

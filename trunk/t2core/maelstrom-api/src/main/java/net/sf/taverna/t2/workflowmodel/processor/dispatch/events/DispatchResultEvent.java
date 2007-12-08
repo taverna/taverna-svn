@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.events;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;

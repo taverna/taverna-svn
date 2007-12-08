@@ -8,7 +8,6 @@ import java.util.Map;
 import org.jdom.Element;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
@@ -141,7 +140,7 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	 * 
 	 * @param e
 	 */
-	protected void receiveEventFromStrategy(IterationInternalEvent e) {
+	protected void receiveEventFromStrategy(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 		// TODO - push events onto dispatch queue
 	}
 

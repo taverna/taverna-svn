@@ -18,6 +18,7 @@ import net.sf.taverna.t2.cloudone.peer.PeerContainer;
 import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class PeerDataManagerTest extends AbstractCloudOneServerTest {
 
 	@Test
