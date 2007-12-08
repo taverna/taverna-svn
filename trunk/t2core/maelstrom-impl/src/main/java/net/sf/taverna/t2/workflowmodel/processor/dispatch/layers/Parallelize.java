@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,12 +10,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.monitor.NoSuchPropertyException;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.PropertyContributingDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobQueueReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultCompletionReaction;
@@ -47,7 +52,8 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
 		REMOVE_PROCESS_STATE, NO_EFFECT })
 @SupportsStreamedResult
 public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
-		implements NotifiableLayer {
+		implements NotifiableLayer,
+		PropertyContributingDispatchLayer<ParallelizeConfig> {
 
 	private Map<String, StateModel> stateMap = new HashMap<String, StateModel>();
 
@@ -158,6 +164,10 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		protected StateModel(DispatchJobQueueEvent queueEvent, int maxJobs) {
 			this.queueEvent = queueEvent;
 			this.maximumJobs = maxJobs;
+		}
+
+		Integer queueSize() {
+			return queueEvent.getQueue().size();
 		}
 
 		/**
@@ -280,6 +290,47 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	public ParallelizeConfig getConfiguration() {
 		return this.config;
+	}
+
+	/**
+	 * Injects the following properties into its parent processor's property set :
+	 * <ul>
+	 * <li><code>dispatch.parallelize.queuesize [Integer]</code><br/>The
+	 * current size of the incomming job queue, or -1 if the state isn't defined
+	 * for the registered process identifier (which will be the case if the
+	 * process hasn't started or has had its state purged after a final
+	 * completion of some kind.</li>
+	 * </ul>
+	 */
+	public void injectPropertiesFor(final String owningProcess) {
+		/**
+		 * Property for the queue depth, will evaluate to -1 if there isn't a
+		 * queue in the state model for this identifier (which will be the case
+		 * if we haven't created the state yet or the queue has been collected)
+		 */
+		MonitorableProperty<Integer> queueSizeProperty = new MonitorableProperty<Integer>() {
+
+			public Date getLastModified() {
+				return new Date();
+			}
+
+			public String[] getName() {
+				return new String[] { "dispatch", "parallelize", "queuesize" };
+			}
+
+			public Integer getValue() throws NoSuchPropertyException {
+				StateModel model = stateMap.get(owningProcess);
+				if (model != null) {
+					return model.queueSize();
+				} else {
+					return -1;
+				}
+			}
+
+		};
+		dispatchStack.receiveMonitorableProperty(queueSizeProperty,
+				owningProcess);
+
 	}
 
 }
