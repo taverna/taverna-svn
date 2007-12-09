@@ -38,10 +38,16 @@ public interface MonitorNode {
 	 * mutable
 	 */
 	public Set<? extends MonitorableProperty<?>> getProperties();
-	
+
 	/**
 	 * Each node has a creation date
 	 */
 	public Date getCreationDate();
+
+	/**
+	 * Properties can be added to the monitor node after creation if required,
+	 * although this should be used only when necessary to avoid race conditions
+	 */
+	public void addMonitorableProperty(MonitorableProperty<?> newProperty);
 
 }

@@ -90,4 +90,15 @@ public interface AsynchronousActivityCallback {
 	 */
 	public void fail(String message);
 
+	/**
+	 * For activities which are going to establish state below the invoke node
+	 * in the monitor tree this method returns the owning process identifier
+	 * allocated to the invoke node. This is particularly necessary for nested
+	 * workflow activities.
+	 * <p>
+	 * Any calls to Monitor.register... must establish a state tree rooted at
+	 * this node, they may assume that this node already exists.
+	 */
+	public String getParentProcessIdentifier();
+
 }

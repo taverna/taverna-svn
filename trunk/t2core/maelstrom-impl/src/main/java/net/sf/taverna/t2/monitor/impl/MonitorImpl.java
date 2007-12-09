@@ -111,7 +111,7 @@ public final class MonitorImpl implements Monitor {
 	 */
 	public void registerNode(final Object workflowObject,
 			final String[] owningProcess,
-			final Set<? extends MonitorableProperty<?>> properties) {
+			final Set<MonitorableProperty<?>> properties) {
 		if (isEnabled) {
 
 			// Create a new MonitorNode
@@ -162,6 +162,12 @@ public final class MonitorImpl implements Monitor {
 						public Date getCreationDate() {
 							return creationDate;
 						}
+
+						public void addMonitorableProperty(
+								MonitorableProperty<?> newProperty) {
+							properties.add(newProperty);
+							
+						}
 					});
 			synchronized (monitorTree) {
 				MutableTreeNode parentNode = nodeAtProcessPath(owningProcess,
@@ -170,6 +176,25 @@ public final class MonitorImpl implements Monitor {
 						.getChildCount(parentNode));
 			}
 		}
+	}
+
+	/**
+	 * Inject properties into an existing node
+	 */
+	public void addPropertiesToNode(String[] owningProcess,
+			Set<MonitorableProperty<?>> newProperties) {
+		try {
+			DefaultMutableTreeNode node = nodeAtProcessPath(owningProcess, -1);
+			MonitorNode mn = (MonitorNode)node.getUserObject();
+			for (MonitorableProperty<?> prop : newProperties) {
+				mn.addMonitorableProperty(prop);
+			}
+		} catch (IndexOutOfBoundsException ioobe) {
+			// Fail silently here, the node wasn't found in the state tree
+		}
+		
+		// TODO Auto-generated method stub
+
 	}
 
 	/**

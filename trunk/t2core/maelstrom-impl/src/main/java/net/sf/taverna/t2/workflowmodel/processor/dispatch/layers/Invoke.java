@@ -1,15 +1,21 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.activity.MonitorableAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
@@ -32,12 +38,20 @@ import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.Dis
  * 
  */
 @DispatchLayerJobReaction(emits = { ERROR, RESULT_COMPLETION, RESULT }, relaysUnmodified = false, stateEffects = {})
+@ControlBoundary
 public class Invoke extends AbstractDispatchLayer<Object> {
-
-	static int threadCount = 0;
 
 	public Invoke() {
 		super();
+	}
+
+	private static Integer invocationCount = 0;
+
+	private static String getNextProcessID() {
+		synchronized (invocationCount) {
+			invocationCount = invocationCount + 1;
+			return "invocation" + invocationCount;
+		}
 	}
 
 	/**
@@ -54,9 +68,18 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 */
 	@Override
 	public void receiveJob(final DispatchJobEvent jobEvent) {
+
 		for (Activity<?> a : jobEvent.getActivities()) {
 
 			if (a instanceof AsynchronousActivity) {
+
+				// Register with the monitor
+				final String invocationProcessIdentifier = jobEvent
+						.pushOwningProcess(getNextProcessID())
+						.getOwningProcess();
+				MonitorImpl.getMonitor().registerNode(a,
+						invocationProcessIdentifier.split(":"),
+						new HashSet<MonitorableProperty<?>>());
 
 				// The activity is an AsynchronousActivity so we invoke it with
 				// an
@@ -106,6 +129,11 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					}
 
 					public void receiveCompletion(int[] completionIndex) {
+						if (completionIndex.length == 0) {
+							// Final result, clean up monitor state
+							MonitorImpl.getMonitor().deregisterNode(
+									invocationProcessIdentifier.split(":"));
+						}
 						if (sentJob) {
 							int[] newIndex;
 							if (completionIndex.length == 0) {
@@ -147,6 +175,12 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					public void receiveResult(
 							Map<String, EntityIdentifier> data, int[] index) {
+
+						if (index.length == 0) {
+							// Final result, clean up monitor state
+							MonitorImpl.getMonitor().deregisterNode(
+									invocationProcessIdentifier.split(":"));
+						}
 
 						// Construct a new result map using the activity mapping
 						// (activity output name to processor output name)
@@ -197,12 +231,25 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						new Thread(runMe, newThreadName).start();
 					}
 
+					public String getParentProcessIdentifier() {
+						return invocationProcessIdentifier;
+					}
+
 				};
 
-				// Run the job, passing in the callback we've just created along
-				// with the (possibly renamed) input data map
-				as.executeAsynch(inputData, callback);
-
+				if (as instanceof MonitorableAsynchronousActivity<?>) {
+					// Monitorable activity so get the monitorable properties
+					// and push them into the state tree after launching the job
+					MonitorableAsynchronousActivity<?> maa = (MonitorableAsynchronousActivity<?>) as;
+					Set<MonitorableProperty<?>> props = maa
+							.executeAsynchWithMonitoring(inputData, callback);
+					MonitorImpl.getMonitor().addPropertiesToNode(
+							invocationProcessIdentifier.split(":"), props);
+				} else {
+					// Run the job, passing in the callback we've just created
+					// along with the (possibly renamed) input data map
+					as.executeAsynch(inputData, callback);
+				}
 				return;
 			}
 		}
