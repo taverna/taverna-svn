@@ -29,7 +29,7 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -75,7 +75,7 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		

@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -36,7 +37,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -72,7 +73,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -95,7 +96,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -119,7 +120,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		assertTrue("Validation failed",report.isValid());
 		
 		WorkflowInstanceFacade facade;
-		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 		facade.addResultListener(listener);
 		
@@ -151,7 +152,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		for (String input : inputs) {
 			
 			WorkflowInstanceFacade facade;
-			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context);
+			facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
 			CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
 			facade.addResultListener(listener);
 			
@@ -159,7 +160,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 			
 			EntityIdentifier entityId=dataFacade.register(input);
 			for (DataflowInputPort port : dataflow.getInputPorts()) {
-				facade.pushData(entityId, new int[0], port.getName());
+				WorkflowDataToken inputToken = new WorkflowDataToken("",new int[]{}, entityId, context);
+				facade.pushData(inputToken, port.getName());
 			}
 			
 			waitForCompletion(listener);

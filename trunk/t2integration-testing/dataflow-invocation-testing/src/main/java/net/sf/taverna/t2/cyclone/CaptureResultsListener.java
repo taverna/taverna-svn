@@ -21,7 +21,7 @@ public class CaptureResultsListener implements ResultListener {
 		this.dataFacade=dataFacade;
 	}
 	public void resultTokenProduced(WorkflowDataToken dataToken,
-			String portname, String owningProcess) {
+			String portname) {
 		if (dataToken.getIndex().length==0) {
 			try {
 				resultMap.put(portname, dataFacade.resolve(dataToken.getData()));
