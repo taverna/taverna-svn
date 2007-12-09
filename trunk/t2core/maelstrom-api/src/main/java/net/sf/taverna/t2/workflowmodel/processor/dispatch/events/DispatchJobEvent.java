@@ -66,15 +66,13 @@ public class DispatchJobEvent extends AbstractDispatchEvent<DispatchJobEvent> {
 	@Override
 	public DispatchJobEvent popOwningProcess()
 			throws ProcessIdentifierException {
-		// TODO Auto-generated method stub
-		return null;
+		return new DispatchJobEvent(popOwner(), index, context, dataMap, activities);
 	}
 
 	@Override
 	public DispatchJobEvent pushOwningProcess(String localProcessName)
 			throws ProcessIdentifierException {
-		// TODO Auto-generated method stub
-		return null;
+		return new DispatchJobEvent(pushOwner(localProcessName), index, context, dataMap, activities);
 	}
 
 	/**
