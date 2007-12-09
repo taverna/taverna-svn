@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.workflowmodel.AbstractOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
@@ -38,9 +38,9 @@ public class ActivityOutputPortImpl extends AbstractOutputPort {
 	 * @param annotations
 	 */
 	public ActivityOutputPortImpl(String portName, int portDepth,
-			int granularDepth, Set<WorkflowAnnotation> annotations) {
+			int granularDepth, Set<AnnotationChain> annotations) {
 		this(portName, portDepth, granularDepth);
-		for (WorkflowAnnotation newAnnotation : annotations) {
+		for (AnnotationChain newAnnotation : annotations) {
 			try {
 				getAddAnnotationEdit(newAnnotation).doEdit();
 			} catch (EditException e) {

@@ -17,7 +17,6 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.NotifiableLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.PropertyContributingDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;

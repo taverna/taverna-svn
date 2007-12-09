@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
@@ -37,9 +37,9 @@ public class ActivityInputPortImpl extends AbstractPort implements InputPort {
 	 * @param annotations
 	 */
 	public ActivityInputPortImpl(String portName, int portDepth,
-			Set<WorkflowAnnotation> annotations) {
+			Set<AnnotationChain> annotations) {
 		this(portName, portDepth);
-		for (WorkflowAnnotation annotation : annotations) {
+		for (AnnotationChain annotation : annotations) {
 			try {
 				getAddAnnotationEdit(annotation).doEdit();
 			} catch (EditException e) {

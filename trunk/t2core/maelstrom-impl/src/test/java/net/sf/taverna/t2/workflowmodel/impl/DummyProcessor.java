@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Edit;
@@ -77,24 +77,18 @@ public class DummyProcessor implements Processor{
 	}
 
 	public Edit<? extends Processor> getAddAnnotationEdit(
-			WorkflowAnnotation newAnnotation) {
+			AnnotationChain newAnnotation) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Set<? extends WorkflowAnnotation> getAnnotations() {
+	public Set<? extends AnnotationChain> getAnnotations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Edit<? extends Processor> getRemoveAnnotationEdit(
-			WorkflowAnnotation annotationToRemove) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Edit<? extends Processor> getReplaceAnnotationEdit(
-			WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation) {
+			AnnotationChain annotationToRemove) {
 		// TODO Auto-generated method stub
 		return null;
 	}

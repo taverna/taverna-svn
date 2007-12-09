@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -53,24 +53,18 @@ public class DummyDataflow implements Dataflow{
 	}
 
 	public Edit<? extends Dataflow> getAddAnnotationEdit(
-			WorkflowAnnotation newAnnotation) {
+			AnnotationChain newAnnotation) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Set<? extends WorkflowAnnotation> getAnnotations() {
+	public Set<? extends AnnotationChain> getAnnotations() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Edit<? extends Dataflow> getRemoveAnnotationEdit(
-			WorkflowAnnotation annotationToRemove) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Edit<? extends Dataflow> getReplaceAnnotationEdit(
-			WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation) {
+			AnnotationChain annotationToRemove) {
 		// TODO Auto-generated method stub
 		return null;
 	}

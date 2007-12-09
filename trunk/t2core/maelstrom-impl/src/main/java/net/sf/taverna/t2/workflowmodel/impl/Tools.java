@@ -15,7 +15,6 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -37,13 +36,13 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- *
+ * 
  * Contains static methods concerned with legacy Processor construction and XML
  * handling for the various configurable types such as Activity and
  * DispatchLayer.
- *
+ * 
  * @author Tom Oinn
- *
+ * 
  */
 public class Tools {
 
@@ -62,6 +61,7 @@ public class Tools {
 	private static final String GROUP = "group";
 	private static final String RAVEN = "raven";
 	private static final String ANNOTATIONS = "annotations";
+	@SuppressWarnings("unused")
 	private static final String ANNOTATION = "annotation";
 
 	// Default values for buildFromActivity()
@@ -75,7 +75,7 @@ public class Tools {
 	 * Build a JDOM &lt;activity&gt; Element corresponding to the given
 	 * {@link Activity} implementation. Relies on the {@link XMLEncoder} based
 	 * serialisation of the configuration bean to store configuration data.
-	 *
+	 * 
 	 * @param activity
 	 *            {@link Activity} to serialise
 	 * @return JDOM &lt;activity&gt; Element
@@ -88,8 +88,8 @@ public class Tools {
 
 		ClassLoader cl = activity.getClass().getClassLoader();
 		if (cl instanceof LocalArtifactClassLoader) {
-			activityElem.addContent(
-					ravenElement((LocalArtifactClassLoader) cl));
+			activityElem
+					.addContent(ravenElement((LocalArtifactClassLoader) cl));
 		}
 		Element classNameElement = new Element(CLASS);
 		classNameElement.setText(activity.getClass().getName());
@@ -131,15 +131,16 @@ public class Tools {
 	/**
 	 * Add the annotations contained in the specified &lt;annotations&gt;
 	 * element to the specified instance of a MutableAnnotated object.
-	 *
+	 * 
 	 * @param annotations
 	 *            {@link Element} to extract 'annotation' elements from
 	 * @param annotated
 	 *            {@link MutableAnnotated} to be annotated
 	 */
 	@SuppressWarnings("unchecked")
-	public static void annotateObject(Element annotations,
-			Annotated annotated) {
+	public static void annotateObject(Element annotations, Annotated annotated) {
+		// TODO - implement for new annotation chain framework
+		/**
 		for (Element e : (List<Element>) annotations.getChildren(ANNOTATION)) {
 			ClassLoader cl = Tools.class.getClassLoader();
 			Element ravenElement = e.getChild(RAVEN);
@@ -169,12 +170,14 @@ public class Tools {
 						+ " annotation element, something's not right here");
 			}
 		}
+		*/
+
 	}
 
 	/**
 	 * Get the &lt;java&gt; element from the {@link XMLEncoder} for the given
 	 * bean as a JDOM {@link Element}.
-	 *
+	 * 
 	 * @see net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser
 	 * @param obj
 	 *            Object to serialise
@@ -202,7 +205,7 @@ public class Tools {
 	 * child element the metadata in that element will be used to locate an
 	 * appropriate ArtifactClassLoader, if absent the ClassLoader used will be
 	 * the one used to load this utility class.
-	 *
+	 * 
 	 * @param element
 	 *            &lt;activity&gt; JDOM from where to build the Activity
 	 * @return Built {@link Activity} instance
@@ -260,7 +263,7 @@ public class Tools {
 	/**
 	 * Build a {@link DispatchLayer} object from the specified JDOM
 	 * &lt;layer&gt; {@link Element}.
-	 *
+	 * 
 	 * @param element
 	 *            &lt;layer&gt; {@link Element}
 	 * @return A {@link DispatchLayer} built from the element
@@ -310,7 +313,7 @@ public class Tools {
 	 * Modifies the given activity object, adding the mappings for input and
 	 * output port names (these will all be fooport->fooport but they're still
 	 * needed)
-	 *
+	 * 
 	 * @param activity
 	 *            the {@link Activity} to use to build the new processor around
 	 * @return An initialised {@link ProcessorImpl}
@@ -350,7 +353,7 @@ public class Tools {
 	 * Use the XMLDecoder to build an arbitrary java bean from the &lt;java&gt;
 	 * JDOM Element object. Uses the supplied {@link ClassLoader} to accommodate
 	 * systems such as {@link Raven}.
-	 *
+	 * 
 	 * @param element
 	 *            &lt;java&gt; JDOM {@link Element} from where to build the bean
 	 * @param classLoader
@@ -360,8 +363,8 @@ public class Tools {
 	public static Object createBean(Element element, ClassLoader classLoader) {
 		String beanXML = new XMLOutputter(Format.getRawFormat())
 				.outputString(element);
-		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(
-				beanXML.getBytes()), null, null, classLoader);
+		XMLDecoder decoder = new XMLDecoder(new ByteArrayInputStream(beanXML
+				.getBytes()), null, null, classLoader);
 		Object bean = decoder.readObject();
 		return bean;
 	}
@@ -369,7 +372,7 @@ public class Tools {
 	/**
 	 * Make a JDOM &lt;layer&gt; {@link Element} serialising the given
 	 * {@link DispatchLayer}.
-	 *
+	 * 
 	 * @param layer
 	 *            layer to serialise
 	 * @return &lt:layer&gt: {@link Element} describing the
@@ -397,7 +400,7 @@ public class Tools {
 	/**
 	 * Return the &lt;annotation&gt; element for a specified {@link Annotated}
 	 * entity.
-	 *
+	 * 
 	 * @see net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser
 	 * @param annotated
 	 *            the workflow entity to serialise annotations for
@@ -405,25 +408,21 @@ public class Tools {
 	 */
 	public static Element getAnnotationsElement(Annotated<?> annotated) {
 		Element result = new Element(ANNOTATIONS);
-		for (WorkflowAnnotation annotation : annotated.getAnnotations()) {
-			Element annotationElement = new Element(ANNOTATION);
-			// If this was loaded by raven then store the artifact details
-			if (annotation.getClass().getClassLoader() instanceof LocalArtifactClassLoader) {
-				LocalArtifactClassLoader lacl = (LocalArtifactClassLoader) annotation
-						.getClass().getClassLoader();
-				annotationElement.addContent(ravenElement(lacl));
-			}
-			try {
-				annotationElement.addContent(beanAsElement(annotation));
-			} catch (JDOMException e) {
-				// Auto-generated catch block but should never see this
-				e.printStackTrace();
-			} catch (IOException e) {
-				// Auto-generated catch block but should never see this
-				e.printStackTrace();
-			}
-			result.addContent(annotationElement);
-		}
+		// TODO - implement for new annotation chain framework
+		/**
+		 * for (WorkflowAnnotation annotation : annotated.getAnnotations()) {
+		 * Element annotationElement = new Element(ANNOTATION); // If this was
+		 * loaded by raven then store the artifact details if
+		 * (annotation.getClass().getClassLoader() instanceof
+		 * LocalArtifactClassLoader) { LocalArtifactClassLoader lacl =
+		 * (LocalArtifactClassLoader) annotation .getClass().getClassLoader();
+		 * annotationElement.addContent(ravenElement(lacl)); } try {
+		 * annotationElement.addContent(beanAsElement(annotation)); } catch
+		 * (JDOMException e) { // Auto-generated catch block but should never
+		 * see this e.printStackTrace(); } catch (IOException e) { //
+		 * Auto-generated catch block but should never see this
+		 * e.printStackTrace(); } result.addContent(annotationElement); }
+		 */
 		return result;
 	}
 
@@ -435,7 +434,7 @@ public class Tools {
 	 * entirely and defaults to using the same classloader as
 	 * {@link Tools this class} was loaded by. This is probably not what you
 	 * want but it's a sensible enough fallback position
-	 *
+	 * 
 	 * @param ravenElement
 	 *            &lt;raven&gt; element describing artifact
 	 * @return Resolved {@link LocalArtifactClassLoader} or current
@@ -474,7 +473,7 @@ public class Tools {
 	 * into the specified {@link Element}. If the annotation set is empty this
 	 * does nothing - this is to prevent copy and paste code of the style 'if
 	 * there are annotations add...'
-	 *
+	 * 
 	 * @param element
 	 *            {@link Element} where to inject annotations
 	 * @param annotated
@@ -490,7 +489,7 @@ public class Tools {
 	 * Populate annotations of a {@link MutableAnnotated} from an
 	 * {@link Element} containing a child 'annotations'. If the annotations
 	 * element is not present this method does nothing.
-	 *
+	 * 
 	 * @see #injectAnnotations(Element, Annotated)
 	 * @param parent
 	 *            Element from where to find the 'annotations' child
@@ -507,7 +506,7 @@ public class Tools {
 
 	/**
 	 * Create the &lt;raven&gt; element for a given local artifact classloader.
-	 *
+	 * 
 	 * @param classLoader
 	 *            The {@link LocalArtifactClassLoader} for the artifact
 	 * @return Populated &lt;raven&gt; element

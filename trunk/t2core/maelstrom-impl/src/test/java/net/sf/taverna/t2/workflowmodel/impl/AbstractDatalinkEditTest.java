@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -113,25 +113,18 @@ public class AbstractDatalinkEditTest {
 			}
 
 			public Edit<? extends Datalink> getAddAnnotationEdit(
-					WorkflowAnnotation newAnnotation) {
+					AnnotationChain newAnnotation) {
 				// TODO Auto-generated method stub
 				return null;
 			}
 
-			public Set<? extends WorkflowAnnotation> getAnnotations() {
+			public Set<? extends AnnotationChain> getAnnotations() {
 				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public Edit<? extends Datalink> getRemoveAnnotationEdit(
-					WorkflowAnnotation annotationToRemove) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			public Edit<? extends Datalink> getReplaceAnnotationEdit(
-					WorkflowAnnotation oldAnnotation,
-					WorkflowAnnotation newAnnotation) {
+					AnnotationChain annotationToRemove) {
 				// TODO Auto-generated method stub
 				return null;
 			}

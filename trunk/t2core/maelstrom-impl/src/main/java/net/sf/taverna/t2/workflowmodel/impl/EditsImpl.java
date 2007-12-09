@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
@@ -139,7 +139,7 @@ public class EditsImpl implements Edits {
 	 */
 	public InputPort buildActivityInputPort(String portName, int portDepth,
 			List<String> mimeTypes) {
-		Set<WorkflowAnnotation> annotations = createMimeTypeSet(mimeTypes);
+		Set<AnnotationChain> annotations = createMimeTypeSet(mimeTypes);
 		return new ActivityInputPortImpl(portName,portDepth,annotations);
 	}
 
@@ -148,12 +148,12 @@ public class EditsImpl implements Edits {
 	 */
 	public OutputPort buildActivityOutputPort(String portName, int portDepth,
 			int portGranularDepth, List<String>mimeTypes) {
-		Set<WorkflowAnnotation> annotations = createMimeTypeSet(mimeTypes);
+		Set<AnnotationChain> annotations = createMimeTypeSet(mimeTypes);
 		return new ActivityOutputPortImpl(portName,portDepth,portGranularDepth,annotations);
 	}
 	
-	private Set<WorkflowAnnotation> createMimeTypeSet(List<String> mimeTypes) {
-		Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
+	private Set<AnnotationChain> createMimeTypeSet(List<String> mimeTypes) {
+		Set<AnnotationChain> annotations = new HashSet<AnnotationChain>();
 		//for (String mimeType : mimeTypes) {
 			// TODO - commenting out for now while I get the annotation objects refactored
 			// annotations.add(new MimeTypeImpl(mimeType));
