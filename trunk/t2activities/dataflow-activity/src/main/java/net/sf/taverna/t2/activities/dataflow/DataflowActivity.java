@@ -63,12 +63,12 @@ public class DataflowActivity extends
 			public void run() {
 
 				final WorkflowInstanceFacade facade = edits
-						.createWorkflowInstanceFacade(dataflow,callback.getContext());
+						.createWorkflowInstanceFacade(dataflow,callback.getContext(), callback.getParentProcessIdentifier());
 
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
-					public void resultTokenProduced(WorkflowDataToken dataToken, String port, String owningProcess) {
+					public void resultTokenProduced(WorkflowDataToken dataToken, String port) {
 						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 						outputData.put(port, dataToken.getData());
 						callback.receiveResult(outputData, dataToken.getIndex());
@@ -85,7 +85,8 @@ public class DataflowActivity extends
 				for (Map.Entry<String, EntityIdentifier> entry : data
 						.entrySet()) {
 					try {
-						facade.pushData(entry.getValue(), new int[0], entry
+						WorkflowDataToken token = new WorkflowDataToken(callback.getParentProcessIdentifier(), new int[]{}, entry.getValue(), callback.getContext());
+						facade.pushData(token, entry
 								.getKey());
 					} catch (TokenOrderException e) {
 						callback.fail("Failed to push data into facade", e);

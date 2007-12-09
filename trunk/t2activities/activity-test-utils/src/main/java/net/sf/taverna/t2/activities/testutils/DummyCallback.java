@@ -69,4 +69,9 @@ public class DummyCallback implements AsynchronousActivityCallback {
 			
 		};
 	}
+
+	public String getParentProcessIdentifier() {
+		// TODO Auto-generated method stub
+		return "";
+	}
 }
