@@ -31,52 +31,58 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		this.depth = depth;
 	}
 
-	public void resultTokenProduced(WorkflowDataToken dataToken,String portName, String owningProcess) {
-		int [] index=dataToken.getIndex();
+	public void resultTokenProduced(WorkflowDataToken dataToken, String portName) {
+		int[] index = dataToken.getIndex();
 		if (this.portName.equals(portName)) {
 			if (depthSeen == -1)
 				depthSeen = index.length;
 
-			if (index.length>=depthSeen) {
-				DataFacade dataFacade = new DataFacade(dataToken.getContext().getDataManager());
+			if (index.length >= depthSeen) {
+				DataFacade dataFacade = new DataFacade(dataToken.getContext()
+						.getDataManager());
 				EntityIdentifier entityToken = dataToken.getData();
-			
-				if (entityToken.getType()==IDType.List) {
-					EntityListIdentifier tokenList = (EntityListIdentifier)entityToken;
+
+				if (entityToken.getType() == IDType.List) {
+					EntityListIdentifier tokenList = (EntityListIdentifier) entityToken;
 					try {
-						
-						EntityList list = (EntityList)dataToken.getContext().getDataManager().getEntity(tokenList);
-						int [] elementIndex=new int[index.length+1];
-						for (int indexElement=0 ; indexElement< index.length ; indexElement++) {
-							elementIndex[indexElement]=index[indexElement];
+
+						EntityList list = (EntityList) dataToken.getContext()
+								.getDataManager().getEntity(tokenList);
+						int[] elementIndex = new int[index.length + 1];
+						for (int indexElement = 0; indexElement < index.length; indexElement++) {
+							elementIndex[indexElement] = index[indexElement];
 						}
-						int c=0;
+						int c = 0;
 						for (EntityIdentifier id : list) {
-							elementIndex[index.length]=c;
-							resultTokenProduced(new WorkflowDataToken(owningProcess,elementIndex,id,dataToken.getContext()), portName, owningProcess);
+							elementIndex[index.length] = c;
+							resultTokenProduced(new WorkflowDataToken(dataToken
+									.getOwningProcess(), elementIndex, id,
+									dataToken.getContext()), portName);
 							c++;
 						}
-						//TODO: display to user.
+						// TODO: display to user.
 					} catch (RetrievalException e) {
-						logger.error("Error resolving data entity list",e);
+						logger.error("Error resolving data entity list", e);
 					} catch (NotFoundException e) {
-						logger.error("Unable to find data entity list",e);
+						logger.error("Unable to find data entity list", e);
 					}
-				}
-				else  {
-					insertNewDataTokenNode(entityToken, index, owningProcess,dataFacade);
+				} else {
+					insertNewDataTokenNode(entityToken, index, dataToken.getOwningProcess(),
+							dataFacade);
 				}
 			}
 		}
 
 	}
 
-	private void insertNewDataTokenNode(EntityIdentifier token, int[] index, String owningProcess, DataFacade dataFacade) {
+	private void insertNewDataTokenNode(EntityIdentifier token, int[] index,
+			String owningProcess, DataFacade dataFacade) {
 		MutableTreeNode parent = (MutableTreeNode) getRoot();
 		if (index.length == depth) {
 			if (depth == 0) {
-				MutableTreeNode child = getChildAt(parent,0);
-				child = updateChildNodeWithData(token, owningProcess, parent, child,dataFacade);
+				MutableTreeNode child = getChildAt(parent, 0);
+				child = updateChildNodeWithData(token, owningProcess, parent,
+						child, dataFacade);
 				nodeChanged(child);
 			} else {
 				parent = getChildAt(parent, 0);
@@ -86,7 +92,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 							index[indexElement]);
 					if (indexElement == (depth - 1)) { // leaf
 						child = updateChildNodeWithData(token, owningProcess,
-								parent, child,dataFacade);
+								parent, child, dataFacade);
 					} else { // list
 						child.setUserObject("List...");
 					}
@@ -98,10 +104,11 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	}
 
 	private MutableTreeNode updateChildNodeWithData(EntityIdentifier token,
-			String owningProcess, MutableTreeNode parent, MutableTreeNode child, DataFacade dataFacade) {
-		if (token.getType()==IDType.Literal) {
+			String owningProcess, MutableTreeNode parent,
+			MutableTreeNode child, DataFacade dataFacade) {
+		if (token.getType() == IDType.Literal) {
 			try {
-				String value = (String)dataFacade.resolve(token,String.class);
+				String value = (String) dataFacade.resolve(token, String.class);
 				child.setUserObject(value);
 			} catch (RetrievalException e) {
 				// TODO Auto-generated catch block
@@ -110,8 +117,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		else {
+		} else {
 			int childIndex = parent.getIndex(child);
 			child = new ResultTreeNode(token, dataFacade);
 			parent.remove(childIndex);
@@ -120,8 +126,7 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 		return child;
 	}
 
-	private MutableTreeNode getChildAt(MutableTreeNode parent,
-			int i) {
+	private MutableTreeNode getChildAt(MutableTreeNode parent, int i) {
 		int childCount = getChildCount(parent);
 		if (childCount <= i) {
 			for (int x = childCount; x <= i; x++) {

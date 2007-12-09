@@ -19,7 +19,7 @@ public class EditsImplTests {
 	
 	@Test
 	public void createWorkflowInstanceFacade() {
-		WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(new DummyDataflow(), new TestInvocationContext());
+		WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(new DummyDataflow(), new TestInvocationContext(), "");
 		
 		assertTrue("Should be a WorkflowInstanceFacadeImpl",facade instanceof WorkflowInstanceFacadeImpl);
 	}

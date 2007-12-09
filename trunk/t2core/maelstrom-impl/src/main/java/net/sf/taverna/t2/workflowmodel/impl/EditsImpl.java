@@ -161,8 +161,8 @@ public class EditsImpl implements Edits {
 		return annotations;
 	}
 
-	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context) {
-		return new WorkflowInstanceFacadeImpl(dataflow, context);
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context, String parentProcess) {
+		return new WorkflowInstanceFacadeImpl(dataflow, context, parentProcess);
 	}
 
 }

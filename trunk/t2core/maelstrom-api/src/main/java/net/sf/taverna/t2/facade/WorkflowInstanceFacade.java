@@ -1,9 +1,10 @@
 package net.sf.taverna.t2.facade;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.TokenOrderException;
+import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.utility.TypedTreeModel;
+import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 
 /**
  * The interaction point with a workflow instance. Technically there is no such
@@ -26,24 +27,25 @@ import net.sf.taverna.t2.utility.TypedTreeModel;
  * @author Tom Oinn
  * 
  */
+@ControlBoundary
 public interface WorkflowInstanceFacade {
 
 	/**
 	 * Push a data token into the specified port. If the token is part of a
-	 * stream the index contains the index of this particular token. If
-	 * not the index should be the empty integer array.
+	 * stream the index contains the index of this particular token. If not the
+	 * index should be the empty integer array.
 	 * 
 	 * @param token
-	 *            Identifier of the data token to be pushed to the workflow
-	 * @param index
-	 *            Index of the token
+	 *            A WorkflowDataToken containing the data to be pushed to the
+	 *            workflow along with its current owning process identifier and
+	 *            index
 	 * @param portName
 	 *            Port name to use
 	 * @throws TokenOrderException
 	 *             if ordering constraints on the token stream to each input
 	 *             port are violated
 	 */
-	public void pushData(EntityIdentifier token, int[] index, String portName)
+	public void pushData(WorkflowDataToken token, String portName)
 			throws TokenOrderException;
 
 	/**

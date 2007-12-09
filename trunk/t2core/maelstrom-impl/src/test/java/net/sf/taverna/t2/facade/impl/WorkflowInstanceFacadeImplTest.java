@@ -32,7 +32,7 @@ public class WorkflowInstanceFacadeImplTest {
 	public void createDataflow() {
 		dataflow=new DummyDataflow();
 		WorkflowInstanceFacadeImpl.owningProcessId = new AtomicLong(0);
-		facade = new WorkflowInstanceFacadeImpl(dataflow, context);
+		facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	public void testAddResultListener() {
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(WorkflowDataToken token, String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token, String portName) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -75,7 +75,7 @@ public class WorkflowInstanceFacadeImplTest {
 		dataflow.processors.add(processor);
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_0:test_dataflow",processor.firedOwningProcess);
+		assertEquals("facade0:test_dataflow",processor.firedOwningProcess);
 	}
 
 	@Ignore("Not implemented")
@@ -88,10 +88,10 @@ public class WorkflowInstanceFacadeImplTest {
 	public void testPushData() throws Exception {
 		DummyDataflowInputPort port = new DummyDataflowInputPort("test",0,0,dataflow);
 		dataflow.inputPorts.add(port);
-		facade.pushData(null, new int[0], "test");
+		facade.pushData(new WorkflowDataToken("", new int[]{}, null, context), "test");
 		
 		assertNotNull(port.tokenOwningProcess);
-		assertEquals("test_dataflow_0",port.tokenOwningProcess);
+		assertEquals("facade0",port.tokenOwningProcess);
 	}
 	
 	@Test
@@ -101,10 +101,10 @@ public class WorkflowInstanceFacadeImplTest {
 		dataflow.inputPorts.add(port1);
 		DummyDataflowInputPort port2 = new DummyDataflowInputPort("test_port2",0,0,dataflow);
 		dataflow.inputPorts.add(port2);
-		facade.pushData(null, new int[0], "test_port1");
+		facade.pushData(new WorkflowDataToken("", new int[]{}, null, context), "test_port1");
 		
 		assertNotNull(port1.tokenOwningProcess);
-		assertEquals("test_dataflow_0",port1.tokenOwningProcess);
+		assertEquals("facade0",port1.tokenOwningProcess);
 		
 		assertNull(port2.tokenOwningProcess);
 	}
@@ -121,7 +121,7 @@ public class WorkflowInstanceFacadeImplTest {
 		
 		facade.fire();
 		assertNotNull(processor.firedOwningProcess);
-		assertEquals("test_dataflow_0:test_dataflow",processor.firedOwningProcess);
+		assertEquals("facade0:test_dataflow",processor.firedOwningProcess);
 		assertNull(port1.tokenOwningProcess);
 	}
 	
@@ -133,7 +133,7 @@ public class WorkflowInstanceFacadeImplTest {
 		DummyDataflowInputPort port1 = new DummyDataflowInputPort("test_port1",0,0,dataflow);
 		dataflow.inputPorts.add(port1);
 		
-		facade.pushData(null, new int[0], "test_port1");
+		facade.pushData(new WorkflowDataToken("", new int[]{}, null, context), "test_port1");
 		
 		facade.fire();
 	}
@@ -141,7 +141,7 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	public void testFireAllProcessors() throws Exception{
 		DummyDataflow dummyDataflow = new DummyDataflow();
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow, context);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dummyDataflow, context, "");
 		DummyProcessor processor1 = new DummyProcessor();
 		dummyDataflow.processors.add(processor1);
 		
@@ -157,9 +157,9 @@ public class WorkflowInstanceFacadeImplTest {
 		assertNotNull(processor2.firedOwningProcess);
 		assertNotNull(processor3.firedOwningProcess);
 		
-		assertEquals("test_dataflow_1:test_dataflow",processor1.firedOwningProcess);
-		assertEquals("test_dataflow_1:test_dataflow",processor2.firedOwningProcess);
-		assertEquals("test_dataflow_1:test_dataflow",processor3.firedOwningProcess);
+		assertEquals("facade1:test_dataflow",processor1.firedOwningProcess);
+		assertEquals("facade1:test_dataflow",processor2.firedOwningProcess);
+		assertEquals("facade1:test_dataflow",processor3.firedOwningProcess);
 	}
 	
 	@Test
@@ -190,9 +190,9 @@ public class WorkflowInstanceFacadeImplTest {
 
 	@Test
 	public void testRemoveResultListener() {
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token,String portName) {	
 			}
 		};
 		assertEquals(0,facade.resultListeners.size());
@@ -201,7 +201,7 @@ public class WorkflowInstanceFacadeImplTest {
 		facade.addResultListener(listener);
 		
 		ResultListener listener2 = new ResultListener() {
-			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {	
+			public void resultTokenProduced(WorkflowDataToken token,String portName) {	
 			}
 		};
 		
@@ -216,9 +216,9 @@ public class WorkflowInstanceFacadeImplTest {
 	@Test
 	//tests that the listener is added and removed from the output ports
 	public void testResultListenerAndOutputPorts() {
-		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context);
+		WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		ResultListener listener = new ResultListener() {
-			public void resultTokenProduced(WorkflowDataToken token,String portName, String owningProcess) {
+			public void resultTokenProduced(WorkflowDataToken token,String portName) {
 			}
 		};
 		DummyDataflowOutputPort outPort = new DummyDataflowOutputPort("test_output",dataflow);

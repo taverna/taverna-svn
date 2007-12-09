@@ -18,11 +18,9 @@ public interface ResultListener {
 	 *            the WorkflowDataToken containing the result.
 	 * @param portName
 	 *            The name of the output port on the workflow from which this
-	 *            token is produced
-	 * @param owningProcess
-	 * 		      The id of the owning process
+	 *            token is produced, this now folds in the owning process which
+	 *            was part of the signature for this method
 	 */
-	public void resultTokenProduced(WorkflowDataToken token,
-			String portName, String owningProcess);
+	public void resultTokenProduced(WorkflowDataToken token, String portName);
 
 }

@@ -41,7 +41,7 @@ public interface Edits {
 	 * 
 	 * @see WorkflowInstanceFacade
 	 */
-	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context);
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context, String parentProcess);
 	
 	/**
 	 * Builds a new instance of a Processor with the given name

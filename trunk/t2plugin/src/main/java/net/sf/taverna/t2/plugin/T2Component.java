@@ -55,17 +55,17 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private ScuflModel model;
 
 	private JButton runButton;
-	
+
 	private JButton testButton;
 
 	private JButton stopButton;
 
 	private JTextArea runStatus;
-	
+
 	private CardLayout cardLayout;
-	
+
 	private JPanel topPanel;
-	
+
 	private HealthCheckReportPanel reportPanel;
 
 	private JScrollPane runStatusScrollPane;
@@ -98,7 +98,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		runStatus = new JTextArea();
 		runStatus.setSize(new Dimension(0, 200));
-		
+
 		cardLayout = new CardLayout();
 		topPanel = new JPanel(cardLayout);
 
@@ -108,7 +108,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		runStatusScrollPane = new JScrollPane(runStatusPanel);
 		topPanel.add(runStatusScrollPane, "run status");
-		
+
 		reportPanel = new HealthCheckReportPanel();
 		topPanel.add(reportPanel, "health report");
 
@@ -127,7 +127,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private JButton createTestButton() {
 		JButton button = new JButton("Test");
-		
+
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -135,27 +135,26 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 				runButton.setEnabled(false);
 				runHealthCheck();
 			}
-		}
-		);
+		});
 		return button;
 	}
 
 	protected void runHealthCheck() {
-		if (model!=null) {
+		if (model != null) {
 			reportPanel.setModel(model);
-			
+
 			cardLayout.show(topPanel, "health report");
-			
+
 			Runnable reportThread = new Runnable() {
 				public void run() {
 					reportPanel.start();
 					testButton.setEnabled(true);
 					runButton.setEnabled(true);
-				}	
+				}
 			};
-			
+
 			new Thread(reportThread).start();
-			
+
 		}
 	}
 
@@ -321,11 +320,13 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			Map<DataflowInputPort, EntityIdentifier> entities,
 			InvocationContext context) throws EditException {
 
-		facade = new WorkflowInstanceFacadeImpl(dataflow, context);
+		// Use the empty context by default to root this facade on the monitor
+		// tree
+		facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		facade.addResultListener(new ResultListener() {
 
 			public void resultTokenProduced(WorkflowDataToken token,
-					String portName, String owningProcess) {
+					String portName) {
 				if (token.getIndex().length == 0) {
 					results++;
 					if (results == dataflow.getOutputPorts().size()) {
@@ -350,7 +351,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 				EntityIdentifier identifier = entry.getValue();
 				int[] index = new int[] {};
 				try {
-					facade.pushData(identifier, index, inputPort.getName());
+					facade.pushData(new WorkflowDataToken("", index, identifier, context), inputPort.getName());
 				} catch (TokenOrderException e) {
 					e.printStackTrace();
 					updateStatus("Could not submit data for port " + inputPort);

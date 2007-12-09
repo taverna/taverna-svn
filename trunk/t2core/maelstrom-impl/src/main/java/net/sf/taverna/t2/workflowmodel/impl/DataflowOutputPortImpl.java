@@ -42,8 +42,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 				sendEvent(newToken);
 				for (ResultListener listener : resultListeners
 						.toArray(new ResultListener[] {})) {
-					listener.resultTokenProduced(newToken, this.getName(),
-							newToken.getOwningProcess());
+					listener.resultTokenProduced(newToken, this.getName());
 				}
 			}
 

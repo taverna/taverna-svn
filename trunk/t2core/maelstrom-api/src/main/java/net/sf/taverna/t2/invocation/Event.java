@@ -134,7 +134,13 @@ public abstract class Event<EventType extends Event<?>> {
 			throw new ProcessIdentifierException("Can't push '"
 					+ newLocalProcess + "' as it contains a ':' character");
 		}
-		return owner + ":" + newLocalProcess;
+		if (owner.equals("")) {
+			// If the owner was the empty string we don't need to append the
+			// colon
+			return newLocalProcess;
+		} else {
+			return owner + ":" + newLocalProcess;
+		}
 	}
 
 }
