@@ -200,7 +200,7 @@ public class BeanSerialiser {
 		return bean;
 	}
 
-	protected Object beanFromXMLFile(File xmlFile) throws RetrievalException,
+	public Object beanFromXMLFile(File xmlFile) throws RetrievalException,
 			FileNotFoundException {
 		FileInputStream fileInput = new FileInputStream(xmlFile);
 		BufferedInputStream bufferedIn = new BufferedInputStream(fileInput);
