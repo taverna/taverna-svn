@@ -41,9 +41,11 @@ public final class WorkflowProcessorFactoryDecoder extends ProcessorFactoryDecod
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getDefinitionURL() != null) {
 		targetSet.setProperty(adapter, CommonKey.WorkflowDefinitionURLKey, new StringValue(encodedFactory.getDefinitionURL()));
+		}
 	}
-
+	
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$

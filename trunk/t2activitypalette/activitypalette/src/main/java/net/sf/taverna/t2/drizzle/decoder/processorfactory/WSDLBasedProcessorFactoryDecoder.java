@@ -43,9 +43,15 @@ public final class WSDLBasedProcessorFactoryDecoder extends ProcessorFactoryDeco
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getWSDLLocation() != null) {
 		targetSet.setProperty(adapter, CommonKey.WsdlLocationKey, new StringValue(encodedFactory.getWSDLLocation()));
+		}
+		if (encodedFactory.getOperationName() != null) {
 		targetSet.setProperty(adapter, CommonKey.WsdlOperationKey, new StringValue(encodedFactory.getOperationName()));
+		}
+		if (encodedFactory.getPortTypeName() != null) {
 		targetSet.setProperty(adapter, CommonKey.WsdlPortTypeKey, new StringValue(encodedFactory.getPortTypeName().getLocalPart()));
+		}
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

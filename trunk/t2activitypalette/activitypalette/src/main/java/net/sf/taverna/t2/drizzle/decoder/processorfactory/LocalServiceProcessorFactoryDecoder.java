@@ -42,8 +42,12 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getWorkerClassName() != null) {
 		targetSet.setProperty(adapter, CommonKey.LocalServiceWorkerClassKey, new StringValue(encodedFactory.getWorkerClassName()));
+		}
+		if (encodedFactory.getCategory() != null) {
 		targetSet.setProperty(adapter, CommonKey.LocalServiceCategoryKey, new StringValue(encodedFactory.getCategory()));
+		}
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

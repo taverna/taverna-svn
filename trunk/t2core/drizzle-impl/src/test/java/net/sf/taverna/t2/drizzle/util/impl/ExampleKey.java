@@ -9,7 +9,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
-public class ExampleKey implements PropertyKey, Comparable<Object> {
+public class ExampleKey implements PropertyKey {
 	private static int keyCount = 0;
 	
 	private int key;

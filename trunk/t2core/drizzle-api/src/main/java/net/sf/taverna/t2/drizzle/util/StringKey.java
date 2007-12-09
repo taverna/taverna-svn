@@ -3,19 +3,11 @@
  */
 package net.sf.taverna.t2.drizzle.util;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-
-import net.sf.taverna.t2.util.beanable.Beanable;
-
-
 /**
  * @author alanrw
  *
  */
-@XmlRootElement(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "stringKey")
-@XmlType(namespace = "http://taverna.sf.net/t2/drizzle/util/", name = "stringKey")
-public final class StringKey implements PropertyKey, Comparable<Object>, Beanable<StringKey> {
+public final class StringKey implements PropertyKey {
 
 	private String key;
 	
@@ -80,12 +72,10 @@ public final class StringKey implements PropertyKey, Comparable<Object>, Beanabl
 		return getKey();
 	}
 
-	public void setFromBean(StringKey bean) throws IllegalArgumentException {
-		this.key = bean.getKey();
-	}
-
-	public StringKey getAsBean() {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * @param key the key to set
+	 */
+	public synchronized final void setKey(String key) {
+		this.key = key;
 	}
 }

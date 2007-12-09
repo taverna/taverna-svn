@@ -88,4 +88,33 @@ public final class SubsetKindConfiguration {
 		return result;
 	}
 
+	/**
+	 * @param keyList the keyList to set
+	 */
+	public synchronized final void setKeyList(ArrayList<PropertyKey> keyList) {
+		this.keyList = keyList;
+	}
+
+	/**
+	 * @param treeListModel the treeListModel to set
+	 */
+	public synchronized final void setTreeListModel(DefaultListModel treeListModel) {
+		this.treeListModel = treeListModel;
+	}
+
+	/**
+	 * @param treeTableListModel the treeTableListModel to set
+	 */
+	public synchronized final void setTreeTableListModel(
+			DefaultListModel treeTableListModel) {
+		this.treeTableListModel = treeTableListModel;
+	}
+
+	/**
+	 * @param tableListModel the tableListModel to set
+	 */
+	public synchronized final void setTableListModel(DefaultListModel tableListModel) {
+		this.tableListModel = tableListModel;
+	}
+
 }

@@ -41,7 +41,9 @@ public final class StringConstantProcessorFactoryDecoder extends ProcessorFactor
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getValue() != null) {
 		targetSet.setProperty(adapter, CommonKey.StringConstantValueKey, new StringValue(encodedFactory.getValue()));
+		}
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

@@ -42,8 +42,12 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getEndpoint() != null) {
 		targetSet.setProperty(adapter, CommonKey.SoaplabEndpointKey, new StringValue(encodedFactory.getEndpoint()));
+		}
+		if (encodedFactory.getCategory() != null) {
 		targetSet.setProperty(adapter, CommonKey.SoaplabCategoryKey, new StringValue(encodedFactory.getCategory()));
+		}
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

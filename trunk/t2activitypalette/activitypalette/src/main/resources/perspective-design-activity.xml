@@ -23,7 +23,7 @@
     <namedcomponent>
       <groupid>uk.org.mygrid.taverna.processors</groupid>
       <artifact>taverna-biomart-processor</artifact>
-      <classname>net.sf.taverna.t2.drizzle.activityregistry.ActivityPalettePanelFactory</classname>
+      <classname>net.sf.taverna.t2.drizzle.view.palette.ActivityPalettePanelFactory</classname>
       <name>Activities</name>
     </namedcomponent>
     <namedcomponent>

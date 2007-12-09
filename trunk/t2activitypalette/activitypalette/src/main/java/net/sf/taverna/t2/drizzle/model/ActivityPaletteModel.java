@@ -3,12 +3,21 @@
  */
 package net.sf.taverna.t2.drizzle.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -16,15 +25,20 @@ import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
 import net.sf.taverna.t2.drizzle.bean.ActivityPaletteModelBean;
+import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
+import net.sf.taverna.t2.drizzle.bean.SubsetKindConfigurationBean;
 import net.sf.taverna.t2.drizzle.query.ActivityQuery;
+import net.sf.taverna.t2.drizzle.query.ActivitySavedConfigurationQuery;
 import net.sf.taverna.t2.drizzle.query.ActivityScavengerQuery;
 import net.sf.taverna.t2.drizzle.util.FalseFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
+import net.sf.taverna.t2.drizzle.util.StringKey;
 import net.sf.taverna.t2.drizzle.util.TrueFilter;
 import net.sf.taverna.t2.drizzle.view.palette.ActivityPaletteModelToScavengerTreeAdapter;
 import net.sf.taverna.t2.drizzle.view.palette.ActivityPalettePanel;
+import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
 import net.sf.taverna.t2.util.beanable.Beanable;
 
 import org.apache.log4j.Logger;
@@ -35,9 +49,11 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
+import org.jdom.Element;
 
 /**
  * @author alanrw
@@ -464,12 +480,93 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 
 	public ActivityPaletteModelBean getAsBean() {
 		ActivityPaletteModelBean result = new ActivityPaletteModelBean();
-		result.setRegistryBean(getActivityRegistry().getRegistry().getAsBean());
+		List<SubsetKindConfigurationBean> configList = new ArrayList<SubsetKindConfigurationBean>();
+		for (String kind : ActivitySubsetPanel.kindConfigurationMap.keySet()) {
+			SubsetKindConfigurationBean configBean = new SubsetKindConfigurationBean();
+			configBean.setKind(kind);
+			SubsetKindConfiguration config = ActivitySubsetPanel.kindConfigurationMap.get(kind);
+			List<String> tempList = new ArrayList<String>();
+			for (PropertyKey pk : config.getKeyList()) {
+				tempList.add(pk.toString());
+			}
+			configBean.setKeyList(tempList);
+			
+			DefaultListModel treeListModel = config.getTreeListModel();
+			tempList = new ArrayList<String>();
+			for (Enumeration e = treeListModel.elements(); e.hasMoreElements();) {
+				tempList.add(e.nextElement().toString());
+			}
+			configBean.setTreeKeyList(tempList);
+			
+			DefaultListModel treeTableListModel = config.getTreeTableListModel();
+			tempList = new ArrayList<String>();
+			for (Enumeration e = treeTableListModel.elements(); e.hasMoreElements();) {
+				tempList.add(e.nextElement().toString());
+			}
+			configBean.setTreeTableKeyList(tempList);
+
+			DefaultListModel tableListModel = config.getTableListModel();
+			tempList = new ArrayList<String>();
+			for (Enumeration e = tableListModel.elements(); e.hasMoreElements();) {
+				tempList.add(e.nextElement().toString());
+			}
+			configBean.setTableKeyList(tempList);
+
+			configList.add(configBean);
+		}
+		
+		List<ProcessorFactoryAdapterBean> adapterBeans = new ArrayList<ProcessorFactoryAdapterBean>();
+		for (ProcessorFactoryAdapter adapter : activityRegistry.getRegistry().getObjects()) {
+			ProcessorFactoryAdapterBean adapterBean = new ProcessorFactoryAdapterBean();
+
+			adapterBean.setXmlFragment(adapter.getSerializedVersion());
+			adapterBeans.add(adapterBean);
+		}
+		result.setAdapterBeans(adapterBeans);
+		result.setSubsetKindConfigurationBeans(configList);
 		return result;
 	}
 
 	public void setFromBean(ActivityPaletteModelBean arg0) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
+	}
+	
+	public void mergeWithBean(ActivityPaletteModelBean arg0){
+		for (SubsetKindConfigurationBean kindConfigBean : arg0.getSubsetKindConfigurationBeans()) {
+			SubsetKindConfiguration config = new SubsetKindConfiguration();
+			ArrayList<PropertyKey> keyList = new ArrayList<PropertyKey>();
+			if (kindConfigBean.getKeyList() != null) {
+			for (String s : kindConfigBean.getKeyList()) {
+				keyList.add(new StringKey(s));
+			}
+			}
+			config.setKeyList(keyList);
+			DefaultListModel treeListModel = new DefaultListModel();
+			if (kindConfigBean.getTreeKeyList() != null) {
+			for (String s : kindConfigBean.getTreeKeyList()) {
+				treeListModel.addElement(new StringKey(s));
+			}
+			}
+			config.setTreeListModel(treeListModel);
+			
+			DefaultListModel treeTableListModel = new DefaultListModel();
+			if (kindConfigBean.getTreeTableKeyList() != null) {
+			for (String s : kindConfigBean.getTreeTableKeyList()) {
+				treeTableListModel.addElement(new StringKey(s));
+			}
+			}
+			config.setTreeTableListModel(treeTableListModel);
+			
+			DefaultListModel tableListModel = new DefaultListModel();
+			if (kindConfigBean.getTableKeyList() != null) {
+			for (String s : kindConfigBean.getTableKeyList()) {
+				tableListModel.addElement(new StringKey(s));
+			}
+			}
+			config.setTableListModel(tableListModel);
+			ActivitySubsetPanel.kindConfigurationMap.put(kindConfigBean.getKind(), config);
+		}
+		addImmediateQuery(new ActivitySavedConfigurationQuery(arg0));
+
 	}
 }

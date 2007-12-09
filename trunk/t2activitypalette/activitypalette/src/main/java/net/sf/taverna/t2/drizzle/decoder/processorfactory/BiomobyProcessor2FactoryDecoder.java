@@ -44,11 +44,14 @@ public final class BiomobyProcessor2FactoryDecoder extends
 		if (encodedFactory == null) {
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
+		if (encodedFactory.getAuthorityName() != null) {
 		targetSet.setProperty(adapter, CommonKey.MobyAuthorityKey,
 				new StringValue(encodedFactory.getAuthorityName()));
+		}
+		if (encodedFactory.getMobyEndpoint() != null) {
 		targetSet.setProperty(adapter, CommonKey.MobyEndpointKey,
 				new StringValue(encodedFactory.getMobyEndpoint()));
-
+		}
 	}
 
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {

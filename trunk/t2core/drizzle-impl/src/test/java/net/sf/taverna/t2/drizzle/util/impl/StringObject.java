@@ -3,11 +3,13 @@
  */
 package net.sf.taverna.t2.drizzle.util.impl;
 
+import net.sf.taverna.t2.util.beanable.Beanable;
+
 /**
  * @author alanrw
  *
  */
-public class StringObject implements Comparable<Object> {
+public class StringObject implements Comparable<Object>, Beanable<StringObjectBean> {
 	private String objectString;
 	
 	/**
@@ -60,5 +62,16 @@ public class StringObject implements Comparable<Object> {
 	@Override
 	public String toString() {
 		return getString();
+	}
+
+	public StringObjectBean getAsBean() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setFromBean(StringObjectBean bean)
+			throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
 	}
 }
