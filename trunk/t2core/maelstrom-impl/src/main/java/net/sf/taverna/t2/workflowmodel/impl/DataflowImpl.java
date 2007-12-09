@@ -552,7 +552,8 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	 * @return true if the owning process specified was already in the active
 	 *         process identifier set, false otherwise
 	 */
-	protected boolean tokenReceived(String owningProcess) {
+	protected boolean tokenReceived(String owningProcess,
+			InvocationContext context) {
 		synchronized (activeProcessIdentifiers) {
 			if (activeProcessIdentifiers.keySet().contains(owningProcess) == false) {
 				MonitorImpl.getMonitor().registerNode(this,
@@ -564,6 +565,9 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 				// stack.
 				for (ProcessorImpl p : getEntities(ProcessorImpl.class)) {
 					p.registerWithMonitor(owningProcess);
+					if (p.getInputPorts().isEmpty()) {
+						p.fire(owningProcess, context);
+					}
 				}
 				activeProcessIdentifiers.put(owningProcess,
 						new HashSet<String>());
@@ -575,18 +579,20 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 
 	public void fire(String owningProcess, InvocationContext context) {
 		String newOwningProcess = owningProcess + ":" + getLocalName();
-		if (tokenReceived(newOwningProcess)) {
+		if (tokenReceived(newOwningProcess, context)) {
 			// This is not good - should ideally handle it as it means the
 			// workflow has been fired when in a state where this wasn't
 			// sensible, i.e. already having been fired on this process
 			// identifier. For now we'll ignore it (ho hum, release deadline
 			// etc!)
 		}
-		for (Processor p : getEntities(Processor.class)) {
-			if (p.getInputPorts().isEmpty()) {
-				p.fire(newOwningProcess, context);
-			}
-		}
+		// The code below now happens in the tokenReceived method, we need to
+		// fire any processors which don't have dependencies when a new token
+		// arrives and we weren't doing that anywhere.
+		/**
+		 * for (Processor p : getEntities(Processor.class)) { if
+		 * (p.getInputPorts().isEmpty()) { p.fire(newOwningProcess, context); } }
+		 */
 	}
 
 	/**

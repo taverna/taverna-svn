@@ -44,7 +44,7 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 		// always be a dataflowimpl
 		if (dataflow instanceof DataflowImpl) {
 			((DataflowImpl) dataflow).tokenReceived(transformedToken
-					.getOwningProcess());
+					.getOwningProcess(), t.getContext());
 		}
 		for (Datalink dl : internalOutput.getOutgoingLinks()) {
 			dl.getSink().receiveEvent(transformedToken);
