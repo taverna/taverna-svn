@@ -26,6 +26,11 @@ import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
 public class ResultComponent extends JPanel implements UIComponentSPI {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2829637398174474092L;
+
 	private JTabbedPane tabbedPane;
 
 	private Map<String, JComponent> componentMap = new HashMap<String, JComponent>();

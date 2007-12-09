@@ -44,6 +44,10 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
 public class InputComponent<InputType extends DataflowInputPort> extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1107966941652188905L;
 	private final List<InputType> inputPorts;
 	private Map<InputType, EntityModel> models = new HashMap<InputType, EntityModel>();;
 	private JTabbedPane tabbedPane;
@@ -155,6 +159,11 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 
 	public class CreateDataAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 7600977055252635059L;
+
 		public CreateDataAction() {
 			super(runMethod.getButtonText());
 		}
@@ -176,6 +185,11 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	}
 
 	public class ClearAction extends AbstractAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2823990029337404456L;
 
 		public ClearAction() {
 			super("Clear All Data");

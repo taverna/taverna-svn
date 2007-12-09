@@ -83,6 +83,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		runButton = createRunButton();
 		stopButton = new JButton(new AbstractAction("Stop") {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -3675250815643062008L;
+
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Actually stop the workflow
 				runButton.setEnabled(true);
