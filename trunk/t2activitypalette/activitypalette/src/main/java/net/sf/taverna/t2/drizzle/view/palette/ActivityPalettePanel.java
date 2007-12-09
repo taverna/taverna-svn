@@ -35,6 +35,7 @@ import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModelListener;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
+import net.sf.taverna.t2.drizzle.model.SubsetKindConfiguration;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectNotFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
@@ -89,7 +90,7 @@ ActivityPaletteModelListener, ActionListener {
 		removeSelectionItem.addActionListener(this);
 
 		this.tabbedPane = new JTabbedPane();
-		this.tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+//		this.tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 //		tabbedPane.setTabPlacement(JTabbedPane.LEFT);
 		this.add(this.tabbedPane, BorderLayout.CENTER);
 		this.tabbedPane.addChangeListener(new ChangeListener() {
@@ -100,7 +101,7 @@ ActivityPaletteModelListener, ActionListener {
 	            Component c = pane.getSelectedComponent();
 	            if (c instanceof ActivitySubsetPanel) {
 	            	ActivitySubsetPanel subPanel = (ActivitySubsetPanel) c;
-	            	//TODO check if this setModels is really needed
+	           	//TODO check if this setModels is really needed
 	            	subPanel.setModels();
 	            	clearSubsetItem.setEnabled(subPanel.getSubsetModel().isEditable());
 	            	removeSelectionItem.setEnabled(subPanel.getSubsetModel().isEditable());
@@ -168,6 +169,12 @@ ActivityPaletteModelListener, ActionListener {
 		searchSubsetItem.setActionCommand("searchSubset"); //$NON-NLS-1$
 		searchSubsetItem.addActionListener(this);
 		menuBar.add(searchSubsetItem);
+		
+		JButton configureSubsetKindItem = new JButton("configure subset");
+		configureSubsetKindItem.setToolTipText("Configure the display of a subset");
+		configureSubsetKindItem.setActionCommand("configureSubsetKind");
+		configureSubsetKindItem.addActionListener(this);
+		menuBar.add(configureSubsetKindItem);
 		
 		JCheckBox watchingWorkflowItem = new JCheckBox("watch workflow", true); //$NON-NLS-1$
 		watchingWorkflowItem.setToolTipText("Load the activities included in the current workflow"); //$NON-NLS-1$
@@ -455,6 +462,15 @@ ActivityPaletteModelListener, ActionListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+			}
+		} else if (command.equals("configureSubsetKind")) {
+			Component selectedComponent = this.tabbedPane.getSelectedComponent();
+			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)) {
+				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
+				String kind = subsetPanel.getSubsetModel().getIdent().getKind();
+				JDialog dialog = new SubsetKindConfigurationDialog(ActivitySubsetPanel.kindConfigurationMap.get(kind), subsetPanel);
+				dialog.setLocationRelativeTo(this);
+				dialog.setVisible(true);		
 			}
 		}
 				

@@ -8,6 +8,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
@@ -20,6 +21,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 
@@ -34,6 +36,8 @@ import org.jdom.Element;
  */
 public final class ActivitySubsetTree extends JTree implements
 		DragGestureListener, DragSourceListener {
+	
+	private DragSource dragSource;
 
 	/**
 	 * 
@@ -41,9 +45,9 @@ public final class ActivitySubsetTree extends JTree implements
 	private static final long serialVersionUID = 741115733679972895L;
 
 	public ActivitySubsetTree() {
-		DragSource dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this,
-				DnDConstants.ACTION_COPY_OR_MOVE, this);
+		dragSource = DragSource.getDefaultDragSource();
+		DragGestureRecognizer test = dragSource.createDefaultDragGestureRecognizer(this,
+				DnDConstants.ACTION_COPY, this);
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 
@@ -62,16 +66,17 @@ public final class ActivitySubsetTree extends JTree implements
 		TreePath dragSourcePath = getPathForLocation((int) l.getX(), (int) l
 				.getY());
 		if (dragSourcePath != null) {
-			PropertiedTreeNode<ProcessorFactory> node = (PropertiedTreeNode<ProcessorFactory>) dragSourcePath
+			PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) dragSourcePath
 					.getLastPathComponent();
 			if (node instanceof PropertiedTreeObjectNode) {
-				ProcessorFactory pf = ((PropertiedTreeObjectNode<ProcessorFactory>) node)
+				ProcessorFactoryAdapter adapter = ((PropertiedTreeObjectNode<ProcessorFactoryAdapter>) node)
 						.getObject();
+				ProcessorFactory pf = adapter.getTheFactory();
 				Element el = pf.getXMLFragment();
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 				Transferable t = new SpecFragmentTransferable(fsf);
-				dge.startDrag(DragSource.DefaultCopyDrop, t, this);
+				dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
 			}
 		}
 	}
@@ -112,8 +117,9 @@ public final class ActivitySubsetTree extends JTree implements
 		if (curPath != null) {
 			Object userObject = curPath.getLastPathComponent();
 			if (userObject instanceof PropertiedTreeObjectNode) {
-				PropertiedTreeObjectNode<ProcessorFactory> poNode = (PropertiedTreeObjectNode<ProcessorFactory>) userObject;
-				ProcessorFactory pf = poNode.getObject();
+				PropertiedTreeObjectNode<ProcessorFactoryAdapter> adapterNode = (PropertiedTreeObjectNode<ProcessorFactoryAdapter>) userObject;
+				net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter adapter = adapterNode.getObject();
+				ProcessorFactory pf = adapter.getTheFactory();
 				result = getProcessorFactoryDescription(pf);
 			}
 		}

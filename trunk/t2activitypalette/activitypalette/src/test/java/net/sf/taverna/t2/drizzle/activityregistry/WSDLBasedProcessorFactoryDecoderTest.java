@@ -12,6 +12,9 @@ import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
+import net.sf.taverna.t2.drizzle.query.DecodeRunIdentification;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 
@@ -32,7 +35,7 @@ import org.junit.Test;
  */
 public class WSDLBasedProcessorFactoryDecoderTest {
 	private String TESTWSDL_BASE="http://www.mygrid.org.uk/taverna-tests/testwsdls/"; //$NON-NLS-1$
-	private PropertiedObjectSet<ProcessorFactory> targetSet;
+	private PropertiedObjectSet<ProcessorFactoryAdapter> targetSet;
 	private WSDLBasedProcessorFactoryDecoder testDecoder;
 	/**
 	 * @throws java.lang.Exception
@@ -92,19 +95,20 @@ public class WSDLBasedProcessorFactoryDecoderTest {
 		DefaultMutableTreeNode leaf = scavenger.getFirstLeaf();
 		Object userObject = leaf.getUserObject();
 		assertTrue(userObject instanceof WSDLBasedProcessorFactory);
-		DecodeRunIdentification<ProcessorFactory> ident = this.testDecoder.decode(this.targetSet, (WSDLBasedProcessorFactory) leaf.getUserObject());
-		Set<ProcessorFactory> factories = ident.getAffectedObjects();
-		Set<ProcessorFactory> objects = this.targetSet.getObjects();
+		DecodeRunIdentification<ProcessorFactoryAdapter> ident = this.testDecoder.decode(this.targetSet, (WSDLBasedProcessorFactory) leaf.getUserObject());
+		Set<ProcessorFactoryAdapter> factories = ident.getAffectedObjects();
+		Set<ProcessorFactoryAdapter> objects = this.targetSet.getObjects();
 		int i = 1;
 		assertEquals(new Integer(i), new Integer(objects.size()));
-		ProcessorFactory factory = objects.iterator().next();
+		ProcessorFactoryAdapter adapter = objects.iterator().next();
+		ProcessorFactory factory = adapter.getTheFactory();
 		assertEquals(new Integer(1), new Integer(factories.size()));
 		assertTrue(factories.contains(factory));
 		assertEquals(userObject, factory);
-		assertNotNull(this.targetSet.getPropertyValue(factory, CommonKey.ProcessorClassKey));
-		assertNotNull(this.targetSet.getPropertyValue(factory, CommonKey.WsdlLocationKey));
-		assertNotNull(this.targetSet.getPropertyValue(factory, CommonKey.WsdlOperationKey));
-		assertNotNull(this.targetSet.getPropertyValue(factory, CommonKey.WsdlPortTypeKey));
+		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.ProcessorClassKey));
+		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.WsdlLocationKey));
+		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.WsdlOperationKey));
+		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.WsdlPortTypeKey));
 		
 	}
 

@@ -30,13 +30,15 @@ import org.jdom.Element;
 public final class ActivitySubsetTable extends JTable implements
 		DragGestureListener, DragSourceListener {
 	
+	private DragSource dragSource;
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6721017677971353107L;
 
 	public ActivitySubsetTable() {
-		DragSource dragSource = DragSource.getDefaultDragSource();
+		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
@@ -56,7 +58,7 @@ public final class ActivitySubsetTable extends JTable implements
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 				Transferable t = new SpecFragmentTransferable(fsf);
-				dge.startDrag(DragSource.DefaultCopyDrop, t, this);
+				dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
 		}
 	}
 

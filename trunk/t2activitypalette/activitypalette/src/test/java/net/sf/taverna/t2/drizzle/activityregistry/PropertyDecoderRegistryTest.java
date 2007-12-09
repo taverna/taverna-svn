@@ -9,6 +9,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
+import net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry;
+import net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder;
+import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
+
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.wsdl.WSDLBasedProcessorFactory;
 import org.junit.After;
@@ -72,7 +77,7 @@ public class PropertyDecoderRegistryTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetDecoders() {
-		List<PropertyDecoder<WSDLBasedProcessorFactory,ProcessorFactory>> decoders = PropertyDecoderRegistry.getDecoders(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
+		List<PropertyDecoder<WSDLBasedProcessorFactory,ProcessorFactoryAdapter>> decoders = PropertyDecoderRegistry.getDecoders(WSDLBasedProcessorFactory.class, ProcessorFactoryAdapter.class);
 		assertFalse (decoders.size() == 0);
 		PropertyDecoder decoder = decoders.get(0);
 		assertTrue (decoder instanceof WSDLBasedProcessorFactoryDecoder);
@@ -80,12 +85,12 @@ public class PropertyDecoderRegistryTest {
 	
 	@Test
 	public void testGetDecoder() {
-		PropertyDecoder<WSDLBasedProcessorFactory, ProcessorFactory> decoder = PropertyDecoderRegistry.getDecoder(WSDLBasedProcessorFactory.class, ProcessorFactory.class);
+		PropertyDecoder<WSDLBasedProcessorFactory, ProcessorFactoryAdapter> decoder = PropertyDecoderRegistry.getDecoder(WSDLBasedProcessorFactory.class, ProcessorFactoryAdapter.class);
 		assertNotNull(decoder);
 		
 		WSDLBasedProcessorFactory factory = new WSDLBasedProcessorFactory("", "", new QName("")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		Object o = factory;
-		PropertyDecoder<?, ProcessorFactory> objectDecoder = PropertyDecoderRegistry.getDecoder(o.getClass(), ProcessorFactory.class);
+		PropertyDecoder<?, ProcessorFactoryAdapter> objectDecoder = PropertyDecoderRegistry.getDecoder(o.getClass(), ProcessorFactoryAdapter.class);
 		assertNotNull(objectDecoder);
 	}
 

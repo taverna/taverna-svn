@@ -83,11 +83,11 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 		return this.rowObjects.get(row);
 	}
 	
-	public int getObjectIndex(ProcessorFactory pf) {
-		if (pf == null) {
-			throw new NullPointerException("pf cannot be null"); //$NON-NLS-1$
+	public int getObjectIndex(ProcessorFactoryAdapter adapter) {
+		if (adapter == null) {
+			throw new NullPointerException("adapter cannot be null"); //$NON-NLS-1$
 		}
-		return this.rowObjects.indexOf(pf);
+		return this.rowObjects.indexOf(adapter);
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ package net.sf.taverna.t2.drizzle.view.subset;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDialog;
 import javax.swing.JMenu;
@@ -31,6 +33,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -47,6 +50,7 @@ import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
+import net.sf.taverna.t2.drizzle.model.SubsetKindConfiguration;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
@@ -71,64 +75,39 @@ public final class ActivitySubsetPanel extends JPanel {
 
 	JTable currentTable;
 
-	JTableHeader keyNamesTableHeader = null;
-
 	private ScuflModel currentWorkflow = null;
 
 	private ActivityRegistrySubsetModel subsetModel = null;
 
-	private static HashMap<String, List<PropertyKeySetting>> keySettingMap = new HashMap<String, List<PropertyKeySetting>>();
+	public static HashMap<String, SubsetKindConfiguration> kindConfigurationMap = new HashMap<String, SubsetKindConfiguration>();
 
-	private TreeMap<PropertyKey, JCheckBoxMenuItem> keyToCheckBoxMap = new TreeMap<PropertyKey, JCheckBoxMenuItem>();
+	private JScrollPane treePane;
 
-	private HashMap<JCheckBoxMenuItem, PropertyKey> checkBoxToKeyMap = new HashMap<JCheckBoxMenuItem, PropertyKey>();
+	private JScrollPane tablePane;
 
-	private boolean listeningToCheckBox = true;
-
-	public List<PropertyKeySetting> getKeySettings() {
+	private SubsetKindConfiguration getConfiguration() {
+		SubsetKindConfiguration result = null;
 		String kind = subsetModel.getIdent().getKind();
-		List<PropertyKeySetting> result = null;
-		if (keySettingMap.containsKey(kind)) {
-			result = keySettingMap.get(kind);
+		if (!kindConfigurationMap.containsKey(kind)) {
+			result = new SubsetKindConfiguration();
+			result.initialiseKeyList(subsetModel.getPropertyKeyProfile());
+			kindConfigurationMap.put(kind, result);
 		} else {
-			Set<PropertyKey> propertyKeyProfile = subsetModel.getIdent()
-					.getPropertyKeyProfile();
-			result = new ArrayList<PropertyKeySetting>();
-
-			for (PropertyKey key : propertyKeyProfile) {
-				PropertyKeySetting setting = ObjectFactory
-						.getInstance(PropertyKeySetting.class);
-				setting.setPropertyKey(key);
-				result.add(setting);
-			}
-
-			keySettingMap.put(kind, result);
+			result = kindConfigurationMap.get(kind);
 		}
 		return result;
 	}
 
-	List<PropertyKey> getPropertyKeys() {
-		List<PropertyKey> result = new ArrayList<PropertyKey>();
-		for (PropertyKeySetting pks : getKeySettings()) {
-			PropertyKey pk = pks.getPropertyKey();
-			if (pk == null) {
-				throw new IllegalStateException("key cannot be null"); //$NON-NLS-1$
-			}
-			result.add(pk);
-		}
-		return result;
+	private List<PropertyKeySetting> getTreeKeySettings() {
+		return getConfiguration().getTreeKeySettings();
 	}
 
-	private List<String> getKeyNames() {
-		List<String> result = new ArrayList<String>();
-		for (PropertyKeySetting pks : getKeySettings()) {
-			PropertyKey pk = pks.getPropertyKey();
-			if (pk == null) {
-				throw new IllegalStateException("key cannot be null"); //$NON-NLS-1$
-			}
-			result.add(pk.toString());
-		}
-		return result;
+	private List<PropertyKeySetting> getTableKeySettings() {
+		return getConfiguration().getTableKeySettings();
+	}
+	
+	private DefaultListModel getTreeTableListModel() {
+		return getConfiguration().getTreeTableListModel();
 	}
 
 	public void expandAll() {
@@ -138,36 +117,43 @@ public final class ActivitySubsetPanel extends JPanel {
 	}
 
 	public void setTreeAndTableModels() {
-		List<PropertyKeySetting> keySettings = getKeySettings();
-		synchronized (keySettings) {
+		List<PropertyKeySetting> treeKeySettings = getTreeKeySettings();
+		if (treeKeySettings.size() == 0) {
+			this.remove(treePane);
+		} else {
 			TreeModel treeModel = ActivitySubsetKeyTableHeader.createTreeModel(
-					subsetModel, keySettings);
+					subsetModel, treeKeySettings);
 			this.currentTree.setModel(treeModel);
+			if (treePane.getParent() == null) {
+				if (tablePane.getParent() != null) {
+					this.remove(tablePane);
+					this.add(treePane);
+				}
+				this.add(treePane);
+			}
+		}
+		List<PropertyKeySetting> tableKeySettings = getTableKeySettings();
+		if (tableKeySettings.size() == 0) {
+			this.remove(tablePane);
+		} else {
+			TreeModel tableModel = ActivitySubsetKeyTableHeader
+					.createTreeModel(subsetModel, tableKeySettings);
 			ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
-					((PropertiedTreeRootNode<ProcessorFactoryAdapter>) treeModel
+					((PropertiedTreeRootNode<ProcessorFactoryAdapter>) tableModel
 							.getRoot()));
 			this.currentTable.setModel(activitiesTableModel);
+			if (tablePane.getParent() == null) {
+				this.add(tablePane);
+			}
 		}
+		this.repaint();
+		this.validate();
 	}
 
 	public void setModels() {
-		List<PropertyKeySetting> keySettings = getKeySettings();
+		List<PropertyKeySetting> keySettings = getTreeKeySettings();
 		synchronized (keySettings) {
 			setTreeAndTableModels();
-
-			Vector<String> keyNames = new Vector<String>(getKeyNames());
-
-			DefaultTableModel keyNamesTableModel = new DefaultTableModel(
-					keyNames, 0);
-			JTable keyNamesTable = new JTable(keyNamesTableModel);
-			TableColumnModel columnModel = keyNamesTable.getColumnModel();
-			if (this.keyNamesTableHeader == null) {
-				this.keyNamesTableHeader = keyNamesTable.getTableHeader();
-				ColumnMoveListener moveListener = new ColumnMoveListener(
-						keyNamesTableHeader, this);
-			} else {
-				this.keyNamesTableHeader.setColumnModel(columnModel);
-			}
 		}
 	}
 
@@ -183,24 +169,23 @@ public final class ActivitySubsetPanel extends JPanel {
 		}
 		this.subsetModel = subsetModel;
 		this.setName(subsetModel.getName());
-		setLayout(new BorderLayout());
+		setLayout(new GridLayout(1, 2));
 		this.setPreferredSize(new Dimension(0, 0));
 
 		this.currentTree = new ActivitySubsetTree();
 		this.currentTree.setRowHeight(0);
 		this.currentTree.setLargeModel(true);
-		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer());
+		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer(getTreeTableListModel(), subsetModel.getParentRegistry().getRegistry()));
 		this.currentTree.addMouseListener(new ActivitySubsetListener(this));
 		this.currentTree.setDragEnabled(true);
 
-		JScrollPane treePane = new JScrollPane(this.currentTree);
+		treePane = new JScrollPane(this.currentTree);
 
 		this.currentTable = new ActivitySubsetTable();
 
-		setModels();
-
 		this.currentTable.addMouseListener(new ActivitySubsetListener(this));
-		JScrollPane tablePane = new JScrollPane(this.currentTable);
+
+		tablePane = new JScrollPane(this.currentTable);
 		final ListSelectionModel tableSelectionModel = this.currentTable
 				.getSelectionModel();
 
@@ -216,24 +201,26 @@ public final class ActivitySubsetPanel extends JPanel {
 				 * implicitly selected for removal and addition.
 				 */
 				for (int i = 0; i < paths.length; i++) {
-					PropertiedTreeNode<ProcessorFactory> node = (PropertiedTreeNode<ProcessorFactory>) paths[i]
+					PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
 							.getLastPathComponent();
-					Set<ProcessorFactory> allObjects = node.getAllObjects();
+					Set<ProcessorFactoryAdapter> allObjects = node
+							.getAllObjects();
 					if (!arg0.isAddedPath(i)) {
-						for (ProcessorFactory pf : allObjects) {
-							int rowIndex = tableModel.getObjectIndex(pf);
+						for (ProcessorFactoryAdapter adapter : allObjects) {
+							int rowIndex = tableModel.getObjectIndex(adapter);
 							tableSelectionModel.removeSelectionInterval(
 									rowIndex, rowIndex);
 						}
 					}
 				}
 				for (int i = 0; i < paths.length; i++) {
-					PropertiedTreeNode<ProcessorFactory> node = (PropertiedTreeNode<ProcessorFactory>) paths[i]
+					PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
 							.getLastPathComponent();
-					Set<ProcessorFactory> allObjects = node.getAllObjects();
+					Set<ProcessorFactoryAdapter> allObjects = node
+							.getAllObjects();
 					if (arg0.isAddedPath(i)) {
-						for (ProcessorFactory pf : allObjects) {
-							int rowIndex = tableModel.getObjectIndex(pf);
+						for (ProcessorFactoryAdapter adapter : allObjects) {
+							int rowIndex = tableModel.getObjectIndex(adapter);
 							tableSelectionModel.addSelectionInterval(rowIndex,
 									rowIndex);
 						}
@@ -242,36 +229,12 @@ public final class ActivitySubsetPanel extends JPanel {
 			}
 		});
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-				treePane, tablePane);
-		splitPane.setDividerLocation(0.5);
-		this.add(splitPane, BorderLayout.CENTER);
-
-		JMenuBar northMenuBar = new JMenuBar();
-
-		final JPopupMenu selectKeysMenu = new JPopupMenu("select keys");
-		JMenuItem selectKeysItem = new JMenuItem("select keys");
-		northMenuBar.add(selectKeysItem);
-		selectKeysItem.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent arg0) {
-				JDialog dialog = new SelectKeysDialog(ActivitySubsetPanel.this);
-				Component c = (Component) arg0.getSource();
-				int py = c.getY() + c.getHeight() + 2;
-				dialog.setLocationRelativeTo(ActivitySubsetPanel.this);
-				dialog.setVisible(true);
-
-			}
-		});
-		northMenuBar.add(selectKeysMenu);
-		for (JCheckBoxMenuItem checkBox : keyToCheckBoxMap.values()) {
-			selectKeysMenu.add(checkBox);
-		}
-
-		northMenuBar.add(new JSeparator(SwingConstants.VERTICAL));
-		northMenuBar.add(keyNamesTableHeader);
-
-		this.add(northMenuBar, BorderLayout.NORTH);
+		// JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+		// treePane, tablePane);
+		// splitPane.setDividerLocation(0.5);
+		this.add(treePane);
+		this.add(tablePane);
+		// this.add(splitPane, BorderLayout.CENTER);
 	}
 
 	public void collapseAll() {

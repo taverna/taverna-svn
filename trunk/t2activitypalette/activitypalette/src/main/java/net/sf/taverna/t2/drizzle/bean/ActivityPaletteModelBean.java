@@ -6,8 +6,6 @@ package net.sf.taverna.t2.drizzle.bean;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
-
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
