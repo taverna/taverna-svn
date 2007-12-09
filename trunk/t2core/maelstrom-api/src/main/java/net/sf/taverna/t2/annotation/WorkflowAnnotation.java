@@ -6,6 +6,7 @@ package net.sf.taverna.t2.annotation;
  * @author Tom Oinn
  *
  */
+@Deprecated
 public interface WorkflowAnnotation {
 
 }

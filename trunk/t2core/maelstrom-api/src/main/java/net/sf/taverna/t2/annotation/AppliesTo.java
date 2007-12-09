@@ -17,10 +17,10 @@ public @interface AppliesTo {
 	/**
 	 * The class of the metadata object allowed by this annotation
 	 */
-	Class<?>[] workflowObjectType();
+	Class<?>[] targetObjectType();
 
 	/**
-	 * Can you have more than one of these metadata objects?
+	 * Can you have more than one of these metadata objects in the resolved set?
 	 */
 	boolean many() default true;
 

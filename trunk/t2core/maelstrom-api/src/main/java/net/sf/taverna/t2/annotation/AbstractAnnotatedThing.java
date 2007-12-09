@@ -18,7 +18,7 @@ import net.sf.taverna.t2.workflowmodel.EditException;
  */
 public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 
-	private Set<WorkflowAnnotation> annotations = new HashSet<WorkflowAnnotation>();
+	private Set<AnnotationChain> annotations = new HashSet<AnnotationChain>();
 
 	/**
 	 * Return the set of annotations bound to this annotated object, the set
@@ -28,7 +28,7 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 	 * 
 	 * @see net.sf.taverna.t2.annotation.Annotated#getAnnotations()
 	 */
-	public final Set<WorkflowAnnotation> getAnnotations() {
+	public final Set<AnnotationChain> getAnnotations() {
 		return Collections.unmodifiableSet(annotations);
 	}
 
@@ -95,7 +95,7 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 	 * @see net.sf.taverna.t2.annotation.Annotated#getAddAnnotationEdit(net.sf.taverna.t2.annotation.WorkflowAnnotation)
 	 */
 	public final Edit<T> getAddAnnotationEdit(
-			final WorkflowAnnotation newAnnotation) {
+			final AnnotationChain newAnnotation) {
 		return new AbstractAnnotationEdit<T>(this) {
 			@Override
 			protected void doEditAction(AbstractAnnotatedThing<?> subject)
@@ -114,7 +114,7 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 	 * @see net.sf.taverna.t2.annotation.Annotated#getRemoveAnnotationEdit(net.sf.taverna.t2.annotation.WorkflowAnnotation)
 	 */
 	public final Edit<T> getRemoveAnnotationEdit(
-			final WorkflowAnnotation annotationToRemove) {
+			final AnnotationChain annotationToRemove) {
 		return new AbstractAnnotationEdit<T>(this) {
 			@Override
 			protected void doEditAction(AbstractAnnotatedThing<?> subject)
@@ -125,29 +125,6 @@ public abstract class AbstractAnnotatedThing<T> implements Annotated<T> {
 			@Override
 			protected void undoEditAction(AbstractAnnotatedThing<?> subject) {
 				annotations.add(annotationToRemove);
-			}
-		};
-	}
-
-	/**
-	 * @see net.sf.taverna.t2.annotation.Annotated#getReplaceAnnotationEdit(net.sf.taverna.t2.annotation.WorkflowAnnotation,
-	 *      net.sf.taverna.t2.annotation.WorkflowAnnotation)
-	 */
-	public final Edit<T> getReplaceAnnotationEdit(
-			final WorkflowAnnotation oldAnnotation,
-			final WorkflowAnnotation newAnnotation) {
-		return new AbstractAnnotationEdit<T>(this) {
-			@Override
-			protected void doEditAction(AbstractAnnotatedThing<?> subject)
-					throws EditException {
-				annotations.remove(oldAnnotation);
-				annotations.add(newAnnotation);
-			}
-
-			@Override
-			protected void undoEditAction(AbstractAnnotatedThing<?> subject) {
-				annotations.remove(newAnnotation);
-				annotations.add(oldAnnotation);
 			}
 		};
 	}

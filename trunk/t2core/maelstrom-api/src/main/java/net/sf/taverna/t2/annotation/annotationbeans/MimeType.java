@@ -1,7 +1,6 @@
-package net.sf.taverna.t2.annotation.beans;
+package net.sf.taverna.t2.annotation.annotationbeans;
 
 import net.sf.taverna.t2.annotation.AppliesTo;
-import net.sf.taverna.t2.annotation.WorkflowAnnotation;
 import net.sf.taverna.t2.workflowmodel.Port;
 
 /**
@@ -12,10 +11,15 @@ import net.sf.taverna.t2.workflowmodel.Port;
  * @author Tom Oinn
  * 
  */
+@AppliesTo(targetObjectType = { Port.class })
+public class MimeType extends AbstractTextualValueAssertion {
 
-//TODO Should this be a proper MimeType rather than a String
-@AppliesTo(workflowObjectType={Port.class})
-public interface MimeType extends WorkflowAnnotation {
+	/**
+	 * Default constructor as mandated by java bean specification
+	 */
+	public MimeType() {
+		super();
+	}
 
 	/**
 	 * Return the MIME type as a string, mime types look like 'part/part'. We
@@ -28,6 +32,9 @@ public interface MimeType extends WorkflowAnnotation {
 	 * 
 	 * @return the MIME type as a string.
 	 */
-	public String getMIMEType();
+	@Override
+	public String getText() {
+		return super.getText();
+	}
 
 }

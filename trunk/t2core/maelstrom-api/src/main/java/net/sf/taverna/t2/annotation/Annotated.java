@@ -25,7 +25,7 @@ public interface Annotated<TargetType> {
 	 * 
 	 * @return set of metadata objects that apply to the annotated object
 	 */
-	Set<? extends WorkflowAnnotation> getAnnotations();
+	Set<? extends AnnotationChain> getAnnotations();
 
 	/**
 	 * Add new workflow object metadata to this annotated entity
@@ -37,7 +37,7 @@ public interface Annotated<TargetType> {
 	 * @return edit object to perform and undo the metadata assignment
 	 */
 	public Edit<? extends TargetType> getAddAnnotationEdit(
-			WorkflowAnnotation newAnnotation);
+			AnnotationChain newAnnotation);
 
 	/**
 	 * Remove an annotation object from the this annotated entity
@@ -52,25 +52,6 @@ public interface Annotated<TargetType> {
 	 * @return edit object to perform and undo the metadata removal
 	 */
 	public Edit<? extends TargetType> getRemoveAnnotationEdit(
-			WorkflowAnnotation annotationToRemove);
-
-	/**
-	 * Replace an annotation on this object with a new annotation object. In all
-	 * probability this is implemented as a compound edit using the remove and
-	 * add annotation edits but from a user's point of view we want to have this
-	 * as a single editing operation within the UI.
-	 * 
-	 * @param <TargetType>
-	 *            type of the workflow object under modification
-	 * @param oldAnnotation
-	 *            annotation to replace
-	 * @param newAnnotation
-	 *            new version of the annotation
-	 * @param objectToAnnotate
-	 *            workflow object being annotated
-	 * @return edit object to perform and undo the metadata modification
-	 */
-	public Edit<? extends TargetType> getReplaceAnnotationEdit(
-			WorkflowAnnotation oldAnnotation, WorkflowAnnotation newAnnotation);
+			AnnotationChain annotationToRemove);
 
 }
