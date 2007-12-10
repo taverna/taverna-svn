@@ -63,4 +63,16 @@ public class ExampleKey implements PropertyKey {
 	public String toString() {
 		return Integer.toString(getKey());
 	}
+
+	public PropertyKey getAsBean() {
+		return this;
+	}
+
+	public void setFromBean(PropertyKey bean) throws IllegalArgumentException {
+		if (bean instanceof ExampleKey) {
+			//TODO
+		} else {
+			throw new IllegalArgumentException("ExampleKey expected");
+		}
+	}
 }
