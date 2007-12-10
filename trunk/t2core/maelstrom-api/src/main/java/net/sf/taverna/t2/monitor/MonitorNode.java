@@ -50,4 +50,10 @@ public interface MonitorNode {
 	 */
 	public void addMonitorableProperty(MonitorableProperty<?> newProperty);
 
+	/**
+	 * Nodes can persist in the tree after they have expired, in which case this
+	 * will return true.
+	 */
+	public boolean hasExpired();
+
 }

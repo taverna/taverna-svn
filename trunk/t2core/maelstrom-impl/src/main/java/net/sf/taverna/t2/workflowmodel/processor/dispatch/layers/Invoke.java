@@ -113,6 +113,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					private boolean sentJob = false;
 
 					public void fail(String message, Throwable t) {
+						MonitorImpl.getMonitor().deregisterNode(
+								invocationProcessIdentifier.split(":"));
 						getAbove().receiveError(
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
@@ -121,6 +123,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					}
 
 					public void fail(String message) {
+						MonitorImpl.getMonitor().deregisterNode(
+								invocationProcessIdentifier.split(":"));
 						fail(message, null);
 					}
 

@@ -1,14 +1,21 @@
 package net.sf.taverna.t2.monitor.impl;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.SwingUtilities;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.tree.*;
+
 import net.sf.taverna.t2.monitor.Monitor;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
@@ -35,6 +42,25 @@ public final class MonitorImpl implements Monitor {
 	private static Monitor monitorSingleton = null;
 	private static boolean isEnabled = false;
 	private static long deregisterDelay = 1000;
+
+	/**
+	 * Very simple UI!
+	 */
+	public static void showMonitorFrame() {
+		MonitorImpl m = (MonitorImpl) (MonitorImpl.getMonitor());
+		final JTree tree = m.new AlwaysOpenJTree(m.monitorTree);
+		final JScrollPane jsp = new JScrollPane(tree);
+		JFrame frame = new JFrame();
+		frame.getContentPane().setLayout(new BorderLayout());
+		frame.getContentPane().add(jsp);
+		frame.pack();
+		frame.setVisible(true);
+		new javax.swing.Timer(500, new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				jsp.repaint();
+			}
+		}).start();
+	}
 
 	/**
 	 * By default the monitor is linked to the code but disabled, mostly so our
@@ -78,12 +104,12 @@ public final class MonitorImpl implements Monitor {
 
 	private DefaultTreeModel monitorTree;
 
-	private Timer nodeRemovalTimer;
+	private java.util.Timer nodeRemovalTimer;
 
 	private MonitorImpl() {
 		monitorTree = new DefaultTreeModel(new DefaultMutableTreeNode(this));
 		// Create the node removal timer as a daemon thread
-		nodeRemovalTimer = new Timer(true);
+		nodeRemovalTimer = new java.util.Timer(true);
 	}
 
 	/**
@@ -93,9 +119,12 @@ public final class MonitorImpl implements Monitor {
 	 */
 	public void deregisterNode(String[] owningProcess) {
 		if (isEnabled) {
-			final MutableTreeNode nodeToRemove = nodeAtProcessPath(
+			// System.out.println("Remove node @" +
+			// printProcess(owningProcess));
+			final DefaultMutableTreeNode nodeToRemove = nodeAtProcessPath(
 					owningProcess, -1);
-			nodeRemovalTimer.schedule(new TimerTask() {
+			((MonitorNodeImpl) nodeToRemove.getUserObject()).expire();
+			nodeRemovalTimer.schedule(new java.util.TimerTask() {
 				@Override
 				public void run() {
 					synchronized (monitorTree) {
@@ -106,6 +135,91 @@ public final class MonitorImpl implements Monitor {
 		}
 	}
 
+	private String printProcess(String[] process) {
+		StringBuffer sb = new StringBuffer();
+		for (String part : process) {
+			sb.append("{" + part + "}");
+		}
+		return sb.toString();
+	}
+
+	class MonitorNodeImpl implements MonitorNode {
+
+		private Object workflowObject;
+		private String[] owningProcess;
+		private Set<MonitorableProperty<?>> properties;
+		private boolean expired = false;
+
+		MonitorNodeImpl(Object workflowObject, String[] owningProcess,
+				Set<MonitorableProperty<?>> properties) {
+			this.properties = properties;
+			this.workflowObject = workflowObject;
+			this.owningProcess = owningProcess;
+		}
+
+		public void expire() {
+			expired = true;
+		}
+
+		public String[] getOwningProcess() {
+			return owningProcess;
+		}
+
+		/**
+		 * Return an unmodifiable copy of the property set
+		 */
+		public Set<? extends MonitorableProperty<?>> getProperties() {
+			return Collections.unmodifiableSet(properties);
+		}
+
+		public Object getWorkflowObject() {
+			return workflowObject;
+		}
+
+		@Override
+		public String toString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(getWorkflowObject().getClass().getSimpleName());
+			sb.append(", ");
+			sb.append(owningProcess[owningProcess.length - 1]);
+			sb.append(" : ");
+			for (MonitorableProperty<?> prop : getProperties()) {
+				int i = 0;
+				for (String nameElement : prop.getName()) {
+					sb.append(nameElement);
+					i++;
+					if (i < prop.getName().length) {
+						sb.append(".");
+					}
+				}
+				sb.append("=");
+				try {
+					sb.append(prop.getValue().toString());
+				} catch (NoSuchPropertyException nspe) {
+					sb.append("EXPIRED");
+				}
+				sb.append(" ");
+			}
+			return sb.toString();
+		}
+
+		Date creationDate = new Date();
+
+		public Date getCreationDate() {
+			return creationDate;
+		}
+
+		public void addMonitorableProperty(MonitorableProperty<?> newProperty) {
+			properties.add(newProperty);
+
+		}
+
+		public boolean hasExpired() {
+			return this.expired;
+		}
+
+	}
+
 	/**
 	 * Create a new node in the monitor
 	 */
@@ -113,65 +227,15 @@ public final class MonitorImpl implements Monitor {
 			final String[] owningProcess,
 			final Set<MonitorableProperty<?>> properties) {
 		if (isEnabled) {
-
+			// System.out.println("Registering node "
+			// + printProcess(owningProcess));
 			// Create a new MonitorNode
-			DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new MonitorNode() {
-						public String[] getOwningProcess() {
-							return owningProcess;
-						}
-
-						/**
-						 * Return an unmodifiable copy of the property set
-						 */
-						public Set<? extends MonitorableProperty<?>> getProperties() {
-							return Collections.unmodifiableSet(properties);
-						}
-
-						public Object getWorkflowObject() {
-							return workflowObject;
-						}
-
-						@Override
-						public String toString() {
-							StringBuffer sb = new StringBuffer();
-							sb.append(getWorkflowObject().toString());
-							sb.append(" : ");
-							for (MonitorableProperty<?> prop : getProperties()) {
-								int i = 0;
-								for (String nameElement : prop.getName()) {
-									sb.append(nameElement);
-									i++;
-									if (i < prop.getName().length) {
-										sb.append(".");
-									}
-								}
-								sb.append("=");
-								try {
-									sb.append(prop.getValue().toString());
-								} catch (NoSuchPropertyException nspe) {
-									sb.append("EXPIRED");
-								}
-								sb.append(" ");
-							}
-							return sb.toString();
-						}
-
-						Date creationDate = new Date();
-
-						public Date getCreationDate() {
-							return creationDate;
-						}
-
-						public void addMonitorableProperty(
-								MonitorableProperty<?> newProperty) {
-							properties.add(newProperty);
-							
-						}
-					});
+			final DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
+					new MonitorNodeImpl(workflowObject, owningProcess,
+							properties));
 			synchronized (monitorTree) {
-				MutableTreeNode parentNode = nodeAtProcessPath(owningProcess,
-						owningProcess.length - 1);
+				final MutableTreeNode parentNode = nodeAtProcessPath(
+						owningProcess, owningProcess.length - 1);
 				monitorTree.insertNodeInto(newNode, parentNode, monitorTree
 						.getChildCount(parentNode));
 			}
@@ -185,14 +249,14 @@ public final class MonitorImpl implements Monitor {
 			Set<MonitorableProperty<?>> newProperties) {
 		try {
 			DefaultMutableTreeNode node = nodeAtProcessPath(owningProcess, -1);
-			MonitorNode mn = (MonitorNode)node.getUserObject();
+			MonitorNode mn = (MonitorNode) node.getUserObject();
 			for (MonitorableProperty<?> prop : newProperties) {
 				mn.addMonitorableProperty(prop);
 			}
 		} catch (IndexOutOfBoundsException ioobe) {
 			// Fail silently here, the node wasn't found in the state tree
 		}
-		
+
 		// TODO Auto-generated method stub
 
 	}
@@ -213,21 +277,101 @@ public final class MonitorImpl implements Monitor {
 		DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode) monitorTree
 				.getRoot();
 		for (int index = 0; index < limit && index < owningProcess.length; index++) {
+			boolean found = false;
 			for (int childIndex = 0; childIndex < monitorTree
-					.getChildCount(currentNode); childIndex++) {
+					.getChildCount(currentNode)
+					&& !found; childIndex++) {
 				DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) monitorTree
 						.getChild(currentNode, childIndex);
 				MonitorNode childMonitorNode = (MonitorNode) childNode
 						.getUserObject();
-				if (childMonitorNode.getOwningProcess()[index] == owningProcess[index]) {
+				if (childMonitorNode.getOwningProcess()[index]
+						.equals(owningProcess[index])) {
 					currentNode = childNode;
-					break;
+					found = true;
+					// break;
 				}
 			}
-			throw new IndexOutOfBoundsException(
-					"Cannot locate node with process ID " + owningProcess);
+			if (!found) {
+				throw new IndexOutOfBoundsException(
+						"Cannot locate node with process ID "
+								+ printProcess(owningProcess));
+			}
 		}
 		return currentNode;
+	}
+
+	class AlwaysOpenJTree extends JTree {
+
+		private static final long serialVersionUID = -3769998854485605447L;
+
+		public AlwaysOpenJTree(TreeModel newModel) {
+			super(newModel);
+			setRowHeight(18);
+			setLargeModel(true);
+			setEditable(false);
+			setExpandsSelectedPaths(false);
+			setDragEnabled(false);
+			setScrollsOnExpand(false);
+			setSelectionModel(EmptySelectionModel.sharedInstance());
+			setCellRenderer(new DefaultTreeCellRenderer() {
+
+				private static final long serialVersionUID = 7106767124654545039L;
+
+				@Override
+				public Component getTreeCellRendererComponent(JTree tree,
+						Object value, boolean sel, boolean expanded,
+						boolean leaf, int row, boolean hasFocus) {
+					super.getTreeCellRendererComponent(tree, value, sel,
+							expanded, leaf, row, hasFocus);
+					if (value instanceof DefaultMutableTreeNode) {
+						Object o = ((DefaultMutableTreeNode) value)
+								.getUserObject();
+						if (o instanceof MonitorNode) {
+							MonitorNode mn = (MonitorNode) o;
+							if (mn.hasExpired()) {
+								setEnabled(false);
+							}
+						}
+					}
+					return this;
+				}
+			});
+		}
+
+		@Override
+		public void setModel(TreeModel model) {
+			if (treeModel == model)
+				return;
+			if (treeModelListener == null)
+				treeModelListener = new TreeModelHandler() {
+					public void treeNodesInserted(final TreeModelEvent ev) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								TreePath path = ev.getTreePath();
+								setExpandedState(path, true);
+								fireTreeExpanded(path);
+							}
+						});
+					}
+					public void treeStructureChanged(final TreeModelEvent ev) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								TreePath path = ev.getTreePath();
+								setExpandedState(path, true);
+								fireTreeExpanded(path);
+							}
+						});
+					}
+				};
+			if (model != null) {
+				model.addTreeModelListener(treeModelListener);
+			}
+			TreeModel oldValue = treeModel;
+			treeModel = model;
+			firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
+		}
+
 	}
 
 }
