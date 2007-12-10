@@ -313,7 +313,7 @@ public final class PropertiedObjectSetImpl<O extends Beanable<?>> implements Pro
 			bean.getPropertiedObjectMap();
 		for (HashMapEntryBean<Object, PropertiedObjectBean> entryBean: beanedPropertiedObjectMap.getEntry()) {
 			Object beanObject = entryBean.getKey();
-			O object = null; // How to do new O();
+			
 			// How to do this? object.setFromBean(beanObject);
 //			this.addObject(object);
 //			PropertiedObject<O> po = getPropertiedObject(object);

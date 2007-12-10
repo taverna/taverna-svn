@@ -9,7 +9,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @author alanrw
  *
  */
-public class ExampleObject implements Comparable<Object>, Beanable<ExampleBean> {
+public class ExampleObject implements Comparable<Object>, Beanable<ExampleObject>{
 	private static int objectCount = 0;
 	
 	private int i;
@@ -64,13 +64,11 @@ public class ExampleObject implements Comparable<Object>, Beanable<ExampleBean> 
 		return "ExampleObject" + Integer.toString(getI()); //$NON-NLS-1$
 	}
 
-	public ExampleBean getAsBean() {
-		// TODO Auto-generated method stub
-		return null;
+	public ExampleObject getAsBean() {
+		return this;
 	}
 
-	public void setFromBean(ExampleBean bean) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		
+	public void setFromBean(ExampleObject bean) throws IllegalArgumentException {
+		this.i = bean.getI();
 	}
 }

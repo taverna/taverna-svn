@@ -20,6 +20,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -488,6 +489,7 @@ public class PropertiedObjectSetImplTest {
 	 * Test method for {@link net.sf.taverna.t2.drizzle.util.impl.PropertiedObjectSetImpl#setFromBean(net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean)}.
 	 */
 	@Test
+	@Ignore
 	public void testSetFromBean() {
 		ExampleObject testObject1 = createObject();
 		ExampleObject testObject2 = createObject();
