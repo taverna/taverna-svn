@@ -20,6 +20,7 @@ public final class ObjectFactory {
 
 	private static Map<Class<?>,SpiRegistry> registryMap = new HashMap<Class<?>,SpiRegistry>();
 	
+	@SuppressWarnings("unchecked")
 	public static <C> C getInstance(Class<C> objectClass) {
 		if (objectClass == null) {
 			throw new NullPointerException ("objectClass cannot be null"); //$NON-NLS-1$
@@ -48,11 +49,10 @@ public final class ObjectFactory {
 		if (getClassLoader() instanceof LocalArtifactClassLoader) {
 			return ((LocalArtifactClassLoader) getClassLoader())
 					.getRepository();
-		} else {
-			// Do the ugly hack in one place
-			System.setProperty("raven.eclipse", "true");
-			return new EclipseRepository();
 		}
+		// Do the ugly hack in one place
+		System.setProperty("raven.eclipse", "true");  //$NON-NLS-1$//$NON-NLS-2$
+		return new EclipseRepository();
 	}
 
 	private static ClassLoader getClassLoader() {

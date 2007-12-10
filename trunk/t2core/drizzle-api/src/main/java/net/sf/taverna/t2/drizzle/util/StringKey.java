@@ -47,7 +47,7 @@ public final class StringKey implements PropertyKey {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int compareTo(Object o) {
+	public int compareTo(PropertyKey o) {
 		int result = 0;
 		if (o instanceof StringKey) {
 			StringKey stringArg = (StringKey) o;

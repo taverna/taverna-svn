@@ -44,7 +44,7 @@ public class ExampleKey implements PropertyKey {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int compareTo(Object o) {
+	public int compareTo(PropertyKey o) {
 		int result = 0;
 		if (o instanceof ExampleKey) {
 			ExampleKey exampleArg = (ExampleKey) o;

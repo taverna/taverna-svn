@@ -108,7 +108,7 @@ public final class PropertiedObjectSetImpl<O extends Beanable<?>> implements Pro
 		} else {
 			Set<O> keySet = this.propertiedObjectMap.keySet();
 			if (!keySet.contains(object)) {
-				throw new IllegalStateException ("Something is very funny here");
+				throw new IllegalStateException ("Something is very funny here"); //$NON-NLS-1$
 			}
 		}
 	}

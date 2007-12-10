@@ -22,7 +22,7 @@ public final class ObjectAndFilter<O> implements PropertiedObjectFilter<O> {
 	 */
 	public boolean acceptObject(O object) {
 		boolean result = true;
-		for (PropertiedObjectFilter<O> filter : filters) {
+		for (PropertiedObjectFilter<O> filter : this.filters) {
 			if (!filter.acceptObject(object)) {
 				result = false;
 				break;

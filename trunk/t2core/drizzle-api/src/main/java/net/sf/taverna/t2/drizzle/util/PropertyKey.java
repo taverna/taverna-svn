@@ -15,6 +15,6 @@ package net.sf.taverna.t2.drizzle.util;
  * @author alanrw
  * 
  */
-public interface PropertyKey extends Comparable {
+public interface PropertyKey extends Comparable<PropertyKey> {
 	// Nothing in common
 }

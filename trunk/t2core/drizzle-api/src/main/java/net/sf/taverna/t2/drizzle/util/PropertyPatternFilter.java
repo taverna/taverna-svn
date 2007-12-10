@@ -17,7 +17,7 @@ public final class PropertyPatternFilter<O extends Beanable<?>> implements Prope
 	
 	public PropertyPatternFilter(final PropertyKey key, final String pattern, final PropertiedObjectSet<O> registry) {
 		this.key = key;
-		this.pattern = ".*" + pattern.toLowerCase() + ".*";
+		this.pattern = ".*" + pattern.toLowerCase() + ".*"; //$NON-NLS-1$ //$NON-NLS-2$
 		this.registry = registry;
 	}
 
