@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workflowmodel.processor.activity;
+package net.sf.taverna.t2.workflowmodel.health;
 
 
 import static org.junit.Assert.assertEquals;

@@ -138,6 +138,4 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 *             iteration mismatch
 	 */
 	public boolean doTypeCheck() throws IterationTypeMismatchException;
-	
-	public HealthReport checkProcessorHealth();
 }

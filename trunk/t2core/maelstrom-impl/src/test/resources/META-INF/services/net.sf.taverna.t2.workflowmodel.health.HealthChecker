@@ -1,3 +1,0 @@
-net.sf.taverna.t2.workflowmodel.health.impl.StringHealthChecker
-net.sf.taverna.t2.workflowmodel.health.impl.FloatHealthChecker
-net.sf.taverna.t2.workflowmodel.health.impl.FloatHealthChecker2

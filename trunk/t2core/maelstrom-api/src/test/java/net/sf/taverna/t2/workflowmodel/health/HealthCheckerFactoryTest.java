@@ -1,10 +1,11 @@
-package net.sf.taverna.t2.workflowmodel.health.impl;
+package net.sf.taverna.t2.workflowmodel.health;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheckerFactory;
 
 import org.junit.Before;
 import org.junit.Test;

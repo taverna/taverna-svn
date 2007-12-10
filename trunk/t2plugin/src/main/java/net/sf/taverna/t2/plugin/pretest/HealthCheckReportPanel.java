@@ -17,8 +17,10 @@ import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
+import net.sf.taverna.t2.workflowmodel.health.HealthCheckerFactory;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 
@@ -88,6 +90,7 @@ public class HealthCheckReportPanel extends JPanel {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void checkProcessors(Dataflow dataflow) {
 		List<? extends Processor> processors = dataflow.getProcessors();
 		if (processors.size() > 0) {
@@ -101,8 +104,10 @@ public class HealthCheckReportPanel extends JPanel {
 				}
 				setStatus("Checking health for processor:"
 						+ processor.getLocalName());
-				HealthReport report = processor.checkProcessorHealth();
-				reportTreeModel.addHealthReport(report);
+				for (HealthChecker checker : HealthCheckerFactory.getInstance().getHealthCheckersForObject(processor)) {
+					HealthReport report = checker.checkHealth(processor);
+					reportTreeModel.addHealthReport(report);
+				}
 				progressBar.setValue(++processorsChecked);
 			}
 		}
