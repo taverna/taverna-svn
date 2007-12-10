@@ -139,7 +139,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		private DispatchJobQueueEvent queueEvent;
 
-		private BlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>> pendingEvents = new LinkedBlockingQueue<IterationInternalEvent<? extends IterationInternalEvent<?>>>();
+		@SuppressWarnings("unchecked")//suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
+		private BlockingQueue<IterationInternalEvent> pendingEvents = new LinkedBlockingQueue<IterationInternalEvent>();
 
 		private int activeJobs = 0;
 
@@ -183,11 +184,12 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 * jobs list and return
 		 * </ul>
 		 */
+		@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
 		protected void fillFromQueue() {
 			synchronized (this) {
 				while (queueEvent.getQueue().peek() != null
 						&& activeJobs < maximumJobs) {
-					final IterationInternalEvent<? extends IterationInternalEvent<?>> e = queueEvent
+					final IterationInternalEvent e = queueEvent
 							.getQueue().remove();
 
 					if (e instanceof Completion && pendingEvents.peek() == null) {
@@ -228,10 +230,11 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		 * @param index
 		 * @return
 		 */
+		@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 error messages caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
 		protected boolean finishWith(int[] index) {
 			synchronized (this) {
 
-				for (IterationInternalEvent<? extends IterationInternalEvent<?>> e : new ArrayList<IterationInternalEvent<? extends IterationInternalEvent<?>>>(
+				for (IterationInternalEvent e : new ArrayList<IterationInternalEvent>(
 						pendingEvents)) {
 					if (e instanceof Job) {
 						Job j = (Job) e;

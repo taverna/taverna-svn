@@ -186,7 +186,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * 
 	 * @param j
 	 */
-	protected void receiveEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
+	@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 compilation errors caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
+	protected void receiveEvent(IterationInternalEvent e) {
 		// If we ever get this method called we know we're not the top layer in
 		// the dispatch stack and that we need to perform wrap / unwrap of data
 		// as it comes in. This boolean flag informs the behaviour of the

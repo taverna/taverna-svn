@@ -44,7 +44,8 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 	 * 
 	 * @param e
 	 */
-	public void receiveEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
+	@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 compilation errors caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
+	public void receiveEvent(IterationInternalEvent e) {
 		String owningProcess = e.getOwningProcess();
 		CompletionAwareTreeCache cache = null;
 		synchronized (cacheMap) {
