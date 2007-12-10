@@ -54,6 +54,10 @@ public class DataFacade {
 	public static final int UNKNOWN_DEPTH = -1;
 
 	private static Logger logger = Logger.getLogger(DataFacade.class);
+	/*
+	 * The DataManager responsible for storing the entities registered through
+	 * the facade
+	 */
 	private DataManager dManager;
 
 	/**

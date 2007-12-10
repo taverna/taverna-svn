@@ -49,11 +49,15 @@ import org.apache.commons.io.IOUtils;
  * 
  */
 public class FileBlobStore implements BlobStore {
-
+	/*
+	 * Where are the blobs stored
+	 */
 	private File path;
 
 	private String namespace;
-
+	/*
+	 * Where is the blob store valid eg. local, same IP, global etc.
+	 */
 	private Set<LocationalContext> locationalContexts;
 
 	/**

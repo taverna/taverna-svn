@@ -7,6 +7,7 @@ import java.util.Set;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
+import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.impl.DataDocumentImpl;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
@@ -27,6 +28,10 @@ public class DataPeerImpl implements DataPeer {
 		this.dataManager = dataManager;
 	}
 
+	/**
+	 * Export the {@link ReferenceScheme}s which are valid in the other
+	 * {@link DataPeer}s {@link LocationalContext}s
+	 */
 	@SuppressWarnings("unchecked")
 	public DataDocument exportDataDocument(
 			Set<LocationalContext> remoteContext,
@@ -54,10 +59,18 @@ public class DataPeerImpl implements DataPeer {
 		return dataManager.getCurrentNamespace();
 	}
 
+	/**
+	 * The {@link DataManager} handling storage of {@link Entity}s for this
+	 * {@link DataPeer}
+	 */
 	public DataManager getDataManager() {
 		return dataManager;
 	}
 
+	/**
+	 * The contexts where this {@link DataPeer}s {@link DataManager} can handle
+	 * {@link Entity}s from
+	 */
 	public Set<LocationalContext> getLocationalContexts() {
 		return dataManager.getLocationalContexts();
 	}

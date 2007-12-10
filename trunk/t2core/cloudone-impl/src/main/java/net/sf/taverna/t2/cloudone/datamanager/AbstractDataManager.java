@@ -43,7 +43,13 @@ public abstract class AbstractDataManager implements DataManager {
 	}
 
 	private String namespace;
+	/*
+	 * The contexts for the DataManager itself
+	 */
 	private Set<LocationalContext> initialContexts;
+	/*
+	 * The contexts for the DataManager and the BlobStore it has
+	 */
 	private Set<LocationalContext> locationalContexts = null;
 
 	/**
@@ -95,6 +101,10 @@ public abstract class AbstractDataManager implements DataManager {
 		return ent;
 	}
 
+	/**
+	 * All of the {@link LocationalContext} which the {@link DataManager} has
+	 * including those from its {@link BlobStore}
+	 */
 	public synchronized Set<LocationalContext> getLocationalContexts() {
 		if (locationalContexts == null) {
 			locationalContexts = new HashSet<LocationalContext>(initialContexts);
@@ -106,6 +116,9 @@ public abstract class AbstractDataManager implements DataManager {
 		return locationalContexts;
 	}
 
+	/**
+	 * The {@link DataManager} can handle {@link Entity}s in these namespaces
+	 */
 	public List<String> getManagedNamespaces() {
 		return Collections.singletonList(namespace);
 	}

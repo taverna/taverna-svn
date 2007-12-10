@@ -10,10 +10,18 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
 
+/**
+ * Host for the {@link CloudOneApplication} in stand alone mode (for testing
+ * purposes)
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class CloudOneServer {
 
 	private static final int DEFAULT_PORT = 7380;
-	
+
 	private static final String DEFAULT_HOST = "localhost";
 
 	private static final String PORT = "port";
@@ -41,10 +49,8 @@ public class CloudOneServer {
 
 		if (line.hasOption(HELP)) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter
-					.printHelp(
-							"cloudoneserver \n"
-									+ "Run the CloudOne REST server.", options);
+			formatter.printHelp("cloudoneserver \n"
+					+ "Run the CloudOne REST server.", options);
 			System.exit(0);
 		}
 
@@ -52,7 +58,7 @@ public class CloudOneServer {
 		if (line.hasOption(PORT)) {
 			port = (Integer) line.getOptionObject(PORT);
 		}
-		
+
 		String host = DEFAULT_HOST;
 		if (line.hasOption(HOST)) {
 			host = line.getOptionValue(HOST);

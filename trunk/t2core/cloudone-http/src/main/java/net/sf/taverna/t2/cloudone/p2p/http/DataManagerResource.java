@@ -23,6 +23,14 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
+/**
+ * RESTful version of a {@link DataManager}. Allows RESTful queries to retrieve
+ * {@link Entity}s
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class DataManagerResource extends Resource {
 
 	private static Logger logger = Logger.getLogger(DataManagerResource.class);
@@ -65,7 +73,7 @@ public class DataManagerResource extends Resource {
 	@Override
 	public Representation getRepresentation(Variant variant) {
 		Element xml;
-		xml = beanSerialiser .beanableToXMLElement(entity);
+		xml = beanSerialiser.beanableToXMLElement(entity);
 		String xmlString = new XMLOutputter(Format.getRawFormat())
 				.outputString(xml);
 		// TODO: Should use streaming

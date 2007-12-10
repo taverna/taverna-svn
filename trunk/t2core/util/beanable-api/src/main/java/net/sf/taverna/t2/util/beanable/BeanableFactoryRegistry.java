@@ -9,6 +9,14 @@ import net.sf.taverna.t2.spi.SPIRegistry;
 
 import org.apache.log4j.Logger;
 
+/**
+ * Registers all the individual {@link BeanableFactory}s discovered using an
+ * SPI lookup
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 @SuppressWarnings("unchecked")
 public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 	private static BeanableFactoryRegistry instance;
@@ -16,7 +24,12 @@ public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(BeanableFactoryRegistry.class);
-
+			
+	/**
+	 * Singleton instance of the {@link BeanableFactoryRegistry}
+	 * 
+	 * @return A singleton instance of the factory
+	 */
 	public static synchronized BeanableFactoryRegistry getInstance() {
 		if (instance == null) {
 			instance = new BeanableFactoryRegistry();
@@ -32,6 +45,9 @@ public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 		checkFactories();
 	}
 
+	/**
+	 * Find all the {@link BeanableFactory}s and log any problems
+	 */
 	public void checkFactories() {
 		Set<Class> beanTypes = new HashSet<Class>();
 		Set<Class> beanableTypes = new HashSet<Class>();
@@ -62,6 +78,14 @@ public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 		}
 	}
 
+	/**
+	 * Given a {@link Beanable} class name find the factory which can create the
+	 * appropriate bean
+	 * 
+	 * @param beanableClassName
+	 *            the name of the {@link Beanable}
+	 * @return he appropraite factory for creating the bean
+	 */
 	public BeanableFactory getFactoryForBeanableType(String beanableClassName) {
 		for (BeanableFactory factory : getInstances()) {
 			if (factory.getBeanableType().getCanonicalName().equals(
@@ -73,6 +97,13 @@ public class BeanableFactoryRegistry extends SPIRegistry<BeanableFactory> {
 				"Can't find factory for beanable class " + beanableClassName);
 	}
 
+	/**
+	 * Given the class of bean find the factory which can create it
+	 * 
+	 * @param beanType
+	 *            the class of bean eg. {@link net.sf.taverna.t2.cloudone.bean.DataDocumentBean}
+	 * @return the appropriate factory
+	 */
 	public BeanableFactory getFactoryForBeanType(Class beanType) {
 		for (BeanableFactory factory : getInstances()) {
 			if (factory.getBeanType().equals(beanType)) {

@@ -4,6 +4,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Bean for serialising a Literal
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "literal")
 @XmlType(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "literal")
 public class LiteralBean {

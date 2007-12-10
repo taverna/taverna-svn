@@ -52,9 +52,9 @@ public class DataDocumentEditView
 	private JPanel refViews;
 
 	/**
-	 * Constructor creates a {@link ModelObserver} and registers it as an
-	 * observer with the {@link DataDocumentEditView} and calls
-	 * {@link #initialiseGui()} to create the GUI
+	 * Constructor creates a {@link net.sf.taverna.t2.cloudone.gui.entity.view.ModelObserver} 
+	 * and registers it as an observer with the {@link DataDocumentEditView} and calls
+	 * {@link #initialiseGui()} to create the GUI.
 	 * 
 	 * @param model
 	 *            the {@link DataDocumentModel} model part in

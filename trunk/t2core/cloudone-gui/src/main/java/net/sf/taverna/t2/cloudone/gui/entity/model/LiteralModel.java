@@ -9,11 +9,15 @@ import net.sf.taverna.t2.lang.observer.Observer;
 import org.apache.log4j.Logger;
 
 /**
- * Model (in MVC terms) for the {@link Literal} being added or removed from a
- * {@link LiteralView}. Interested parties can register with it (delegated to
- * the {@link MultiCaster}) to receive notifications when this model changes.
+ * Model (in MVC terms) for the
+ * {@link net.sf.taverna.t2.cloudone.entity.Literal} being added or removed from
+ * a {@link LiteralView}. Interested parties can register with it (delegated to
+ * the {@link net.sf.taverna.t2.lang.observer.MultiCaster}) to receive
+ * notifications when this model changes.
+ * <p>
  * String literals are handled by the {@link StringModel} since they can be
- * either {@link Literal}s or {@link BlobReferenceScheme}
+ * either {@link net.sf.taverna.t2.cloudone.entity.Literal}s or
+ * {@link net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme}s
  * 
  * @author Ian Dunlop
  * @author Stian Soiland

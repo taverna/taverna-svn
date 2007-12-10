@@ -26,6 +26,13 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
+/**
+ * A RESTful HTTP servlet for {@link DataManager} activities
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class CloudOneApplication extends Application {
 
 	private static Logger logger = Logger.getLogger(CloudOneApplication.class);
@@ -60,7 +67,8 @@ public class CloudOneApplication extends Application {
 	 * <ul>
 	 * <li>Creating a default worker, so there is always at least 1</li>
 	 * </ul>
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	private void init() {
 		initializeRestletLogging();
@@ -75,7 +83,8 @@ public class CloudOneApplication extends Application {
 			userHome.delete();
 			userHome.mkdir();
 		} catch (IOException e) {
-			throw new RuntimeException("Failed to create temp directory for data storage", e);
+			throw new RuntimeException(
+					"Failed to create temp directory for data storage", e);
 		}
 		File dataManagerRoot = new File(userHome, ".cloudone");
 		dataManager = new FileDataManager(namespace, Collections
@@ -134,8 +143,8 @@ public class CloudOneApplication extends Application {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
-		
+		// EntityListIdentifier emptyList = dataManager.registerEmptyList(2);
+
 		logger.warn("Registered " + listID);
 	}
 

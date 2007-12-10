@@ -34,7 +34,9 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 public class PeerDataManager implements DataManager {
 
 	DataManager dataManager;
-
+	/*
+	 * The other peers that this one knows about
+	 */
 	List<PeerContainer> peers = new ArrayList<PeerContainer>();
 
 	/**

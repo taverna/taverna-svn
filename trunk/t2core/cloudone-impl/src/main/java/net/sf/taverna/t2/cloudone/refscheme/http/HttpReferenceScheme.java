@@ -94,6 +94,10 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 		this.url = url;
 	}
 
+	/**
+	 * Return the data at the {@link URL} represented by this
+	 * {@link HttpReferenceScheme}
+	 */
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
 		try {
@@ -239,6 +243,7 @@ public class HttpReferenceScheme implements ReferenceScheme<HttpReferenceBean> {
 	public URL getUrl() {
 		return url;
 	}
+
 	public String getCharset() throws DereferenceException {
 		if (!url.getProtocol().equals("http")) {
 			return null; // Don't know

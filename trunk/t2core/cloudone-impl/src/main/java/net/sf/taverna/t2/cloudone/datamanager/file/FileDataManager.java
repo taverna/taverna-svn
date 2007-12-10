@@ -68,14 +68,21 @@ import org.apache.log4j.Logger;
  */
 public class FileDataManager extends AbstractDataManager {
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(FileDataManager.class);
-	
+	/*
+	 * How big can a string literal be before it is stored as a blob instead
+	 */
 	private static final int MAX_ID_LENGTH = 80; // for debug reasons
-	
+
 	private BeanSerialiser beanSerialiser = BeanSerialiser.getInstance();
-
+	/*
+	 * Where are the entities stored
+	 */
 	private File path;
-
+	/*
+	 * What object is used to store the blobs
+	 */
 	private FileBlobStore blobStore;
 
 	/**
@@ -111,6 +118,9 @@ public class FileDataManager extends AbstractDataManager {
 		return blobStore;
 	}
 
+	/**
+	 * The largest string {@link Literal} allowed
+	 */
 	public int getMaxIDLength() {
 		return MAX_ID_LENGTH;
 	}
@@ -170,6 +180,9 @@ public class FileDataManager extends AbstractDataManager {
 		return new File(namespaceDir(ns), type);
 	}
 
+	/**
+	 * The identifier for a non literal entity
+	 */
 	@Override
 	protected String generateId(IDType type) {
 		if (type.equals(IDType.Literal)) {
@@ -179,18 +192,25 @@ public class FileDataManager extends AbstractDataManager {
 				+ "/" + UUID.randomUUID();
 	}
 
+	/**
+	 * Given an identifier return the actual entity
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <ID extends EntityIdentifier> Entity<ID, ?> retrieveEntity(ID id)
 			throws RetrievalException {
 		File entityPath = asPath(id);
 		try {
-			return (Entity<ID, ?>) beanSerialiser.beanableFromXMLFile(entityPath);
+			return (Entity<ID, ?>) beanSerialiser
+					.beanableFromXMLFile(entityPath);
 		} catch (FileNotFoundException e) {
 			return null;
 		}
 	}
 
+	/**
+	 * Store an Entity by serialising it out to disk
+	 */
 	@Override
 	protected <Bean> void storeEntity(Entity<?, Bean> entity)
 			throws StorageException {
@@ -201,13 +221,15 @@ public class FileDataManager extends AbstractDataManager {
 			throw new IllegalStateException("Already exists: "
 					+ entity.getIdentifier());
 		}
-	
+
 		entityPath.getParentFile().mkdirs();
 		try {
 			beanSerialiser.beanableToXMLFile(entity, entityPath);
 		} catch (IOException e) {
-			throw new StorageException("Could not store entity to " + entityPath, e);
+			throw new StorageException("Could not store entity to "
+					+ entityPath, e);
 		}
 	}
+
 
 }

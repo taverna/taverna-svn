@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.cloudone.util;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,6 +24,13 @@ import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
 
 import org.apache.log4j.Logger;
 
+/**
+ * For compatibility testing with Raven
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class AnnotationTester {
 	public static final String DEFAULT_NAMESPACE = "http://taverna.sf.net/t2/cloudone/bean/unknown/";
 	@SuppressWarnings("unused")
@@ -32,18 +38,15 @@ public class AnnotationTester {
 	private BeanableFactoryRegistry beanableFactoryRegistry = BeanableFactoryRegistry
 			.getInstance();
 
-	
 	public static void main(String[] args) throws JAXBException, IOException {
 		AnnotationTester annotationTest = new AnnotationTester();
-		
+
 		annotationTest.annotateDataDoc();
 		annotationTest.annotateEntityList();
 		annotationTest.annotateErrorDoc();
 		System.exit(0);
 	}
 
-
-	
 	public void annotateDataDoc() throws JAXBException, IOException {
 
 		JAXBContext context = makeJAXBContext();
@@ -80,15 +83,13 @@ public class AnnotationTester {
 			beanClasses.add(beanableFactory.getBeanType());
 		}
 
-
 		JAXBContext context = JAXBContext.newInstance(beanClasses
 				.toArray(new Class[0]));
 		return context;
 	}
 
-
 	public void annotateErrorDoc() throws JAXBException {
-		
+
 		JAXBContext context = makeJAXBContext();
 
 		ErrorDocumentBean bean = new ErrorDocumentBean();
@@ -100,8 +101,8 @@ public class AnnotationTester {
 		System.out.println();
 		marshaller.marshal(bean, System.out);
 	}
-	
-	public void annotateEntityList() throws JAXBException  {
+
+	public void annotateEntityList() throws JAXBException {
 		JAXBContext context = makeJAXBContext();
 		EntityListBean bean = new EntityListBean();
 		bean.setIdentifier("some-kind_of-identifier");
@@ -110,11 +111,10 @@ public class AnnotationTester {
 		identifiers.add("the-second one");
 		identifiers.add("last <weird> one");
 		bean.setContent(identifiers);
-		
 
 		Marshaller marshaller = context.createMarshaller();
 		System.out.println();
 		marshaller.marshal(bean, System.out);
-		
+
 	}
 }

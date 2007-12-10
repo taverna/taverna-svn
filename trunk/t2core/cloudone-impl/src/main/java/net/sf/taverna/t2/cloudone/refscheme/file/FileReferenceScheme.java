@@ -13,6 +13,13 @@ import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 
+/**
+ * Represents a File on a local file system
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 
 	private File file;
@@ -40,6 +47,10 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		this.charset = charset;
 	}
 
+	/**
+	 * find this {@link File} using a {@link DataManager} and return a stream
+	 * representing it
+	 */
 	public InputStream dereference(DataManager manager)
 			throws DereferenceException {
 		try {
@@ -49,6 +60,9 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		}
 	}
 
+	/**
+	 * How has the file been encoded
+	 */
 	public String getCharset() {
 		return charset;
 	}
@@ -67,6 +81,9 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		return false;
 	}
 
+	/**
+	 * Used for serialising
+	 */
 	public FileReferenceBean getAsBean() {
 		FileReferenceBean bean = new FileReferenceBean();
 		bean.setFile(getFile().getPath());
@@ -74,6 +91,9 @@ public class FileReferenceScheme implements ReferenceScheme<FileReferenceBean> {
 		return bean;
 	}
 
+	/**
+	 * Used for deserialising
+	 */
 	public synchronized void setFromBean(FileReferenceBean bean)
 			throws IllegalArgumentException {
 		if (file != null) {

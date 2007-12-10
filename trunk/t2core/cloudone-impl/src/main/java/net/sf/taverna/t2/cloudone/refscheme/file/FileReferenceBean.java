@@ -5,6 +5,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import net.sf.taverna.t2.cloudone.bean.ReferenceBean;
 
+/**
+ * Bean for serialising {@link FileReferenceScheme}
+ * 
+ * @author Ian Dunlop
+ * @author Stian Soiland
+ * 
+ */
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/refscheme/file/", name = "fileReferenceScheme")
 @XmlType(namespace = "http://taverna.sf.net/t2/cloudone/refscheme/file/", name = "fileReferenceScheme")
 public class FileReferenceBean extends ReferenceBean {

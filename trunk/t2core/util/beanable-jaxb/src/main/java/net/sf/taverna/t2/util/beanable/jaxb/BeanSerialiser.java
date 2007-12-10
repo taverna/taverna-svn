@@ -52,7 +52,7 @@ public class BeanSerialiser {
 
 	private static BeanSerialiser instance;
 
-	private JAXBContext jaxbContext;
+	private  JAXBContext jaxbContext;
 
 	private static Logger logger = Logger.getLogger(BeanSerialiser.class);
 
@@ -103,7 +103,6 @@ public class BeanSerialiser {
 				SPIRegistryEvent message) throws Exception {
 			refreshBindings();
 		}
-		
 	}
 
 	/**
@@ -139,12 +138,34 @@ public class BeanSerialiser {
 		return beanableFromBean(beanObject);
 	}
 
+	/**
+	 * Given a {@link File} containing the XML representation of a
+	 * {@link Beanable} entity, return the {@link Beanable}
+	 * 
+	 * @param <Bean>
+	 *            the bean type used to create the {@link Beanable}
+	 * @param xmlFile
+	 *            XML representation of the beanable entity
+	 * @return the {@link Beanable} recreated from the XML
+	 * @throws RetrievalException
+	 * @throws FileNotFoundException
+	 */
 	public <Bean> Beanable<?> beanableFromXMLFile(File xmlFile)
 			throws RetrievalException, FileNotFoundException {
 		Object beanObject = beanFromXMLFile(xmlFile);
 		return beanableFromBean(beanObject);
 	}
 
+	/**
+	 * Given an InputStream containing an XML representation of a
+	 * {@link Beanable}, return this {@link Beanable}
+	 * 
+	 * @param <Bean>
+	 *            the bean type used to create the {@link Beanable}
+	 * @param inputStream
+	 * @return the {@link Beanable} recreated from the stream
+	 * @throws RetrievalException
+	 */
 	public <Bean> Beanable<?> beanableFromXMLStream(InputStream inputStream)
 			throws RetrievalException {
 		Object beanObject = beanFromXMLStream(inputStream);
@@ -162,11 +183,31 @@ public class BeanSerialiser {
 		return beanToXMLElement(beanable.getAsBean());
 	}
 
+	/**
+	 * Given a {@link Beanable} entity store it in a file in XML format
+	 * 
+	 * @param beanable
+	 *            the {@link Beanable} entity
+	 * @param xmlFile
+	 *            a file to serialise the {@link Beanable} out to
+	 * @throws StorageException
+	 * @throws IOException
+	 */
 	public void beanableToXMLFile(Beanable<?> beanable, File xmlFile)
 			throws StorageException, IOException {
 		beanToXMLFile(beanable.getAsBean(), xmlFile);
 	}
 
+	/**
+	 * Given a {@link Beanable} entity store it in a stream in XML format
+	 * 
+	 * @param beanable
+	 *            the {@link Beanable} entity
+	 * @param outputStream
+	 *            a stream to serialise the {@link Beanable} out to
+	 * 
+	 * @throws StorageException
+	 */
 	public void beanableToXMLStream(Beanable<?> beanable,
 			OutputStream outputStream) throws StorageException {
 		beanToXMLStream(beanable.getAsBean(), outputStream);
@@ -200,6 +241,15 @@ public class BeanSerialiser {
 		return bean;
 	}
 
+	/**
+	 * Deserialise the bean from an XML file
+	 * 
+	 * @param xmlFile
+	 *            file containing XML serialisation of bean
+	 * @return Deserialised bean
+	 * @throws RetrievalException
+	 * @throws FileNotFoundException
+	 */
 	public Object beanFromXMLFile(File xmlFile) throws RetrievalException,
 			FileNotFoundException {
 		FileInputStream fileInput = new FileInputStream(xmlFile);
@@ -216,12 +266,12 @@ public class BeanSerialiser {
 	}
 
 	/**
-	 * Deserialise bean from XML file.
+	 * Deserialise bean from XML stream.
 	 * 
 	 * @see #fromXML(Element, ClassLoader)
 	 * @see #beanToXMLElement(Object)
 	 * @param inputStream
-	 *            File containing XML serialisation of bean using
+	 *            stream containing XML serialisation of bean using
 	 *            {@link #beanToXMLElement(Object)}
 	 * @param classLoader
 	 *            {@link ClassLoader} from where to construct bean classes
@@ -283,6 +333,16 @@ public class BeanSerialiser {
 		return configElement;
 	}
 
+	/**
+	 * Serialise the bean to file
+	 * 
+	 * @param bean
+	 *            the bean type eg {@link net.sf.taverna.t2.cloudone.bean.DataDocumentBean}
+	 * @param xmlFile
+	 *            the file to write the serialised bean out to
+	 * @throws IOException
+	 * @throws StorageException
+	 */
 	protected void beanToXMLFile(Object bean, File xmlFile) throws IOException,
 			StorageException {
 		FileOutputStream fileOutput = new FileOutputStream(xmlFile);

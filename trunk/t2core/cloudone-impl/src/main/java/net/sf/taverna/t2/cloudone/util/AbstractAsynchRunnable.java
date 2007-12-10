@@ -8,7 +8,8 @@ import net.sf.taverna.t2.cloudone.util.AsynchRunnable;
  * @author Ian Dunlop
  * @author Stian Soiland
  * 
- * @param <ResultType> Return type
+ * @param <ResultType>
+ *            Return type
  */
 public abstract class AbstractAsynchRunnable<ResultType> implements
 		AsynchRunnable<ResultType> {
@@ -17,6 +18,9 @@ public abstract class AbstractAsynchRunnable<ResultType> implements
 	private boolean finished = false;
 	private Exception exception = null;
 
+	/**
+	 * Check if it has been run before, if not run it via {@link #execute()}
+	 */
 	public final void run() {
 		if (finished) {
 			throw new IllegalStateException("Can't run twice");
