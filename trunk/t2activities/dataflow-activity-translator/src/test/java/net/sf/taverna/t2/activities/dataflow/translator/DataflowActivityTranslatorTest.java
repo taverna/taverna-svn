@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.activities.dataflow.translator;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -28,7 +29,8 @@ public class DataflowActivityTranslatorTest {
 	@Before
 	public void setUp() throws Exception {
 		translator = new DataflowActivityTranslator();
-		processor = new WorkflowProcessor(new ScuflModel(), "test");
+		ScuflModel scuflModel = new ScuflModel();
+		processor = new WorkflowProcessor(scuflModel, "test");
 	}
 
 	@Test
@@ -50,6 +52,14 @@ public class DataflowActivityTranslatorTest {
 		assertTrue(translator.canHandle(processor));
 		assertFalse(translator.canHandle(new DummyProcessor()));
 		assertFalse(translator.canHandle(null));
+	}
+
+	@Test
+	public void testDoTranslationProcessor() throws Exception {
+		DataflowActivity activity = (DataflowActivity) translator
+				.doTranslation(processor);
+		assertEquals(0, activity.getInputPorts().size());
+		assertEquals(0, activity.getOutputPorts().size());
 	}
 
 }
