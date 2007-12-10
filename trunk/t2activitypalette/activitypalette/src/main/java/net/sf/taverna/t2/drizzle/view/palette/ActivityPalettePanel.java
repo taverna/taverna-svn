@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -29,7 +28,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
@@ -40,13 +38,14 @@ import javax.swing.event.MenuListener;
 
 import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.drizzle.bean.ActivityPaletteModelBean;
+import net.sf.taverna.t2.drizzle.bean.ActivityRegistryBean;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModelListener;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetIdentification;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetSelectionIdentification;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
-import net.sf.taverna.t2.drizzle.model.SubsetKindConfiguration;
+import net.sf.taverna.t2.drizzle.query.ActivitySavedConfigurationQuery;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectNotFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
@@ -57,7 +56,9 @@ import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
+import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
+import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
 /**
  * @author alanrw
  *
@@ -65,7 +66,7 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public class ActivityPalettePanel extends JPanel implements WorkflowModelViewSPI,
 ActivityPaletteModelListener, ActionListener {
 
-	private static Logger logger = Logger.getLogger(ActivityPalettePanel.class);
+	static Logger logger = Logger.getLogger(ActivityPalettePanel.class);
 	
 	/**
 	 * 
@@ -84,22 +85,20 @@ ActivityPaletteModelListener, ActionListener {
 	
 	private HashMap<ActivityRegistrySubsetModel, ActivitySubsetPanel> subsetToPanelMap;
 	
-	private JMenu showSubsetItem;
-	
 	public ActivityPalettePanel() {
-		subsetToPanelMap = new HashMap<ActivityRegistrySubsetModel, ActivitySubsetPanel>();
+		this.subsetToPanelMap = new HashMap<ActivityRegistrySubsetModel, ActivitySubsetPanel>();
 		this.setLayout(new BorderLayout());
 		
 		this.paletteModel = new ActivityPaletteModel(this);
 		
-		final JMenuItem clearSubsetItem = new JMenuItem("clear subset");
-		clearSubsetItem.setActionCommand("clearSubset");
-		clearSubsetItem.setToolTipText("clear the contents of the subset");
+		final JMenuItem clearSubsetItem = new JMenuItem("clear subset"); //$NON-NLS-1$
+		clearSubsetItem.setActionCommand("clearSubset"); //$NON-NLS-1$
+		clearSubsetItem.setToolTipText("clear the contents of the subset"); //$NON-NLS-1$
 		clearSubsetItem.addActionListener(this);
 
-		final JMenuItem removeSelectionItem = new JMenuItem("remove selection");
-		removeSelectionItem.setActionCommand("removeSelection");
-		removeSelectionItem.setToolTipText("remove the selected activities from the the subset");
+		final JMenuItem removeSelectionItem = new JMenuItem("remove selection"); //$NON-NLS-1$
+		removeSelectionItem.setActionCommand("removeSelection"); //$NON-NLS-1$
+		removeSelectionItem.setToolTipText("remove the selected activities from the the subset"); //$NON-NLS-1$
 		removeSelectionItem.addActionListener(this);
 
 		this.tabbedPane = new JTabbedPane();
@@ -126,15 +125,25 @@ ActivityPaletteModelListener, ActionListener {
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setToolTipText("Controls for activity subsets"); //$NON-NLS-1$
 		
-		JMenuItem saveConfigItem = new JMenuItem("save configuration");
-		saveConfigItem.setToolTipText("Save the kind configuration");
-		saveConfigItem.setActionCommand("saveConfiguration");
-		saveConfigItem.addActionListener(this);
+		JMenuItem saveKindConfigItem = new JMenuItem("save kind configuration"); //$NON-NLS-1$
+		saveKindConfigItem.setToolTipText("Save the kind configuration"); //$NON-NLS-1$
+		saveKindConfigItem.setActionCommand("saveKindConfiguration"); //$NON-NLS-1$
+		saveKindConfigItem.addActionListener(this);
 
-		JMenuItem loadConfigItem = new JMenuItem("load configuration");
-		loadConfigItem.setToolTipText("Load the kind configuration");
-		loadConfigItem.setActionCommand("loadConfiguration");
-		loadConfigItem.addActionListener(this);
+		JMenuItem loadKindConfigItem = new JMenuItem("load kind configuration"); //$NON-NLS-1$
+		loadKindConfigItem.setToolTipText("Load the kind configuration"); //$NON-NLS-1$
+		loadKindConfigItem.setActionCommand("loadKindConfiguration"); //$NON-NLS-1$
+		loadKindConfigItem.addActionListener(this);
+		
+		JMenuItem saveRegistryItem = new JMenuItem("save registry"); //$NON-NLS-1$
+		saveRegistryItem.setToolTipText("Save the registry"); //$NON-NLS-1$
+		saveRegistryItem.setActionCommand("saveRegistry"); //$NON-NLS-1$
+		saveRegistryItem.addActionListener(this);
+
+		JMenuItem loadRegistryItem = new JMenuItem("load registry"); //$NON-NLS-1$
+		loadRegistryItem.setToolTipText("Load a registry"); //$NON-NLS-1$
+		loadRegistryItem.setActionCommand("loadRegistry"); //$NON-NLS-1$
+		loadRegistryItem.addActionListener(this);
 		
 		JMenuItem expandAllItem = new JMenuItem("expand"); //$NON-NLS-1$
 		expandAllItem.setToolTipText("Expand all the nodes in the tree"); //$NON-NLS-1$
@@ -146,17 +155,88 @@ ActivityPaletteModelListener, ActionListener {
 		collapseAllItem.setActionCommand("collapseAll"); //$NON-NLS-1$
 		collapseAllItem.addActionListener(this);
 		
-		JMenuItem addScavengerItem = new JMenuItem("add scavenger"); //$NON-NLS-1$
+		final JMenu addScavengerItem = new JMenu("add scavenger"); //$NON-NLS-1$
 		addScavengerItem.setToolTipText("Add a new subset from activities detected by a scavenger"); //$NON-NLS-1$
-		addScavengerItem.setActionCommand("addScavenger"); //$NON-NLS-1$
-		addScavengerItem.addActionListener(this);
+		addScavengerItem.addMenuListener(new MenuListener() {
+
+			public void menuCanceled(MenuEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void menuDeselected(MenuEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void menuSelected(MenuEvent arg0) {
+				addScavengerItem.removeAll();
+				ScavengerHelper webScavengerHelper = null;
+				// Iterate over the scavenger creator list from the
+				// ProcessorHelper class
+
+				List<ScavengerHelper> scavengerHelpers = ScavengerHelperRegistry
+						.instance().getScavengerHelpers();
+
+				// sort alphabetically
+				Collections.sort(scavengerHelpers, new Comparator<ScavengerHelper>() {
+					public int compare(ScavengerHelper o1, ScavengerHelper o2) {
+						if (o1.getScavengerDescription() == null)
+							return -1;
+						if (o2.getScavengerDescription() == null)
+							return 1;
+						return o1.getScavengerDescription().compareTo(
+								o2.getScavengerDescription());
+					}
+				});
+
+				for (ScavengerHelper scavengerHelper : scavengerHelpers) {
+					// Instantiate a ScavengerHelper...
+					try {
+						// webscavenger helper is added after the
+						// seperator
+						if (scavengerHelper instanceof WebScavengerHelper) {
+							webScavengerHelper = scavengerHelper;
+						} else {
+							addScavengerHelperToMenu(addScavengerItem, scavengerHelper);
+						}
+					} catch (Exception ex) {
+						logger.error("Exception adding scavenger helper to scavenger tree"); //$NON-NLS-1$
+					}
+				}
+				// if (!parentPanel.getPaletteModel().isPopulating()) {
+				// TODO
+				addScavengerItem.addSeparator();
+
+				if (webScavengerHelper != null) {
+					addScavengerHelperToMenu(addScavengerItem, webScavengerHelper);
+				}
+				}
+			private void addScavengerHelperToMenu(JMenu menu,
+					ScavengerHelper scavengerHelper) {
+				if (menu == null) {
+					throw new NullPointerException("menu cannot be null"); //$NON-NLS-1$
+				}
+				if (scavengerHelper == null) {
+					throw new NullPointerException("scavengerHelper cannot be null"); //$NON-NLS-1$
+				}
+				String scavengerDescription = scavengerHelper.getScavengerDescription();
+				if (scavengerDescription != null) {
+					JMenuItem scavengerMenuItem = new JMenuItem(scavengerDescription,
+							scavengerHelper.getIcon());
+					scavengerMenuItem.addActionListener(scavengerHelper
+							.getListener(ActivityPalettePanel.this.paletteModel.getAdapter()));
+					menu.add(scavengerMenuItem);
+				}
+			}			
+		});
 		
 		JMenuItem hideSubsetItem = new JMenuItem("hide subset"); //$NON-NLS-1$
 		hideSubsetItem.setToolTipText("Hide the subset of activities shown in the current tab"); //$NON-NLS-1$
 		hideSubsetItem.setActionCommand("hideSubset"); //$NON-NLS-1$
 		hideSubsetItem.addActionListener(this);
-		
-		showSubsetItem = new JMenu("show subset"); //$NON-NLS-1$
+	
+		final JMenu showSubsetItem = new JMenu("show subset"); //$NON-NLS-1$
 		showSubsetItem.setToolTipText("Select a previously hidden subset of activities to show"); //$NON-NLS-1$
 		showSubsetItem.addMenuListener(new MenuListener() {
 
@@ -201,11 +281,9 @@ ActivityPaletteModelListener, ActionListener {
 			}
 			
 		);
-/*		showSubsetItem.setActionCommand("showSubset"); //$NON-NLS-1$
-		showSubsetItem.addActionListener(this);*/
 		
-		final JMenu copySelectionItem = new JMenu("copy selection");
-		copySelectionItem.setToolTipText("Copy the selected activities to another subset");
+		final JMenu copySelectionItem = new JMenu("copy selection"); //$NON-NLS-1$
+		copySelectionItem.setToolTipText("Copy the selected activities to another subset"); //$NON-NLS-1$
 		copySelectionItem.addMenuListener(new MenuListener() {
 
 			public void menuCanceled(MenuEvent arg0) {
@@ -214,11 +292,12 @@ ActivityPaletteModelListener, ActionListener {
 			}
 
 			public void menuDeselected(MenuEvent arg0) {
+				// TODO Auto-generated method stub
 			}
 
 			public void menuSelected(MenuEvent arg0) {
 				copySelectionItem.removeAll();
-				Component selectedComponent = tabbedPane.getSelectedComponent();
+				Component selectedComponent = ActivityPalettePanel.this.tabbedPane.getSelectedComponent();
 
 				if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
 						final ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
@@ -228,9 +307,9 @@ ActivityPaletteModelListener, ActionListener {
 
 					Collections.sort(subsets,
 							new Comparator<ActivityRegistrySubsetModel>() {
-								public int compare(ActivityRegistrySubsetModel arg0,
-										ActivityRegistrySubsetModel arg1) {
-									return (arg0.getName().compareTo(arg1.getName()));
+								public int compare(ActivityRegistrySubsetModel a,
+										ActivityRegistrySubsetModel b) {
+									return (a.getName().compareTo(b.getName()));
 								}
 
 							});
@@ -243,7 +322,7 @@ ActivityPaletteModelListener, ActionListener {
 							JMenuItem subsetItem = new JMenuItem(subset.getName());
 							subsetItem.addActionListener(new ActionListener() {
 
-								public void actionPerformed(ActionEvent arg0) {
+								public void actionPerformed(ActionEvent a) {
 									PropertiedObjectFilter<ProcessorFactoryAdapter> newFilter = new ObjectMembershipFilter<ProcessorFactoryAdapter>(subsetPanel.getSelectedObjects());
 									subset.addOredFilter(newFilter);
 								}
@@ -268,9 +347,9 @@ ActivityPaletteModelListener, ActionListener {
 		searchSubsetItem.setActionCommand("searchSubset"); //$NON-NLS-1$
 		searchSubsetItem.addActionListener(this);
 		
-		JMenuItem configureSubsetKindItem = new JMenuItem("configure subset");
-		configureSubsetKindItem.setToolTipText("Configure the display of a subset");
-		configureSubsetKindItem.setActionCommand("configureSubsetKind");
+		JMenuItem configureSubsetKindItem = new JMenuItem("configure subset"); //$NON-NLS-1$
+		configureSubsetKindItem.setToolTipText("Configure the display of a subset"); //$NON-NLS-1$
+		configureSubsetKindItem.setActionCommand("configureSubsetKind"); //$NON-NLS-1$
 		configureSubsetKindItem.addActionListener(this);
 		
 		JCheckBox watchingWorkflowItem = new JCheckBox("watch workflow", true); //$NON-NLS-1$
@@ -296,19 +375,21 @@ ActivityPaletteModelListener, ActionListener {
 			}
 			
 		});
-		JMenu saveLoad = new JMenu("save/load");
-		saveLoad.add(saveConfigItem);
-		saveLoad.add(loadConfigItem);
+		JMenu saveLoad = new JMenu("save/load"); //$NON-NLS-1$
+		saveLoad.add(saveKindConfigItem);
+		saveLoad.add(loadKindConfigItem);
+		saveLoad.add(saveRegistryItem);
+		saveLoad.add(loadRegistryItem);
 		menuBar.add(saveLoad);
 		
-		JMenu expandCollapse = new JMenu("expand/collapse");
+		JMenu expandCollapse = new JMenu("expand/collapse"); //$NON-NLS-1$
 		expandCollapse.add(expandAllItem);
 		expandCollapse.add(collapseAllItem);
 		menuBar.add(expandCollapse);
 		
 		menuBar.add(addScavengerItem);
 		
-		JMenu subsetControl = new JMenu("subset control");
+		JMenu subsetControl = new JMenu("subset control"); //$NON-NLS-1$
 		subsetControl.add(hideSubsetItem);
 		subsetControl.add(showSubsetItem);
 		subsetControl.add(createSubsetItem);
@@ -316,7 +397,7 @@ ActivityPaletteModelListener, ActionListener {
 		subsetControl.add(configureSubsetKindItem);
 		menuBar.add(subsetControl);
 		
-		JMenu selectionControl = new JMenu("selection");
+		JMenu selectionControl = new JMenu("selection"); //$NON-NLS-1$
 		selectionControl.add(copySelectionItem);
 		selectionControl.add(removeSelectionItem);
 		selectionControl.add(searchSubsetItem);
@@ -418,13 +499,13 @@ ActivityPaletteModelListener, ActionListener {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
 			ActivitySubsetPanel tabPanel = new ActivitySubsetPanel(subsetModel);
-			subsetToPanelMap.put(subsetModel, tabPanel);
+			this.subsetToPanelMap.put(subsetModel, tabPanel);
 			tabPanel.setName(subsetModel.getName());
 			insertTab(tabPanel);
 	}
 	
 	public void reshowSubsetModel (ActivityRegistrySubsetModel subsetModel) {
-		insertTab(subsetToPanelMap.get(subsetModel));
+		insertTab(this.subsetToPanelMap.get(subsetModel));
 	}
 
 	/**
@@ -457,14 +538,6 @@ ActivityPaletteModelListener, ActionListener {
 		}		
 	}
 	
-	private void showAddScavengerPopup(Component c, int px, int py) {
-		if (c == null) {
-			throw new NullPointerException("c cannot be null"); //$NON-NLS-1$
-		}
-		JPopupMenu scavengerAdderPopupMenu = new ScavengerAdderPopupMenu(this);
-		scavengerAdderPopupMenu.show(c,px,py);
-	}
-		
 	private void showCreateSubsetPopup(Component c, @SuppressWarnings("unused")
 	final int px, @SuppressWarnings("unused")
 	final int py) {
@@ -501,26 +574,11 @@ ActivityPaletteModelListener, ActionListener {
 			expandTab();
 		} else if (command.equals("collapseAll")) { //$NON-NLS-1$
 			collapseTab();
-		} else if (command.equals("addScavenger")) { //$NON-NLS-1$
-	           Component c = (Component) e.getSource();
-	           int py = c.getY() + c.getHeight() + 2;
-	 			showAddScavengerPopup(c, 0, py);
 		} else if (command.equals("hideSubset")) { //$NON-NLS-1$
 			Component selectedComponent = this.tabbedPane.getSelectedComponent();
 			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
 	
 				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
-				final JMenuItem showItem = new JMenuItem (subsetPanel.getName());
-				showSubsetItem.add(showItem);
-				final ActivityRegistrySubsetModel subsetModel = subsetPanel.getSubsetModel();
-				showItem.addActionListener(new ActionListener() {
-
-					public void actionPerformed(ActionEvent arg0) {
-						reshowSubsetModel(subsetModel);
-						showSubsetItem.remove(showItem);
-					}
-					
-				});
 				subsetPanel.destroy();
 				this.tabbedPane.remove(subsetPanel);
 			}
@@ -528,8 +586,8 @@ ActivityPaletteModelListener, ActionListener {
 			Component c = (Component) e.getSource();
 			int py = c.getY() + c.getHeight() + 2;
 			showCreateSubsetPopup(c,0,py);
-		} else if (command.equals("clearSubset")) {
-			if (JOptionPane.showConfirmDialog((Component)e.getSource(), "Really clear the subset?", "confirm", JOptionPane.YES_NO_OPTION)
+		} else if (command.equals("clearSubset")) { //$NON-NLS-1$
+			if (JOptionPane.showConfirmDialog((Component)e.getSource(), "Really clear the subset?", "confirm", JOptionPane.YES_NO_OPTION)  //$NON-NLS-1$//$NON-NLS-2$
 					== JOptionPane.YES_OPTION) {
 				Component selectedComponent = this.tabbedPane.getSelectedComponent();
 				if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
@@ -538,11 +596,11 @@ ActivityPaletteModelListener, ActionListener {
 					subsetPanel.setModels();
 				}				
 			}
-		} else if (command.equals("searchSubset")) {
+		} else if (command.equals("searchSubset")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
 			int py = c.getY() + c.getHeight() + 2;
 			showSearchSubsetPopup(c,0,py);		
-		} else if (command.equals("removeSelection")) {
+		} else if (command.equals("removeSelection")) { //$NON-NLS-1$
 			Component selectedComponent = this.tabbedPane.getSelectedComponent();
 			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)) {
 				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
@@ -553,9 +611,9 @@ ActivityPaletteModelListener, ActionListener {
 				subsetPanel.getSubsetModel().addAndedFilter(negativeFilter);
 				subsetPanel.setModels();
 			}
-		} else if (command.equals("loadConfiguration")) {
+		} else if (command.equals("loadKindConfiguration")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
-			JFileChooser chooser = new JFileChooser("");
+			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
 			chooser.setDialogType(JFileChooser.OPEN_DIALOG);
 			int returnVal = chooser.showOpenDialog(c);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -563,7 +621,7 @@ ActivityPaletteModelListener, ActionListener {
 				try {
 					Object o = BeanSerialiser.getInstance().beanFromXMLFile(loadFile);
 					if (o instanceof ActivityPaletteModelBean) {
-						paletteModel.mergeWithBean((ActivityPaletteModelBean)o);
+						this.paletteModel.mergeWithBean((ActivityPaletteModelBean)o);
 					}
 				} catch (StorageException e1) {
 					// TODO Auto-generated catch block
@@ -573,15 +631,15 @@ ActivityPaletteModelListener, ActionListener {
 					e1.printStackTrace();
 				}
 			}
-		} else if (command.equals("saveConfiguration")) {
+		} else if (command.equals("saveKindConfiguration")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
-			JFileChooser chooser = new JFileChooser("");
+			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			int returnVal = chooser.showSaveDialog(c);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File saveFile = chooser.getSelectedFile();
 				try {
-					BeanSerialiser.getInstance().beanableToXMLFile(paletteModel, saveFile);
+					BeanSerialiser.getInstance().beanableToXMLFile(this.paletteModel, saveFile);
 				} catch (StorageException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -590,7 +648,46 @@ ActivityPaletteModelListener, ActionListener {
 					e1.printStackTrace();
 				}
 			}
-		} else if (command.equals("configureSubsetKind")) {
+		} else if (command.equals("loadRegistry")) { //$NON-NLS-1$
+			Component c = (Component) e.getSource();
+			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
+			chooser.setDialogType(JFileChooser.OPEN_DIALOG);
+			int returnVal = chooser.showOpenDialog(c);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File loadFile = chooser.getSelectedFile();
+				try {
+					Object o = BeanSerialiser.getInstance().beanFromXMLFile(loadFile);
+					if (o instanceof ActivityRegistryBean) {
+						this.paletteModel.addImmediateQuery(new ActivitySavedConfigurationQuery((ActivityRegistryBean)o));
+
+						this.paletteModel.getActivityRegistry().mergeWithBean((ActivityRegistryBean)o);
+					}
+				} catch (StorageException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		} else if (command.equals("saveRegistry")) { //$NON-NLS-1$
+			Component c = (Component) e.getSource();
+			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
+			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
+			int returnVal = chooser.showSaveDialog(c);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File saveFile = chooser.getSelectedFile();
+				try {
+					BeanSerialiser.getInstance().beanableToXMLFile(this.paletteModel.getActivityRegistry(), saveFile);
+				} catch (StorageException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		} else if (command.equals("configureSubsetKind")) { //$NON-NLS-1$
 			Component selectedComponent = this.tabbedPane.getSelectedComponent();
 			if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)) {
 				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;

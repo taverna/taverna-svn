@@ -10,8 +10,6 @@ import net.sf.taverna.t2.drizzle.util.ObjectAndFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectOrFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 /**
  * @author alanrw
  *

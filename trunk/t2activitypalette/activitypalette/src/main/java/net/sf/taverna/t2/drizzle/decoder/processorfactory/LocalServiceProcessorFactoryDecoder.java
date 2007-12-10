@@ -13,7 +13,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessorFactory;
 
 /**
@@ -27,7 +26,7 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 		{ add(CommonKey.ProcessorClassKey);
 		add(CommonKey.NameKey);
 		add(CommonKey.LocalServiceWorkerClassKey);
-		add(CommonKey.LocalServiceCategoryKey);
+		add(CommonKey.CategoryKey);
 		}
 	};
 	
@@ -46,7 +45,7 @@ public final class LocalServiceProcessorFactoryDecoder extends ProcessorFactoryD
 		targetSet.setProperty(adapter, CommonKey.LocalServiceWorkerClassKey, new StringValue(encodedFactory.getWorkerClassName()));
 		}
 		if (encodedFactory.getCategory() != null) {
-		targetSet.setProperty(adapter, CommonKey.LocalServiceCategoryKey, new StringValue(encodedFactory.getCategory()));
+		targetSet.setProperty(adapter, CommonKey.CategoryKey, new StringValue(encodedFactory.getCategory()));
 		}
 	}
 

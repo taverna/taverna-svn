@@ -38,8 +38,8 @@ public final class ActivitySubsetTable extends JTable implements
 	private static final long serialVersionUID = -6721017677971353107L;
 
 	public ActivitySubsetTable() {
-		dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
+		this.dragSource = DragSource.getDefaultDragSource();
+		this.dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 
@@ -58,7 +58,7 @@ public final class ActivitySubsetTable extends JTable implements
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 				Transferable t = new SpecFragmentTransferable(fsf);
-				dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
+				this.dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
 		}
 	}
 

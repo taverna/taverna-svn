@@ -18,8 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
@@ -28,7 +26,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyPatternFilter;
-import net.sf.taverna.t2.drizzle.util.TrueFilter;
 import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
 
 /**
@@ -37,11 +34,16 @@ import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
  */
 public final class SearchSubsetDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6090097608584963674L;
+
 	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
 		this.setLayout(new GridLayout(0, 1));
 
 		JPanel keyPanel = new JPanel();
-		keyPanel.add(new JLabel("Property key"));
+		keyPanel.add(new JLabel("Property key")); //$NON-NLS-1$
 		Set<PropertyKey> keys = new TreeSet<PropertyKey>(subsetPanel.getSubsetModel().getPropertyKeyProfile());
 		final JComboBox keysCombo = new JComboBox(keys.toArray(new PropertyKey[0]));
 		keyPanel.add(keysCombo);
@@ -49,7 +51,7 @@ public final class SearchSubsetDialog extends JDialog {
 		this.add(keyPanel);
 
 		JPanel patternPanel = new JPanel();
-		patternPanel.add(new JLabel("Text Pattern"));
+		patternPanel.add(new JLabel("Text Pattern")); //$NON-NLS-1$
 		final JTextField patternField = new JTextField();
 		patternField.setColumns(10);
 		patternPanel.add(patternField);
@@ -57,7 +59,7 @@ public final class SearchSubsetDialog extends JDialog {
 		this.add(patternPanel);
 
 		JPanel buttonPanel = new JPanel();
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton("Cancel"); //$NON-NLS-1$
 		cancelButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -65,7 +67,7 @@ public final class SearchSubsetDialog extends JDialog {
 			}
 
 		});
-		JButton searchButton = new JButton("Search");
+		JButton searchButton = new JButton("Search"); //$NON-NLS-1$
 		searchButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {

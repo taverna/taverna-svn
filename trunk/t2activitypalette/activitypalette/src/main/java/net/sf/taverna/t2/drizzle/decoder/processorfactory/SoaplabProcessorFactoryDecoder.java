@@ -13,7 +13,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.soaplab.SoaplabProcessorFactory;
 
 /**
@@ -27,7 +26,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 		{ add(CommonKey.ProcessorClassKey);
 		add(CommonKey.NameKey);
 		add(CommonKey.SoaplabEndpointKey);
-		add(CommonKey.SoaplabCategoryKey);
+		add(CommonKey.CategoryKey);
 		}
 	};
 	
@@ -46,7 +45,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 		targetSet.setProperty(adapter, CommonKey.SoaplabEndpointKey, new StringValue(encodedFactory.getEndpoint()));
 		}
 		if (encodedFactory.getCategory() != null) {
-		targetSet.setProperty(adapter, CommonKey.SoaplabCategoryKey, new StringValue(encodedFactory.getCategory()));
+		targetSet.setProperty(adapter, CommonKey.CategoryKey, new StringValue(encodedFactory.getCategory()));
 		}
 	}
 

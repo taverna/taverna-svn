@@ -3,7 +3,6 @@
  */
 package net.sf.taverna.t2.drizzle.view.palette;
 
-import java.awt.Container;
 import java.awt.Frame;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragSourceDragEvent;

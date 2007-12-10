@@ -15,8 +15,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 /**
  * @author alanrw
  *

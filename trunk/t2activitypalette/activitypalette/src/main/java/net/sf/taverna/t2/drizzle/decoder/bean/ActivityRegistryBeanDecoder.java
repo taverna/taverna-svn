@@ -8,10 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashSet;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
-
-import net.sf.taverna.t2.drizzle.bean.ActivityPaletteModelBean;
+import net.sf.taverna.t2.drizzle.bean.ActivityRegistryBean;
 import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry;
@@ -21,7 +18,6 @@ import net.sf.taverna.t2.drizzle.query.DecodeRunIdentification;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
-import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.jdom.Element;
@@ -30,8 +26,8 @@ import org.jdom.Element;
  * @author alanrw
  * 
  */
-public final class ActivityPaletteModelBeanDecoder implements
-		PropertyDecoder<ActivityPaletteModelBean, ProcessorFactoryAdapter> {
+public final class ActivityRegistryBeanDecoder implements
+		PropertyDecoder<ActivityRegistryBean, ProcessorFactoryAdapter> {
 
 	/*
 	 * (non-Javadoc)
@@ -46,13 +42,14 @@ public final class ActivityPaletteModelBeanDecoder implements
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) && ActivityPaletteModelBean.class
+		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) && ActivityRegistryBean.class
 				.isAssignableFrom(sourceClass));
 	}
 
+	@SuppressWarnings("unchecked")
 	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
 			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
-			ActivityPaletteModelBean encodedObject) {
+			ActivityRegistryBean encodedObject) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
 		}
@@ -84,15 +81,13 @@ public final class ActivityPaletteModelBeanDecoder implements
 					ident.getPropertyKeyProfile().addAll(subIdent.getPropertyKeyProfile());
 				} else {
 					throw new NullPointerException ("No decoder found for " + pf.getClass().getName()); //$NON-NLS-1$
-				}							;
+				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// TODO What to do?
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				// TODO What to do?
 			} catch (NullPointerException e) {
-				e.printStackTrace();
+				// TODO What to do?
 			}
 			
 		}

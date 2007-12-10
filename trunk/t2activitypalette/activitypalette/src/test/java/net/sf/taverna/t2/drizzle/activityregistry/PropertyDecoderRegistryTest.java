@@ -63,7 +63,7 @@ public class PropertyDecoderRegistryTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoderRegistry#getInstance()}.
+	 * Test method for {@link net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry#getInstance()}.
 	 */
 	@Test
 	public void testGetInstance() {
@@ -72,7 +72,7 @@ public class PropertyDecoderRegistryTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoderRegistry#getDecoders(java.lang.Object)}.
+	 * Test method for {@link net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry#getDecoders(java.lang.Object)}.
 	 */
 	@SuppressWarnings("unchecked")
 	@Test

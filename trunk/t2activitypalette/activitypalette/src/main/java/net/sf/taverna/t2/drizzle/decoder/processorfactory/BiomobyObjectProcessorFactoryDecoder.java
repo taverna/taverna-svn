@@ -13,7 +13,6 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringValue;
 
 import org.biomoby.client.taverna.plugin.BiomobyObjectProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * @author alanrw

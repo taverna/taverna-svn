@@ -3,11 +3,7 @@
  */
 package net.sf.taverna.t2.drizzle.model;
 
-import java.util.Set;
-
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
-
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 
 

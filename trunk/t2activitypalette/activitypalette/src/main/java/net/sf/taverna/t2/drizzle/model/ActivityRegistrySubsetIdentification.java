@@ -8,8 +8,6 @@ import java.util.Set;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 /**
  * @author alanrw
  *
@@ -25,7 +23,7 @@ public abstract class ActivityRegistrySubsetIdentification {
 	 * @return the kind
 	 */
 	public synchronized final String getKind() {
-		return kind;
+		return this.kind;
 	}
 
 	/**

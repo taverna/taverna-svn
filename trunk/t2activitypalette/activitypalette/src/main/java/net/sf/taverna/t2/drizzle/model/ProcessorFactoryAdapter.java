@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.util.Arrays;
 
 import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
-import net.sf.taverna.t2.drizzle.util.StringKey;
 import net.sf.taverna.t2.util.beanable.Beanable;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
@@ -19,40 +18,47 @@ import org.jdom.Element;
  * @author alanrw
  *
  */
-public final class ProcessorFactoryAdapter<FactoryType extends ProcessorFactory> implements Beanable<ProcessorFactoryAdapterBean>{
+public final class ProcessorFactoryAdapter implements Beanable<ProcessorFactoryAdapterBean>{
 	
 	private byte[] serializedVersion = null;
 
-	private FactoryType theFactory;
+	private ProcessorFactory theFactory;
 	
-	public ProcessorFactoryAdapter(FactoryType theFactory) {
+	private int hashCode;
+	
+	public ProcessorFactoryAdapter(ProcessorFactory theFactory) {
 		this.theFactory = theFactory;
+		this.hashCode = super.hashCode();
+		try {
 		Element elem = theFactory.getXMLFragment();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
 			oos = new ObjectOutputStream(baos);
 			oos.writeObject(elem);
-			serializedVersion = baos.toByteArray();
+			this.serializedVersion = baos.toByteArray();
+			this.hashCode = Arrays.hashCode(this.serializedVersion);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		} catch (IllegalStateException e) {
+			// should not matter
+		}
 	}
 
 	/**
 	 * @return the serializedVersion
 	 */
 	public synchronized final byte[] getSerializedVersion() {
-		return serializedVersion;
+		return this.serializedVersion;
 	}
 
 	/**
 	 * @return the theFactory
 	 */
-	public synchronized final FactoryType getTheFactory() {
-		return theFactory;
+	public synchronized final ProcessorFactory getTheFactory() {
+		return this.theFactory;
 	}
 
 	public ProcessorFactoryAdapterBean getAsBean() {
@@ -76,7 +82,7 @@ public final class ProcessorFactoryAdapter<FactoryType extends ProcessorFactory>
 	
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(getSerializedVersion());
+		return this.hashCode;
 	}
 	
 

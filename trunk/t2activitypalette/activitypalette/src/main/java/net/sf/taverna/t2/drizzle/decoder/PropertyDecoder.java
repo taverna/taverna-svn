@@ -11,7 +11,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @author alanrw
  *
  */
-public interface PropertyDecoder<Source, Target extends Beanable> {
+public interface PropertyDecoder<Source, Target extends Beanable<?>> {
 
 	boolean canDecode (Class<?> sourceClass, Class<?> targetClass);
 	

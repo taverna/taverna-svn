@@ -31,21 +31,27 @@ import net.sf.taverna.t2.drizzle.view.subset.ActivitySubsetPanel;
  */
 public final class SubsetKindConfigurationDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -818854898146357591L;
+
 	public SubsetKindConfigurationDialog(final SubsetKindConfiguration config, final ActivitySubsetPanel subsetPanel) {
 		this.setLayout(new BorderLayout());
 
 		JPanel choices = new JPanel();
 		choices.setLayout(new BorderLayout());
-		choices.add(createCheckBoxAndListPanel("tree", config.getKeyList(), config.getTreeListModel()), BorderLayout.NORTH);
-		choices.add(createCheckBoxAndListPanel("tree table", config.getKeyList(), config.getTreeTableListModel()), BorderLayout.CENTER);
-		choices.add(createCheckBoxAndListPanel("table", config.getKeyList(), config.getTableListModel()), BorderLayout.SOUTH);
+		choices.add(createCheckBoxAndListPanel("tree", config.getKeyList(), config.getTreeListModel()), BorderLayout.NORTH); //$NON-NLS-1$
+		choices.add(createCheckBoxAndListPanel("tree table", config.getKeyList(), config.getTreeTableListModel()), BorderLayout.CENTER); //$NON-NLS-1$
+		choices.add(createCheckBoxAndListPanel("table", config.getKeyList(), config.getTableListModel()), BorderLayout.SOUTH); //$NON-NLS-1$
 
 		this.add(choices, BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel();
-		JButton finishButton = new JButton("Finish");
+		JButton finishButton = new JButton("Finish"); //$NON-NLS-1$
 		finishButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
+				config.setLastChange(System.currentTimeMillis());
 				subsetPanel.setModels();
 				SubsetKindConfigurationDialog.this.dispose();
 			}

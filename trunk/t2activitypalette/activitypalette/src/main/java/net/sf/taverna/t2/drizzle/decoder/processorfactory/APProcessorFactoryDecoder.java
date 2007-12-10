@@ -13,8 +13,6 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import nl.utwente.ewi.hmi.taverna.scuflworkers.abstractprocessor.APProcessorFactory;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 /**
  * @author alanrw
  *

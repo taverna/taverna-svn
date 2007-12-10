@@ -3,48 +3,25 @@
  */
 package net.sf.taverna.t2.drizzle.view.subset;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.JTree;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.TableColumnModelEvent;
-import javax.swing.event.TableColumnModelListener;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -52,13 +29,13 @@ import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.model.SubsetKindConfiguration;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreeModel;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
-import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
+import net.sf.taverna.t2.utility.TreeModelAdapter;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
 /**
  * @author alanrw
@@ -77,20 +54,25 @@ public final class ActivitySubsetPanel extends JPanel {
 
 	private ScuflModel currentWorkflow = null;
 
-	private ActivityRegistrySubsetModel subsetModel = null;
+	ActivityRegistrySubsetModel subsetModel = null;
 
 	public static HashMap<String, SubsetKindConfiguration> kindConfigurationMap = new HashMap<String, SubsetKindConfiguration>();
 
-	private JScrollPane treePane;
+	JScrollPane treePane;
 
-	private JScrollPane tablePane;
+	JScrollPane tablePane;
+	
+	private long lastModelEvaluation;
+	
+	private DefaultTreeModel holdingTree;
+	private DefaultTableModel holdingTable;
 
 	private SubsetKindConfiguration getConfiguration() {
 		SubsetKindConfiguration result = null;
-		String kind = subsetModel.getIdent().getKind();
+		String kind = this.subsetModel.getIdent().getKind();
 		if (!kindConfigurationMap.containsKey(kind)) {
 			result = new SubsetKindConfiguration();
-			result.initialiseKeyList(subsetModel.getPropertyKeyProfile());
+			result.initialiseKeyList(this.subsetModel.getPropertyKeyProfile());
 			kindConfigurationMap.put(kind, result);
 		} else {
 			result = kindConfigurationMap.get(kind);
@@ -116,45 +98,84 @@ public final class ActivitySubsetPanel extends JPanel {
 		}
 	}
 
-	public void setTreeAndTableModels() {
-		List<PropertyKeySetting> treeKeySettings = getTreeKeySettings();
+	public void setModels() {
+		SubsetKindConfiguration currentConfiguration = getConfiguration();
+		if ((currentConfiguration.getLastChange() > this.lastModelEvaluation) || this.subsetModel.isUpdated()) {
+			this.lastModelEvaluation = System.currentTimeMillis();
+			this.subsetModel.setUpdated(false);
+			
+		final List<PropertyKeySetting> treeKeySettings = getTreeKeySettings();
 		if (treeKeySettings.size() == 0) {
-			this.remove(treePane);
+			this.remove(this.treePane);
 		} else {
-			TreeModel treeModel = ActivitySubsetKeyTableHeader.createTreeModel(
-					subsetModel, treeKeySettings);
-			this.currentTree.setModel(treeModel);
-			if (treePane.getParent() == null) {
-				if (tablePane.getParent() != null) {
-					this.remove(tablePane);
-					this.add(treePane);
-				}
-				this.add(treePane);
-			}
+			this.currentTree.setModel(this.holdingTree);
+			Runnable populateTree = new Runnable() {
+
+				public void run() {
+					TreeModel treeModel = createTreeModel(
+							ActivitySubsetPanel.this.subsetModel, treeKeySettings);
+					ActivitySubsetPanel.this.currentTree.setModel(treeModel);
+					if (ActivitySubsetPanel.this.treePane.getParent() == null) {
+						if (ActivitySubsetPanel.this.tablePane.getParent() != null) {
+							remove(ActivitySubsetPanel.this.tablePane);
+							add(ActivitySubsetPanel.this.treePane);
+						}
+						add(ActivitySubsetPanel.this.treePane);
+					}				}
+				
+			};
+			SwingUtilities.invokeLater(populateTree);
+
 		}
-		List<PropertyKeySetting> tableKeySettings = getTableKeySettings();
+		final List<PropertyKeySetting> tableKeySettings = getTableKeySettings();
 		if (tableKeySettings.size() == 0) {
-			this.remove(tablePane);
+			this.remove(this.tablePane);
 		} else {
-			TreeModel tableModel = ActivitySubsetKeyTableHeader
-					.createTreeModel(subsetModel, tableKeySettings);
-			ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
-					((PropertiedTreeRootNode<ProcessorFactoryAdapter>) tableModel
-							.getRoot()));
-			this.currentTable.setModel(activitiesTableModel);
-			if (tablePane.getParent() == null) {
-				this.add(tablePane);
-			}
+			this.currentTable.setModel(this.holdingTable);
+			Runnable populateTable = new Runnable() {
+
+				@SuppressWarnings("unchecked")
+				public void run() {
+					final TreeModel tableModel = createTreeModel(ActivitySubsetPanel.this.subsetModel, tableKeySettings);
+					ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
+							((PropertiedTreeRootNode<ProcessorFactoryAdapter>) tableModel
+									.getRoot()));
+					ActivitySubsetPanel.this.currentTable.setModel(activitiesTableModel);
+					if (ActivitySubsetPanel.this.tablePane.getParent() == null) {
+						add(ActivitySubsetPanel.this.tablePane);
+					}
+				}
+				
+			};
+			SwingUtilities.invokeLater(populateTable);
 		}
 		this.repaint();
 		this.validate();
+		}
 	}
 
-	public void setModels() {
-		List<PropertyKeySetting> keySettings = getTreeKeySettings();
-		synchronized (keySettings) {
-			setTreeAndTableModels();
+	@SuppressWarnings("unchecked")
+	public static TreeModel createTreeModel(final ActivityRegistrySubsetModel subsetModel,
+			final List<PropertyKeySetting> theKeySettings) {
+		if (subsetModel == null) {
+			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
+		if (theKeySettings == null) {
+			throw new NullPointerException("theKeySettings cannot be null"); //$NON-NLS-1$
+		}
+		TreeModel result = null;
+
+		PropertiedTreeModel<ProcessorFactoryAdapter> propertiedTreeModel = ObjectFactory
+				.getInstance(PropertiedTreeModel.class);
+		propertiedTreeModel.setPropertyKeySettings(theKeySettings);
+		propertiedTreeModel.setFilter(subsetModel.getFilter());
+		
+		propertiedTreeModel.setPropertiedGraphView(subsetModel
+				.getParentRegistry().getGraphView());
+		
+		propertiedTreeModel.detachFromGraphView();
+		result = TreeModelAdapter.untypedView(propertiedTreeModel);
+		return result;
 	}
 
 	/**
@@ -168,6 +189,10 @@ public final class ActivitySubsetPanel extends JPanel {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
 		this.subsetModel = subsetModel;
+		this.lastModelEvaluation = 0;
+		
+		this.holdingTree = new DefaultTreeModel(new DefaultMutableTreeNode("Please wait")); //$NON-NLS-1$
+		this.holdingTable = new DefaultTableModel(new String[] {"Please wait"}, 0); //$NON-NLS-1$
 		this.setName(subsetModel.getName());
 		setLayout(new GridLayout(1, 2));
 		this.setPreferredSize(new Dimension(0, 0));
@@ -179,13 +204,13 @@ public final class ActivitySubsetPanel extends JPanel {
 		this.currentTree.addMouseListener(new ActivitySubsetListener(this));
 		this.currentTree.setDragEnabled(true);
 
-		treePane = new JScrollPane(this.currentTree);
+		this.treePane = new JScrollPane(this.currentTree);
 
 		this.currentTable = new ActivitySubsetTable();
 
 		this.currentTable.addMouseListener(new ActivitySubsetListener(this));
 
-		tablePane = new JScrollPane(this.currentTable);
+		this.tablePane = new JScrollPane(this.currentTable);
 		final ListSelectionModel tableSelectionModel = this.currentTable
 				.getSelectionModel();
 
@@ -232,8 +257,8 @@ public final class ActivitySubsetPanel extends JPanel {
 		// JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 		// treePane, tablePane);
 		// splitPane.setDividerLocation(0.5);
-		this.add(treePane);
-		this.add(tablePane);
+		this.add(this.treePane);
+		this.add(this.tablePane);
 		// this.add(splitPane, BorderLayout.CENTER);
 	}
 
@@ -286,7 +311,7 @@ public final class ActivitySubsetPanel extends JPanel {
 	 * @return the subsetModel
 	 */
 	public synchronized final ActivityRegistrySubsetModel getSubsetModel() {
-		return subsetModel;
+		return this.subsetModel;
 	}
 
 	/**

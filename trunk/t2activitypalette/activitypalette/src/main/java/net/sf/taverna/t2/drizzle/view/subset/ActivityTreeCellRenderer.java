@@ -12,7 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -51,13 +50,13 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 	ActivityTreeCellRenderer(DefaultListModel listModel, PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
 		this.listModel = listModel;
 		this.registry = registry;
-		defaultRenderer = new DefaultTreeCellRenderer();
-		resultLabel = new JLabel("");
-		resultLabel.setOpaque(true);
-		resultTable = new JTable();
-		resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		selectedColor = defaultRenderer.getBackgroundSelectionColor();
-		nonSelectedColor = defaultRenderer.getBackgroundNonSelectionColor();
+		this.defaultRenderer = new DefaultTreeCellRenderer();
+		this.resultLabel = new JLabel(""); //$NON-NLS-1$
+		this.resultLabel.setOpaque(true);
+		this.resultTable = new JTable();
+		this.resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		this.selectedColor = this.defaultRenderer.getBackgroundSelectionColor();
+		this.nonSelectedColor = this.defaultRenderer.getBackgroundNonSelectionColor();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -75,50 +74,49 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 		if (value instanceof PropertiedTreeObjectNode) {
 			PropertiedTreeObjectNode<ProcessorFactoryAdapter> objectNode = (PropertiedTreeObjectNode<ProcessorFactoryAdapter>) value;
 			ProcessorFactoryAdapter adapter = objectNode.getObject();
-			if (listModel.isEmpty()) {
+			if (this.listModel.isEmpty()) {
 				ProcessorFactory pf = adapter.getTheFactory();
-				resultLabel.setText(pf.getName());
+				this.resultLabel.setText(pf.getName());
 				Class<?> processorClass = pf.getProcessorClass();
 				String tagName = ProcessorHelper
 						.getTagNameForClassName(processorClass.getName());
 				ImageIcon icon = ProcessorHelper.getIconForTagName(tagName);
 				if (icon != null) {
-					resultLabel.setIcon(icon);
+					this.resultLabel.setIcon(icon);
 				}
 				if (selected) {
-					resultLabel.setBackground(selectedColor);
+					this.resultLabel.setBackground(this.selectedColor);
 				} else {
-					resultLabel.setBackground(nonSelectedColor);
+					this.resultLabel.setBackground(this.nonSelectedColor);
 				}
-				return resultLabel;
-			} else {
-				DefaultTableModel tableModel = new DefaultTableModel(1,
-						listModel.getSize());
-				int column = 0;
-				for (Enumeration e = listModel.elements(); e.hasMoreElements();) {
-					PropertyKey pk = (PropertyKey) e.nextElement();
-					PropertyValue pv = registry.getPropertyValue(adapter, pk);
-					if (pv != null) {
-						tableModel.setValueAt(pv.toString(), 0, column++);
-					}
-				}
-				resultTable.setModel(tableModel);
-				TableColumnModel colModel = resultTable.getColumnModel();
-		        for (int i = 0; i < resultTable.getColumnCount(); i++) {
-		            TableColumn col = colModel.getColumn(i);
-		            col.setPreferredWidth(256);
-		        }
-		        if (selected) {
-		        	resultTable.setBackground(selectedColor);
-		        } else {
-		        	resultTable.setBackground(nonSelectedColor);
-		        }
-		        resultTable.doLayout();
-				resultTable.revalidate();
-				return resultTable;
+				return this.resultLabel;
 			}
+			DefaultTableModel tableModel = new DefaultTableModel(1,
+					this.listModel.getSize());
+			int column = 0;
+			for (Enumeration e = this.listModel.elements(); e.hasMoreElements();) {
+				PropertyKey pk = (PropertyKey) e.nextElement();
+				PropertyValue pv = this.registry.getPropertyValue(adapter, pk);
+				if (pv != null) {
+					tableModel.setValueAt(pv.toString(), 0, column++);
+				}
+			}
+			this.resultTable.setModel(tableModel);
+			TableColumnModel colModel = this.resultTable.getColumnModel();
+			for (int i = 0; i < this.resultTable.getColumnCount(); i++) {
+			    TableColumn col = colModel.getColumn(i);
+			    col.setPreferredWidth(256);
+			}
+			if (selected) {
+				this.resultTable.setBackground(this.selectedColor);
+			} else {
+				this.resultTable.setBackground(this.nonSelectedColor);
+			}
+			this.resultTable.doLayout();
+			this.resultTable.revalidate();
+			return this.resultTable;
 		}
-		return defaultRenderer.getTreeCellRendererComponent(tree, value,
+		return this.defaultRenderer.getTreeCellRendererComponent(tree, value,
 				selected, expanded, leaf, row, hasFocus);
 	}
 

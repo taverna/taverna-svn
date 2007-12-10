@@ -20,7 +20,7 @@ public final class ProcessorFactoryAdapterBean {
 	 * @return the xmlFragment
 	 */
 	public synchronized final byte[] getXmlFragment() {
-		return xmlFragment;
+		return this.xmlFragment;
 	}
 
 	/**

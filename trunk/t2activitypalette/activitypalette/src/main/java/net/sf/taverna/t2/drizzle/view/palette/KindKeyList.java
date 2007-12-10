@@ -27,6 +27,14 @@ import javax.swing.JList;
 public final class KindKeyList extends JList implements DragSourceListener,
 DragGestureListener, DropTargetListener {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4989449280785296705L;
+	/**
+	 * 
+	 */
+
 	private int fromIndex = -1;
 	private int toIndex = -1;
 
@@ -39,7 +47,7 @@ DragGestureListener, DropTargetListener {
 	}
 
 	public void dragGestureRecognized(DragGestureEvent arg0) {
-		fromIndex = this.locationToIndex(arg0.getDragOrigin());
+		this.fromIndex = this.locationToIndex(arg0.getDragOrigin());
 	}
 
 	public void dragEnter(DropTargetDragEvent arg0) {
@@ -58,15 +66,15 @@ DragGestureListener, DropTargetListener {
 	}
 
 	public void drop(DropTargetDropEvent arg0) {
-		if (fromIndex != -1) {
-			toIndex = this.locationToIndex(arg0.getLocation());
+		if (this.fromIndex != -1) {
+			this.toIndex = this.locationToIndex(arg0.getLocation());
 			DefaultListModel model = (DefaultListModel) this.getModel();
-			Object o = model.getElementAt(fromIndex);
-			model.removeElementAt(fromIndex);
-			model.insertElementAt(o, toIndex);
+			Object o = model.getElementAt(this.fromIndex);
+			model.removeElementAt(this.fromIndex);
+			model.insertElementAt(o, this.toIndex);
 		}
-		fromIndex = -1;
-		toIndex = -1;
+		this.fromIndex = -1;
+		this.toIndex = -1;
 	}
 
 	public void dropActionChanged(DropTargetDragEvent arg0) {

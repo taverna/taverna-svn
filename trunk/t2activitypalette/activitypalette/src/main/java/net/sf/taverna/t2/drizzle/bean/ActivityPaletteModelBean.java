@@ -8,8 +8,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-
 /**
  * @author alanrw
  *
@@ -19,29 +17,13 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public final class ActivityPaletteModelBean {
 
 	private List<SubsetKindConfigurationBean> subsetKindConfigurationBeans;
-	
-	private List<ProcessorFactoryAdapterBean> adapterBeans;
 
-	/**
-	 * @return the adapterBeans
-	 */
-	public synchronized final List<ProcessorFactoryAdapterBean> getAdapterBeans() {
-		return adapterBeans;
-	}
-
-	/**
-	 * @param adapterBeans the adapterBeans to set
-	 */
-	public synchronized final void setAdapterBeans(
-			List<ProcessorFactoryAdapterBean> adapterBeans) {
-		this.adapterBeans = adapterBeans;
-	}
 
 	/**
 	 * @return the subsetKindConfigurationBeans
 	 */
 	public synchronized final List<SubsetKindConfigurationBean> getSubsetKindConfigurationBeans() {
-		return subsetKindConfigurationBeans;
+		return this.subsetKindConfigurationBeans;
 	}
 
 	/**

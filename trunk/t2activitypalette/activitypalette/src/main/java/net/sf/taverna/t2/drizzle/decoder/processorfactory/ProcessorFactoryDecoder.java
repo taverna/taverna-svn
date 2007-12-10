@@ -25,7 +25,7 @@ public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFacto
 	protected abstract void fillInDetails(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet, ProcessorFactoryAdapter adapter, FactoryType encodedFactory);
 
 	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
-			PropertiedObjectSet targetSet,
+			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
 			FactoryType encodedObject) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$

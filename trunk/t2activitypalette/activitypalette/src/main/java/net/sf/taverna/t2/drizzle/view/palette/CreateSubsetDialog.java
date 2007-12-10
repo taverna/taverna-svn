@@ -24,18 +24,23 @@ import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
  */
 public final class CreateSubsetDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4916707367626813948L;
+
 	public CreateSubsetDialog(final ActivityPaletteModel paletteModel) {
 		this.setLayout(new GridLayout(3, 1));
 
 		JPanel namePanel = new JPanel();
-		namePanel.add(new JLabel("Subset name"));
+		namePanel.add(new JLabel("Subset name")); //$NON-NLS-1$
 		final JTextField nameField = new JTextField();
 		nameField.setColumns(10);
 		namePanel.add(nameField);
 		this.add(namePanel);
 
 		JPanel kindPanel = new JPanel();
-		kindPanel.add(new JLabel("Subset kind"));
+		kindPanel.add(new JLabel("Subset kind")); //$NON-NLS-1$
 
 		final Set<String> subsetKinds = paletteModel.getSubsetKinds();
 		final JComboBox kindCombo = new JComboBox(subsetKinds
@@ -45,7 +50,7 @@ public final class CreateSubsetDialog extends JDialog {
 		this.add(kindPanel);
 
 		JPanel buttonPanel = new JPanel();
-		JButton cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton("Cancel"); //$NON-NLS-1$
 		cancelButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -53,7 +58,7 @@ public final class CreateSubsetDialog extends JDialog {
 			}
 
 		});
-		JButton createButton = new JButton("Create");
+		JButton createButton = new JButton("Create"); //$NON-NLS-1$
 		createButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {

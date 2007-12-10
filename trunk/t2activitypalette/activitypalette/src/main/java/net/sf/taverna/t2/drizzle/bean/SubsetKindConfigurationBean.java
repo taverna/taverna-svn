@@ -5,15 +5,9 @@ package net.sf.taverna.t2.drizzle.bean;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import net.sf.taverna.t2.drizzle.util.PropertyKey;
-import net.sf.taverna.t2.drizzle.util.StringKey;
 
 /**
  * @author alanrw
@@ -37,7 +31,7 @@ public final class SubsetKindConfigurationBean {
 	 * @return the kind
 	 */
 	public synchronized final String getKind() {
-		return kind;
+		return this.kind;
 	}
 
 	/**
@@ -51,7 +45,7 @@ public final class SubsetKindConfigurationBean {
 	 * @return the keyList
 	 */
 	public synchronized final List<String> getKeyList() {
-		return keyList;
+		return this.keyList;
 	}
 
 	/**
@@ -66,7 +60,7 @@ public final class SubsetKindConfigurationBean {
 	 */
 	@XmlElement(name="treeKey")
 	public synchronized final List<String> getTreeKeyList() {
-		return treeKeyList;
+		return this.treeKeyList;
 	}
 
 	/**
@@ -81,7 +75,7 @@ public final class SubsetKindConfigurationBean {
 	 */
 	@XmlElement(name="treeTableKey")
 	public synchronized final List<String> getTreeTableKeyList() {
-		return treeTableKeyList;
+		return this.treeTableKeyList;
 	}
 
 	/**
@@ -97,7 +91,7 @@ public final class SubsetKindConfigurationBean {
 	 */
 	@XmlElement(name="tableKey")
 	public synchronized final List<String> getTableKeyList() {
-		return tableKeyList;
+		return this.tableKeyList;
 	}
 
 	/**

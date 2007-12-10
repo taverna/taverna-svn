@@ -3,13 +3,7 @@
  */
 package net.sf.taverna.t2.drizzle.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -25,14 +19,11 @@ import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
 import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
 import net.sf.taverna.t2.drizzle.bean.ActivityPaletteModelBean;
-import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
 import net.sf.taverna.t2.drizzle.bean.SubsetKindConfigurationBean;
 import net.sf.taverna.t2.drizzle.query.ActivityQuery;
-import net.sf.taverna.t2.drizzle.query.ActivitySavedConfigurationQuery;
 import net.sf.taverna.t2.drizzle.query.ActivityScavengerQuery;
 import net.sf.taverna.t2.drizzle.util.FalseFilter;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
-import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.StringKey;
 import net.sf.taverna.t2.drizzle.util.TrueFilter;
@@ -48,12 +39,9 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerHelperThreadPool;
 import org.embl.ebi.escience.scuflui.workbench.URLBasedScavenger;
 import org.embl.ebi.escience.scuflui.workbench.scavenger.spi.ScavengerRegistry;
-import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
-import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 import org.embl.ebi.escience.scuflworkers.ScavengerHelperRegistry;
 import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
-import org.jdom.Element;
 
 /**
  * @author alanrw
@@ -65,7 +53,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 
 	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
-	private ActivityRegistry activityRegistry;
+	ActivityRegistry activityRegistry;
 
 	private Set<ActivityRegistrySubsetModel> subsetModels;
 	
@@ -81,6 +69,8 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	private ActivityPaletteModelToScavengerTreeAdapter adapter = null;
 
 	private static ActivityRegistrySubsetModel searchResultsSubsetModel = null;
+	
+	static ActivityRegistrySubsetModel allActivitiesSubsetModel = null;
 	
 	/**
 	 * @return the adapter
@@ -129,7 +119,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		this.activityRegistry = registry;
 	}
 	
-	private void addSubsetModel (final ActivityRegistrySubsetModel subsetModel) {
+	void addSubsetModel (final ActivityRegistrySubsetModel subsetModel) {
 		if (subsetModel == null) {
 			throw new NullPointerException ("subsetModel cannot be null"); //$NON-NLS-1$
 		}
@@ -157,17 +147,25 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		}
 	}
 
-	private void addImmediateQuery(ActivityQuery<?> query) {
+	public void addImmediateQuery(final ActivityQuery<?> query) {
 		if (query == null) {
 			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
 		}
-		ActivityRegistrySubsetIdentification ident = this.activityRegistry
+		Runnable queryRunner = new Runnable() {
+
+			public void run() {
+				ActivityRegistrySubsetIdentification ident = ActivityPaletteModel.this.activityRegistry
 				.addImmediateQuery(query);
 		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
 		subsetModel.setIdent(ident);
-		subsetModel.setParentRegistry(this.activityRegistry);
+		subsetModel.setParentRegistry(ActivityPaletteModel.this.activityRegistry);
 		subsetModel.setEditable(false);
 		addSubsetModel(subsetModel);
+		allActivitiesSubsetModel.setUpdated(true);
+			}
+			
+		};
+		SwingUtilities.invokeLater(queryRunner);
 	}
 
 	public void removeSubsetModel(final ActivityRegistrySubsetModel subsetModel) {
@@ -383,7 +381,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	
 	public synchronized Set<String> getSubsetNames() {
 		Set<String> names = new TreeSet<String>();
-		for (ActivityRegistrySubsetModel subset : subsetModels) {
+		for (ActivityRegistrySubsetModel subset : this.subsetModels) {
 			names.add(subset.getName());
 		}
 		return (names);	
@@ -391,7 +389,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	
 	public synchronized Set<String> getSubsetKinds() {
 		Set<String> kinds = new TreeSet<String>();
-		for (ActivityRegistrySubsetModel subset : subsetModels) {
+		for (ActivityRegistrySubsetModel subset : this.subsetModels) {
 			kinds.add(subset.getIdent().getKind());
 		}
 		return (kinds);
@@ -410,8 +408,8 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			allKeys.add(CommonKey.NameKey);
 			allKeys.add(CommonKey.MobyEndpointKey);
 			allKeys.add(CommonKey.MobyAuthorityKey);
-			allKeys.add(CommonKey.LocalServiceCategoryKey);
-			allKeys.add(CommonKey.SoaplabCategoryKey);
+			allKeys.add(CommonKey.CategoryKey);
+
 			return allKeys;
 	}
 
@@ -435,18 +433,18 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 	
 	private void addAllSubsetModel() {
-		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
+		allActivitiesSubsetModel = new ActivityRegistrySubsetModel();
 		ActivityQueryRunIdentification ident = new ActivityQueryRunIdentification();
-		ident.setObjectFilter(new TrueFilter());
+		ident.setObjectFilter(new TrueFilter<ProcessorFactoryAdapter>());
 
-		ident.setName("All activities");
+		ident.setName("All activities"); //$NON-NLS-1$
 
 		ident.setPropertyKeyProfile(getAllKeys());
-		ident.setKind("allactivities");	
-		subsetModel.setIdent(ident);
-		subsetModel.setParentRegistry(this.activityRegistry);
-		subsetModel.setEditable(false);
-		addSubsetModel(subsetModel);		
+		ident.setKind("allactivities");	 //$NON-NLS-1$
+		allActivitiesSubsetModel.setIdent(ident);
+		allActivitiesSubsetModel.setParentRegistry(this.activityRegistry);
+		allActivitiesSubsetModel.setEditable(false);
+		addSubsetModel(allActivitiesSubsetModel);		
 	}
 	
 	private void addSearchResultsSubsetModel() {
@@ -454,10 +452,10 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		ActivityRegistrySubsetSelectionIdentification ident = new ActivityRegistrySubsetSelectionIdentification();
 		ident.setObjectFilter(new FalseFilter<ProcessorFactoryAdapter>());
 
-		ident.setName("Search results");
+		ident.setName("Search results"); //$NON-NLS-1$
 
 		ident.setPropertyKeyProfile(getAllKeys());
-		ident.setKind("allactivities");	
+		ident.setKind("allactivities");	 //$NON-NLS-1$
 		searchResultsSubsetModel.setIdent(ident);
 		searchResultsSubsetModel.setParentRegistry(this.activityRegistry);
 		searchResultsSubsetModel.setEditable(true);
@@ -475,7 +473,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	 * @return the activityRegistry
 	 */
 	public synchronized final ActivityRegistry getActivityRegistry() {
-		return activityRegistry;
+		return this.activityRegistry;
 	}
 
 	public ActivityPaletteModelBean getAsBean() {
@@ -493,21 +491,21 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			
 			DefaultListModel treeListModel = config.getTreeListModel();
 			tempList = new ArrayList<String>();
-			for (Enumeration e = treeListModel.elements(); e.hasMoreElements();) {
+			for (Enumeration<?> e = treeListModel.elements(); e.hasMoreElements();) {
 				tempList.add(e.nextElement().toString());
 			}
 			configBean.setTreeKeyList(tempList);
 			
 			DefaultListModel treeTableListModel = config.getTreeTableListModel();
 			tempList = new ArrayList<String>();
-			for (Enumeration e = treeTableListModel.elements(); e.hasMoreElements();) {
+			for (Enumeration<?> e = treeTableListModel.elements(); e.hasMoreElements();) {
 				tempList.add(e.nextElement().toString());
 			}
 			configBean.setTreeTableKeyList(tempList);
 
 			DefaultListModel tableListModel = config.getTableListModel();
 			tempList = new ArrayList<String>();
-			for (Enumeration e = tableListModel.elements(); e.hasMoreElements();) {
+			for (Enumeration<?> e = tableListModel.elements(); e.hasMoreElements();) {
 				tempList.add(e.nextElement().toString());
 			}
 			configBean.setTableKeyList(tempList);
@@ -515,14 +513,6 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			configList.add(configBean);
 		}
 		
-		List<ProcessorFactoryAdapterBean> adapterBeans = new ArrayList<ProcessorFactoryAdapterBean>();
-		for (ProcessorFactoryAdapter adapter : activityRegistry.getRegistry().getObjects()) {
-			ProcessorFactoryAdapterBean adapterBean = new ProcessorFactoryAdapterBean();
-
-			adapterBean.setXmlFragment(adapter.getSerializedVersion());
-			adapterBeans.add(adapterBean);
-		}
-		result.setAdapterBeans(adapterBeans);
 		result.setSubsetKindConfigurationBeans(configList);
 		return result;
 	}
@@ -566,7 +556,5 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			config.setTableListModel(tableListModel);
 			ActivitySubsetPanel.kindConfigurationMap.put(kindConfigBean.getKind(), config);
 		}
-		addImmediateQuery(new ActivitySavedConfigurationQuery(arg0));
-
 	}
 }

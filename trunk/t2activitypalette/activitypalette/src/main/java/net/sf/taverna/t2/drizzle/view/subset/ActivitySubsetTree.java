@@ -8,7 +8,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragGestureRecognizer;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
@@ -18,7 +17,6 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JTree;
 import javax.swing.ToolTipManager;
-import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
@@ -45,8 +43,8 @@ public final class ActivitySubsetTree extends JTree implements
 	private static final long serialVersionUID = 741115733679972895L;
 
 	public ActivitySubsetTree() {
-		dragSource = DragSource.getDefaultDragSource();
-		DragGestureRecognizer test = dragSource.createDefaultDragGestureRecognizer(this,
+		this.dragSource = DragSource.getDefaultDragSource();
+		this.dragSource.createDefaultDragGestureRecognizer(this,
 				DnDConstants.ACTION_COPY, this);
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
@@ -76,7 +74,7 @@ public final class ActivitySubsetTree extends JTree implements
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 				Transferable t = new SpecFragmentTransferable(fsf);
-				dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
+				this.dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
 			}
 		}
 	}

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 
+import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
@@ -25,59 +25,67 @@ public final class SubsetKindConfiguration {
 	private DefaultListModel treeListModel;
 	private DefaultListModel treeTableListModel;
 	private DefaultListModel tableListModel;
+	private long lastChange = 0;
 
+	@SuppressWarnings("unchecked")
 	public void initialiseKeyList(Set<PropertyKey> keyProfile) {
-		keyList = new ArrayList(keyProfile);
-		Collections.sort(keyList);
-		treeListModel = new DefaultListModel();
-		treeTableListModel = new DefaultListModel();
-		tableListModel = new DefaultListModel();
-		for (PropertyKey pk : keyList) {
-			treeListModel.addElement(pk);
-			tableListModel.addElement(pk);
+		this.keyList = new ArrayList<PropertyKey>(keyProfile);
+		Collections.sort(this.keyList);
+		this.treeListModel = new DefaultListModel();
+		this.treeTableListModel = new DefaultListModel();
+		this.tableListModel = new DefaultListModel();
+		if (this.keyList.contains(CommonKey.CategoryKey)) {
+			this.treeListModel.addElement(CommonKey.CategoryKey);
+			this.tableListModel.addElement(CommonKey.CategoryKey);
 		}
+		if (this.keyList.contains(CommonKey.NameKey)) {
+			this.treeListModel.addElement(CommonKey.NameKey);
+			this.tableListModel.addElement(CommonKey.NameKey);
+		}
+
+		this.lastChange = System.currentTimeMillis();
 	}
 
 	/**
 	 * @return the keyList
 	 */
 	public synchronized ArrayList<PropertyKey> getKeyList() {
-		return keyList;
+		return this.keyList;
 	}
 
 	/**
 	 * @return the treeListModel
 	 */
 	public synchronized DefaultListModel getTreeListModel() {
-		return treeListModel;
+		return this.treeListModel;
 	}
 
 	/**
 	 * @return the treeTableListModel
 	 */
 	public synchronized DefaultListModel getTreeTableListModel() {
-		return treeTableListModel;
+		return this.treeTableListModel;
 	}
 
 	/**
 	 * @return the tableListModel
 	 */
 	public synchronized DefaultListModel getTableListModel() {
-		return tableListModel;
+		return this.tableListModel;
 	}
 
 	public List<PropertyKeySetting> getTreeKeySettings() {
-		return getKeySettings(treeListModel);
+		return getKeySettings(this.treeListModel);
 	}
 
 	public List<PropertyKeySetting> getTableKeySettings() {
-		return getKeySettings(tableListModel);
+		return getKeySettings(this.tableListModel);
 	}
 
 	private List<PropertyKeySetting> getKeySettings(DefaultListModel model) {
 		List<PropertyKeySetting> result = new ArrayList<PropertyKeySetting>();
 
-		for (Enumeration e = model.elements(); e.hasMoreElements();) {
+		for (Enumeration<?> e = model.elements(); e.hasMoreElements();) {
 			PropertyKey key = (PropertyKey) e.nextElement();
 			PropertyKeySetting setting = ObjectFactory
 					.getInstance(PropertyKeySetting.class);
@@ -92,13 +100,29 @@ public final class SubsetKindConfiguration {
 	 * @param keyList the keyList to set
 	 */
 	public synchronized final void setKeyList(ArrayList<PropertyKey> keyList) {
+		this.lastChange = System.currentTimeMillis();
 		this.keyList = keyList;
+	}
+
+	/**
+	 * @return the lastChange
+	 */
+	public synchronized final long getLastChange() {
+		return this.lastChange;
+	}
+
+	/**
+	 * @param lastChange the lastChange to set
+	 */
+	public synchronized final void setLastChange(long lastChange) {
+		this.lastChange = lastChange;
 	}
 
 	/**
 	 * @param treeListModel the treeListModel to set
 	 */
 	public synchronized final void setTreeListModel(DefaultListModel treeListModel) {
+		this.lastChange = System.currentTimeMillis();
 		this.treeListModel = treeListModel;
 	}
 
@@ -107,6 +131,7 @@ public final class SubsetKindConfiguration {
 	 */
 	public synchronized final void setTreeTableListModel(
 			DefaultListModel treeTableListModel) {
+		this.lastChange = System.currentTimeMillis();
 		this.treeTableListModel = treeTableListModel;
 	}
 
@@ -114,6 +139,7 @@ public final class SubsetKindConfiguration {
 	 * @param tableListModel the tableListModel to set
 	 */
 	public synchronized final void setTableListModel(DefaultListModel tableListModel) {
+		this.lastChange = System.currentTimeMillis();
 		this.tableListModel = tableListModel;
 	}
 
