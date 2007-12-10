@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.cloudone.datamanager.refscheme.file;
+package net.sf.taverna.t2.cloudone.refscheme.file;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
