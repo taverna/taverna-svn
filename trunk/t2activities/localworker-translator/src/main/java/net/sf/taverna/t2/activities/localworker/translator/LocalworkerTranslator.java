@@ -81,6 +81,23 @@ public class LocalworkerTranslator extends
 		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
 		localWorkerToDependecies.put("net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker", Collections.singletonList("uk.org.mygrid.resources:biojava:1.4pre1"));
 		
+		//io
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.TextFileReader", "TextFileReader");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.TextFileWriter", "TextFileWriter");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.LocalCommand", "LocalCommand");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.FileListByExtTask", "FileListByExtTask");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.FileListByRegexTask", "FileListByRegexTask");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.DataRangeTask", "DataRangeTask");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.ConcatenateFileListWorker", "ConcatenateFileListWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.io.EnvVariableWorker", "EnvVariableWorker");
+
+		//ui
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.AskWorker", "AskWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.SelectWorker", "SelectWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.ChooseWorker", "ChooseWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.TellWorker", "TellWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.WarnWorker", "WarnWorker");
+		localWorkerToScript.put("net.sourceforge.taverna.scuflworkers.ui.SelectFileWorker", "SelectFileWorker");
 	}
 
 	@Override

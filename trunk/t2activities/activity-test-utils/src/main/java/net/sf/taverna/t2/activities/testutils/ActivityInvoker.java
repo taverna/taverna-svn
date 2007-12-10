@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
@@ -63,10 +64,16 @@ public class ActivityInvoker {
 			for (String outputName : requestedOutputs) {
 				EntityIdentifier id = callback.data.get(outputName);
 				if (id != null) {
-					Object result = dataFacade.resolve(id);
-					if (result instanceof ByteArrayInputStream) {
-						result = IOUtils.toByteArray((ByteArrayInputStream) result);
+					Object result;
+					try {
+						result = dataFacade.resolve(id,	String.class);
+					} catch (RetrievalException e) {
+						result = dataFacade.resolve(id,	byte[].class);
 					}
+
+//					if (result instanceof ByteArrayInputStream) {
+//						result = IOUtils.toByteArray((ByteArrayInputStream) result);
+//					}
 					results.put(outputName, result);
 				}
 			}

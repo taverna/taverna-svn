@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,9 +28,18 @@ import net.sourceforge.taverna.scuflworkers.biojava.GenBankParserWorker;
 import net.sourceforge.taverna.scuflworkers.biojava.ReverseCompWorker;
 import net.sourceforge.taverna.scuflworkers.biojava.SwissProtParserWorker;
 import net.sourceforge.taverna.scuflworkers.biojava.TranscribeWorker;
+import net.sourceforge.taverna.scuflworkers.io.ConcatenateFileListWorker;
+import net.sourceforge.taverna.scuflworkers.io.DataRangeTask;
+import net.sourceforge.taverna.scuflworkers.io.EnvVariableWorker;
+import net.sourceforge.taverna.scuflworkers.io.FileListByExtTask;
+import net.sourceforge.taverna.scuflworkers.io.FileListByRegexTask;
+import net.sourceforge.taverna.scuflworkers.io.LocalCommand;
+import net.sourceforge.taverna.scuflworkers.io.TextFileReader;
+import net.sourceforge.taverna.scuflworkers.io.TextFileWriter;
 import net.sourceforge.taverna.scuflworkers.xml.XPathTextWorker;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scuflworkers.java.ByteArrayToString;
@@ -54,7 +65,6 @@ import org.embl.ebi.escience.scuflworkers.java.TestAlwaysFailingProcessor;
 import org.embl.ebi.escience.scuflworkers.java.WebImageFetcher;
 import org.embl.ebi.escience.scuflworkers.java.WebPageFetcher;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -95,7 +105,6 @@ public class LocalworkerTranslatorTest {
 				"EchoList", new EchoList())));
 	}
 
-	@Ignore("Beanshell assumes String input")
 	@Test
 	public void testDoTranslationByteArrayToString() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -177,7 +186,6 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
-	@Ignore("Beanshell assumes String input")
 	@Test
 	public void testDoTranslationEncodeBase64() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -692,6 +700,208 @@ public class LocalworkerTranslatorTest {
 						.getResourceAsStream("/varC4-2.rdna")));
 
 		invoke(activity, inputs, expectedOutputs);
+	}
+
+	// io
+
+	@Test
+	public void testDoTranslationTextFileReader() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"TextFileReader", new TextFileReader());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("fileurl", LocalworkerTranslator.class.getResource(
+				"/AAC4_HUMAN.sp").getFile());
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("filecontents", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/AAC4_HUMAN.sp")));
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationTextFileWriter() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"TextFileWriter", new TextFileWriter());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		File tempFile = File.createTempFile("test", null);
+		inputs.put("outputFile", tempFile.getAbsolutePath());
+		inputs.put("filecontents", IOUtils.toString(LocalworkerTranslator.class
+				.getResourceAsStream("/AAC4_HUMAN.sp")));
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("outputFile", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/AAC4_HUMAN.sp")));
+
+		invoke(activity, inputs, expectedOutputs);
+
+		assertEquals(IOUtils.toString(LocalworkerTranslator.class
+				.getResourceAsStream("/AAC4_HUMAN.sp")), FileUtils
+				.readFileToString(tempFile, null));
+		tempFile.delete();
+	}
+
+	@Test
+	public void testDoTranslationLocalCommand() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"LocalCommand", new LocalCommand());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("command", "echo");
+		inputs.put("args", Collections.singletonList("hello"));
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("result", "hello\n");
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationFileListByExtTask() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"FileListByExtTask", new FileListByExtTask());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("directory", LocalworkerTranslator.class
+				.getResource("/test").getFile());
+		inputs.put("extension", "test");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		List<String> outputList = new ArrayList<String>();
+		outputList.add(LocalworkerTranslator.class.getResource(
+				"/test/alpha.test").getFile());
+		outputList.add(LocalworkerTranslator.class.getResource(
+				"/test/beta.test").getFile());
+		outputList.add(LocalworkerTranslator.class.getResource(
+				"/test/gamma.test").getFile());
+		expectedOutputs.put("filelist", outputList);
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationFileListByRegexTask() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"FileListByRegexTask", new FileListByRegexTask());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("directory", LocalworkerTranslator.class
+				.getResource("/test").getFile());
+		inputs.put("regex", ".+[h|t]a\\.test");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		List<String> outputList = new ArrayList<String>();
+		outputList.add(LocalworkerTranslator.class.getResource(
+				"/test/alpha.test").getFile());
+		outputList.add(LocalworkerTranslator.class.getResource(
+				"/test/beta.test").getFile());
+		expectedOutputs.put("filelist", outputList);
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationDataRangeTask() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"DataRangeTask", new DataRangeTask());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		List<List<String>> inputList = new ArrayList<List<String>>();
+		inputList.add(Arrays.asList(new String[] { "a1", "b1", "c1", "d1" }));
+		inputList.add(Arrays.asList(new String[] { "a2", "b2", "c2", "d2" }));
+		inputList.add(Arrays.asList(new String[] { "a3", "b3", "c3", "d3" }));
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("inputArray", inputList);
+		inputs.put("startingPoint", "1,1");
+		inputs.put("endPoint", "3,2");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		List<List<String>> outputList = new ArrayList<List<String>>();
+		outputList.add(Arrays.asList(new String[] { "b2", "c2", "d2" }));
+		outputList.add(Arrays.asList(new String[] { "b3", "c3", "d3" }));
+		expectedOutputs.put("outputArray", outputList);
+
+		invoke(activity, inputs, expectedOutputs);
+	}
+
+	@Test
+	public void testDoTranslationConcatenateFileListWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"ConcatenateFileListWorker", new ConcatenateFileListWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		File temp = File.createTempFile("temp", null);
+		List<String> inputList = new ArrayList<String>();
+		inputList.add(LocalworkerTranslator.class.getResource(
+				"/concatenateTestFile1.txt").getFile());
+		inputList.add(LocalworkerTranslator.class.getResource(
+				"/concatenateTestFile2.txt").getFile());
+		Map<String, Object> inputs = new HashMap<String, Object>();
+		inputs.put("filelist", inputList);
+		inputs.put("outputfile", temp.getAbsolutePath());
+		inputs.put("displayresults", "true");
+		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
+		expectedOutputs.put("results", IOUtils
+				.toString(LocalworkerTranslator.class
+						.getResourceAsStream("/concatenateTestOut.txt")));
+
+		invoke(activity, inputs, expectedOutputs);
+
+		assertEquals(IOUtils.toString(LocalworkerTranslator.class
+				.getResourceAsStream("/concatenateTestOut.txt")), IOUtils
+				.toString(new FileReader(temp)));
+		
+		//test displayresults = false
+		inputs.put("displayresults", "false");
+		expectedOutputs = new HashMap<String, Object>();
+
+		invoke(activity, inputs, expectedOutputs);
+		temp.delete();
+	}
+
+	@Test
+	public void testDoTranslationEnvVariableWorker() throws Exception {
+		LocalServiceProcessor processor = new LocalServiceProcessor(null,
+				"EnvVariableWorker", new EnvVariableWorker());
+		BeanshellActivity activity = (BeanshellActivity) translator
+				.doTranslation(processor);
+
+		verifyPorts(processor, activity);
+
+		Map<String, Object> inputs = new HashMap<String, Object>();
+
+		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+				activity, inputs, Collections.singletonList("properties"));
+		assertEquals(1, outputs.size());
+
+		Object output = outputs.get("properties");
+		assertTrue(output instanceof String);
+		assertTrue(((String) output).startsWith("<?xml version=\"1.0\"?>\n<property-list>\n"));
+		assertTrue(((String) output).endsWith("</property-list>"));
 	}
 
 	private void invoke(AbstractAsynchronousActivity<?> activity,
