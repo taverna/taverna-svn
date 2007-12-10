@@ -34,7 +34,7 @@ import org.junit.Test;
  *
  */
 public class WSDLBasedProcessorFactoryDecoderTest {
-	private String TESTWSDL_BASE="http://www.mygrid.org.uk/taverna-tests/testwsdls/"; //$NON-NLS-1$
+	private String TESTWSDL_BASE="http://www.mygrid.org.uk/taverna-tests/testwsdls/";
 	private PropertiedObjectSet<ProcessorFactoryAdapter> targetSet;
 	private WSDLBasedProcessorFactoryDecoder testDecoder;
 	/**
@@ -74,18 +74,18 @@ public class WSDLBasedProcessorFactoryDecoderTest {
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.activityregistry.WSDLBasedProcessorFactoryDecoder#canDecode(java.lang.Object)}.
+	 * Test method for {@link net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder#canDecode(java.lang.Object)}.
 	 */
 	@Test
 	public void testCanDecode() {
-		assertTrue (this.testDecoder.canDecode(WSDLBasedProcessorFactory.class, WSDLBasedProcessorFactory.class));
-		assertTrue (this.testDecoder.canDecode(WSDLBasedProcessorFactory.class, ProcessorFactory.class));
+		assertTrue (this.testDecoder.canDecode(WSDLBasedProcessorFactory.class, ProcessorFactoryAdapter.class));
+		assertTrue (this.testDecoder.canDecode(WSDLBasedProcessorFactory.class, ProcessorFactoryAdapter.class));
 		assertFalse(this.testDecoder.canDecode(BiomobyProcessorFactory.class, WSDLBasedProcessorFactory.class));
 		assertFalse (this.testDecoder.canDecode(WSDLBasedProcessorFactory.class, String.class));
 	}
 
 	/**
-	 * Test method for {@link net.sf.taverna.t2.drizzle.activityregistry.WSDLBasedProcessorFactoryDecoder#decode(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet, java.lang.Object)}.
+	 * Test method for {@link net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder#decode(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet, java.lang.Object)}.
 	 * @throws ScavengerCreationException 
 	 */
 	@Test
@@ -96,15 +96,13 @@ public class WSDLBasedProcessorFactoryDecoderTest {
 		Object userObject = leaf.getUserObject();
 		assertTrue(userObject instanceof WSDLBasedProcessorFactory);
 		DecodeRunIdentification<ProcessorFactoryAdapter> ident = this.testDecoder.decode(this.targetSet, (WSDLBasedProcessorFactory) leaf.getUserObject());
-		Set<ProcessorFactoryAdapter> factories = ident.getAffectedObjects();
+		Set<ProcessorFactoryAdapter> adapters = ident.getAffectedObjects();
 		Set<ProcessorFactoryAdapter> objects = this.targetSet.getObjects();
-		int i = 1;
-		assertEquals(new Integer(i), new Integer(objects.size()));
+		assertEquals(1, objects.size());
 		ProcessorFactoryAdapter adapter = objects.iterator().next();
-		ProcessorFactory factory = adapter.getTheFactory();
-		assertEquals(new Integer(1), new Integer(factories.size()));
-		assertTrue(factories.contains(factory));
-		assertEquals(userObject, factory);
+		assertEquals(1, adapters.size());
+		assertTrue(adapters.contains(adapter));
+		assertEquals(userObject, adapter.getTheFactory());
 		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.ProcessorClassKey));
 		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.WsdlLocationKey));
 		assertNotNull(this.targetSet.getPropertyValue(adapter, CommonKey.WsdlOperationKey));
