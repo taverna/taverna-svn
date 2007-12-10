@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -32,8 +33,11 @@ import net.sf.taverna.t2.cloudone.gui.entity.model.FileRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.HttpRefSchemeModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.LiteralModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.ReferenceSchemeModel;
+import net.sf.taverna.t2.cloudone.gui.entity.model.SingletonListModel;
 import net.sf.taverna.t2.cloudone.gui.entity.model.StringModel;
 import net.sf.taverna.t2.cloudone.gui.entity.view.EntityListView;
+import net.sf.taverna.t2.cloudone.gui.entity.view.LiteralView;
+import net.sf.taverna.t2.cloudone.gui.entity.view.SingletonListView;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
@@ -49,15 +53,16 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	 */
 	private static final long serialVersionUID = -1107966941652188905L;
 	private final List<InputType> inputPorts;
-	private Map<InputType, EntityModel> models = new HashMap<InputType, EntityModel>();;
+	private Map<InputType, SingletonListModel> models = new HashMap<InputType, SingletonListModel>();;
+	private Map<InputType, SingletonListView> views = new HashMap<InputType, SingletonListView>();
 	private JTabbedPane tabbedPane;
 	private DataManager dataManager;
 	private DataFacade dataFacade;
 	private final InputComponentCallback<InputType> runMethod;
-	private InvocationContext context;
+	private InvocationContext context;;
 
 	/**
-	 * Method to be invoked 
+	 * Method to be invoked
 	 * 
 	 */
 	public interface InputComponentCallback<InputType extends DataflowInputPort> {
@@ -70,11 +75,13 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 		 */
 		public String getButtonText();
 	}
-	
-	public InputComponent(List<InputType> inputPorts, InputComponentCallback<InputType> runMethod, InvocationContext context) {
+
+	public InputComponent(List<InputType> inputPorts,
+			InputComponentCallback<InputType> runMethod,
+			InvocationContext context) {
 		this.inputPorts = inputPorts;
 		this.runMethod = runMethod;
-		this.context=context;
+		this.context = context;
 		initialise();
 	}
 
@@ -82,7 +89,7 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 		setLayout(new BorderLayout());
 		CreateDataAction createDataAction = new CreateDataAction();
 		ClearAction clearAction = new ClearAction();
-//		add(new JButton(clearAction));
+		// add(new JButton(clearAction));
 		add(new JButton(createDataAction), BorderLayout.SOUTH);
 		add(new JLabel("Inputs"), BorderLayout.NORTH);
 		tabbedPane = new JTabbedPane();
@@ -105,9 +112,11 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	}
 
 	private Component createEntityPanel(InputType dataflowInputPort) {
-		EntityListModel model = new EntityListModel(null);
-		EntityListView view = new EntityListView(model);
+		SingletonListModel model = new SingletonListModel(dataflowInputPort
+				.getDepth());
+		SingletonListView view = new SingletonListView(model);
 		models.put(dataflowInputPort, model);
+		views.put(dataflowInputPort, view);
 		return view;
 	}
 
@@ -117,6 +126,7 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	}
 
 	private Object prepareForFacacde(EntityModel model) {
+		// ignore if EntityRootModel
 		if (model instanceof EntityListModel) {
 			EntityListModel listModel = (EntityListModel) model;
 			List<Object> children = new ArrayList<Object>();
@@ -169,17 +179,32 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			// go through tabs and do something
+			
+			for (Entry<InputType, SingletonListView> entry:views.entrySet()) {
+				try {
+					entry.getValue().setEdit(false);
+				} catch (IllegalStateException ex) {
+					// OK
+					return;
+				}
+			}
+			
 			try {
 				Map<InputType, EntityIdentifier> entities = registerModels();
 				runMethod.invoke(entities);
-			} catch (EmptyListException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (MalformedListException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			} catch (EntityValueMissingException ex) {
+				JOptionPane.showMessageDialog(InputComponent.this,
+						"There is no value for '" + ex.getPort().getName()
+								+ "'", "Missing value",
+						JOptionPane.WARNING_MESSAGE);
+			} catch (InputPortException ex) {
+				String msg = "Could not register '" + ex.getPort().getName()
+						+ "'";
+				if (ex.getCause() != null) {
+					msg += ":\n" + ex.getCause().getLocalizedMessage();
+				}
+				JOptionPane.showMessageDialog(InputComponent.this, msg,
+						"Could not register port", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -202,17 +227,28 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 	}
 
 	public Map<InputType, EntityIdentifier> registerModels()
-			throws EmptyListException, MalformedListException {
+			throws EntityValueMissingException, InputPortException {
 		Map<InputType, EntityIdentifier> portEntities = new HashMap<InputType, EntityIdentifier>();
-		for (Entry<InputType, EntityModel> entry : models.entrySet()) {
+		for (Entry<InputType, SingletonListModel> entry : models.entrySet()) {
 			InputType port = entry.getKey();
-			EntityModel model = entry.getValue();
-			EntityIdentifier entity = registerModel(model);
-			portEntities.put(port, entity);
+			SingletonListModel singletonModel = entry.getValue();
+			EntityModel model = singletonModel.getSingleton();
+			if (model != null) {
+				EntityIdentifier entity;
+				try {
+					entity = registerModel(model);
+				} catch (EmptyListException e) {
+					throw new InputPortException(port, e);
+				} catch (MalformedListException e) {
+					throw new InputPortException(port, e);
+				}
+				portEntities.put(port, entity);
+			} else {
+				throw new EntityValueMissingException(port);
+			}
 		}
 		return portEntities;
 	}
-
 
 	public EntityIdentifier registerModel(EntityModel model)
 			throws EmptyListException, MalformedListException {
