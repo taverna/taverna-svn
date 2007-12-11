@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavenger.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-18 14:46:52 $
+ * Last modified on   $Date: 2007-12-11 14:38:38 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -69,7 +69,7 @@ public class BiomartScavenger extends URLBasedScavenger {
 	
 	public BiomartScavenger(String registryURL)
 			throws ScavengerCreationException {
-		super("Biomart service @ " + registryURL);
+		super("Biomart service @ " + getBiomartServiceLocation(registryURL));
 
 		logger.info("Initialising Biomart Scavenger for URL:" + registryURL);
 
@@ -114,12 +114,12 @@ public class BiomartScavenger extends URLBasedScavenger {
 	}
 
 	/**
-	 * Attempts to construct a valid MartService URL fron the location given.
+	 * Attempts to construct a valid MartService URL from the location given.
 	 * 
 	 * @param biomartLocation
 	 * @return a (hopefully) valid MartService URL
 	 */
-	private String getBiomartServiceLocation(String biomartLocation) {
+	private static String getBiomartServiceLocation(String biomartLocation) {
 		StringBuffer sb = new StringBuffer();
 		if (biomartLocation.endsWith("martservice")) {
 			sb.append(biomartLocation);

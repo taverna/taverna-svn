@@ -25,23 +25,26 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartScavengerHelper.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-08-08 15:38:36 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-12-11 14:38:38 $
+ *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.biomart;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
@@ -108,9 +111,23 @@ public class BiomartScavengerHelper implements ScavengerHelper {
 	}
 	
 	public Set<Scavenger> getFromModel(ScuflModel model) {
-		//TODO make BioMartProcessor give access Biomart URL to allow Scavengers
-		//to be created
-		return new HashSet<Scavenger>();		
+		Set<Scavenger> result = new HashSet<Scavenger>();
+		List<String> existingLocations = new ArrayList<String>();
+		Processor[] processors = model
+				.getProcessorsOfType(BiomartProcessor.class);
+		for (Processor processor : processors) {
+			String loc = ((BiomartProcessor) processor).getQuery().getMartService().getLocation();
+			if (!existingLocations.contains(loc)) {
+				existingLocations.add(loc);
+				try {
+					result.add(new BiomartScavenger(loc));
+				} catch (ScavengerCreationException e) {
+					logger.warn("Error creating BiomartScavenger", e);
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	/**
