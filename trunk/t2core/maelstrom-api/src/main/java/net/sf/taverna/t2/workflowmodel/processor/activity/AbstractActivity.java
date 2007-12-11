@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -34,7 +35,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityPortsDe
  * @author Stuart Owen
  * 
  * @param <ConfigType>
- *            type of configuration object to be used to hold configuration information
+ *            type of configuration object to be used to hold configuration
+ *            information
  */
 public abstract class AbstractActivity<ConfigType> extends
 		AbstractAnnotatedThing<Activity<?>> implements Activity<ConfigType> {
@@ -45,7 +47,7 @@ public abstract class AbstractActivity<ConfigType> extends
 
 	protected Set<OutputPort> outputPorts = new HashSet<OutputPort>();
 
-	protected Set<InputPort> inputPorts = new HashSet<InputPort>();
+	protected Set<ActivityInputPort> inputPorts = new HashSet<ActivityInputPort>();
 
 	/**
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#configure(java.lang.Object)
@@ -57,30 +59,37 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getConfiguration()
 	 */
 	public abstract ConfigType getConfiguration();
-	
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getInputPortMapping()
 	 */
 	public final Map<String, String> getInputPortMapping() {
 		return this.inputPortMapping;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getInputPorts()
 	 */
-	public final Set<InputPort> getInputPorts() {
+	public final Set<ActivityInputPort> getInputPorts() {
 		return inputPorts;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getOutputPortMapping()
 	 */
 	public final Map<String, String> getOutputPortMapping() {
 		return this.outputPortMapping;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.t2.workflowmodel.processor.activity.Activity#getOutputPorts()
 	 */
 	public final Set<OutputPort> getOutputPorts() {
@@ -90,24 +99,36 @@ public abstract class AbstractActivity<ConfigType> extends
 	/**
 	 * Creates and adds a new input port with the provided properties.
 	 * 
-	 * @param portName - the name of the port to be created.
-	 * @param portDepth - the depth of the port to be created.
-	 * @param mimeTypes - a list of String representations of the MIME type this port will accept as inputs.
+	 * @param portName -
+	 *            the name of the port to be created.
+	 * @param portDepth -
+	 *            the depth of the port to be created.
 	 */
-	protected void addInput(String portName, int portDepth, List<String>mimeTypes) {
-		inputPorts.add(EditsRegistry.getEdits().buildActivityInputPort(portName, portDepth,mimeTypes));
+	protected void addInput(String portName, int portDepth,
+			boolean allowsLiteralValues,
+			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			Class<?> translatedElementClass) {
+		inputPorts.add(EditsRegistry.getEdits().buildActivityInputPort(
+				portName, portDepth, allowsLiteralValues,
+				handledReferenceSchemes, translatedElementClass));
 	}
 
 	/**
 	 * Creates and adds a new output port with the provided properties.
-	 * @param portName - the name of the port to be created.
-	 * @param portDepth - the depth of the port to be created
-	 * @param granularDepth - the granular depth of the port to be created
-	 * @param mimeTypes - a List of String representations of the MIME type this port will emit as outputs.
+	 * 
+	 * @param portName -
+	 *            the name of the port to be created.
+	 * @param portDepth -
+	 *            the depth of the port to be created
+	 * @param granularDepth -
+	 *            the granular depth of the port to be created
+	 * @param mimeTypes -
+	 *            a List of String representations of the MIME type this port
+	 *            will emit as outputs.
 	 */
-	protected void addOutput(String portName, int portDepth, int granularDepth, List<String>mimeTypes) {
-		outputPorts.add(EditsRegistry.getEdits().buildActivityOutputPort(portName, portDepth,
-				granularDepth,mimeTypes));
+	protected void addOutput(String portName, int portDepth, int granularDepth) {
+		outputPorts.add(EditsRegistry.getEdits().buildActivityOutputPort(
+				portName, portDepth, granularDepth));
 	}
 
 	/**
@@ -117,31 +138,40 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param portName
 	 * @param portDepth
 	 */
-	protected void addOutput(String portName, int portDepth,List<String> mimeTypes) {
-		addOutput(portName, portDepth, portDepth, mimeTypes);
+	protected void addOutput(String portName, int portDepth) {
+		addOutput(portName, portDepth, portDepth);
 	}
-	
+
 	/**
 	 * <p>
 	 * Simplifies configuring the Activity input and output ports if its
 	 * ConfigType is an implementation of {@link ActivityPortsDefinitionBean}
 	 * </p>
 	 * <p>
-	 * For an Activity that has ports that are defined dynamically it is natural that is
-	 * ConfigType will not implement this interface. 
-	 * </p> 
+	 * For an Activity that has ports that are defined dynamically it is natural
+	 * that is ConfigType will not implement this interface.
+	 * </p>
+	 * 
 	 * @param configBean
 	 */
 	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
-		
-		for (ActivityInputPortDefinitionBean inputDef : configBean.getInputPortDefinitions()) {
-			addInput(inputDef.getName(), inputDef.getDepth(), inputDef.getMimeTypes());
+
+		for (ActivityInputPortDefinitionBean inputDef : configBean
+				.getInputPortDefinitions()) {
+			addInput(inputDef.getName(), inputDef.getDepth(), inputDef
+					.getAllowsLiteralValues(), inputDef
+					.getHandledReferenceSchemes(), inputDef
+					.getTranslatedElementType());
+			// TODO - use the mime types from the config bean if required,
+			// probably best handled elsewhere though
 		}
-		
-		for (ActivityOutputPortDefinitionBean outputDef : configBean.getOutputPortDefinitions()) {
-			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef.getGranularDepth(),outputDef.getMimeTypes());
+
+		for (ActivityOutputPortDefinitionBean outputDef : configBean
+				.getOutputPortDefinitions()) {
+			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef
+					.getGranularDepth());
 		}
-		
+
 	}
 
 }

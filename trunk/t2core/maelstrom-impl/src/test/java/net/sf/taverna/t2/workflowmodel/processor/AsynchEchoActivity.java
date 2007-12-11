@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
@@ -20,8 +21,8 @@ public class AsynchEchoActivity extends
 
 	@Override
 	public void configure(EchoConfig conf) throws ActivityConfigurationException {
-		addInput("input",0, new ArrayList<String>());
-		addOutput("output",0,0, new ArrayList<String>());
+		addInput("input",0, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+		addOutput("output",0,0);
 		this.config = conf;
 	}
 
@@ -40,9 +41,8 @@ public class AsynchEchoActivity extends
 	}
 
 	public HealthReport checkActivityHealth() {
-		return new HealthReport("AsynchEchoActivity","Everything is hunky dorey",Status.OK);
+		return new HealthReport("AsynchEchoActivity",
+				"Everything is hunky dorey", Status.OK);
 	}
-	
-	
 
 }

@@ -2,9 +2,11 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 
@@ -32,29 +34,34 @@ public interface Edits {
 	 * @return
 	 */
 	public Dataflow createDataflow();
-	
+
 	/**
 	 * Build a new WorkflowInstanceFacade using the supplied Dataflow
+	 * 
 	 * @param dataflow
 	 * @param context
 	 * @return an instance of a WorkflowInstanceFacade
 	 * 
 	 * @see WorkflowInstanceFacade
 	 */
-	public WorkflowInstanceFacade createWorkflowInstanceFacade(Dataflow dataflow, InvocationContext context, String parentProcess);
-	
+	public WorkflowInstanceFacade createWorkflowInstanceFacade(
+			Dataflow dataflow, InvocationContext context, String parentProcess);
+
 	/**
 	 * Builds a new instance of a Processor with the given name
 	 * 
-	 * @param the local name for the processor.
+	 * @param the
+	 *            local name for the processor.
 	 */
 	public Processor createProcessor(String name);
 
 	/**
 	 * Builds a new Datalink with the given source and sink ports
 	 * 
-	 * @param source the source port
-	 * @param sink the sink port
+	 * @param source
+	 *            the source port
+	 * @param sink
+	 *            the sink port
 	 * @return a new Datalink instance
 	 */
 	public Datalink createDatalink(EventForwardingOutputPort source,
@@ -65,17 +72,18 @@ public interface Edits {
 	 * 
 	 * @param dataflow
 	 *            the dataflow to add this processor to
-	 * @param processor 
-	 * 			  the processor to be added to the dataflow
+	 * @param processor
+	 *            the processor to be added to the dataflow
 	 */
-	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow, Processor processor);
+	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
+			Processor processor);
 
 	/**
 	 * Create a new processor in the specified dataflow configured as a default
-	 * Taverna 1 style activity with output and input ports matching those of the
-	 * Activity instance supplied, a default cross product iteration strategy and
-	 * a dispatch stack consisting of a parallelize, failover, retry and invoke
-	 * layer set.
+	 * Taverna 1 style activity with output and input ports matching those of
+	 * the Activity instance supplied, a default cross product iteration
+	 * strategy and a dispatch stack consisting of a parallelize, failover,
+	 * retry and invoke layer set.
 	 * 
 	 * @param dataflow
 	 *            the dataflow to add this processor to
@@ -105,28 +113,37 @@ public interface Edits {
 	/**
 	 * Connect a datalink to its source and sink.
 	 * 
-	 * @param datalink the datalink to connect
+	 * @param datalink
+	 *            the datalink to connect
 	 * @return a datalink edit
 	 */
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
-	
+
 	/**
-	 * Creates and returns an instance of an Edit<Merge> that is responsible for generating the links to an from 
-	 * the Merge instance to link together the source and sink port via the merge instance.
+	 * Creates and returns an instance of an Edit<Merge> that is responsible
+	 * for generating the links to an from the Merge instance to link together
+	 * the source and sink port via the merge instance.
 	 * 
-	 * @return a new instance of Edit<Merge> constructed from the provided parameters.
+	 * @return a new instance of Edit<Merge> constructed from the provided
+	 *         parameters.
 	 * 
-	 * @param merge a Merge instance
-	 * @param sourcePort the source port from which a link is to be created.
-	 * @param sinkPort the sink port to which the link is to be created.
+	 * @param merge
+	 *            a Merge instance
+	 * @param sourcePort
+	 *            the source port from which a link is to be created.
+	 * @param sinkPort
+	 *            the sink port to which the link is to be created.
 	 * 
 	 * @see Merge
 	 */
-	public Edit<Merge> getConnectMergedDatalinkEdit(Merge merge,EventForwardingOutputPort sourcePort, EventHandlingInputPort sinkPort);
-	
+	public Edit<Merge> getConnectMergedDatalinkEdit(Merge merge,
+			EventForwardingOutputPort sourcePort,
+			EventHandlingInputPort sinkPort);
+
 	/**
 	 * @param sinkPort
-	 * @return an instance of Merge, using the sink port to generate the Merge name.
+	 * @return an instance of Merge, using the sink port to generate the Merge
+	 *         name.
 	 * 
 	 * @see Merge
 	 */
@@ -157,7 +174,8 @@ public interface Edits {
 			DispatchLayer<?> layer);
 
 	/**
-	 * Add an Activity implementation to the set of activities within a Processor
+	 * Add an Activity implementation to the set of activities within a
+	 * Processor
 	 * 
 	 * @param processor
 	 *            Processor to add the activity to
@@ -266,23 +284,35 @@ public interface Edits {
 	 */
 	public Edit<OrderedPair<Processor>> getRemoveConditionEdit(
 			Processor control, Processor target);
-	
+
 	/**
 	 * Builds an instance of an {@link InputPort} for an Activity.
+	 * 
 	 * @param portName
 	 * @param portDepth
-	 * @param mimeTypes
+	 * @param allowsLiteralValues
+	 *            whether the input port can cope with literal values
+	 * @param handledReferenceSchemes
+	 *            a list of the reference scheme types that can be legitimately
+	 *            pushed into this input port
+	 * @param translatedElementClass
+	 *            the class desired as result (or elements of collections of
+	 *            results) when interpreted by the data facade
 	 * @return an instance of InputPort
 	 */
-	InputPort buildActivityInputPort(String portName, int portDepth, List<String> mimeTypes);
+	ActivityInputPort buildActivityInputPort(String portName, int portDepth,
+			boolean allowsLiteralValues,
+			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			Class<?> translatedElementClass);
 
 	/**
 	 * Builds an instance of an {@link OutputPort} for an Activity.
+	 * 
 	 * @param portName
 	 * @param portDepth
 	 * @param portGranularDepth
-	 * @param mimeTypes
 	 * @return an instance of OutputPort
 	 */
-	OutputPort buildActivityOutputPort(String portName, int portDepth, int portGranularDepth, List<String> mimeTypes);
+	OutputPort buildActivityOutputPort(String portName, int portDepth,
+			int portGranularDepth);
 }

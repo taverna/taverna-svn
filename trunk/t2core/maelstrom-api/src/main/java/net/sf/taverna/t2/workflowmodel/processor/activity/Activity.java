@@ -49,7 +49,7 @@ public interface Activity<ConfigurationType> extends Annotated<Activity<?>> {
 	 * @return the set of input ports for this activity
 	 */
 	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
-	public Set<InputPort> getInputPorts();
+	public Set<ActivityInputPort> getInputPorts();
 
 	/**
 	 * A processor may have different input port names to the activity or

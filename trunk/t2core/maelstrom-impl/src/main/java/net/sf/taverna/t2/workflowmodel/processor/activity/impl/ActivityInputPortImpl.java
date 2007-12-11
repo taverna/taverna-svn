@@ -1,11 +1,15 @@
 package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 /**
  * An input port on an Activity instance. Simply used as a bean to hold port
@@ -15,7 +19,12 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
  * @author Stuart Owen
  * 
  */
-public class ActivityInputPortImpl extends AbstractPort implements InputPort {
+public class ActivityInputPortImpl extends AbstractPort implements
+		ActivityInputPort {
+
+	private Class<?> translatedElementClass;
+	private List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes;
+	boolean allowsLiteralValues;
 
 	/**
 	 * Constructs an Activity input port instance with the provided name and
@@ -34,19 +43,27 @@ public class ActivityInputPortImpl extends AbstractPort implements InputPort {
 	 * 
 	 * @param portName
 	 * @param portDepth
-	 * @param annotations
 	 */
 	public ActivityInputPortImpl(String portName, int portDepth,
-			Set<AnnotationChain> annotations) {
+			boolean allowsLiteralValues,
+			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			Class<?> translatedElementClass) {
 		this(portName, portDepth);
-		for (AnnotationChain annotation : annotations) {
-			try {
-				getAddAnnotationEdit(annotation).doEdit();
-			} catch (EditException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		this.allowsLiteralValues = allowsLiteralValues;
+		this.handledReferenceSchemes = handledReferenceSchemes;
+		this.translatedElementClass = translatedElementClass;
+	}
+
+	public boolean allowsLiteralValues() {
+		return this.allowsLiteralValues();
+	}
+
+	public List<Class<? extends ReferenceScheme<?>>> getHandledReferenceSchemes() {
+		return Collections.unmodifiableList(this.handledReferenceSchemes);
+	}
+
+	public Class<?> getTranslatedElementClass() {
+		return this.translatedElementClass;
 	}
 
 }

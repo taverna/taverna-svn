@@ -30,6 +30,7 @@ import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
@@ -422,7 +423,7 @@ public class WorkflowModelTranslator {
 			Processor t2Processor) throws EditException,
 			ActivityTranslatorNotFoundException, ActivityTranslationException,
 			ActivityConfigurationException, WorkflowTranslationException {
-		Set<InputPort> inputPorts = activity.getInputPorts();
+		Set<ActivityInputPort> inputPorts = activity.getInputPorts();
 		Map<String, org.embl.ebi.escience.scufl.InputPort> t1InputPorts = getInputPortMap(t1Processor);
 		for (InputPort inputPort : inputPorts) {
 			org.embl.ebi.escience.scufl.InputPort t1InputPort = t1InputPorts
