@@ -35,6 +35,10 @@ public final class DefaultProcessorFactoryDecoder extends
 
 	HashMap<PropertyDescriptor, PropertyKey> descriptorToKeyMap;
 	
+	/**
+	 * @param c
+	 * @return
+	 */
 	public static DefaultProcessorFactoryDecoder getInstance(final Class<?> c) {
 		if (c == null) {
 			throw new NullPointerException("c cannot be null"); //$NON-NLS-1$
@@ -106,6 +110,9 @@ public final class DefaultProcessorFactoryDecoder extends
 		return new HashSet<PropertyKey>(this.descriptorToKeyMap.values());
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#canDecode(java.lang.Class, java.lang.Class)
+	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$

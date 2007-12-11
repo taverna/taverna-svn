@@ -12,10 +12,10 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
-public final class ActivityRegistrySubsetModel {
-	private ActivityRegistry parentRegistry = null;
+public final class ActivitySubsetModel {
+	private ActivitySetModel parentRegistry = null;
 	
-	private ActivityRegistrySubsetIdentification ident = null;
+	private ActivitySubsetIdentification ident = null;
 	
 	private boolean editable = false;
 	
@@ -59,14 +59,14 @@ public final class ActivityRegistrySubsetModel {
 	/**
 	 * @return the parentRegistry
 	 */
-	public synchronized final ActivityRegistry getParentRegistry() {
+	public synchronized final ActivitySetModel getParentRegistry() {
 		return this.parentRegistry;
 	}
 
 	/**
 	 * @param parentRegistry the parentRegistry to set
 	 */
-	public synchronized final void setParentRegistry(ActivityRegistry parentRegistry) {
+	public synchronized final void setParentRegistry(ActivitySetModel parentRegistry) {
 		if (parentRegistry == null) {
 			throw new NullPointerException("parentRegistry cannot be null"); //$NON-NLS-1$
 		}
@@ -76,7 +76,7 @@ public final class ActivityRegistrySubsetModel {
 	/**
 	 * @return the ident
 	 */
-	public synchronized final ActivityRegistrySubsetIdentification getIdent() {
+	public synchronized final ActivitySubsetIdentification getIdent() {
 		return this.ident;
 	}
 
@@ -84,10 +84,13 @@ public final class ActivityRegistrySubsetModel {
 	 * @param ident the ident to set
 	 */
 	public synchronized final void setIdent(
-			ActivityRegistrySubsetIdentification ident) {
+			ActivitySubsetIdentification ident) {
 		this.ident = ident;
 	}
 
+	/**
+	 * @param additionalFilter
+	 */
 	public void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		this.ident.addOredFilter(additionalFilter);
 		setUpdated(true);
@@ -107,10 +110,16 @@ public final class ActivityRegistrySubsetModel {
 		this.editable = editable;
 	}
 
+	/**
+	 * 
+	 */
 	public void clearSubset() {
 		this.ident.clearSubset();
 	}
 
+	/**
+	 * @param additionalFilter
+	 */
 	public final void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		this.ident.addAndedFilter(additionalFilter);
 		setUpdated(true);

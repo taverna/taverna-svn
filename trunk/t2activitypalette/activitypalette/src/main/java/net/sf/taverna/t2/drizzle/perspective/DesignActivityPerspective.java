@@ -25,13 +25,13 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignActivityPerspective.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-18 23:43:10 $
+ * Last modified on   $Date: 2007-12-11 17:23:57 $
  *               by   $Author: alaninmcr $
  * Created on 8 Nov 2006
  *****************************************************************/
-package net.sf.taverna.t2.drizzle.activityregistry;
+package net.sf.taverna.t2.drizzle.perspective;
 
 import java.io.InputStream;
 
@@ -42,6 +42,10 @@ import net.sf.taverna.perspectives.WorkflowPerspective;
 
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 
+/**
+ * @author alanrw
+ *
+ */
 public class DesignActivityPerspective extends AbstractPerspective implements WorkflowPerspective {	
 
 	@Override
@@ -59,6 +63,9 @@ public class DesignActivityPerspective extends AbstractPerspective implements Wo
 		return DesignActivityPerspective.class.getResourceAsStream("/perspective-design-activity.xml"); //$NON-NLS-1$
 	}
 
+	/**
+	 * @see net.sf.taverna.perspectives.AbstractPerspective#positionHint()
+	 */
 	@Override
 	public int positionHint() {
 		return 10;

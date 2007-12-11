@@ -7,7 +7,7 @@ package net.sf.taverna.t2.drizzle.decoder.processorfactory;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
@@ -40,6 +40,9 @@ public final class RshellProcessorFactoryDecoder extends ProcessorFactoryDecoder
 		// TODO Look at prototype
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#canDecode(java.lang.Class, java.lang.Class)
+	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$

@@ -36,6 +36,10 @@ public final class SubsetKindConfigurationDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -818854898146357591L;
 
+	/**
+	 * @param config
+	 * @param subsetPanel
+	 */
 	public SubsetKindConfigurationDialog(final SubsetKindConfiguration config, final ActivitySubsetPanel subsetPanel) {
 		this.setLayout(new BorderLayout());
 
@@ -92,9 +96,11 @@ public final class SubsetKindConfigurationDialog extends JDialog {
 		leftPanel.add(checkBox);
 		}
 		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BorderLayout());
 		JList shownKeyList = new KindKeyList (listModel);
 		shownKeyList.setDragEnabled(true);
 		JScrollPane scrollPane = new JScrollPane(shownKeyList);
+		scrollPane.setViewportView(shownKeyList);
 		rightPanel.add(scrollPane);
 		doublePanel.add(leftPanel);
 		doublePanel.add(rightPanel);

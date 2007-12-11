@@ -42,6 +42,9 @@ public final class ActivitySubsetTree extends JTree implements
 	 */
 	private static final long serialVersionUID = 741115733679972895L;
 
+	/**
+	 * 
+	 */
 	public ActivitySubsetTree() {
 		this.dragSource = DragSource.getDefaultDragSource();
 		this.dragSource.createDefaultDragGestureRecognizer(this,
@@ -49,8 +52,7 @@ public final class ActivitySubsetTree extends JTree implements
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
 	 * @see java.awt.dnd.DragGestureListener#dragGestureRecognized(java.awt.dnd.DragGestureEvent)
 	 */
@@ -79,31 +81,49 @@ public final class ActivitySubsetTree extends JTree implements
 		}
 	}
 
+	/**
+	 * @see java.awt.dnd.DragSourceListener#dragDropEnd(java.awt.dnd.DragSourceDropEvent)
+	 */
 	public void dragDropEnd(DragSourceDropEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see java.awt.dnd.DragSourceListener#dragEnter(java.awt.dnd.DragSourceDragEvent)
+	 */
 	public void dragEnter(DragSourceDragEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see java.awt.dnd.DragSourceListener#dragExit(java.awt.dnd.DragSourceEvent)
+	 */
 	public void dragExit(DragSourceEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see java.awt.dnd.DragSourceListener#dragOver(java.awt.dnd.DragSourceDragEvent)
+	 */
 	public void dragOver(DragSourceDragEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see java.awt.dnd.DragSourceListener#dropActionChanged(java.awt.dnd.DragSourceDragEvent)
+	 */
 	public void dropActionChanged(DragSourceDragEvent arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see javax.swing.JTree#getToolTipText(java.awt.event.MouseEvent)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public String getToolTipText(MouseEvent evt) {
@@ -124,6 +144,10 @@ public final class ActivitySubsetTree extends JTree implements
 		return result;
 	}
 	
+	/**
+	 * @param pf
+	 * @return
+	 */
 	public static String getProcessorFactoryDescription(final ProcessorFactory pf) {
 		if (pf == null) {
 			throw new NullPointerException("pf cannot be null"); //$NON-NLS-1$

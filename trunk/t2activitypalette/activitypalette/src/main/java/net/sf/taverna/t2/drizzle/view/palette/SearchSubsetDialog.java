@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
-import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ActivitySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectAndFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
@@ -39,6 +39,10 @@ public final class SearchSubsetDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -6090097608584963674L;
 
+	/**
+	 * @param subsetPanel
+	 * @param registry
+	 */
 	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
 		this.setLayout(new GridLayout(0, 1));
 
@@ -79,7 +83,7 @@ public final class SearchSubsetDialog extends JDialog {
 							"pattern must be specified"); //$NON-NLS-1$
 					return;
 				}
-				ActivityRegistrySubsetModel searchResults =
+				ActivitySubsetModel searchResults =
 					ActivityPaletteModel.getSearchResultsSubsetModel();
 				HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters =
 					new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();

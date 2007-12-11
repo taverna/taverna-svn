@@ -27,6 +27,9 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 	private static final long serialVersionUID = -3947839087479059276L;
 	private List<ProcessorFactoryAdapter> rowObjects;
 	
+	/**
+	 * @param node
+	 */
 	public ActivitySubsetTableModel(final PropertiedTreeNode<ProcessorFactoryAdapter> node) {
 		super();
 		if (node == null) {
@@ -77,10 +80,18 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 		}
 	}
 	
+	/**
+	 * @param row
+	 * @return
+	 */
 	public ProcessorFactoryAdapter getRowObject(int row) {
 		return this.rowObjects.get(row);
 	}
 	
+	/**
+	 * @param adapter
+	 * @return
+	 */
 	public int getObjectIndex(ProcessorFactoryAdapter adapter) {
 		if (adapter == null) {
 			throw new NullPointerException("adapter cannot be null"); //$NON-NLS-1$
@@ -88,6 +99,9 @@ public class ActivitySubsetTableModel extends DefaultTableModel {
 		return this.rowObjects.indexOf(adapter);
 	}
 	
+	/**
+	 * @see javax.swing.table.DefaultTableModel#isCellEditable(int, int)
+	 */
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		return false;

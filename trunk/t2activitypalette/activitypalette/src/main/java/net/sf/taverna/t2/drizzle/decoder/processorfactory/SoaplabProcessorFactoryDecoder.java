@@ -7,7 +7,7 @@ package net.sf.taverna.t2.drizzle.decoder.processorfactory;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
@@ -25,7 +25,7 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 	static Set<PropertyKey> keyProfile = new HashSet<PropertyKey>() {
 		{ add(CommonKey.ProcessorClassKey);
 		add(CommonKey.NameKey);
-		add(CommonKey.SoaplabEndpointKey);
+		add(CommonKey.EndpointKey);
 		add(CommonKey.CategoryKey);
 		}
 	};
@@ -42,13 +42,16 @@ public final class SoaplabProcessorFactoryDecoder extends ProcessorFactoryDecode
 			throw new NullPointerException("encodedFactory cannot be null"); //$NON-NLS-1$
 		}
 		if (encodedFactory.getEndpoint() != null) {
-		targetSet.setProperty(adapter, CommonKey.SoaplabEndpointKey, new StringValue(encodedFactory.getEndpoint()));
+		targetSet.setProperty(adapter, CommonKey.EndpointKey, new StringValue(encodedFactory.getEndpoint()));
 		}
 		if (encodedFactory.getCategory() != null) {
 		targetSet.setProperty(adapter, CommonKey.CategoryKey, new StringValue(encodedFactory.getCategory()));
 		}
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#canDecode(java.lang.Class, java.lang.Class)
+	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$

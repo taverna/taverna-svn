@@ -11,7 +11,7 @@ import java.util.Set;
 
 import javax.swing.DefaultListModel;
 
-import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
@@ -27,6 +27,9 @@ public final class SubsetKindConfiguration {
 	private DefaultListModel tableListModel;
 	private long lastChange = 0;
 
+	/**
+	 * @param keyProfile
+	 */
 	@SuppressWarnings("unchecked")
 	public void initialiseKeyList(Set<PropertyKey> keyProfile) {
 		this.keyList = new ArrayList<PropertyKey>(keyProfile);

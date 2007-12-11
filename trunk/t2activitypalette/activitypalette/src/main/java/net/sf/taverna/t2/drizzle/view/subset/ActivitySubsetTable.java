@@ -37,13 +37,16 @@ public final class ActivitySubsetTable extends JTable implements
 	 */
 	private static final long serialVersionUID = -6721017677971353107L;
 
+	/**
+	 * 
+	 */
 	public ActivitySubsetTable() {
 		this.dragSource = DragSource.getDefaultDragSource();
 		this.dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		ToolTipManager.sharedInstance().registerComponent(this);
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragGestureListener#dragGestureRecognized(java.awt.dnd.DragGestureEvent)
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge) {
@@ -62,7 +65,7 @@ public final class ActivitySubsetTable extends JTable implements
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragSourceListener#dragDropEnd(java.awt.dnd.DragSourceDropEvent)
 	 */
 	public void dragDropEnd(DragSourceDropEvent dsde) {
@@ -70,7 +73,7 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragSourceListener#dragEnter(java.awt.dnd.DragSourceDragEvent)
 	 */
 	public void dragEnter(DragSourceDragEvent dsde) {
@@ -78,7 +81,7 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragSourceListener#dragExit(java.awt.dnd.DragSourceEvent)
 	 */
 	public void dragExit(DragSourceEvent dse) {
@@ -86,7 +89,7 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragSourceListener#dragOver(java.awt.dnd.DragSourceDragEvent)
 	 */
 	public void dragOver(DragSourceDragEvent dsde) {
@@ -94,7 +97,7 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see java.awt.dnd.DragSourceListener#dropActionChanged(java.awt.dnd.DragSourceDragEvent)
 	 */
 	public void dropActionChanged(DragSourceDragEvent dsde) {
@@ -102,6 +105,9 @@ public final class ActivitySubsetTable extends JTable implements
 
 	}
 
+	/**
+	 * @see javax.swing.JTable#getToolTipText(java.awt.event.MouseEvent)
+	 */
 	@Override
 	public String getToolTipText(MouseEvent evt) {
 		if (evt == null) {

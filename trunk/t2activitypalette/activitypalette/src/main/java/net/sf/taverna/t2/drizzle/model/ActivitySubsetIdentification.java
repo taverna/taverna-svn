@@ -12,7 +12,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
-public abstract class ActivityRegistrySubsetIdentification {
+public abstract class ActivitySubsetIdentification {
 
 	private String name;
 	private PropertiedObjectFilter<ProcessorFactoryAdapter> objectFilter;
@@ -84,10 +84,19 @@ public abstract class ActivityRegistrySubsetIdentification {
 		this.propertyKeyProfile = propertyKeyProfile;
 	}
 
+	/**
+	 * 
+	 */
 	public abstract void clearSubset();
 
+	/**
+	 * @param additionalFilter
+	 */
 	public abstract void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter);
 
+	/**
+	 * @param additionalFilter
+	 */
 	public abstract void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter);
 
 }

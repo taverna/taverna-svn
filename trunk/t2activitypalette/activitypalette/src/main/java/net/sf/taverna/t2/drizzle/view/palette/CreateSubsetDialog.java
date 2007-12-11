@@ -29,6 +29,9 @@ public final class CreateSubsetDialog extends JDialog {
 	 */
 	private static final long serialVersionUID = -4916707367626813948L;
 
+	/**
+	 * @param paletteModel
+	 */
 	public CreateSubsetDialog(final ActivityPaletteModel paletteModel) {
 		this.setLayout(new GridLayout(3, 1));
 

@@ -25,7 +25,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetModel;
+import net.sf.taverna.t2.drizzle.model.ActivitySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.model.SubsetKindConfiguration;
 import net.sf.taverna.t2.drizzle.util.ObjectFactory;
@@ -54,7 +54,7 @@ public final class ActivitySubsetPanel extends JPanel {
 
 	private ScuflModel currentWorkflow = null;
 
-	ActivityRegistrySubsetModel subsetModel = null;
+	ActivitySubsetModel subsetModel = null;
 
 	public static HashMap<String, SubsetKindConfiguration> kindConfigurationMap = new HashMap<String, SubsetKindConfiguration>();
 
@@ -92,12 +92,18 @@ public final class ActivitySubsetPanel extends JPanel {
 		return getConfiguration().getTreeTableListModel();
 	}
 
+	/**
+	 * 
+	 */
 	public void expandAll() {
 		for (int i = 0; i <= this.currentTree.getRowCount(); i++) {
 			this.currentTree.expandRow(i);
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void setModels() {
 		SubsetKindConfiguration currentConfiguration = getConfiguration();
 		if ((currentConfiguration.getLastChange() > this.lastModelEvaluation) || this.subsetModel.isUpdated()) {
@@ -154,8 +160,13 @@ public final class ActivitySubsetPanel extends JPanel {
 		}
 	}
 
+	/**
+	 * @param subsetModel
+	 * @param theKeySettings
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public static TreeModel createTreeModel(final ActivityRegistrySubsetModel subsetModel,
+	public static TreeModel createTreeModel(final ActivitySubsetModel subsetModel,
 			final List<PropertyKeySetting> theKeySettings) {
 		if (subsetModel == null) {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
@@ -184,7 +195,7 @@ public final class ActivitySubsetPanel extends JPanel {
 	 * altering the PropertiedObjectSet are shown to be mirrored in the JTree.
 	 */
 	@SuppressWarnings("unchecked")
-	public ActivitySubsetPanel(final ActivityRegistrySubsetModel subsetModel) {
+	public ActivitySubsetPanel(final ActivitySubsetModel subsetModel) {
 		if (subsetModel == null) {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
@@ -262,6 +273,9 @@ public final class ActivitySubsetPanel extends JPanel {
 		// this.add(splitPane, BorderLayout.CENTER);
 	}
 
+	/**
+	 * 
+	 */
 	public void collapseAll() {
 		for (int i = this.currentTree.getRowCount() - 1; i > 0; i--) {
 			this.currentTree.collapseRow(i);
@@ -290,10 +304,16 @@ public final class ActivitySubsetPanel extends JPanel {
 		return this.currentTree;
 	}
 
+	/**
+	 * 
+	 */
 	public void destroy() {
 		// TODO
 	}
 
+	/**
+	 * @return
+	 */
 	public Set<ProcessorFactoryAdapter> getSelectedObjects() {
 		Set<ProcessorFactoryAdapter> result = new HashSet<ProcessorFactoryAdapter>();
 		int[] selectedRows = this.currentTable.getSelectedRows();
@@ -310,7 +330,7 @@ public final class ActivitySubsetPanel extends JPanel {
 	/**
 	 * @return the subsetModel
 	 */
-	public synchronized final ActivityRegistrySubsetModel getSubsetModel() {
+	public synchronized final ActivitySubsetModel getSubsetModel() {
 		return this.subsetModel;
 	}
 
@@ -319,7 +339,7 @@ public final class ActivitySubsetPanel extends JPanel {
 	 *            the subsetModel to set
 	 */
 	public synchronized final void setSubsetModel(
-			ActivityRegistrySubsetModel subsetModel) {
+			ActivitySubsetModel subsetModel) {
 		this.subsetModel = subsetModel;
 	}
 

@@ -6,6 +6,10 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.spi.UIComponentFactorySPI;
 import org.embl.ebi.escience.scuflui.spi.UIComponentSPI;
 
+/**
+ * @author alanrw
+ *
+ */
 public class ActivityPalettePanelFactory implements UIComponentFactorySPI {
 
 	public String getName() {

@@ -27,6 +27,9 @@ public final class ProcessorFactoryAdapter implements
 
 	private int hashCode;
 
+	/**
+	 * @param theFactory
+	 */
 	public ProcessorFactoryAdapter(ProcessorFactory theFactory) {
 		this.theFactory = theFactory;
 		this.hashCode = super.hashCode();
@@ -67,12 +70,18 @@ public final class ProcessorFactoryAdapter implements
 		return null;
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#setFromBean(java.lang.Object)
+	 */
 	public void setFromBean(ProcessorFactoryAdapterBean bean)
 			throws IllegalArgumentException {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ProcessorFactoryAdapter) {
@@ -82,6 +91,9 @@ public final class ProcessorFactoryAdapter implements
 		return false;
 	}
 
+	/**
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return this.hashCode;

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.HashSet;
 
-import net.sf.taverna.t2.drizzle.bean.ActivityRegistryBean;
+import net.sf.taverna.t2.drizzle.bean.ActivitySetModelBean;
 import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry;
@@ -26,14 +26,11 @@ import org.jdom.Element;
  * @author alanrw
  * 
  */
-public final class ActivityRegistryBeanDecoder implements
-		PropertyDecoder<ActivityRegistryBean, ProcessorFactoryAdapter> {
+public final class ActivitySetModelBeanDecoder implements
+		PropertyDecoder<ActivitySetModelBean, ProcessorFactoryAdapter> {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoder#canDecode(java.lang.Class,
-	 *      java.lang.Class)
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#canDecode(java.lang.Class, java.lang.Class)
 	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
@@ -42,14 +39,17 @@ public final class ActivityRegistryBeanDecoder implements
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) && ActivityRegistryBean.class
+		return (targetClass.isAssignableFrom(ProcessorFactoryAdapter.class) && ActivitySetModelBean.class
 				.isAssignableFrom(sourceClass));
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#decode(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet, java.lang.Object)
+	 */
 	@SuppressWarnings("unchecked")
 	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
 			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
-			ActivityRegistryBean encodedObject) {
+			ActivitySetModelBean encodedObject) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
 		}

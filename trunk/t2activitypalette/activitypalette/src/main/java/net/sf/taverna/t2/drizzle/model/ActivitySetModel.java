@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import net.sf.taverna.t2.drizzle.bean.ActivityRegistryBean;
+import net.sf.taverna.t2.drizzle.bean.ActivitySetModelBean;
 import net.sf.taverna.t2.drizzle.bean.ProcessorFactoryAdapterBean;
 import net.sf.taverna.t2.drizzle.query.ActivityQuery;
 import net.sf.taverna.t2.drizzle.query.ActivitySavedConfigurationQuery;
@@ -22,22 +22,29 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  *
  */
 // TODO should this be forced to be a singleton?
-public final class ActivityRegistry  implements Beanable<ActivityRegistryBean> {
+public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
 	private PropertiedObjectSet<ProcessorFactoryAdapter> registry;
 	private PropertiedGraphView<ProcessorFactoryAdapter> graphView;
 	
+	/**
+	 * 
+	 */
 	@SuppressWarnings("unchecked")
-	public ActivityRegistry() {
+	public ActivitySetModel() {
 		this.registry = ObjectFactory.getInstance(PropertiedObjectSet.class);
 		this.graphView = ObjectFactory.getInstance(PropertiedGraphView.class);
 		this.graphView.setPropertiedObjectSet(this.registry);
 	}
 
-	public synchronized ActivityRegistrySubsetIdentification addImmediateQuery(ActivityQuery<?> query) {
+	/**
+	 * @param query
+	 * @return
+	 */
+	public synchronized ActivitySubsetIdentification addImmediateQuery(ActivityQuery<?> query) {
 		if (query == null) {
 			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
 		}
-		ActivityRegistrySubsetIdentification ident =
+		ActivitySubsetIdentification ident =
 			query.runQuery(this.registry);
 		return ident;
 	}
@@ -60,8 +67,11 @@ public final class ActivityRegistry  implements Beanable<ActivityRegistryBean> {
 		return this.registry.getAllPropertyKeys();
 	}
 
-	public ActivityRegistryBean getAsBean() {
-		ActivityRegistryBean result = new ActivityRegistryBean();
+	/**
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#getAsBean()
+	 */
+	public ActivitySetModelBean getAsBean() {
+		ActivitySetModelBean result = new ActivitySetModelBean();
 		
 		List<ProcessorFactoryAdapterBean> adapterBeans = new ArrayList<ProcessorFactoryAdapterBean>();
 		for (ProcessorFactoryAdapter adapter : this.getRegistry().getObjects()) {
@@ -75,11 +85,17 @@ public final class ActivityRegistry  implements Beanable<ActivityRegistryBean> {
 		return result;
 	}
 
-	public void setFromBean(ActivityRegistryBean arg0) throws IllegalArgumentException {
+	/**
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#setFromBean(java.lang.Object)
+	 */
+	public void setFromBean(ActivitySetModelBean arg0) throws IllegalArgumentException {
 		throw new UnsupportedOperationException();
 	}
 	
-	public void mergeWithBean(ActivityRegistryBean arg0){
+	/**
+	 * @param arg0
+	 */
+	public void mergeWithBean(ActivitySetModelBean arg0){
 
 		addImmediateQuery(new ActivitySavedConfigurationQuery(arg0));
 

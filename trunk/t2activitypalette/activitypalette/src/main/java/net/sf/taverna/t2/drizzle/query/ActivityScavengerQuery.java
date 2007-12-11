@@ -6,7 +6,7 @@ package net.sf.taverna.t2.drizzle.query;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoderRegistry;
 import net.sf.taverna.t2.drizzle.model.ActivityQueryRunIdentification;
-import net.sf.taverna.t2.drizzle.model.ActivityRegistrySubsetIdentification;
+import net.sf.taverna.t2.drizzle.model.ActivitySubsetIdentification;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.ObjectMembershipFilter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
@@ -22,8 +22,11 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 	
 	Scavenger scavenger;
-	private ActivityRegistrySubsetIdentification lastRun = null;
+	private ActivitySubsetIdentification lastRun = null;
 	
+	/**
+	 * @param configuration
+	 */
 	public ActivityScavengerQuery(Scavenger configuration) {
 		if (configuration == null) {
 			throw new NullPointerException("configuration cannot be null"); //$NON-NLS-1$
@@ -31,6 +34,9 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 		configure(configuration);
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.query.ActivityQuery#configure(java.lang.Object)
+	 */
 	public void configure(Scavenger configuration) {
 		if (configuration == null) {
 			throw new NullPointerException ("configuration cannot be null"); //$NON-NLS-1$
@@ -38,11 +44,16 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 		this.scavenger = configuration;
 	}
 
-	public ActivityRegistrySubsetIdentification runQuery(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet) {
+	/**
+	 * @see net.sf.taverna.t2.drizzle.query.ActivityQuery#runQuery(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet)
+	 */
+	@SuppressWarnings("unchecked")
+	public ActivitySubsetIdentification runQuery(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet) {
 		if (targetSet == null) {
 			throw new NullPointerException("targetSet cannot be null"); //$NON-NLS-1$
 		}
-	    PropertyDecoder<Scavenger, ProcessorFactoryAdapter> decoder = PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactoryAdapter.class);
+	    PropertyDecoder<Scavenger, ProcessorFactoryAdapter> decoder =
+	    	PropertyDecoderRegistry.getDecoder(Scavenger.class, ProcessorFactoryAdapter.class);
 		if (decoder == null) {
 			throw new NullPointerException("No decoder found for " + this.scavenger.getClass().getName()); //$NON-NLS-1$
 		}
@@ -68,7 +79,10 @@ public final class ActivityScavengerQuery implements ActivityQuery <Scavenger>{
 		return result;
 	}
 
-	public ActivityRegistrySubsetIdentification lastRun() {
+	/**
+	 * @see net.sf.taverna.t2.drizzle.query.ActivityQuery#lastRun()
+	 */
+	public ActivitySubsetIdentification lastRun() {
 		return this.lastRun;
 	}
 

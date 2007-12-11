@@ -26,14 +26,17 @@ public class ActivityInvocationListener implements ActionListener {
 	
 	private ProcessorFactory pf;
 
+	/**
+	 * @param pf
+	 */
 	public ActivityInvocationListener(final ProcessorFactory pf) {
 		if (pf == null) {
 			throw new NullPointerException ("pf cannot be null"); //$NON-NLS-1$
 		}
 		this.pf = pf;
 	}
-
-	/* (non-Javadoc)
+	
+	/**
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent arg0) {

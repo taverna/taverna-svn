@@ -21,12 +21,17 @@ import javax.swing.tree.TreeCellRenderer;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
 
+/**
+ * @author alanrw
+ *
+ */
 public class ActivityTreeCellRenderer implements TreeCellRenderer {
 
 	/**
@@ -41,13 +46,15 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 	private JLabel resultLabel;
 
 	private JTable resultTable;
-	
+
 	private PropertiedObjectSet<ProcessorFactoryAdapter> registry;
-	
+
 	Color selectedColor;
+
 	Color nonSelectedColor;
 
-	ActivityTreeCellRenderer(DefaultListModel listModel, PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
+	ActivityTreeCellRenderer(DefaultListModel listModel,
+			PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
 		this.listModel = listModel;
 		this.registry = registry;
 		this.defaultRenderer = new DefaultTreeCellRenderer();
@@ -56,9 +63,13 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 		this.resultTable = new JTable();
 		this.resultTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		this.selectedColor = this.defaultRenderer.getBackgroundSelectionColor();
-		this.nonSelectedColor = this.defaultRenderer.getBackgroundNonSelectionColor();
+		this.nonSelectedColor = this.defaultRenderer
+				.getBackgroundNonSelectionColor();
 	}
 
+	/**
+	 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree, java.lang.Object, boolean, boolean, boolean, int, boolean)
+	 */
 	@SuppressWarnings("unchecked")
 	public Component getTreeCellRendererComponent(JTree tree,
 			final Object value, @SuppressWarnings("hiding")
@@ -71,7 +82,22 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 		if (value == null) {
 			throw new NullPointerException("value cannot be null"); //$NON-NLS-1$
 		}
-		if (value instanceof PropertiedTreeObjectNode) {
+		if (value instanceof PropertiedTreePropertyValueNode) {
+			PropertiedTreePropertyValueNode<ProcessorFactoryAdapter> propertyNode = (PropertiedTreePropertyValueNode<ProcessorFactoryAdapter>) value;
+			PropertyKey pk = propertyNode.getKey();
+			PropertyValue pv = propertyNode.getValue();
+			String propertyKeyString = (pk == null) ? "missing" : pk.toString(); //$NON-NLS-1$
+			String propertyValueString = (pv == null) ? "missing" : pv.toString(); //$NON-NLS-1$
+			this.resultLabel.setText(propertyValueString
+					+ " - " + propertyKeyString); //$NON-NLS-1$
+			this.resultLabel.setIcon(null);
+			if (selected) {
+				this.resultLabel.setBackground(this.selectedColor);
+			} else {
+				this.resultLabel.setBackground(this.nonSelectedColor);
+			}
+			return this.resultLabel;
+		} else if (value instanceof PropertiedTreeObjectNode) {
 			PropertiedTreeObjectNode<ProcessorFactoryAdapter> objectNode = (PropertiedTreeObjectNode<ProcessorFactoryAdapter>) value;
 			ProcessorFactoryAdapter adapter = objectNode.getObject();
 			if (this.listModel.isEmpty()) {
@@ -104,8 +130,8 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 			this.resultTable.setModel(tableModel);
 			TableColumnModel colModel = this.resultTable.getColumnModel();
 			for (int i = 0; i < this.resultTable.getColumnCount(); i++) {
-			    TableColumn col = colModel.getColumn(i);
-			    col.setPreferredWidth(256);
+				TableColumn col = colModel.getColumn(i);
+				col.setPreferredWidth(256);
 			}
 			if (selected) {
 				this.resultTable.setBackground(this.selectedColor);

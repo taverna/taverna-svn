@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/drizzle/bean/", name = "activityRegistry")
 @XmlType(namespace = "http://taverna.sf.net/t2/drizzle/bean/", name = "activityRegistry")
-public final class ActivityRegistryBean {
+public final class ActivitySetModelBean {
 
 	private List<ProcessorFactoryAdapterBean> adapterBeans;
 

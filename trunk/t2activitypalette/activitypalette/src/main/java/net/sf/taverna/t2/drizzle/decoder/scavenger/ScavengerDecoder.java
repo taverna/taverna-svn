@@ -26,11 +26,8 @@ import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 public final class ScavengerDecoder implements
 		PropertyDecoder<Scavenger, ProcessorFactoryAdapter> {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.drizzle.activityregistry.PropertyDecoder#canDecode(java.lang.Class,
-	 *      java.lang.Class)
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#canDecode(java.lang.Class, java.lang.Class)
 	 */
 	public boolean canDecode(Class<?> sourceClass, Class<?> targetClass) {
 		if (sourceClass == null) {
@@ -43,6 +40,9 @@ public final class ScavengerDecoder implements
 				.isAssignableFrom(sourceClass));
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#decode(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet, java.lang.Object)
+	 */
 	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
 			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
 			Scavenger encodedObject) {

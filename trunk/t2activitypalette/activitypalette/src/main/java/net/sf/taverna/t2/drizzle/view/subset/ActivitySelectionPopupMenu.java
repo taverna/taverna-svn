@@ -42,6 +42,10 @@ public class ActivitySelectionPopupMenu extends JPopupMenu {
 	static Logger logger = Logger
 			.getLogger(ActivitySelectionPopupMenu.class);
 
+	/**
+	 * @param pf
+	 * @param parent
+	 */
 	public ActivitySelectionPopupMenu(final ProcessorFactory pf,
 			final ActivitySubsetPanel parent) {
 		super();

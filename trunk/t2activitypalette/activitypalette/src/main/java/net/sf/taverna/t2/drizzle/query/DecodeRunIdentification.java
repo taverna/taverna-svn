@@ -11,6 +11,11 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  * @author alanrw
  *
  */
+/**
+ * @author alanrw
+ *
+ * @param <O>
+ */
 public final class DecodeRunIdentification<O> {
 	private Set<O> affectedObjects;
 	private long timeOfRun;

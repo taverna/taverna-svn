@@ -8,8 +8,6 @@ import java.util.List;
 
 import net.sf.taverna.t2.spi.SPIRegistry;
 
-import net.sf.taverna.t2.util.beanable.Beanable;
-
 /**
  * @author alanrw
  *
@@ -40,39 +38,42 @@ public class PropertyDecoderRegistry extends SPIRegistry<PropertyDecoder> {
 	}
 
 	/**
-	 * Find {@link PropertyDecoder}s that can decode encodedObject
-	 * 
-	 * @param encodedObject
-	 *            Object to decode
-	 * @return A list of {@link PropertyDecoder}s
+	 * @param sourceClass
+	 * @param targetClass
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <Source, Target extends Beanable> List<PropertyDecoder<Source,Target>> getDecoders(
-			Class<Source> sourceClass, Class<Target> targetClass) {
+	public static List<PropertyDecoder> getDecoders(
+			Class sourceClass, Class targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
 		}
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		List<PropertyDecoder<Source,Target>> decoders = new ArrayList<PropertyDecoder<Source,Target>>();
+		List<PropertyDecoder> decoders = new ArrayList<PropertyDecoder>();
 		for (PropertyDecoder<?,?> decoder : getInstance().getInstances()) {
 			if (decoder.canDecode(sourceClass, targetClass)) {
-				decoders.add((PropertyDecoder<Source,Target>)decoder);
+				decoders.add(decoder);
 			}
 		}
 		return decoders;
 	}
 	
-	public static <Source,Target extends Beanable> PropertyDecoder<Source,Target> getDecoder(Class<Source> sourceClass, Class<Target> targetClass) {
+	/**
+	 * @param sourceClass
+	 * @param targetClass
+	 * @return
+	 */
+	public static PropertyDecoder getDecoder(Class sourceClass, Class targetClass) {
 		if (sourceClass == null) {
 			throw new NullPointerException("sourceClass cannot be null"); //$NON-NLS-1$
 		}
 		if (targetClass == null) {
 			throw new NullPointerException("targetClass cannot be null"); //$NON-NLS-1$
 		}
-		PropertyDecoder<Source,Target> result = null;
-		List<PropertyDecoder<Source,Target>> decoders = getDecoders(sourceClass, targetClass);
+		PropertyDecoder result = null;
+		List<PropertyDecoder> decoders = getDecoders(sourceClass, targetClass);
 		if (decoders.size() > 0) {
 			result = decoders.get(0);
 		}

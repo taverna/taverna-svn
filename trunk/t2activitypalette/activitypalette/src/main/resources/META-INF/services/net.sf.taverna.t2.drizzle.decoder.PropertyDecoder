@@ -13,4 +13,4 @@ net.sf.taverna.t2.drizzle.decoder.processorfactory.StringConstantProcessorFactor
 net.sf.taverna.t2.drizzle.decoder.processorfactory.WorkflowProcessorFactoryDecoder
 net.sf.taverna.t2.drizzle.decoder.processorfactory.WSDLBasedProcessorFactoryDecoder
 net.sf.taverna.t2.drizzle.decoder.scavenger.ScavengerDecoder
-net.sf.taverna.t2.drizzle.decoder.bean.ActivityRegistryBeanDecoder
+net.sf.taverna.t2.drizzle.decoder.bean.ActivitySetModelBeanDecoder

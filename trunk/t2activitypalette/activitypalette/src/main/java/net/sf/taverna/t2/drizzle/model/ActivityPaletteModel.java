@@ -17,9 +17,9 @@ import javax.swing.tree.DefaultTreeModel;
 
 import net.sf.taverna.raven.spi.RegistryListener;
 import net.sf.taverna.raven.spi.SpiRegistry;
-import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
 import net.sf.taverna.t2.drizzle.bean.ActivityPaletteModelBean;
 import net.sf.taverna.t2.drizzle.bean.SubsetKindConfigurationBean;
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.query.ActivityQuery;
 import net.sf.taverna.t2.drizzle.query.ActivityScavengerQuery;
 import net.sf.taverna.t2.drizzle.util.FalseFilter;
@@ -47,15 +47,15 @@ import org.embl.ebi.escience.scuflworkers.web.WebScavengerHelper;
  * @author alanrw
  * 
  */
-// TODO consider if the ActivityRegistry really should be specific to the
+// TODO consider if the ActivitySetModel really should be specific to the
 // ActivityPaletteModel.
 public final class ActivityPaletteModel implements Beanable<ActivityPaletteModelBean>{
 
 	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
-	ActivityRegistry activityRegistry;
+	ActivitySetModel activityRegistry;
 
-	private Set<ActivityRegistrySubsetModel> subsetModels;
+	private Set<ActivitySubsetModel> subsetModels;
 	
 	private List<ActivityPaletteModelListener> listeners;
 	
@@ -68,9 +68,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	
 	private ActivityPaletteModelToScavengerTreeAdapter adapter = null;
 
-	private static ActivityRegistrySubsetModel searchResultsSubsetModel = null;
+	private static ActivitySubsetModel searchResultsSubsetModel = null;
 	
-	static ActivityRegistrySubsetModel allActivitiesSubsetModel = null;
+	static ActivitySubsetModel allActivitiesSubsetModel = null;
 	
 	/**
 	 * @return the adapter
@@ -79,49 +79,55 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		return this.adapter;
 	}
 	
-	/*
-	 * representation should not be needed 
+	/**
+	 * @param representation
 	 */
 	public ActivityPaletteModel(final ActivityPalettePanel representation) {
 		if (representation == null) {
-			throw new NullPointerException ("representation cannot be null"); //$NON-NLS-1$
+			throw new NullPointerException("representation cannot be null"); //$NON-NLS-1$
 		}
-		this.subsetModels = new HashSet<ActivityRegistrySubsetModel>();
-		this.scavengerList = new ArrayList<String> ();
-		this.activityRegistry = new ActivityRegistry();
+		this.subsetModels = new HashSet<ActivitySubsetModel>();
+		this.scavengerList = new ArrayList<String>();
+		this.activityRegistry = new ActivitySetModel();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
 		this.adapter = new ActivityPaletteModelToScavengerTreeAdapter(this, representation);
 
 	}
 
+	/**
+	 * 
+	 */
 	public void initialize() {
 		initializeRegistry();
 		addAllSubsetModel();
 		addSearchResultsSubsetModel();
 	}
 	
+	/**
+	 * @param listener
+	 */
 	public void addListener(final ActivityPaletteModelListener listener) {
 		if (listener == null) {
-			throw new NullPointerException ("listener cannot be null"); //$NON-NLS-1$
+			throw new NullPointerException("listener cannot be null"); //$NON-NLS-1$
 		}
 		if (!this.listeners.contains(listener)) {
 			this.listeners.add(listener);
 		}
 	}
+
 	/**
-	 * @param activityRegistry
-	 *            the activityRegistry to set
+	 * @param registry
 	 */
-	public synchronized void setRegistry(final ActivityRegistry registry) {
+	public synchronized void setRegistry(final ActivitySetModel registry) {
 		if (registry == null) {
 			throw new NullPointerException("activityRegistry cannot be null"); //$NON-NLS-1$
 		}
 		this.activityRegistry = registry;
 	}
 	
-	void addSubsetModel (final ActivityRegistrySubsetModel subsetModel) {
+	void addSubsetModel(final ActivitySubsetModel subsetModel) {
 		if (subsetModel == null) {
-			throw new NullPointerException ("subsetModel cannot be null"); //$NON-NLS-1$
+			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
 		if (!this.subsetModels.contains(subsetModel)) {
 			this.subsetModels.add(subsetModel);
@@ -129,7 +135,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		}
 	}
 
-	private void notifyListenersSubsetModelAdded(final ActivityRegistrySubsetModel subsetModel) {
+	private void notifyListenersSubsetModelAdded(final ActivitySubsetModel subsetModel) {
 		for (ActivityPaletteModelListener listener : this.listeners) {
 			listener.subsetModelAdded(this, subsetModel);
 		}
@@ -147,6 +153,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		}
 	}
 
+	/**
+	 * @param query
+	 */
 	public void addImmediateQuery(final ActivityQuery<?> query) {
 		if (query == null) {
 			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
@@ -154,9 +163,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		Runnable queryRunner = new Runnable() {
 
 			public void run() {
-				ActivityRegistrySubsetIdentification ident = ActivityPaletteModel.this.activityRegistry
+				ActivitySubsetIdentification ident = ActivityPaletteModel.this.activityRegistry
 				.addImmediateQuery(query);
-		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
+		ActivitySubsetModel subsetModel = new ActivitySubsetModel();
 		subsetModel.setIdent(ident);
 		subsetModel.setParentRegistry(ActivityPaletteModel.this.activityRegistry);
 		subsetModel.setEditable(false);
@@ -168,7 +177,10 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		SwingUtilities.invokeLater(queryRunner);
 	}
 
-	public void removeSubsetModel(final ActivityRegistrySubsetModel subsetModel) {
+	/**
+	 * @param subsetModel
+	 */
+	public void removeSubsetModel(final ActivitySubsetModel subsetModel) {
 		if (subsetModel == null) {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
 		}
@@ -180,7 +192,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	 */
 	public void addScavenger(final Scavenger theScavenger) {
 		if (theScavenger == null) {
-			throw new NullPointerException ("theScavenger cannot be null"); //$NON-NLS-1$
+			throw new NullPointerException("theScavenger cannot be null"); //$NON-NLS-1$
 		}
 		synchronized (this.activityRegistry) {
 			// Check to see we don't already have a scavenger with this name
@@ -275,7 +287,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			try {
 				if (!threadPool.isEmpty()) Thread.sleep(2500);
 			} catch (InterruptedException e1) {
-				logger.error("Interruption while waiting sleeping",e1); //$NON-NLS-1$
+				logger.error("Interruption while waiting sleeping", e1); //$NON-NLS-1$
 			}
 		}
 		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
@@ -302,6 +314,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 
 	}
 	
+	/**
+	 * @param theModel
+	 */
 	public void createScavengersFromModelThread(final ScuflModel theModel) {
 		new ScavengersFromModelThread(theModel);
 	}
@@ -338,20 +353,26 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 			try {
 				if (!threadPool.isEmpty()) Thread.sleep(2500);
 			} catch (InterruptedException e1) {
-				logger.error("Interruption while waiting sleeping",e1); //$NON-NLS-1$
+				logger.error("Interruption while waiting sleeping", e1); //$NON-NLS-1$
 			}
 		}
 		logger.info("Scavenger thread pool completed"); //$NON-NLS-1$
 	}
 	
+	/**
+	 * 
+	 */
 	public void scavengingDone() {
-		this.scavengingInProgressCount --;
+		this.scavengingInProgressCount--;
 		if (this.scavengingInProgressCount==0) {
 			notifyListenersScavengingDone();
 		}
 		
 	}
 
+	/**
+	 * @param message
+	 */
 	public void scavengingStarting(String message) {
 		if (this.scavengingInProgressCount==0) {
 			notifyListenersScavengingStarted(message);
@@ -359,10 +380,14 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		this.scavengingInProgressCount++;
 	}
 
-	public Set<ActivityRegistrySubsetModel> getSubsetModels() {
+	public Set<ActivitySubsetModel> getSubsetModels() {
 		return this.subsetModels;
 	}
 	
+	/**
+	 * @param model
+	 * @throws ScavengerCreationException
+	 */
 	public void attachToModel(@SuppressWarnings("unused")
 	final ScuflModel model) throws ScavengerCreationException {
 		if (model == null) {
@@ -371,6 +396,9 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		this.adapter.addScavengersFromModel();
 	}
 
+	/**
+	 * @param model
+	 */
 	public void detachFromModel(@SuppressWarnings("unused")
 	final ScuflModel model) {
 		if (model == null) {
@@ -379,17 +407,23 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		// nothing to do
 	}
 	
+	/**
+	 * @return
+	 */
 	public synchronized Set<String> getSubsetNames() {
 		Set<String> names = new TreeSet<String>();
-		for (ActivityRegistrySubsetModel subset : this.subsetModels) {
+		for (ActivitySubsetModel subset : this.subsetModels) {
 			names.add(subset.getName());
 		}
 		return (names);	
 	}
 	
+	/**
+	 * @return
+	 */
 	public synchronized Set<String> getSubsetKinds() {
 		Set<String> kinds = new TreeSet<String>();
-		for (ActivityRegistrySubsetModel subset : this.subsetModels) {
+		for (ActivitySubsetModel subset : this.subsetModels) {
 			kinds.add(subset.getIdent().getKind());
 		}
 		return (kinds);
@@ -398,24 +432,29 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	private Set<PropertyKey> getAllKeys() {
 		Set<PropertyKey> allKeys = new HashSet<PropertyKey>();
 		allKeys.add(CommonKey.LocalServiceWorkerClassKey);
-			allKeys.add(CommonKey.SoaplabEndpointKey);
+			allKeys.add(CommonKey.EndpointKey);
 			allKeys.add(CommonKey.StringConstantValueKey);
 			allKeys.add(CommonKey.WorkflowDefinitionURLKey);
 			allKeys.add(CommonKey.ProcessorClassKey);
-			allKeys.add(CommonKey.WsdlLocationKey);
+			allKeys.add(CommonKey.LocationKey);
 			allKeys.add(CommonKey.WsdlOperationKey);
 			allKeys.add(CommonKey.WsdlPortTypeKey);
 			allKeys.add(CommonKey.NameKey);
-			allKeys.add(CommonKey.MobyEndpointKey);
 			allKeys.add(CommonKey.MobyAuthorityKey);
 			allKeys.add(CommonKey.CategoryKey);
+			allKeys.add(CommonKey.BiomartMartKey);
 
 			return allKeys;
 	}
 
+	/**
+	 * @param subsetName
+	 * @param subsetKind
+	 * @param newKind
+	 */
 	public void addSubsetModelFromUser(String subsetName, String subsetKind, boolean newKind) {
-		ActivityRegistrySubsetModel subsetModel = new ActivityRegistrySubsetModel();
-		ActivityRegistrySubsetSelectionIdentification ident = new ActivityRegistrySubsetSelectionIdentification();
+		ActivitySubsetModel subsetModel = new ActivitySubsetModel();
+		ActivitySubsetSelectionIdentification ident = new ActivitySubsetSelectionIdentification();
 		ident.setObjectFilter(new ObjectMembershipFilter<ProcessorFactoryAdapter>(new HashSet<ProcessorFactoryAdapter>()));
 		ident.setName(subsetName);
 		if (newKind) {
@@ -433,7 +472,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 	
 	private void addAllSubsetModel() {
-		allActivitiesSubsetModel = new ActivityRegistrySubsetModel();
+		allActivitiesSubsetModel = new ActivitySubsetModel();
 		ActivityQueryRunIdentification ident = new ActivityQueryRunIdentification();
 		ident.setObjectFilter(new TrueFilter<ProcessorFactoryAdapter>());
 
@@ -448,8 +487,8 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 	
 	private void addSearchResultsSubsetModel() {
-		searchResultsSubsetModel = new ActivityRegistrySubsetModel();
-		ActivityRegistrySubsetSelectionIdentification ident = new ActivityRegistrySubsetSelectionIdentification();
+		searchResultsSubsetModel = new ActivitySubsetModel();
+		ActivitySubsetSelectionIdentification ident = new ActivitySubsetSelectionIdentification();
 		ident.setObjectFilter(new FalseFilter<ProcessorFactoryAdapter>());
 
 		ident.setName("Search results"); //$NON-NLS-1$
@@ -465,17 +504,20 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	/**
 	 * @return the searchResultsSubsetModel
 	 */
-	public synchronized static final ActivityRegistrySubsetModel getSearchResultsSubsetModel() {
+	public synchronized static final ActivitySubsetModel getSearchResultsSubsetModel() {
 		return searchResultsSubsetModel;
 	}
 
 	/**
 	 * @return the activityRegistry
 	 */
-	public synchronized final ActivityRegistry getActivityRegistry() {
+	public synchronized final ActivitySetModel getActivityRegistry() {
 		return this.activityRegistry;
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#getAsBean()
+	 */
 	public ActivityPaletteModelBean getAsBean() {
 		ActivityPaletteModelBean result = new ActivityPaletteModelBean();
 		List<SubsetKindConfigurationBean> configList = new ArrayList<SubsetKindConfigurationBean>();
@@ -517,10 +559,16 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		return result;
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.util.beanable.Beanable#setFromBean(java.lang.Object)
+	 */
 	public void setFromBean(ActivityPaletteModelBean arg0) throws IllegalArgumentException {
 		throw new UnsupportedOperationException();
 	}
 	
+	/**
+	 * @param arg0
+	 */
 	public void mergeWithBean(ActivityPaletteModelBean arg0){
 		for (SubsetKindConfigurationBean kindConfigBean : arg0.getSubsetKindConfigurationBeans()) {
 			SubsetKindConfiguration config = new SubsetKindConfiguration();

@@ -14,15 +14,21 @@ import net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter;
  * @author alanrw
  *
  */
-public final class ActivityRegistrySubsetSelectionIdentification extends
-		ActivityRegistrySubsetIdentification {
+public final class ActivitySubsetSelectionIdentification extends
+		ActivitySubsetIdentification {
 	
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.model.ActivitySubsetIdentification#clearSubset()
+	 */
 	@Override
 	public void clearSubset() {
 		this.setObjectFilter(new FalseFilter<ProcessorFactoryAdapter>());
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.model.ActivitySubsetIdentification#addOredFilter(net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter)
+	 */
 	@Override
 	public void addOredFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		PropertiedObjectFilter<ProcessorFactoryAdapter> oldFilter = this.getObjectFilter();
@@ -33,6 +39,9 @@ public final class ActivityRegistrySubsetSelectionIdentification extends
 		this.setObjectFilter(newFilter);
 	}
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.model.ActivitySubsetIdentification#addAndedFilter(net.sf.taverna.t2.drizzle.util.PropertiedObjectFilter)
+	 */
 	@Override
 	public void addAndedFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter) {
 		PropertiedObjectFilter<ProcessorFactoryAdapter> oldFilter = this.getObjectFilter();

@@ -10,11 +10,23 @@ import net.sf.taverna.t2.util.beanable.Beanable;
 /**
  * @author alanrw
  *
+ * @param <Source>
+ * @param <Target>
  */
 public interface PropertyDecoder<Source, Target extends Beanable<?>> {
 
+	/**
+	 * @param sourceClass
+	 * @param targetClass
+	 * @return
+	 */
 	boolean canDecode (Class<?> sourceClass, Class<?> targetClass);
 	
+	/**
+	 * @param target
+	 * @param encodedObject
+	 * @return
+	 */
 	DecodeRunIdentification<Target> decode (PropertiedObjectSet<Target> target, Source encodedObject);
 	
 }

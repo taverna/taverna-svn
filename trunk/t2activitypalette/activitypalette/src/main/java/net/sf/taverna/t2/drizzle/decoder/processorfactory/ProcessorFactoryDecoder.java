@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
 
-import net.sf.taverna.t2.drizzle.activityregistry.CommonKey;
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.decoder.PropertyDecoder;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.query.DecodeRunIdentification;
@@ -19,11 +19,15 @@ import net.sf.taverna.t2.drizzle.util.StringValue;
 /**
  * @author alanrw
  *
+ * @param <FactoryType>
  */
 public abstract class ProcessorFactoryDecoder<FactoryType extends ProcessorFactory> implements PropertyDecoder<FactoryType,ProcessorFactoryAdapter> {
 
 	protected abstract void fillInDetails(PropertiedObjectSet<ProcessorFactoryAdapter> targetSet, ProcessorFactoryAdapter adapter, FactoryType encodedFactory);
 
+	/**
+	 * @see net.sf.taverna.t2.drizzle.decoder.PropertyDecoder#decode(net.sf.taverna.t2.drizzle.util.PropertiedObjectSet, java.lang.Object)
+	 */
 	public DecodeRunIdentification<ProcessorFactoryAdapter> decode(
 			PropertiedObjectSet<ProcessorFactoryAdapter> targetSet,
 			FactoryType encodedObject) {

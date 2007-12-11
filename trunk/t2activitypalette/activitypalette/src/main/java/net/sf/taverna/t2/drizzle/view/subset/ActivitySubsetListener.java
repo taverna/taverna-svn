@@ -26,6 +26,9 @@ public class ActivitySubsetListener extends MouseAdapter {
 	
 	private ActivitySubsetPanel parent;
 	
+	/**
+	 * @param parent
+	 */
 	public ActivitySubsetListener(final ActivitySubsetPanel parent) {
 		if (parent == null) {
 			throw new NullPointerException("parent cannot be null"); //$NON-NLS-1$
