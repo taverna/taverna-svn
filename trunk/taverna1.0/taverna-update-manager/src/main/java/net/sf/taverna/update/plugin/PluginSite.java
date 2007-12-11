@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginSite.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 12:10:52 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-12-11 16:19:18 $
+ *               by   $Author: davidwithers $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -103,22 +103,49 @@ public class PluginSite {
 	public Element toXml() {
 		Element pluginSiteElement = new Element("pluginSite");
 		pluginSiteElement.addContent(new Element("name").addContent(getName()));
-		pluginSiteElement.addContent(new Element("url").addContent(getUrl().toString()));
+		Element urlElement = new Element("url");
+		if (getUrl() != null) {
+			urlElement.addContent(getUrl().toString());
+		}
+		pluginSiteElement.addContent(urlElement);
 		return pluginSiteElement;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof PluginSite)) return false;
-		PluginSite site = (PluginSite)obj;
-		return (site.getUrl().equals(this.getUrl()) && site.getName().equals(this.getName()));
-	}
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
-		return (this.getUrl().toExternalForm()+this.getName()).hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((url == null) ? 0 : url.hashCode());
+		return result;
 	}
-	
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final PluginSite other = (PluginSite) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (url == null) {
+			if (other.url != null)
+				return false;
+		} else if (!url.equals(other.url))
+			return false;
+		return true;
+	}
 	
 }
