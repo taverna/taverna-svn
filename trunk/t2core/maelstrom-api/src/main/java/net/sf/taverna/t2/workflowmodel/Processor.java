@@ -123,7 +123,6 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 * @return a List of Condition objects for which this is the controlling
 	 *         processor
 	 */
-	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Condition> getControlledPreconditionList();
 
 	/**
