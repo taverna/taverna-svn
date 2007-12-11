@@ -13,14 +13,17 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
+ * Simple dialogue to handle username/password input for workflow URL requiring http authentication.
  *
- * @author  sowen
+ * @author  Stuart Owen
  */
 public class PasswordInput extends javax.swing.JDialog {
         
         private String password=null;
         private String username=null;
         private URL url=null;
+        private int tryCount = 0;
+        private final static int MAX_TRIES=3;
         
         public void setUrl(URL url) {
                 this.url=url;
@@ -113,8 +116,8 @@ public class PasswordInput extends javax.swing.JDialog {
         }// </editor-fold>//GEN-END:initComponents
         
         private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-                this.password=String.valueOf(passwordTextField.getPassword());
-                this.username=usernameTextField.getText();
+                String password=String.valueOf(passwordTextField.getPassword());
+                String username=usernameTextField.getText();
                 HttpURLConnection connection;
                 try {
                         connection = (HttpURLConnection) url.openConnection();
@@ -124,10 +127,18 @@ public class PasswordInput extends javax.swing.JDialog {
                         connection.setRequestProperty("Accept", "text/xml");
                         int code=connection.getResponseCode();
                         
-                        if (code==401 || code==500) { //myexperiment gives a 500 response for an invalid username/password
+                        if (code==401 || code==500) { //myExperiment gives a 500 response for an invalid username/password
+                        		tryCount++;
                                 JOptionPane.showMessageDialog(this,"The username and password failed","Invalid username or password",JOptionPane.ERROR_MESSAGE);
+                                if (tryCount>=MAX_TRIES) { //close after 3 attempts.
+                                	this.password=null;
+                                    this.username=null;
+                                	this.setVisible(false);
+                                }
                         } else {
-                                this.setVisible(false);
+                        	this.username=username;
+                        	this.password=password;
+                            this.setVisible(false);
                         }
                 } catch (IOException ex) {
                         ex.printStackTrace();
