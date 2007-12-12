@@ -11,11 +11,11 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -64,6 +64,15 @@ public class BeanshellActivity extends
 	public BeanshellActivityConfigurationBean getConfiguration() {
 		return configurationBean;
 	}
+	
+	public ActivityInputPort getInputPort(String name) {
+		for (ActivityInputPort port : getInputPorts()) {
+			if (port.getName().equals(name)) {
+				return port;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	public void executeAsynch(final Map<String, EntityIdentifier> data,
@@ -80,17 +89,9 @@ public class BeanshellActivity extends
 					synchronized (interpreter) {
 						// set inputs
 						for (String inputName : data.keySet()) {
-							// TODO determine the correct type to be resolved
-							// this is a nasty hack that tries String and then
-							// byte[]
-							Object input;
-							try {
-								input = dataFacade.resolve(data.get(inputName),
-										String.class);
-							} catch (RetrievalException e) {
-								input = dataFacade.resolve(data.get(inputName),
-										byte[].class);
-							}
+							ActivityInputPort inputPort = getInputPort(inputName);
+							Object input = dataFacade.resolve(data.get(inputName),
+									inputPort.getTranslatedElementClass());
 							inputName = sanatisePortName(inputName);
 							interpreter.set(inputName, input);
 						}

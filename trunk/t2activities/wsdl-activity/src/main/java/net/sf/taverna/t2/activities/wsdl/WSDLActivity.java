@@ -12,6 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -72,18 +73,19 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
         for (TypeDescriptor descriptor : inputDescriptors) {
             List<String>mimeTypes = new ArrayList<String>();
             mimeTypes.add(descriptor.getMimeType());
-            addInput(descriptor.getName(),descriptor.getDepth(),mimeTypes);
+            addInput(descriptor.getName(),descriptor.getDepth(), true,
+            		new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
         }
         
         for (TypeDescriptor descriptor : outputDescriptors) {
             List<String>mimeTypes = new ArrayList<String>();
             mimeTypes.add(descriptor.getMimeType());
-            addOutput(descriptor.getName(),descriptor.getDepth(),mimeTypes);
+            addOutput(descriptor.getName(),descriptor.getDepth());
             outputDepth.put(descriptor.getName(), Integer.valueOf(descriptor.getDepth()));
         }
         
         //add output for attachment list
-        addOutput("attachmentList",1,new ArrayList<String>());
+        addOutput("attachmentList", 1);
         outputDepth.put("attachmentList", Integer.valueOf(1));
 	}
 

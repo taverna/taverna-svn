@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.activities.biomart;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,7 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -19,7 +20,6 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceException;
-import org.biomart.martservice.MartServiceUtils;
 import org.biomart.martservice.config.QueryConfigUtils;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
@@ -147,9 +147,9 @@ public class BiomartActivity extends
 		for (Filter filter : filters) {
 			String name = filter.getQualifiedName() + "_filter";
 			if (filter.isList()) {
-				addInput(name, 1, Collections.singletonList("l('text/plain')"));
+				addInput(name, 1, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
 			} else {
-				addInput(name, 0, Collections.singletonList("'text/plain'"));
+				addInput(name, 0, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
 			}
 		}
 	}
@@ -163,19 +163,16 @@ public class BiomartActivity extends
 			for (Attribute attribute : attributes) {
 				String name = attribute.getQualifiedName();
 				if (attribute.getAttributes() != null) {
-					addOutput(name, 2, 2, Collections
-							.singletonList("l(l('text/plain'))"));
+					addOutput(name, 2, 2);
 				} else {
-					addOutput(name, 1, 1, Collections
-							.singletonList("l('text/plain')"));
+					addOutput(name, 1, 1);
 				}
 			}
 		} else if (attributes.size() > 0) {
 			// create one port using the dataset name
 			Attribute attribute = attributes.get(0);
 			String name = attribute.getContainingDataset().getName();
-			addOutput(name, 0, 0, Collections.singletonList(MartServiceUtils
-					.getMimeTypeForFormatter(formatter)));
+			addOutput(name, 0, 0);
 		}
 	}
 

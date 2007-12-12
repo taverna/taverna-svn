@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -35,6 +36,9 @@ public class BeanshellActivityTest {
 		inputPortBean.setDepth(0);
 		inputPortBean.setName("input");
 		inputPortBean.setMimeTypes(new ArrayList<String>());
+		inputPortBean.setHandledReferenceSchemes(new ArrayList<Class<? extends ReferenceScheme<?>>>());
+		inputPortBean.setTranslatedElementType(String.class);
+		inputPortBean.setAllowsLiteralValues(true);
 		bean.setInputPortDefinitions(Collections.singletonList(inputPortBean));
 		
 		ActivityOutputPortDefinitionBean outputPortBean = new ActivityOutputPortDefinitionBean();

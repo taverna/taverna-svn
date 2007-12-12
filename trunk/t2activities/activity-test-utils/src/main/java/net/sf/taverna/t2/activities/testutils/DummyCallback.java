@@ -8,11 +8,13 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.tsunami.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
 /**
  * A DummyCallback to aid with testing Activities.
  * 
  * @author Stuart Owen
+ * @author David Withers
  *
  */
 public class DummyCallback implements AsynchronousActivityCallback {
@@ -36,6 +38,11 @@ public class DummyCallback implements AsynchronousActivityCallback {
 		throw new RuntimeException(message);
 	}
 
+	public void fail(String message, Throwable t, DispatchErrorType arg2) {
+		failed = true;
+		throw new RuntimeException(message, t);
+	}
+	
 	public DataManager getLocalDataManager() {
 		return dataManager;
 	}
@@ -74,4 +81,5 @@ public class DummyCallback implements AsynchronousActivityCallback {
 		// TODO Auto-generated method stub
 		return "";
 	}
+
 }

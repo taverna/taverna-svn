@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -295,21 +295,21 @@ public class SoaplabActivity extends
 				// but at the moment we've got nowhere to put them
 				// so we don't bother.
 				if (input_type.equals("string")) {
-					addInput(input_name, 0, Collections
-							.singletonList("'text/plain'"));
+					addInput(input_name, 0, true,
+							new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
 					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("string[]")) {
-					addInput(input_name, 1, Collections
-							.singletonList("l('text/plain')"));
+					addInput(input_name, 1, true,
+							new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
 					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("byte[]")) {
-					addInput(input_name, 0, Collections
-							.singletonList("'application/octet-stream'"));
+					addInput(input_name, 0, true,
+							new ArrayList<Class<? extends ReferenceScheme<?>>>(), byte[].class);
 					inputTypeMap.put(input_name, byte[].class);
 				} else if (input_type.equals("byte[][]")) {
-					addInput(input_name, 1, Collections
-							.singletonList("l('application/octet-stream')"));
-					inputTypeMap.put(input_name, byte[][].class);
+					addInput(input_name, 1, true,
+							new ArrayList<Class<? extends ReferenceScheme<?>>>(), byte[].class);
+					inputTypeMap.put(input_name, byte[].class);
 				}
 			}
 
@@ -330,17 +330,13 @@ public class SoaplabActivity extends
 				if ((!output_name.equalsIgnoreCase("detailed_status"))) {
 					// && (!output_name.equalsIgnoreCase("report"))) {
 					if (output_type.equals("string")) {
-						addOutput(output_name, 0, Collections
-								.singletonList("'text/plain'"));
+						addOutput(output_name, 0);
 					} else if (output_type.equals("string[]")) {
-						addOutput(output_name, 1, Collections
-								.singletonList("l('text/plain')"));
+						addOutput(output_name, 1);
 					} else if (output_type.equals("byte[]")) {
-						addOutput(output_name, 0, Collections
-								.singletonList("'application/octet-stream'"));
+						addOutput(output_name, 0);
 					} else if (output_type.equals("byte[][]")) {
-						addOutput(output_name, 1, Collections
-								.singletonList("l('application/octet-stream')"));
+						addOutput(output_name, 1);
 					}
 				}
 			}

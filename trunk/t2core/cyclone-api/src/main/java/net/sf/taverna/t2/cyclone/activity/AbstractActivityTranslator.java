@@ -3,6 +3,7 @@ package net.sf.taverna.t2.cyclone.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -31,6 +32,7 @@ import org.embl.ebi.escience.scufl.Processor;
  * </p>
  * 
  * @author Stuart Owen
+ * @author David Withers
  * 
  * @param <ConfigurationType>
  */
@@ -98,6 +100,9 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 			List<String> mimeTypes = new ArrayList<String>();
 			mimeTypes.add(inputPort.getSyntacticType());
 			bean.setMimeTypes(mimeTypes);
+			bean.setHandledReferenceSchemes(new ArrayList<Class<? extends ReferenceScheme<?>>>());
+			bean.setTranslatedElementType(determineClassFromSyntacticType(inputPort.getSyntacticType()));
+			bean.setAllowsLiteralValues(true);
 			inputDefinitions.add(bean);
 		}
 
@@ -118,6 +123,24 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 		}
 		configBean.setInputPortDefinitions(inputDefinitions);
 		configBean.setOutputPortDefinitions(outputDefinitions);
+	}
+
+	protected Class<?> determineClassFromSyntacticType(String syntacticType) {
+		Class<?> result = String.class;
+		if (syntacticType != null) {
+			if (syntacticType.startsWith("l(")) {
+				syntacticType = syntacticType.substring(syntacticType.lastIndexOf("l(") + 2);
+			}
+			if (syntacticType.startsWith("'")) {
+				syntacticType = syntacticType.substring(1);
+			}
+			if (syntacticType.startsWith("application")) {
+				result = byte[].class;
+			} else if (syntacticType.startsWith("image")) {
+				result = byte[].class;
+			}
+		}
+		return result;
 	}
 
 	/**

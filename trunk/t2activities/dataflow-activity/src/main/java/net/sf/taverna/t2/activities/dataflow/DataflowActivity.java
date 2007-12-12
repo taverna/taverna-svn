@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.TokenOrderException;
@@ -63,15 +64,19 @@ public class DataflowActivity extends
 			public void run() {
 
 				final WorkflowInstanceFacade facade = edits
-						.createWorkflowInstanceFacade(dataflow,callback.getContext(), callback.getParentProcessIdentifier());
+						.createWorkflowInstanceFacade(dataflow, callback
+								.getContext(), callback
+								.getParentProcessIdentifier());
 
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
-					public void resultTokenProduced(WorkflowDataToken dataToken, String port) {
+					public void resultTokenProduced(
+							WorkflowDataToken dataToken, String port) {
 						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 						outputData.put(port, dataToken.getData());
-						callback.receiveResult(outputData, dataToken.getIndex());
+						callback
+								.receiveResult(outputData, dataToken.getIndex());
 						if (dataToken.getIndex().length == 0) {
 							if (--outputPortCount == 0) {
 								facade.removeResultListener(this);
@@ -85,9 +90,11 @@ public class DataflowActivity extends
 				for (Map.Entry<String, EntityIdentifier> entry : data
 						.entrySet()) {
 					try {
-						WorkflowDataToken token = new WorkflowDataToken(callback.getParentProcessIdentifier(), new int[]{}, entry.getValue(), callback.getContext());
-						facade.pushData(token, entry
-								.getKey());
+						WorkflowDataToken token = new WorkflowDataToken(
+								callback.getParentProcessIdentifier(),
+								new int[] {}, entry.getValue(), callback
+										.getContext());
+						facade.pushData(token, entry.getKey());
 					} catch (TokenOrderException e) {
 						callback.fail("Failed to push data into facade", e);
 					}
@@ -101,15 +108,15 @@ public class DataflowActivity extends
 	private void buildInputPorts() throws ActivityConfigurationException {
 		for (DataflowInputPort dataflowInputPort : dataflow.getInputPorts()) {
 			addInput(dataflowInputPort.getName(), dataflowInputPort.getDepth(),
-					getMimeTypes(dataflowInputPort));
+					true, new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+					null);
 		}
 	}
 
 	private void buildOutputPorts() throws ActivityConfigurationException {
 		for (DataflowOutputPort dataflowOutputPort : dataflow.getOutputPorts()) {
 			addOutput(dataflowOutputPort.getName(), dataflowOutputPort
-					.getDepth(), dataflowOutputPort.getGranularDepth(),
-					getMimeTypes(dataflowOutputPort));
+					.getDepth(), dataflowOutputPort.getGranularDepth());
 		}
 	}
 
