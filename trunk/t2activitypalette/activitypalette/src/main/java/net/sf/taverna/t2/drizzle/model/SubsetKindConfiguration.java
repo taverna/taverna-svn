@@ -39,11 +39,11 @@ public final class SubsetKindConfiguration {
 		this.tableListModel = new DefaultListModel();
 		if (this.keyList.contains(CommonKey.CategoryKey)) {
 			this.treeListModel.addElement(CommonKey.CategoryKey);
-			this.tableListModel.addElement(CommonKey.CategoryKey);
+//			this.tableListModel.addElement(CommonKey.CategoryKey);
 		}
 		if (this.keyList.contains(CommonKey.NameKey)) {
 			this.treeListModel.addElement(CommonKey.NameKey);
-			this.tableListModel.addElement(CommonKey.NameKey);
+//			this.tableListModel.addElement(CommonKey.NameKey);
 		}
 
 		this.lastChange = System.currentTimeMillis();

@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -61,10 +62,11 @@ public final class ActivitySubsetPanel extends JPanel {
 	JScrollPane treePane;
 
 	JScrollPane tablePane;
-	
+
 	private long lastModelEvaluation;
-	
+
 	private DefaultTreeModel holdingTree;
+
 	private DefaultTableModel holdingTable;
 
 	private SubsetKindConfiguration getConfiguration() {
@@ -87,7 +89,7 @@ public final class ActivitySubsetPanel extends JPanel {
 	private List<PropertyKeySetting> getTableKeySettings() {
 		return getConfiguration().getTableKeySettings();
 	}
-	
+
 	private DefaultListModel getTreeTableListModel() {
 		return getConfiguration().getTreeTableListModel();
 	}
@@ -106,57 +108,64 @@ public final class ActivitySubsetPanel extends JPanel {
 	 */
 	public void setModels() {
 		SubsetKindConfiguration currentConfiguration = getConfiguration();
-		if ((currentConfiguration.getLastChange() > this.lastModelEvaluation) || this.subsetModel.isUpdated()) {
+		if ((currentConfiguration.getLastChange() > this.lastModelEvaluation)
+				|| this.subsetModel.isUpdated()) {
 			this.lastModelEvaluation = System.currentTimeMillis();
 			this.subsetModel.setUpdated(false);
-			
-		final List<PropertyKeySetting> treeKeySettings = getTreeKeySettings();
-		if (treeKeySettings.size() == 0) {
-			this.remove(this.treePane);
-		} else {
-			this.currentTree.setModel(this.holdingTree);
-			Runnable populateTree = new Runnable() {
 
-				public void run() {
-					TreeModel treeModel = createTreeModel(
-							ActivitySubsetPanel.this.subsetModel, treeKeySettings);
-					ActivitySubsetPanel.this.currentTree.setModel(treeModel);
-					if (ActivitySubsetPanel.this.treePane.getParent() == null) {
-						if (ActivitySubsetPanel.this.tablePane.getParent() != null) {
-							remove(ActivitySubsetPanel.this.tablePane);
+			final List<PropertyKeySetting> treeKeySettings = getTreeKeySettings();
+			if (treeKeySettings.size() == 0) {
+				this.remove(this.treePane);
+			} else {
+				this.currentTree.setModel(this.holdingTree);
+				Runnable populateTree = new Runnable() {
+
+					public void run() {
+						TreeModel treeModel = createTreeModel(
+								ActivitySubsetPanel.this.subsetModel,
+								treeKeySettings);
+						ActivitySubsetPanel.this.currentTree
+								.setModel(treeModel);
+						if (ActivitySubsetPanel.this.treePane.getParent() == null) {
+							if (ActivitySubsetPanel.this.tablePane.getParent() != null) {
+								remove(ActivitySubsetPanel.this.tablePane);
+								add(ActivitySubsetPanel.this.treePane);
+							}
 							add(ActivitySubsetPanel.this.treePane);
 						}
-						add(ActivitySubsetPanel.this.treePane);
-					}				}
-				
-			};
-			SwingUtilities.invokeLater(populateTree);
-
-		}
-		final List<PropertyKeySetting> tableKeySettings = getTableKeySettings();
-		if (tableKeySettings.size() == 0) {
-			this.remove(this.tablePane);
-		} else {
-			this.currentTable.setModel(this.holdingTable);
-			Runnable populateTable = new Runnable() {
-
-				@SuppressWarnings("unchecked")
-				public void run() {
-					final TreeModel tableModel = createTreeModel(ActivitySubsetPanel.this.subsetModel, tableKeySettings);
-					ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
-							((PropertiedTreeRootNode<ProcessorFactoryAdapter>) tableModel
-									.getRoot()));
-					ActivitySubsetPanel.this.currentTable.setModel(activitiesTableModel);
-					if (ActivitySubsetPanel.this.tablePane.getParent() == null) {
-						add(ActivitySubsetPanel.this.tablePane);
 					}
-				}
-				
-			};
-			SwingUtilities.invokeLater(populateTable);
-		}
-		this.repaint();
-		this.validate();
+
+				};
+				SwingUtilities.invokeLater(populateTree);
+
+			}
+			final List<PropertyKeySetting> tableKeySettings = getTableKeySettings();
+			if (tableKeySettings.size() == 0) {
+				this.remove(this.tablePane);
+			} else {
+				this.currentTable.setModel(this.holdingTable);
+				Runnable populateTable = new Runnable() {
+
+					@SuppressWarnings("unchecked")
+					public void run() {
+						final TreeModel tableModel = createTreeModel(
+								ActivitySubsetPanel.this.subsetModel,
+								tableKeySettings);
+						ActivitySubsetTableModel activitiesTableModel = new ActivitySubsetTableModel(
+								((PropertiedTreeRootNode<ProcessorFactoryAdapter>) tableModel
+										.getRoot()));
+						ActivitySubsetPanel.this.currentTable
+								.setModel(activitiesTableModel);
+						if (ActivitySubsetPanel.this.tablePane.getParent() == null) {
+							add(ActivitySubsetPanel.this.tablePane);
+						}
+					}
+
+				};
+				SwingUtilities.invokeLater(populateTable);
+			}
+			this.repaint();
+			this.validate();
 		}
 	}
 
@@ -166,7 +175,8 @@ public final class ActivitySubsetPanel extends JPanel {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static TreeModel createTreeModel(final ActivitySubsetModel subsetModel,
+	public static TreeModel createTreeModel(
+			final ActivitySubsetModel subsetModel,
 			final List<PropertyKeySetting> theKeySettings) {
 		if (subsetModel == null) {
 			throw new NullPointerException("subsetModel cannot be null"); //$NON-NLS-1$
@@ -180,10 +190,10 @@ public final class ActivitySubsetPanel extends JPanel {
 				.getInstance(PropertiedTreeModel.class);
 		propertiedTreeModel.setPropertyKeySettings(theKeySettings);
 		propertiedTreeModel.setFilter(subsetModel.getFilter());
-		
+
 		propertiedTreeModel.setPropertiedGraphView(subsetModel
 				.getParentRegistry().getGraphView());
-		
+
 		propertiedTreeModel.detachFromGraphView();
 		result = TreeModelAdapter.untypedView(propertiedTreeModel);
 		return result;
@@ -201,9 +211,11 @@ public final class ActivitySubsetPanel extends JPanel {
 		}
 		this.subsetModel = subsetModel;
 		this.lastModelEvaluation = 0;
-		
-		this.holdingTree = new DefaultTreeModel(new DefaultMutableTreeNode("Please wait")); //$NON-NLS-1$
-		this.holdingTable = new DefaultTableModel(new String[] {"Please wait"}, 0); //$NON-NLS-1$
+
+		this.holdingTree = new DefaultTreeModel(new DefaultMutableTreeNode(
+				"Please wait")); //$NON-NLS-1$
+		this.holdingTable = new DefaultTableModel(
+				new String[] { "Please wait" }, 0); //$NON-NLS-1$
 		this.setName(subsetModel.getName());
 		setLayout(new GridLayout(1, 2));
 		this.setPreferredSize(new Dimension(0, 0));
@@ -211,9 +223,11 @@ public final class ActivitySubsetPanel extends JPanel {
 		this.currentTree = new ActivitySubsetTree();
 		this.currentTree.setRowHeight(0);
 		this.currentTree.setLargeModel(true);
-		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer(getTreeTableListModel(), subsetModel.getParentRegistry().getRegistry()));
+		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer(
+				getTreeTableListModel(), subsetModel.getParentRegistry()
+						.getRegistry()));
 		this.currentTree.addMouseListener(new ActivitySubsetListener(this));
-		this.currentTree.setDragEnabled(true);
+		// this.currentTree.setDragEnabled(true);
 
 		this.treePane = new JScrollPane(this.currentTree);
 
@@ -229,36 +243,41 @@ public final class ActivitySubsetPanel extends JPanel {
 
 			public void valueChanged(TreeSelectionEvent arg0) {
 				TreePath[] paths = arg0.getPaths();
-				ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) ActivitySubsetPanel.this.currentTable
+				TableModel currentTableModel = ActivitySubsetPanel.this.currentTable
 						.getModel();
-				/**
-				 * Note that this has to be done as two separate iterations
-				 * because of the tree structure that can cause nodes to be
-				 * implicitly selected for removal and addition.
-				 */
-				for (int i = 0; i < paths.length; i++) {
-					PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
-							.getLastPathComponent();
-					Set<ProcessorFactoryAdapter> allObjects = node
-							.getAllObjects();
-					if (!arg0.isAddedPath(i)) {
-						for (ProcessorFactoryAdapter adapter : allObjects) {
-							int rowIndex = tableModel.getObjectIndex(adapter);
-							tableSelectionModel.removeSelectionInterval(
-									rowIndex, rowIndex);
+				if (currentTableModel instanceof ActivitySubsetTableModel) {
+					ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) currentTableModel;
+					/**
+					 * Note that this has to be done as two separate iterations
+					 * because of the tree structure that can cause nodes to be
+					 * implicitly selected for removal and addition.
+					 */
+					for (int i = 0; i < paths.length; i++) {
+						PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
+								.getLastPathComponent();
+						Set<ProcessorFactoryAdapter> allObjects = node
+								.getAllObjects();
+						if (!arg0.isAddedPath(i)) {
+							for (ProcessorFactoryAdapter adapter : allObjects) {
+								int rowIndex = tableModel
+										.getObjectIndex(adapter);
+								tableSelectionModel.removeSelectionInterval(
+										rowIndex, rowIndex);
+							}
 						}
 					}
-				}
-				for (int i = 0; i < paths.length; i++) {
-					PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
-							.getLastPathComponent();
-					Set<ProcessorFactoryAdapter> allObjects = node
-							.getAllObjects();
-					if (arg0.isAddedPath(i)) {
-						for (ProcessorFactoryAdapter adapter : allObjects) {
-							int rowIndex = tableModel.getObjectIndex(adapter);
-							tableSelectionModel.addSelectionInterval(rowIndex,
-									rowIndex);
+					for (int i = 0; i < paths.length; i++) {
+						PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) paths[i]
+								.getLastPathComponent();
+						Set<ProcessorFactoryAdapter> allObjects = node
+								.getAllObjects();
+						if (arg0.isAddedPath(i)) {
+							for (ProcessorFactoryAdapter adapter : allObjects) {
+								int rowIndex = tableModel
+										.getObjectIndex(adapter);
+								tableSelectionModel.addSelectionInterval(
+										rowIndex, rowIndex);
+							}
 						}
 					}
 				}
@@ -316,13 +335,30 @@ public final class ActivitySubsetPanel extends JPanel {
 	 */
 	public Set<ProcessorFactoryAdapter> getSelectedObjects() {
 		Set<ProcessorFactoryAdapter> result = new HashSet<ProcessorFactoryAdapter>();
+
 		int[] selectedRows = this.currentTable.getSelectedRows();
-		ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) this.currentTable
-				.getModel();
-		for (int i = 0; i < selectedRows.length; i++) {
-			int row = selectedRows[i];
-			ProcessorFactoryAdapter pf = tableModel.getRowObject(row);
-			result.add(pf);
+		TableModel currentTableModel = this.currentTable.getModel();
+		if ((currentTableModel instanceof ActivitySubsetTableModel)
+				&& (selectedRows != null)) {
+			ActivitySubsetTableModel tableModel = (ActivitySubsetTableModel) currentTableModel;
+			for (int i = 0; i < selectedRows.length; i++) {
+				int row = selectedRows[i];
+				ProcessorFactoryAdapter pf = tableModel.getRowObject(row);
+				result.add(pf);
+			}
+		} else {
+			// Work off tree
+			TreePath[] selectionPaths = this.currentTree.getSelectionPaths();
+			if (selectionPaths != null) {
+				for (TreePath selectionPath : selectionPaths) {
+					Object objectNode = selectionPath.getLastPathComponent();
+					if (objectNode instanceof PropertiedTreeNode) {
+						PropertiedTreeNode<ProcessorFactoryAdapter> node = (PropertiedTreeNode<ProcessorFactoryAdapter>) objectNode;
+						result.addAll(node.getAllObjects());
+					}
+				}
+			}
+
 		}
 		return result;
 	}

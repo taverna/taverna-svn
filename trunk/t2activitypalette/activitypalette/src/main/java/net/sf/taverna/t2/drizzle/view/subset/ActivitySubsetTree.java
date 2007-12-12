@@ -13,6 +13,7 @@ import java.awt.dnd.DragSourceDragEvent;
 import java.awt.dnd.DragSourceDropEvent;
 import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JTree;
@@ -76,7 +77,12 @@ public final class ActivitySubsetTree extends JTree implements
 				String name = pf.getName();
 				FactorySpecFragment fsf = new FactorySpecFragment(el, name);
 				Transferable t = new SpecFragmentTransferable(fsf);
-				this.dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
+				try {
+					this.dragSource.startDrag(dge, DragSource.DefaultCopyDrop, t, this);
+				} catch (InvalidDnDOperationException e) {
+					e.printStackTrace();
+					// TODO Figure out what causes this
+				}
 			}
 		}
 	}
