@@ -137,8 +137,8 @@
     </section>
 
     <section id="ame_mime_types">
-      <title><emphasis>(Slight digression)</emphasis> - Interesting MIME types
-      for Taverna</title>
+      <title><emphasis>(Slight digression)</emphasis> - Some facts about using
+      MIME types in Taverna</title>
 
       <para>The following is a list of the MIME types currently recognized by
       renderers in Taverna's result browser, this list is useful to know when
@@ -176,6 +176,13 @@ chemical/x-mdl-molfile</screen>
       extension when storing results to a file system tree, this is currently
       the only reason to tag an output as application/zip. Taverna has no
       other understanding of zip files</para>
+
+      <para>You can add multiple mime types to a workflow output port (to be
+      used by the output renderers) by selecting the output and going to
+      "Metadata for 'myoutputport'" - under "MIME types", eg for SVG add:
+      image/svg+xml This should enable the SVG renderer for the output port.
+      You might need to right click on the value in the left hand column and
+      select "SVG" instead of "Text".</para>
     </section>
 
     <section id="ame_connecting_inputs">
