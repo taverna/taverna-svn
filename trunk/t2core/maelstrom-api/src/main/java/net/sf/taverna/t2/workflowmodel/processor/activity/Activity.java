@@ -7,7 +7,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.HierarchyTraversal;
-import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 /**

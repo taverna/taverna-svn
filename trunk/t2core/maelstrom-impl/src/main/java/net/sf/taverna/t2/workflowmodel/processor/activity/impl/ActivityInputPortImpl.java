@@ -2,13 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-
-import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
-import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
 /**

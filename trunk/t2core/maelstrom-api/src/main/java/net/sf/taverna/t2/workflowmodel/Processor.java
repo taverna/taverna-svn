@@ -7,7 +7,6 @@ import java.util.List;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;

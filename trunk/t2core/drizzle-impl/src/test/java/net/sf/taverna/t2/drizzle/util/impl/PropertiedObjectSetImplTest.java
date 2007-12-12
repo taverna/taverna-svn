@@ -5,10 +5,8 @@ package net.sf.taverna.t2.drizzle.util.impl;
 
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
 import java.util.Set;
 
-import net.sf.taverna.t2.drizzle.bean.PropertiedObjectBean;
 import net.sf.taverna.t2.drizzle.bean.PropertiedObjectSetBean;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectListener;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
