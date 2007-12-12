@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.6 $
+ * Revision           $Revision: 1.7 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-12 16:01:44 $
+ * Last modified on   $Date: 2007-12-12 16:04:30 $
  *               by   $Author: iandunlop $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -38,7 +38,6 @@ import java.util.List;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
-import net.sf.taverna.raven.repository.SystemArtifact;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.update.plugin.event.PluginEvent;
 import net.sf.taverna.update.plugin.event.PluginListener;
