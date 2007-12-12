@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
+import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
@@ -81,6 +82,12 @@ public class DummyDataflow implements Dataflow{
 				p.fire(newOwningProcess, context);
 			}
 		}
+	}
+
+
+	public FailureTransmitter getFailureTransmitter() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

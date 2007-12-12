@@ -20,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchCompletionEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
@@ -112,6 +113,16 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					private boolean sentJob = false;
 
+					public void fail(String message, Throwable t, DispatchErrorType errorType) {
+						MonitorImpl.getMonitor().deregisterNode(
+								invocationProcessIdentifier.split(":"));
+						getAbove().receiveError(
+								new DispatchErrorEvent(jobEvent
+										.getOwningProcess(), jobEvent
+										.getIndex(), jobEvent.getContext(),
+										message, t, errorType, as));
+					}
+					
 					public void fail(String message, Throwable t) {
 						MonitorImpl.getMonitor().deregisterNode(
 								invocationProcessIdentifier.split(":"));
@@ -119,7 +130,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
 										.getIndex(), jobEvent.getContext(),
-										message, t));
+										message, t, DispatchErrorType.INVOCATION, as));
 					}
 
 					public void fail(String message) {

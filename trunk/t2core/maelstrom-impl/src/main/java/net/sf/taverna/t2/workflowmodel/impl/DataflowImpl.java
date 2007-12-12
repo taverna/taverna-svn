@@ -18,6 +18,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.NamingException;
@@ -650,6 +651,11 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 			}
 		}
 
+	}
+
+	public FailureTransmitter getFailureTransmitter() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

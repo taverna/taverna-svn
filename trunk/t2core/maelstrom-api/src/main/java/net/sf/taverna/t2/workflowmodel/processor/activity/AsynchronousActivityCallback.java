@@ -4,6 +4,7 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
 /**
  * The callback interface used by instances of AsynchronousActivity to push
@@ -65,6 +66,21 @@ public interface AsynchronousActivityCallback {
 	 * @param completionIndex
 	 */
 	public void receiveCompletion(int[] completionIndex);
+
+	/**
+	 * If the job fails (as opposed to succeeding and sending an error for which
+	 * the receiveResult method is used) this method will cause an error to be
+	 * sent up the dispatch stack, triggering any appropriate handling methods
+	 * such as retry, failover etc. This particular method accepts both a free
+	 * text message and an instance of Throwable for additional information, in
+	 * addition to which it sends an error type which allows upstream layers to
+	 * determine whether they can handle the error or whether it should be
+	 * passed directly upwards.
+	 * 
+	 * @param message
+	 * @param t
+	 */
+	public void fail(String message, Throwable t, DispatchErrorType errorType);
 
 	/**
 	 * If the job fails (as opposed to succeeding and sending an error for which

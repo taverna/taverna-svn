@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.events;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
 
 /**
@@ -19,6 +20,8 @@ public class DispatchErrorEvent extends
 
 	private Throwable cause;
 	private String message;
+	private DispatchErrorType failureType;
+	private Activity<?> failedActivity;
 
 	/**
 	 * Create a new error event
@@ -30,10 +33,28 @@ public class DispatchErrorEvent extends
 	 * @param t
 	 */
 	public DispatchErrorEvent(String owningProcess, int[] index,
-			InvocationContext context, String errorMessage, Throwable t) {
+			InvocationContext context, String errorMessage, Throwable t,
+			DispatchErrorType failureType, Activity<?> failedActivity) {
 		super(owningProcess, index, context);
 		this.message = errorMessage;
 		this.cause = t;
+		this.failureType = failureType;
+		this.failedActivity = failedActivity;
+	}
+
+	/**
+	 * Return the type of failure, this is used by upstream dispatch layers to
+	 * determine whether they can reasonably handle the error message
+	 */
+	public DispatchErrorType getFailureType() {
+		return this.failureType;
+	}
+
+	/**
+	 * Return the Activity instance which failed to produce this error message
+	 */
+	public Activity<?> getFailedActivity() {
+		return this.failedActivity;
 	}
 
 	/**
@@ -59,14 +80,14 @@ public class DispatchErrorEvent extends
 	public DispatchErrorEvent popOwningProcess()
 			throws ProcessIdentifierException {
 		return new DispatchErrorEvent(popOwner(), index, context, message,
-				cause);
+				cause, failureType, failedActivity);
 	}
 
 	@Override
 	public DispatchErrorEvent pushOwningProcess(String localProcessName)
 			throws ProcessIdentifierException {
 		return new DispatchErrorEvent(pushOwner(localProcessName), index,
-				context, message, cause);
+				context, message, cause, failureType, failedActivity);
 	}
 
 	/**

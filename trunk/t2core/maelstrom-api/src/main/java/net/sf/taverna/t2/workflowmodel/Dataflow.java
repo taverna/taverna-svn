@@ -90,4 +90,17 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 */
 	public void fire(String owningProcess, InvocationContext context);
 
+	/**
+	 * The failure transmitter contains event listeners to be notified of
+	 * workflow level failures - these occur when an error bubbles up to the top
+	 * of the dispatch stack in a processor and is not handled by conversion to
+	 * an error token within the data stream.
+	 * <p>
+	 * Listeners are messaged after all clean-up has been performed on the
+	 * dataflow's internal state and that of any child operations within it,
+	 * guaranteeing that no tokens will be generated with the id of the failed
+	 * process after the message has been received by the listener
+	 */
+	public FailureTransmitter getFailureTransmitter();
+	
 }
