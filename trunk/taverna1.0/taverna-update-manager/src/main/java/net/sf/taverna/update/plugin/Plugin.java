@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 12:10:52 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2007-12-12 16:01:44 $
+ *               by   $Author: iandunlop $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -38,6 +38,7 @@ import java.util.List;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.repository.SystemArtifact;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.update.plugin.event.PluginEvent;
 import net.sf.taverna.update.plugin.event.PluginListener;
@@ -45,7 +46,7 @@ import net.sf.taverna.update.plugin.event.PluginListener;
 import org.jdom.Element;
 
 /**
- *
+ * 
  * @author David Withers
  */
 public class Plugin implements Comparable<Plugin> {
@@ -60,7 +61,7 @@ public class Plugin implements Comparable<Plugin> {
 	private String version;
 
 	private String provider;
-	
+
 	private List<String> tavernaVersions = new ArrayList<String>();
 
 	private boolean enabled;
@@ -68,21 +69,23 @@ public class Plugin implements Comparable<Plugin> {
 	private List<String> repositories = new ArrayList<String>();
 
 	private Profile profile = new Profile(true);
-	
+
 	private boolean builtIn = false;
-	
+
 	public boolean compatible = true;
-	
+
 	/**
-	 * Indicates whether a plugin is a default plugin, and if so cannot be uninstalled, but can be disabled.
+	 * Indicates whether a plugin is a default plugin, and if so cannot be
+	 * uninstalled, but can be disabled.
+	 * 
 	 * @return
 	 */
 	public boolean isBuiltIn() {
 		return builtIn;
 	}
-	
+
 	public void setBuiltIn(boolean val) {
-		this.builtIn=val;
+		this.builtIn = val;
 	}
 
 	public boolean isCompatible() {
@@ -95,7 +98,7 @@ public class Plugin implements Comparable<Plugin> {
 
 	/**
 	 * Constructs an instance of Plugin.
-	 *
+	 * 
 	 */
 	private Plugin() {
 	}
@@ -167,7 +170,7 @@ public class Plugin implements Comparable<Plugin> {
 					enabled ? PluginEvent.ENABLED : PluginEvent.DISABLED));
 		}
 	}
-	
+
 	public List<String> getTavernaVersions() {
 		return this.tavernaVersions;
 	}
@@ -193,7 +196,8 @@ public class Plugin implements Comparable<Plugin> {
 	/**
 	 * Adds a <code>PluginListener</code>.
 	 * 
-	 * @param listener the <code>PluginListener</code> to add
+	 * @param listener
+	 *            the <code>PluginListener</code> to add
 	 */
 	public void addPluginListener(PluginListener listener) {
 		synchronized (pluginListeners) {
@@ -206,7 +210,8 @@ public class Plugin implements Comparable<Plugin> {
 	/**
 	 * Removes a <code>PluginListener</code>.
 	 * 
-	 * @param listener the <code>PluginListener</code> to remove
+	 * @param listener
+	 *            the <code>PluginListener</code> to remove
 	 */
 	public void removePluginListener(PluginListener listener) {
 		synchronized (pluginListeners) {
@@ -217,7 +222,8 @@ public class Plugin implements Comparable<Plugin> {
 	/**
 	 * Fires a <code>PluginEvent</code> to the <code>PluginListener</code>s.
 	 * 
-	 * @param event the <code>PluginEvent</code> to fire
+	 * @param event
+	 *            the <code>PluginEvent</code> to fire
 	 */
 	protected void firePluginChangedEvent(PluginEvent event) {
 		synchronized (pluginListeners) {
@@ -230,7 +236,8 @@ public class Plugin implements Comparable<Plugin> {
 	/**
 	 * Creates a <code>Plugin</code> from an XML element.
 	 * 
-	 * @param pluginElement the XML element
+	 * @param pluginElement
+	 *            the XML element
 	 * @return a new <code>Plugin</code>
 	 */
 	public static Plugin fromXml(Element pluginElement) {
@@ -240,19 +247,19 @@ public class Plugin implements Comparable<Plugin> {
 		plugin.identifier = pluginElement.getChildTextTrim("identifier");
 		plugin.version = pluginElement.getChildTextTrim("version");
 		plugin.provider = pluginElement.getChildTextTrim("provider");
-		
-		if (pluginElement.getChild("taverna")==null) {
-			//if missing, then assume only compatible with 1.5.0 since this tag didn't exist in that version
+
+		if (pluginElement.getChild("taverna") == null) {
+			// if missing, then assume only compatible with 1.5.0 since this tag
+			// didn't exist in that version
 			plugin.tavernaVersions.add("1.5.0");
-		}
-		else {
-			List<Element> tavernaElements = pluginElement.getChild("taverna").getChildren("version");
+		} else {
+			List<Element> tavernaElements = pluginElement.getChild("taverna")
+					.getChildren("version");
 			for (Element tavernaVersion : tavernaElements) {
 				plugin.tavernaVersions.add(tavernaVersion.getTextTrim());
 			}
 		}
-		
-		
+
 		plugin.enabled = Boolean.valueOf(pluginElement
 				.getChildTextTrim("enabled"));
 		List<Element> repositoryElements = pluginElement.getChild(
@@ -267,8 +274,16 @@ public class Plugin implements Comparable<Plugin> {
 					.getAttributeValue("groupId"), artifact
 					.getAttributeValue("artifactId"), artifact
 					.getAttributeValue("version"));
+			if (artifact.getAttributeValue("system") != null
+					&& artifact.getAttributeValue("system").equalsIgnoreCase(
+							"true")) {
+				// Artifact systemArtifact = new SystemArtifact(basicArtifact,
+				// true);
+				plugin.profile.addSystemArtifact(basicArtifact);
+			}
 			plugin.profile.addArtifact(basicArtifact);
-		}		
+
+		}
 		return plugin;
 	}
 
@@ -286,7 +301,7 @@ public class Plugin implements Comparable<Plugin> {
 				.addContent(getIdentifier()));
 		pluginElement.addContent(new Element("version")
 				.addContent(getVersion()));
-		
+
 		pluginElement.addContent(new Element("provider")
 				.addContent(getProvider()));
 		pluginElement.addContent(new Element("enabled").addContent(Boolean
@@ -304,18 +319,21 @@ public class Plugin implements Comparable<Plugin> {
 			artifactElement
 					.setAttribute("artifactId", artifact.getArtifactId());
 			artifactElement.setAttribute("version", artifact.getVersion());
+			if (getProfile().getSystemArtifacts().contains(artifact)) {
+				artifactElement.setAttribute("system", "true");
+			}
 			profileElement.addContent(artifactElement);
 		}
 		pluginElement.addContent(profileElement);
-		
-		Element tavernaversions=new Element("taverna");
+
+		Element tavernaversions = new Element("taverna");
 		for (String v : this.tavernaVersions) {
-			Element tavernaVersion=new Element("version");
+			Element tavernaVersion = new Element("version");
 			tavernaVersion.setText(v);
 			tavernaversions.addContent(tavernaVersion);
 		}
 		pluginElement.addContent(tavernaversions);
-		
+
 		return pluginElement;
 	}
 
@@ -374,9 +392,9 @@ public class Plugin implements Comparable<Plugin> {
 		}
 		return version.compareTo(plugin.version);
 	}
-	
+
 	public String toString() {
-		return this.identifier+":"+this.name+" v."+this.version;
+		return this.identifier + ":" + this.name + " v." + this.version;
 	}
 
 }

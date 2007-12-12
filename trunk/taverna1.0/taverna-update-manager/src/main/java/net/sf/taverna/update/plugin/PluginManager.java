@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.28 $
+ * Revision           $Revision: 1.29 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-11 16:19:18 $
- *               by   $Author: davidwithers $
+ * Last modified on   $Date: 2007-12-12 16:01:44 $
+ *               by   $Author: iandunlop $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -49,9 +49,12 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
+import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
+import net.sf.taverna.raven.repository.RepositoryListener;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
@@ -79,7 +82,7 @@ import org.jdom.output.XMLOutputter;
  * @author David Withers
  */
 public class PluginManager implements PluginListener {
-	
+
 	private static Log logger = Log.getLogger(PluginListener.class);
 
 	private static PluginManager instance;
@@ -89,7 +92,8 @@ public class PluginManager implements PluginListener {
 	private static List<PluginManagerListener> pluginManagerListeners = new ArrayList<PluginManagerListener>();
 
 	private File pluginsDir;
-	private File defaultPluginsDir; //defaults are read from $taverna.startup/plugins
+	private File defaultPluginsDir; // defaults are read from
+	// $taverna.startup/plugins
 
 	private List<PluginSite> pluginSites = new ArrayList<PluginSite>();
 
@@ -103,9 +107,9 @@ public class PluginManager implements PluginListener {
 	 * Constructs an instance of PluginManager.
 	 * 
 	 */
-	private PluginManager() {		
+	private PluginManager() {
 		pluginsDir = MyGridConfiguration.getUserDir("plugins");
-		defaultPluginsDir=MyGridConfiguration.getStartupDir("plugins");
+		defaultPluginsDir = MyGridConfiguration.getStartupDir("plugins");
 		if (pluginsDir != null) {
 			initializePluginSites();
 			initializePlugins();
@@ -127,7 +131,7 @@ public class PluginManager implements PluginListener {
 	public Repository getRepository() {
 		return repository;
 	}
-	
+
 	public static void setRepository(Repository repository) {
 		PluginManager.repository = repository;
 	}
@@ -141,9 +145,9 @@ public class PluginManager implements PluginListener {
 		return plugins;
 	}
 
-	public void addPlugin(Plugin plugin) {
-		if (!plugins.contains(plugin)) {			
-			plugins.add(plugin);			
+	public void addPlugin(final Plugin plugin) {
+		if (!plugins.contains(plugin)) {
+			plugins.add(plugin);
 			sortPlugins();
 			for (String repositoryURL : plugin.getRepositories()) {
 				try {
@@ -156,84 +160,116 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
 			}
-			
+			for (final Artifact artifact : plugin.getProfile()
+					.getSystemArtifacts()) {
+				// repository.addArtifact(artifact);
+				// should this wait for something to happen? Not sure if
+				// anything does!!
+				repository.addRepositoryListener(new RepositoryListener() {
+
+					public void statusChanged(Artifact a,
+							ArtifactStatus oldStatus, ArtifactStatus newStatus) {
+						if (plugin.getProfile().getSystemArtifacts().contains(a) && newStatus.equals(ArtifactStatus.Ready)) {
+							try {
+								Bootstrap.addSystemArtifact(a.getGroupId(), a.getArtifactId(), a.getVersion());
+							} catch (MalformedURLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+					}
+
+				});
+			}
+
 			if (!checkPluginCompatibility(plugin)) {
 				if (plugin.isEnabled()) {
 					plugin.setEnabled(false);
-					firePluginIncompatibleEvent(new PluginManagerEvent(this,plugin,plugins.indexOf(plugin)));
+					firePluginIncompatibleEvent(new PluginManagerEvent(this,
+							plugin, plugins.indexOf(plugin)));
 				}
 			}
-			
+
 			repository.update();
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
-			firePluginAddedEvent(new PluginManagerEvent(this, plugin,plugins.indexOf(plugin)));
+			firePluginAddedEvent(new PluginManagerEvent(this, plugin, plugins
+					.indexOf(plugin)));
 			plugin.addPluginListener(this);
 		}
 	}
 
 	/**
 	 * Returns a list of all currently installed and enabled plugins that would
-	 * become incompatible with the version String supplied. If teh omitDisbaledPlugins flag
-	 * is set to true, then only enabled plugins will be returned
+	 * become incompatible with the version String supplied. If teh
+	 * omitDisbaledPlugins flag is set to true, then only enabled plugins will
+	 * be returned
 	 * 
-	 * @param version - the version String to check plugins against
-	 * @param omitDisabledPlugins - flag to indicate that disabled plugins should be ignored
+	 * @param version -
+	 *            the version String to check plugins against
+	 * @param omitDisabledPlugins -
+	 *            flag to indicate that disabled plugins should be ignored
 	 * @return
 	 */
-	public List<Plugin> getIncompatiblePlugins(String version, boolean omitDisabledPlugins) {
+	public List<Plugin> getIncompatiblePlugins(String version,
+			boolean omitDisabledPlugins) {
 		List<Plugin> result = new ArrayList<Plugin>();
 		for (Plugin plugin : getPlugins()) {
-			if (omitDisabledPlugins && !plugin.isEnabled()) continue;
-			if (!checkPluginCompatibility(plugin,version)) {
+			if (omitDisabledPlugins && !plugin.isEnabled())
+				continue;
+			if (!checkPluginCompatibility(plugin, version)) {
 				result.add(plugin);
 			}
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Checks a plugins compatiblilty with the current version and returns whether it is compatible.
-	 * Sets the plugins compatibility flag accordingly
+	 * Checks a plugins compatiblilty with the current version and returns
+	 * whether it is compatible. Sets the plugins compatibility flag accordingly
+	 * 
 	 * @param plugin
 	 * @return
 	 */
 	private boolean checkPluginCompatibility(Plugin plugin) {
-		String profileVersion=profile.getVersion();
+		String profileVersion = profile.getVersion();
 		boolean result;
-		result=checkPluginCompatibility(plugin,profileVersion);
+		result = checkPluginCompatibility(plugin, profileVersion);
 		plugin.setCompatible(result);
 		return result;
 	}
-	
+
 	private boolean checkPluginCompatibility(Plugin plugin, String version) {
 		for (String v : plugin.getTavernaVersions()) {
-			if (version.startsWith(v)) {				
+			if (version.startsWith(v)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	private void firePluginIncompatibleEvent(PluginManagerEvent event) {
 		for (PluginManagerListener listener : pluginManagerListeners) {
 			listener.pluginIncompatible(event);
 		}
 	}
-	
+
 	public void removePlugin(Plugin plugin) {
-		if (updatedPlugins.contains(plugin)) updatedPlugins.remove(plugin);
-		
+		//might need a pop up to warn if there are any system artifacts - restart might be required
+		if (updatedPlugins.contains(plugin))
+			updatedPlugins.remove(plugin);
+
 		if (plugins.contains(plugin)) {
 			if (plugin.isEnabled()) {
 				disablePlugin(plugin);
 			}
-			int index=plugins.indexOf(plugin);
+			int index = plugins.indexOf(plugin);
 			plugins.remove(plugin);
-			firePluginRemovedEvent(new PluginManagerEvent(this, plugin,index));										
+			firePluginRemovedEvent(new PluginManagerEvent(this, plugin, index));
 			plugin.removePluginListener(this);
-		}		
+		}
 	}
 
 	private void enablePlugin(Plugin plugin) {
@@ -241,20 +277,31 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.addArtifact(artifact);
 			}
-		savePlugins();
-	}
+			//new code to ensure the system artifacts are saved in the plugins.xml
+			//for (Artifact artifact : plugin.getProfile().getSystemArtifacts()) {
+			//	profile.addSystemArtifact(artifact);
+			//}
+			savePlugins();
+		}
 	}
 
 	private void disablePlugin(Plugin plugin) {
+		//might need a pop up to warn if there are any system artifacts - restart might be required
 		if (plugins.contains(plugin)) {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.removeArtifact(artifact);
 			}
-		savePlugins();
-	}
+			//new code
+			// the profile seemed to do this by default in removeArtifact but
+			// might be best to make it obvious
+			//for (Artifact artifact : plugin.getProfile().getSystemArtifacts()) {
+			//	profile.removeSystemArtifact(artifact);
+			//}
+			savePlugins();
+		}
 	}
 
-	public void savePlugins() {		
+	public void savePlugins() {
 		Element pluginsElement = new Element("plugins");
 		for (Plugin plugin : plugins) {
 			pluginsElement.addContent(plugin.toXml());
@@ -262,14 +309,13 @@ public class PluginManager implements PluginListener {
 		File pluginsFile = new File(pluginsDir, "plugins.xml");
 		try {
 			Writer writer = new FileWriter(pluginsFile);
-			new XMLOutputter(Format.getPrettyFormat()).output(
-					pluginsElement, writer);
+			new XMLOutputter(Format.getPrettyFormat()).output(pluginsElement,
+					writer);
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
-			logger.error("Error writing plugins to "
-					+ pluginsFile.getPath());
-		}		
+			logger.error("Error writing plugins to " + pluginsFile.getPath());
+		}
 	}
 
 	/**
@@ -303,7 +349,7 @@ public class PluginManager implements PluginListener {
 		savePluginSites();
 	}
 
-	public void savePluginSites() {		
+	public void savePluginSites() {
 		Element pluginSitesElement = new Element("pluginSites");
 		for (PluginSite pluginSite : pluginSites) {
 			if (!(pluginSite instanceof TavernaPluginSite))
@@ -319,7 +365,7 @@ public class PluginManager implements PluginListener {
 		} catch (IOException e) {
 			logger.error("Error writing plugin sites to "
 					+ pluginSitesFile.getPath());
-		}		
+		}
 	}
 
 	/**
@@ -335,12 +381,13 @@ public class PluginManager implements PluginListener {
 		List<Plugin> plugins = new ArrayList<Plugin>();
 		HttpClient client = new HttpClient();
 		setProxy(client);
-		
+
 		if (pluginSite.getUrl() == null) {
 			logger.error("No plugin site URL" + pluginSite);
 			return plugins;			
 		}
 		
+
 		URI pluginSiteURI;
 		try {
 			pluginSiteURI = pluginSite.getUrl().toURI();
@@ -348,9 +395,9 @@ public class PluginManager implements PluginListener {
 			logger.error("Invalid plugin site URL" + pluginSite);
 			return plugins;
 		}
-		
+
 		URI pluginsXML = pluginSiteURI.resolve("pluginlist.xml");
-		
+
 		HttpMethod getPlugins = new GetMethod(pluginsXML.toString());
 		int statusCode;
 		try {
@@ -360,15 +407,15 @@ public class PluginManager implements PluginListener {
 			return plugins;
 		}
 		if (statusCode != HttpStatus.SC_OK) {
-			logger.warn("HTTP status " + statusCode + 
-				" while getting plugins " + pluginsXML);
+			logger.warn("HTTP status " + statusCode + " while getting plugins "
+					+ pluginsXML);
 			return plugins;
 		}
 
 		Document pluginsDocument;
 		try {
 			pluginsDocument = new SAXBuilder().build(getPlugins
-				.getResponseBodyAsStream());
+					.getResponseBodyAsStream());
 		} catch (JDOMException e) {
 			logger.warn("Could not parse plugins " + pluginsXML, e);
 			return plugins;
@@ -376,17 +423,19 @@ public class PluginManager implements PluginListener {
 			logger.warn("Could not read plugins " + pluginsXML, e);
 			return plugins;
 		}
-		List<Element> pluginList =
-			pluginsDocument.getRootElement().getChildren("plugin");
+		List<Element> pluginList = pluginsDocument.getRootElement()
+				.getChildren("plugin");
 		for (Element pluginElement : pluginList) {
 			URI pluginUri;
 			try {
 				pluginUri = pluginSiteURI.resolve(pluginElement.getTextTrim());
 			} catch (IllegalArgumentException ex) {
-				logger.warn("Invalid plugin URI " + pluginElement.getTextTrim());
+				logger
+						.warn("Invalid plugin URI "
+								+ pluginElement.getTextTrim());
 				continue;
 			}
-			
+
 			HttpMethod getPlugin = new GetMethod(pluginUri.toString());
 			try {
 				statusCode = client.executeMethod(getPlugin);
@@ -395,15 +444,15 @@ public class PluginManager implements PluginListener {
 				continue;
 			}
 			if (statusCode != HttpStatus.SC_OK) {
-				logger.warn("HTTP status " + statusCode + 
-					" while getting plugin " + pluginUri);
+				logger.warn("HTTP status " + statusCode
+						+ " while getting plugin " + pluginUri);
 				continue;
 			}
-			
+
 			Document pluginDocument;
 			try {
 				pluginDocument = new SAXBuilder().build(getPlugin
-					.getResponseBodyAsStream());
+						.getResponseBodyAsStream());
 			} catch (JDOMException e) {
 				logger.warn("Could not parse plugin " + pluginUri, e);
 				continue;
@@ -415,9 +464,9 @@ public class PluginManager implements PluginListener {
 			if (checkPluginCompatibility(plugin)) {
 				plugins.add(plugin);
 				logger.debug("Added plugin from " + pluginUri);
-			}
-			else {
-				logger.debug("Plugin deemed incompatible so not added to available plugin list");
+			} else {
+				logger
+						.debug("Plugin deemed incompatible so not added to available plugin list");
 			}
 		}
 		logger.info("Added plugins from " + pluginSiteURI);
@@ -467,16 +516,17 @@ public class PluginManager implements PluginListener {
 	/**
 	 * If an update is available, removes the plugin an installs the update.
 	 * 
-	 * @param plugin the plugin to update
+	 * @param plugin
+	 *            the plugin to update
 	 */
 	public void updatePlugin(Plugin plugin) {
 		if (isUpdateAvailable(plugin)) {
 			synchronized (updatedPlugins) {
 				Plugin newPlugin = getUpdate(plugin);
 				updatedPlugins.remove(newPlugin);
-				newPlugin.setEnabled(true); //enable newly updated plugin
+				newPlugin.setEnabled(true); // enable newly updated plugin
 				removePlugin(plugin);
-				addPlugin(newPlugin);								
+				addPlugin(newPlugin);
 				savePlugins();
 			}
 		}
@@ -493,7 +543,8 @@ public class PluginManager implements PluginListener {
 	}
 
 	/**
-	 * Checks the <code>PluginSite</code>s to find updates for installed plugins.
+	 * Checks the <code>PluginSite</code>s to find updates for installed
+	 * plugins.
 	 * 
 	 * @return true if updates are found
 	 */
@@ -510,7 +561,7 @@ public class PluginManager implements PluginListener {
 							updatedPlugins.remove(index);
 							updatedPlugins.add(plugin);
 							firePluginChangedEvent(new PluginManagerEvent(this,
-									plugin,plugins.indexOf(plugin)));
+									plugin, plugins.indexOf(plugin)));
 						}
 					} else {
 						int index = plugins.indexOf(plugin);
@@ -518,7 +569,7 @@ public class PluginManager implements PluginListener {
 						if (updatedPlugin.compareVersion(plugin) < 0) {
 							updatedPlugins.add(plugin);
 							firePluginChangedEvent(new PluginManagerEvent(this,
-									plugin,plugins.indexOf(plugin)));
+									plugin, plugins.indexOf(plugin)));
 						}
 					}
 				}
@@ -527,15 +578,16 @@ public class PluginManager implements PluginListener {
 		return updatedPlugins.size() > 0;
 	}
 
-	public static void addPluginManagerListener(PluginManagerListener listener) {		
+	public static void addPluginManagerListener(PluginManagerListener listener) {
 		synchronized (pluginManagerListeners) {
 			if (!pluginManagerListeners.contains(listener)) {
 				pluginManagerListeners.add(listener);
 			}
 		}
-	}	
+	}
 
-	public static void removePluginManagerListener(PluginManagerListener listener) {
+	public static void removePluginManagerListener(
+			PluginManagerListener listener) {
 		synchronized (pluginManagerListeners) {
 			pluginManagerListeners.remove(listener);
 		}
@@ -565,7 +617,9 @@ public class PluginManager implements PluginListener {
 		}
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see net.sf.taverna.update.plugin.event.PluginListener#pluginChanged(net.sf.taverna.update.plugin.event.PluginEvent)
 	 */
 	public void pluginChanged(PluginEvent event) {
@@ -574,32 +628,39 @@ public class PluginManager implements PluginListener {
 		} else if (event.getAction() == PluginEvent.DISABLED) {
 			disablePlugin(event.getPlugin());
 		}
-		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin(),plugins.indexOf(event.getPlugin())));
+		firePluginChangedEvent(new PluginManagerEvent(event, event.getPlugin(),
+				plugins.indexOf(event.getPlugin())));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void initializePlugins() {
 		File pluginsFile = new File(pluginsDir, "plugins.xml");
 		List<Plugin> extractedPlugins = extractPluginsFromFile(pluginsFile);
-		
-		pluginsFile = new File(defaultPluginsDir,"plugins.xml");
+
+		pluginsFile = new File(defaultPluginsDir, "plugins.xml");
 		List<Plugin> builtInPlugins = extractPluginsFromFile(pluginsFile);
-		
+
 		for (Plugin plugin : extractedPlugins) {
-			plugin.setBuiltIn(false); //user provided plugins are not concidered built in, and can be uninstalled
+			plugin.setBuiltIn(false); // user provided plugins are not
+			// considered built in, and can be
+			// uninstalled
 			if (builtInPlugins.contains(plugin)) {
-				int i=builtInPlugins.indexOf(plugin);
-				//allow it to be uninstalled if it is the same plugin but different version.
-				//the built in plugin will then reappear as the original version when Taverna restarts
-				if (builtInPlugins.get(i).getVersion().equals(plugin.getVersion())) {
+				int i = builtInPlugins.indexOf(plugin);
+				// allow it to be uninstalled if it is the same plugin but
+				// different version.
+				// the built in plugin will then reappear as the original
+				// version when Taverna restarts
+				if (builtInPlugins.get(i).getVersion().equals(
+						plugin.getVersion())) {
 					plugin.setBuiltIn(true);
 				}
 			}
 			addPlugin(plugin);
 		}
-		
+
 		for (Plugin plugin : builtInPlugins) {
-			plugin.setBuiltIn(true); // default plugins are concidered built in and cannot be uninstalled.
+			plugin.setBuiltIn(true); // default plugins are considered built
+			// in and cannot be uninstalled.
 			addPlugin(plugin);
 		}
 		savePlugins();
@@ -617,9 +678,9 @@ public class PluginManager implements PluginListener {
 					result.add(plugin);
 				}
 			} catch (JDOMException e) {
-				logger.error("Error parsing plugins.xml",e);
+				logger.error("Error parsing plugins.xml", e);
 			} catch (IOException e) {
-				logger.error("Error reading plugins.xml",e);
+				logger.error("Error reading plugins.xml", e);
 			}
 		}
 		return result;
@@ -627,51 +688,59 @@ public class PluginManager implements PluginListener {
 
 	public List<TavernaPluginSite> getTavernaPluginSites() {
 		List<TavernaPluginSite> result = new ArrayList<TavernaPluginSite>();
-		String prefix="raven.pluginsite.";
-		if (Bootstrap.properties!=null) {
-			Map<Integer,String> pluginSiteMap = new TreeMap<Integer,String>(); //tree map will do the sorting for us
+		String prefix = "raven.pluginsite.";
+		if (Bootstrap.properties != null) {
+			Map<Integer, String> pluginSiteMap = new TreeMap<Integer, String>(); 
+			// tree map will do the sorting for us
 			for (Entry prop : Bootstrap.properties.entrySet()) {
-				String propertyName=(String)prop.getKey();
-				if (propertyName.startsWith(prefix) && !propertyName.endsWith("name")) {		
+				String propertyName = (String) prop.getKey();
+				if (propertyName.startsWith(prefix)
+						&& !propertyName.endsWith("name")) {
 					try {
-						Integer index=new Integer(propertyName.replace(prefix,""));
-						pluginSiteMap.put(index, (String)prop.getValue());
+						Integer index = new Integer(propertyName.replace(
+								prefix, ""));
+						pluginSiteMap.put(index, (String) prop.getValue());
+					} catch (NumberFormatException e) {
+						logger.error("Error with index for property: "
+								+ propertyName);
 					}
-					catch(NumberFormatException e) {
-						logger.error("Error with index for property: "+propertyName);
-					}								
 				}
 			}
-			
-			//create a list of URL objects from the space seperated list of alternatives for each site		
+
+			// create a list of URL objects from the space seperated list of
+			// alternatives for each site
 			for (Integer siteIndex : pluginSiteMap.keySet()) {
 				String siteList = pluginSiteMap.get(siteIndex);
-				String nameKey=prefix+siteIndex+".name";
-				String name=(String)Bootstrap.properties.get(nameKey);
-				if (name==null) name="Taverna Plugin Update Site";
-				
+				String nameKey = prefix + siteIndex + ".name";
+				String name = (String) Bootstrap.properties.get(nameKey);
+				if (name == null)
+					name = "Taverna Plugin Update Site";
+
 				List<URL> urls = new ArrayList<URL>();
-				logger.info("Adding plugin sitelist: "+siteList);
-				String [] siteUrls = siteList.split(" ");
+				logger.info("Adding plugin sitelist: " + siteList);
+				String[] siteUrls = siteList.split(" ");
 				for (String siteUrl : siteUrls) {
-					siteUrl=siteUrl.trim();
-					if (!siteUrl.endsWith("/")) siteUrl+="/";
+					siteUrl = siteUrl.trim();
+					if (!siteUrl.endsWith("/"))
+						siteUrl += "/";
 					try {
 						URL url = new URL(siteUrl);
 						urls.add(url);
-					}
-					catch(MalformedURLException e) {
-						logger.error("Malformed URL for plugin site (or mirror):"+siteUrl);
+					} catch (MalformedURLException e) {
+						logger
+								.error("Malformed URL for plugin site (or mirror):"
+										+ siteUrl);
 					}
 				}
-				if (urls.size()>0) {
-					result.add(new TavernaPluginSite(name,urls.toArray(new URL[]{})));
+				if (urls.size() > 0) {
+					result.add(new TavernaPluginSite(name, urls
+							.toArray(new URL[] {})));
 				}
 			}
 		}
 		return result;
 	}
-	
+
 	private void setProxy(HttpClient client) {
 		String host = System.getProperty("http.proxyHost");
 		String port = System.getProperty("http.proxyPort");
@@ -692,15 +761,15 @@ public class PluginManager implements PluginListener {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void initializePluginSites() {
 		pluginSites.addAll(getTavernaPluginSites());
-		
+
 		File pluginSitesFile = new File(pluginsDir, "plugin-sites.xml");
 		extractPluginSitesFromFile(pluginSitesFile);
-		
-		pluginSitesFile = new File(defaultPluginsDir,"plugin-sites.xml");
+
+		pluginSitesFile = new File(defaultPluginsDir, "plugin-sites.xml");
 		extractPluginSitesFromFile(pluginSitesFile);
 	}
 
@@ -712,13 +781,14 @@ public class PluginManager implements PluginListener {
 				Element root = document.getRootElement();
 				List<Element> siteList = root.getChildren("pluginSite");
 				for (Element site : siteList) {
-					PluginSite pluginSite=PluginSite.fromXml(site);
-					if (!pluginSites.contains(pluginSite)) pluginSites.add(pluginSite);
+					PluginSite pluginSite = PluginSite.fromXml(site);
+					if (!pluginSites.contains(pluginSite))
+						pluginSites.add(pluginSite);
 				}
 			} catch (JDOMException e) {
-				logger.error("Error parsing plugin-sites.xml",e);
+				logger.error("Error parsing plugin-sites.xml", e);
 			} catch (IOException e) {
-				logger.error("Error reading plugin-sites.xml",e);
+				logger.error("Error reading plugin-sites.xml", e);
 			}
 		}
 	}
@@ -731,5 +801,13 @@ public class PluginManager implements PluginListener {
 			}
 
 		});
-	}	
+	}
+	// what is the component it runs within?
+	// private void showWarning(Plugin plugin) {
+	// JOptionPane.showMessageDialog(PluginManager.this, plugin
+	// + " depends on system artifacts, "
+	// + "disabling/removing may affect Taverna performance. "
+	// + "Please restart the workbench.",
+	// "Plugin has System Artifacts", JOptionPane.WARNING_MESSAGE);
+	// }
 }

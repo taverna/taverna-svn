@@ -59,19 +59,19 @@ import org.xml.sax.SAXException;
  */
 public class Profile extends AbstractArtifactFilter {
 	private static Log logger = Log.getLogger(Profile.class);
-	
+
 	private Set<Artifact> artifacts = new HashSet<Artifact>();
 	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
-	
+
 	private boolean strict;
-	
+
 	private String version;
 	private String name;
-	
-	public Profile(boolean strict)  {
+
+	public Profile(boolean strict) {
 		this.strict = strict;
 	}
-	
+
 	/**
 	 * Create a Profile and initialize it from the specified InputStream of XML
 	 * (see class description)
@@ -95,45 +95,50 @@ public class Profile extends AbstractArtifactFilter {
 	 * @throws InvalidProfileException
 	 *             if there is any problem reading or parsing the profile XML.
 	 */
-	public Profile(InputStream is, boolean strict) throws InvalidProfileException {
-		
+	public Profile(InputStream is, boolean strict)
+			throws InvalidProfileException {
+
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		Document document;		
+		Document document;
 		this.strict = strict;
-		
+
 		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();			
+			DocumentBuilder builder = factory.newDocumentBuilder();
 			try {
 				document = builder.parse(is);
 			} catch (SAXException e) {
-				throw new InvalidProfileException("Unable to parse profile XML", e);
+				throw new InvalidProfileException(
+						"Unable to parse profile XML", e);
 			} catch (IOException e) {
-				throw new InvalidProfileException("Unable to open profile XML", e);
-			}						
+				throw new InvalidProfileException("Unable to open profile XML",
+						e);
+			}
 		} catch (ParserConfigurationException e) {
 			throw new InvalidProfileException("Failed to create XML parser", e);
 		}
-		
-		// determine the version if available		
-		Node profileVersionAttribute = document.getDocumentElement().getAttributes().getNamedItem("version");
+
+		// determine the version if available
+		Node profileVersionAttribute = document.getDocumentElement()
+				.getAttributes().getNamedItem("version");
 		if (profileVersionAttribute != null) {
 			version = profileVersionAttribute.getNodeValue();
 		} else {
 			logger.warn("Profile document contains no version.");
 			version = null;
 		}
-		
-		// determine the name if available		
-		Node profileNameAttribute=document.getDocumentElement().getAttributes().getNamedItem("name");
+
+		// determine the name if available
+		Node profileNameAttribute = document.getDocumentElement()
+				.getAttributes().getNamedItem("name");
 		if (profileNameAttribute != null) {
 			name = profileNameAttribute.getNodeValue();
 		} else {
 			logger.warn("Profile document contains no name.");
 			name = null;
 		}
-							
+
 		NodeList nodelist = document.getDocumentElement().getChildNodes();
-		for (int i=0; i<nodelist.getLength(); i++) {
+		for (int i = 0; i < nodelist.getLength(); i++) {
 			Node n = nodelist.item(i);
 			if (n instanceof Element) {
 				NamedNodeMap atts = n.getAttributes();
@@ -141,20 +146,20 @@ public class Profile extends AbstractArtifactFilter {
 				Node anode = atts.getNamedItem("artifactId");
 				Node vnode = atts.getNamedItem("version");
 				if (gnode == null || anode == null || vnode == null) {
-					throw new InvalidProfileException("Entries must contain groupId, artifactId, version");
+					throw new InvalidProfileException(
+							"Entries must contain groupId, artifactId, version");
 				}
 				Artifact artifact = new BasicArtifact(gnode.getNodeValue(),
-						anode.getNodeValue(),
-						vnode.getNodeValue());
+						anode.getNodeValue(), vnode.getNodeValue());
 				artifacts.add(artifact);
 				Node snode = atts.getNamedItem("system");
 				if (snode != null && "true".equals(snode.getNodeValue())) {
 					systemArtifacts.add(artifact);
 				}
 			}
-		}		
+		}
 	}
-	
+
 	/**
 	 * Return the version string of the Profile, or 'NO VERSION' if a version is
 	 * not defined
@@ -165,18 +170,26 @@ public class Profile extends AbstractArtifactFilter {
 		}
 		return version;
 	}
-	
+
 	/**
 	 * Allow an artifact to be added to the profile at runtime
+	 * 
 	 * @param artifact
 	 */
 	public void addArtifact(Artifact artifact) {
 		artifacts.add(artifact);
 		fireFilterChanged(this);
 	}
-	
+
+	// new
+	public void addSystemArtifact(Artifact artifact) {
+		systemArtifacts.add(artifact);
+		fireFilterChanged(this);
+	}
+
 	/**
 	 * Allow an artifact to be removed from the profile at runtime
+	 * 
 	 * @param artifact
 	 */
 	public void removeArtifact(Artifact artifact) {
@@ -184,23 +197,29 @@ public class Profile extends AbstractArtifactFilter {
 		systemArtifacts.remove(artifacts);
 		fireFilterChanged(this);
 	}
-	
+
+	// new (probably not needed)
+	public void removeSystemArtifact(Artifact artifact) {
+		systemArtifacts.remove(artifact);
+		fireFilterChanged(this);
+	}
+
 	/**
 	 * Return the name of the profile, or null if no name is defined
 	 */
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Get the artifacts that forms part of this profile.
- 	 * 
+	 * 
 	 * @return a copy of the internal {@link Set} of {@link Artifact}.
 	 */
 	public Set<Artifact> getArtifacts() {
 		return new HashSet<Artifact>(artifacts);
 	}
-	
+
 	/**
 	 * Get the subset of {@link #getArtifacts()} that is marked as being system
 	 * artifacts by this profile. A system artifact is supposed to be put into
@@ -228,17 +247,17 @@ public class Profile extends AbstractArtifactFilter {
 			if (artifacts.contains(artifact)) {
 				// Exact match to an entry in the profile so include it
 				result.add(artifact);
-			} else if (! strict) {
-				// We will include the artifact as long as we don't have it in 
+			} else if (!strict) {
+				// We will include the artifact as long as we don't have it in
 				// another version
-				if (! containsOtherVersion(artifact)) {
-					result.add(artifact);					
+				if (!containsOtherVersion(artifact)) {
+					result.add(artifact);
 				}
-			}			
+			}
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @param artifact
 	 *            Artifact to look for ignoring version information
@@ -247,18 +266,19 @@ public class Profile extends AbstractArtifactFilter {
 	 */
 	private boolean containsOtherVersion(Artifact artifact) {
 		for (Artifact existing : artifacts) {
-			if (existing.getArtifactId().equals(artifact.getArtifactId()) &&
-					existing.getGroupId().equals(artifact.getGroupId())) {
+			if (existing.getArtifactId().equals(artifact.getArtifactId())
+					&& existing.getGroupId().equals(artifact.getGroupId())) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Select the highest version {@link Artifact} defined in the registry that fits the
-	 * artifactId and groupId. Useful for allowing artifacts to be defined
-	 * without version with the profile dictating the version to be used.
+	 * Select the highest version {@link Artifact} defined in the registry that
+	 * fits the artifactId and groupId. Useful for allowing artifacts to be
+	 * defined without version with the profile dictating the version to be
+	 * used.
 	 * <p>
 	 * Versions are compared as described in {@link VersionComparator}.
 	 * 
@@ -270,9 +290,9 @@ public class Profile extends AbstractArtifactFilter {
 	public Artifact discoverArtifact(String groupId, String artifactId) {
 		Artifact result = null;
 		List<Artifact> matches = new ArrayList<Artifact>();
-		for (Artifact artifact: artifacts) {
-			if (artifact.getArtifactId().equals(artifactId) && 
-					artifact.getGroupId().equals(groupId)) {
+		for (Artifact artifact : artifacts) {
+			if (artifact.getArtifactId().equals(artifactId)
+					&& artifact.getGroupId().equals(groupId)) {
 				matches.add(artifact);
 			}
 		}
@@ -283,32 +303,40 @@ public class Profile extends AbstractArtifactFilter {
 		}
 		return result;
 	}
-	
+
 	/**
-	 * Generate the XML representation of this profile, write to given output stream.
+	 * Generate the XML representation of this profile, write to given output
+	 * stream.
 	 * 
-	 * @param outputStream Stream to output profile as XML.
+	 * @param outputStream
+	 *            Stream to output profile as XML.
 	 * 
-	 * @throws ParserConfigurationException If a DocumentBuilder could not be created
-	 * @throws TransformerFactoryConfigurationError If a Transformer could not be created
-	 * @throws TransformerException If the XML document could not be transformed
+	 * @throws ParserConfigurationException
+	 *             If a DocumentBuilder could not be created
+	 * @throws TransformerFactoryConfigurationError
+	 *             If a Transformer could not be created
+	 * @throws TransformerException
+	 *             If the XML document could not be transformed
 	 */
-	public void write(OutputStream outputStream) throws ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+	public void write(OutputStream outputStream)
+			throws ParserConfigurationException,
+			TransformerFactoryConfigurationError, TransformerException {
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder();
 		Document doc = builder.newDocument();
 		Element element = doc.createElement("profile");
 		doc.appendChild(element);
 		if (version != null) {
-			element.setAttribute("version",version);
+			element.setAttribute("version", version);
 		}
 		if (name != null) {
-			element.setAttribute("name",name);
+			element.setAttribute("name", name);
 		}
 		for (Artifact artifact : getArtifacts()) {
 			String groupId = artifact.getGroupId();
 			String artifactId = artifact.getArtifactId();
 			String version = artifact.getVersion();
-			
+
 			Element artifactElement = doc.createElement("artifact");
 			artifactElement.setAttribute("groupId", groupId);
 			artifactElement.setAttribute("artifactId", artifactId);
@@ -318,12 +346,13 @@ public class Profile extends AbstractArtifactFilter {
 			}
 			element.appendChild(artifactElement);
 		}
-		
-		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+
+		Transformer transformer = TransformerFactory.newInstance()
+				.newTransformer();
 		DOMSource source = new DOMSource(doc);
 		StreamResult dest = new StreamResult(outputStream);
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		transformer.transform(source, dest);		
+		transformer.transform(source, dest);
 	}
-	
+
 }

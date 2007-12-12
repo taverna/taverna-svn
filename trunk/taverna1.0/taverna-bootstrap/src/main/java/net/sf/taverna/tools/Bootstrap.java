@@ -45,17 +45,17 @@ public class Bootstrap {
 			InvocationTargetException {
 
 		findUserDir();
-		if (System.getProperty("taverna.startup")==null) {
+		if (System.getProperty("taverna.startup") == null) {
 			determineStartup();
 		}
 		new ProxyConfiguration().initialiseProxySettings();
 		properties = findProperties();
 
-		if (properties==null) {
-			System.out.println("Unable to find raven.properties. This should either be within a conf folder in your startup directory, or within the conf folder of your $taverna.home.");
+		if (properties == null) {
+			System.out
+					.println("Unable to find raven.properties. This should either be within a conf folder in your startup directory, or within the conf folder of your $taverna.home.");
 			System.exit(-1);
-		}
-		else {
+		} else {
 			System.getProperties().putAll(properties);
 		}
 
@@ -63,9 +63,10 @@ public class Bootstrap {
 
 		List<URL> localLoaderUrls = new ArrayList<URL>();
 		List<URL> remoteLoaderUrls = new ArrayList<URL>();
-		getLoaderUrls(localLoaderUrls,remoteLoaderUrls);
+		getLoaderUrls(localLoaderUrls, remoteLoaderUrls);
 
-		Method loaderMethod = createLoaderMethod(localLoaderUrls,remoteLoaderUrls);
+		Method loaderMethod = createLoaderMethod(localLoaderUrls,
+				remoteLoaderUrls);
 
 		Class workbenchClass = createWorkbenchClass(loaderVersion, loaderMethod);
 
@@ -81,7 +82,8 @@ public class Bootstrap {
 			URL cacheURL = findCache().toURI().toURL();
 
 			try {
-				String localProfile = RavenProperties.getInstance().getRavenProfileLocation();
+				String localProfile = RavenProperties.getInstance()
+						.getRavenProfileLocation();
 				if (localProfile != null) {
 					URL url = new URL(localProfile);
 					DocumentBuilder builder = DocumentBuilderFactory
@@ -116,13 +118,26 @@ public class Bootstrap {
 		}
 	}
 
+	public static void addSystemArtifact(String groupID, String artifactID,
+			String versionID) throws MalformedURLException {
+		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+		if (systemClassLoader instanceof BootstrapClassLoader) {
+				BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
+				URL cacheURL = findCache().toURI().toURL();
+				bootstrapClassLoader.addURL(new URL(cacheURL, artifactURI(
+						groupID, artifactID, versionID)));
+		}
+
+	}
+
 	/**
-	 * Returns a copy of the raven.properties, which are overridden by any System.properties.
-	 *
+	 * Returns a copy of the raven.properties, which are overridden by any
+	 * System.properties.
+	 * 
 	 * @return the properties
 	 */
 	public static Properties findProperties() {
-		if (System.getProperty("taverna.startup")==null) {
+		if (System.getProperty("taverna.startup") == null) {
 			determineStartup();
 		}
 		Properties result = null;
@@ -142,24 +157,25 @@ public class Bootstrap {
 	}
 
 	/**
-	 * Determines the location that Taverna was started from, used for finding the default configurations and
-	 * plugin files which determine the default behaviour for Taverna.
-	 *
-	 * If determined succesfully the system property $taverna.startup is set to this value.
-	 *
+	 * Determines the location that Taverna was started from, used for finding
+	 * the default configurations and plugin files which determine the default
+	 * behaviour for Taverna.
+	 * 
+	 * If determined succesfully the system property $taverna.startup is set to
+	 * this value.
+	 * 
 	 */
 	private static void determineStartup() {
 		try {
 			File startupDir = TavernaBootstrapLocation.getBootstrapDir();
-			if (startupDir!=null) {
-				String startup=startupDir.getAbsolutePath();
+			if (startupDir != null) {
+				String startup = startupDir.getAbsolutePath();
 				System.setProperty("taverna.startup", startup);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
 
 	public static void invokeWorkbench(String[] args, Class workbenchClass)
 			throws IllegalAccessException, NoSuchMethodException {
@@ -168,7 +184,7 @@ public class Bootstrap {
 			try {
 				// Try m(String[] args) first
 				Method workbenchStatic = workbenchClass.getMethod(methodName,
-					String[].class);
+						String[].class);
 				workbenchStatic.invoke(null, new Object[] { args });
 			} catch (NoSuchMethodException ex) {
 				// Try m() instead
@@ -225,8 +241,9 @@ public class Bootstrap {
 					cacheDir, remoteRepositories, groupID, artifactID, version,
 					targetClassName, splashScreenURL, splashScreenTime);
 		} catch (InvocationTargetException e) {
-			String msg = e.getCause().getMessage()!=null ? e.getCause().getMessage() : "you should check you have network access.";
-			System.err.println("Could not launch Raven: "+msg);
+			String msg = e.getCause().getMessage() != null ? e.getCause()
+					.getMessage() : "you should check you have network access.";
+			System.err.println("Could not launch Raven: " + msg);
 			System.exit(4);
 		}
 		return workbenchClass;
@@ -236,7 +253,8 @@ public class Bootstrap {
 		return Bootstrap.class.getResource("/" + SPLASHSCREEN);
 	}
 
-	public static void getLoaderUrls(List<URL> localUrls, List<URL> remoteUrls) throws MalformedURLException {
+	public static void getLoaderUrls(List<URL> localUrls, List<URL> remoteUrls)
+			throws MalformedURLException {
 		File cacheDir = findCache();
 
 		if (cacheDir == null) {
@@ -265,104 +283,110 @@ public class Bootstrap {
 				loaderVersion);
 
 		// Use our local repository if possible
-		URL cacheUrl = new URL(cacheDir.toURI().toURL(),artifactLocation);
+		URL cacheUrl = new URL(cacheDir.toURI().toURL(), artifactLocation);
 		if (cacheUrl.getProtocol().equals("file")) {
 			localUrls.add(cacheUrl);
-		}
-		else {
+		} else {
 			remoteUrls.add(cacheUrl);
 		}
 
 		for (URL repository : remoteRepositories) {
-			URL loaderUrl=null;
+			URL loaderUrl = null;
 			if (loaderVersion.endsWith("-SNAPSHOT")) {
-				loaderUrl=getSnapshotUrl(loaderArtifactId,loaderGroupId,loaderVersion,repository);
-				if (loaderUrl!=null) {
+				loaderUrl = getSnapshotUrl(loaderArtifactId, loaderGroupId,
+						loaderVersion, repository);
+				if (loaderUrl != null) {
 					if (loaderUrl.getProtocol().equals("file")) {
 						localUrls.add(loaderUrl);
-					}
-					else {
+					} else {
 						remoteUrls.add(loaderUrl);
 					}
-					break; //for snapshots leave loop once we've found the first.
+					break; // for snapshots leave loop once we've found the
+					// first.
 				}
-			}
-			else {
-				loaderUrl=new URL(repository, artifactLocation);
+			} else {
+				loaderUrl = new URL(repository, artifactLocation);
 				if (loaderUrl.getProtocol().equals("file")) {
 					localUrls.add(loaderUrl);
-				}
-				else {
+				} else {
 					remoteUrls.add(loaderUrl);
 				}
 			}
 		}
 	}
 
-	private static URL getSnapshotUrl(String artifact, String group, String version, URL repository) {
-		URL result=null;
-		String path=group.replaceAll("\\.", "/") + "/" + artifact + "/" + version;
+	private static URL getSnapshotUrl(String artifact, String group,
+			String version, URL repository) {
+		URL result = null;
+		String path = group.replaceAll("\\.", "/") + "/" + artifact + "/"
+				+ version;
 
-		//try concrete path first
-		String loc=artifactURI(group, artifact, version);
+		// try concrete path first
+		String loc = artifactURI(group, artifact, version);
 
 		try {
-			//test if the URL exists, with a short timeout
-			result = new URL(repository,loc);
+			// test if the URL exists, with a short timeout
+			result = new URL(repository, loc);
 			URLConnection con = result.openConnection();
 			con.setConnectTimeout(5000);
 			con.setReadTimeout(5000);
 			con.getInputStream();
-		}
-		catch(IOException e) {
-			result=null;
-			//try metadata
+		} catch (IOException e) {
+			result = null;
+			// try metadata
 			try {
-				URL metadata=new URL(repository, path+"/maven-metadata.xml");
-				URLConnection con=metadata.openConnection();
+				URL metadata = new URL(repository, path + "/maven-metadata.xml");
+				URLConnection con = metadata.openConnection();
 				con.setConnectTimeout(5000);
-				Document doc=DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(con.getInputStream());
-				//generate file = <artifact>-<version>-<timestamp>-<buildnumber>.jar
-				NodeList timestamps=doc.getElementsByTagName("timestamp");
-				NodeList buildnumbers=doc.getElementsByTagName("buildNumber");
+				Document doc = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder().parse(con.getInputStream());
+				// generate file =
+				// <artifact>-<version>-<timestamp>-<buildnumber>.jar
+				NodeList timestamps = doc.getElementsByTagName("timestamp");
+				NodeList buildnumbers = doc.getElementsByTagName("buildNumber");
 
-				if (timestamps.getLength()>0) {
-					String timestamp="";
+				if (timestamps.getLength() > 0) {
+					String timestamp = "";
 					String buildnumber;
 
-					if (timestamps.getLength()>1) {
-	                    System.out.println("More than 1 timestamp for snapshot");
-                    }
-					Node el=timestamps.item(0);
-					timestamp=el.getTextContent();
-					if (buildnumbers.getLength()>0) {
-						if (buildnumbers.getLength()>1) {
-	                        System.out.println("More than 1 buildnumber for snapshot");
-                        }
-						el=buildnumbers.item(0);
-						buildnumber=el.getTextContent();
+					if (timestamps.getLength() > 1) {
+						System.out
+								.println("More than 1 timestamp for snapshot");
+					}
+					Node el = timestamps.item(0);
+					timestamp = el.getTextContent();
+					if (buildnumbers.getLength() > 0) {
+						if (buildnumbers.getLength() > 1) {
+							System.out
+									.println("More than 1 buildnumber for snapshot");
+						}
+						el = buildnumbers.item(0);
+						buildnumber = el.getTextContent();
 
-						String file=artifact+"-"+version.replace("-SNAPSHOT", "")+"-"+timestamp+"-"+buildnumber+".jar";
-						URL snapshot=new URL(repository,path+"/"+file);
+						String file = artifact + "-"
+								+ version.replace("-SNAPSHOT", "") + "-"
+								+ timestamp + "-" + buildnumber + ".jar";
+						URL snapshot = new URL(repository, path + "/" + file);
 
-						//test that snapshot file exists.
+						// test that snapshot file exists.
 						con = snapshot.openConnection();
 						con.setConnectTimeout(5000);
 						con.setReadTimeout(5000);
 						con.getInputStream();
-						result=snapshot;
+						result = snapshot;
 					}
 				}
-			}
-			catch(IOException ex) {
-				//no metadata at this repository either so give up
-			}
-			catch(SAXException sex) {
-				System.out.println("SAX Exception parsing maven-metadata.xml for location "+path);
+			} catch (IOException ex) {
+				// no metadata at this repository either so give up
+			} catch (SAXException sex) {
+				System.out
+						.println("SAX Exception parsing maven-metadata.xml for location "
+								+ path);
 				sex.printStackTrace();
-			}
-			catch(ParserConfigurationException pcex) {
-				System.out.println("ParserConfigurationException parsing maven-metadata.xml for location "+path);
+			} catch (ParserConfigurationException pcex) {
+				System.out
+						.println("ParserConfigurationException parsing maven-metadata.xml for location "
+								+ path);
 				pcex.printStackTrace();
 			}
 		}
@@ -370,27 +394,33 @@ public class Bootstrap {
 		return result;
 	}
 
-	public static Method createLoaderMethod(List<URL> localUrls, List<URL> remoteUrls)
-			throws ClassNotFoundException, NoSuchMethodException {
-		Method result=null;
+	public static Method createLoaderMethod(List<URL> localUrls,
+			List<URL> remoteUrls) throws ClassNotFoundException,
+			NoSuchMethodException {
+		Method result = null;
 
-		//first try with just the local urls, since raven should be local by now
+		// first try with just the local urls, since raven should be local by
+		// now
 		try {
-			ClassLoader c = new URLClassLoader(localUrls.toArray(new URL[0]), null);
+			ClassLoader c = new URLClassLoader(localUrls.toArray(new URL[0]),
+					null);
 			result = createLoaderMethodWithClassloader(c);
-		} catch(Exception e) {
-			//now try with the remote too, this is probably fhe first run and raven needs fetching
-			List<URL> allUrls=new ArrayList<URL>();
+		} catch (Exception e) {
+			// now try with the remote too, this is probably fhe first run and
+			// raven needs fetching
+			List<URL> allUrls = new ArrayList<URL>();
 			allUrls.addAll(localUrls);
 			allUrls.addAll(remoteUrls);
-			ClassLoader c = new URLClassLoader(allUrls.toArray(new URL[0]), null);
+			ClassLoader c = new URLClassLoader(allUrls.toArray(new URL[0]),
+					null);
 			result = createLoaderMethodWithClassloader(c);
 		}
 
 		return result;
 	}
 
-	private static Method createLoaderMethodWithClassloader(ClassLoader c) throws ClassNotFoundException, NoSuchMethodException {
+	private static Method createLoaderMethodWithClassloader(ClassLoader c)
+			throws ClassNotFoundException, NoSuchMethodException {
 		Method loaderMethod;
 		// override with system classloader if running in eclipse
 		if (properties.getProperty("raven.eclipse") != null) {
@@ -497,31 +527,31 @@ public class Bootstrap {
 	 * <p>
 	 * If any exception occurs (such as out of diskspace), taverna.home will be
 	 * unset.
-	 *
+	 * 
 	 * <p>
 	 * On Windows, this will typically be something like:
-	 *
+	 * 
 	 * <pre>
 	 *      	C:\Document and settings\MyUsername\Application Data\MyApplication
 	 * </pre>
-	 *
+	 * 
 	 * while on Mac OS X it will be something like:
-	 *
+	 * 
 	 * <pre>
 	 *      	/Users/MyUsername/Library/Application Support/MyApplication
 	 * </pre>
-	 *
+	 * 
 	 * All other OS'es are assumed to be UNIX-alike, returning something like:
-	 *
+	 * 
 	 * <pre>
 	 *      	/user/myusername/.myapplication
 	 * </pre>
-	 *
+	 * 
 	 * <p>
 	 * If the directory does not already exist, it will be created. It will also
 	 * create the 'conf' directory within it if it doesn't exist.
 	 * </p>
-	 *
+	 * 
 	 * @return System property <code>taverna.home</code> contains path of an
 	 *         existing directory for Taverna user-centric files.
 	 */
@@ -579,8 +609,8 @@ public class Bootstrap {
 		// create conf folder
 		File conf = new File(appHome, "conf");
 		if (!conf.exists()) {
-	        conf.mkdir();
-        }
+			conf.mkdir();
+		}
 
 		System.setProperty("taverna.home", appHome.getAbsolutePath());
 		return;
