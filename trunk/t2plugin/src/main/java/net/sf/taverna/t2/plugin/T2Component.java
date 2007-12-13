@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -44,6 +45,7 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 public class T2Component extends JPanel implements WorkflowModelViewSPI {
@@ -51,7 +53,13 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private static final long serialVersionUID = 6964568042620234711L;
 
 	private static final Logger logger = Logger.getLogger(T2Component.class);
+	
+	static final File defaultDataManagerDir = new File(System.getProperty("taverna.home"), "t2-datamanager");
+	
+	public static final String DATA_STORE_PROPERTY = "dataManagerDir";
 
+	private static Preferences userPrefs = Preferences.userNodeForPackage(T2Component.class);
+	
 	private ScuflModel model;
 
 	private JButton runButton;
@@ -59,6 +67,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private JButton testButton;
 
 	private JButton stopButton;
+
+	private JButton preferencesButton;
 
 	private JTextArea runStatus;
 
@@ -72,6 +82,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
+	
+	private PreferencesFrame preferencesFrame = new PreferencesFrame();
 
 	private WorkflowInstanceFacadeImpl facade;
 
@@ -83,9 +95,6 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		runButton = createRunButton();
 		stopButton = new JButton(new AbstractAction("Stop") {
 
-			/**
-			 * 
-			 */
 			private static final long serialVersionUID = -3675250815643062008L;
 
 			public void actionPerformed(ActionEvent e) {
@@ -96,6 +105,17 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		});
 
+		preferencesButton = new JButton("Preferences");
+		preferencesButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				preferencesFrame.pack();
+				preferencesFrame.setLocationRelativeTo(T2Component.this);
+				preferencesFrame.setVisible(true);
+			}
+			
+		});
+		
 		runStatus = new JTextArea();
 		runStatus.setSize(new Dimension(0, 200));
 
@@ -116,6 +136,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		buttonPanel.add(testButton);
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
+		buttonPanel.add(preferencesButton);
 
 		JSplitPane midPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		midPanel.add(topPanel);
@@ -303,8 +324,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	protected InvocationContext createContext() {
 		// final DataManager dataManager = new InMemoryDataManager("namespace",
 		// Collections.EMPTY_SET);
-		String tavHome = System.getProperty("taverna.home");
-		File dataManagerDir = new File(tavHome, "t2-datamanager");
+		
+		String dataManagerStore = userPrefs
+				.get(DATA_STORE_PROPERTY, defaultDataManagerDir.getAbsolutePath());
+		File dataManagerDir = new File(dataManagerStore);
+		
 		final DataManager dataManager = new FileDataManager(UUID.randomUUID()
 				.toString(), Collections.EMPTY_SET, dataManagerDir);
 
