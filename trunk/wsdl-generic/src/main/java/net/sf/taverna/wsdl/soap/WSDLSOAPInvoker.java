@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-30 12:13:38 $
+ * Last modified on   $Date: 2007-12-13 17:07:36 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -79,6 +79,7 @@ public class WSDLSOAPInvoker {
 	private WSDLParser parser;
 	private String operationName;
 	private List<String> outputNames;
+	
 	private static Logger logger = Logger.getLogger(WSDLSOAPInvoker.class);
 
 	public WSDLSOAPInvoker(WSDLParser parser, String operationName,
@@ -124,10 +125,13 @@ public class WSDLSOAPInvoker {
 		SOAPBodyElement body = builder.build(inputMap);
 
 		SOAPEnvelope requestEnv = new SOAPEnvelope();
-
+		
 		requestEnv.addBodyElement(body);
-
+		logger.info("Invoking service with SOAP envelope:\n"+requestEnv);
+		
 		SOAPEnvelope responseEnv = call.invoke(requestEnv);
+		
+		logger.info("Recieved SOAP response:\n"+responseEnv);
 
 		Map<String, Object> result;
 		if (responseEnv == null) {

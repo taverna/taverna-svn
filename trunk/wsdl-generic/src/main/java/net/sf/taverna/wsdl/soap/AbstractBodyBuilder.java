@@ -2,6 +2,7 @@ package net.sf.taverna.wsdl.soap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +23,7 @@ import net.sf.taverna.wsdl.parser.WSDLParser;
 
 import org.apache.axis.encoding.Base64;
 import org.apache.axis.message.SOAPBodyElement;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,6 +31,8 @@ import org.xml.sax.SAXException;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractBodyBuilder implements BodyBuilder {
+	
+	private static Logger logger = Logger.getLogger(AbstractBodyBuilder.class);
 
 	private String style;
 	private WSDLParser parser;
@@ -261,7 +265,7 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
 			TypeDescriptor descriptor = (TypeDescriptor) iterator.next();
-			nsCount = mapNamespace(descriptor, result, nsCount);
+			nsCount = mapNamespace(descriptor, new ArrayList<TypeDescriptor>(),result, nsCount);
 
 		}
 
@@ -278,24 +282,30 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 	 * @param nsCount
 	 * @return
 	 */
-	protected int mapNamespace(TypeDescriptor descriptor,
+	protected int mapNamespace(TypeDescriptor descriptor, List<TypeDescriptor> visitedDescriptors,
 			Map<String, String> namespaceMap, int nsCount) {
-		String namespace = descriptor.getNamespaceURI();
-		if (namespace != null && namespace.length() > 0
-				&& !namespaceMap.containsKey(namespace)) {
-			namespaceMap.put(namespace, "ns" + nsCount);
-			nsCount++;
-		}
-
-		if (descriptor instanceof ArrayTypeDescriptor) {
-			nsCount = mapNamespace(((ArrayTypeDescriptor) descriptor)
-					.getElementType(), namespaceMap, nsCount);
-		} else if (descriptor instanceof ComplexTypeDescriptor) {
-			List elements = ((ComplexTypeDescriptor) descriptor).getElements();
-			for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
-				nsCount = mapNamespace((TypeDescriptor) iterator.next(),
-						namespaceMap, nsCount);
+		if (!visitedDescriptors.contains(descriptor)) {
+			visitedDescriptors.add(descriptor);
+			String namespace = descriptor.getNamespaceURI();
+			if (namespace != null && namespace.length() > 0
+					&& !namespaceMap.containsKey(namespace)) {
+				namespaceMap.put(namespace, "ns" + nsCount);
+				nsCount++;
 			}
+	
+			if (descriptor instanceof ArrayTypeDescriptor) {
+				nsCount = mapNamespace(((ArrayTypeDescriptor) descriptor)
+						.getElementType(),visitedDescriptors, namespaceMap, nsCount);
+			} else if (descriptor instanceof ComplexTypeDescriptor) {
+				List elements = ((ComplexTypeDescriptor) descriptor).getElements();
+				for (Iterator iterator = elements.iterator(); iterator.hasNext();) {
+					nsCount = mapNamespace((TypeDescriptor) iterator.next(),visitedDescriptors,
+							namespaceMap, nsCount);
+				}
+			}
+		}
+		else {
+			logger.error("The descriptor: "+descriptor+" is appears to be part of a cyclic schema. Bailing out of mapping namespace.");
 		}
 
 		return nsCount;
