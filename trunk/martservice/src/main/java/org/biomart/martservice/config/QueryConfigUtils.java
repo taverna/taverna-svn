@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryConfigUtils.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 15:57:30 $
+ * Last modified on   $Date: 2007-12-13 11:38:57 $
  *               by   $Author: davidwithers $
  * Created on 30-Mar-2006
  *****************************************************************/
@@ -109,8 +109,8 @@ public abstract class QueryConfigUtils {
 		}
 	}
 
-	public static List getOutputFormats(AttributePage attributePage) {
-		List outputFormats = new ArrayList();
+	public static List<String> getOutputFormats(AttributePage attributePage) {
+		List<String> outputFormats = new ArrayList<String>();
 		
 		String[] formats = attributePage.getOutFormats().split(",");
 		for (int i = 0; i < formats.length; i++) {
@@ -360,10 +360,8 @@ public abstract class QueryConfigUtils {
 			throws MartServiceException {
 		FilterDescription referencedFilter = null;
 		DatasetConfig datasetConfig = martService.getDatasetConfig(dataset);
-		List filterDescriptions = datasetConfig.getAllFilterDescriptions();
-		for (Iterator iter = filterDescriptions.iterator(); iter.hasNext();) {
-			FilterDescription filterDescription = (FilterDescription) iter
-					.next();
+		List<FilterDescription> filterDescriptions = datasetConfig.getAllFilterDescriptions();
+		for (FilterDescription filterDescription : filterDescriptions) {
 			if (filterName.equals(filterDescription.getInternalName())) {
 				if (!"true".equals(filterDescription.getHidden())) {
 					referencedFilter = filterDescription;
@@ -527,8 +525,8 @@ public abstract class QueryConfigUtils {
 		return list.trim().replaceAll("\\s", ",");
 	}
 
-	public static List csvToList(String csv) {
-		List list = new ArrayList();
+	public static List<String> csvToList(String csv) {
+		List<String> list = new ArrayList<String>();
 
 		String[] splitString = csv.split(",");
 		for (int i = 0; i < splitString.length; i++) {
@@ -556,10 +554,10 @@ public abstract class QueryConfigUtils {
 	 * @return a List of objects to a comma separated string of the object's
 	 *         string representations
 	 */
-	public static String listToCsv(List list) {
+	public static String listToCsv(List<?> list) {
 		StringBuffer sb = new StringBuffer();
-		for (Iterator iter = list.iterator(); iter.hasNext();) {
-			sb.append((String) iter.next());
+		for (Iterator<?> iter = list.iterator(); iter.hasNext();) {
+			sb.append(iter.next().toString());
 			if (iter.hasNext()) {
 				sb.append(',');
 			}

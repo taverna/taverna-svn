@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryComponent.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:08 $
+ * Last modified on   $Date: 2007-12-13 11:38:56 $
  *               by   $Author: davidwithers $
  * Created on 03-Apr-2006
  *****************************************************************/
@@ -35,7 +35,6 @@ package org.biomart.martservice.config.ui;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -58,7 +57,7 @@ public abstract class QueryComponent extends JPanel {
 
 	public static final int LINK = 2;
 
-	private Vector queryComponentListeners = new Vector();
+	private Vector<QueryComponentListener> queryComponentListeners = new Vector<QueryComponentListener>();
 
 	private MartDataset dataset;
 
@@ -258,9 +257,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireAttributeAdded(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.attributeAdded(event);
 		}
 	}
@@ -271,9 +268,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireAttributeRemoved(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.attributeRemoved(event);
 		}
 	}
@@ -284,9 +279,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireFilterAdded(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.filterAdded(event);
 		}
 	}
@@ -297,9 +290,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireFilterRemoved(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.filterRemoved(event);
 		}
 	}
@@ -310,9 +301,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireFilterChanged(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.filterChanged(event);
 		}
 	}
@@ -323,9 +312,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireLinkAdded(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.linkAdded(event);
 		}
 	}
@@ -336,9 +323,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireLinkRemoved(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.linkRemoved(event);
 		}
 	}
@@ -349,9 +334,7 @@ public abstract class QueryComponent extends JPanel {
 	 * @param event the event to be fired
 	 */
 	protected void fireLinkChanged(QueryComponentEvent event) {
-		for (Iterator iter = queryComponentListeners.iterator(); iter.hasNext();) {
-			QueryComponentListener listener = (QueryComponentListener) iter
-					.next();
+		for (QueryComponentListener listener : queryComponentListeners) {
 			listener.linkChanged(event);
 		}
 	}

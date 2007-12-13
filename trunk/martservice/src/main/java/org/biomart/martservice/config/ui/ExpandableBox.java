@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ExpandableBox.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-06-22 09:41:12 $
+ * Last modified on   $Date: 2007-12-13 11:38:56 $
  *               by   $Author: davidwithers $
  * Created on Jun 22, 2007
  *****************************************************************/
@@ -53,10 +53,12 @@ import javax.swing.border.LineBorder;
  * A component that when collapsed only shows a title and when expanded shows
  * the title and contained components.
  * 
- * @author davidwithers
+ * @author David Withers
  * 
  */
 public class ExpandableBox extends JPanel {
+	private static final long serialVersionUID = -5678399632577606442L;
+
 	private JButton expandButton;
 
 	private JPanel labelBox;

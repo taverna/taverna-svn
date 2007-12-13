@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartQuery.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:04 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 08-May-2006
  *****************************************************************/
@@ -60,7 +60,7 @@ public class MartQuery {
 
 	private Query query;
 
-	private Map linkedDatasets = new HashMap();
+	private Map<String, String> linkedDatasets = new HashMap<String, String>();
 
 	private String softwareVersion;
 
@@ -179,9 +179,7 @@ public class MartQuery {
 			dataset.removeAllAttributes();
 			dataset.removeAllFilters();
 			query.removeDataset(dataset);
-			Set links = query.getLinks(datasetName);
-			for (Iterator iter = links.iterator(); iter.hasNext();) {
-				Link link = (Link) iter.next();
+			for (Link link : query.getLinks(datasetName)) {
 				removeLinkedDataset(link.getTarget());
 			}
 
@@ -209,7 +207,7 @@ public class MartQuery {
 		}
 	}
 
-	public Set getLinkedDatasets() {
+	public Set<String> getLinkedDatasets() {
 		return linkedDatasets.keySet();
 	}
 
@@ -223,16 +221,13 @@ public class MartQuery {
 	 * 
 	 * @return the Datasets that this Query contains in the order specified by
 	 *         the links
-	 * @deprecated MartJ 0.5 won't require links to be specified
 	 */
-	public List getDatasetsInLinkOrder() {
+	public List<Dataset> getDatasetsInLinkOrder() {
 		if (query.getLinks().size() > 0) {
-			List datasets = new ArrayList();
+			List<Dataset> datasets = new ArrayList<Dataset>();
 			datasets.addAll(getLinkedDatasets(martDataset.getName()));
 			// add other datasets
-			List allDatasets = query.getDatasets();
-			for (Iterator iter = allDatasets.iterator(); iter.hasNext();) {
-				Dataset dataset = (Dataset) iter.next();
+			for (Dataset dataset : query.getDatasets()) {
 				if (!datasets.contains(dataset)) {
 					datasets.add(dataset);
 				}
@@ -246,10 +241,9 @@ public class MartQuery {
 	/**
 	 * @param dataset
 	 * @return
-	 * @deprecated MartJ 0.5 won't require links to be specified
 	 */
-	private List getLinkedDatasets(String dataset) {
-		List datasets = new ArrayList();
+	private List<Dataset> getLinkedDatasets(String dataset) {
+		List<Dataset> datasets = new ArrayList<Dataset>();
 		datasets.add(query.getDataset(dataset));
 		if (query.containsLink(dataset)) {
 			Link link = query.getLink(dataset);
@@ -266,18 +260,16 @@ public class MartQuery {
 	 * 
 	 * @return all the Attributes from all the Datasets in this Query in the
 	 *         order specified by the links
-	 * @deprecated MartJ 0.5 won't require links to be specified
 	 */
-	public List getAttributesInLinkOrder() {
-		List attributes = new ArrayList();
-		List datasets;
+	public List<Attribute> getAttributesInLinkOrder() {
+		List<Attribute> attributes = new ArrayList<Attribute>();
+		List<Dataset> datasets;
 		if (softwareVersion == null) {
 			datasets = getDatasetsInLinkOrder();
 		} else {
 			datasets = query.getDatasets();
 		}
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
+		for (Dataset dataset : datasets) {
 			attributes.addAll(dataset.getAttributes());
 		}
 		return attributes;
@@ -369,21 +361,16 @@ public class MartQuery {
 
 	/**
 	 * @throws MartServiceException
-	 * @deprecated MartJ 0.5 won't require links to be specified
 	 */
 	public void calculateLinks() throws MartServiceException {
 		if (softwareVersion == null) {
 			if (!martService.linksCalculated()) {
 				martService.calculateLinks();
 			}
-			Set links = query.getLinks();
-			for (Iterator iter = links.iterator(); iter.hasNext();) {
-				Link link = (Link) iter.next();
+			for (Link link : query.getLinks()) {
 				query.removeLink(link);
 			}
-			List datasets = query.getDatasets();
-			for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-				Dataset dataset = (Dataset) iter.next();
+			for (Dataset dataset : query.getDatasets()) {
 				if (!martDataset.getName().equals(dataset.getName())) {
 					addLinks(dataset.getName());
 				}
@@ -394,13 +381,12 @@ public class MartQuery {
 	/**
 	 * @param source
 	 * @throws MartServiceException
-	 * @deprecated MartJ 0.5 won't require links to be specified
 	 */
 	public void addLinks(String source) throws MartServiceException {
 		MartDataset sourceDataset = martService.getDataset(martDataset
 				.getVirtualSchema(), source);
 		MartDataset targetDataset = martDataset;
-		List path = martService.getPath(sourceDataset, targetDataset);
+		List<MartDataset> path = martService.getPath(sourceDataset, targetDataset);
 		if (path == null) {
 			path = martService.getPath(targetDataset, sourceDataset);
 		}
@@ -408,7 +394,7 @@ public class MartQuery {
 			throw new MartServiceException("No link between " + source
 					+ " and " + targetDataset.getName());
 		}
-		Iterator iter = path.iterator();
+		Iterator<MartDataset> iter = path.iterator();
 		if (iter.hasNext()) {
 			MartDataset lastDataset = (MartDataset) iter.next();
 			while (iter.hasNext()) {
@@ -420,7 +406,7 @@ public class MartQuery {
 					if (getLink(source) != null) {
 						linkId = getLink(source);
 					} else {
-						List attributes = query.getDataset(source)
+						List<Attribute> attributes = query.getDataset(source)
 								.getAttributes();
 						if (attributes.size() > 0) {
 							Attribute attribute = (Attribute) attributes.get(0);

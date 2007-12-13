@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 15:57:30 $
+ * Last modified on   $Date: 2007-12-13 11:38:56 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -144,21 +144,21 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 	private DatasetConfig datasetConfig;
 
-	private Map filterNameToComponentMap = new HashMap();
+	private Map<String, Component> filterNameToComponentMap = new HashMap<String, Component>();
 
-	private Map attributeNameToComponentMap = new HashMap();
+	private Map<String, List<Component>> attributeNameToComponentMap = new HashMap<String, List<Component>>();
 
-	private Map filterToDisplayName = new HashMap();
+	private Map<String, String> filterToDisplayName = new HashMap<String, String>();
 
-	private Map attributeToDisplayName = new HashMap();
+	private Map<String, String> attributeToDisplayName = new HashMap<String, String>();
 
-	private Map attributePageNameToComponent = new HashMap();
+	private Map<String, Component> attributePageNameToComponent = new HashMap<String, Component>();
 
-	private Map attributePageNameToButton = new HashMap();
+	private Map<String, JRadioButton> attributePageNameToButton = new HashMap<String, JRadioButton>();
 
 	private boolean settingAttributeState = false;
 
-	private List componentRegister = new ArrayList();
+	private List<Component> componentRegister = new ArrayList<Component>();
 
 	private int datasetNumber;
 
@@ -241,9 +241,9 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 									.getDataset1CountLabel();
 							setSummaryCount(query, datasetName, label1);
 
-							Set linkedDatasets = martQuery.getLinkedDatasets();
+							Set<String> linkedDatasets = martQuery.getLinkedDatasets();
 							if (linkedDatasets.size() == 1) {
-								String linkedDatasetName = (String) linkedDatasets
+								String linkedDatasetName = linkedDatasets
 										.iterator().next();
 								JLabel label2 = summaryPanel
 										.getDataset2CountLabel();
@@ -893,10 +893,10 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			if (!attributeNameToComponentMap.containsKey(component
 					.getQualifiedName())) {
 				attributeNameToComponentMap.put(component.getQualifiedName(),
-						new ArrayList());
+						new ArrayList<Component>());
 			}
-			((List) attributeNameToComponentMap.get(component
-					.getQualifiedName())).add(component);
+			attributeNameToComponentMap.get(component
+					.getQualifiedName()).add(component);
 			componentRegister.add(component);
 			// nasty hard coded rules that aren't in the configs
 			// component.addQueryComponentListener(new QueryComponentAdapter() {
@@ -1041,9 +1041,9 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 		if (!attributeNameToComponentMap.containsKey(component
 				.getQualifiedName())) {
 			attributeNameToComponentMap.put(component.getQualifiedName(),
-					new ArrayList());
+					new ArrayList<Component>());
 		}
-		((List) attributeNameToComponentMap.get(component.getQualifiedName()))
+		attributeNameToComponentMap.get(component.getQualifiedName())
 				.add(component);
 		componentRegister.add(component);
 		/*
@@ -1275,7 +1275,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 	public Component getFilterDescriptionsUI(
 			FilterDescription[] filterDescriptions, Object data)
 			throws MartServiceException {
-		List components = new ArrayList();
+		List<Component> components = new ArrayList<Component>();
 		for (int i = 0; i < filterDescriptions.length; i++) {
 			if (QueryConfigUtils.display(filterDescriptions[i])) {
 				Component component = getFilterDescriptionUI(
@@ -1314,8 +1314,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			JComponent box = new JPanel(
 					new GridLayout(components.size() / 2, 2));
 			box.setBackground(componentBackgroundColor);
-			for (Iterator iter = components.iterator(); iter.hasNext();) {
-				box.add((Component) iter.next());
+			for (Component component : components) {
+				box.add(component);
 			}
 			return box;
 		} else {
@@ -1379,12 +1379,12 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			} else if (type.equals("id_list")
 					|| QueryConfigUtils.isIdList(displayedFilter)) {
 				Option[] options = displayedFilter.getOptions();
-				List filters = new ArrayList();
+				List<TextFilterComponent> filters = new ArrayList<TextFilterComponent>();
 				for (int i = 0; i < options.length; i++) {
 					FilterDescription idFilterDescription = new FilterDescription(
 							options[i]);
 					idFilterDescription.setType("id_list");
-					QueryComponent queryComponent = new TextFilterComponent(
+					TextFilterComponent queryComponent = new TextFilterComponent(
 							idFilterDescription, martDataset);
 					queryComponent.setPointerDataset(pointerDataset);
 					filters.add(queryComponent);
@@ -1566,9 +1566,9 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 		for (int i = 0; i < attributePages.length; i++) {
 			if (QueryConfigUtils.display(attributePages[i])) {
-				Component component = (Component) attributePageNameToComponent
+				Component component = attributePageNameToComponent
 						.get(attributePages[i].getInternalName());
-				JRadioButton button = (JRadioButton) attributePageNameToButton
+				JRadioButton button = attributePageNameToButton
 						.get(attributePages[i].getInternalName());
 				if (component != null && button != null) {
 					int attributeCount = getSelectedAttributeComponents(
@@ -1980,16 +1980,16 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 		private JTextArea textArea;
 
-		private Map componentMap = new HashMap();
+		private Map<String, QueryComponent> componentMap = new HashMap<String, QueryComponent>();
 
-		private List filterList = new ArrayList();
+		private List<String> filterList = new ArrayList<String>();
 
 		private int currentIndex;
 
 		private boolean valueChanging;
 
 		public IdListFilterComponent(FilterDescription description,
-				MartDataset dataset, List filterComponentList) {
+				MartDataset dataset, List<TextFilterComponent> filterComponentList) {
 			setLayout(new MinimalLayout(MinimalLayout.VERTICAL));
 			setBackground(componentBackgroundColor);
 
@@ -1998,9 +1998,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 			comboBox.setBackground(componentBackgroundColor);
 			comboBox.setModel(comboBoxModel);
 
-			for (Iterator iter = filterComponentList.iterator(); iter.hasNext();) {
-				TextFilterComponent filterComponent = (TextFilterComponent) iter
-						.next();
+			for (TextFilterComponent filterComponent : filterComponentList) {
 				BaseNamedConfigurationObject filterDescription = filterComponent
 						.getConfigObject();
 				componentMap.put(filterDescription.getInternalName(),
@@ -2050,7 +2048,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 							if (!valueChanging) {
 								valueChanging = true;
-								QueryComponent queryComponent = (QueryComponent) componentMap
+								QueryComponent queryComponent = componentMap
 										.get(filterList.get(selectedIndex));
 								queryComponent.setValue(QueryConfigUtils
 										.valuePerLineToCsv(textArea.getText()));
@@ -2060,8 +2058,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 						} else if (e.getStateChange() == ItemEvent.DESELECTED) {
 							if (!valueChanging) {
 								valueChanging = true;
-								((QueryComponent) componentMap.get(filterList
-										.get(currentIndex))).setSelected(false);
+								componentMap.get(filterList
+										.get(currentIndex)).setSelected(false);
 								valueChanging = false;
 							}
 						}
@@ -2089,8 +2087,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 						int selectedIndex = comboBox.getSelectedIndex();
 						String value = QueryConfigUtils
 								.valuePerLineToCsv(textArea.getText());
-						((QueryComponent) componentMap.get(filterList
-								.get(selectedIndex))).setValue(value);
+						componentMap.get(filterList
+								.get(selectedIndex)).setValue(value);
 						valueChanging = false;
 					}
 				}
@@ -2158,7 +2156,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					if (e.getStateChange() == ItemEvent.SELECTED) {
 						if (!valueChanging) {
 							valueChanging = true;
-							QueryComponent queryComponent = (QueryComponent) componentMap
+							QueryComponent queryComponent = componentMap
 									.get(filterList.get(selectedIndex));
 							queryComponent.setValue(QueryConfigUtils
 									.valuePerLineToCsv(textArea.getText()));
@@ -2168,8 +2166,8 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					} else if (e.getStateChange() == ItemEvent.DESELECTED) {
 						if (!valueChanging) {
 							valueChanging = true;
-							((QueryComponent) componentMap.get(filterList
-									.get(selectedIndex))).setSelected(false);
+							componentMap.get(filterList
+									.get(selectedIndex)).setSelected(false);
 							valueChanging = false;
 						}
 					}
@@ -2195,7 +2193,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 
 		private Map componentMap = new HashMap();
 
-		private List filterList = new ArrayList();
+		private List<String> filterList = new ArrayList<String>();
 
 		private int currentIndex;
 
@@ -3143,10 +3141,10 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					if (linkedDataset != null
 							&& linkedDataset.getName().equals(
 									attribute.getContainingDataset().getName())) {
-						displayName = (String) linkedDatasetFactory.attributeToDisplayName
+						displayName = linkedDatasetFactory.attributeToDisplayName
 								.get(attribute.getName());
 					} else {
-						displayName = (String) attributeToDisplayName
+						displayName = attributeToDisplayName
 								.get(attribute.getName());
 					}
 					if (displayName == null) {
@@ -3162,7 +3160,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 						displayName = (String) linkedDatasetFactory.filterToDisplayName
 								.get(filter.getName());
 					} else {
-						displayName = (String) filterToDisplayName.get(filter
+						displayName = filterToDisplayName.get(filter
 								.getName());
 					}
 					if (displayName == null) {

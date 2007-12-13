@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryConfigController.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 15:57:30 $
+ * Last modified on   $Date: 2007-12-13 11:38:57 $
  *               by   $Author: davidwithers $
  * Created on 27-Mar-2006
  *****************************************************************/
@@ -35,7 +35,6 @@ package org.biomart.martservice.config;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -49,7 +48,6 @@ import org.biomart.martservice.query.Filter;
 import org.biomart.martservice.query.Query;
 import org.biomart.martservice.query.QueryListener;
 import org.ensembl.mart.lib.config.FilterDescription;
-import org.ensembl.mart.lib.config.Option;
 
 /**
  * Controls the interaction between graphical <code>QueryComponent</code>s
@@ -67,13 +65,13 @@ public class QueryConfigController {
 
 	private Query query;
 
-	private Map initialAttributeMap = new HashMap();
+	private Map<String, Attribute> initialAttributeMap = new HashMap<String, Attribute>();
 
-	private Map initialFilterMap = new HashMap();
+	private Map<String, Filter> initialFilterMap = new HashMap<String, Filter>();
 
-	private Map nameToAttributeMap = new HashMap();
+	private Map<String, Attribute> nameToAttributeMap = new HashMap<String, Attribute>();
 
-	private Map nameToFilterMap = new HashMap();
+	private Map	<String, Filter> nameToFilterMap = new HashMap<String, Filter>();
 
 	private QueryComponentHandler queryComponenHandler = new QueryComponentHandler();
 
@@ -87,15 +85,11 @@ public class QueryConfigController {
 		query = martQuery.getQuery();
 		query.addQueryListener(queryListener);
 
-		List attributes = query.getAttributes();
-		for (Iterator iter = attributes.iterator(); iter.hasNext();) {
-			Attribute attribute = (Attribute) iter.next();
+		for (Attribute attribute : query.getAttributes()) {
 			initialAttributeMap.put(attribute.getQualifiedName(), attribute);
 			nameToAttributeMap.put(attribute.getQualifiedName(), attribute);
 		}
-		List filters = query.getFilters();
-		for (Iterator iter = filters.iterator(); iter.hasNext();) {
-			Filter filter = (Filter) iter.next();
+		for (Filter filter : query.getFilters()) {
 			initialFilterMap.put(filter.getQualifiedName(), filter);
 			nameToFilterMap.put(filter.getQualifiedName(), filter);
 		}
@@ -171,10 +165,10 @@ public class QueryConfigController {
 				queryComponent.setSelected(true);
 			}
 		} else if (queryComponent.getType() == QueryComponent.LINK) {
-			Iterator linkedDatasets = martQuery.getLinkedDatasets().iterator();
+			Iterator<String> linkedDatasets = martQuery.getLinkedDatasets().iterator();
 			// only one linked dataset allowed for now
 			if (linkedDatasets.hasNext()) {
-				String dataset = (String) linkedDatasets.next();
+				String dataset = linkedDatasets.next();
 				queryComponent.setName(dataset);
 				queryComponent.setValue(martQuery.getLink(dataset));
 			}

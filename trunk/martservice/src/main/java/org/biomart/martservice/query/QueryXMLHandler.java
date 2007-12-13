@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryXMLHandler.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-01 12:11:27 $
+ * Last modified on   $Date: 2007-12-13 11:38:57 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -104,15 +104,10 @@ public class QueryXMLHandler {
 		if (requestId != null) {
 			queryElement.setAttribute(REQUEST_ID_ATTRIBUTE, requestId);			
 		}
-		List datasets = query.getDatasets();
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Dataset dataset = (Dataset) iter.next();
+		for (Dataset dataset : query.getDatasets()) {
 			queryElement.addContent(datasetToElement(dataset, namespace));
 		}
-
-		Set links = query.getLinks();
-		for (Iterator iter = links.iterator(); iter.hasNext();) {
-			Link link = (Link) iter.next();
+		for (Link link : query.getLinks()) {
 			queryElement.addContent(linkToElement(link, namespace));
 		}
 
@@ -133,15 +128,11 @@ public class QueryXMLHandler {
 		Element datasetElement = new Element(DATASET_ELEMENT, namespace);
 		datasetElement.setAttribute(NAME_ATTRIBUTE, dataset.getName());
 
-		List attributes = dataset.getAttributes();
-		for (Iterator iterator = attributes.iterator(); iterator.hasNext();) {
-			Attribute attribute = (Attribute) iterator.next();
+		for (Attribute attribute : dataset.getAttributes()) {
 			datasetElement.addContent(attributeToElement(attribute, namespace));
 		}
 
-		List filters = dataset.getFilters();
-		for (Iterator iterator = filters.iterator(); iterator.hasNext();) {
-			Filter filter = (Filter) iterator.next();
+		for (Filter filter : dataset.getFilters()) {
 			datasetElement.addContent(filterToElement(filter, namespace));
 		}
 
@@ -242,14 +233,12 @@ public class QueryXMLHandler {
 		if (uniqueRows != null) {
 			query.setUniqueRows(Integer.parseInt(uniqueRows));
 		}
-		List datasets = element.getChildren(DATASET_ELEMENT, namespace);
-		for (Iterator iter = datasets.iterator(); iter.hasNext();) {
-			Element datasetElement = (Element) iter.next();
+		List<Element> datasets = element.getChildren(DATASET_ELEMENT, namespace);
+		for (Element datasetElement : datasets) {
 			query.addDataset(elementToDataset(datasetElement, namespace));
 		}
-		List links = element.getChildren(LINK_ELEMENT, namespace);
-		for (Iterator iter = links.iterator(); iter.hasNext();) {
-			Element linkElement = (Element) iter.next();
+		List<Element> links = element.getChildren(LINK_ELEMENT, namespace);
+		for (Element linkElement : links) {
 			query.addLink(elementToLink(linkElement));
 		}
 		return query;
@@ -268,15 +257,13 @@ public class QueryXMLHandler {
 	public static Dataset elementToDataset(Element element, Namespace namespace) {
 		Dataset dataset = new Dataset(element.getAttributeValue(NAME_ATTRIBUTE));
 
-		List attributes = element.getChildren(ATTRIBUTE_ELEMENT, namespace);
-		for (Iterator iter1 = attributes.iterator(); iter1.hasNext();) {
-			Element attributeElement = (Element) iter1.next();
+		List<Element> attributes = element.getChildren(ATTRIBUTE_ELEMENT, namespace);
+		for (Element attributeElement : attributes) {
 			dataset.addAttribute(elementToAttribute(attributeElement));
 		}
 
-		List filters = element.getChildren(FILTER_ELEMENT, namespace);
-		for (Iterator iter1 = filters.iterator(); iter1.hasNext();) {
-			Element filterElement = (Element) iter1.next();
+		List<Element> filters = element.getChildren(FILTER_ELEMENT, namespace);
+		for (Element filterElement : filters) {
 			dataset.addFilter(elementToFilter(filterElement));
 		}
 		return dataset;

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-04 14:17:19 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -41,7 +41,6 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
@@ -382,11 +381,9 @@ public class MartServiceUtils {
 //		return location.toString();
 //	}
 	
-	private static int getAttributeCount(List attributeList) {
+	private static int getAttributeCount(List<Attribute> attributeList) {
 		int result = 0;
-		for (Iterator iterator = attributeList.iterator(); iterator
-				.hasNext();) {
-			Attribute attribute = (Attribute) iterator.next();
+		for (Attribute attribute : attributeList) {
 			if (attribute.getAttributes() == null) {
 				result++;
 			} else {

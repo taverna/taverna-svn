@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartService.java,v $errors/failure.html
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 15:57:30 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -35,7 +35,6 @@ package org.biomart.martservice;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -43,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -79,23 +77,23 @@ public class MartService {
 
 	private MartRegistry registry;
 
-	private Map versionMap = new HashMap();
+	private Map<MartURLLocation, String> versionMap = new HashMap<MartURLLocation, String>();
 
-	private Map datasetsMap = new HashMap();
+	private Map<String, MartDataset[]> datasetsMap = new HashMap<String, MartDataset[]>();
 
-	private Map datasetConfigMap = new HashMap();
+	private Map<String, SoftReference<DatasetConfig>> datasetConfigMap = new HashMap<String, SoftReference<DatasetConfig>>();
 
-	private Map importablesMap = new HashMap();
+	private Map<String, Importable[]> importablesMap = new HashMap<String, Importable[]>();
 
-	private Map exportablesMap = new HashMap();
+	private Map<String, Exportable[]> exportablesMap = new HashMap<String, Exportable[]>();
 
-	private Map linkableDatasetsMap = new HashMap();
+	private Map<MartDataset, List<DatasetLink>> linkableDatasetsMap = new HashMap<MartDataset, List<DatasetLink>>();
 
-	private Map datasetToLinkSetMap = new HashMap();
+	private Map<MartDataset, Set<DatasetLink>> datasetToLinkSetMap = new HashMap<MartDataset, Set<DatasetLink>>();
 
-	private Map datasetsToPathMap = new HashMap();
+	private Map<MartDataset, Map<MartDataset, MartDataset>> datasetsToPathMap = new HashMap<MartDataset, Map<MartDataset, MartDataset>>();
 
-	private static final Map martServiceMap = new HashMap();
+	private static final Map<String, MartService> martServiceMap = new HashMap<String, MartService>();
 
 	private static final String fs = System.getProperty("file.separator");
 
@@ -130,7 +128,7 @@ public class MartService {
 		if (!martServiceMap.containsKey(location)) {
 			martServiceMap.put(location, new MartService(location));
 		}
-		return (MartService) martServiceMap.get(location);
+		return martServiceMap.get(location);
 	}
 
 	/**
@@ -209,7 +207,7 @@ public class MartService {
 			versionMap.put(martURLLocation, MartServiceUtils.getVersion(
 					location, requestId, martURLLocation));
 		}
-		return (String) versionMap.get(martURLLocation);
+		return versionMap.get(martURLLocation);
 	}
 
 	/**
@@ -220,12 +218,12 @@ public class MartService {
 	 *             if the MartService returns an error or is unavailable
 	 */
 	public MartDataset[] getDatasets() throws MartServiceException {
-		List datasets = new ArrayList();
+		List<MartDataset> datasets = new ArrayList<MartDataset>();
 		MartURLLocation[] locations = getRegistry().getMartURLLocations();
 		for (int i = 0; i < locations.length; i++) {
 			datasets.addAll(Arrays.asList(getDatasets(locations[i])));
 		}
-		return (MartDataset[]) datasets
+		return datasets
 				.toArray(new MartDataset[datasets.size()]);
 	}
 
@@ -240,7 +238,7 @@ public class MartService {
 	 */
 	public MartDataset[] getDatasets(String virtualSchema)
 			throws MartServiceException {
-		List datasets = new ArrayList();
+		List<MartDataset> datasets = new ArrayList<MartDataset>();
 		MartURLLocation[] locations = getRegistry().getMartURLLocations();
 		for (int i = 0; i < locations.length; i++) {
 			if (virtualSchema == null
@@ -248,7 +246,7 @@ public class MartService {
 				datasets.addAll(Arrays.asList(getDatasets(locations[i])));
 			}
 		}
-		return (MartDataset[]) datasets
+		return datasets
 				.toArray(new MartDataset[datasets.size()]);
 	}
 
@@ -268,7 +266,7 @@ public class MartService {
 			datasetsMap.put(name, MartServiceUtils.getDatasets(location, requestId,
 					martURLLocation));
 		}
-		return (MartDataset[]) datasetsMap.get(name);
+		return datasetsMap.get(name);
 	}
 
 	/**
@@ -316,11 +314,9 @@ public class MartService {
 						dataset);	
 			}
 			datasetConfigMap.put(qualifiedName,
-					new SoftReference(datasetConfig));
+					new SoftReference<DatasetConfig>(datasetConfig));
 		} else {
-			SoftReference ref = (SoftReference) datasetConfigMap
-					.get(qualifiedName);
-			datasetConfig = (DatasetConfig) ref.get();
+			datasetConfig = datasetConfigMap.get(qualifiedName).get();
 			if (datasetConfig == null) {
 				if (dataset.getModified() != null && cacheDirectory != null)	{
 					datasetConfig = getDatasetConfigFromCache(dataset);
@@ -328,7 +324,7 @@ public class MartService {
 					datasetConfig = MartServiceUtils.getDatasetConfig(location, requestId,
 							dataset);	
 				}
-				datasetConfigMap.put(qualifiedName, new SoftReference(
+				datasetConfigMap.put(qualifiedName, new SoftReference<DatasetConfig>(
 						datasetConfig));
 			}
 
@@ -337,6 +333,7 @@ public class MartService {
 	}
 
 	private DatasetConfig getDatasetConfigFromCache(MartDataset dataset) throws MartServiceException {
+		System.out.println("lookinf for " + dataset.getName());
 		DatasetConfig datasetConfig = null;
 		MartURLLocation mart = dataset.getMartURLLocation();
 		String path = mart.getHost()+fs+mart.getName()+fs+mart.getVirtualSchema();
@@ -355,6 +352,8 @@ public class MartService {
 				datasetConfigXMLUtils.loadDatasetConfigWithDocument(datasetConfig,
 						doc);
 				if (!datasetConfig.getModified().trim().equals(dataset.getModified().trim())) {
+					System.out.println(" " + datasetConfig.getModified().trim() + " != " + dataset.getModified().trim());
+					System.out.println("  Database: " + dataset.getMartURLLocation().getDatabase() + ", Dataset: " + dataset.getName());
 					datasetConfig = null;
 				}
 			} catch (IOException e) {
@@ -403,7 +402,7 @@ public class MartService {
 				return new Importable[0];
 			}
 		}
-		return (Importable[]) importablesMap.get(qualifiedName);
+		return importablesMap.get(qualifiedName);
 	}
 
 	/**
@@ -425,7 +424,7 @@ public class MartService {
 				return new Exportable[0];
 			}
 		}
-		return (Exportable[]) exportablesMap.get(qualifiedName);
+		return exportablesMap.get(qualifiedName);
 	}
 
 	/**
@@ -453,12 +452,12 @@ public class MartService {
 	 * @return datasets that can be linked to the specified dataset
 	 * @throws MartServiceException
 	 */
-	public List getLinkableDatasets(MartDataset martDataset)
+	public List<DatasetLink> getLinkableDatasets(MartDataset martDataset)
 			throws MartServiceException {
 		if (!linkableDatasetsMap.containsKey(martDataset)) {
-			List linkableDatasets = new ArrayList();
+			List<DatasetLink> linkableDatasets = new ArrayList<DatasetLink>();
 
-			Set importableSet = new HashSet();
+			Set<String> importableSet = new HashSet<String>();
 			Importable[] importables = getImportables(martDataset);
 			for (int i = 0; i < importables.length; i++) {
 				importableSet.add(importables[i].getLinkName());
@@ -485,7 +484,7 @@ public class MartService {
 			linkableDatasetsMap.put(martDataset, linkableDatasets);
 		}
 
-		return (List) linkableDatasetsMap.get(martDataset);
+		return linkableDatasetsMap.get(martDataset);
 	}
 
 	/*
@@ -548,10 +547,10 @@ public class MartService {
 		}
 	}
 
-	public List getPath(MartDataset source, MartDataset target) {
-		List path = new ArrayList();
+	public List<MartDataset> getPath(MartDataset source, MartDataset target) {
+		List<MartDataset> path = new ArrayList<MartDataset>();
 
-		Map pathMap = (Map) datasetsToPathMap.get(source);
+		Map<MartDataset, MartDataset> pathMap = datasetsToPathMap.get(source);
 
 		MartDataset currentDataset = target;
 
@@ -570,9 +569,8 @@ public class MartService {
 
 	public DatasetLink getLinkBetween(MartDataset exportingDataset,
 			MartDataset importingDataset) {
-		Set links = (Set) datasetToLinkSetMap.get(exportingDataset);
-		for (Iterator iter = links.iterator(); iter.hasNext();) {
-			DatasetLink link = (DatasetLink) iter.next();
+		Set<DatasetLink> links = datasetToLinkSetMap.get(exportingDataset);
+		for (DatasetLink link : links) {
 			MartDataset targetDataset = link.getTargetDataset();
 			if (importingDataset.equals(targetDataset)) {
 				return link;
@@ -582,12 +580,11 @@ public class MartService {
 		return null;
 	}
 
-	public List getLinksFrom(MartDataset dataset) {
-		List linksFrom = new ArrayList();
-		Set links = (Set) datasetToLinkSetMap.get(dataset);
+	public List<DatasetLink> getLinksFrom(MartDataset dataset) {
+		List<DatasetLink> linksFrom = new ArrayList<DatasetLink>();
+		Set<DatasetLink> links = datasetToLinkSetMap.get(dataset);
 		if (links != null) {
-			for (Iterator iter = links.iterator(); iter.hasNext();) {
-				DatasetLink link = (DatasetLink) iter.next();
+			for (DatasetLink link : links) {
 				if (link.getSourceDataset().equals(dataset)) {
 					linksFrom.add(link);
 				}
@@ -619,23 +616,23 @@ public class MartService {
 		}
 		if (datasetLink.hasLinks()) {
 			if (!datasetToLinkSetMap.containsKey(source)) {
-				datasetToLinkSetMap.put(source, new HashSet());
+				datasetToLinkSetMap.put(source, new HashSet<DatasetLink>());
 			}
 			if (!datasetToLinkSetMap.containsKey(target)) {
-				datasetToLinkSetMap.put(target, new HashSet());
+				datasetToLinkSetMap.put(target, new HashSet<DatasetLink>());
 			}
-			((Set) datasetToLinkSetMap.get(source)).add(datasetLink);
-			((Set) datasetToLinkSetMap.get(target)).add(datasetLink);
+			datasetToLinkSetMap.get(source).add(datasetLink);
+			datasetToLinkSetMap.get(target).add(datasetLink);
 		}
 	}
 
-	public Map dijkstra(MartDataset dataset) throws MartServiceException {
-		Map path = new HashMap();
-		LinkedList vertices = new LinkedList(Arrays.asList(getDatasets(dataset
+	public Map<MartDataset, MartDataset> dijkstra(MartDataset dataset) throws MartServiceException {
+		Map<MartDataset, MartDataset> path = new HashMap<MartDataset, MartDataset>();
+		LinkedList<MartDataset> vertices = new LinkedList<MartDataset>(Arrays.asList(getDatasets(dataset
 				.getVirtualSchema())));
-		Map dist = new HashMap();
-		for (Iterator iter = vertices.iterator(); iter.hasNext();) {
-			dist.put((MartDataset) iter.next(), new Integer(10000));
+		Map<MartDataset, Integer> dist = new HashMap<MartDataset, Integer>();
+		for (MartDataset vertex : vertices) {
+			dist.put(vertex, new Integer(10000));
 		}
 
 		dist.put(dataset, new Integer(0));
@@ -661,9 +658,8 @@ public class MartService {
 
 			vertices.remove(min_vert_idx);
 
-			List edges = getLinksFrom(min_vert);
-			for (Iterator iter = edges.iterator(); iter.hasNext();) {
-				DatasetLink edge = (DatasetLink) iter.next();
+			List<DatasetLink> edges = getLinksFrom(min_vert);
+			for (DatasetLink edge : edges) {
 				MartDataset vertex = edge.getTargetDataset();
 
 				if (((Integer) dist.get(vertex)).intValue() > ((Integer) dist

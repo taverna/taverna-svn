@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DatasetLink.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:06 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 12-Apr-2006
  *****************************************************************/
@@ -44,13 +44,13 @@ import java.util.Set;
  * @author David Withers
  */
 public class DatasetLink {
-	private static final Comparator displayComparator = new DatasetLinkComparator();
+	private static final Comparator<DatasetLink> displayComparator = new DatasetLinkComparator();
 
 	private MartDataset sourceDataset;
 
 	private MartDataset targetDataset;
 
-	private Set links = new HashSet();
+	private Set<String> links = new HashSet<String>();
 
 	/**
 	 * Constructs an instance of an <code>DatasetLink</code> with the
@@ -110,7 +110,7 @@ public class DatasetLink {
 	 * @return the link IDs that could join the source and target MartDatasets
 	 */
 	public String[] getLinks() {
-		return (String[]) links.toArray(new String[links.size()]);
+		return links.toArray(new String[links.size()]);
 	}
 
 	/**
@@ -179,7 +179,7 @@ public class DatasetLink {
 	 * 
 	 * @return the display comparator
 	 */
-	public static Comparator getDisplayComparator() {
+	public static Comparator<DatasetLink> getDisplayComparator() {
 		return displayComparator;
 	}
 
@@ -192,7 +192,7 @@ public class DatasetLink {
  * 
  * @author David Withers
  */
-class DatasetLinkComparator implements Comparator {
+class DatasetLinkComparator implements Comparator<DatasetLink> {
 
 	/**
 	 * Compares two DatasetLinks based on the display name of the source dataset
@@ -200,15 +200,15 @@ class DatasetLinkComparator implements Comparator {
 	 * dataset.
 	 * 
 	 * @param o1
-	 *            the first object to be compared
+	 *            the first DatasetLink to be compared
 	 * @param o2
-	 *            the second object to be compared
+	 *            the second DatasetLink to be compared
 	 * @return a negative integer, zero, or a positive integer as the first
 	 *         argument is less than, equal to, or greater than the second
 	 */
-	public int compare(Object o1, Object o2) {
-		MartDataset ds1 = ((DatasetLink) o1).getSourceDataset();
-		MartDataset ds2 = ((DatasetLink) o2).getSourceDataset();
+	public int compare(DatasetLink o1, DatasetLink o2) {
+		MartDataset ds1 = o1.getSourceDataset();
+		MartDataset ds2 = o2.getSourceDataset();
 		int result = ds1.getDisplayName().compareTo(ds2.getDisplayName());
 		if (result == 0) {
 			result = ds1.getMartURLLocation().getDisplayName().compareTo(

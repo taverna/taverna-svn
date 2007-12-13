@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceIcons.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:08 $
+ * Last modified on   $Date: 2007-12-13 11:38:56 $
  *               by   $Author: davidwithers $
  * Created on 24-Aug-2006
  *****************************************************************/
@@ -44,7 +44,7 @@ import javax.swing.ImageIcon;
  * @author witherd5
  */
 public class MartServiceIcons {
-	private static Map nameToIcon = new HashMap();
+	private static Map<String, Icon> nameToIcon = new HashMap<String, Icon>();
 
 	private static final String imageLocation = "org/biomart/martservice/config/ui/";
 

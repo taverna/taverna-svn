@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartRegistry.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:04 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -42,7 +42,7 @@ import java.util.List;
  * @author David Withers
  */
 public class MartRegistry {
-	private List martURLLocations = new ArrayList();
+	private List<MartURLLocation> martURLLocations = new ArrayList<MartURLLocation>();
 
 	/**
 	 * Returns the martURLLocations.
@@ -50,7 +50,7 @@ public class MartRegistry {
 	 * @return the martURLLocations.
 	 */
 	public MartURLLocation[] getMartURLLocations() {
-		return (MartURLLocation[]) martURLLocations
+		return martURLLocations
 				.toArray(new MartURLLocation[martURLLocations.size()]);
 	}
 

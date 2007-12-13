@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceXMLHandler.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-04 14:15:59 $
+ * Last modified on   $Date: 2007-12-13 11:38:55 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
@@ -208,9 +208,8 @@ public class MartServiceXMLHandler {
 	public static MartRegistry elementToRegistry(Element root,
 			Namespace namespace) {
 		MartRegistry registry = new MartRegistry();
-		List children = root.getChildren();
-		for (Iterator iterator = children.iterator(); iterator.hasNext();) {
-			Element childElement = (Element) iterator.next();
+		List<Element> children = root.getChildren();
+		for (Element childElement : children) {
 			if (childElement.getNamespace().equals(namespace)) {
 				if (childElement.getName().equals(MART_URL_LOCATION_ELEMENT)) {
 					MartURLLocation martURLLocation = MartServiceXMLHandler
@@ -221,11 +220,9 @@ public class MartServiceXMLHandler {
 						.equals(VIRTUAL_SCHEMA_ELEMENT)) {
 					String virtualSchema = childElement
 							.getAttributeValue(NAME_ATTRIBUTE);
-					List locations = childElement.getChildren(
+					List<Element> locations = childElement.getChildren(
 							MART_URL_LOCATION_ELEMENT, namespace);
-					for (Iterator iterator2 = locations.iterator(); iterator2
-							.hasNext();) {
-						Element location = (Element) iterator2.next();
+					for (Element location : locations) {
 						MartURLLocation martURLLocation = MartServiceXMLHandler
 								.elementToLocation(location);
 						martURLLocation.setVirtualSchema(virtualSchema);
@@ -304,8 +301,12 @@ public class MartServiceXMLHandler {
 		location.setMartUser(element.getAttributeValue(MART_USER_ATTRIBUTE));
 		location.setName(element.getAttributeValue(NAME_ATTRIBUTE));
 		location.setPath(element.getAttributeValue(PATH_ATTRIBUTE));
-		location.setPort(Integer.parseInt(element
-				.getAttributeValue(PORT_ATTRIBUTE)));
+		try {
+			location.setPort(Integer.parseInt(element
+					.getAttributeValue(PORT_ATTRIBUTE)));
+		} catch (NumberFormatException e) {
+			location.setPort(80);
+		}
 		location.setServerVirtualSchema(element
 				.getAttributeValue(SERVER_VIRTUAL_SCHEMA_ATTRIBUTE));
 		location.setVirtualSchema(element
