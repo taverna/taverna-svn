@@ -31,6 +31,30 @@ public class PreferencesFrame extends JFrame {
 		super("T2 Plugin Preferences");
 		setPreferredSize(new Dimension(500, 300));
 
+		JButton okButton = new JButton("OK");
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setVisible(false);
+			}
+		});
+		
+		JPanel dataManagerPanel = createDataManagerPreferences();
+
+		JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane.add("Data Manager", dataManagerPanel);
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(okButton);
+
+		JPanel mainPanel = new JPanel(new BorderLayout());
+		mainPanel.add(tabbedPane, BorderLayout.CENTER);
+		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+		add(mainPanel);
+
+	}
+
+	private JPanel createDataManagerPreferences() {
 		final Preferences prefs = Preferences
 				.userNodeForPackage(T2Component.class);
 		final String dataManagerStore = prefs.get(
@@ -74,12 +98,7 @@ public class PreferencesFrame extends JFrame {
 		buttonPanel.add(chooseDirButton, BorderLayout.EAST);
 		
 		storageDirPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.add("Data Manager", dataManagerPanel);
-
-		add(tabbedPane);
-
+		return dataManagerPanel;
 	}
 
 }
