@@ -2,11 +2,11 @@ package net.sf.taverna.t2.plugin;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,16 +14,18 @@ import java.util.Map.Entry;
 import java.util.prefs.Preferences;
 
 import javax.swing.AbstractAction;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
+import javax.swing.JTree;
+import javax.swing.border.EmptyBorder;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
@@ -35,6 +37,8 @@ import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.monitor.MonitorNode;
+import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.plugin.input.InputComponent;
 import net.sf.taverna.t2.plugin.input.InputComponent.InputComponentCallback;
 import net.sf.taverna.t2.plugin.pretest.HealthCheckReportPanel;
@@ -45,7 +49,6 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
-import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
 public class T2Component extends JPanel implements WorkflowModelViewSPI {
@@ -70,15 +73,15 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private JButton preferencesButton;
 
-	private JTextArea runStatus;
+	private JLabel runStatus;
 
 	private CardLayout cardLayout;
 
 	private JPanel topPanel;
+	
+	private JTree monitorTree;
 
 	private HealthCheckReportPanel reportPanel;
-
-	private JScrollPane runStatusScrollPane;
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
@@ -116,18 +119,21 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			
 		});
 		
-		runStatus = new JTextArea();
-		runStatus.setSize(new Dimension(0, 200));
+		runStatus = new JLabel(" ");
+		runStatus.setBorder(new EmptyBorder(5,5,5,5));
 
 		cardLayout = new CardLayout();
 		topPanel = new JPanel(cardLayout);
 
+		monitorTree = MonitorImpl.getJTree();
+		monitorTree.setRootVisible(false);
+		MonitorImpl.enableMonitoring(true);
+		
 		JPanel runStatusPanel = new JPanel(new BorderLayout());
-		runStatusPanel.add(runStatus, BorderLayout.CENTER);
-		runStatusPanel.add(Box.createVerticalStrut(200), BorderLayout.EAST);
+		runStatusPanel.add(runStatus, BorderLayout.NORTH);
+		runStatusPanel.add(new JScrollPane(monitorTree), BorderLayout.CENTER);
 
-		runStatusScrollPane = new JScrollPane(runStatusPanel);
-		topPanel.add(runStatusScrollPane, "run status");
+		topPanel.add(runStatusPanel, "run status");
 
 		reportPanel = new HealthCheckReportPanel();
 		topPanel.add(reportPanel, "health report");
@@ -188,22 +194,23 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			public void actionPerformed(ActionEvent arg0) {
 				if (model.getProcessors().length > 0
 						&& model.getWorkflowSinkPorts().length > 0) {
+					clearMonitorTree();
 					cardLayout.show(topPanel, "run status");
 					runButton.setEnabled(false);
 					testButton.setEnabled(false);
-					runStatus.setText("");
+					updateStatus("");
 					resultComponent.clear();
 
 					try {
 						updateStatus("Translating workflow...");
 						final Dataflow dataflow = WorkflowModelTranslator
 								.doTranslation(model);
-						updateStatus("done\n");
+						updateStatus("Translating workflow...done");
 						updateStatus("Validating workflow...");
 						DataflowValidationReport report = dataflow
 								.checkValidity();
 						if (report.isValid()) {
-							updateStatus("done\n");
+							updateStatus("Validating workflow...done");
 
 							List<? extends DataflowInputPort> inputPorts = dataflow
 									.getInputPorts();
@@ -224,13 +231,14 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 													logger
 															.info("Running workflow with "
 																	+ entities);
+													updateStatus("Running workflow...");
 													runWorkflow(dataflow,
 															entities, context);
 												} catch (EditException e) {
 													logger.error(e);
-													updateStatus("failed\n");
+													updateStatus("Running workflow...failed");
 													showErrorDialog(
-															"Unable to translate workflow",
+															"Unable to run workflow",
 															e.getMessage());
 													runButton.setEnabled(true);
 													testButton.setEnabled(true);
@@ -243,24 +251,25 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 								dialog.setVisible(true);
 								return;
 							}
+							updateStatus("Running workflow...");
 							runWorkflow(dataflow, null, context);
 						} else {
-							updateStatus("failed\n");
-							showErrorDialog("Unable to translate workflow",
+							updateStatus("Validating workflow...failed");
+							showErrorDialog("Unable to validate workflow",
 									"Workflow validation failed");
 							runButton.setEnabled(true);
 							testButton.setEnabled(true);
 						}
 					} catch (EditException e) {
 						logger.error(e);
-						updateStatus("failed\n");
-						showErrorDialog("Unable to translate workflow", e
+						updateStatus("Running workflow...failed");
+						showErrorDialog("Unable to run workflow", e
 								.getMessage());
 						runButton.setEnabled(true);
 						testButton.setEnabled(true);
 					} catch (WorkflowTranslationException e) {
 						logger.error(e);
-						updateStatus("failed\n");
+						updateStatus("Translating workflow...failed");
 						showErrorDialog("Unable to translate workflow", e
 								.getMessage());
 						runButton.setEnabled(true);
@@ -273,6 +282,24 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		});
 
 		return button;
+	}
+
+	protected void clearMonitorTree() {
+		Object root = monitorTree.getModel().getRoot();
+		if (root instanceof TreeNode) {
+			TreeNode rootTreeNode = (TreeNode) root;
+			Enumeration children = rootTreeNode.children();
+			while (children.hasMoreElements()) {
+				Object child = children.nextElement();
+				if (child instanceof DefaultMutableTreeNode) {
+					DefaultMutableTreeNode childTreeNode = (DefaultMutableTreeNode) child;
+					if (childTreeNode.getUserObject() instanceof MonitorNode) {
+						MonitorNode monitorNode = (MonitorNode) childTreeNode.getUserObject();
+						MonitorImpl.getMonitor().deregisterNode(monitorNode.getOwningProcess());
+					}
+				}
+			}
+		}
 	}
 
 	private void showErrorDialog(String title, String message) {
@@ -294,11 +321,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	private void updateStatus(String status) {
-		runStatus.append(status);
-		JScrollBar scrollBar = runStatusScrollPane.getVerticalScrollBar();
-		if (scrollBar != null) {
-			scrollBar.setValue(scrollBar.getMaximum());
-		}
+		runStatus.setText(status);
 	}
 
 	public void attachToModel(ScuflModel model) {
@@ -356,13 +379,14 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 					if (results == dataflow.getOutputPorts().size()) {
 						resultComponent.deregister(facade);
 						facade.removeResultListener(this);
+						updateStatus("Workflow complete");
 						runButton.setEnabled(true);
 						testButton.setEnabled(true);
 						results = 0;
 					}
 				}
-				updateStatus("Result " + indexString(token.getIndex())
-						+ " for port " + portName + "\n");
+//				updateStatus("Result " + indexString(token.getIndex())
+//						+ " for port " + portName);
 			}
 
 		});
