@@ -21,6 +21,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -171,6 +172,7 @@ public class ArtifactImplTest {
 		assertTrue("No geronimo dependency found", geronimoDependencies.size()>0);
 	}
 	
+	@Ignore("Takes too loooooong")
 	@Test
 	public void testBocaPropertiesInterpolation() throws MalformedURLException, InterruptedException, ArtifactStateException, FileNotFoundException {
 		r.addRemoteRepository(new URL("http://repository.aduna-software.org/maven2"));
