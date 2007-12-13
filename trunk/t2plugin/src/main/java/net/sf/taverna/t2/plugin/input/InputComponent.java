@@ -256,7 +256,6 @@ public class InputComponent<InputType extends DataflowInputPort> extends JPanel 
 		EntityIdentifier identifier;
 		try {
 			identifier = dataFacade.register(obj);
-			System.out.println("Registered Entity id " + identifier);
 		} catch (UnsupportedObjectTypeException e) {
 			// All EntityModel's should be supported by prepareForFacacde
 			throw new RuntimeException(

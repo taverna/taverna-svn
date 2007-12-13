@@ -153,7 +153,6 @@ public class EntityListView extends
 		// Note: on UNKNOWN_DEPTH we get all actions, otherwise either just the
 		// list, or all the 0-depth ones (literal/data/string)
 		int depth = getModel().getDepth();
-		System.out.println(depth);
 		if (depth == EntityModel.UNKNOWN_DEPTH || depth > 1) {
 			createActions.add(createListAction);
 		}
