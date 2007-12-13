@@ -181,6 +181,22 @@ public class LocalRepository implements Repository {
 			fileRepositories.add(repositoryURL);
 		}
 	}
+	
+	/**
+	 * Adds a remote repository, but adds it at the start of the list. This is used by Plugins that specify their
+	 * repositories that we know need to be checked first. 
+	 * 
+	 * @param repositoryURL
+	 */
+	public void prependRemoteRepository(URL repositoryURL) {
+		LinkedHashSet<URL> tmpRepositories = new LinkedHashSet<URL>();
+		tmpRepositories.add(repositoryURL);
+		tmpRepositories.addAll(repositories);
+		repositories=tmpRepositories;
+		if (repositoryURL.getProtocol().equals("file")) {
+			fileRepositories.add(repositoryURL);
+		}
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -1059,5 +1075,9 @@ public class LocalRepository implements Repository {
 					"\n");
 		}
 		return sb.toString();
+	}
+	
+	protected LinkedHashSet<URL> getRemoteRepositories() {
+		return repositories;
 	}
 }

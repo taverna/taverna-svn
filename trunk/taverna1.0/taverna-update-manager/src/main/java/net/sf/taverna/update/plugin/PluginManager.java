@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.29 $
+ * Revision           $Revision: 1.30 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-12 16:01:44 $
- *               by   $Author: iandunlop $
+ * Last modified on   $Date: 2007-12-13 15:25:07 $
+ *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -55,6 +55,7 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.RepositoryListener;
+import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.tools.Bootstrap;
@@ -151,7 +152,13 @@ public class PluginManager implements PluginListener {
 			sortPlugins();
 			for (String repositoryURL : plugin.getRepositories()) {
 				try {
-					repository.addRemoteRepository(new URL(repositoryURL));
+					if (repository instanceof LocalRepository) {
+						//fix for TAV-684, but didn't want to change the Repository interface API.
+						((LocalRepository)repository).prependRemoteRepository(new URL(repositoryURL));
+					}
+					else {
+						repository.addRemoteRepository(new URL(repositoryURL));
+					}
 				} catch (MalformedURLException e) {
 					logger.warn("Invalid remote repository URL - "
 							+ repositoryURL);
@@ -173,8 +180,7 @@ public class PluginManager implements PluginListener {
 							try {
 								Bootstrap.addSystemArtifact(a.getGroupId(), a.getArtifactId(), a.getVersion());
 							} catch (MalformedURLException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								logger.error("Malformed URL whilst adding plugin artifact to system artifacts:"+a.toString(),e);
 							}
 						}
 

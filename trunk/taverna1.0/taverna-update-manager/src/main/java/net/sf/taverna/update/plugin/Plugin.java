@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-12 16:04:30 $
- *               by   $Author: iandunlop $
+ * Last modified on   $Date: 2007-12-13 15:25:07 $
+ *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -42,6 +42,7 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.update.plugin.event.PluginEvent;
 import net.sf.taverna.update.plugin.event.PluginListener;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 /**
@@ -49,6 +50,9 @@ import org.jdom.Element;
  * @author David Withers
  */
 public class Plugin implements Comparable<Plugin> {
+	
+	private static Logger logger = Logger.getLogger(Plugin.class);
+	
 	private List<PluginListener> pluginListeners = new ArrayList<PluginListener>();
 
 	private String name;
@@ -264,7 +268,14 @@ public class Plugin implements Comparable<Plugin> {
 		List<Element> repositoryElements = pluginElement.getChild(
 				"repositories").getChildren("repository");
 		for (Element repository : repositoryElements) {
-			plugin.repositories.add(repository.getTextTrim());
+			String repo = repository.getTextTrim();
+			if (repo!=null) {
+				if (repo.endsWith("/")) repo=repo+"/";
+				plugin.repositories.add(repo);
+			}
+			else {
+				logger.error("Null repository found for plugin:"+plugin.name);
+			}
 		}
 		List<Element> artifactElements = pluginElement.getChild("profile")
 				.getChildren("artifact");

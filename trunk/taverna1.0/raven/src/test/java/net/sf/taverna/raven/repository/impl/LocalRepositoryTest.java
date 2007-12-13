@@ -253,4 +253,22 @@ public class LocalRepositoryTest {
 		cl.loadClass("org.apache.batik.apps.rasterizer.Main");
 	}
 
+	@Test
+	public void testPrependRemoteRepository() throws Exception {
+		assertEquals(0,r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.google.com"));
+		assertEquals(1,r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.yahoo.com"));
+		assertEquals(2,r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.bbc.co.uk"));
+		assertEquals(3,r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.mygrid.org.uk"));
+		assertEquals(4,r.getRemoteRepositories().size());
+		int i=0;
+		String [] expectedURLS = new String[] {"http://www.mygrid.org.uk","http://www.bbc.co.uk","http://www.yahoo.com","http://www.google.com"};
+		for (URL url : r.getRemoteRepositories()) {
+			assertEquals(expectedURLS[i],url.toExternalForm());
+			i++;
+		}
+	}
 }
