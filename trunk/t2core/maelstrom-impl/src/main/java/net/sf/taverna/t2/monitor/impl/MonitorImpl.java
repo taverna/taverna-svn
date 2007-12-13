@@ -62,6 +62,16 @@ public final class MonitorImpl implements Monitor {
 	}
 
 	/**
+	 * Returns a tree view over the monitor.
+	 * 
+	 * @return a tree view over the monitor
+	 */
+	public static JTree getJTree() {
+		MonitorImpl m = (MonitorImpl) (MonitorImpl.getMonitor());
+		return m.new AlwaysOpenJTree(m.monitorTree);
+	}
+
+	/**
 	 * By default the monitor is linked to the code but disabled, mostly so our
 	 * unit tests don't all suddenly change or require the monitor to be working
 	 * correctly!
