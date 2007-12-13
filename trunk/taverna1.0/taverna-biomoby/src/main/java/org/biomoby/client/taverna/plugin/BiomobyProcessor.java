@@ -40,7 +40,7 @@ import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
  * extant ports at creation time.
  * <p>
  * 
- * @version $Id: BiomobyProcessor.java,v 1.3 2007-04-04 14:29:55 edwardkawas Exp $
+ * @version $Id: BiomobyProcessor.java,v 1.4 2007-12-13 07:32:24 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyProcessor extends Processor implements java.io.Serializable, HTMLSummarisableProcessor {
@@ -146,6 +146,14 @@ public class BiomobyProcessor extends Processor implements java.io.Serializable,
 			}
 			throw new ProcessorCreationException(formatError(e.toString()));
 		}
+		
+		// here we get the wsdl, as the biomoby api assumes ...
+		try {
+		    new RetrieveWsdlThread(worker, mobyService).start();
+		}catch (Exception e) {
+		    /* don't care if an exception occurs here ... */
+		}
+		
 	}
 
 	/**
