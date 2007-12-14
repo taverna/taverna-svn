@@ -613,6 +613,11 @@ ActivityPaletteModelListener, ActionListener {
 				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
 				subsetPanel.destroy();
 				this.tabbedPane.remove(subsetPanel);
+				selectedComponent = this.tabbedPane.getSelectedComponent();
+				if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)) {
+					subsetPanel = (ActivitySubsetPanel) selectedComponent;
+					subsetPanel.setModels();
+				}
 			}
 		} else if (command.equals("createSubset")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
