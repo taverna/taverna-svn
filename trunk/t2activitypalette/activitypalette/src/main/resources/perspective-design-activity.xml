@@ -21,8 +21,8 @@
   </child>
   <namedcomponents>    
     <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.processors</groupid>
-      <artifact>taverna-biomart-processor</artifact>
+      <groupid>net.sf.taverna.t2</groupid>
+      <artifact>activitypalette</artifact>
       <classname>net.sf.taverna.t2.drizzle.view.palette.ActivityPalettePanelFactory</classname>
       <name>Activities</name>
     </namedcomponent>
