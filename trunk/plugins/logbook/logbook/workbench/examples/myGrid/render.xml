@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:d4fec1e0-11a9-473a-9f11-1bedfd1281ef" author="Daniele Turi" title="Test Clipboard" />
+  <s:link source="in" sink="out" />
+  <s:source name="in" />
+  <s:sink name="out">
+    <s:metadata>
+      <s:mimeTypes>
+        <s:mimeType>image/*</s:mimeType>
+      </s:mimeTypes>
+    </s:metadata>
+  </s:sink>
+</s:scufl>
+

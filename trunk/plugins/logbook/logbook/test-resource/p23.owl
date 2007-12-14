@@ -1,0 +1,73 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.mygrid.org.uk/provenance#" >
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:46fd39a4-bd1e-4c0d-9156-a7a3a87d1e5c">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_in_string"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:be74a992-0494-4f36-b501-c1e45e127ce8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_in_regex"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#string">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1170769430351">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-02-06T13:43:50.362Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:be74a992-0494-4f36-b501-c1e45e127ce8"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:46fd39a4-bd1e-4c0d-9156-a7a3a87d1e5c"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessIteration"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:311c2bd0-8cae-4f51-8a14-5fc008ebced9"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor</j.0:className>
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1170769430362"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_in_regex">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1170769430362">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.SplitByRegex</j.0:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:5490075c-f2ea-4dd3-9ef4-ec173f884dbf">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:dd493a1a-1e9b-4109-9bde-f59f091a27f8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:311c2bd0-8cae-4f51-8a14-5fc008ebced9">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_out_split"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:dd493a1a-1e9b-4109-9bde-f59f091a27f8"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:5490075c-f2ea-4dd3-9ef4-ec173f884dbf"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:be74a992-0494-4f36-b501-c1e45e127ce8"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:46fd39a4-bd1e-4c0d-9156-a7a3a87d1e5c"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#regex">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#split">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_in_string">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#Split_string_into_string_list_by_regular_expression_out_split">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain)</j.0:dataSyntacticType>
+  </rdf:Description>
+</rdf:RDF>
+

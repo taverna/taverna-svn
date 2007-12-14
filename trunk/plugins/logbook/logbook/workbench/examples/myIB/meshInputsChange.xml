@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:N6P5M6FDR70" author="" title="" />
+  <s:processor name="ptsInputChanged" boring="true">
+    <s:stringconstant>/tmp/TBunnyC4_i.pts</s:stringconstant>
+  </s:processor>
+  <s:processor name="triInputChanged" boring="true">
+    <s:stringconstant>/tmp/TBunnyC4_i_bnd.tri</s:stringconstant>
+  </s:processor>
+  <s:processor name="MeshalizerPreprocess">
+    <s:local>uk.ac.man.cs.img.mygrid.scuflworkers.MeshalizerWorker</s:local>
+  </s:processor>
+  <s:processor name="gzInputChanged" boring="true">
+    <s:stringconstant>/tmp/vm_small.igb.gz</s:stringconstant>
+  </s:processor>
+  <s:processor name="Read_a_file">
+    <s:local breakpoint="true">net.sourceforge.taverna.scuflworkers.io.TextFileReader</s:local>
+  </s:processor>
+  <s:processor name="filename" boring="true">
+    <s:stringconstant>/tmp/test.txt</s:stringconstant>
+  </s:processor>
+  <s:processor name="Concatenate_two_strings">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.StringConcat</s:local>
+  </s:processor>
+  <s:link source="Concatenate_two_strings:output" sink="out" />
+  <s:link source="MeshalizerPreprocess:meshalizerInput" sink="Concatenate_two_strings:string1" />
+  <s:link source="Read_a_file:filecontents" sink="Concatenate_two_strings:string2" />
+  <s:link source="filename:value" sink="Read_a_file:fileurl" />
+  <s:link source="gzInputChanged:value" sink="MeshalizerPreprocess:gzFile" />
+  <s:link source="ptsInputChanged:value" sink="MeshalizerPreprocess:ptsFile" />
+  <s:link source="triInputChanged:value" sink="MeshalizerPreprocess:triFile" />
+  <s:sink name="out" />
+</s:scufl>
+
+

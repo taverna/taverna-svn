@@ -2,3 +2,5 @@ build
 doc
 lib
 target
+.settings
+.classpath
