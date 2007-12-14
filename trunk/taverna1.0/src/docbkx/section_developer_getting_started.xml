@@ -74,7 +74,7 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
     <para>This installs the artifacts into your local maven repository. Next
     run the command:</para>
 
-    <screen>maven package assembly:directory</screen>
+    <screen>mvn package assembly:directory</screen>
 
     <para>This builds the Taverna release into the directory
     target/taverna-1.5.1-bin/taverna-1.5.1</para>
