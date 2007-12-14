@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -783,7 +784,7 @@ public class LocalworkerTranslatorTest {
 				.getResource("/test").getFile());
 		inputs.put("extension", "test");
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
-		List<String> outputList = new ArrayList<String>();
+		Set<String> outputList = new HashSet<String>();
 		outputList.add(LocalworkerTranslator.class.getResource(
 				"/test/alpha.test").getFile());
 		outputList.add(LocalworkerTranslator.class.getResource(
@@ -792,7 +793,15 @@ public class LocalworkerTranslatorTest {
 				"/test/gamma.test").getFile());
 		expectedOutputs.put("filelist", outputList);
 
-		invoke(activity, inputs, expectedOutputs);
+		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+				activity, inputs, expectedOutputs.keySet());
+		assertEquals(expectedOutputs.size(), outputs.size());
+		for (Map.Entry<String, Object> output : expectedOutputs.entrySet()) {
+			assertTrue("No output for port " + output.getKey(), outputs
+					.containsKey(output.getKey()));
+			assertEquals(output.getValue(), new HashSet<String>((Collection<String>) outputs
+						.get(output.getKey())));
+		}
 	}
 
 	@Test
@@ -809,14 +818,22 @@ public class LocalworkerTranslatorTest {
 				.getResource("/test").getFile());
 		inputs.put("regex", ".+[h|t]a\\.test");
 		Map<String, Object> expectedOutputs = new HashMap<String, Object>();
-		List<String> outputList = new ArrayList<String>();
+		Set<String> outputList = new HashSet<String>();
 		outputList.add(LocalworkerTranslator.class.getResource(
 				"/test/alpha.test").getFile());
 		outputList.add(LocalworkerTranslator.class.getResource(
 				"/test/beta.test").getFile());
 		expectedOutputs.put("filelist", outputList);
 
-		invoke(activity, inputs, expectedOutputs);
+		Map<String, Object> outputs = ActivityInvoker.invokeAsyncActivity(
+				activity, inputs, expectedOutputs.keySet());
+		assertEquals(expectedOutputs.size(), outputs.size());
+		for (Map.Entry<String, Object> output : expectedOutputs.entrySet()) {
+			assertTrue("No output for port " + output.getKey(), outputs
+					.containsKey(output.getKey()));
+			assertEquals(output.getValue(), new HashSet<String>((Collection<String>) outputs
+						.get(output.getKey())));
+		}
 	}
 
 	@Test
