@@ -23,7 +23,7 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  */
 // TODO should this be forced to be a singleton?
 public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
-	private PropertiedObjectSet<ProcessorFactoryAdapter> registry;
+	private PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet;
 	private PropertiedGraphView<ProcessorFactoryAdapter> graphView;
 	
 	/**
@@ -31,9 +31,9 @@ public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
 	 */
 	@SuppressWarnings("unchecked")
 	public ActivitySetModel() {
-		this.registry = ObjectFactory.getInstance(PropertiedObjectSet.class);
+		this.propertiedProcessorFactoryAdapterSet = ObjectFactory.getInstance(PropertiedObjectSet.class);
 		this.graphView = ObjectFactory.getInstance(PropertiedGraphView.class);
-		this.graphView.setPropertiedObjectSet(this.registry);
+		this.graphView.setPropertiedObjectSet(this.propertiedProcessorFactoryAdapterSet);
 	}
 
 	/**
@@ -45,15 +45,15 @@ public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
 			throw new NullPointerException("query cannot be null"); //$NON-NLS-1$
 		}
 		ActivitySubsetIdentification ident =
-			query.runQuery(this.registry);
+			query.runQuery(this.propertiedProcessorFactoryAdapterSet);
 		return ident;
 	}
 
 	/**
-	 * @return the registry
+	 * @return the propertiedProcessorFactoryAdapterSet
 	 */
-	public synchronized final PropertiedObjectSet<ProcessorFactoryAdapter> getRegistry() {
-		return this.registry;
+	public synchronized final PropertiedObjectSet<ProcessorFactoryAdapter> getPropertiedProcessorFactoryAdapterSet() {
+		return this.propertiedProcessorFactoryAdapterSet;
 	}
 
 	/**
@@ -64,7 +64,7 @@ public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
 	}
 	
 	public synchronized Set<PropertyKey> getAllPropertyKeys() {
-		return this.registry.getAllPropertyKeys();
+		return this.propertiedProcessorFactoryAdapterSet.getAllPropertyKeys();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public final class ActivitySetModel  implements Beanable<ActivitySetModelBean> {
 		ActivitySetModelBean result = new ActivitySetModelBean();
 		
 		List<ProcessorFactoryAdapterBean> adapterBeans = new ArrayList<ProcessorFactoryAdapterBean>();
-		for (ProcessorFactoryAdapter adapter : this.getRegistry().getObjects()) {
+		for (ProcessorFactoryAdapter adapter : this.getPropertiedProcessorFactoryAdapterSet().getObjects()) {
 			ProcessorFactoryAdapterBean adapterBean = new ProcessorFactoryAdapterBean();
 
 			adapterBean.setXmlFragment(adapter.getSerializedVersion());

@@ -192,7 +192,7 @@ public final class ActivitySubsetPanel extends JPanel {
 		propertiedTreeModel.setFilter(subsetModel.getFilter());
 
 		propertiedTreeModel.setPropertiedGraphView(subsetModel
-				.getParentRegistry().getGraphView());
+				.getParentActivitySubsetModel().getGraphView());
 
 		propertiedTreeModel.detachFromGraphView();
 		result = TreeModelAdapter.untypedView(propertiedTreeModel);
@@ -224,8 +224,8 @@ public final class ActivitySubsetPanel extends JPanel {
 		this.currentTree.setRowHeight(0);
 		this.currentTree.setLargeModel(true);
 		this.currentTree.setCellRenderer(new ActivityTreeCellRenderer(
-				getTreeTableListModel(), subsetModel.getParentRegistry()
-						.getRegistry()));
+				getTreeTableListModel(), subsetModel.getParentActivitySubsetModel()
+						.getPropertiedProcessorFactoryAdapterSet()));
 		this.currentTree.addMouseListener(new ActivitySubsetListener(this));
 		// this.currentTree.setDragEnabled(true);
 

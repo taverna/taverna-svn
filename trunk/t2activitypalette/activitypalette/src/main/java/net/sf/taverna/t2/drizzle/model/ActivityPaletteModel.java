@@ -53,7 +53,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 
 	static Logger logger = Logger.getLogger(ActivityPaletteModel.class);
 
-	ActivitySetModel activityRegistry;
+	ActivitySetModel activitySetModel;
 
 	private Set<ActivitySubsetModel> subsetModels;
 	
@@ -88,7 +88,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		}
 		this.subsetModels = new HashSet<ActivitySubsetModel>();
 		this.scavengerList = new ArrayList<String>();
-		this.activityRegistry = new ActivitySetModel();
+		this.activitySetModel = new ActivitySetModel();
 		this.listeners = new ArrayList<ActivityPaletteModelListener>();
 		this.adapter = new ActivityPaletteModelToScavengerTreeAdapter(this, representation);
 
@@ -98,7 +98,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	 * 
 	 */
 	public void initialize() {
-		initializeRegistry();
+		initializeActivitySet();
 		addAllSubsetModel();
 		addSearchResultsSubsetModel();
 	}
@@ -116,13 +116,13 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 
 	/**
-	 * @param registry
+	 * @param activitySetModel
 	 */
-	public synchronized void setRegistry(final ActivitySetModel registry) {
-		if (registry == null) {
-			throw new NullPointerException("activityRegistry cannot be null"); //$NON-NLS-1$
+	public synchronized void setActivitySetModel(final ActivitySetModel activitySetModel) {
+		if (activitySetModel == null) {
+			throw new NullPointerException("activitySetModel cannot be null"); //$NON-NLS-1$
 		}
-		this.activityRegistry = registry;
+		this.activitySetModel = activitySetModel;
 	}
 	
 	void addSubsetModel(final ActivitySubsetModel subsetModel) {
@@ -163,11 +163,11 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		Runnable queryRunner = new Runnable() {
 
 			public void run() {
-				ActivitySubsetIdentification ident = ActivityPaletteModel.this.activityRegistry
+				ActivitySubsetIdentification ident = ActivityPaletteModel.this.activitySetModel
 				.addImmediateQuery(query);
 		ActivitySubsetModel subsetModel = new ActivitySubsetModel();
 		subsetModel.setIdent(ident);
-		subsetModel.setParentRegistry(ActivityPaletteModel.this.activityRegistry);
+		subsetModel.setParentActivitySetModel(ActivityPaletteModel.this.activitySetModel);
 		subsetModel.setEditable(false);
 		addSubsetModel(subsetModel);
 		allActivitiesSubsetModel.setUpdated(true);
@@ -194,7 +194,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		if (theScavenger == null) {
 			throw new NullPointerException("theScavenger cannot be null"); //$NON-NLS-1$
 		}
-		synchronized (this.activityRegistry) {
+		synchronized (this.activitySetModel) {
 			// Check to see we don't already have a scavenger with this name
 			String newName = theScavenger.getUserObject().toString();
 			if (!this.scavengerList.contains(newName)) {			
@@ -208,7 +208,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	 * Adapted from code in DefaultScavengerTree
 	 * 
 	 */
-	private void initializeRegistry() {
+	private void initializeActivitySet() {
 		List<Scavenger> simpleScavengers = ScavengerRegistry.instance()
 				.getScavengers();
 		if (simpleScavengers.isEmpty() == false) {
@@ -466,7 +466,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		}
 		ident.setKind(subsetKind);	
 		subsetModel.setIdent(ident);
-		subsetModel.setParentRegistry(this.activityRegistry);
+		subsetModel.setParentActivitySetModel(this.activitySetModel);
 		subsetModel.setEditable(true);
 		addSubsetModel(subsetModel);
 	}
@@ -481,7 +481,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		ident.setPropertyKeyProfile(getAllKeys());
 		ident.setKind("allactivities");	 //$NON-NLS-1$
 		allActivitiesSubsetModel.setIdent(ident);
-		allActivitiesSubsetModel.setParentRegistry(this.activityRegistry);
+		allActivitiesSubsetModel.setParentActivitySetModel(this.activitySetModel);
 		allActivitiesSubsetModel.setEditable(false);
 		addSubsetModel(allActivitiesSubsetModel);		
 	}
@@ -496,7 +496,7 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 		ident.setPropertyKeyProfile(getAllKeys());
 		ident.setKind("allactivities");	 //$NON-NLS-1$
 		searchResultsSubsetModel.setIdent(ident);
-		searchResultsSubsetModel.setParentRegistry(this.activityRegistry);
+		searchResultsSubsetModel.setParentActivitySetModel(this.activitySetModel);
 		searchResultsSubsetModel.setEditable(true);
 		addSubsetModel(searchResultsSubsetModel);		
 	}
@@ -509,10 +509,10 @@ public final class ActivityPaletteModel implements Beanable<ActivityPaletteModel
 	}
 
 	/**
-	 * @return the activityRegistry
+	 * @return the activitySetModel
 	 */
-	public synchronized final ActivitySetModel getActivityRegistry() {
-		return this.activityRegistry;
+	public synchronized final ActivitySetModel getActivitySetModel() {
+		return this.activitySetModel;
 	}
 
 	/**

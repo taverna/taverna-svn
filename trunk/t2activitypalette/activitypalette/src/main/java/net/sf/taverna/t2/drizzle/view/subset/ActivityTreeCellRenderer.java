@@ -47,16 +47,16 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 
 	private JTable resultTable;
 
-	private PropertiedObjectSet<ProcessorFactoryAdapter> registry;
+	private PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet;
 
 	Color selectedColor;
 
 	Color nonSelectedColor;
 
 	ActivityTreeCellRenderer(DefaultListModel listModel,
-			PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
+			PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet) {
 		this.listModel = listModel;
-		this.registry = registry;
+		this.propertiedProcessorFactoryAdapterSet = propertiedProcessorFactoryAdapterSet;
 		this.defaultRenderer = new DefaultTreeCellRenderer();
 		this.resultLabel = new JLabel(""); //$NON-NLS-1$
 		this.resultLabel.setOpaque(true);
@@ -122,7 +122,7 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 			int column = 0;
 			for (Enumeration e = this.listModel.elements(); e.hasMoreElements();) {
 				PropertyKey pk = (PropertyKey) e.nextElement();
-				PropertyValue pv = this.registry.getPropertyValue(adapter, pk);
+				PropertyValue pv = this.propertiedProcessorFactoryAdapterSet.getPropertyValue(adapter, pk);
 				if (pv != null) {
 					tableModel.setValueAt(pv.toString(), 0, column++);
 				}

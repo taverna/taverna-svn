@@ -138,15 +138,15 @@ ActivityPaletteModelListener, ActionListener {
 		loadKindConfigItem.setActionCommand("loadKindConfiguration"); //$NON-NLS-1$
 		loadKindConfigItem.addActionListener(this);
 		
-		JMenuItem saveRegistryItem = new JMenuItem("Save registry"); //$NON-NLS-1$
-		saveRegistryItem.setToolTipText("Save the registry"); //$NON-NLS-1$
-		saveRegistryItem.setActionCommand("saveRegistry"); //$NON-NLS-1$
-		saveRegistryItem.addActionListener(this);
+		JMenuItem saveActivitySetItem = new JMenuItem("Save activity set"); //$NON-NLS-1$
+		saveActivitySetItem.setToolTipText("Save the activity set"); //$NON-NLS-1$
+		saveActivitySetItem.setActionCommand("saveActivitySet"); //$NON-NLS-1$
+		saveActivitySetItem.addActionListener(this);
 
-		JMenuItem loadRegistryItem = new JMenuItem("Load registry"); //$NON-NLS-1$
-		loadRegistryItem.setToolTipText("Load a registry"); //$NON-NLS-1$
-		loadRegistryItem.setActionCommand("loadRegistry"); //$NON-NLS-1$
-		loadRegistryItem.addActionListener(this);
+		JMenuItem loadActivitySetItem = new JMenuItem("Load activity set"); //$NON-NLS-1$
+		loadActivitySetItem.setToolTipText("Load an activity set"); //$NON-NLS-1$
+		loadActivitySetItem.setActionCommand("loadActivitySet"); //$NON-NLS-1$
+		loadActivitySetItem.addActionListener(this);
 		
 		JMenuItem expandAllItem = new JMenuItem("Expand"); //$NON-NLS-1$
 		expandAllItem.setToolTipText("Expand all the nodes in the tree"); //$NON-NLS-1$
@@ -382,8 +382,8 @@ ActivityPaletteModelListener, ActionListener {
 		JMenu saveLoad = new JMenu("Save/load"); //$NON-NLS-1$
 		saveLoad.add(saveKindConfigItem);
 		saveLoad.add(loadKindConfigItem);
-		saveLoad.add(saveRegistryItem);
-		saveLoad.add(loadRegistryItem);
+		saveLoad.add(saveActivitySetItem);
+		saveLoad.add(loadActivitySetItem);
 		menuBar.add(saveLoad);
 		
 		JMenu expandCollapse = new JMenu("Expand/collapse"); //$NON-NLS-1$
@@ -588,7 +588,7 @@ ActivityPaletteModelListener, ActionListener {
 				if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
 					ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
 					JDialog dialog = new SearchSubsetDialog(subsetPanel,
-							this.paletteModel.getActivityRegistry().getRegistry());
+							this.paletteModel.getActivitySetModel().getPropertiedProcessorFactoryAdapterSet());
 					dialog.setLocationRelativeTo(this);
 					dialog.setVisible(true);
 				}				
@@ -680,7 +680,7 @@ ActivityPaletteModelListener, ActionListener {
 					e1.printStackTrace();
 				}
 			}
-		} else if (command.equals("loadRegistry")) { //$NON-NLS-1$
+		} else if (command.equals("loadActivitySet")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
 			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
 			chooser.setDialogType(JFileChooser.OPEN_DIALOG);
@@ -692,7 +692,7 @@ ActivityPaletteModelListener, ActionListener {
 					if (o instanceof ActivitySetModelBean) {
 						this.paletteModel.addImmediateQuery(new ActivitySavedConfigurationQuery((ActivitySetModelBean)o));
 
-						this.paletteModel.getActivityRegistry().mergeWithBean((ActivitySetModelBean)o);
+						this.paletteModel.getActivitySetModel().mergeWithBean((ActivitySetModelBean)o);
 					}
 				} catch (StorageException e1) {
 					// TODO Auto-generated catch block
@@ -702,7 +702,7 @@ ActivityPaletteModelListener, ActionListener {
 					e1.printStackTrace();
 				}
 			}
-		} else if (command.equals("saveRegistry")) { //$NON-NLS-1$
+		} else if (command.equals("saveActivitySet")) { //$NON-NLS-1$
 			Component c = (Component) e.getSource();
 			JFileChooser chooser = new JFileChooser(""); //$NON-NLS-1$
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
@@ -710,7 +710,7 @@ ActivityPaletteModelListener, ActionListener {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File saveFile = chooser.getSelectedFile();
 				try {
-					BeanSerialiser.getInstance().beanableToXMLFile(this.paletteModel.getActivityRegistry(), saveFile);
+					BeanSerialiser.getInstance().beanableToXMLFile(this.paletteModel.getActivitySetModel(), saveFile);
 				} catch (StorageException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

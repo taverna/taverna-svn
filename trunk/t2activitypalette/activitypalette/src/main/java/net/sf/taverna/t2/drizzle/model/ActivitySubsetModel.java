@@ -13,7 +13,7 @@ import net.sf.taverna.t2.drizzle.util.PropertyKey;
  *
  */
 public final class ActivitySubsetModel {
-	private ActivitySetModel parentRegistry = null;
+	private ActivitySetModel parentActivitySubsetModel = null;
 	
 	private ActivitySubsetIdentification ident = null;
 	
@@ -57,20 +57,20 @@ public final class ActivitySubsetModel {
 	}
 
 	/**
-	 * @return the parentRegistry
+	 * @return the parentActivitySubsetModel
 	 */
-	public synchronized final ActivitySetModel getParentRegistry() {
-		return this.parentRegistry;
+	public synchronized final ActivitySetModel getParentActivitySubsetModel() {
+		return this.parentActivitySubsetModel;
 	}
 
 	/**
-	 * @param parentRegistry the parentRegistry to set
+	 * @param parentActivitySetModel the parentActivitySetModel to set
 	 */
-	public synchronized final void setParentRegistry(ActivitySetModel parentRegistry) {
-		if (parentRegistry == null) {
-			throw new NullPointerException("parentRegistry cannot be null"); //$NON-NLS-1$
+	public synchronized final void setParentActivitySetModel(ActivitySetModel parentActivitySetModel) {
+		if (parentActivitySetModel == null) {
+			throw new NullPointerException("parentActivitySetModel cannot be null"); //$NON-NLS-1$
 		}
-		this.parentRegistry = parentRegistry;
+		this.parentActivitySubsetModel = parentActivitySetModel;
 	}
 
 	/**

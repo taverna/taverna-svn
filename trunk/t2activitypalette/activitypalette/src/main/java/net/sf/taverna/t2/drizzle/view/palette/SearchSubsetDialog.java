@@ -41,9 +41,9 @@ public final class SearchSubsetDialog extends JDialog {
 
 	/**
 	 * @param subsetPanel
-	 * @param registry
+	 * @param propertiedProcessorFactoryAdapterSet
 	 */
-	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> registry) {
+	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet) {
 		this.setLayout(new GridLayout(0, 1));
 
 		JPanel keyPanel = new JPanel();
@@ -88,7 +88,7 @@ public final class SearchSubsetDialog extends JDialog {
 				HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters =
 					new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
 				filters.add(subsetPanel.getSubsetModel().getFilter());
-				filters.add(new PropertyPatternFilter<ProcessorFactoryAdapter>(selectedKey, pattern, registry));
+				filters.add(new PropertyPatternFilter<ProcessorFactoryAdapter>(selectedKey, pattern, propertiedProcessorFactoryAdapterSet));
 				PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter =
 					new ObjectAndFilter<ProcessorFactoryAdapter>(filters);
 
