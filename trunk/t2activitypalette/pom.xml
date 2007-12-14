@@ -2,8 +2,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 Core</name>
 	<groupId>net.sf.taverna.t2</groupId>
-	<version>0.1-SNAPSHOT</version>
-	<artifactId>activityregistry</artifactId>
+	<version>0.1.0</version>
+	<artifactId>activityset</artifactId>
 	<packaging>pom</packaging>
 	<dependencyManagement>
 		<dependencies>
