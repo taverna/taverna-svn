@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.30 $
+ * Revision           $Revision: 1.31 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 15:25:07 $
+ * Last modified on   $Date: 2007-12-15 19:16:17 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -167,27 +167,23 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
 			}
-			for (final Artifact artifact : plugin.getProfile()
-					.getSystemArtifacts()) {
-				// repository.addArtifact(artifact);
-				// should this wait for something to happen? Not sure if
-				// anything does!!
-				repository.addRepositoryListener(new RepositoryListener() {
-
-					public void statusChanged(Artifact a,
-							ArtifactStatus oldStatus, ArtifactStatus newStatus) {
-						if (plugin.getProfile().getSystemArtifacts().contains(a) && newStatus.equals(ArtifactStatus.Ready)) {
-							try {
-								Bootstrap.addSystemArtifact(a.getGroupId(), a.getArtifactId(), a.getVersion());
-							} catch (MalformedURLException e) {
-								logger.error("Malformed URL whilst adding plugin artifact to system artifacts:"+a.toString(),e);
-							}
-						}
-
-					}
-
-				});
-			}
+			
+//			repository.addRepositoryListener(new RepositoryListener() {
+//
+//					public void statusChanged(Artifact a,
+//							ArtifactStatus oldStatus, ArtifactStatus newStatus) {
+//						if (plugin.getProfile().getSystemArtifacts().contains(a) && newStatus.equals(ArtifactStatus.Ready)) {
+//							try {
+//								Bootstrap.addSystemArtifact(a.getGroupId(), a.getArtifactId(), a.getVersion());
+//							} catch (MalformedURLException e) {
+//								logger.error("Malformed URL whilst adding plugin artifact to system artifacts:"+a.toString(),e);
+//							}
+//						}
+//
+//					}
+//
+//			});
+			
 
 			if (!checkPluginCompatibility(plugin)) {
 				if (plugin.isEnabled()) {
@@ -282,11 +278,15 @@ public class PluginManager implements PluginListener {
 		if (plugins.contains(plugin)) {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.addArtifact(artifact);
+				if (plugin.getProfile().getSystemArtifacts().contains(artifact)) {
+					profile.addSystemArtifact(artifact);
+					try {
+						Bootstrap.addSystemArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+					} catch (MalformedURLException e) {
+						logger.error("Error composing url for artifact "+artifact,e);
+					}
+				}
 			}
-			//new code to ensure the system artifacts are saved in the plugins.xml
-			//for (Artifact artifact : plugin.getProfile().getSystemArtifacts()) {
-			//	profile.addSystemArtifact(artifact);
-			//}
 			savePlugins();
 		}
 	}
@@ -297,12 +297,6 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.removeArtifact(artifact);
 			}
-			//new code
-			// the profile seemed to do this by default in removeArtifact but
-			// might be best to make it obvious
-			//for (Artifact artifact : plugin.getProfile().getSystemArtifacts()) {
-			//	profile.removeSystemArtifact(artifact);
-			//}
 			savePlugins();
 		}
 	}
