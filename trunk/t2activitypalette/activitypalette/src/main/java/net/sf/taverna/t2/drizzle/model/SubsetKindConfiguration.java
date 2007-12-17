@@ -45,6 +45,10 @@ public final class SubsetKindConfiguration {
 			this.treeListModel.addElement(CommonKey.BiomartMartKey);
 //			this.tableListModel.addElement(CommonKey.CategoryKey);
 		}
+		if (this.keyList.contains(CommonKey.MobyAuthorityKey)) {
+			this.treeListModel.addElement(CommonKey.MobyAuthorityKey);
+//			this.tableListModel.addElement(CommonKey.CategoryKey);
+		}
 		if (this.keyList.contains(CommonKey.NameKey)) {
 			this.treeListModel.addElement(CommonKey.NameKey);
 //			this.tableListModel.addElement(CommonKey.NameKey);
