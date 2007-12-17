@@ -117,7 +117,7 @@
       <title>Searching for an activity</title>
 
       <para>The activities within the current subset can be searched using the
-      "Search subset" option under the "Selection" menu. The user chooses from
+      "Search subset" button. The user chooses from
       a property associated with the activity and specifies text that must be
       present within the value for that activity. In the example shown below,
       the search is for the string `blast' within the `name' property.</para>
