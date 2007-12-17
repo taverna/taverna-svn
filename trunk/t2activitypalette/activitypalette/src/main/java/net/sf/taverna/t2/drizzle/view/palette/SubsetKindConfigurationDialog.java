@@ -53,7 +53,7 @@ public final class SubsetKindConfigurationDialog extends JDialog {
 		
 		JScrollPane choicesScroll = new JScrollPane(choices);
 		Dimension fullDimension = Toolkit.getDefaultToolkit().getScreenSize();
-		choicesScroll.setPreferredSize(new Dimension(600,(int) (fullDimension.getHeight() * 2 / 3)));
+		choicesScroll.setMaximumSize(new Dimension(600,(int) (fullDimension.getHeight() * 2 / 3)));
 		this.add(choicesScroll, BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel();
 		JButton finishButton = new JButton("Finish"); //$NON-NLS-1$
