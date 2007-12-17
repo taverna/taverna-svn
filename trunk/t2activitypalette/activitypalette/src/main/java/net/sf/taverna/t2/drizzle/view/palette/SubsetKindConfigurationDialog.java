@@ -4,7 +4,9 @@
 package net.sf.taverna.t2.drizzle.view.palette;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -48,8 +50,11 @@ public final class SubsetKindConfigurationDialog extends JDialog {
 		choices.add(createCheckBoxAndListPanel("tree", config.getKeyList(), config.getTreeListModel()), BorderLayout.NORTH); //$NON-NLS-1$
 		choices.add(createCheckBoxAndListPanel("tree table", config.getKeyList(), config.getTreeTableListModel()), BorderLayout.CENTER); //$NON-NLS-1$
 		choices.add(createCheckBoxAndListPanel("table", config.getKeyList(), config.getTableListModel()), BorderLayout.SOUTH); //$NON-NLS-1$
-
-		this.add(choices, BorderLayout.NORTH);
+		
+		JScrollPane choicesScroll = new JScrollPane(choices);
+		Dimension fullDimension = Toolkit.getDefaultToolkit().getScreenSize();
+		choicesScroll.setPreferredSize(new Dimension(600,(int) (fullDimension.getHeight() * 2 / 3)));
+		this.add(choicesScroll, BorderLayout.NORTH);
 		JPanel buttonPanel = new JPanel();
 		JButton finishButton = new JButton("Finish"); //$NON-NLS-1$
 		finishButton.addActionListener(new ActionListener() {
