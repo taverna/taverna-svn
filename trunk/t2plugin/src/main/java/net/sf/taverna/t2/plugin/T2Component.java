@@ -96,18 +96,18 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		setLayout(new BorderLayout());
 		testButton = createTestButton();
 		runButton = createRunButton();
-		stopButton = new JButton(new AbstractAction("Stop") {
+		stopButton = new JButton(new AbstractAction("Reset") {
 
 			private static final long serialVersionUID = -3675250815643062008L;
 
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Actually stop the workflow
-				runButton.setEnabled(true);
-				testButton.setEnabled(true);
+				enableRun(true);
 			}
 
 		});
-
+		stopButton.setEnabled(false);
+		
 		preferencesButton = new JButton("Preferences");
 		preferencesButton.addActionListener(new ActionListener() {
 
@@ -158,8 +158,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				testButton.setEnabled(false);
-				runButton.setEnabled(false);
+				enableRun(false);
 				runHealthCheck();
 			}
 		});
@@ -175,8 +174,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			Runnable reportThread = new Runnable() {
 				public void run() {
 					reportPanel.start();
-					testButton.setEnabled(true);
-					runButton.setEnabled(true);
+					enableRun(true);
 				}
 			};
 
@@ -196,8 +194,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 						&& model.getWorkflowSinkPorts().length > 0) {
 					clearMonitorTree();
 					cardLayout.show(topPanel, "run status");
-					runButton.setEnabled(false);
-					testButton.setEnabled(false);
+					enableRun(false);
 					updateStatus("");
 					resultComponent.clear();
 
@@ -240,8 +237,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 													showErrorDialog(
 															"Unable to run workflow",
 															e.getMessage());
-													runButton.setEnabled(true);
-													testButton.setEnabled(true);
+													enableRun(true);
 												}
 											}
 
@@ -257,23 +253,20 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 							updateStatus("Validating workflow...failed");
 							showErrorDialog("Unable to validate workflow",
 									"Workflow validation failed");
-							runButton.setEnabled(true);
-							testButton.setEnabled(true);
+							enableRun(true);
 						}
 					} catch (EditException e) {
 						logger.error(e);
 						updateStatus("Running workflow...failed");
 						showErrorDialog("Unable to run workflow", e
 								.getMessage());
-						runButton.setEnabled(true);
-						testButton.setEnabled(true);
+						enableRun(true);
 					} catch (WorkflowTranslationException e) {
 						logger.error(e);
 						updateStatus("Translating workflow...failed");
 						showErrorDialog("Unable to translate workflow", e
 								.getMessage());
-						runButton.setEnabled(true);
-						testButton.setEnabled(true);
+						enableRun(true);
 					}
 
 				}
@@ -380,8 +373,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 						resultComponent.deregister(facade);
 						facade.removeResultListener(this);
 						updateStatus("Workflow complete");
-						runButton.setEnabled(true);
-						testButton.setEnabled(true);
+						enableRun(true);
 						results = 0;
 					}
 				}
@@ -407,6 +399,12 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			}
 		}
 
+	}
+
+	private void enableRun(boolean enabled) {
+		runButton.setEnabled(enabled);
+		testButton.setEnabled(enabled);
+		stopButton.setEnabled(!enabled);
 	}
 
 }
