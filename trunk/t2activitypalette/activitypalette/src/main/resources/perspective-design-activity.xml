@@ -11,7 +11,7 @@
               </right>
               <left>
                 <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-                  <namedcomponent>
+                  <namedcomponent scroll="false">
                     <name>Activities</name>
                   </namedcomponent>
                 </znode>
