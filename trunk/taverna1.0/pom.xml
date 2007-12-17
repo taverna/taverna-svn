@@ -10,22 +10,6 @@
 		<system>jira</system>
 		<url>http://www.mygrid.org.uk/jira/</url>
 	</issueManagement>
-	<ciManagement>
-		<system>continuum</system>
-		<url>http://www.mygrid.org.uk/continuum/</url>
-		<notifiers>
-			<notifier>
-				<type>mail</type>
-				<sendOnError>false</sendOnError>
-				<sendOnFailure>true</sendOnFailure>
-				<sendOnSuccess>false</sendOnSuccess>
-				<sendOnWarning>false</sendOnWarning>
-				<configuration>
-					<address>david.withers@manchester.ac.uk</address>
-				</configuration>
-			</notifier>
-		</notifiers>
-	</ciManagement>
 	<mailingLists>
 		<mailingList>
 			<name>Taverna hackers</name>
@@ -117,10 +101,14 @@
 		<connection>
 			scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0
 		</connection>
+		<developerConnection>
+			scm:cvs:ext:taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0
+		</developerConnection>
 		<url>
 			http://taverna.cvs.sourceforge.net/taverna/taverna1.0/
 		</url>
 	</scm>
+
 	<organization>
 		<name>University of Manchester</name>
 		<url>http://www.manchester.ac.uk/</url>
@@ -182,16 +170,16 @@
 				</executions>
 			</plugin>
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
