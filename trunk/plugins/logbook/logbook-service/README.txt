@@ -1,1 +1,1 @@
-See http://www.mygrid.org.uk/wiki/Mygrid/LobBookWebService.
+See http://www.mygrid.org.uk/wiki/Mygrid/LogBookWebService
