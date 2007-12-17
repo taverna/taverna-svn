@@ -157,15 +157,15 @@ for (Iterator i = hsToRat.keySet().iterator(); i.hasNext();) {
   </s:processor>
   <s:processor name="seqret" workers="5">
     <s:description>Reads and writes (returns) sequences</s:description>
-    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/edit.seqret</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/emboss4/services/edit.seqret</s:soaplabwsdl>
   </s:processor>
   <s:processor name="plot" workers="5">
     <s:description>Displays aligned sequences, with colouring and boxing</s:description>
-    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple.prettyplot</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/emboss4/services/alignment_multiple.prettyplot</s:soaplabwsdl>
   </s:processor>
   <s:processor name="emma" workers="5">
     <s:description>Multiple alignment program - interface to ClustalW program</s:description>
-    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/services/alignment_multiple.emma</s:soaplabwsdl>
+    <s:soaplabwsdl>http://www.ebi.ac.uk/soaplab/emboss4/services/alignment_multiple.emma</s:soaplabwsdl>
   </s:processor>
   <s:link source="CreateFasta:fasta" sink="seqret:sequence_direct_data" />
   <s:link source="GetUniqueHomolog:HSOut" sink="getHSsequence:hsapiens_gene_ensembl.ensembl_gene_id_filter" />
