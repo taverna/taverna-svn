@@ -22,6 +22,7 @@ import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
 import net.sf.taverna.t2.drizzle.util.PropertiedObjectSet;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreeObjectNode;
 import net.sf.taverna.t2.drizzle.util.PropertiedTreePropertyValueNode;
+import net.sf.taverna.t2.drizzle.util.PropertiedTreeRootNode;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyValue;
 
@@ -142,8 +143,12 @@ public class ActivityTreeCellRenderer implements TreeCellRenderer {
 			this.resultTable.revalidate();
 			return this.resultTable;
 		}
-		return this.defaultRenderer.getTreeCellRendererComponent(tree, value,
+		Component result = this.defaultRenderer.getTreeCellRendererComponent(tree, value,
 				selected, expanded, leaf, row, hasFocus);
+		if ((result instanceof JLabel) && (value instanceof PropertiedTreeRootNode)) {
+			((JLabel)result).setText("Activities");
+		}
+		return result;
 	}
 
 }
