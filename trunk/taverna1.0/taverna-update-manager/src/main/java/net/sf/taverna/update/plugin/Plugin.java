@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 15:25:07 $
+ * Last modified on   $Date: 2007-12-17 14:36:02 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -287,8 +287,6 @@ public class Plugin implements Comparable<Plugin> {
 			if (artifact.getAttributeValue("system") != null
 					&& artifact.getAttributeValue("system").equalsIgnoreCase(
 							"true")) {
-				// Artifact systemArtifact = new SystemArtifact(basicArtifact,
-				// true);
 				plugin.profile.addSystemArtifact(basicArtifact);
 			}
 			plugin.profile.addArtifact(basicArtifact);

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.31 $
+ * Revision           $Revision: 1.32 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-15 19:16:17 $
+ * Last modified on   $Date: 2007-12-17 14:36:02 $
  *               by   $Author: sowen70 $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -49,12 +49,9 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.repository.Artifact;
-import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.Repository;
-import net.sf.taverna.raven.repository.RepositoryListener;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
@@ -166,24 +163,10 @@ public class PluginManager implements PluginListener {
 			}
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				repository.addArtifact(artifact);
+				if (plugin.getProfile().getSystemArtifacts().contains(artifact)) {
+					profile.addSystemArtifact(artifact);
+				}
 			}
-			
-//			repository.addRepositoryListener(new RepositoryListener() {
-//
-//					public void statusChanged(Artifact a,
-//							ArtifactStatus oldStatus, ArtifactStatus newStatus) {
-//						if (plugin.getProfile().getSystemArtifacts().contains(a) && newStatus.equals(ArtifactStatus.Ready)) {
-//							try {
-//								Bootstrap.addSystemArtifact(a.getGroupId(), a.getArtifactId(), a.getVersion());
-//							} catch (MalformedURLException e) {
-//								logger.error("Malformed URL whilst adding plugin artifact to system artifacts:"+a.toString(),e);
-//							}
-//						}
-//
-//					}
-//
-//			});
-			
 
 			if (!checkPluginCompatibility(plugin)) {
 				if (plugin.isEnabled()) {
@@ -192,8 +175,9 @@ public class PluginManager implements PluginListener {
 							plugin, plugins.indexOf(plugin)));
 				}
 			}
-
+			
 			repository.update();
+		
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
@@ -279,7 +263,6 @@ public class PluginManager implements PluginListener {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.addArtifact(artifact);
 				if (plugin.getProfile().getSystemArtifacts().contains(artifact)) {
-					profile.addSystemArtifact(artifact);
 					try {
 						Bootstrap.addSystemArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
 					} catch (MalformedURLException e) {

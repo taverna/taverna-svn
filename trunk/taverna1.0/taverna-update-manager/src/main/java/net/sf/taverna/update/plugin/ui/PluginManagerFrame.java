@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManagerFrame.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-29 13:11:11 $
+ * Last modified on   $Date: 2007-12-17 14:36:02 $
  *               by   $Author: sowen70 $
  * Created on 27 Nov 2006
  *****************************************************************/
@@ -39,9 +39,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -52,6 +56,9 @@ import javax.swing.event.ListSelectionListener;
 
 import net.sf.taverna.update.plugin.Plugin;
 import net.sf.taverna.update.plugin.PluginManager;
+import net.sf.taverna.update.plugin.event.PluginEvent;
+import net.sf.taverna.update.plugin.event.PluginManagerEvent;
+import net.sf.taverna.update.plugin.event.PluginManagerListener;
 
 /**
  * GUI component for the <code>PluginManager</code>.
@@ -81,6 +88,8 @@ public class PluginManagerFrame extends JDialog {
 	private JButton findUpdatesButton = null;
 	
 	private JButton closeButton = null;
+	
+	private PluginManagerListener managerListener;
 	
 	/**
 	 * This is the default constructor
@@ -117,7 +126,51 @@ public class PluginManagerFrame extends JDialog {
 	private void initialize() {
 		this.setSize(613, 444);
 		this.setContentPane(getJContentPane());
-		this.setTitle("Plugin Manager");			
+		this.setTitle("Plugin Manager");
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				if (managerListener!=null) PluginManager.removePluginManagerListener(managerListener);
+			}
+			
+		});
+		managerListener = new PluginManagerListener() {
+
+			public void pluginAdded(PluginManagerEvent event) {
+				if (event.getPlugin().getProfile().getSystemArtifacts().size()!=0) {
+					JOptionPane.showMessageDialog(PluginManagerFrame.this,"The plugin '"+event.getPlugin().getName()+"' will not be fully functional until Taverna is restarted","Restart required.", JOptionPane.WARNING_MESSAGE);
+				}
+			}
+
+			public void pluginChanged(PluginManagerEvent event)
+			{
+				if (event.getPlugin().getProfile().getSystemArtifacts().size()!=0) {
+					if (event.getSource() instanceof PluginEvent) {
+						PluginEvent pluginEvent = (PluginEvent)event.getSource();
+						if (pluginEvent.getAction()==PluginEvent.ENABLED) {
+							JOptionPane.showMessageDialog(PluginManagerFrame.this, "The plugin '"+event.getPlugin().getName()+"' will not be completely enabled until Taverna is restarted.","Restart required", JOptionPane.WARNING_MESSAGE);
+						}
+						else if (pluginEvent.getAction()==PluginEvent.DISABLED) {
+							JOptionPane.showMessageDialog(PluginManagerFrame.this, "The plugin '"+event.getPlugin().getName()+"' will not be completely disabled until Taverna is restarted.","Restart required", JOptionPane.WARNING_MESSAGE);
+						}
+					}
+				}
+				
+			}
+
+			public void pluginIncompatible(PluginManagerEvent event) {
+				
+			}
+
+			public void pluginRemoved(PluginManagerEvent event) {
+				JOptionPane.showMessageDialog(PluginManagerFrame.this, "The plugin '"+event.getPlugin().getName()+"' will not be completely uninstalled until Taverna is restarted.","Restart required", JOptionPane.WARNING_MESSAGE);
+			}
+			
+		};
+		PluginManager.addPluginManagerListener(managerListener);
+		
 	}
 
 	/**

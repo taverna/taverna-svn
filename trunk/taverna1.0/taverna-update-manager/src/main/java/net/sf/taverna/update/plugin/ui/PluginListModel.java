@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginListModel.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-16 13:55:11 $
+ * Last modified on   $Date: 2007-12-17 14:36:02 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -35,11 +35,11 @@ package net.sf.taverna.update.plugin.ui;
 
 import javax.swing.AbstractListModel;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.update.plugin.PluginManager;
 import net.sf.taverna.update.plugin.event.PluginManagerEvent;
 import net.sf.taverna.update.plugin.event.PluginManagerListener;
+
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -74,7 +74,7 @@ public class PluginListModel extends AbstractListModel implements PluginManagerL
 		fireIntervalAdded(this, event.getPluginIndex(), event.getPluginIndex());
 	}
 
-	public void pluginRemoved(PluginManagerEvent event) {		
+	public void pluginRemoved(PluginManagerEvent event) {	
 		fireIntervalRemoved(this, event.getPluginIndex(), event.getPluginIndex());
 	}
 
@@ -85,7 +85,4 @@ public class PluginListModel extends AbstractListModel implements PluginManagerL
 	public void pluginIncompatible(PluginManagerEvent event) {
 				
 	}
-	
-	
-	
 }
