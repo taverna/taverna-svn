@@ -12,9 +12,9 @@ import java.util.Set;
 import javax.swing.DefaultListModel;
 
 import net.sf.taverna.t2.drizzle.decoder.CommonKey;
-import net.sf.taverna.t2.drizzle.util.ObjectFactory;
 import net.sf.taverna.t2.drizzle.util.PropertyKey;
 import net.sf.taverna.t2.drizzle.util.PropertyKeySetting;
+import net.sf.taverna.t2.drizzle.util.impl.PropertyKeySettingImpl;
 
 /**
  * @author alanrw
@@ -39,6 +39,10 @@ public final class SubsetKindConfiguration {
 		this.tableListModel = new DefaultListModel();
 		if (this.keyList.contains(CommonKey.CategoryKey)) {
 			this.treeListModel.addElement(CommonKey.CategoryKey);
+//			this.tableListModel.addElement(CommonKey.CategoryKey);
+		}
+		if (this.keyList.contains(CommonKey.BiomartMartKey)) {
+			this.treeListModel.addElement(CommonKey.BiomartMartKey);
 //			this.tableListModel.addElement(CommonKey.CategoryKey);
 		}
 		if (this.keyList.contains(CommonKey.NameKey)) {
@@ -90,8 +94,7 @@ public final class SubsetKindConfiguration {
 
 		for (Enumeration<?> e = model.elements(); e.hasMoreElements();) {
 			PropertyKey key = (PropertyKey) e.nextElement();
-			PropertyKeySetting setting = ObjectFactory
-					.getInstance(PropertyKeySetting.class);
+			PropertyKeySetting setting = new PropertyKeySettingImpl();
 			setting.setPropertyKey(key);
 			result.add(setting);
 

@@ -125,4 +125,12 @@ public final class ActivitySubsetModel {
 		setUpdated(true);
 	}
 
+	/**
+	 * @param filter
+	 */
+	public void setFilter(PropertiedObjectFilter<ProcessorFactoryAdapter> filter) {
+		this.ident.setObjectFilter(filter);
+		setUpdated(true);
+	}
+
 }

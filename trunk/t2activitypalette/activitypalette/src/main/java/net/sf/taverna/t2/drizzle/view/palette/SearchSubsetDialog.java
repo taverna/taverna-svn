@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -40,18 +41,24 @@ public final class SearchSubsetDialog extends JDialog {
 	private static final long serialVersionUID = -6090097608584963674L;
 
 	/**
+	 * @param panel
 	 * @param subsetPanel
 	 * @param propertiedProcessorFactoryAdapterSet
 	 */
-	public SearchSubsetDialog(final ActivitySubsetPanel subsetPanel, final PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet) {
+	public SearchSubsetDialog(
+			final ActivityPalettePanel panel,
+			final ActivitySubsetPanel subsetPanel,
+			final PropertiedObjectSet<ProcessorFactoryAdapter> propertiedProcessorFactoryAdapterSet) {
 		this.setLayout(new GridLayout(0, 1));
 
 		JPanel keyPanel = new JPanel();
 		keyPanel.add(new JLabel("Property key")); //$NON-NLS-1$
-		Set<PropertyKey> keys = new TreeSet<PropertyKey>(subsetPanel.getSubsetModel().getPropertyKeyProfile());
-		final JComboBox keysCombo = new JComboBox(keys.toArray(new PropertyKey[0]));
+		Set<PropertyKey> keys = new TreeSet<PropertyKey>(subsetPanel
+				.getSubsetModel().getPropertyKeyProfile());
+		final JComboBox keysCombo = new JComboBox(keys
+				.toArray(new PropertyKey[0]));
 		keyPanel.add(keysCombo);
-		
+
 		this.add(keyPanel);
 
 		JPanel patternPanel = new JPanel();
@@ -61,6 +68,14 @@ public final class SearchSubsetDialog extends JDialog {
 		patternPanel.add(patternField);
 
 		this.add(patternPanel);
+
+		final JCheckBox clearResults = new JCheckBox("clear results");
+		clearResults.setSelected(true);
+		this.add(clearResults);
+
+		final JCheckBox searchAllActivities = new JCheckBox("search all activities");
+		searchAllActivities.setSelected(true);
+		this.add(searchAllActivities);
 
 		JPanel buttonPanel = new JPanel();
 		JButton cancelButton = new JButton("Cancel"); //$NON-NLS-1$
@@ -75,24 +90,40 @@ public final class SearchSubsetDialog extends JDialog {
 		searchButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
-				PropertyKey selectedKey = (PropertyKey) keysCombo.getSelectedItem();
-				
+				PropertyKey selectedKey = (PropertyKey) keysCombo
+						.getSelectedItem();
+
 				String pattern = patternField.getText();
 				if ((pattern == null) || (pattern.length() == 0)) {
 					JOptionPane.showMessageDialog(SearchSubsetDialog.this,
 							"pattern must be specified"); //$NON-NLS-1$
 					return;
 				}
-				ActivitySubsetModel searchResults =
-					ActivityPaletteModel.getSearchResultsSubsetModel();
-				HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters =
-					new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
+				ActivitySubsetModel searchResults = ActivityPaletteModel
+						.getSearchResultsSubsetModel();
+				PropertiedObjectFilter<ProcessorFactoryAdapter> searchFilter = new PropertyPatternFilter<ProcessorFactoryAdapter>(
+						selectedKey, pattern,
+						propertiedProcessorFactoryAdapterSet);
+				if (searchAllActivities.isSelected()) {
+					if (clearResults.isSelected()) {
+						searchResults.setFilter(searchFilter);
+					} else {
+						searchResults.addOredFilter(searchFilter);
+					}
+				} else {
+				HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>> filters = new HashSet<PropertiedObjectFilter<ProcessorFactoryAdapter>>();
 				filters.add(subsetPanel.getSubsetModel().getFilter());
-				filters.add(new PropertyPatternFilter<ProcessorFactoryAdapter>(selectedKey, pattern, propertiedProcessorFactoryAdapterSet));
-				PropertiedObjectFilter<ProcessorFactoryAdapter> additionalFilter =
-					new ObjectAndFilter<ProcessorFactoryAdapter>(filters);
+				filters.add(searchFilter);
+				PropertiedObjectFilter<ProcessorFactoryAdapter> newFilter = new ObjectAndFilter<ProcessorFactoryAdapter>(
+						filters);
+				if (clearResults.isSelected()) {
+					searchResults.setFilter(newFilter);
+				} else {
 
-				searchResults.addOredFilter(additionalFilter);
+					searchResults.addOredFilter(newFilter);
+				}
+				}
+				panel.showTabWithModel(searchResults);
 				SearchSubsetDialog.this.dispose();
 			}
 
