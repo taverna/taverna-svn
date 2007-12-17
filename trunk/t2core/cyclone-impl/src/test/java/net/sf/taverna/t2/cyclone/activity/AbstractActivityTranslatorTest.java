@@ -45,7 +45,9 @@ public class AbstractActivityTranslatorTest {
 		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("application/zip"));
 		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("image/jpeg"));
 		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("l('image/gif')"));
-		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("l(l(image/png))"));
+		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("l()"));
+		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("l('')"));
+		assertEquals(byte[].class, abstractActivityTranslator.determineClassFromSyntacticType("''"));
 	}
 
 }

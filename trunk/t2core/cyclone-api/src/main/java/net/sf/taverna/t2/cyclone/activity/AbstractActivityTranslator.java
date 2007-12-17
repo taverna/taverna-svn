@@ -138,6 +138,8 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 				result = byte[].class;
 			} else if (syntacticType.startsWith("image")) {
 				result = byte[].class;
+			} else if (syntacticType.startsWith("'") || syntacticType.startsWith(")")) {
+				result = byte[].class;
 			}
 		}
 		return result;
