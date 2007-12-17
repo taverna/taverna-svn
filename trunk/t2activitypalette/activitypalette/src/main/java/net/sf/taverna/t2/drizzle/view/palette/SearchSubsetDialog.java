@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import net.sf.taverna.t2.drizzle.decoder.CommonKey;
 import net.sf.taverna.t2.drizzle.model.ActivityPaletteModel;
 import net.sf.taverna.t2.drizzle.model.ActivitySubsetModel;
 import net.sf.taverna.t2.drizzle.model.ProcessorFactoryAdapter;
@@ -57,6 +58,7 @@ public final class SearchSubsetDialog extends JDialog {
 				.getSubsetModel().getPropertyKeyProfile());
 		final JComboBox keysCombo = new JComboBox(keys
 				.toArray(new PropertyKey[0]));
+		keysCombo.setSelectedItem(CommonKey.NameKey);
 		keyPanel.add(keysCombo);
 
 		this.add(keyPanel);
@@ -87,7 +89,8 @@ public final class SearchSubsetDialog extends JDialog {
 
 		});
 		JButton searchButton = new JButton("Search"); //$NON-NLS-1$
-		searchButton.addActionListener(new ActionListener() {
+		
+		ActionListener searchListener = new ActionListener() {
 
 			public void actionPerformed(ActionEvent arg0) {
 				PropertyKey selectedKey = (PropertyKey) keysCombo
@@ -127,7 +130,9 @@ public final class SearchSubsetDialog extends JDialog {
 				SearchSubsetDialog.this.dispose();
 			}
 
-		});
+		};
+		searchButton.addActionListener(searchListener);
+		patternField.addActionListener(searchListener);
 		buttonPanel.add(cancelButton);
 		buttonPanel.add(searchButton);
 		this.add(buttonPanel);
