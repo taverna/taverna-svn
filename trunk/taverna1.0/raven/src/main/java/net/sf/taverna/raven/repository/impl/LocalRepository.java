@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 public class LocalRepository implements Repository {
 	
 	//the version of raven to used as the artifact for the faked classloader used during initialisation.
-	private final String RAVEN_VERSION="1.6-SNAPSHOT";
+	private final String RAVEN_VERSION="1.7.0.0";
 
 	private static Log logger = Log.getLogger(LocalRepository.class);
 
@@ -752,6 +752,18 @@ public class LocalRepository implements Repository {
 	private boolean fetchLocal(ArtifactImpl artifact, String suffix) {
 		String repositoryPath = repositoryPath(artifact, suffix);
 		// Let's see if any of our file:// repositories have it
+		//check if artifact is defined as a system artifact in the profile, if one is defined.
+		ProfileFactory profileFactory = ProfileFactory.getInstance();
+		if (profileFactory.isProfileDefined()) {
+			Set<Artifact> systemArtifacts = profileFactory.getProfile().getSystemArtifacts();
+			if (systemArtifacts.contains(artifact)) {
+				// Need to copy it so that the system classloader can
+				// find it (We can't interact with it here as Raven shouldn't
+				// depend on Taverna's BootstrapClassLoader)
+				// TODO: something like SystemClassLoaderSPI.addURL(file)
+				return false;
+			}
+		}
 		for (URL repository : fileRepositories) {
 			File file = new File(repository.getPath(), repositoryPath);
 			if (!file.canRead()) {
@@ -774,20 +786,6 @@ public class LocalRepository implements Repository {
 			} else { // unexpected suffix
 				logger.error("Unknown suffix " + suffix + " for " + artifact);
 				return false;
-			}
-			
-
-			//check if artifact is defined as a system artifact in the profile, if one is defined.
-			ProfileFactory profileFactory = ProfileFactory.getInstance();
-			if (profileFactory.isProfileDefined()) {
-				Set<Artifact> systemArtifacts = profileFactory.getProfile().getSystemArtifacts();
-				if (systemArtifacts.contains(artifact)) {
-					// Need to copy it so that the system classloader can
-					// find it (We can't interact with it here as Raven shouldn't
-					// depend on Taverna's BootstrapClassLoader)
-					// TODO: something like SystemClassLoaderSPI.addURL(file)
-					return false;
-				}
 			}
 			return true; // OK to use cache
 		}
@@ -1080,4 +1078,5 @@ public class LocalRepository implements Repository {
 	protected LinkedHashSet<URL> getRemoteRepositories() {
 		return repositories;
 	}
+	
 }

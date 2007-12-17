@@ -25,14 +25,17 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.8 $
+ * Revision           $Revision: 1.9 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-08-08 16:56:35 $
+ * Last modified on   $Date: 2007-12-17 13:17:31 $
  *               by   $Author: sowen70 $
  * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import net.sf.taverna.raven.log.Log;
@@ -90,6 +93,7 @@ public class ProfileFactory {
 		try {
 			URL profileURL = new URL(profileStr);
 			profile = new Profile(profileURL.openStream(), true);
+			updateWithPluginArtifacts(profile);
 			return profile;
 		} catch (Exception e) {
 			logger.warn("Could not fetch profile from: " + profileStr
@@ -97,5 +101,37 @@ public class ProfileFactory {
 			return null;
 		}
 	}
+
+	private void updateWithPluginArtifacts(Profile profile) {
+		if (System.getProperty("taverna.home")!=null) {
+			File pluginsFile = new File(System.getProperty("taverna.home"),"plugins/plugins.xml");
+			if (pluginsFile.exists()) {
+				updateProfileWithPluginsProfile(pluginsFile,profile);
+			}
+			else {
+				if (System.getProperty("taverna.startup")!=null) {
+					pluginsFile = new File(System.getProperty("taverna.startup"),"plugins/plugins.xml");
+					if (pluginsFile.exists()) {
+						updateProfileWithPluginsProfile(pluginsFile,profile);
+					}
+					else {
+						System.out.println("Plugins file not found in startup");
+					}
+				}
+			}
+		}
+	}
+
+	private void updateProfileWithPluginsProfile(File pluginsFile,
+			Profile profile2) {
+		try {
+			profile.addArtifactsForPlugins(pluginsFile.toURI().toURL().openStream());
+		} catch (MalformedURLException e) {
+			logger.error("Invalid URL to plugins file:"+pluginsFile.getAbsolutePath(),e);
+		} catch (IOException e) {
+			logger.error("Unable to ppen stream to plugins file:"+pluginsFile.getAbsolutePath(),e);
+		}
+	}
+	
 
 }
