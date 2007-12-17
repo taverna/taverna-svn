@@ -222,7 +222,11 @@ public class FileDataManager extends AbstractDataManager {
 					+ entity.getIdentifier());
 		}
 
-		entityPath.getParentFile().mkdirs();
+		File parentDir = entityPath.getParentFile();
+		parentDir.mkdirs();
+		if (! parentDir.isDirectory()) {
+			throw new StorageException("Could not create directory " + parentDir);
+		}
 		try {
 			beanSerialiser.beanableToXMLFile(entity, entityPath);
 		} catch (IOException e) {
