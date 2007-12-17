@@ -404,8 +404,10 @@ ActivityPaletteModelListener, ActionListener {
 		JMenu selectionControl = new JMenu("Selection"); //$NON-NLS-1$
 		selectionControl.add(copySelectionItem);
 		selectionControl.add(removeSelectionItem);
-		selectionControl.add(searchSubsetItem);
+//		selectionControl.add(searchSubsetItem);
 		menuBar.add(selectionControl);
+		
+		menuBar.add(searchSubsetItem);
 		
 		menuBar.add(watchingWorkflowItem);
 		
@@ -532,6 +534,7 @@ ActivityPaletteModelListener, ActionListener {
 	 */
 	public void reshowSubsetModel (ActivitySubsetModel subsetModel) {
 		insertTab(this.subsetToPanelMap.get(subsetModel));
+		showTabWithModel(subsetModel);
 	}
 
 	/**
@@ -553,7 +556,10 @@ ActivityPaletteModelListener, ActionListener {
 		return result;
 	}
 	
-	private void expandTab() {
+	/**
+	 * 
+	 */
+	public void expandTab() {
 		ActivitySubsetPanel currentTab = getCurrentTab();
 		if (currentTab != null) {
 			currentTab.expandAll();
@@ -587,7 +593,8 @@ ActivityPaletteModelListener, ActionListener {
 				Component selectedComponent = this.tabbedPane.getSelectedComponent();
 				if ((selectedComponent != null) && (selectedComponent instanceof ActivitySubsetPanel)){
 					ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) selectedComponent;
-					JDialog dialog = new SearchSubsetDialog(subsetPanel,
+					JDialog dialog = new SearchSubsetDialog(this,
+							subsetPanel,
 							this.paletteModel.getActivitySetModel().getPropertiedProcessorFactoryAdapterSet());
 					dialog.setLocationRelativeTo(this);
 					dialog.setVisible(true);
@@ -789,6 +796,27 @@ ActivityPaletteModelListener, ActionListener {
 			result = result.getParent();
 		}
 		return (Frame) result;
+	}
+
+	/**
+	 * @param subsetModel
+	 */
+	public void showTabWithModel(ActivitySubsetModel subsetModel) {
+		int tabCount = this.tabbedPane.getTabCount();
+		ActivitySubsetPanel selectedSubsetPanel = null;
+		for (int i = 0; (i < tabCount) && (selectedSubsetPanel == null); i++) {
+			Component c = this.tabbedPane.getComponent(i);
+			if (c instanceof ActivitySubsetPanel) {
+				ActivitySubsetPanel subsetPanel = (ActivitySubsetPanel) c;
+				if (subsetPanel.getSubsetModel() == subsetModel) {
+					selectedSubsetPanel = subsetPanel;
+				}
+			}
+		}
+		if (selectedSubsetPanel != null) {
+			this.tabbedPane.setSelectedComponent(selectedSubsetPanel);
+			selectedSubsetPanel.setModels();
+		}
 	}
 
 }
