@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-17 14:36:02 $
+ * Last modified on   $Date: 2007-12-18 17:10:05 $
  *               by   $Author: sowen70 $
  * Created on 28 Nov 2006
  *****************************************************************/
@@ -270,7 +270,7 @@ public class Plugin implements Comparable<Plugin> {
 		for (Element repository : repositoryElements) {
 			String repo = repository.getTextTrim();
 			if (repo!=null) {
-				if (repo.endsWith("/")) repo=repo+"/";
+				if (!repo.endsWith("/")) repo=repo+"/";
 				plugin.repositories.add(repo);
 			}
 			else {
