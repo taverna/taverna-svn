@@ -776,7 +776,7 @@ public class Workbench extends JFrame {
 		private JMenu makeTools() {
 			JMenu menu = new JMenu("Tools");
 
-			menu.add(new JMenuItem(new AbstractAction("Plugin Manager") {
+			menu.add(new JMenuItem(new AbstractAction("Plugin manager") {
 				
 				public void actionPerformed(ActionEvent e) {					
 					PluginManagerFrame pluginManagerUI = new PluginManagerFrame(Workbench.this,PluginManager.getInstance());
@@ -788,7 +788,7 @@ public class Workbench extends JFrame {
 			
 			if (RavenProperties.getInstance().configuredForUpdates()) {
 				JMenuItem checkUpdates = new JMenuItem(
-						"Check for core Taverna updates");
+						"Check for updates");
 				menu.add(checkUpdates);
 
 				checkUpdates.addActionListener(new ActionListener() {
@@ -796,6 +796,7 @@ public class Workbench extends JFrame {
 						checkForProfileUpdate();
 					}
 				});
+				checkUpdates.setToolTipText("Check for core Taverna updates");
 			}
 						
 			menu.add(perspectives.getDisplayPerspectivesMenu());			
@@ -804,13 +805,14 @@ public class Workbench extends JFrame {
 		
 		private JMenuItem makeSwitchProfileMenu() {
 			JMenuItem revertMenu = new JMenuItem();
-			revertMenu.setAction(new AbstractAction("Switch to another core Taverna version") {
+			revertMenu.setAction(new AbstractAction("Switch version") {
 				public void actionPerformed(ActionEvent e) {					
 					ProfileVersionListFrame frame=new ProfileVersionListFrame(Workbench.this);
 					frame.setLocationRelativeTo(Workbench.this);
 					frame.setVisible(true);
 				}				
 			});
+			revertMenu.setToolTipText("Switch to another core Taverna version");
 			return revertMenu;
 		}
 

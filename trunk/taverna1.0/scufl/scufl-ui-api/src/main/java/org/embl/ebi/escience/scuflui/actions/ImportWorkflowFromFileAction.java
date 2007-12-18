@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ImportWorkflowFromFileAction.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-24 12:09:33 $
+ * Last modified on   $Date: 2007-12-18 14:40:15 $
  *               by   $Author: sowen70 $
  * Created on 24 Jan 2007
  *****************************************************************/
@@ -48,7 +48,7 @@ public class ImportWorkflowFromFileAction extends OpenWorkflowFromFileAction {
 	
 	protected void initialise() {
 		putValue(SMALL_ICON, TavernaIcons.importFileIcon);
-		putValue(NAME, "Import workflow ...");
+		putValue(NAME, "Import workflow...");
 		putValue(SHORT_DESCRIPTION, "Imports a workflow from a file into the current workflow");		
 	}
 

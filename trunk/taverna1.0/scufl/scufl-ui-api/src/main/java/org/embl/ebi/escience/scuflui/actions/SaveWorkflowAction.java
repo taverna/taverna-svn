@@ -46,7 +46,7 @@ public class SaveWorkflowAction extends AbstractAction {
 
 	public SaveWorkflowAction(Component parentComponent) {
 		putValue(SMALL_ICON, TavernaIcons.saveIcon);
-		putValue(NAME, "Save workflow ...");
+		putValue(NAME, "Save workflow...");
 		putValue(SHORT_DESCRIPTION, "Saves the current workflow to a file");
 		this.parentComponent = parentComponent;
 	}

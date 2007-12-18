@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: OpenWorkflowFromURLAction.java,v $
- * Revision           $Revision: 1.7 $
+ * Revision           $Revision: 1.8 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-23 14:23:27 $
+ * Last modified on   $Date: 2007-12-18 14:40:15 $
  *               by   $Author: sowen70 $
  * Created on 20 Nov 2006
  *****************************************************************/
@@ -59,7 +59,7 @@ public class OpenWorkflowFromURLAction extends OpenWorkflowFromFileAction {
         
         protected void initialise() {
                 putValue(SMALL_ICON, TavernaIcons.openurlIcon);
-                putValue(NAME, "Open workflow location ...");
+                putValue(NAME, "Open workflow location...");
                 putValue(SHORT_DESCRIPTION, "Open a workflow from the web into a new worklflow");
         }
         

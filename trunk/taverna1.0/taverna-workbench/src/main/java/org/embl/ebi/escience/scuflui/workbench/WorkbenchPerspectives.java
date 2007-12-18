@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WorkbenchPerspectives.java,v $
- * Revision           $Revision: 1.23 $
+ * Revision           $Revision: 1.24 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-02-14 16:49:30 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2007-12-18 14:40:15 $
+ *               by   $Author: sowen70 $
  * Created on 10 Nov 2006
  *****************************************************************/
 package org.embl.ebi.escience.scuflui.workbench;
@@ -212,7 +212,7 @@ public class WorkbenchPerspectives {
 			}
 		};
 
-		newPerspectiveAction.putValue(Action.NAME, "New ..");
+		newPerspectiveAction.putValue(Action.NAME, "New...");
 		newPerspectiveAction.putValue(Action.SMALL_ICON, TavernaIcons.newIcon);
 		editPerspectivesMenu.add(newPerspectiveAction);
 		Action toggleEditAction = basePane.getToggleEditAction();
