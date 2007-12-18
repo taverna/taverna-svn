@@ -364,7 +364,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		processorListPanel.setLayout(new BoxLayout(processorListPanel,
 				BoxLayout.PAGE_AXIS));
 		processorListPanel.setBorder(BorderFactory.createTitledBorder(
-				BorderFactory.createEtchedBorder(), "Processor statii"));
+				BorderFactory.createEtchedBorder(), "Processor statuses"));
 
 		statusTableModel = new EnactorStatusTableModel(theModel);
 		final JTable processorTable = new JTable(statusTableModel);
