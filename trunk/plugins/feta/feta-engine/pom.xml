@@ -4,81 +4,11 @@
 	<parent>
 		<groupId>uk.org.mygrid.feta</groupId>
 		<artifactId>feta</artifactId>
-		<version>1.1</version>
+		<version>1.1.6</version>
 	</parent>
 	<groupId>uk.org.mygrid.feta</groupId>
 	<artifactId>feta-engine</artifactId>
 	<name>Feta Engine</name>
-	<version>1.1.4</version>
-	<issueManagement>
-		<system>jira</system>
-		<url>http://www.mygrid.org.uk/jira</url>
-	</issueManagement>
-	<ciManagement>
-		<system>continuum</system>
-	</ciManagement>
-	<mailingLists>
-		<mailingList>
-			<name>Taverna hackers</name>
-			<subscribe>
-				https://lists.sourceforge.net/lists/listinfo/taverna-hackers
-			</subscribe>
-			<post>taverna-hackers@lists.sourceforge.net</post>
-			<archive>
-				http://sourceforge.net/mailarchive/forum.php?forum=taverna-hackers
-			</archive>
-		</mailingList>
-		<mailingList>
-			<name>Taverna users</name>
-			<subscribe>
-				https://lists.sourceforge.net/lists/listinfo/taverna-users
-			</subscribe>
-			<post>taverna-users@lists.sourceforge.net</post>
-			<archive>
-				http://sourceforge.net/mailarchive/forum.php?forum=taverna-users
-			</archive>
-		</mailingList>
-	</mailingLists>
-	<developers>
-		<developer>
-			<id>pinar</id>
-			<name>Pinar Alper</name>
-			<organization>University of Manchester</organization>
-			<organizationUrl>
-				http://www.manchester.ac.uk
-			</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-		<developer>
-			<id>sowen</id>
-			<name>Stuart Owen</name>
-			<email>stuart.owen@manchester.ac.uk</email>
-			<url>http://www.cs.man.ac.uk/~sowen/</url>
-			<organization>University of Manchester</organization>
-			<organizationUrl>
-				http://www.manchester.ac.uk
-			</organizationUrl>
-			<roles>
-				<role>Developer</role>
-			</roles>
-			<timezone>0</timezone>
-		</developer>
-	</developers>
-	<licenses>
-		<license>
-			<name>GNU Lesser General Public License</name>
-			<url>http://www.gnu.org/licenses/lgpl.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-
-	<organization>
-		<name>University of Manchester</name>
-		<url>http://www.manchester.ac.uk</url>
-	</organization>
 	<build>
 		<resources>
 			<resource>
@@ -89,13 +19,6 @@
 			</resource>
 		</resources>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
@@ -142,95 +65,8 @@
 					</fileNamespaceToPackage>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
-	<profiles></profiles>
-	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</repository>
-		<repository>
-			<id>mobycentral</id>
-			<name>MobyCentral Repository</name>
-			<url>http://mobycentral.icapture.ubc.ca/maven</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>Maven Snapshots</id>
-			<url>http://snapshots.maven.codehaus.org/maven2/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</pluginRepository>
-		<pluginRepository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.resources</groupId>
@@ -373,25 +209,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<distributionManagement>
-		<repository>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
-			</url>
-		</repository>
-		<snapshotRepository>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
-			</url>
-		</snapshotRepository>
-		<site>
-			<id>test-site</id>
-			<name>test-site</name>
-			<url>file:///</url>
-		</site>
-	</distributionManagement>
 </project>
