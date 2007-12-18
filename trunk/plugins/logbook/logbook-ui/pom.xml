@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>uk.org.mygrid.provenance</groupId>
 	<artifactId>logbook-ui</artifactId>
-	<version>1.2.8</version>
+	<version>1.2.9</version>
 	<name>Logbook user interface</name>
 	<description>Provenance Browser for Taverna</description>
 	<build>
@@ -38,12 +38,12 @@
 		<dependency>
 			<groupId>uk.org.mygrid.provenance</groupId>
 			<artifactId>logbook</artifactId>
-			<version>1.2.8</version>
+			<version>1.2.9</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.provenance</groupId>
 			<artifactId>datalineage</artifactId>
-			<version>1.0.4</version>
+			<version>1.0.5</version>
 		</dependency>
 		<!-- 
 			<dependency>
@@ -55,19 +55,19 @@
 		<dependency>
 			<groupId>uk.org.mygrid.taverna</groupId>
 			<artifactId>taverna-workbench</artifactId>
-			<version>1.6.2.0</version>
+			<version>1.7.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>
 				uk.org.mygrid.taverna.scufl.scufl-ui-components
 			</groupId>
 			<artifactId>scufl-diagram-panel</artifactId>
-			<version>1.6.2.0</version>
+			<version>1.7.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.perspectives</groupId>
 			<artifactId>perspective-design</artifactId>
-			<version>1.6.2.0</version>
+			<version>1.7.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

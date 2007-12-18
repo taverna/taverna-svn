@@ -8,7 +8,7 @@
 	</parent>
 	<groupId>uk.org.mygrid.provenance</groupId>
 	<artifactId>datalineage</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<name>Logbook data lineage visualisation</name>
 	<description>
 		Data Lineage Visualisation for Taverna's LogBook
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>uk.org.mygrid.provenance</groupId>
 			<artifactId>logbook</artifactId>
-			<version>1.2.8</version>
+			<version>1.2.9</version>
 		</dependency>
 	</dependencies>
 
