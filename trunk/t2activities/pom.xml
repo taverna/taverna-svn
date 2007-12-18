@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.taverna.t2</groupId>
   <artifactId>activities</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.1.0</version>
   <name>Taverna 2 Activities</name>
   <description>A collection of Taverna 2 Activities. These are the core activities required to cover the functionality of Taverna 1.</description>
   <packaging>pom</packaging>

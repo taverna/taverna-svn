@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>beanable-jaxb</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>Beanable JAXB implementation</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>util</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<description>
 		Serialisation framework for t2, JAXB-based implementation
@@ -17,12 +17,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanable-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 				<dependency>
 			<groupId>com.sun.xml.bind</groupId>

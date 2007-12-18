@@ -3,33 +3,33 @@
 	<parent>
 		<artifactId>activities</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>biomart-activity</artifactId>
 	<name>Taverna 2 Biomart Activity.</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.biomart</groupId>
 			<artifactId>martservice</artifactId>
-			<version>0.6.1-SNAPSHOT</version>
+			<version>0.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-impl</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
