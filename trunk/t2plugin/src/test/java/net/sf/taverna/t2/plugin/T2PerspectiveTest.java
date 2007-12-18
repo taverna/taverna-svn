@@ -15,7 +15,7 @@ public class T2PerspectiveTest {
 
 	@Test
 	public void testGetText() {
-		assertEquals("Taverna 2", t2Perspective.getText());
+		assertEquals("Taverna 2 preview", t2Perspective.getText());
 	}
 
 }

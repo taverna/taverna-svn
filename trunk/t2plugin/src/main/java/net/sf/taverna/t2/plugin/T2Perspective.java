@@ -23,7 +23,7 @@ public class T2Perspective extends AbstractPerspective {
 	}
 
 	public String getText() {
-		return "Taverna 2";
+		return "Taverna 2 preview";
 	}
 
 }
