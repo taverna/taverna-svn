@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignActivityPerspective.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-18 15:08:43 $
+ * Last modified on   $Date: 2007-12-18 16:37:24 $
  *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
@@ -55,7 +55,7 @@ public class DesignActivityPerspective extends AbstractPerspective implements Wo
 
 	@Override
 	public String getText() {
-		return "Activity palette preview"; //$NON-NLS-1$
+		return "T2 Activity palette preview"; //$NON-NLS-1$
 	}
 
 	@Override
