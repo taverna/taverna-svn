@@ -63,7 +63,7 @@ public class RestfulExecutionThread extends Thread {
 
 	private String workerPassword;
 	
-	private static final String BASE_TAVERNA_VERSION="1.6.2.0";
+	private static final String BASE_TAVERNA_VERSION="1.7.0.0";
 
 	public RestfulExecutionThread(String jobUri, String baseUri,
 			String workerUsername, String workerPassword) {
@@ -271,12 +271,12 @@ public class RestfulExecutionThread extends Thread {
                 
                 repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-				"1.6.2.1"));
+				"BASE_TAVERNA_VERSION"));
                 repository.addArtifact(new BasicArtifact(
 				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-				"1.6.2.1"));
+				"BASE_TAVERNA_VERSION"));
                 repository.addArtifact(new BasicArtifact("biomoby.org",
-				"taverna-biomoby", "1.6.2.1"));
+				"taverna-biomoby", "BASE_TAVERNA_VERSION"));
       
 		
 		repository.addArtifact(new BasicArtifact(

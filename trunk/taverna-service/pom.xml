@@ -4,7 +4,7 @@
 	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>remotetaverna</artifactId>
 	<packaging>pom</packaging>
-	<version>0.4.5</version>
+	<version>0.4.6</version>
 	<name>Remote Taverna execution</name>
 	<description>Remote Taverna execution service</description>
 	<issueManagement>
