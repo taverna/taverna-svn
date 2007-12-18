@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.org.mygrid.provenance</groupId>
+		<artifactId>logbook-parent</artifactId>
+		<version>1.2</version>
+	</parent>
 	<groupId>uk.org.mygrid.provenance</groupId>
 	<artifactId>logbook-ui</artifactId>
 	<version>1.2.8</version>
+	<name>Logbook user interface</name>
 	<description>Provenance Browser for Taverna</description>
 	<build>
 		<resources>
@@ -21,86 +27,13 @@
 		</extensions>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-   		<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-							<goal>test-jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>Maven Snapshots</id>
-			<url>http://snapshots.maven.codehaus.org/maven2/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.provenance</groupId>
@@ -113,12 +46,12 @@
 			<version>1.0.4</version>
 		</dependency>
 		<!-- 
-		<dependency>
+			<dependency>
 			<groupId>uk.org.mygrid.provenance</groupId>
 			<artifactId>logbook-boca</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		 -->
+			</dependency>
+		-->
 		<dependency>
 			<groupId>uk.org.mygrid.taverna</groupId>
 			<artifactId>taverna-workbench</artifactId>
@@ -143,20 +76,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
-			</url>
-		</repository>
-		<snapshotRepository>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>

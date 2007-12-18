@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>uk.org.mygrid.provenance</groupId>
+		<artifactId>logbook-parent</artifactId>
+		<version>1.2</version>
+	</parent>
 	<groupId>uk.org.mygrid.provenance</groupId>
 	<artifactId>logbook-boca</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
@@ -21,13 +26,6 @@
 		</extensions>
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skip>true</skip>
@@ -35,49 +33,6 @@
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-		<repository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>Maven Snapshots</id>
-			<url>http://snapshots.maven.codehaus.org/maven2/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots />
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				http://www.mygrid.org.uk/maven/snapshot-repository
-			</url>
-		</pluginRepository>
-	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -156,54 +111,54 @@
 			<version>2.4</version>
 		</dependency>
 		<!-- 
-		<dependency>
+			<dependency>
 			<groupId>uk.org.mygrid.resources</groupId>
 			<artifactId>boca-notification-servlet</artifactId>
 			<version>2.4</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>uk.org.mygrid.resources</groupId>
 			<artifactId>boca-runner</artifactId>
 			<version>2.4</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>uk.org.mygrid.resources</groupId>
 			<artifactId>boca-client-jena</artifactId>
 			<version>2.4</version>
-		</dependency>		
-		 -->
+			</dependency>		
+		-->
 		<dependency>
 			<groupId>uk.org.mygrid.resources</groupId>
 			<artifactId>boca-server</artifactId>
 			<version>2.4</version>
 		</dependency>
 		<!-- 
-		<dependency>
+			<dependency>
 			<groupId>org.openrdf</groupId>
 			<artifactId>openrdf-model</artifactId>
 			<version>2.0-beta1</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.2</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 			<version>1.1</version>
-		</dependency>
-		<dependency>
+			</dependency>
+			<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.2</version>
-		</dependency>
-		 -->
+			</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
@@ -216,20 +171,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/repository
-			</url>
-		</repository>
-		<snapshotRepository>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				scpexe://phoebus.cs.man.ac.uk/disk1/maven/snapshot-repository
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
 </project>
