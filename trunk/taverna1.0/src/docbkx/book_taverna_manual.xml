@@ -6,7 +6,7 @@
 <!ENTITY __chapter_admin_guide__ SYSTEM "chapter_admin_guide.xml">
 ]>
 <book>
-  <title>Taverna 1.6 Manual.</title>
+  <title>Taverna 1.7 Manual.</title>
 
   &__chapter_user_guide__;
 
