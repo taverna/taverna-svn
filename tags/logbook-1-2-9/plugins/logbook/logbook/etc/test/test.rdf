@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:j.0="http://www.mygrid.org/provenance#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" ><rdf:Description rdf:nodeID="A0"><j.0:location>/tmp/eg.tri</j.0:location><rdf:type rdf:resource="http://www.mygrid.org/provenance#TriInput"/></rdf:Description></rdf:RDF>
+
+	
+	
