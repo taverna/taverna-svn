@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: DesignActivityPerspective.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-11 17:23:57 $
- *               by   $Author: alaninmcr $
+ * Last modified on   $Date: 2007-12-18 15:08:43 $
+ *               by   $Author: sowen70 $
  * Created on 8 Nov 2006
  *****************************************************************/
 package net.sf.taverna.t2.drizzle.perspective;
@@ -55,7 +55,7 @@ public class DesignActivityPerspective extends AbstractPerspective implements Wo
 
 	@Override
 	public String getText() {
-		return "Design with Activity Palette"; //$NON-NLS-1$
+		return "Activity palette preview"; //$NON-NLS-1$
 	}
 
 	@Override
