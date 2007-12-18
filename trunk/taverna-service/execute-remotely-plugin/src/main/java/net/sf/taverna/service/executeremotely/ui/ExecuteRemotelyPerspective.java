@@ -10,7 +10,7 @@ public class ExecuteRemotelyPerspective extends AbstractPerspective {
 
 	static String NAME = "Execute remotely";
 	
-	static ImageIcon ICON = new ImageIcon(ExecuteRemotelyFactory.class.getResource("/package_network.png"));
+	static ImageIcon ICON = new ImageIcon(ExecuteRemotelyFactory.class.getResource("/package_network_small.png"));
 	
 	@Override
 	public ImageIcon getButtonIcon() {
