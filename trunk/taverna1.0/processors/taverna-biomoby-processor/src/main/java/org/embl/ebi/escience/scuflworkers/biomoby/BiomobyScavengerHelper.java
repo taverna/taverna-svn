@@ -47,7 +47,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 				String baseURL = (String) JOptionPane.showInputDialog(s.getContainingFrame(),
 						"Location (URL) of your Biomoby central registry?", "Biomoby location",
 						JOptionPane.QUESTION_MESSAGE, null, null,
-						"http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl");
+						"http://moby.ucalgary.ca/moby/MOBY-Central.pl");
 				if (baseURL != null) {
 					s.scavengingStarting("Adding BioMoby ccavenger");
 					try {
