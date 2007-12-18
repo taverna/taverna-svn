@@ -4,13 +4,19 @@
 <!ENTITY __chapter_user_guide__ SYSTEM "chapter_user_guide.xml">
 <!ENTITY __chapter_developer_guide__ SYSTEM "chapter_developer_guide.xml">
 <!ENTITY __chapter_admin_guide__ SYSTEM "chapter_admin_guide.xml">
+<!ENTITY __chapter_t2_guide__ SYSTEM "chapter_t2_guide.xml">
+<!ENTITY __chapter_release_notes__ SYSTEM "chapter_releasenotes1.7.0.0.xml">
 ]>
 <book>
   <title>Taverna 1.7 Manual.</title>
+
+  &__chapter_release_notes__;
 
   &__chapter_user_guide__;
 
   &__chapter_developer_guide__;
   
   &__chapter_admin_guide__;
+  
+  &__chapter_t2_guide__;
 </book>

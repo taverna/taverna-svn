@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<chapter>
-  <title>Using the T2 Plugin</title>
-
   <section>
-    <title>Using the Plugin</title>
+    <title>Using the Taverna 2 preview</title>
 
-    <para>The plugin contains 3 main panels: a view of the currently opened
+    <para>The preview contains 3 main panels: a view of the currently opened
     workflow, the process being executed and the results. There are also 4
     buttons: Test, Run, Stop &amp; Preferences.</para>
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_plugin_workflow.png" />
+          <imagedata fileref="./images/t2_plugin_workflow.png" />
         </imageobject>
       </inlinemediaobject></para>
 
@@ -23,11 +20,11 @@
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_healthcheck_fail.png" />
+          <imagedata fileref="./images/t2_healthcheck_fail.png" />
         </imageobject>
       </inlinemediaobject><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_healthcheck_pass.png" />
+          <imagedata fileref="./images/t2_healthcheck_pass.png" />
         </imageobject>
       </inlinemediaobject></para>
 
@@ -37,7 +34,7 @@
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_plugin_preference.png" />
+          <imagedata fileref="./images/t2_plugin_preference.png" />
         </imageobject>
       </inlinemediaobject></para>
 
@@ -49,7 +46,7 @@
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_plugin_create_entity.png" />
+          <imagedata fileref="./images/t2_plugin_create_entity.png" />
         </imageobject>
       </inlinemediaobject></para>
 
@@ -59,7 +56,7 @@
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_plugin_create_entity2.png" />
+          <imagedata fileref="./images/t2_plugin_create_entity2.png" />
         </imageobject>
       </inlinemediaobject></para>
 
@@ -69,8 +66,7 @@
 
     <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="../../workspace/taverna1/src/docbkx/images/t2_plugin_workflow_complete.png" />
+          <imagedata fileref="./images/t2_plugin_workflow_complete.png" />
         </imageobject>
       </inlinemediaobject></para>
   </section>
-</chapter>
