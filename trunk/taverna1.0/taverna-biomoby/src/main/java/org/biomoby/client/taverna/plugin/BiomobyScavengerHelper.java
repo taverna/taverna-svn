@@ -130,7 +130,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
         };
     }
     
-    public Set<Scavenger> getDefaults() {
+    public synchronized Set<Scavenger> getDefaults() {
 		Set<Scavenger> result = new HashSet<Scavenger>();
 		String urlList = System.getProperty("taverna.defaultbiomoby");
 		if (urlList != null) {

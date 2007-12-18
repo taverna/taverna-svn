@@ -387,7 +387,7 @@ public class BiomobyScavengerWorker {
 	 * @throws MobyException
 	 *             if something goes wrong
 	 */
-	public ArrayList<DefaultMutableTreeNode> getServices() throws MobyException {
+	public synchronized ArrayList<DefaultMutableTreeNode> getServices() throws MobyException {
 		try {
 			updateServiceInstanceCache();
 		} catch (Exception e) {
