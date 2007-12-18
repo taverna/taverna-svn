@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.org.mygrid.interaction</groupId>
   <artifactId>interaction-server</artifactId>
-  <version>0.7.3</version>
+  <version>0.7.4</version>
   <description></description>
   <packaging>pom</packaging>
   <name>Interaction Server</name>
