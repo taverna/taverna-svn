@@ -5,7 +5,7 @@
 	<artifactId>taverna</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna</name>
-	<version>1.6-SNAPSHOT</version>
+	<version>1.7.0.0</version>
 	<issueManagement>
 		<system>jira</system>
 		<url>http://www.mygrid.org.uk/jira/</url>
@@ -114,6 +114,7 @@
 		<url>http://www.manchester.ac.uk/</url>
 	</organization>
 	<build>
+		<!-- 
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
@@ -121,6 +122,7 @@
 				<version>1.0-alpha-5</version>
 			</extension>
 		</extensions>
+		 -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.9 $
+ * Revision           $Revision: 1.10 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-17 13:17:31 $
+ * Last modified on   $Date: 2007-12-18 13:29:28 $
  *               by   $Author: sowen70 $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -113,9 +113,6 @@ public class ProfileFactory {
 					pluginsFile = new File(System.getProperty("taverna.startup"),"plugins/plugins.xml");
 					if (pluginsFile.exists()) {
 						updateProfileWithPluginsProfile(pluginsFile,profile);
-					}
-					else {
-						System.out.println("Plugins file not found in startup");
 					}
 				}
 			}

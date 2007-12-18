@@ -164,7 +164,7 @@ public class WorkflowLauncherWrapper {
 	 * This version has to match the version of the real dependency you have to
 	 * Taverna libraries on your classpath (ie. the pom.xml dependencies).
 	 */
-	public static final String TAVERNA_BASE_VERSION = "1.6.2.0";
+	public static final String TAVERNA_BASE_VERSION = "1.7.0.0";
 
 	String workflowName;
 
@@ -256,7 +256,7 @@ public class WorkflowLauncherWrapper {
 	 */
 	protected Repository initialiseRepository() throws IOException {
 
-		System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.6.2/taverna-1.6.2.0-profile.xml");
+		System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.7.0/taverna-1.7.0.0-profile.xml");
 
 		// this line is necessary if working with Taverna 1.5.2 or earlier:
 		// Bootstrap.properties = new Properties();
