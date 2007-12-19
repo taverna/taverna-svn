@@ -686,6 +686,14 @@ public class BiomobyScavengerWorker {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return the CacheImpl object for this scavenger
+	 */
+	public CacheImpl getCacheImpl() {
+	    return cache;
+	}
+	
 	/*
 	 * 
 	 */

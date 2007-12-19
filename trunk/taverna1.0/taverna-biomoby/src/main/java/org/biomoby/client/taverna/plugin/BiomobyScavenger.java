@@ -18,7 +18,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  * Biomoby Central Registry.
  * <p>
  * 
- * @version $Id: BiomobyScavenger.java,v 1.5 2007-04-04 14:29:55 edwardkawas Exp $
+ * @version $Id: BiomobyScavenger.java,v 1.6 2007-12-19 16:13:09 edwardkawas Exp $
  * @author Martin Senger
  */
 public class BiomobyScavenger extends Scavenger {
@@ -66,6 +66,16 @@ public class BiomobyScavenger extends Scavenger {
 			sce.initCause(e);
 			throw sce;
 		}
+		/* do this to speed things up for the user; here we 
+		 * read the RDF from a file, rather than downloading 
+		 * it again whenever the datatypes are used 
+		 */
+		try {
+		String url = helper.getCacheImpl().getMOBYCENTRAL_REGISTRY_URL();
+		String filelocation = helper.getCacheImpl().getDatatypeRDFLocation();
+		org.biomoby.registry.meta.Registry reg = new org.biomoby.registry.meta.Registry(url,url,"http://domain.com/MOBY/Central" );
+		org.biomoby.shared.MobyDataType.loadDataTypes(((new java.io.File(filelocation)).toURL()), reg);
+		} catch (Exception e){}
 	}
 
 	/**
@@ -104,6 +114,16 @@ public class BiomobyScavenger extends Scavenger {
 			sce.initCause(e);
 			throw sce;
 		}
+		/* do this to speed things up for the user; here we 
+		 * read the RDF from a file, rather than downloading 
+		 * it again whenever the datatypes are used 
+		 */
+		try {
+		String url = helper.getCacheImpl().getMOBYCENTRAL_REGISTRY_URL();
+		String filelocation = helper.getCacheImpl().getDatatypeRDFLocation();
+		org.biomoby.registry.meta.Registry reg = new org.biomoby.registry.meta.Registry(url,url,uri );
+		org.biomoby.shared.MobyDataType.loadDataTypes(((new java.io.File(filelocation)).toURL()), reg);
+		} catch (Exception e){}
 	}
 
 	/**
