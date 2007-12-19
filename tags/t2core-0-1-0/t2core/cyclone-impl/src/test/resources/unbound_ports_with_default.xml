@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:22adf7ef-33bf-457a-b62d-a3de5ebcc735" author="" title="unbound_ports" />
+  <s:processor name="Processor_A">
+    <s:defaults>
+      <s:default name="input_1">Some Data</s:default>
+    </s:defaults>
+    <s:beanshell>
+      <s:scriptvalue>String output = input_1</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_1</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="Processor_A:output" sink="out" />
+  <s:sink name="out" />
+</s:scufl>
+

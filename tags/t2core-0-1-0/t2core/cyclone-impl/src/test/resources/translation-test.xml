@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:426b51fd-9883-4261-abb0-d1789407ed3c" author="" title="translation-test" />
+  <s:processor name="processor_a">
+    <s:beanshell>
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_1</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output_1</s:beanshelloutput>
+        <s:beanshelloutput s:syntactictype="l('text/plain')">output_2</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="processor_b" workers="4">
+    <s:defaults>
+      <s:default name="input_2" />
+    </s:defaults>
+    <s:beanshell maxretries="2" retrydelay="1000" retrybackoff="1.5">
+      <s:scriptvalue />
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="'text/plain'">input_2</s:beanshellinput>
+        <s:beanshellinput s:syntactictype="l('text/plain')">input_3</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">output_3</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="input" sink="processor_a:input_1" />
+  <s:link source="processor_a:output_1" sink="processor_b:input_2" />
+  <s:link source="processor_a:output_2" sink="processor_b:input_3" />
+  <s:link source="processor_b:output_3" sink="output" />
+  <s:source name="input" />
+  <s:sink name="output" />
+  <s:coordination name="processor_b_BLOCKON_processor_a">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>processor_a</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>processor_b</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
