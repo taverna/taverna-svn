@@ -154,6 +154,11 @@
 				<configuration>
 					<minmemory>128m</minmemory>
 					<maxmemory>512</maxmemory>
+					<aggregate>true</aggregate>
+					<links>
+						<link>http://www.mygrid.org.uk/taverna/api/</link>
+						<link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+					</links>
 				</configuration>
 			</plugin>
 			<plugin>
