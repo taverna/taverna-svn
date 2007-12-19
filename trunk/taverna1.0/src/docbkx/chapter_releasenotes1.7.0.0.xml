@@ -4,7 +4,7 @@
 
   <toc></toc>
 
-  <section id="admin_overview">
+  <section id="t2_preview_overview">
     <title>Overview</title>
 
     <para>Release notes for the 'Christmas' release of the Taverna Workbench,
@@ -54,7 +54,7 @@
     because we've been focusing on...</para>
   </section>
 
-  <section id="admin_taverna_loads">
+  <section id="t2_tech_preview_1">
     <title>Taverna 2 Technology Preview 1</title>
 
     <para>The 1.7.0 release of the Taverna Workbench incorporates a technology
@@ -123,7 +123,7 @@
     early next year.</para>
   </section>
 
-  <section>
+  <section id="prototype_activity_palette">
     <title>Prototype Activity Palette</title>
 
     <para>This release also includes a prototype of the new activity palette
@@ -132,6 +132,7 @@
     the new enactor the aim is to get feedback rather than be ready for
     mainstream production use.</para>
 
-    <para></para>
+    <para>A guide to using the Activity Palette can be found at <ulink
+    url="http://www.mygrid.org.uk/usermanual1.7/t2_guide.html#activity_palette">http://www.mygrid.org.uk/usermanual1.7/t2_guide.html#activity_palette</ulink>.</para>
   </section>
 </chapter>
