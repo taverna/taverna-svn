@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="biomart_processor">
+  <title>Biomart query integration</title>
+
+  <para>The Biomart system (<ulink
+  url="http://www.biomart.org/">http://www.biomart.org/</ulink>) is a flexible
+  data warehouse aimed at complex interlinked biological data sets. Originally
+  developed for the Ensembl project it has now been generalized to allow other
+  data providers access to its functionality. As an example the EBI's Biomart
+  instance contains data from Ensembl, VEGA, DbSNP, UniProt and MSD data sets
+  - Taverna's biomart query integration provides full search and retrieval
+  functionality over these data sources.</para>
+
+  <para>Biomart instances can contain multiple data sets, so the basic unit
+  used in Taverna is the data set, or, more specifically, a single configured
+  query over a single data set (although some dataset configurations allow
+  links to a second dataset).</para>
+
+  <section id="describing_biomart_service">
+    <title>Describing a Biomart service</title>
+
+    <para>A new Biomart service is added to the services panel from the right
+    click menu on the top level node and selection of the ' Create new Biomart
+    service... ' item. This then displays the following input dialog box
+    :</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/biomart_location.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The default location shown here is for the Biomart central server
+    which contains seven distinct sets of datasets: Ensembl, SNP, VEGA,
+    Uniprot, MSD, Wormbase and Dictybase. Once the user has specified the
+    Biomart location a new node becomes available in the service selection
+    panel, expanding this node shows the various distinct data sets available
+    to query:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/biomart_scavenger.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+  </section>
+
+  <section id="creating_biomart_query">
+    <title>Creating a new Biomart query</title>
+
+    <para>The query is created by dragging a dataset (shown in the panel
+    above) into the advanced model explorer as with any other processor type.
+    Similarly to the Beanshell scripting engine all Biomart processors require
+    configuration before they are of any use within the workflow. The
+    configuration section is accessible from the ' Configure biomart query...
+    ' option in the right click context menu for the Biomart processor. When
+    selected this will show the query configuration panel. The example below
+    shows the initial configuration screen for the data source based on Homo
+    Sapiens genomic data in Ensembl:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/create_biomart_query.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>Biomart query processors have two sets of configuration, filters and
+    attributes. Filters define restrictions on the query and are particularly
+    important if the users wishes the query to return anything other than
+    entire genome's worth of data. Attributes on the other hand define the
+    values which the user is interested in. Conceptually filters are inputs
+    (although not all filters appear as input ports) and attributes are
+    outputs.</para>
+  </section>
+
+  <section id="conf_biomart_filters">
+    <title>Configuring filters</title>
+
+    <para>Filters are critical to almost all queries. If no filter is defined
+    the query will return all records within the selected data set - as data
+    sets generally correspond to entire genomes or databases these queries are
+    therefore substantial. Filters are configured by selecting the 'Filters'
+    button on the summary panel (on the left of the Biomart configuration
+    panel).</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/configure_biomart_filter.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>Filters are shown in groupes (REGION, GENE, etc); clicking the '+'
+    next to the filter group name will expand the group (as shown below).
+    Clicking on the '-' will collapse the filter group.</para>
+
+    <para>Filters are added by selecting the check box on the left. Filters
+    may be grouped as filter collections, so selecting the Band filters in the
+    example below will add the Start and End filters to the Query. Note that
+    the summary box on the left shows the filters that have been
+    selected.</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/configure_biomart_filter1.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The image above shows two distinct kinds of filters: The drop down
+    lists represent filters over controlled vocabularies whereas the text
+    entry boxes represent arbitrary textual inputs (although from the context
+    here it is clear they are actually intended to be numeric values, at least
+    for the chromosomal coordinate inputs). Some filter values change when
+    other filters are configured - if the user selects a chromosome the band
+    filters will be populated with appropriate values.</para>
+
+    <para>The image below shows two more filter types, both based on boolean
+    expressions. The pair of filters at the end of the page are simple boolean
+    filters, they allow the user to specify whether a particular constraint
+    must be satisfied, must not be satisfied or is ignored (filter not
+    selected, the default). The filters at the top of the page are similar but
+    the condition is configurable, the entire filter is constructed from a
+    combination of the drop down subject with the predicate and object
+    specified by the boolean selection:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/configure_biomart_filter2.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The image below shows an ID List based filter. These are used to
+    constrain the query to only those results matching an explicitly stated
+    list of values. The drop down list at the top of the filter selects the
+    type of ID to filter on and the text entry area accepts IDs, one per line,
+    to be used as values in the filter. Selecting the 'Browse' button allows
+    the ID values to be read from a file - the file must have one ID per
+    line.</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/configure_biomart_filter3.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>The final kind of filter is one similar to the list based filter but
+    where the item selected comes from a tree or taxonomy of terms:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/configure_biomart_filter4.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+  </section>
+
+  <section id="biomart_param_filters">
+    <title>Parameterised filters</title>
+
+    <para>Some types of filters may manifest as inputs to the query processor.
+    These are always optional - if no upstream processor is connected to the
+    input the query will proceed exactly as configured. If, however, a data
+    link is connected the data will override the value parameter for the
+    query. For example, if the user wishes to construct a workflow where
+    Ensembl Gene IDs are used to fetch the corresponding sequences he or she
+    specifies a filter based on Ensembl Gene ID (as with the ID list filter
+    above) and overrides the specified values by connecting a string list to
+    the appropriate input. When the query is run by the enactor the ID list
+    configuration will be modified by the input data. This applies to all
+    filters other than the two boolean filter types, all except the ID list
+    filter accept a single string as a value override. The example workflow
+    'BiomartAndEMBOSSAnalysis' shows this facility in action:</para>
+
+    <para></para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/biomart_workflow.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+  </section>
+
+  <section id="conf_biomart_attributes">
+    <title>Configuring attributes</title>
+
+    <para>Attributes are configured by clicking the 'Attributes' button on the
+    summary panel. Attributes are themselves divided into pages. The required
+    page is selected from the available pages, in this case 'Features',
+    'Structures', 'SNPs', 'Homologs' and 'Sequences'. Attributes can only be
+    selected from one page. Any attributes selected from an attribute page
+    will be removed from the query when another page is selected.</para>
+
+    <section id="biomart_basic_attributes">
+      <title>Selecting attributes</title>
+
+      <para>Selecting an attribute in one of the subpages states that the
+      attribute should be returned for each record passing all defined
+      filters.</para>
+
+      <screenshot>
+        <screeninfo></screeninfo>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="images/biomart_basic_attributes.png" />
+          </imageobject>
+        </mediaobject>
+      </screenshot>
+    </section>
+
+    <section>
+      <title>Result modes</title>
+
+      <para>There are two modes for returning values from a Biomart query:
+      Multiple outputs and a formatted single output (as shown above). The
+      formats available for the single output depends on which attribute page
+      is chosen.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Multiple Outputs</para>
+
+          <para>Each attribute maps directly to an output on the processor -
+          where possible sensible names are chosen for the processor outputs
+          such that it is reasonably obvious which corresponds to which. The
+          image below show the corresponding processor in the advanced model
+          explorer for the above attributes:</para>
+
+          <screenshot>
+            <screeninfo></screeninfo>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="images/biomart_ame1.png" />
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+        </listitem>
+
+        <listitem>
+          <para>Single formatted output</para>
+
+          <para>When a single output is chosen there is a single output port
+          on the processor. A single value will be returned in the format
+          chosen. The image below show the corresponding processor in the
+          advanced model explorer when single output mode is chosen:</para>
+
+          <screenshot>
+            <screeninfo></screeninfo>
+
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="images/biomart_ame2.png" />
+              </imageobject>
+            </mediaobject>
+          </screenshot>
+
+          <note>
+            <para>Switching between modes will cause output ports (and any
+            links connected to them) to be removed from the workflow.</para>
+          </note>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section id="biomart_dataset_filters">
+    <title>Second dataset filters</title>
+
+    <para>Some dataset configurations allow filters and attributes to be
+    selected for a second dataset. Clicking on the second dataset button in
+    the summary panel shows the datasets that can be selected:</para>
+
+    <screenshot>
+      <screeninfo></screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/biomart_second_dataset.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>When a second dataset is selected additional 'Filters' and
+    'Attributes' buttons are added to the summary panel. Selecting filters and
+    attributes from the second dataset is done in the same way as for the
+    first dataset.</para>
+  </section>
+</section>
