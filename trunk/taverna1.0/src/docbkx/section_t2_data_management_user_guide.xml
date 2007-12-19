@@ -6,7 +6,7 @@
 
     <para>The preview contains 3 main panels: a view of the currently opened
     workflow, the process being executed and the results. There are also 4
-    buttons: Test, Run, Stop &amp; Preferences.</para>
+    buttons: Test, Run, Reset &amp; Preferences.</para>
 
     <para><inlinemediaobject>
         <imageobject>
@@ -16,13 +16,16 @@
 
     <para>Test allows you to perform a workflow healthcheck. This will check
     that the workflow can be translated from the old style scufl model to the
-    T2 style and that any web-service endpoints are responding.</para>
+    T2 style and that any web-service endpoints are responding.  The top screenshot 
+    is from a failed check while the bottom one is a success.</para>
 
     <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_healthcheck_fail.png" />
         </imageobject>
-      </inlinemediaobject><inlinemediaobject>
+      </inlinemediaobject>
+      </para>
+      <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_healthcheck_pass.png" />
         </imageobject>
@@ -61,9 +64,13 @@
       </inlinemediaobject></para>
 
     <para>Clicking on run workflow executes the workflow and generates the
-    results. In the example results below a beanshell was concatenating “xxx”
-    to a string input of “Hello taverna users”.</para>
-
+    results. During the run the workflow status is monitored and shown to you.  In the example results below a beanshell was concatenating “xxx”
+    to a string input of “Hello Taverna Users”.</para>
+<para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="images/t2_plugin_monitor.png" />
+        </imageobject>
+      </inlinemediaobject></para>
     <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_plugin_workflow_complete.png" />
