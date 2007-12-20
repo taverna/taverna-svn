@@ -20,9 +20,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
-    <developerConnection>scm:cvs:ext:taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</developerConnection>
-    <url>http://taverna.cvs.sourceforge.net/taverna/taverna1.0/</url>
+    <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:martservice</connection>
+    <developerConnection>scm:cvs:ext:taverna.cvs.sourceforge.net:/cvsroot/taverna:martservice</developerConnection>
+    <url>http://taverna.cvs.sourceforge.net/taverna/martservice/</url>
   </scm>
   <build>
     <plugins>
