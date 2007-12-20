@@ -5,6 +5,25 @@
   <name>MartService</name>
   <version>0.6.3-SNAPSHOT</version>
   <description>Biomart webservice API</description>
+  <developers>
+    <developer>
+      <id>witherd5</id>
+      <name>David Withers</name>
+      <email>david.withers@manchester.ac.uk</email>
+      <url>http://www.cs.man.ac.uk/~witherd5/</url>
+      <organization>University of Manchester</organization>
+      <organizationUrl>http://www.manchester.ac.uk/</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>0</timezone>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:cvs:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</connection>
+    <developerConnection>scm:cvs:ext:taverna.cvs.sourceforge.net:/cvsroot/taverna:taverna1.0</developerConnection>
+    <url>http://taverna.cvs.sourceforge.net/taverna/taverna1.0/</url>
+  </scm>
   <build>
     <plugins>
       <plugin>
