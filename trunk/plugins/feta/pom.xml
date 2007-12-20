@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>uk.org.mygrid</groupId>
@@ -106,8 +108,9 @@
 		<module>feta-engine</module>
 		<module>feta-war</module>
 		<module>feta-client</module>
+		<module>feta-browser</module>
 	</modules>
-			<repositories>
+	<repositories>
 		<repository>
 			<releases />
 			<snapshots>
@@ -116,5 +119,6 @@
 			<id>mygrid-repository</id>
 			<name>myGrid Repository</name>
 			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository></repositories>
+		</repository>
+	</repositories>
 </project>
