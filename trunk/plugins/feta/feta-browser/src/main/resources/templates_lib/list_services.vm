@@ -1,0 +1,25 @@
+## List services
+## Requires $urlFactory and $services
+
+<ul>
+#set($lastInterface = "unknown")
+#foreach ($service in $services)
+	#if ($service.hasInterfaceLocations.isEmpty())
+	   #set($interface = "")
+	#else   
+		#set($interface = $service.hasInterfaceLocations.iterator().next())
+	#end
+	#if ($interface != ($lastInterface))
+		#if($lastInterface != "unknown")
+				</ul>
+			</li>
+		#end
+		#set($lastInterface = $interface)
+		<li>$interface
+		<ul>
+	#end
+			<li><a href="$urlFactory.getReference($service)">$service.hasServiceNameTexts</a>
+			<small>$service.hasServiceDescriptionTexts</small>
+			</li>
+#end
+</ul>

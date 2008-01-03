@@ -1,0 +1,28 @@
+<html>
+	<body>
+		<h1>Service $service.hasServiceNameTexts</h1>
+		<dl>
+			#if (! $service.providedBy.empty)	
+				<dt>Provider</dt>
+				#foreach ($provider in $service.providedBy)
+				<dd>
+					<a href="$urlFactory.getReference($provider)">
+					#foreach ($txt in $provider.hasOrganisationNameTexts)
+						$txt
+					#end
+					</a>
+				</dd>
+				#end
+			#end
+			
+			#if (! $service.hasServiceDescriptionTexts.empty)
+			<dt>Description</dt>
+			<dd>
+				$service.hasServiceDescriptionTexts
+			</dd>
+			#end
+			
+			
+		</dl>
+	</body>
+</html>
