@@ -1,3 +1,8 @@
+/*
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Wei Tan, the University of Chicago
+ */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
 import org.embl.ebi.escience.scufl.DuplicateProcessorNameException;
@@ -13,7 +18,7 @@ import org.jdom.Element;
 /**
  * Handles XML store and load for the GT4 processor
  * 
- * @author Tom Oinn
+ * @author Wei Tan
  */
 public class GT4XMLHandler implements XMLHandler {
 

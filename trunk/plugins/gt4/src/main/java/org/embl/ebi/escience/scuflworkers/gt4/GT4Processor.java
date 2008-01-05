@@ -1,7 +1,7 @@
 /**
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
+ * Copyright Wei Tan, the University of Chicago
  */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
@@ -52,7 +52,7 @@ import org.embl.ebi.escience.scuflworkers.java.XMLSplittableOutputPort;
  * A processor based on an operation defined within a WSDL file accessible to
  * the class at construction time.
  * 
- * @author Tom Oinn
+ * @author Wei Tan
  */
 
 public class GT4Processor extends Processor implements Serializable,

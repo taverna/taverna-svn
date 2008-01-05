@@ -1,7 +1,7 @@
 /**
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
+ * Copyright Wei Tan, the University of Chicago
  */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
@@ -17,7 +17,7 @@ import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
  * A Scavenger that knows how to get all the GT4 services from a specified
  * installation
  * 
- * @author Tom Oinn, Stian Soiland, Stuart Owen
+ * @author Wei Tan, Ravi Madduri
  */
 
 public class GT4Scavenger extends Scavenger {

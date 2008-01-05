@@ -1,8 +1,19 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Wei Tan, the University of Chicago
+ */
+
 package org.embl.ebi.escience.scuflworkers.gt4;
 
 import javax.xml.namespace.QName;
-
 import org.embl.ebi.escience.scuflworkers.ProcessorFactory;
+
+/**
+ * A processor factory used to create GT4 processor
+ * 
+ * @author Wei Tan
+ */
 
 public class GT4ProcessorFactory extends ProcessorFactory
 {

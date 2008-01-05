@@ -1,7 +1,7 @@
 /**
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
+ * Copyright Wei Tan, the University of Chicago
  */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
@@ -34,9 +34,9 @@ import org.w3c.dom.Element;
 import uk.ac.soton.itinnovation.taverna.enactor.entities.TaskExecutionException;
 
 /**
- * The task required to invoke an arbitrary web service.
+ * The task required to invoke an arbitrary GT4 service.
  * 
- * @author Tom Oinn
+ * @author Wei Tan
  */
 public class GT4InvocationTask implements ProcessorTaskWorker {
 
