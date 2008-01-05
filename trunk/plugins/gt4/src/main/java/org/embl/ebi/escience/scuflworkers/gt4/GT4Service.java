@@ -1,5 +1,6 @@
+
 /*
- * Copyright (C) 2003 The University of Manchester 
+ * Copyright (C) 2003 The University of Chicago 
  *
  * Modifications to the initial code base are copyright of their
  * respective authors, or their employers as appropriate.  Authorship
@@ -25,11 +26,11 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: GT4Service.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-01-04 17:38:18 $
- *               by   $Author: rmadduri $
- * Created on 4 Sep 2006
+ * Last modified on   $Date: 2008-01-05 14:54:32 $
+ *               by   $Author: tanwei $
+ * Created on 01-Dec-2007
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.gt4;
 

@@ -1,7 +1,7 @@
 /*
  * This file is a component of the Taverna project,
  * and is licensed under the GNU LGPL.
- * Copyright Tom Oinn, EMBL-EBI
+ * Copyright Wei Tan, the University of Chicago
  */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
@@ -25,8 +25,8 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
 /**
  * Helper for handling GT4 scavengers.
  * 
- * @author Tom Oinn
- * @author Stuart Owen
+ * @author Wei Tan
+ * @author Ravi Madduri
  */
 public class GT4ScavengerHelper implements ScavengerHelper {
 
@@ -44,7 +44,7 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 						.showInputDialog(s.getContainingFrame(),
 								"Address of the GT4 Service Index?",
 								"Discovery location", JOptionPane.QUESTION_MESSAGE,
-								null, null, "http://");
+								null, null, "http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService");
 				if (indexLocation != null) {
 					Runnable r = new Runnable() {
 						public void run() {
