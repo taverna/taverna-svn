@@ -1,3 +1,10 @@
+/**
+ * This file is a component of the Taverna project,
+ * and is licensed under the GNU LGPL.
+ * Copyright Wei Tan, Ravi Madduri, U Chicago
+ */
+
+
 package org.embl.ebi.escience.scuflworkers.gt4;
 import org.apache.axis.client.Service;
 import org.apache.axis.client.Call;
