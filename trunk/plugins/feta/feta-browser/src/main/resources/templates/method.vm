@@ -1,0 +1,11 @@
+<html>
+	<body>
+		<h1>Method $methodName</h1>
+		<p>
+			<small><a href="$uriFactory.getURIForMethods()">Methods</a></small>
+		</p>
+		<h2>Services using method</h2>
+		
+		#parse("templates_lib/list_services.vm")
+	</body>
+</html>

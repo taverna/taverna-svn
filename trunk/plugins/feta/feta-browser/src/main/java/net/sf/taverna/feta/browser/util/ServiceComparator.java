@@ -3,13 +3,10 @@
  */
 package net.sf.taverna.feta.browser.util;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
-import uk.org.mygrid.mygridmobyservice.Organisation;
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
 public class ServiceComparator implements Comparator<ServiceDescription> {
@@ -25,7 +22,7 @@ public class ServiceComparator implements Comparator<ServiceDescription> {
 	protected ServiceComparator() {
 	}
 
-	protected <Type extends Comparable<Type>> int compareSets(Set<Type> s1,
+	public static <Type extends Comparable<Type>> int compareSets(Set<Type> s1,
 			Set<Type> s2) {
 		Iterator<Type> s1Iter = s1.iterator();
 		Iterator<Type> s2Iter = s2.iterator();

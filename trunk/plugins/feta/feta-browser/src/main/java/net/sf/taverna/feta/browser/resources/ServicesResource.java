@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sf.taverna.feta.browser.elmo.ServiceRegistry;
 import net.sf.taverna.feta.browser.util.ServiceComparator;
-import net.sf.taverna.feta.browser.util.URLFactory;
+import net.sf.taverna.feta.browser.util.URIFactory;
 import net.sf.taverna.feta.browser.util.VelocityRepresentation;
 
 import org.restlet.Context;
@@ -21,11 +21,7 @@ import org.restlet.resource.Variant;
 
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
-public class ServicesResource extends Resource {
-
-	private URLFactory urlFactory = URLFactory.getInstance();
-
-	private ServiceRegistry serviceRegistry = ServiceRegistry.getInstance();
+public class ServicesResource extends AbstractResource {
 
 	public ServicesResource(Context context, Request request, Response response) {
 		super(context, request, response);
@@ -34,7 +30,7 @@ public class ServicesResource extends Resource {
 
 	@Override
 	public Representation getRepresentation(Variant variant) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = makeModel();
 		List<ServiceDescription> services = new ArrayList<ServiceDescription>();
 		for (ServiceDescription service : serviceRegistry
 				.getServiceDescriptions()) {
@@ -42,7 +38,6 @@ public class ServicesResource extends Resource {
 		}
 		Collections.sort(services, ServiceComparator.getInstance());
 
-		model.put("urlFactory", urlFactory);
 		model.put("services", services);
 		VelocityRepresentation templateRepr = new VelocityRepresentation(
 				"services.vm", model, MediaType.TEXT_HTML);

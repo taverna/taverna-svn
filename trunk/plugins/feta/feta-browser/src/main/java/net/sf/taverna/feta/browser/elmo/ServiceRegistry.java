@@ -4,17 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.openrdf.concepts.rdfs.Class;
 import org.openrdf.elmo.ElmoManager;
 import org.openrdf.elmo.ElmoModule;
 import org.openrdf.elmo.ElmoQuery;
-import org.openrdf.elmo.sesame.SesameManager;
+import org.openrdf.elmo.Entity;
 import org.openrdf.elmo.sesame.SesameManagerFactory;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
@@ -25,7 +24,9 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.memory.MemoryStore;
 
+import uk.org.mygrid.mygridmobyservice.Operation;
 import uk.org.mygrid.mygridmobyservice.Organisation;
+import uk.org.mygrid.mygridmobyservice.Parameter;
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
 public class ServiceRegistry {
@@ -47,6 +48,17 @@ public class ServiceRegistry {
 	private SesameManagerFactory factory;
 	private ElmoManager elmoManager;
 
+	private QName bioConceptQName = new QName(
+			"http://www.mygrid.org.uk/ontology#", "bioinformatics_concept");
+	private QName bioTaskQName = new QName(
+			"http://www.mygrid.org.uk/ontology#", "bioinformatics_task");
+	
+	private QName bioDataResourceQName = new QName(
+			"http://www.mygrid.org.uk/ontology#", "bioinformatics_data_resource");
+
+	private QName bioAlgorithmQName = new QName(
+			"http://www.mygrid.org.uk/ontology#", "bioinformatics_algorithm");
+	
 	protected ServiceRegistry() {
 		try {
 			init();
@@ -99,26 +111,162 @@ public class ServiceRegistry {
 				+ "SELECT ?org\n"
 				+ "WHERE {\n"
 				+ " ?org service:hasOrganisationNameText ?name \n" + "}";
-		System.out.println(query);
 		ElmoQuery<Organisation> elmoQuery = (ElmoQuery<Organisation>) getElmoManager()
 				.createQuery(query);
 		elmoQuery.setParameter("name", name);
 		Organisation org = elmoQuery.getSingleResult();
-		System.out.println("Found " + org);
 		return org;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ServiceDescription> getServicesProvidedByOrganisation(String name) {
+	public List<ServiceDescription> getServicesProvidedByOrganisation(
+			String name) {
 		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
 				+ "SELECT ?service\n"
 				+ "WHERE {\n"
 				+ " ?service service:providedBy ?org .\n"
 				+ " ?org service:hasOrganisationNameText ?name \n" + "}";
-		System.out.println(query);
 		ElmoQuery<ServiceDescription> elmoQuery = (ElmoQuery<ServiceDescription>) getElmoManager()
 				.createQuery(query);
 		elmoQuery.setParameter("name", name);
 		return elmoQuery.getResultList();
 	}
+
+	public Iterable<Organisation> getOrganisations() {
+		return getElmoManager().findAll(Organisation.class);
+	}
+
+	public List<Class> getTasksPerformedBy(Operation operation) {
+		return getClassesForHaving(operation, "performsTask");
+	}
+
+	public List<Class> getMethodsUsedBy(Operation operation) {
+		return getClassesForHaving(operation, "usesMethod");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Class> getClassesForHaving(Object subject, String predicate) {
+		QName predName = new QName(
+				"http://www.mygrid.org.uk/mygrid-moby-service#", predicate);
+		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
+				+ "SELECT ?aClass \n"
+				+ "WHERE {\n"
+				+ " ?subject ?predicate ?object .\n"
+				+ " ?object a ?aClass \n"
+				+ "}";
+		ElmoQuery<Class> elmoQuery = (ElmoQuery<Class>) getElmoManager()
+				.createQuery(query);
+		elmoQuery.setParameter("predicate", predName);
+		elmoQuery.setParameter("subject", subject);
+		List<Class> results = elmoQuery.getResultList();
+		return results;
+	}
+
+	public List<Class> getResourcesUsedBy(Operation operation) {
+		return getClassesForHaving(operation, "usesResource");
+	}
+
+	public List<Class> getParamNamespaces(Parameter param) {
+		return getClassesForHaving(param, "inNamespaces");
+	}
+
+	public List<Class> getParamObjectType(Parameter param) {
+		return getClassesForHaving(param, "objectType");
+	}
+
+	public Class getBioConceptClass() {
+		return (Class) getElmoManager().find(bioConceptQName);
+	}
+
+	public Class getBioTaskClass() {
+		return (Class) getElmoManager().find(bioTaskQName);
+	}
+	
+	public Class getBioResourceClass() {
+		return (Class) getElmoManager().find(bioDataResourceQName);
+	}
+
+	public Class getTaskClass(QName qname) {
+		Class bioTask = getBioTaskClass();
+		Class taskClass = (Class) getElmoManager().find(qname);
+		if (!taskClass.getRdfsSubClassOf().contains(bioTask)) {
+			return null;
+		}
+		return taskClass;
+	}
+
+	public List<ServiceDescription> getServicesMethodHas(Class objectClass, String predicate) {
+		QName predName = new QName(
+				"http://www.mygrid.org.uk/mygrid-moby-service#", predicate);
+
+		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
+				+ "SELECT ?service\n"
+				+ "WHERE {\n"
+				+ " ?service service:hasOperation ?oper .\n"
+				+ " ?oper ?operPred ?object .\n"
+				+ " ?object a ?objectClass\n" + "}";
+		ElmoQuery<ServiceDescription> elmoQuery = (ElmoQuery<ServiceDescription>) getElmoManager()
+				.createQuery(query);
+		elmoQuery.setParameter("objectClass", objectClass);
+		elmoQuery.setParameter("operPred", predName);
+		return elmoQuery.getResultList();
+	}
+
+	public List<Class> getTaskClasses() {
+		return getSubClasses(getBioTaskClass());
+	}
+
+	public List<Class> getSubClasses(Class parent) {
+		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
+				+ "SELECT ?class\n"
+				+ "WHERE {\n"
+				+ " ?class rdfs:subClassOf ?parent\n" + "}";
+		ElmoQuery<Class> elmoQuery = (ElmoQuery<Class>) getElmoManager()
+				.createQuery(query);
+		elmoQuery.setParameter("parent", parent);
+		return elmoQuery.getResultList();
+	}
+	
+	public List<Class> getResourceClasses() {
+		return getSubClasses(getBioResourceClass());
+	}
+
+	public Class getResourceClass(QName qname) {
+		Class bioResource = getBioResourceClass();
+		Class resourceClass = (Class) getElmoManager().find(qname);
+		if (!resourceClass.getRdfsSubClassOf().contains(bioResource)) {
+			return null;
+		}
+		return resourceClass;
+	}
+
+	public List<ServiceDescription> getServicesUsingResource(Class resource) {
+		return getServicesMethodHas(resource, "usesResource");
+	}
+
+	public List<ServiceDescription> getServicesPerforming(Class task) {
+		return getServicesMethodHas(task, "performsTask");
+	}
+
+	public List<ServiceDescription> getServicesUsingMethod(Class method) {
+		return getServicesMethodHas(method, "usesMethod");
+	}
+
+	public Class getMethodClass(QName qname) {
+		Class bioMethod = getBioMethodClass();
+		Class resourceClass = (Class) getElmoManager().find(qname);
+		if (!resourceClass.getRdfsSubClassOf().contains(bioMethod)) {
+			return null;
+		}
+		return resourceClass;
+	}
+
+	public Class getBioMethodClass() {
+		return (Class) getElmoManager().find(bioAlgorithmQName);
+	}
+
+	public List<Class> getMethodClasses() {
+		return getSubClasses(getBioMethodClass());
+	}
+
 }

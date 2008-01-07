@@ -1,0 +1,11 @@
+<html>
+	<body>
+		<h1>Task $taskName</h1>
+		<p>
+			<small><a href="$uriFactory.getURIForTasks()">Tasks</a></small>
+		</p>
+		<h2>Services performing task</h2>
+		
+		#parse("templates_lib/list_services.vm")
+	</body>
+</html>

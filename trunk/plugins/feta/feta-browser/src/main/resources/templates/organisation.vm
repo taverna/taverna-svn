@@ -2,13 +2,18 @@
 	<body>
 		<h1>Organisation $organisation.hasOrganisationNameTexts</h1>
 		<p>
-					#foreach ($txt in $organisation.hasOrganisationNameTexts)
-						$txt
-					#end
+			<small>
+				<a href="$uriFactory.getURIForOrganisations()">
+					Organisations
+				</a>
+			</small>
+		</p>
+		<p>
+			#foreach ($txt in $organisation.hasOrganisationNameTexts)
+				$txt 
+			#end
 		</p>
 		<h2>Provides services</h2>
 		#parse("templates_lib/list_services.vm")
-		</li>
-		</ul>
 	</body>
 </html>

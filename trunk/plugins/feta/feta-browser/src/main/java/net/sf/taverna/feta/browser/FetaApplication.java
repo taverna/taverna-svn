@@ -1,8 +1,15 @@
 package net.sf.taverna.feta.browser;
 
+import net.sf.taverna.feta.browser.resources.MethodResource;
+import net.sf.taverna.feta.browser.resources.MethodsResource;
 import net.sf.taverna.feta.browser.resources.OrganisationResource;
+import net.sf.taverna.feta.browser.resources.OrganisationsResource;
+import net.sf.taverna.feta.browser.resources.ResourceResource;
+import net.sf.taverna.feta.browser.resources.ResourcesResource;
 import net.sf.taverna.feta.browser.resources.ServiceResource;
 import net.sf.taverna.feta.browser.resources.ServicesResource;
+import net.sf.taverna.feta.browser.resources.TaskResource;
+import net.sf.taverna.feta.browser.resources.TasksResource;
 import net.sf.taverna.feta.browser.resources.UpdateRegistryResource;
 
 import org.apache.log4j.Logger;
@@ -65,6 +72,16 @@ public class FetaApplication extends Application {
 		defaultHost.attach("/services/{id}", ServiceResource.class);
 		defaultHost.attach("/services/", ServicesResource.class);
 		defaultHost.attach("/organisations/{name}", OrganisationResource.class);
+		defaultHost.attach("/organisations/", OrganisationsResource.class);
+		defaultHost.attach("/tasks/{name}", TaskResource.class);
+		defaultHost.attach("/tasks/", TasksResource.class);
+		defaultHost.attach("/resources/{name}", ResourceResource.class);
+		defaultHost.attach("/resources/", ResourcesResource.class);
+		defaultHost.attach("/methods/{name}", MethodResource.class);
+		defaultHost.attach("/methods/", MethodsResource.class);
+		
+		
+
 		defaultHost.attach("/registry;update", UpdateRegistryResource.class);
 		return component;
 	}

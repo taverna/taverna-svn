@@ -1,0 +1,25 @@
+## Show parameter info
+## Requires $parameter
+
+<div class="parameter">
+<span class="paramName">$parameter.name</span>
+	<div class="paramDesc"><small>$parameter.description</small></div>
+
+	#if(! $parameter.objectTypes.empty)
+	<div class="objectType">Types: <em>
+		#foreach($objectType in $parameter.objectTypes)
+			<a href="$uriFactory.getURIForType($objectType)">$objectType</a>,
+		#end		
+		</em>
+	</div>
+	#end
+	
+		#if(! $parameter.objectTypes.empty)
+	<div class="inNamespaces">Namespaces: <em>
+		#foreach($namespace in $parameter.inNamespaces)
+			<a href="$uriFactory.getURIForNamespace($namespace)">$namespace</a>,
+		#end		
+		</em>
+	</div>
+	#end
+</div>

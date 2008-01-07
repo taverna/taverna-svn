@@ -3,8 +3,6 @@ package net.sf.taverna.feta.browser.resources;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import net.sf.taverna.feta.browser.elmo.ServiceRegistry;
-
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
 import org.restlet.Context;
@@ -12,26 +10,15 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
-public class UpdateRegistryResource extends Resource {
+public class UpdateRegistryResource extends AbstractResource {
 
-	private ServiceRegistry serviceRegistry = ServiceRegistry.getInstance();
-	
 	public UpdateRegistryResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 	}
-	
 
-	@Override
-	public Representation getRepresentation(Variant variant) {
-		// TODO Auto-generated method stub
-		return super.getRepresentation(variant);
-	}
-	
 	@Override
 	public void handleGet() {
 		

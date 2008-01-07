@@ -1,6 +1,7 @@
 ## List services
-## Requires $urlFactory and $services
+## Requires $uriFactory and $services
 
+<p>$services.size() services found:</p>
 <ul>
 #set($lastInterface = "unknown")
 #foreach ($service in $services)
@@ -18,7 +19,7 @@
 		<li>$interface
 		<ul>
 	#end
-			<li><a href="$urlFactory.getReference($service)">$service.hasServiceNameTexts</a>
+			<li><a href="$uriFactory.getURI($service)">$service.hasServiceNameTexts</a>
 			<small>$service.hasServiceDescriptionTexts</small>
 			</li>
 #end

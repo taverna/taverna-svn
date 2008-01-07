@@ -1,18 +1,17 @@
 <html>
 	<body>
 		<h1>Service $service.hasServiceNameTexts</h1>
+		<p>
+			<small><a href="$uriFactory.getURIForServices()">Services</a></small>
+		</p>
 		<dl>
 			#if (! $service.providedBy.empty)	
 				<dt>Provider</dt>
-				#foreach ($provider in $service.providedBy)
 				<dd>
-					<a href="$urlFactory.getReference($provider)">
-					#foreach ($txt in $provider.hasOrganisationNameTexts)
-						$txt
-					#end
+					<a href="$uriFactory.getURI($provider)">
+					$provider.hasOrganisationNameTexts
 					</a>
 				</dd>
-				#end
 			#end
 			
 			#if (! $service.hasServiceDescriptionTexts.empty)
@@ -22,7 +21,69 @@
 			</dd>
 			#end
 			
+			#if (! $service.locationURI.empty)
+			<dt>Location</dt>
+			<dd>$service.locationURI</dd>
+			#end
 			
+			#if (! $service.hasInterfaceLocations.empty)
+			<dt>Interface</dt>
+			<dd>$service.hasInterfaceLocations</dd>
+			#end
+			
+						
 		</dl>
+		<h2>Operation $operation.hasOperationNameTexts</h2>
+			<p>$operation.hasOperationDescriptionTexts</p>
+			
+			#if(! $tasks.empty)
+				<h3>Performs tasks</h3>
+				<ul>
+				#foreach($task in $tasks)
+				   <li><a href="$uriFactory.getURIForTask($task)">$task</a></li>
+				#end
+				</ul>
+			#end
+			
+			#if(! $methods.empty)
+				<h3>Uses methods</h3>
+				<ul>
+				#foreach($method in $methods)
+				   <li><a href="$uriFactory.getURIForMethod($method)">$method</a></li>
+				#end
+				</ul>
+			#end
+			
+			#if(! $resources.empty)
+				<h3>Uses resources</h3>
+				<ul>
+				#foreach($resource in $resources)
+				   <li><a href="$uriFactory.getURIForResource($resource)">$resource</a></li>
+				#end
+				</ul>
+			#end
+			
+			#if(! $inputs.empty)
+			<h3>Inputs</h3>
+			<ul>
+			#foreach($parameter in $inputs)
+				<li>
+					#parse("templates_lib/list_parameter.vm")
+				</li>
+			#end
+			</ul>
+			#end
+			
+			#if(! $outputs.empty)
+			<h3>Outputs</h3>
+			<ul>
+			#foreach($parameter in $outputs)
+				<li>
+					#parse("templates_lib/list_parameter.vm")
+				</li>
+			#end
+			</ul>
+			#end
+					
 	</body>
 </html>
