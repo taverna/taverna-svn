@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MySQLDataService.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:49:07 $
- *               by   $Author: stain $
+ * Last modified on   $Date: 2008-01-07 11:52:29 $
+ *               by   $Author: iandunlop $
  * Created on 27-Apr-2006
  *****************************************************************/
 package uk.org.mygrid.provenance.dataservice;
@@ -50,7 +50,7 @@ import uk.org.mygrid.provenance.util.ProvenanceConfigurator;
  * {@link uk.org.mygrid.provenance.dataservice.AbstractJDBCDataService}
  * 
  * @author Daniele Turi
- * @version $Id: MySQLDataService.java,v 1.1 2007-12-14 12:49:07 stain Exp $
+ * @version $Id: MySQLDataService.java,v 1.2 2008-01-07 11:52:29 iandunlop Exp $
  */
 public class MySQLDataService extends AbstractJDBCDataService {
 
@@ -88,7 +88,7 @@ public class MySQLDataService extends AbstractJDBCDataService {
             Statement st = con.createStatement();
             st
                     .executeUpdate("CREATE TABLE IF NOT EXISTS datathings (id INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                            + "                                       thing TEXT NOT NULL,"
+                            + "                                       thing MEDIUMTEXT NOT NULL,"
                             + "                                       PRIMARY KEY(id)) TYPE = InnoDB;");
             log.info("Created table datathings");
             st
