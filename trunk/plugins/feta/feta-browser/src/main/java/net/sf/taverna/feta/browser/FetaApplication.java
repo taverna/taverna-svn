@@ -1,7 +1,10 @@
 package net.sf.taverna.feta.browser;
 
+import net.sf.taverna.feta.browser.resources.IndexResource;
 import net.sf.taverna.feta.browser.resources.MethodResource;
 import net.sf.taverna.feta.browser.resources.MethodsResource;
+import net.sf.taverna.feta.browser.resources.NamespaceResource;
+import net.sf.taverna.feta.browser.resources.NamespacesResource;
 import net.sf.taverna.feta.browser.resources.OrganisationResource;
 import net.sf.taverna.feta.browser.resources.OrganisationsResource;
 import net.sf.taverna.feta.browser.resources.ResourceResource;
@@ -10,7 +13,9 @@ import net.sf.taverna.feta.browser.resources.ServiceResource;
 import net.sf.taverna.feta.browser.resources.ServicesResource;
 import net.sf.taverna.feta.browser.resources.TaskResource;
 import net.sf.taverna.feta.browser.resources.TasksResource;
-import net.sf.taverna.feta.browser.resources.UpdateRegistryResource;
+import net.sf.taverna.feta.browser.resources.TypeResource;
+import net.sf.taverna.feta.browser.resources.TypesResource;
+import net.sf.taverna.feta.browser.resources.RegistryUpdateResource;
 
 import org.apache.log4j.Logger;
 import org.restlet.Application;
@@ -79,10 +84,14 @@ public class FetaApplication extends Application {
 		defaultHost.attach("/resources/", ResourcesResource.class);
 		defaultHost.attach("/methods/{name}", MethodResource.class);
 		defaultHost.attach("/methods/", MethodsResource.class);
-		
-		
+		defaultHost.attach("/types/{name}", TypeResource.class);
+		defaultHost.attach("/types/", TypesResource.class);
+		defaultHost.attach("/namespaces/{name}", NamespaceResource.class);
+		defaultHost.attach("/namespaces/", NamespacesResource.class);
 
-		defaultHost.attach("/registry;update", UpdateRegistryResource.class);
+		defaultHost.attach("/registry;update", RegistryUpdateResource.class);
+		
+		defaultHost.attach("/", IndexResource.class);
 		return component;
 	}
 

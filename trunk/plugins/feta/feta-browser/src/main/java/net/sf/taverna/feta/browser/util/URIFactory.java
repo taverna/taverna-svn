@@ -67,7 +67,7 @@ public class URIFactory {
 	}
 
 	public URI getURIForNamespaces() {
-		return root.resolve("namespaces");
+		return root.resolve("namespaces/");
 	}
 
 	public URI getURIForOrganisation(String name) {
@@ -104,6 +104,10 @@ public class URIFactory {
 
 	public URI getURIForTypes() {
 		return root.resolve("types/");
+	}
+	
+	public URI getURIForUpdate() {
+		return root.resolve("registry;update");
 	}
 
 	public void setRoot(URI root) {

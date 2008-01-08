@@ -88,9 +88,10 @@ public class ServiceResource extends AbstractResource {
 					.getParamNamespaces(param));
 			paramDesc.put("inNamespaces", namespaces);
 
-			List<String> objectType = utils.extractBioNames(serviceRegistry
+			List<String> objectTypes = utils.extractBioNames(serviceRegistry
 					.getParamObjectType(param));
-			paramDesc.put("objectTypes", namespaces);
+			System.out.println(objectTypes);
+			paramDesc.put("objectTypes", objectTypes);
 
 			String description = utils.firstOf(param
 					.getHasParameterDescriptionTexts());

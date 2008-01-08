@@ -27,7 +27,7 @@ public class ResourceResource extends AbstractResource {
 		super(context, request, response);
 		resourceName = (String) request.getAttributes().get("name");
 		qname = new QName("http://www.mygrid.org.uk/ontology#", resourceName);
-		resource = serviceRegistry.getResourceClass(qname);
+		resource = serviceRegistry.getClass(qname);
 		if (resource != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}

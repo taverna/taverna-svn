@@ -27,7 +27,7 @@ public class TaskResource extends AbstractResource {
 		super(context, request, response);
 		taskName = (String) request.getAttributes().get("name");
 		qname = new QName("http://www.mygrid.org.uk/ontology#", taskName);
-		task = serviceRegistry.getTaskClass(qname);
+		task = serviceRegistry.getClass(qname);
 		if (task != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}

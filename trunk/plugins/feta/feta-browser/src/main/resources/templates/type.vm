@@ -1,0 +1,15 @@
+<html>
+	<body>
+		<h1>Type $typeName</h1>
+		
+		<h2>Services producing type</h2>
+		#set($services=$producingServices)
+		#parse("templates_lib/list_services.vm")
+		</ul>
+		
+		<h2>Services consuming type</h2>
+		#set($services=$consumingServices)
+		#parse("templates_lib/list_services.vm")
+		
+	</body>
+</html>

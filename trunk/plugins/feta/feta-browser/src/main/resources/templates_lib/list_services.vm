@@ -1,7 +1,7 @@
 ## List services
 ## Requires $uriFactory and $services
 
-<p>$services.size() services found:</p>
+<p>$services.size() services found</p>
 <ul>
 #set($lastInterface = "unknown")
 #foreach ($service in $services)

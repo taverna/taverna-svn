@@ -1,0 +1,10 @@
+<html>
+	<body>
+		<h1>Types</h1>
+		<ul>
+		#foreach ($type in $types)
+			<li><a href="$uriFactory.getURIForType($type)">$type</a></li>
+		#end
+		</ul>
+	</body>
+</html>

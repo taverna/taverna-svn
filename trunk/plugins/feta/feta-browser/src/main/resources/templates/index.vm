@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>Feta browser</title>
+	</head>
+	<body>
+		<h1>Feta services</h1>
+		<p>Browse services by:</p>
+		<ul>
+			<li>
+				<a href="$uriFactory.URIForTasks">Tasks</a>
+			</li>
+			<li>
+				<a href="$uriFactory.URIForTypes">Types</a>
+			</li>
+			<li>
+				<a href="$uriFactory.URIForNamespaces">Namespaces</a>
+			</li>
+			<li>
+				<a href="$uriFactory.URIForOrganisations">Provider</a>
+			</li>
+			<li>
+				<a href="$uriFactory.URIForResources">Resources used</a>
+			</li>
+			<li>
+				<a href="$uriFactory.URIForMethods">Methods used</a>
+			</li>
+		</ul>
+		<p>
+			Or list
+			<a href="$uriFactory.URIForServices">all services</a>
+			.
+		</p>
+		<hr />
+		<p>
+			This browser was last
+			<a href="$uriFactory.URIForUpdate">synchronised</a>
+			against the Feta installation at
+			<a
+				href="http://www.mygrid.org.uk/fetaEngine/services/feta?wsdl">
+				www.mygrid.org.uk/fetaEngine
+			</a>
+			on $lastUpdated.
+		</p>
+		<address>
+			Services annotated by Franck Tanoh of the
+			<a href="http://www.mygrid.org.uk/">myGrid</a>
+			team. (To suggest a service to be annotated, first check the
+			<a
+				href="http://www.mygrid.org.uk/wiki/Mygrid/BiologicalWebServices">
+				list of known services
+			</a>
+			). Web adaption by Stian Soiland.
+		</address>
+
+	</body>
+</html>

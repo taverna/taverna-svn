@@ -27,7 +27,7 @@ public class MethodResource extends AbstractResource {
 		super(context, request, response);
 		methodName = (String) request.getAttributes().get("name");
 		qname = new QName("http://www.mygrid.org.uk/ontology#", methodName);
-		method = serviceRegistry.getMethodClass(qname);
+		method = serviceRegistry.getClass(qname);
 		if (method != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}

@@ -12,9 +12,9 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Variant;
 
-public class UpdateRegistryResource extends AbstractResource {
+public class RegistryUpdateResource extends AbstractResource {
 
-	public UpdateRegistryResource(Context context, Request request, Response response) {
+	public RegistryUpdateResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		getVariants().add(new Variant(MediaType.TEXT_HTML));
 	}

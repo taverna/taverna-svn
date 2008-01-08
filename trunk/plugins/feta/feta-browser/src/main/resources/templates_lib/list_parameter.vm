@@ -14,7 +14,7 @@
 	</div>
 	#end
 	
-		#if(! $parameter.objectTypes.empty)
+	#if(! $parameter.inNamespaces.empty)
 	<div class="inNamespaces">Namespaces: <em>
 		#foreach($namespace in $parameter.inNamespaces)
 			<a href="$uriFactory.getURIForNamespace($namespace)">$namespace</a>,

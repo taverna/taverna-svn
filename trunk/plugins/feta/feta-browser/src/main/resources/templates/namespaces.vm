@@ -1,0 +1,10 @@
+<html>
+	<body>
+		<h1>Namespaces</h1>
+		<ul>
+		#foreach ($ns in $namespaces)
+			<li><a href="$uriFactory.getURIForNamespace($ns)">$ns</a></li>
+		#end
+		</ul>
+	</body>
+</html>
