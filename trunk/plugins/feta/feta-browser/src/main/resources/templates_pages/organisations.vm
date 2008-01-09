@@ -1,6 +1,4 @@
-<html>
-	<body>
-		<h1>Organisations</h1>
+
 		<ul>
 		#foreach($organisation in $organisations)
 			<li>
@@ -10,5 +8,3 @@
 			</li>
 		#end
 		</ul>
-	</body>
-</html>

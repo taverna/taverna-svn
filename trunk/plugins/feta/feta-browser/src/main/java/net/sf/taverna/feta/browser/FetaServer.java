@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 public class FetaServer {
 
 	private static final int DEFAULT_PORT = 7580;
-	
+
 	private static final String DEFAULT_HOST = "localhost";
 
 	private static final String PORT = "port";
@@ -41,10 +41,8 @@ public class FetaServer {
 
 		if (line.hasOption(HELP)) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter
-					.printHelp(
-							"cloudoneserver \n"
-									+ "Run the CloudOne REST server.", options);
+			formatter.printHelp("cloudoneserver \n"
+					+ "Run the CloudOne REST server.", options);
 			System.exit(0);
 		}
 
@@ -52,7 +50,7 @@ public class FetaServer {
 		if (line.hasOption(PORT)) {
 			port = (Integer) line.getOptionObject(PORT);
 		}
-		
+
 		String host = DEFAULT_HOST;
 		if (line.hasOption(HOST)) {
 			host = line.getOptionValue(HOST);

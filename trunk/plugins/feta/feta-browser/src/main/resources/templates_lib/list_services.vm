@@ -2,7 +2,7 @@
 ## Requires $uriFactory and $services
 
 <p>$services.size() services found</p>
-<ul>
+<ul class="services">
 #set($lastInterface = "unknown")
 #foreach ($service in $services)
 	#if ($service.hasInterfaceLocations.isEmpty())
@@ -16,11 +16,12 @@
 			</li>
 		#end
 		#set($lastInterface = $interface)
-		<li>$interface
+		<li class="interface">$interface
 		<ul>
 	#end
-			<li><a href="$uriFactory.getURI($service)">$service.hasServiceNameTexts</a>
-			<small>$service.hasServiceDescriptionTexts</small>
+			<li class="service">
+			  <a href="$uriFactory.getURI($service)" class="serviceName">$service.hasServiceNameTexts</a>
+			  <span class="serviceDescription">$service.hasServiceDescriptionTexts</span>
 			</li>
 #end
 </ul>

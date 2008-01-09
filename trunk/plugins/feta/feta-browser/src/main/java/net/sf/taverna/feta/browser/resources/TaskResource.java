@@ -5,14 +5,11 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import net.sf.taverna.feta.browser.util.VelocityRepresentation;
-
 import org.openrdf.concepts.rdfs.Class;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
@@ -32,17 +29,25 @@ public class TaskResource extends AbstractResource {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}
 	}
-	
+
 	@Override
-	public Representation getRepresentation(Variant variant) {
-		Map<String, Object> model = makeModel();
-		List<ServiceDescription> performing = serviceRegistry.getServicesPerforming(task);
+	public String getPageTemplate() {
+		return "task.vm";
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Task " + taskName;
+	}
+
+	@Override
+	protected Map<String, Object> makeModel() {
+		Map<String, Object> model = super.makeModel();
+		List<ServiceDescription> performing = serviceRegistry
+				.getServicesPerforming(task);
 		model.put("taskName", taskName);
 		model.put("services", performing);
-		
-		VelocityRepresentation templateRepr = new VelocityRepresentation(
-				"task.vm", model, MediaType.TEXT_HTML);
-		return templateRepr;
+		return model;
 	}
 
 }

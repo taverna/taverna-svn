@@ -1,6 +1,0 @@
-<html>
-	<body>
-		<h1>Services</h1>
-		#parse("templates_lib/list_services.vm")
-	</body>
-</html>

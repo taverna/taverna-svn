@@ -1,9 +1,8 @@
-<html>
-	<body>
-		<h1>Service $service.hasServiceNameTexts</h1>
-		<p>
-			<small><a href="$uriFactory.getURIForServices()">Services</a></small>
-		</p>
+<ul class="menu">
+	<li>
+		<a href="$uriFactory.getURIForServices()">All services</a>
+	</li>
+</ul>
 		<dl>
 			#if (! $service.providedBy.empty)	
 				<dt>Provider</dt>
@@ -65,7 +64,7 @@
 			
 			#if(! $inputs.empty)
 			<h3>Inputs</h3>
-			<ul>
+			<ul class="inputs parameters">
 			#foreach($parameter in $inputs)
 				<li>
 					#parse("templates_lib/list_parameter.vm")
@@ -76,7 +75,7 @@
 			
 			#if(! $outputs.empty)
 			<h3>Outputs</h3>
-			<ul>
+			<ul class="outputs parameters">
 			#foreach($parameter in $outputs)
 				<li>
 					#parse("templates_lib/list_parameter.vm")
@@ -84,6 +83,3 @@
 			#end
 			</ul>
 			#end
-					
-	</body>
-</html>

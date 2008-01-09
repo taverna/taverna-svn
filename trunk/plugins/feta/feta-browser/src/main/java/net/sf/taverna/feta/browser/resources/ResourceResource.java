@@ -5,20 +5,16 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import net.sf.taverna.feta.browser.util.VelocityRepresentation;
-
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
 public class ResourceResource extends AbstractResource {
 
-	
 	protected org.openrdf.concepts.rdfs.Class resource;
 	protected String resourceName;
 	protected QName qname;
@@ -32,17 +28,25 @@ public class ResourceResource extends AbstractResource {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}
 	}
-	
+
 	@Override
-	public Representation getRepresentation(Variant variant) {
-		Map<String, Object> model = makeModel();
-		List<ServiceDescription> usesResources = serviceRegistry.getServicesUsingResource(resource);
+	public String getPageTemplate() {
+		return "resource.vm";
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Resource " + resourceName;
+	}
+
+	@Override
+	protected Map<String, Object> makeModel() {
+		Map<String, Object> model = super.makeModel();
+		List<ServiceDescription> usesResources = serviceRegistry
+				.getServicesUsingResource(resource);
 		model.put("resourceName", resourceName);
 		model.put("services", usesResources);
-		
-		VelocityRepresentation templateRepr = new VelocityRepresentation(
-				"resource.vm", model, MediaType.TEXT_HTML);
-		return templateRepr;
+		return model;
 	}
 
 }

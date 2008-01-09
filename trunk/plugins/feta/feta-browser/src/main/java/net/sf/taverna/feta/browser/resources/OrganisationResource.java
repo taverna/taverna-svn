@@ -1,19 +1,16 @@
 package net.sf.taverna.feta.browser.resources;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.feta.browser.util.ServiceComparator;
-import net.sf.taverna.feta.browser.util.VelocityRepresentation;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 
 import uk.org.mygrid.mygridmobyservice.Organisation;
@@ -36,17 +33,24 @@ public class OrganisationResource extends AbstractResource {
 	}
 
 	@Override
-	public Representation getRepresentation(Variant variant) {
-		Map<String, Object> model = makeModel();
+	public String getPageTemplate() {
+		return "organisation.vm";
+	}
+
+	@Override
+	public String getPageTitle() {
+		return "Organisation " + organisationName;
+	}
+
+	@Override
+	protected Map<String, Object> makeModel() {
+		Map<String, Object> model = super.makeModel();
 		model.put("organisation", organisation);
 
 		List<ServiceDescription> services = serviceRegistry
 				.getServicesProvidedByOrganisation(organisationName);
 		Collections.sort(services, ServiceComparator.getInstance());
 		model.put("services", services);
-
-		VelocityRepresentation templateRepr = new VelocityRepresentation(
-				"organisation.vm", model, MediaType.TEXT_HTML);
-		return templateRepr;
+		return model;
 	}
 }

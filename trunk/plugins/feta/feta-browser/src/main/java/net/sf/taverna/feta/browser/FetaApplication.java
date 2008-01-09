@@ -7,6 +7,7 @@ import net.sf.taverna.feta.browser.resources.NamespaceResource;
 import net.sf.taverna.feta.browser.resources.NamespacesResource;
 import net.sf.taverna.feta.browser.resources.OrganisationResource;
 import net.sf.taverna.feta.browser.resources.OrganisationsResource;
+import net.sf.taverna.feta.browser.resources.RegistryUpdateResource;
 import net.sf.taverna.feta.browser.resources.ResourceResource;
 import net.sf.taverna.feta.browser.resources.ResourcesResource;
 import net.sf.taverna.feta.browser.resources.ServiceResource;
@@ -15,7 +16,6 @@ import net.sf.taverna.feta.browser.resources.TaskResource;
 import net.sf.taverna.feta.browser.resources.TasksResource;
 import net.sf.taverna.feta.browser.resources.TypeResource;
 import net.sf.taverna.feta.browser.resources.TypesResource;
-import net.sf.taverna.feta.browser.resources.RegistryUpdateResource;
 
 import org.apache.log4j.Logger;
 import org.restlet.Application;
@@ -37,6 +37,30 @@ public class FetaApplication extends Application {
 	public FetaApplication(String host, int port) {
 		this.host = host;
 		this.port = port;
+	}
+
+	public Component createComponent() {
+		Component component = new Component();
+		VirtualHost defaultHost = component.getDefaultHost();
+		defaultHost.attach("/services/{id}", ServiceResource.class);
+		defaultHost.attach("/services/", ServicesResource.class);
+		defaultHost.attach("/organisations/{name}", OrganisationResource.class);
+		defaultHost.attach("/organisations/", OrganisationsResource.class);
+		defaultHost.attach("/tasks/{name}", TaskResource.class);
+		defaultHost.attach("/tasks/", TasksResource.class);
+		defaultHost.attach("/resources/{name}", ResourceResource.class);
+		defaultHost.attach("/resources/", ResourcesResource.class);
+		defaultHost.attach("/methods/{name}", MethodResource.class);
+		defaultHost.attach("/methods/", MethodsResource.class);
+		defaultHost.attach("/types/{name}", TypeResource.class);
+		defaultHost.attach("/types/", TypesResource.class);
+		defaultHost.attach("/namespaces/{name}", NamespaceResource.class);
+		defaultHost.attach("/namespaces/", NamespacesResource.class);
+
+		defaultHost.attach("/registry;update", RegistryUpdateResource.class);
+
+		defaultHost.attach("/", IndexResource.class);
+		return component;
 	}
 
 	@Override
@@ -69,30 +93,6 @@ public class FetaApplication extends Application {
 			}
 		}
 		component = null;
-	}
-
-	public Component createComponent() {
-		Component component = new Component();
-		VirtualHost defaultHost = component.getDefaultHost();
-		defaultHost.attach("/services/{id}", ServiceResource.class);
-		defaultHost.attach("/services/", ServicesResource.class);
-		defaultHost.attach("/organisations/{name}", OrganisationResource.class);
-		defaultHost.attach("/organisations/", OrganisationsResource.class);
-		defaultHost.attach("/tasks/{name}", TaskResource.class);
-		defaultHost.attach("/tasks/", TasksResource.class);
-		defaultHost.attach("/resources/{name}", ResourceResource.class);
-		defaultHost.attach("/resources/", ResourcesResource.class);
-		defaultHost.attach("/methods/{name}", MethodResource.class);
-		defaultHost.attach("/methods/", MethodsResource.class);
-		defaultHost.attach("/types/{name}", TypeResource.class);
-		defaultHost.attach("/types/", TypesResource.class);
-		defaultHost.attach("/namespaces/{name}", NamespaceResource.class);
-		defaultHost.attach("/namespaces/", NamespacesResource.class);
-
-		defaultHost.attach("/registry;update", RegistryUpdateResource.class);
-		
-		defaultHost.attach("/", IndexResource.class);
-		return component;
 	}
 
 }

@@ -9,6 +9,12 @@ public class VelocityRepresentation extends TemplateRepresentation {
 
 	private static final String templateDir = "templates/";
 
+	public VelocityRepresentation(String templateName,
+			Map<String, Object> dataModel, MediaType mediaType) {
+		super(templateDir + templateName, dataModel, mediaType);
+		configureEngine();
+	}
+
 	public VelocityRepresentation(String templateName, MediaType mediaType) {
 		super(templateDir + templateName, mediaType);
 		configureEngine();
@@ -19,12 +25,6 @@ public class VelocityRepresentation extends TemplateRepresentation {
 		getEngine()
 				.setProperty("class.resource.loader.class",
 						"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-	}
-
-	public VelocityRepresentation(String templateName,
-			Map<String, Object> dataModel, MediaType mediaType) {
-		super(templateDir + templateName, dataModel, mediaType);
-		configureEngine();
 	}
 
 }

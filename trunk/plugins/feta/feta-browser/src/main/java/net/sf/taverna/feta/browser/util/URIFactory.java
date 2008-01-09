@@ -105,7 +105,7 @@ public class URIFactory {
 	public URI getURIForTypes() {
 		return root.resolve("types/");
 	}
-	
+
 	public URI getURIForUpdate() {
 		return root.resolve("registry;update");
 	}

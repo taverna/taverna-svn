@@ -3,7 +3,7 @@
 
 <div class="parameter">
 <span class="paramName">$parameter.name</span>
-	<div class="paramDesc"><small>$parameter.description</small></div>
+	<div class="paramDesc">$parameter.description</div>
 
 	#if(! $parameter.objectTypes.empty)
 	<div class="objectType">Types: <em>

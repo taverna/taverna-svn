@@ -12,16 +12,6 @@ import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 public class ServiceComparator implements Comparator<ServiceDescription> {
 	private static ServiceComparator instance;
 
-	public synchronized static ServiceComparator getInstance() {
-		if (instance == null) {
-			instance = new ServiceComparator();
-		}
-		return instance;
-	}
-
-	protected ServiceComparator() {
-	}
-
 	public static <Type extends Comparable<Type>> int compareSets(Set<Type> s1,
 			Set<Type> s2) {
 		Iterator<Type> s1Iter = s1.iterator();
@@ -42,6 +32,16 @@ public class ServiceComparator implements Comparator<ServiceDescription> {
 		} else {
 			return 0; // equal for all elements
 		}
+	}
+
+	public synchronized static ServiceComparator getInstance() {
+		if (instance == null) {
+			instance = new ServiceComparator();
+		}
+		return instance;
+	}
+
+	protected ServiceComparator() {
 	}
 
 	public int compare(ServiceDescription service1, ServiceDescription service2) {

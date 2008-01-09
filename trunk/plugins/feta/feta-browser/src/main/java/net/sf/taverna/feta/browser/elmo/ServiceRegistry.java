@@ -2,13 +2,15 @@ package net.sf.taverna.feta.browser.elmo;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.StringReader;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.endpoint.dynamic.DynamicClientFactory;
 import org.openrdf.concepts.rdfs.Class;
 import org.openrdf.elmo.ElmoManager;
 import org.openrdf.elmo.ElmoModule;
@@ -69,28 +71,6 @@ public class ServiceRegistry {
 		}
 	}
 
-	public List<ServiceDescription> getServicesParamPred(String hasParameter,
-			String paramPred, Class type) {
-		QName hasParameterName = new QName(
-				"http://www.mygrid.org.uk/mygrid-moby-service#", hasParameter);
-		QName paramPredName = new QName(
-				"http://www.mygrid.org.uk/mygrid-moby-service#", paramPred);
-
-		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
-				+ "SELECT DISTINCT ?service\n"
-				+ "WHERE {\n"
-				+ " ?obj a ?objectClass .\n"
-				+ " ?service service:hasOperation ?oper .\n"
-				+ " ?param ?paramPred ?obj .\n"
-				+ " ?oper ?hasParameter ?param .\n" + "}";
-		ElmoQuery<ServiceDescription> elmoQuery = (ElmoQuery<ServiceDescription>) getElmoManager()
-				.createQuery(query);
-		elmoQuery.setParameter("hasParameter", hasParameterName);
-		elmoQuery.setParameter("paramPred", paramPredName);
-		elmoQuery.setParameter("objectClass", type);
-		return elmoQuery.getResultList();
-	}
-
 	public Class getBioConceptClass() {
 		return (Class) getElmoManager().find(bioConceptQName);
 	}
@@ -137,12 +117,42 @@ public class ServiceRegistry {
 		return elmoManager;
 	}
 
+	public StringReader getFetaN3() throws Exception {
+		// SerQL query to get all statements.
+		String query = "CONSTRUCT {serv} p {uri} \n" + "FROM {serv} p {uri}";
+		DynamicClientFactory dcf = DynamicClientFactory.newInstance();
+		Client client = dcf
+				.createClient("http://www.mygrid.org.uk/fetaEngine/services/feta?wsdl");
+		Object[] result = client.invoke("freeFormQuery", query);
+		String brokenN3 = (String) result[0];
+		String n3 = brokenN3.replace("\t", "    ").replace("j.0:", "dc:");
+		//File n3File = new File("/tmp/feta.n3");
+		//FileUtils.writeStringToFile(n3File, n3, "utf-8");
+		return new StringReader(n3);
+	}
+
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+
 	public List<Class> getMethodClasses() {
 		return getSubClasses(getBioMethodClass());
 	}
 
 	public List<Class> getMethodsUsedBy(Operation operation) {
 		return getClassesForHaving(operation, "usesMethod");
+	}
+
+	public List<Class> getNamespaceClasses() {
+		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
+				+ "SELECT DISTINCT ?nsClass\n"
+				+ "WHERE {\n"
+				+ " ?param service:inNamespaces ?ns .\n"
+				+ " ?ns a ?nsClass \n"
+				+ "}";
+		ElmoQuery<Class> elmoQuery = (ElmoQuery<Class>) getElmoManager()
+				.createQuery(query);
+		return elmoQuery.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -215,6 +225,28 @@ public class ServiceRegistry {
 		return elmoQuery.getResultList();
 	}
 
+	public List<ServiceDescription> getServicesParamPred(String hasParameter,
+			String paramPred, Class type) {
+		QName hasParameterName = new QName(
+				"http://www.mygrid.org.uk/mygrid-moby-service#", hasParameter);
+		QName paramPredName = new QName(
+				"http://www.mygrid.org.uk/mygrid-moby-service#", paramPred);
+
+		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
+				+ "SELECT DISTINCT ?service\n"
+				+ "WHERE {\n"
+				+ " ?obj a ?objectClass .\n"
+				+ " ?service service:hasOperation ?oper .\n"
+				+ " ?param ?paramPred ?obj .\n"
+				+ " ?oper ?hasParameter ?param .\n" + "}";
+		ElmoQuery<ServiceDescription> elmoQuery = (ElmoQuery<ServiceDescription>) getElmoManager()
+				.createQuery(query);
+		elmoQuery.setParameter("hasParameter", hasParameterName);
+		elmoQuery.setParameter("paramPred", paramPredName);
+		elmoQuery.setParameter("objectClass", type);
+		return elmoQuery.getResultList();
+	}
+
 	public List<ServiceDescription> getServicesPerforming(Class task) {
 		return getServicesMethodHas(task, "performsTask");
 	}
@@ -264,8 +296,7 @@ public class ServiceRegistry {
 				+ "SELECT DISTINCT ?taskClass\n"
 				+ "WHERE {\n"
 				+ " ?oper service:performsTask ?task .\n"
-				+ " ?task a ?taskClass \n"
-				+ "}";
+				+ " ?task a ?taskClass \n" + "}";
 		ElmoQuery<Class> elmoQuery = (ElmoQuery<Class>) getElmoManager()
 				.createQuery(query);
 		return elmoQuery.getResultList();
@@ -273,44 +304,6 @@ public class ServiceRegistry {
 
 	public List<Class> getTasksPerformedBy(Operation operation) {
 		return getClassesForHaving(operation, "performsTask");
-	}
-
-	public void init() throws RepositoryException, RDFParseException,
-			IOException {
-		System.out.println("Creating service registry..");
-		dataDir.mkdirs();
-		repository = new SailRepository(new MemoryStore(dataDir));
-		repository.initialize();
-		repConnection = repository.getConnection();
-		valueFactory = repository.getValueFactory();
-		ElmoModule elmoModule = new ElmoModule();
-		factory = new SesameManagerFactory(elmoModule, repository);
-		elmoManager = factory.createElmoManager();
-		System.out.println("Created service registry instance in " + dataDir);
-	}
-
-	public void updateFeta() throws MalformedURLException, IOException,
-			RDFParseException, RepositoryException {
-		
-		repConnection.clear();
-		String location = "http://soiland.no/feta-2007-12-19.n3";
-		String baseURI = location;
-		URL url = new URL(location);
-		URI context = valueFactory.createURI(location);
-		repConnection.add(url, baseURI, RDFFormat.N3, context);
-		lastUpdated = new Date();
-	}
-
-	public List<Class> getNamespaceClasses() {
-		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
-				+ "SELECT DISTINCT ?nsClass\n"
-				+ "WHERE {\n"
-				+ " ?param service:inNamespaces ?ns .\n"
-				+ " ?ns a ?nsClass \n"
-				+ "}";
-		ElmoQuery<Class> elmoQuery = (ElmoQuery<Class>) getElmoManager()
-				.createQuery(query);
-		return elmoQuery.getResultList();
 	}
 
 	public List<Class> getTypesClasses() {
@@ -325,8 +318,27 @@ public class ServiceRegistry {
 		return elmoQuery.getResultList();
 	}
 
-	public Date getLastUpdated() {
-		return lastUpdated;
+	public void init() throws RepositoryException, RDFParseException,
+			IOException {
+		System.out.println("Creating service registry..");
+		dataDir.mkdirs();
+		repository = new SailRepository(new MemoryStore(dataDir));
+		repository.initialize();
+		repConnection = repository.getConnection();
+		valueFactory = repository.getValueFactory();
+		ElmoModule elmoModule = new ElmoModule();
+		factory = new SesameManagerFactory(elmoModule, repository);
+		elmoManager = factory.createElmoManager();
+		lastUpdated = new Date(dataDir.lastModified());
+		System.out.println("Created service registry instance in " + dataDir);
+	}
+
+	public void updateFeta() throws Exception {
+		repConnection.clear();
+		String baseURI = "http://www.mygrid.org.uk/feta";
+		URI context = valueFactory.createURI(baseURI);
+		repConnection.add(getFetaN3(), baseURI, RDFFormat.N3, context);
+		lastUpdated = new Date(dataDir.lastModified());
 	}
 
 }

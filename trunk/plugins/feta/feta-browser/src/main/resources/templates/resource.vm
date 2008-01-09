@@ -1,8 +1,0 @@
-<html>
-	<body>
-		<h1>Resource $resourceName</h1>
-		<h2>Services using resource</h2>
-		
-		#parse("templates_lib/list_services.vm")
-	</body>
-</html>
