@@ -31,6 +31,21 @@ public class ElmoTest {
 	private ValueFactory valueFactory;
 
 
+	@Test
+	public void doElmoStuff() throws Exception {
+		System.out.println("w00t");
+		ElmoModule elmoModule = new ElmoModule();
+		factory = new SesameManagerFactory(elmoModule, repository);
+		ElmoManager manager = factory.createElmoManager();
+		
+		QName id = new QName("urn:lsid:www.mygrid.org.uk:serviceDescription:", "ae5c01a5-4377-405a-b3f7-d8a8e449b348");
+		ServiceDescription o = manager.create(ServiceDescription.class, id);
+		System.out.println(o.getLocationURI());
+		
+		
+	}
+	
+
 	@Before
 	public void makeRepository() throws RepositoryException, RDFParseException, IOException {
 		repository = new SailRepository(new MemoryStore());
@@ -43,21 +58,6 @@ public class ElmoTest {
 		URL url = new URL(location);
 		URI context = valueFactory.createURI(location);
 		repConnection.add(url, baseURI, RDFFormat.N3, context);
-		
-	}
-	
-
-	@Test
-	public void doElmoStuff() throws Exception {
-		System.out.println("w00t");
-		ElmoModule elmoModule = new ElmoModule();
-		factory = new SesameManagerFactory(elmoModule, repository);
-		ElmoManager manager = factory.createElmoManager();
-		
-		QName id = new QName("urn:lsid:www.mygrid.org.uk:serviceDescription:", "ae5c01a5-4377-405a-b3f7-d8a8e449b348");
-		ServiceDescription o = manager.create(ServiceDescription.class, id);
-		System.out.println(o.getLocationURI());
-		
 		
 	}
 
