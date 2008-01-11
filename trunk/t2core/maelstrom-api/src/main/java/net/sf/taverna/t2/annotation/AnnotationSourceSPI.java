@@ -10,6 +10,6 @@ package net.sf.taverna.t2.annotation;
  * @author Tom Oinn
  * 
  */
-public interface AnnotationSource {
+public interface AnnotationSourceSPI {
 
 }

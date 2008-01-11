@@ -48,5 +48,5 @@ public interface Curateable {
 	 * 
 	 * @return
 	 */
-	public AnnotationSource getSource();
+	public AnnotationSourceSPI getSource();
 }
