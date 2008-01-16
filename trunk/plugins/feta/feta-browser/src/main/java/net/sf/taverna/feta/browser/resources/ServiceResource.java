@@ -1,5 +1,7 @@
 package net.sf.taverna.feta.browser.resources;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -20,16 +23,17 @@ import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
 public class ServiceResource extends AbstractResource {
 
+	private static Logger logger = Logger.getLogger(ServiceResource.class);
+
 	private ServiceDescription service;
 
 	public ServiceResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		String id = (String) request.getAttributes().get("id");
 		service = serviceRegistry.getServiceDescription(id);
-		if (!service.getHasOperations().isEmpty()) {
+		if (service != null) {
 			getVariants().add(new Variant(MediaType.TEXT_HTML));
 		}
-
 	}
 
 	@Override
@@ -100,9 +104,42 @@ public class ServiceResource extends AbstractResource {
 				.getResourcesUsedBy(operation));
 		model.put("resources", resources);
 
+		model.put("exampleWorkflow", findExampleWorkflow());
+
 		model.put("inputs", getParameterInfo(operation.getInputParameters()));
 		model.put("outputs", getParameterInfo(operation.getOutputParameters()));
 		return model;
+	}
+
+	private URI findExampleWorkflow() {
+		URI examplesRoot = URI
+				.create("http://www.mygrid.org.uk/feta/mygrid/example_workflow/");
+		URI descriptionsRoot = URI
+				.create("http://www.mygrid.org.uk/feta/mygrid/descriptions/");
+		String descriptionLocationStr = utils.firstOf(service
+				.getHasServiceDescriptionLocations());
+		if (descriptionLocationStr == null) {
+			return null;
+		}
+		URI descriptionLocation;
+		try {
+			descriptionLocation = new URI(descriptionLocationStr);
+		} catch (URISyntaxException e) {
+			logger.warn("Invalid description location "
+					+ descriptionLocationStr);
+			return null;
+		}
+		
+		URI parent = descriptionLocation.resolve(".");
+		URI baseName = parent.relativize(descriptionLocation);
+		String workflowName = baseName.getRawPath().replace(".xml", "_workflow.xml");
+				
+		URI relativeUri = descriptionsRoot.relativize(descriptionLocation);
+		URI workflowUri =  examplesRoot.resolve(relativeUri).resolve(workflowName);
+		
+		// TODO: Check if it's there
+		return workflowUri;
+
 	}
 
 }

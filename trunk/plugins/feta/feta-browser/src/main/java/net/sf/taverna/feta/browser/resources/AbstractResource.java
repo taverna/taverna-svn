@@ -8,6 +8,7 @@ import net.sf.taverna.feta.browser.util.URIFactory;
 import net.sf.taverna.feta.browser.util.Utils;
 import net.sf.taverna.feta.browser.util.VelocityRepresentation;
 
+import org.apache.commons.collections.SetUtils;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;

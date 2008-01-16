@@ -20,6 +20,14 @@
 			</dd>
 			#end
 			
+					
+			#if ($exampleWorkflow)
+			<dt>Example workflow</dt>
+			<dd>
+				<a href="$exampleWorkflow">$exampleWorkflow</a>
+			</dd>
+			#end
+			
 			#if (! $service.locationURI.empty)
 			<dt>Location</dt>
 			<dd>$service.locationURI</dd>
