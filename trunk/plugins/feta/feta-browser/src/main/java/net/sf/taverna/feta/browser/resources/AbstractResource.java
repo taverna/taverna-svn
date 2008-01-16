@@ -19,11 +19,12 @@ import org.restlet.resource.Variant;
 public abstract class AbstractResource extends Resource {
 
 	protected ServiceRegistry serviceRegistry = ServiceRegistry.getInstance();
-	protected URIFactory uriFactory = URIFactory.getInstance();
+	protected URIFactory uriFactory;
 	protected Utils utils = Utils.getInstance();
 
 	public AbstractResource(Context context, Request request, Response response) {
 		super(context, request, response);
+		uriFactory = URIFactory.getInstance(request);
 	}
 
 	public abstract String getPageTemplate();

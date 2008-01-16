@@ -56,7 +56,7 @@ public class FetaServer {
 			host = line.getOptionValue(HOST);
 		}
 
-		FetaApplication application = new FetaApplication(host, port);
+		FetaApplication application = new FetaApplication(port);
 		application.startServer();
 	}
 

@@ -61,7 +61,6 @@ public class ServiceResource extends AbstractResource {
 
 			List<String> objectTypes = utils.extractBioNames(serviceRegistry
 					.getParamObjectType(param));
-			System.out.println(objectTypes);
 			paramDesc.put("objectTypes", objectTypes);
 
 			String description = utils.firstOf(param

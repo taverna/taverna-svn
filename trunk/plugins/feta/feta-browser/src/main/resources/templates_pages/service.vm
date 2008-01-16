@@ -29,6 +29,8 @@
 			<dt>Interface</dt>
 			<dd>$service.hasInterfaceLocations</dd>
 			#end
+			<dt>Taverna</dt>
+			<dd><a href="$uriFactory($service);scufl">Download as Taverna workflow component</a></dd>
 			
 						
 		</dl>

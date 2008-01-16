@@ -1,23 +1,41 @@
 package net.sf.taverna.feta.browser.util;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URI;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import net.sf.taverna.feta.browser.elmo.ServiceRegistry;
 
 import org.apache.log4j.Logger;
 import org.openrdf.elmo.Entity;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
 
 import uk.org.mygrid.mygridmobyservice.Organisation;
 import uk.org.mygrid.mygridmobyservice.ServiceDescription;
 
 public class URIFactory {
 
+	private static Utils setUtils = Utils.getInstance();
+	
 	private static URIFactory instance;
 
 	private static Logger logger = Logger.getLogger(URIFactory.class);
 
-	private static Utils setUtils = Utils.getInstance();
+	private static ServiceRegistry serviceRegistry = ServiceRegistry.getInstance();
 
-	public synchronized static URIFactory getInstance() {
+	public static URIFactory getInstance(Request request) {
+		Reference root = request.getRootRef();
+		URI rootUri = URI.create(root.getTargetRef().toString() + "/")
+				.normalize();
+		URIFactory uriFactory = new URIFactory();
+		uriFactory.setRoot(rootUri);
+		return uriFactory;
+	}
+
+	private synchronized static URIFactory getInstance() {
 		if (instance == null) {
 			instance = new URIFactory();
 		}
@@ -33,6 +51,8 @@ public class URIFactory {
 		return root;
 	}
 
+
+
 	public URI getURI(Object resource) {
 		if (!(resource instanceof Entity)) {
 			throw new IllegalArgumentException("Unknown object type "
@@ -40,8 +60,7 @@ public class URIFactory {
 		}
 		Entity entity = ((Entity) resource);
 		if (resource instanceof ServiceDescription) {
-			return getURIForServices()
-					.resolve(entity.getQName().getLocalPart());
+			return getURIForService((ServiceDescription) resource);
 		}
 		if (resource instanceof Organisation) {
 			Organisation org = (Organisation) resource;
@@ -84,6 +103,11 @@ public class URIFactory {
 
 	public URI getURIForResources() {
 		return root.resolve("resources/");
+	}
+
+	public URI getURIForService(ServiceDescription service) {
+		String hashHex = serviceRegistry.getServiceHash(service);
+		return getURIForServices().resolve(hashHex);
 	}
 
 	public URI getURIForServices() {
