@@ -16,7 +16,7 @@
 			#if (! $service.hasServiceDescriptionTexts.empty)
 			<dt>Description</dt>
 			<dd>
-				$service.hasServiceDescriptionTexts
+				$utils.htmlURLs($utils.firstOf($service.hasServiceDescriptionTexts))
 			</dd>
 			#end
 			
@@ -36,14 +36,11 @@
 			#if (! $service.hasInterfaceLocations.empty)
 			<dt>Interface</dt>
 			<dd>$service.hasInterfaceLocations</dd>
-			#end
-			<dt>Taverna</dt>
-			<dd><a href="$uriFactory($service);scufl">Download as Taverna workflow component</a></dd>
-			
+			#end			
 						
 		</dl>
 		<h2>Operation $operation.hasOperationNameTexts</h2>
-			<p>$operation.hasOperationDescriptionTexts</p>
+			<p>$utils.htmlURLs($utils.firstOf($operation.hasOperationDescriptionTexts))</p>
 			
 			#if(! $tasks.empty)
 				<h3>Performs tasks</h3>

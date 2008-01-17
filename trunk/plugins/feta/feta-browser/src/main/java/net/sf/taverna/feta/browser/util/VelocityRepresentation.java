@@ -21,6 +21,8 @@ public class VelocityRepresentation extends TemplateRepresentation {
 	}
 
 	protected void configureEngine() {
+		getEngine().setProperty("runtime.log.logsystem",
+				"org.apache.velocity.runtime.log.Log4JLogChute");
 		getEngine().setProperty("resource.loader", "class");
 		getEngine()
 				.setProperty("class.resource.loader.class",

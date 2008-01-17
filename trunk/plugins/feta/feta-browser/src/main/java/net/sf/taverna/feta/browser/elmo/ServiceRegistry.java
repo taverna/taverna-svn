@@ -221,15 +221,17 @@ public class ServiceRegistry {
 	}
 
 	public ServiceDescription getServiceDescription(String hash) {
-		synchronized (this) {
-			if (services == null) {
-				services = new HashMap<String, ServiceDescription>();
-				for (ServiceDescription service : getServiceDescriptions()) {
-					services.put(getServiceHash(service), service);
-				}
+		HashMap<String, ServiceDescription> myServices = services;
+		if (myServices == null) {
+			myServices = new HashMap<String, ServiceDescription>();
+			for (ServiceDescription service : getServiceDescriptions()) {
+				myServices.put(getServiceHash(service), service);
+			}
+			synchronized (this) {
+				services = myServices;
 			}
 		}
-		return services.get(hash);
+		return myServices.get(hash);
 	}
 
 	public Iterable<ServiceDescription> getServiceDescriptions() {

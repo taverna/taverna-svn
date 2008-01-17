@@ -3,7 +3,9 @@
 
 <div class="parameter">
 <span class="paramName">$parameter.name</span>
-	<div class="paramDesc">$parameter.description</div>
+	<div class="paramDesc">
+	$utils.htmlURLs($parameter.description)
+	</div>
 
 	#if(! $parameter.objectTypes.empty)
 	<div class="objectType">Types: <em>

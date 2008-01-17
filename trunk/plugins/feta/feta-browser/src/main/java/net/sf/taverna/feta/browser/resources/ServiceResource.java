@@ -11,8 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
+import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Variant;
@@ -137,6 +140,12 @@ public class ServiceResource extends AbstractResource {
 		URI relativeUri = descriptionsRoot.relativize(descriptionLocation);
 		URI workflowUri =  examplesRoot.resolve(relativeUri).resolve(workflowName);
 		
+		Request request = new Request(Method.GET, workflowUri.toASCIIString());
+		Client client = new Client(Protocol.HTTP);
+		Response response = client.handle(request);
+		if (! response.getStatus().isSuccess()) {
+			return null;
+		}
 		// TODO: Check if it's there
 		return workflowUri;
 

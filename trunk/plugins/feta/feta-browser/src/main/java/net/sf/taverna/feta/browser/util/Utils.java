@@ -67,5 +67,11 @@ public class Utils {
 		}
 		return set.iterator().next();
 	}
+	
+	public String htmlURLs(String plainText) {
+		// Naive regex to find URLs
+		return plainText.replaceAll("(http://[^ \n]+)", 
+				"<a href=\"$1\">$1</a>");
+	}
 
 }

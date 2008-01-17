@@ -230,7 +230,6 @@
 			<groupId>com.noelios.restlet</groupId>
 			<artifactId>com.noelios.restlet.ext.httpclient</artifactId>
 			<version>1.0.6</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>

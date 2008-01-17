@@ -39,6 +39,7 @@ public abstract class AbstractResource extends Resource {
 	}
 
 	public VelocityRepresentation makeRepresentation(Map<String, Object> model) {
+		
 		return new VelocityRepresentation("layout.vm", model,
 				MediaType.TEXT_HTML);
 	}
@@ -46,7 +47,7 @@ public abstract class AbstractResource extends Resource {
 	protected Map<String, Object> makeModel() {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("uriFactory", uriFactory);
-		model.put("setUtils", utils);
+		model.put("utils", utils);
 		model.put("lastUpdated", serviceRegistry.getLastUpdated());
 		model.put("pageTemplate", getPageTemplate());
 		model.put("pageTitle", getPageTitle());
