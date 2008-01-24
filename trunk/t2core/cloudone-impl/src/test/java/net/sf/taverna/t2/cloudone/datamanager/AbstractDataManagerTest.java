@@ -6,10 +6,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Entity;
@@ -23,6 +27,9 @@ import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -248,49 +255,62 @@ public abstract class AbstractDataManagerTest {
 		assertTrue("Reference schemes no longer empty", doc
 				.getReferenceSchemes().isEmpty());
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Test
-	public void registerError() throws NotFoundException, StorageException,
-			RetrievalException {
-		Throwable ex = new IllegalArgumentException("Did not work",
-				new NullPointerException("No no"));
+	public void registerDocumentWithHttpReference() throws NotFoundException, StorageException,
+			RetrievalException, MalformedURLException {
+		// not sure what a reference scheme is so empty one will have to do
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		HttpReferenceScheme httpRefScheme = new HttpReferenceScheme(new URL("http://google.com"));
+		references.add(httpRefScheme);
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		DataDocument doc = (DataDocument) dManager.getEntity(docId);
+		assertEquals(docId, doc.getIdentifier());
+		assertTrue("Reference schemes are empty", !doc
+				.getReferenceSchemes().isEmpty());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void registerDocumentWithFileReference() throws NotFoundException, StorageException,
+			RetrievalException, MalformedURLException {
+		// not sure what a reference scheme is so empty one will have to do
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		File file = null;
+		try {
+			file = File.createTempFile("test", ".tmp");
+		} catch (IOException e) {
 
-		String msg = "Something failed";
+		}
+		FileReferenceScheme fileRefScheme = new FileReferenceScheme(file);
+		references.add(fileRefScheme);
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		DataDocument doc = (DataDocument) dManager.getEntity(docId);
+		assertEquals(docId, doc.getIdentifier());
+		assertTrue("Reference schemes are empty", !doc
+				.getReferenceSchemes().isEmpty());
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void registerDocumentWithBlobReference() throws NotFoundException, StorageException,
+			RetrievalException, MalformedURLException {
+		// not sure what a reference scheme is so empty one will have to do
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		File file = null;
+		try {
+			file = File.createTempFile("test", ".tmp");
+		} catch (IOException e) {
 
-		int depth = 0;
-		int implicitDepth = 1;
-
-		ErrorDocumentIdentifier errId1 = dManager.registerError(depth++,
-				implicitDepth, msg);
-		assertEquals(0, errId1.getDepth());
-		assertEquals(1, errId1.getImplicitDepth());
-
-		ErrorDocumentIdentifier errId2 = dManager.registerError(depth++,
-				implicitDepth, ex);
-		assertEquals(1, errId2.getDepth());
-
-		ErrorDocumentIdentifier errId3 = dManager.registerError(depth++,
-				implicitDepth, msg, ex);
-		assertEquals(2, errId3.getDepth());
-
-		ErrorDocument err1 = (ErrorDocument) dManager.getEntity(errId1);
-		assertEquals(msg, err1.getMessage());
-		assertNull(err1.getCause());
-		assertNull(err1.getStackTrace());
-
-		ErrorDocument err2 = (ErrorDocument) dManager.getEntity(errId2);
-
-		assertNull(err2.getMessage());
-		// Exceptions are not serialised
-		// assertEquals(ex, err2.getCause());
-		assertTrue(err2.getStackTrace().contains("No no"));
-
-		ErrorDocument err3 = (ErrorDocument) dManager.getEntity(errId3);
-		assertEquals(msg, err3.getMessage());
-		// Exceptions are not serialised
-		// assertEquals(ex, err3.getCause());
-		assertTrue(err3.getStackTrace().contains("No no"));
-
+		}
+		BlobReferenceSchemeImpl blobRefScheme = new BlobReferenceSchemeImpl(TEST_NS,UUID.randomUUID().toString());
+		references.add(blobRefScheme);
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		DataDocument doc = (DataDocument) dManager.getEntity(docId);
+		assertEquals(docId, doc.getIdentifier());
+		assertTrue("Reference schemes are empty", !doc
+				.getReferenceSchemes().isEmpty());
 	}
 
 	@Test
@@ -306,6 +326,52 @@ public abstract class AbstractDataManagerTest {
 		Entity<Literal, ?> ent = dManager.getEntity(lit);
 		assertSame("Literal was not its own entity", lit, ent);
 	}
+	
+
+	@Test
+	public void registerError() throws NotFoundException, StorageException,
+	RetrievalException {
+		Throwable ex = new IllegalArgumentException("Did not work",
+				new NullPointerException("No no"));
+		
+		String msg = "Something failed";
+		
+		int depth = 0;
+		int implicitDepth = 1;
+		
+		ErrorDocumentIdentifier errId1 = dManager.registerError(depth++,
+				implicitDepth, msg);
+		assertEquals(0, errId1.getDepth());
+		assertEquals(1, errId1.getImplicitDepth());
+		
+		ErrorDocumentIdentifier errId2 = dManager.registerError(depth++,
+				implicitDepth, ex);
+		assertEquals(1, errId2.getDepth());
+		
+		ErrorDocumentIdentifier errId3 = dManager.registerError(depth++,
+				implicitDepth, msg, ex);
+		assertEquals(2, errId3.getDepth());
+		
+		ErrorDocument err1 = (ErrorDocument) dManager.getEntity(errId1);
+		assertEquals(msg, err1.getMessage());
+		assertNull(err1.getCause());
+		assertNull(err1.getStackTrace());
+		
+		ErrorDocument err2 = (ErrorDocument) dManager.getEntity(errId2);
+		
+		assertNull(err2.getMessage());
+		// Exceptions are not serialised
+		// assertEquals(ex, err2.getCause());
+		assertTrue(err2.getStackTrace().contains("No no"));
+		
+		ErrorDocument err3 = (ErrorDocument) dManager.getEntity(errId3);
+		assertEquals(msg, err3.getMessage());
+		// Exceptions are not serialised
+		// assertEquals(ex, err3.getCause());
+		assertTrue(err3.getStackTrace().contains("No no"));
+		
+	}
+
 
 	@Before
 	public abstract void setDataManager();
