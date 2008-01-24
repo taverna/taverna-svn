@@ -3,6 +3,12 @@ package net.sf.taverna.t2.cloudone.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -23,12 +29,13 @@ import net.sf.taverna.t2.util.beanable.Beanable;
  * @author Stian Soiland
  * 
  */
+@Entity
 @XmlRootElement(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "dataDocument")
 @XmlType(namespace = "http://taverna.sf.net/t2/cloudone/bean/", name = "dataDocument")
 public class DataDocumentBean {
-
+	@Id
 	private String identifier;
-
+	@ManyToMany //(cascade=CascadeType.ALL)
 	private List<ReferenceBean> references = new ArrayList<ReferenceBean>();
 
 	public String getIdentifier() {
@@ -36,6 +43,8 @@ public class DataDocumentBean {
 	}
 
 	@XmlElement(name = "reference")
+//	@Column(name="reference")
+	//@OneToMany
 	public List<ReferenceBean> getReferences() {
 		return references;
 	}
