@@ -8,7 +8,10 @@ except ImportError:
     PrettyPrint, FromXML = None, None
 import logging as log
 
-from ns import BACLAVA, XSCUFL
+from ns import Namespace
+from scufl import XSCUFL
+
+BACLAVA = Namespace("http://org.embl.ebi.escience/baclava/0.1alpha")
 
 
 def make_input_doc(input_doc, inputs):

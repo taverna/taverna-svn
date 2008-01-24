@@ -3,6 +3,7 @@
 import unittest
 from tavernaclient.client import TavernaService, STATUS
 from elementtree import ElementTree
+import time
 
 
 TEST_SERVER="http://rpc269.cs.man.ac.uk:8180/remotetaverna/v1/"
@@ -91,9 +92,14 @@ class TestClient(unittest.TestCase):
                          
     def testWaitForJob(self):
         jobURL = self._makeJobURL()
-        print "Waiting for", jobURL    
-        status = self.service.waitForJob(jobURL, 5*60)
-        print status
+        print "Waiting for", jobURL
+        now = time.time()
+        timeout = 10
+        status = self.service.waitForJob(jobURL, timeout)
+        after = time.time()
+        # Should be at least some milliseconds longer than the timeout
+        self.assertTrue(after-now > timeout)
+        self.assertFalse(self.service.isFinished(jobURL))
         
 if __name__ == '__main__':
     unittest.main()

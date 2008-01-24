@@ -1,32 +1,17 @@
-import ns
+from tavernaclient.ns import Namespace
 import unittest
 
 class testNS(unittest.TestCase):
-    def testMeta(self):
-        class TestNS(ns.NS):
-            NS = "http://test"
-            tags = "document author"
-        
-        self.assertEqual(TestNS.document, "{http://test}document")
-        self.assertEqual(TestNS.author, "{http://test}author")
     
-    def testMissingTags(self):
-        try:
-            class TestNS(ns.NS):
-                NS = "Something"
-                # But forgot tags 
-        except:
-            return
-        self.fail("Should throw exception for missing tags")        
-
-    def testMissingNS(self):
-        try:
-            class TestNS(ns.NS):
-                tags = "some tags"
-                # But forgot NS
-        except:
-            return
-        self.fail("Should throw exception for missing NS")        
+    def setUp(self):
+        self.TestNS = Namespace("http://test")
+    
+    def testGetAttrib(self):
+        self.assertEqual("{http://test}document", self.TestNS.document)
+        self.assertEqual("{http://test}author", self.TestNS.author)
+        
+    def testGet(self):
+        self.assertEqual("{http://test}fish", self.TestNS.get("fish"))
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@
 from unittest import TestCase
 import tempfile
 
-from scufl import Scufl
+from tavernaclient.scufl import Scufl
 
 from testworkflows import COMPLEX_WORKFLOW, OLD_WORKFLOW
 

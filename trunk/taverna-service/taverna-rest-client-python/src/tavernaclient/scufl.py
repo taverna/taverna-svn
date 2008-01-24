@@ -3,7 +3,8 @@ from elementtree import ElementTree
 
 import re
 
-from ns import XSCUFL
+from ns import Namespace
+XSCUFL = Namespace("http://org.embl.ebi.escience/xscufl/0.1alpha")
 
 
 class Scufl(object):

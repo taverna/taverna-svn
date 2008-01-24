@@ -3,6 +3,20 @@ import time
 from elementtree import ElementTree
 import baclava
 
+from ns import Namespace
+
+XSCUFL = Namespace("http://org.embl.ebi.escience/xscufl/0.1alpha")
+BACLAVA = Namespace("http://org.embl.ebi.escience/baclava/0.1alpha")
+SERVICE = Namespace("http://taverna.sf.net/service")
+XLINK = Namespace("http://www.w3.org/1999/xlink")
+
+REST_MIMETYPE = "application/vnd.taverna.rest+xml"
+SCUFL_MIMETYPE = "application/vnd.taverna.scufl+xml"
+BACLAVA_MIMETYPE = "application/vnd.taverna.baclava+xml"
+
+REALM = 'Taverna service'
+
+
 class TavernaServiceException(Exception):
     pass
 
@@ -18,11 +32,13 @@ class STATUS:
     COMPLETE = "COMPLETE"
     FAILED = "FAILED"
     DESTROYED = "DESTROYED"
-    FINISHED = (COMPLETE, CANCELLED, DESTROYED, FAILED)
+    _FINISHED = (COMPLETE, CANCELLED, DESTROYED, FAILED)
+    _ALL = (NEW, QUEUED, INITIALISING, PAUSED, FAILING, 
+           CANCELLING, CANCELLED, COMPLETE, FAILED, DESTROYED)
     
 class TavernaService:
     def __init__(self, url, user, password):
-        self.realm = 'Taverna service'
+        self.realm = REALM
         self.url = url
         self.user = user
         self.password = password
@@ -36,61 +52,60 @@ class TavernaService:
     
     def getCapabilities(self):
         request = urllib2.Request(self.url)
-        request.add_header("Accept", "application/vnd.taverna.rest+xml")
+        request.add_header("Accept", REST_MIMETYPE)
         result = urllib2.urlopen(request)
         return ElementTree.parse(result).getroot()
         
     def getUserURL(self):
         capabilities = self.getCapabilities()
-        currentUser = capabilities.find("{http://taverna.sf.net/service}currentUser")
-        currentUserURL = currentUser.attrib["{http://www.w3.org/1999/xlink}href"]
+        currentUser = capabilities.find(SERVICE.currentUser)
+        currentUserURL = currentUser.attrib[XLINK.href]
 
         request = urllib2.Request(currentUserURL)
-        request.add_header("Accept", "application/vnd.taverna.rest+xml")
+        request.add_header("Accept", REST_MIMETYPE)
         result = urllib2.urlopen(request)
         return result.url
      
     def getUser(self):
         userURL = self.getUserURL()
         request = urllib2.Request(userURL)
-        request.add_header("Accept", "application/vnd.taverna.rest+xml")
+        request.add_header("Accept", REST_MIMETYPE)
         result = urllib2.urlopen(request)
         return ElementTree.parse(result).getroot()    
         
     def getUserCollectionURL(self, collection):
         user = self.getUser()
-        collections = user.find("{http://taverna.sf.net/service}" + collection)
-        return collections.attrib["{http://www.w3.org/1999/xlink}href"]
+        collections = user.find(SERVICE.get(collection))
+        return collections.attrib[XLINK.href]
         
     def uploadToUserCollection(self, url, data, contentType):
         request = urllib2.Request(url, data)
-        request.add_header("Accept", "application/vnd.taverna.rest+xml")
+        request.add_header("Accept", REST_MIMETYPE)
         request.add_header("Content-Type", contentType)
         try:
-            result = urllib2.urlopen(request)
-            # Expected 201 Created
+            urllib2.urlopen(request)
             raise TavernaServiceException("Expected 201 Created when uploading workflow")
         except urllib2.HTTPError, error:
             # Control through exceptions!
-            if (error.code != 201): # 201 Created
-                 raise error
+            if (error.code != 201): # Was not 201 Created
+                raise error
             return error.headers["Location"]
         
     def uploadWorkflow(self, workflowXML):
         workflowsURL = self.getUserCollectionURL("workflows")
         return self.uploadToUserCollection(workflowsURL, workflowXML, 
-                               "application/vnd.taverna.scufl+xml")
+                               SCUFL_MIMETYPE)
      
     def createJobDocument(self, workflowURL, dataURL=None):
-          jobElem = ElementTree.Element("{http://taverna.sf.net/service}job")
-          workflowElem = ElementTree.SubElement(jobElem, "{http://taverna.sf.net/service}workflow")
-          workflowElem.attrib["{http://www.w3.org/1999/xlink}href"] = workflowURL
-          return ElementTree.tostring(jobElem)
+        jobElem = ElementTree.Element(SERVICE.job)
+        workflowElem = ElementTree.SubElement(jobElem, SERVICE.workflow)
+        workflowElem.attrib[XLINK.href] = workflowURL
+        return ElementTree.tostring(jobElem)
 
     def submitJob(self, jobDocument):
         jobsURL = self.getUserCollectionURL("jobs")
         return self.uploadToUserCollection(jobsURL, jobDocument, 
-                                           "application/vnd.taverna.rest+xml")
+                                           REST_MIMETYPE)
     
     def createDataDocument(self, dictionary):
         dataElem = baclava.make_input_elem(dictionary)
@@ -105,23 +120,23 @@ class TavernaService:
     def uploadData(self, baclavaDoc):
         datasURL = self.getUserCollectionURL("datas")
         return self.uploadToUserCollection(datasURL, baclavaDoc, 
-                               "application/vnd.taverna.baclava+xml")
+                               BACLAVA_MIMETYPE)
 
     def getRestDocument(self, url):
         request = urllib2.Request(url)
-        request.add_header("Accept", "application/vnd.taverna.rest+xml")
+        request.add_header("Accept", REST_MIMETYPE)
         result = urllib2.urlopen(request)
         return ElementTree.parse(result).getroot()  
 
     def getJobStatus(self, jobURL):
         jobDocument = self.getRestDocument(jobURL)
-        status = jobDocument.find("{http://taverna.sf.net/service}status")
-        statusURL = status.attrib["{http://www.w3.org/1999/xlink}href"]
+        status = jobDocument.find(SERVICE.status)
+        #statusURL = status.attrib[XLINK.href]
         return status.text
     
     def isFinished(self, jobURL):
         status = self.getJobStatus(jobURL)
-        return status in STATUS.FINISHED
+        return status in STATUS._FINISHED
     
     def waitForJob(self, jobURL, timeOut=60, refresh=0.5):            
         until = time.time() + timeOut

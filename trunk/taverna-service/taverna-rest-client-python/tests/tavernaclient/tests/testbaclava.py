@@ -11,10 +11,10 @@ import os
 import base64
 from elementtree import ElementTree
 
-import runner
-import baclava
+from tavernaclient.baclava import BACLAVA
+from tavernaclient.scufl import XSCUFL
+from tavernaclient import baclava
 
-from ns import BACLAVA, XSCUFL
 
 
 class TestExecuteWorkflow(TestCase):
@@ -22,10 +22,8 @@ class TestExecuteWorkflow(TestCase):
     def testMakeInputEmpty(self):
         input_doc = StringIO()
         baclava.make_input_doc(input_doc, {})
-        self.assertEqual(input_doc.getvalue(), 
-        """<?xml version='1.0' encoding='UTF-8'?>
-<ns0:dataThingMap xmlns:ns0='http://org.embl.ebi.escience/baclava/0.1alpha'/>
-""")
+        self.assertEqual('<ns0:dataThingMap '
+                         'xmlns:ns0="http://org.embl.ebi.escience/baclava/0.1alpha" />', input_doc.getvalue())
     
     def testMakeInputSingleString(self):
         root = baclava.make_input_elem({"in": "my value"})
