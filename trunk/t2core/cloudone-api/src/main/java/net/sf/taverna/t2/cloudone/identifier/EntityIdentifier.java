@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.identifier;
 
+import java.io.Serializable;
 
 /**
  * Identifier within the data cloud system for a single DataDocument, error or
@@ -9,7 +10,9 @@ package net.sf.taverna.t2.cloudone.identifier;
  * @author Matthew Pocock
  * 
  */
-public abstract class EntityIdentifier {
+public abstract class EntityIdentifier implements Serializable{
+	
+
 
 	/**
 	 * Check if a string is a <em>valid name</em>. A valid name is not null,
