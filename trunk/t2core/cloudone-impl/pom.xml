@@ -31,7 +31,7 @@
 			<artifactId>tsunami-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanable-jaxb</artifactId>
 			<version>0.1.0</version>
@@ -58,5 +58,18 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-annotations</artifactId>
+				<version>3.2.1.ga</version>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.persistence</groupId>
+				<artifactId>persistence-api</artifactId>
+				<version>1.0</version>
+			</dependency>
+			
 	</dependencies>
 </project>
