@@ -76,7 +76,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	}
 
 	public void eventAdded(String owningProcess) {
-		if (stateMap.containsKey(owningProcess) == false) {
+		if (! stateMap.containsKey(owningProcess)) {
 			throw new WorkflowStructureException(
 					"Should never see this here, it means we've had duplicate completion events from upstream");
 		} else {
