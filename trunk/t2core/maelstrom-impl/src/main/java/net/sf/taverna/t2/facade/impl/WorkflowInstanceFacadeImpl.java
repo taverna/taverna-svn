@@ -47,11 +47,6 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 			public void resultTokenProduced(WorkflowDataToken token,
 					String portName) {
 				if (instanceOwningProcessId.equals(token.getOwningProcess())) {
-					for (ResultListener resultListener : resultListeners
-							.toArray(new ResultListener[resultListeners.size()])) {
-						resultListener.resultTokenProduced(token
-								.popOwningProcess(), portName);
-					}
 					synchronized (this) {
 						if (token.getIndex().length == 0) {
 							portsToComplete--;
@@ -62,6 +57,11 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 							MonitorImpl.getMonitor().deregisterNode(
 									instanceOwningProcessId.split(":"));
 						}
+					}
+					for (ResultListener resultListener : resultListeners
+							.toArray(new ResultListener[resultListeners.size()])) {
+						resultListener.resultTokenProduced(token
+								.popOwningProcess(), portName);
 					}
 				}
 			}
