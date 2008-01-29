@@ -13,5 +13,6 @@
 
 	<modules>
 		<module>observer</module>
+		<module>partition</module>
 	</modules>
 </project>
