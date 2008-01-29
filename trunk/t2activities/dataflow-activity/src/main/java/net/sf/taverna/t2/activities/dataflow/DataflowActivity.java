@@ -71,15 +71,17 @@ public class DataflowActivity extends
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
+					Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+
 					public void resultTokenProduced(
 							WorkflowDataToken dataToken, String port) {
-						Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
-						outputData.put(port, dataToken.getData());
-						callback
-								.receiveResult(outputData, dataToken.getIndex());
 						if (dataToken.getIndex().length == 0) {
-							if (--outputPortCount == 0) {
-								facade.removeResultListener(this);
+							outputData.put(port, dataToken.getData());
+							synchronized (this) {
+								if (--outputPortCount == 0) {
+									callback.receiveResult(outputData, dataToken.getIndex());
+									facade.removeResultListener(this);
+								}
 							}
 						}
 					}
