@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlType;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
 import net.sf.taverna.t2.util.beanable.Beanable;
 
-import org.hibernate.annotations.CollectionOfElements;
 
 /**
  * Bean for serialising an {@link EntityList}. An EntityList is serialised as a
@@ -31,11 +30,11 @@ import org.hibernate.annotations.CollectionOfElements;
 public class EntityListBean {
 	@Id
 	private String identifier;
-	@CollectionOfElements //needed since JPA can't cope with lists of strings!
+	//@CollectionOfElements //needed since JPA can't cope with lists of strings!
 	private List<String> content = new ArrayList<String>();
 
 	@XmlElement(name = "entity")
-	@CollectionOfElements
+	//@CollectionOfElements
 	public List<String> getContent() {
 		return content;
 	}

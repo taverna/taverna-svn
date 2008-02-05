@@ -91,7 +91,7 @@
 		<module>drizzle-impl</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
-		<module>persistent-store</module>
+		<!-- <module>persistent-store</module> -->
 	</modules>
 	<repositories>
 		<repository>
