@@ -1,18 +1,28 @@
 #!/usr/bin/env python
 
 import unittest
-from tavernaclient.client import TavernaService, Status
-from elementtree import ElementTree
 import time
+import os
 
+from elementtree import ElementTree
 
+from tavernaclient.client import TavernaService, Status
+
+#ÊServer and username of server to use for tests
 TEST_SERVER="http://rpc269.cs.man.ac.uk:8180/remotetaverna/v1/"
 TEST_USER="snake"
-TEST_PW=open("password.txt").read().strip()
+# Note: Set password in data/password.txt
+
+import testclient
+ROOT_DIR = os.path.abspath(os.path.join(testclient.__file__, ".."))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+
+# Password for connecting to server
+TEST_PW=open(os.path.join(DATA_DIR, "password.txt")).read().strip()
 
 # Test workflows
-ANIMAL_WF=open("../../data/animal.xml").read()
-COLOUR_ANIMAL_WF=open("../../data/colouranimal.xml").read()
+ANIMAL_WF=open(os.path.join(DATA_DIR, "animal.xml")).read()
+COLOUR_ANIMAL_WF=open(os.path.join(DATA_DIR, "colouranimal.xml")).read()
 
 
 class TestClient(unittest.TestCase):
@@ -140,11 +150,13 @@ class TestClient(unittest.TestCase):
         #print results
         self.assertEquals(1, len(results))
         animals = results["coulouredAnimal"]
-        self.assertEquals(6, len(animals))
+        self.assertEquals(2, len(animals))
+        allAnimals = set(animals[0])
+        allAnimals.update(animals[1])
 
-        self.assertTrue("redmouse" in animals)
-        self.assertTrue("greenrabbit" in animals)
-        self.assertTrue("redsnake" not in animals) # hehe
+        self.assertTrue("redmouse" in allAnimals)
+        self.assertTrue("greenrabbit" in allAnimals)
+        self.assertTrue("redsnake" not in allAnimals) # hehe
         
 if __name__ == '__main__':
     unittest.main()
