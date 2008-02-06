@@ -474,10 +474,10 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
 	 */
 	public void detachFromModel() {
-		((ScuflGraphModel) getModel()).detachFromModel();
-		// FIXME: Is it correct to reset these to null? At least 
-		// we have to get away the references 
-		// to the hacks we inserted in attachToModel()
+		if (getScuflGraphModel()!=null) {
+			getScuflGraphModel().detachFromModel();
+		}
+		
 		VertexView.renderer = null;
 		EdgeView.renderer = null;
 	}
@@ -493,7 +493,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	 * @see java.awt.Component#getName()
 	 */
 	public String getName() {
-		return "Workflow Editor (BETA)";
+		return "Interactive Workflow Editor";
 	}
 
 	public void updateAutoSize(CellView view) {

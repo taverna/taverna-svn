@@ -27,10 +27,12 @@
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="workflow-instance-container" version="1.7.0.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-text-area" version="1.7.0.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="xscufl-tree" version="1.7.0.0"/>
+	<artifact groupId="uk.org.mygrid.taverna.scufl.scufl-ui-components" artifactId="scufl-interactive-diagram" version="1.7.0.0"/>
 	
 	<!-- perspectives -->
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-design" version="1.7.0.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-enact" version="1.7.0.0"/>
+	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-interactive-design" version="1.7.0.0"/>
 
 	<!-- workbench -->
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-workbench" version="1.7.0.0"/>

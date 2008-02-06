@@ -18,6 +18,7 @@
     <module>enactor-invocation</module>
     <module>iteration-strategy-editor</module>
     <module>scufl-diagram-panel</module>
+    <module>scufl-interactive-diagram</module>
     <module>scufl-model-explorer</module>
     <module>semantic-markup-editor</module>
     <module>svg-diagram</module>
