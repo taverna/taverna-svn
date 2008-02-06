@@ -177,22 +177,29 @@ public class BiomobyScavengerWorker {
 			iter = model.listStatements();
 			while (iter.hasNext()) {
 				stmt = (Statement) iter.next();
-
 				String sub = stmt.getSubject().getURI();
 				String obj = stmt.getObject().toString();
 				if (sub != null) {
 					try {
+					    	if (sub.indexOf("/MOBY_SUB_COMPONENT/") > 0) continue;
 						if (sub.indexOf("#") > 0)
 							sub = sub.substring(sub.indexOf("#") + 1, sub
 									.length());
+						else if(sub.lastIndexOf("/Objects/") > 0) {
+						    sub = sub.substring(sub.lastIndexOf("/Objects/")+"/Objects/".length());
+						}
 						LSID lsid = new LSID(sub);
 						sub = lsid.getObject();
 					} catch (Exception e) {
 					}
 				}
 				if (obj != null) {
+				    	if (obj.indexOf("/MOBY_SUB_COMPONENT/") > 0) continue;
 					if (obj.indexOf("#") > 0)
 						obj = obj.substring(obj.indexOf("#") + 1, obj.length());
+					else if(obj.lastIndexOf("/Objects/") > 0) {
+					    obj = obj.substring(obj.lastIndexOf("/Objects/")+"/Objects/".length());
+					}
 					try {
 						LSID lsid = new LSID(obj);
 						obj = lsid.getObject();
