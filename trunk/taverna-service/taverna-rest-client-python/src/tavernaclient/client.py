@@ -5,6 +5,7 @@ Taverna Remote Execution service client
 =======================================
 
 Authors: Stian Soiland, David Withers
+Copyright: 2008 University of Manchester, UK
 Version: 0.4.0
 URL: http://taverna.sourceforge.net/
 Contact: taverna-hackers@lists.sourceforge.net

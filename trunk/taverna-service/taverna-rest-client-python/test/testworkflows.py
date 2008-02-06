@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 """
 Collection of test workflows
+
+
+Author: Stian Soiland
+Copyright: 2006-2007 University of Manchester, UK
+URL: http://taverna.sourceforge.net/
+Contact: taverna-hackers@lists.sourceforge.net
+Licence: LGPL 3 (See LICENCE or http://www.gnu.org/licenses/lgpl.html)
 """
+
 
 UNION_WORKFLOW="""<?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">

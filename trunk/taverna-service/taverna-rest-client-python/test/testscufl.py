@@ -1,10 +1,18 @@
 #!/usr/bin/env python
+"""
+Tests for scufl.py
+
+Author: Stian Soiland
+Copyright: 2006-2007 University of Manchester, UK
+URL: http://taverna.sourceforge.net/
+Contact: taverna-hackers@lists.sourceforge.net
+Licence: LGPL 3 (See LICENCE or http://www.gnu.org/licenses/lgpl.html)
+"""
 
 from unittest import TestCase
 import tempfile
 
 from tavernaclient.scufl import Scufl
-
 from testworkflows import COMPLEX_WORKFLOW, OLD_WORKFLOW
 
 class TestScuflConstructor(TestCase):

@@ -1,3 +1,12 @@
+"""
+SCUFL (Taverna workflow) basic information extraction.
+
+Author: Stian Soiland
+Copyright: 2006-2008 University of Manchester, UK
+URL: http://taverna.sourceforge.net/
+Contact: taverna-hackers@lists.sourceforge.net
+Licence: LGPL 3 (See LICENCE or http://www.gnu.org/licenses/lgpl.html)
+"""
 
 from elementtree import ElementTree
 

@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+"""
+Setup for tavernaclient.
+
+Author: Stian Soiland
+Copyright: 2008 University of Manchester, UK
+URL: http://taverna.sourceforge.net/
+Contact: taverna-hackers@lists.sourceforge.net
+Licence: LGPL 3 (See LICENCE or http://www.gnu.org/licenses/lgpl.html)
+"""
+
 
 import ez_setup
 ez_setup.use_setuptools()
