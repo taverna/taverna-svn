@@ -22,15 +22,16 @@ class Scufl(object):
         self.lsid = None
         self.description = None
         self._parse()
+
+    def _port_name(self, port_element):
+        try:
+            return port_element.attrib["name"]
+        except KeyError:
+            return port_element.text.strip()
    
     def _parse(self):
-        def port_name(port_element):
-            try:
-                return port_element.attrib["name"]
-            except KeyError:
-                return port_element.text.strip()
-        self.sinks = [port_name(e) for e in self.root.findall(XSCUFL.sink)]
-        self.sources = [port_name(e) for e in self.root.findall(XSCUFL.source)]
+        self.sinks = [self._port_name(e) for e in self.root.findall(XSCUFL.sink)]
+        self.sources = [self._port_name(e) for e in self.root.findall(XSCUFL.source)]
         desc = self.root.find(XSCUFL.workflowdescription)
         if desc is not None:
             self.author = desc.attrib["author"]

@@ -100,13 +100,19 @@ def data_string_element(data):
     return dataElement
 
 
-def parse(baclava):
+def parse(xml=None, elem=None):
     """Parse Baclava data document. 
      
     Return a dictionary of BaclavaData instances as of the dataThingMap"""
-    doc = ET.XML(baclava) 
+    if xml is None and elem is None:
+        raise TypeError("Need to specify either xml or elem")
+    if xml is not None and elem is not None:
+        raise TypeError("Can't specify both xml and elem")
+        
+    if xml is not None:
+        elem = ET.XML(xml)
     things = {}
-    for thing in doc.findall(BACLAVA.dataThing):
+    for thing in elem.findall(BACLAVA.dataThing):
         thing_name = thing.attrib["key"]
         thing_obj = _parse_thing(thing)
         things[thing_name] = thing_obj 
