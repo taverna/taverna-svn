@@ -312,7 +312,7 @@ public class RestfulExecutionThread extends Thread {
 		repository.addRemoteRepository(new URL(
 				"http://www.ibiblio.org/maven2/"));
 		repository.addRemoteRepository(new URL(
-				"http://mobycentral.icapture.ubc.ca/maven/"));
+				"http://moby.ucalgary.ca/moby_maven/"));
 		repository.addRemoteRepository(new URL(
 			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
 		
