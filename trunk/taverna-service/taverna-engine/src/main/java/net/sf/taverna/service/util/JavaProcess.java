@@ -267,7 +267,7 @@ public class JavaProcess {
 				continue;
 			}
 			if (cl == ClassLoader.getSystemClassLoader()) {
-				// Only include stuff in java.class.path instead
+				// Also include stuff in java.class.path
 				String[] paths = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 				for (String path : paths) {
 					File pathFile = new File(path).getAbsoluteFile();
@@ -277,7 +277,6 @@ public class JavaProcess {
 						logger.warn("Ignoring invalid path " + path, e);
 					}
 				}
-				continue;
 			}
 			URLClassLoader urlCL = (URLClassLoader) cl;
 			classpath.addAll(Arrays.asList(urlCL.getURLs()));
@@ -317,6 +316,7 @@ public class JavaProcess {
 			// Delete last ;
 			sb.deleteCharAt(sb.length() - 1);
 		}
+		logger.debug("Classpath: " + sb);
 		return sb.toString();
 	}
 
