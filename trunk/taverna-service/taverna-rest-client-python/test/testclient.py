@@ -73,15 +73,7 @@ class TestClient(unittest.TestCase):
         workflowURL = self.service.uploadWorkflow(ANIMAL_WF)
         jobURL = self.service.submitJob(workflowURL)
         prefix = TEST_SERVER + "jobs/"
-        self.assertTrue(jobURL.startswith(prefix))
-        
-    
-    def testSubmitJob(self):
-        workflowURL = self.service.uploadWorkflow(ANIMAL_WF)
-        jobURL = self.service.submitJob(workflowURL)
-        prefix = TEST_SERVER + "jobs/"
-        self.assertTrue(jobURL.startswith(prefix))
-    
+        self.assertTrue(jobURL.startswith(prefix))    
 
     def testCreateData(self):
         inputs = {}
