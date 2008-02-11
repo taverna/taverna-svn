@@ -36,7 +36,7 @@ public class DefaultQueueMonitor extends Thread {
 	// (ie. JPA) and is perfectly thread-safe and can be shared all-over
 	private DAOFactory daoFactory = DAOFactory.getFactory();
 
-	private final int CHECK_PERIOD = 20; // checks every 20 seconds.
+	private final long CHECK_PERIOD = 300; // checks every 0.3 seconds.
 
 	private boolean terminate = false;
 
@@ -154,7 +154,7 @@ public class DefaultQueueMonitor extends Thread {
 	private void sleep() {
 		try {
 			if (!terminate) {
-				Thread.sleep(CHECK_PERIOD * 1000);
+				Thread.sleep(CHECK_PERIOD);
 			}
 		} catch (InterruptedException e) {
 			terminate = true;

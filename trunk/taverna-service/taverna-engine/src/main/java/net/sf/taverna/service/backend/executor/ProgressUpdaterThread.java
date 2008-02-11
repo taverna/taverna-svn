@@ -30,7 +30,7 @@ public class ProgressUpdaterThread extends Thread {
 	/**
 	 * Minimal time for loop to sleep in milliseconds
 	 */
-	public final int MIN_SLEEP = 2000;
+	public final int MIN_SLEEP = 500;
 
 	private JobREST job;
 
