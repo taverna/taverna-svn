@@ -8,7 +8,6 @@ import java.io.PipedOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,10 +17,10 @@ import java.util.Set;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
-import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.service.rest.client.DataREST;
+import net.sf.taverna.service.rest.client.DatasREST;
 import net.sf.taverna.service.rest.client.JobREST;
 import net.sf.taverna.service.rest.client.NotSuccessException;
 import net.sf.taverna.service.rest.client.RESTContext;
@@ -52,8 +51,8 @@ import org.restlet.data.Reference;
 
 public class RestfulExecutionThread extends Thread {
 
-	private static Logger logger =
-		Logger.getLogger(RestfulExecutionThread.class);
+	private static Logger logger = Logger
+			.getLogger(RestfulExecutionThread.class);
 
 	private String jobUri;
 
@@ -62,8 +61,8 @@ public class RestfulExecutionThread extends Thread {
 	private String workerUsername;
 
 	private String workerPassword;
-	
-	private static final String BASE_TAVERNA_VERSION="1.7.0.0";
+
+	private static final String BASE_TAVERNA_VERSION = "1.7.0.0";
 
 	public RestfulExecutionThread(String jobUri, String baseUri,
 			String workerUsername, String workerPassword) {
@@ -118,7 +117,7 @@ public class RestfulExecutionThread extends Thread {
 			try {
 				scufl = job.getWorkflow().getScufl();
 			} catch (RuntimeException ex) {
-				logger.warn("Could not load scufl for " + job,ex);
+				logger.warn("Could not load scufl for " + job, ex);
 				return;
 			}
 			try {
@@ -142,7 +141,8 @@ public class RestfulExecutionThread extends Thread {
 			try {
 				job.setStatus(StatusType.RUNNING);
 			} catch (NotSuccessException e2) {
-				logger.warn("Could not set status to running", e2); // OK for now..
+				logger.warn("Could not set status to running", e2); 
+				// OK for now..
 			}
 
 			GDuration updateInterval = job.getUpdateInterval();
@@ -154,13 +154,13 @@ public class RestfulExecutionThread extends Thread {
 			Map outputs = null;
 			try {
 				if (updater != null) {
-					outputs =
-						launcher.execute(inputs, updater.workflowEventListener);
+					outputs = launcher.execute(inputs,
+							updater.workflowEventListener);
 				} else {
 					outputs = launcher.execute(inputs);
 				}
 			} catch (Exception e) {
-				logger.warn("Workflow execution failed", e);
+				logger.warn("Workflow execution failed for " + job, e);
 				return;
 			}
 			logger.info("Job " + job + " succeeded");
@@ -171,9 +171,12 @@ public class RestfulExecutionThread extends Thread {
 			Document doc = DataThingXMLFactory.getDataDocument(outputs);
 			DataREST data = null;
 			try {
-				data = job.getOwner().getDatas().add(
-						new ByteArrayInputStream(new XMLOutputter()
-								.outputString(doc).getBytes()));
+				DatasREST datas = job.getOwner().getDatas();
+				String dataString = new XMLOutputter()
+						.outputString(doc);
+				ByteArrayInputStream dataStream = new ByteArrayInputStream(dataString.getBytes());
+				data = datas.add(
+						dataStream);
 			} catch (NotSuccessException e1) {
 				logger.warn("Could not upload data for job " + job, e1);
 				// But we're still complete, so don't return
@@ -205,7 +208,7 @@ public class RestfulExecutionThread extends Thread {
 				// reports at once
 			} catch (InterruptedException e) {
 				logger.warn(
-					"Interrupted " + this + " while joining " + updater, e);
+						"Interrupted " + this + " while joining " + updater, e);
 				updater.interrupt(); // take it down with us!
 				Thread.currentThread().interrupt();
 			}
@@ -216,7 +219,7 @@ public class RestfulExecutionThread extends Thread {
 				logger.warn("Could not set progress report for " + job, e);
 			} catch (XmlException e) {
 				logger.error("Could not serialize progress report for " + job,
-					e);
+						e);
 			}
 		}
 	}
@@ -239,86 +242,83 @@ public class RestfulExecutionThread extends Thread {
 			DuplicateProcessorNameException, ProcessorCreationException,
 			DataConstraintCreationException, MalformedNameException,
 			DuplicateConcurrencyConstraintNameException, URISyntaxException {
-		
+
 		File base = getRepositoryBase();
-		if (base==null) {
+		if (base == null) {
 			throw new IllegalStateException("Unable to set repository base");
 		}
-		
+
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-tools", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-tools", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-enactor", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-tools", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-core", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-model", BASE_TAVERNA_VERSION));
-		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-				"scufl-workflow", BASE_TAVERNA_VERSION));
 
-                Repository repository = LocalRepository.getRepository(base, this
+		/*
+		 * systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+		 * "scufl-tools", BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna.baclava", "baclava-core",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna.baclava", "baclava-tools",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-core",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-enactor",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-tools",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-core",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-model",
+		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
+		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-workflow",
+		 * BASE_TAVERNA_VERSION));
+		 */
+		Repository repository = LocalRepository.getRepository(base, this
 				.getClass().getClassLoader(), systemArtifacts);
-                //FIXME: remove hard coded version. need to handle versions better with remote profile
-                
-                repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
-				"BASE_TAVERNA_VERSION"));
-                repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-				"BASE_TAVERNA_VERSION"));
-                repository.addArtifact(new BasicArtifact("biomoby.org",
-				"taverna-biomoby", "BASE_TAVERNA_VERSION"));
-      
-		
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
-				BASE_TAVERNA_VERSION));
-		
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
-		
-		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
-				"taverna-contrib", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-beanshell-processor", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-biomart-processor", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-soaplab-processor", BASE_TAVERNA_VERSION));
-		repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-notification-processor", BASE_TAVERNA_VERSION));
-                repository.addArtifact(new BasicArtifact(
-				"uk.org.mygrid.taverna.processors",
-				"taverna-biomoby-processor", BASE_TAVERNA_VERSION));
-
-		repository.addRemoteRepository(new URL(
-				"http://www.mygrid.org.uk/maven/repository/"));
-		repository.addRemoteRepository(new URL(
-				"http://mirrors.sunsite.dk/maven2/"));
-		repository.addRemoteRepository(new URL(
-				"http://www.ibiblio.org/maven2/"));
-		repository.addRemoteRepository(new URL(
-				"http://moby.ucalgary.ca/moby_maven/"));
-		repository.addRemoteRepository(new URL(
-			"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+		// FIXME: remove hard coded version. need to handle versions better with
+		// remote profile
+		/*
+		 * repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-localworkers",
+		 * "BASE_TAVERNA_VERSION")); repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
+		 * "BASE_TAVERNA_VERSION")); repository.addArtifact(new
+		 * BasicArtifact("biomoby.org", "taverna-biomoby",
+		 * "BASE_TAVERNA_VERSION"));
+		 * 
+		 * repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-java-processor",
+		 * BASE_TAVERNA_VERSION));
+		 * 
+		 * repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors",
+		 * "taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
+		 * 
+		 * repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
+		 * "taverna-contrib", BASE_TAVERNA_VERSION)); repository.addArtifact(new
+		 * BasicArtifact( "uk.org.mygrid.taverna.processors",
+		 * "taverna-beanshell-processor", BASE_TAVERNA_VERSION));
+		 * repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-biomart-processor",
+		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-soaplab-processor",
+		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-notification-processor",
+		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
+		 * "uk.org.mygrid.taverna.processors", "taverna-biomoby-processor",
+		 * BASE_TAVERNA_VERSION));
+		 * 
+		 * repository.addRemoteRepository(new URL(
+		 * "http://www.mygrid.org.uk/maven/repository/"));
+		 * repository.addRemoteRepository(new URL(
+		 * "http://mirrors.sunsite.dk/maven2/")); repository
+		 * .addRemoteRepository(new URL("http://www.ibiblio.org/maven2/"));
+		 * repository.addRemoteRepository(new URL(
+		 * "http://moby.ucalgary.ca/moby_maven/"));
+		 * repository.addRemoteRepository(new URL(
+		 * "http://www.mygrid.org.uk/maven/snapshot-repository/"));
+		 */
 		
 		TavernaSPIRegistry.setRepository(repository);
 		Bootstrap.properties = new Properties();
-		repository.update();
+		// repository.update();
 
 		ByteArrayInputStream inStream = new ByteArrayInputStream(scufl
 				.getBytes());
@@ -329,15 +329,14 @@ public class RestfulExecutionThread extends Thread {
 	private File getRepositoryBase() {
 		String tavernaHome = System.getProperty("taverna.home");
 		File base = null;
-		
-		if (tavernaHome!=null) {
+
+		if (tavernaHome != null) {
 			File tavernaHomeFile = new File(tavernaHome);
-			base = new File(tavernaHomeFile,"repository");
-		}
-		else {
+			base = new File(tavernaHomeFile, "repository");
+		} else {
 			logger.error("No taverna.home defined");
 		}
-		
+
 		return base;
 	}
 
@@ -348,8 +347,8 @@ public class RestfulExecutionThread extends Thread {
 	}
 
 	private RESTContext getRESTContext() {
-		RESTContext context =
-			new RESTContext(baseUri, workerUsername, workerPassword);
+		RESTContext context = new RESTContext(baseUri, workerUsername,
+				workerPassword);
 		return context;
 	}
 }
