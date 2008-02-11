@@ -112,7 +112,7 @@ public class ProcessJobExecutor implements JobExecutor {
 		String baseUri = uriFactory.getApplicationRoot().toString();
 		String username = worker.getUsername();
 		String password = worker.getWorkerPasswordStr();
-		String memory=getConfiguredMemory();
+		String memory = getConfiguredMemory();
 	
 		JavaProcess javaProcess =
 			new JavaProcess("net.sf.taverna.service.backend.executor.RestfulExecutionProcess",
@@ -123,16 +123,16 @@ public class ProcessJobExecutor implements JobExecutor {
 		
 		javaProcess.addSystemProperty("java.awt.headless", "true");
 		
-		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.1-profile.xml");
+		// Enable for debugging on localhost:8990
+		//javaProcess.addJavaArguments("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:8990");
 		
-//		RavenProcess javaProcess =
-//			new RavenProcess("uk.org.mygrid.tavernaservice", "taverna-engine",
-//				"1.0.0", "net.sf.taverna.service.RestfulExecutionProcess",
-//				"main");
+		// Enable to avoid using Raven to download artefacts
+		//javaProcess.addSystemProperty("raven.eclipse", "true");
+		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.7.0/taverna-1.7.0.0-profile.xml");
 
 		javaProcess.addArguments("-base", baseUri);
 		javaProcess.addArguments("-username", username);
-		// FIXME: Don't expose our password on command line
+		// FIXME: Don't expose our password on command line!
 		javaProcess.addArguments("-password", password);
 		
 		javaProcess.setRedirectingError(true);
