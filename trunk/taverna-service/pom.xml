@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>remotetaverna</artifactId>
 	<packaging>pom</packaging>
-	<version>0.4.6</version>
+	<version>0.4-SNAPSHOT</version>
 	<name>Remote Taverna execution</name>
 	<description>Remote Taverna execution service</description>
 	<issueManagement>
 		<system>jira</system>
-		<url>http://www.mygrid.org.uk/jira/</url>
+		<url>http://www.mygrid.org.uk/dev/issues/</url>
 	</issueManagement>
-	<ciManagement>
-		<system>continuum</system>
-		<url>http://www.mygrid.org.uk/continuum/</url>
-	</ciManagement>
 	<mailingLists>
 		<mailingList>
 			<name>Taverna hackers</name>
@@ -43,6 +41,20 @@
 			<name>Stian Soiland</name>
 			<email>ssoiland@cs.man.ac.uk</email>
 			<url>http://www.cs.man.ac.uk/~ssoiland/</url>
+			<organization>University of Manchester</organization>
+			<organizationUrl>
+				http://www.manchester.ac.uk/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>witherd5</id>
+			<name>David Withers</name>
+			<email>david.withers@manchester.ac.uk</email>
+			<url>http://www.cs.man.ac.uk/~witherd5/</url>
 			<organization>University of Manchester</organization>
 			<organizationUrl>
 				http://www.manchester.ac.uk/
@@ -110,7 +122,7 @@
 					<skip>false</skip>
 				</configuration>
 			</plugin>
-   		<plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
 				<executions>
@@ -123,16 +135,16 @@
 				</executions>
 			</plugin>
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
@@ -232,12 +244,302 @@
 				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
 			</url>
 		</snapshotRepository>
-		<site>
-			<id>test-site</id>
-			<name>test-site</name>
-			<url>file:///</url>
-		</site>
 	</distributionManagement>
+	<dependencyManagement>
+		<dependencies>
+			<!--  Our own modules -->
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-datastore</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-datastore</artifactId>
+				<version>0.4-SNAPSHOT</version>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-engine</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-interface</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-rest</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-rest</artifactId>
+				<version>0.4-SNAPSHOT</version>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-rest-client</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.remotetaverna</groupId>
+				<artifactId>taverna-rest-xmlbeans</artifactId>
+				<version>0.4-SNAPSHOT</version>
+			</dependency>
+
+			<!--  Standard libraries -->
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>1.2</version>
+			</dependency>
+			<dependency>
+				<groupId>jdom</groupId>
+				<artifactId>jdom</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.3.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.13</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.xmlbeans</groupId>
+				<artifactId>xmlbeans</artifactId>
+				<version>2.3.0</version>
+			</dependency>
+
+
+			<!--  Taverna -->
+			<dependency>
+				<groupId>uk.org.mygrid.taverna</groupId>
+				<artifactId>taverna-workbench</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.scufl</groupId>
+				<artifactId>scufl-tools</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+
+			<!--  Taverna processors -->
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-dependency-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-beanshell-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-biomart-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-biomoby-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-inferno-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-apiconsumer-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-java-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-localworkers</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-notification-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-rdfgenerator-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-rserv-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-soaplab-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>
+					taverna-stringconstant-processor
+				</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-talisman-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.processors</groupId>
+				<artifactId>taverna-wsdl-processor</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna</groupId>
+				<artifactId>taverna-contrib</artifactId>
+				<version>1.7.0.0</version>
+			</dependency>
+
+			<!--  Restlet -->
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.noelios.restlet</groupId>
+				<artifactId>
+					com.noelios.restlet.ext.httpclient
+				</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.noelios.restlet</groupId>
+				<artifactId>com.noelios.restlet.ext.jetty</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+			<dependency>
+				<groupId>com.noelios.restlet</groupId>
+				<artifactId>com.noelios.restlet.ext.servlet</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+			<dependency>
+				<groupId>org.restlet</groupId>
+				<artifactId>org.restlet.ext.velocity</artifactId>
+				<version>1.0.5</version>
+			</dependency>
+
+
+			<!-- Hibernate/JPA/Derby -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate</artifactId>
+				<version>3.2.2.ga</version>
+				<exclusions>
+					<exclusion>
+						<groupId>ant</groupId>
+						<artifactId>ant</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>odmg</groupId>
+						<artifactId>odmg</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>proxool</groupId>
+						<artifactId>proxool</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>opensymphony</groupId>
+						<artifactId>oscache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>swarmcache</groupId>
+						<artifactId>swarmcache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>jboss</groupId>
+						<artifactId>jboss-cache</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.security</groupId>
+						<artifactId>jacc</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>javax.transaction</groupId>
+						<artifactId>jta</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>geronimo-spec</groupId>
+				<artifactId>geronimo-spec-jta</artifactId>
+				<version>1.0-M1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-annotations</artifactId>
+				<version>3.2.1.ga</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>3.2.1.ga</version>
+			</dependency>
+			<dependency>
+				<!-- pool manager default for hibernate -->
+				<groupId>c3p0</groupId>
+				<artifactId>c3p0</artifactId>
+				<version>0.9.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derby</artifactId>
+				<version>10.2.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derbynet</artifactId>
+				<version>10.2.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derbytools</artifactId>
+				<version>10.2.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derbyclient</artifactId>
+				<version>10.2.2.0</version>
+			</dependency>
+			
+		</dependencies>
+
+	</dependencyManagement>
 	<modules>
 		<module>taverna-interface</module>
 		<module>taverna-datastore</module>
