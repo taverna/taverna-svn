@@ -23,7 +23,7 @@
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
-                    <xsd:element name="items" type="cloudone:NonNegativeLong" />
+                    <xsd:element name="items" type="cloudone:NonNegativeLong" maxOccurs="1" minOccurs="0"/>
 				</xsd:sequence>
 				<xsd:attribute name="depth" type="cloudone:NonNegativeLong"></xsd:attribute>
 			</xsd:extension>
@@ -48,7 +48,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="cloudone:Entity">
 				<xsd:sequence>
-                    <xsd:element name="value" type="xsd:anySimpleType"></xsd:element>
+                    <xsd:element name="value" type="xsd:anySimpleType" maxOccurs="1" minOccurs="0"></xsd:element>
                 </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -106,7 +106,7 @@
 		<xsd:complexContent>
 			<xsd:restriction base="cloudone:Literal">
 				<xsd:sequence>
-					<xsd:element name="value" type="xsd:string"></xsd:element>
+					<xsd:element name="value" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
 				</xsd:sequence>
 			</xsd:restriction>
 		</xsd:complexContent>

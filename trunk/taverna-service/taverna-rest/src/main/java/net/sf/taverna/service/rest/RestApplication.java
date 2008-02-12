@@ -18,6 +18,7 @@ import net.sf.taverna.service.rest.resources.AdminCreationResource;
 import net.sf.taverna.service.rest.resources.CapabilitiesResource;
 import net.sf.taverna.service.rest.resources.ConfigurationResource;
 import net.sf.taverna.service.rest.resources.CurrentUserResource;
+import net.sf.taverna.service.rest.resources.DataPortResource;
 import net.sf.taverna.service.rest.resources.DataResource;
 import net.sf.taverna.service.rest.resources.DatasResource;
 import net.sf.taverna.service.rest.resources.DefaultQueueResource;
@@ -69,8 +70,10 @@ public class RestApplication extends Application {
 
 	private static final String DATA = "/{data}";
 
-	private static final String QUEUE = "/{queue}";
+	private static final String PORT = "/{port}";
 	
+	private static final String QUEUE = "/{queue}";
+
 	private static final String WORKER = "/{worker}";
 
 	protected DAOFactory daoFactory = DAOFactory.getFactory();
@@ -86,13 +89,13 @@ public class RestApplication extends Application {
 		super();
 		init();
 	}
-	
+
 	/**
 	 * Do some pre-start initialisation.
 	 * 
-	 * This includes 
+	 * This includes
 	 * <ul>
-	 * 	<li>Creating a default worker, so there is always at least 1</li>
+	 * <li>Creating a default worker, so there is always at least 1</li>
 	 * </ul>
 	 */
 	private void init() {
@@ -100,23 +103,24 @@ public class RestApplication extends Application {
 		createDefaultQueue();
 		createDefaultWorker();
 	}
-	
+
 	private void initializeRestletLogging() {
-	    Handler[] handlers = java.util.logging.Logger.getLogger("").getHandlers();
-	    for (Handler handler : handlers) {
-    		handler.setFormatter(new ReallySimpleFormatter());
-	    }
-	    java.util.logging.Logger.getLogger("").setLevel(Level.WARNING);
-            logger.warn("Set logging to WARNING");
+		Handler[] handlers = java.util.logging.Logger.getLogger("")
+				.getHandlers();
+		for (Handler handler : handlers) {
+			handler.setFormatter(new ReallySimpleFormatter());
+		}
+		java.util.logging.Logger.getLogger("").setLevel(Level.WARNING);
+		logger.warn("Set logging to WARNING");
 	}
 
 	private void createDefaultWorker() {
-		if (daoFactory.getWorkerDAO().all().size()==0) {
+		if (daoFactory.getWorkerDAO().all().size() == 0) {
 			logger.info("No workers exist. Creating a default worker");
 			WorkerInitialisation.createNew();
 		}
 	}
-	
+
 	private void createDefaultQueue() {
 		DAOFactory.getFactory().getQueueDAO().defaultQueue();
 		DAOFactory.getFactory().commit();
@@ -156,9 +160,9 @@ public class RestApplication extends Application {
 	}
 
 	public class AdminPresentFilter extends Filter {
-		private boolean adminFound=false;
+		private boolean adminFound = false;
 		private Restlet orginalNext;
-		
+
 		public AdminPresentFilter(Context context, Restlet next) {
 			super(context, next);
 			orginalNext = next;
@@ -168,38 +172,42 @@ public class RestApplication extends Application {
 		protected void beforeHandle(Request req, Response resp) {
 			super.beforeHandle(req, resp);
 			if (req.getMethod().equals(Method.GET)) {
-				checkForAdmin(req,resp);
+				checkForAdmin(req, resp);
 			}
 		}
-		
+
 		private void checkForAdmin(Request req, Response resp) {
-			Reference createAdminRef = new Reference(req.getRootRef(), URIFactory.V1 + "/" + URIFactory.getMapping(User.class) + URIFactory.getMappingCreateAdmin()).getTargetRef();
-			
+			Reference createAdminRef = new Reference(req.getRootRef(),
+					URIFactory.V1 + "/" + URIFactory.getMapping(User.class)
+							+ URIFactory.getMappingCreateAdmin())
+					.getTargetRef();
+
 			URIFactory uriFactory = URIFactory.getInstance();
 			if (req.getResourceRef().equals(createAdminRef)) {
 				// always pass through
 				setNext(orginalNext);
 				return;
 			}
-			if (!adminFound) { //only check once. Once an admin exists it cannot be demoted.
+			if (!adminFound) { // only check once. Once an admin exists it
+								// cannot be demoted.
 				if (daoFactory.getUserDAO().admins().isEmpty()) {
 					resp.redirectTemporary(createAdminRef);
-					setNext(new Restlet());  // to avoid 404
-					//setNext(AdminCreationResource.class);
+					setNext(new Restlet()); // to avoid 404
+					// setNext(AdminCreationResource.class);
 				} else {
 					setNext(orginalNext);
-					adminFound=true;
+					adminFound = true;
 				}
 			}
 		}
 	}
-	
+
 	public class DaoCloseFilter extends Filter {
 
 		public DaoCloseFilter(Context context, Restlet next) {
 			super(context, next);
 		}
-				
+
 		@Override
 		protected void afterHandle(Request req, Response response) {
 			closeDao();
@@ -208,7 +216,7 @@ public class RestApplication extends Application {
 		private void closeDao() {
 			try {
 				daoFactory.rollback();
-			} catch (IllegalStateException ex) { 
+			} catch (IllegalStateException ex) {
 				// Expected
 			} finally {
 				daoFactory.close();
@@ -219,132 +227,148 @@ public class RestApplication extends Application {
 	protected void attachHTMLSource(Component component) {
 		component.getClients().add(Protocol.FILE);
 		URL htmlSource = this.getClass().getResource("/html");
-		Directory htmlDir =
-			new Directory(component.getContext(), htmlSource.toString());
+		Directory htmlDir = new Directory(component.getContext(), htmlSource
+				.toString());
 		// Map /html
 		component.getDefaultHost().attach("/" + URIFactory.HTML, htmlDir);
 	}
 
 	protected void attachFilters(Component component, Router router) {
-		DaoCloseFilter daoCloser =
-			new DaoCloseFilter(component.getContext(), router);
-		AdminPresentFilter adminFilter=new AdminPresentFilter(component.getContext(),daoCloser);
+		DaoCloseFilter daoCloser = new DaoCloseFilter(component.getContext(),
+				router);
+		AdminPresentFilter adminFilter = new AdminPresentFilter(component
+				.getContext(), daoCloser);
 		// Map /v1
 		component.getDefaultHost().attach("/" + URIFactory.V1, adminFilter);
-		
-		//  Redirector for anything else not matching
+
+		// Redirector for anything else not matching
 		String template = "{oi}" + "/" + URIFactory.V1 + "/";
-		Route route = component.getDefaultHost().attach("",
-			new Redirector(component.getContext(), template,
-				Redirector.MODE_CLIENT_TEMPORARY));
+		Route route = component.getDefaultHost().attach(
+				"",
+				new Redirector(component.getContext(), template,
+						Redirector.MODE_CLIENT_TEMPORARY));
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
 	}
 
 	public Component createComponent() {
 		Component component = new Component();
-		
+
 		attachHTMLSource(component);
-		
+
 		Router router = new Router(component.getContext());
-		
+
 		attachFilters(component, router);
 
 		Guard userGuard = new UserGuard(router.getContext());
 
 		// Authenticate access to mostly anything
 		router.attach(userGuard);
-		
+
 		// /user (exact match) is not authenticated (for registering with POST)
-		Route route =
-			router.attach("/" + URIFactory.getMapping(User.class),
+		Route route = router.attach("/" + URIFactory.getMapping(User.class),
 				UsersResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
 
 		// Capabilities at / is also unprotected
 		route = router.attach("/", CapabilitiesResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_EQUALS);
-		
-		route = router.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingRegisterUser(),UserRegisterResource.class);
+
+		route = router.attach("/" + URIFactory.getMapping(User.class)
+				+ URIFactory.getMappingRegisterUser(),
+				UserRegisterResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
-		
-		route =
-			router.attach("/" + URIFactory.getMapping(User.class)
+
+		route = router.attach("/" + URIFactory.getMapping(User.class)
 				+ URIFactory.getMappingCreateAdmin(),
 				AdminCreationResource.class);
 		route.getTemplate().setMatchingMode(Template.MODE_STARTS_WITH);
-		
 
 		// Everything else goes through our authenticated router
 		Router authenticated = new Router(userGuard.getContext());
-		
+
 		userGuard.setNext(authenticated);
-		
+
 		// /config
-		authenticated.attach("/"+URIFactory.getMapping(Configuration.class),ConfigurationResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(Configuration.class),
+				ConfigurationResource.class);
 		// /jobs/X
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB,
-			JobResource.class);
+				JobResource.class);
 		// /jobs/X/status
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
-			+ URIFactory.getMappingStatus(), JobStatusResource.class);
+				+ URIFactory.getMappingStatus(), JobStatusResource.class);
 		// /jobs/X/report
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
-			+ URIFactory.getMappingReport(), JobReportResource.class);
+				+ URIFactory.getMappingReport(), JobReportResource.class);
 		// /jobs/X/console
 		authenticated.attach("/" + URIFactory.getMapping(Job.class) + JOB
-			+ URIFactory.getMappingConsole(), JobConsoleResource.class);		
+				+ URIFactory.getMappingConsole(), JobConsoleResource.class);
 		// /workflows/X
 		authenticated.attach("/" + URIFactory.getMapping(Workflow.class)
-			+ WORKFLOW, WorkflowResource.class);
+				+ WORKFLOW, WorkflowResource.class);
 		// /data/X
 		authenticated.attach("/" + URIFactory.getMapping(DataDoc.class) + DATA,
-			DataResource.class);
+				DataResource.class);
+
+		// /data/{data}/ports/{port}
+		authenticated.attach("/" + URIFactory.getMapping(DataDoc.class) + DATA
+				+ URIFactory.getMappingPorts() + PORT, DataPortResource.class);
 
 		// /users;current
-		authenticated.attach("/" + URIFactory.getMapping(User.class)
-			+ URIFactory.getMappingCurrentUser(), CurrentUserResource.class);
+		authenticated
+				.attach("/" + URIFactory.getMapping(User.class)
+						+ URIFactory.getMappingCurrentUser(),
+						CurrentUserResource.class);
 
-//		 /users;add
-		authenticated.attach("/"+URIFactory.getMapping(User.class)+URIFactory.getMappingAddUser(), UserAddResource.class);
-		
+		// /users;add
+		authenticated.attach("/" + URIFactory.getMapping(User.class)
+				+ URIFactory.getMappingAddUser(), UserAddResource.class);
+
 		// /users/X
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER,
-			UserResource.class);
-		
+				UserResource.class);
+
 		// /users/X/edit
-		authenticated.attach("/" + URIFactory.getMapping(User.class)+USER+URIFactory.getMappingEditUser(),UserEditResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
+				+ URIFactory.getMappingEditUser(), UserEditResource.class);
 
 		// Collections - below user
 
 		// /users/X/workflows
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
-			+ "/" + URIFactory.getMapping(Workflow.class),
-			WorkflowsResource.class);
+				+ "/" + URIFactory.getMapping(Workflow.class),
+				WorkflowsResource.class);
 		// /users/X/data
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
-			+ "/" + URIFactory.getMapping(DataDoc.class), DatasResource.class);
+				+ "/" + URIFactory.getMapping(DataDoc.class),
+				DatasResource.class);
 		// /users/X/jobs
 		authenticated.attach("/" + URIFactory.getMapping(User.class) + USER
-			+ "/" + URIFactory.getMapping(Job.class), JobsResource.class);
+				+ "/" + URIFactory.getMapping(Job.class), JobsResource.class);
 
 		// /queues
 		authenticated.attach("/" + URIFactory.getMapping(Queue.class),
-			QueuesResource.class);
+				QueuesResource.class);
 		// /queues/X
 		authenticated.attach("/" + URIFactory.getMapping(Queue.class) + QUEUE,
-			QueueResource.class);
+				QueueResource.class);
 		// /queues;default
 		authenticated.attach("/" + URIFactory.getMapping(Queue.class)
-			+ URIFactory.getMappingDefaultQueue(), DefaultQueueResource.class);
+				+ URIFactory.getMappingDefaultQueue(),
+				DefaultQueueResource.class);
 
 		// /workers
-		authenticated.attach("/"+URIFactory.getMapping(Worker.class),WorkersResource.class);
-		authenticated.attach("/"+URIFactory.getMapping(Worker.class) + WORKER,WorkerResource.class);
+		authenticated.attach("/" + URIFactory.getMapping(Worker.class),
+				WorkersResource.class);
+		authenticated.attach(
+				"/" + URIFactory.getMapping(Worker.class) + WORKER,
+				WorkerResource.class);
 		// /workers/X
 
 		return component;
 	}
 }
+
 class ReallySimpleFormatter extends java.util.logging.Formatter {
 	@Override
 	public String format(java.util.logging.LogRecord record) {
@@ -354,5 +378,5 @@ class ReallySimpleFormatter extends java.util.logging.Formatter {
 			record.getThrown().printStackTrace(new PrintWriter(sw));
 		}
 		return msg + sw;
-	}	
+	}
 }

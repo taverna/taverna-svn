@@ -11,6 +11,9 @@ import net.sf.taverna.service.interfaces.ParseException;
 import net.sf.taverna.service.xml.Data;
 import net.sf.taverna.service.xml.DataDocument;
 import net.sf.taverna.service.xml.DatasDocument;
+import net.sf.taverna.t2.cloudone.rest.xml.Entity;
+import net.sf.taverna.t2.cloudone.rest.xml.EntityList;
+import net.sf.taverna.t2.cloudone.rest.xml.MapEntry;
 
 import org.apache.xmlbeans.XmlException;
 import org.junit.Before;
@@ -129,6 +132,21 @@ public class TestDataDoc extends ClientTest {
 		assertEquals("http://org.embl.ebi.escience/baclava/0.1alpha",
 			a.getNamespaceURI());
 		assertEquals(3, a.getChildNodes().getLength());
+		
+		assertEquals(1, doc.getData().getPorts().getEntryArray().length);
+		
+		System.out.println(doc.getData().getPorts());
+		
+		MapEntry entry = doc.getData().getPorts().getEntryArray(0);
+		assertEquals("duplicates", entry.getKey());
+		Entity entity = entry.getEntity();
+		// FIXME: Should be just /ports/duplicates
+		assertEquals(justCreated + "/ports/duplicates/list/;unknown", 
+				entity.getHref());
+		assertTrue(entity instanceof EntityList);
+		EntityList entityList = (EntityList) entity;
+		assertEquals(1, entityList.getDepth());
+		assertEquals(7, entityList.getItems());
 	}
 
 	@Test

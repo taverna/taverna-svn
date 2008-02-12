@@ -31,17 +31,17 @@ import org.restlet.data.Request;
  * @author Stian Soiland
  */
 public class URIFactory {
-	
+
 	private static Logger logger = Logger.getLogger(URIFactory.class);
 
-	public static final String HTML = "html" ;
-	
+	public static final String HTML = "html";
+
 	public static final String V1 = "v1";
-	
+
 	public static final String DEFAULT_HTML_PATH = "../" + HTML;
-	
-	public static boolean BASE_URI_CHANGED=true;
-	
+
+	public static boolean BASE_URI_CHANGED = true;
+
 	private static Reference applicationRoot;
 
 	public static URIFactory getInstance() {
@@ -49,7 +49,7 @@ public class URIFactory {
 	}
 
 	private static String html = DEFAULT_HTML_PATH;
-	
+
 	private String htmlRoot;
 
 	/**
@@ -68,15 +68,14 @@ public class URIFactory {
 		resourceMap.put(Configuration.class, "config");
 	}
 
-
-
 	/**
 	 * Get the mapping for a collection resource class. The mapping is generally
 	 * appended to {@link #getApplicationRoot()} by {@link #getURI(Class)} or
-	 * {@link #getURI(AbstractUUID)}, but also used by {@link #getURI(User, Class)}.
+	 * {@link #getURI(AbstractUUID)}, but also used by
+	 * {@link #getURI(User, Class)}.
 	 * <p>
-	 * If a direct mapping in {@link #resourceMap} can't be found, the
-	 * mapping of the superclass will be searched instead, recursively.
+	 * If a direct mapping in {@link #resourceMap} can't be found, the mapping
+	 * of the superclass will be searched instead, recursively.
 	 * 
 	 * @see #getURI(Class)
 	 * @param resourceClass
@@ -103,15 +102,17 @@ public class URIFactory {
 		String mapping = getMapping(resourceClass);
 		if (mapping == null) {
 			throw new IllegalArgumentException("Unknown resource class: "
-				+ resourceClass);
+					+ resourceClass);
 		}
-		return new Reference(getApplicationRoot(), mapping).getTargetRef().toString();
+		return new Reference(getApplicationRoot(), mapping).getTargetRef()
+				.toString();
 	}
 
 	/**
 	 * Get URI for a resource.
 	 * 
-	 * @param resource The {@link AbstractUUID} bean of the resource
+	 * @param resource
+	 *            The {@link AbstractUUID} bean of the resource
 	 * @return The full URI for the resource
 	 */
 	public String getURI(AbstractUUID resource) {
@@ -122,7 +123,6 @@ public class URIFactory {
 		String resourcePrefix = getURI(resource.getClass());
 		return resourcePrefix + "/" + resource.getId();
 	}
-
 
 	/**
 	 * Get the URI for a collection of owned resources
@@ -137,23 +137,24 @@ public class URIFactory {
 		String uri = getURIUser(owner);
 		return uri + "/" + getMapping(ownedClass);
 	}
-	
+
 	public String getURIUser(User user) {
 		return getURI(User.class) + "/" + user.getUsername();
 	}
-	
+
 	public String getURIEditUser(User user) {
-		return getURIUser(user)+getMappingEditUser();
+		return getURIUser(user) + getMappingEditUser();
 	}
 
 	public String getURIDefaultQueue() {
 		return getURI(Queue.class) + getMappingDefaultQueue();
 	}
-	
+
 	/**
 	 * Get the URI for the status of a job
 	 * 
-	 * @param job The {@link Job} bean
+	 * @param job
+	 *            The {@link Job} bean
 	 * @return The full URI for the job's status
 	 */
 	public String getURIStatus(Job job) {
@@ -163,17 +164,19 @@ public class URIFactory {
 	/**
 	 * Get the URI for the progress report of a job
 	 * 
-	 * @param job The {@link Job} bean
+	 * @param job
+	 *            The {@link Job} bean
 	 * @return The full URI for the job's progress report
 	 */
 	public String getURIReport(Job job) {
 		return getURI(job) + getMappingReport();
 	}
-	
+
 	/**
 	 * Get the URI for the console log of a job
 	 * 
-	 * @param job The {@link Job} bean
+	 * @param job
+	 *            The {@link Job} bean
 	 * @return The full URI for the job's console log
 	 */
 	public String getURIConsole(Job job) {
@@ -186,14 +189,15 @@ public class URIFactory {
 	 * included in the {@link Capabilities} document.
 	 * 
 	 * @see Capabilities#getCurrentUser()
-	 * @return The full URI for the meta-resource that redirects to the current user
+	 * @return The full URI for the meta-resource that redirects to the current
+	 *         user
 	 */
 	public String getURICurrentUser() {
 		return getURI(User.class) + getMappingCurrentUser();
 	}
-	
+
 	public String getURICreateAdmin() {
-		return getURI(User.class)  + getMappingCreateAdmin();
+		return getURI(User.class) + getMappingCreateAdmin();
 	}
 
 	/**
@@ -209,12 +213,15 @@ public class URIFactory {
 	}
 
 	/**
-	 * The mapping to the URI of the {@link Queue} to the form the URL for the default Queue.
+	 * The mapping to the URI of the {@link Queue} to the form the URL for the
+	 * default Queue.
+	 * 
 	 * @return
 	 */
 	public static String getMappingDefaultQueue() {
 		return ";default";
 	}
+
 	/**
 	 * The mapping added to the URI of the {@link Job} to get the status.
 	 * 
@@ -229,19 +236,19 @@ public class URIFactory {
 	public static String getMappingRegisterUser() {
 		return ";register";
 	}
-	
+
 	public static String getMappingCreateAdmin() {
 		return ";createAdmin";
 	}
-	
+
 	public static String getMappingAddUser() {
 		return ";add";
 	}
-	
+
 	public static String getMappingEditUser() {
 		return "/edit";
 	}
-	
+
 	/**
 	 * The mapping added to the URI of the {@link Job} to get the console.
 	 * 
@@ -252,9 +259,10 @@ public class URIFactory {
 	public static String getMappingConsole() {
 		return "/console";
 	}
-	
+
 	/**
-	 * The mapping added to the URI of the {@link Job} to get the progress report.
+	 * The mapping added to the URI of the {@link Job} to get the progress
+	 * report.
 	 * 
 	 * @see #getURIReport(Job)
 	 * @see #getURI(AbstractUUID)
@@ -279,7 +287,8 @@ public class URIFactory {
 	}
 
 	/**
-	 * Get the path relative to {@link #getApplicationRoot()} for static HTML files.
+	 * Get the path relative to {@link #getApplicationRoot()} for static HTML
+	 * files.
 	 * 
 	 * @return
 	 */
@@ -287,30 +296,31 @@ public class URIFactory {
 		return html;
 	}
 
-	
-	
 	/**
-	 * Get the application root. The root is where the
-	 * {@link Capabilities} document is served, and also the base of the URIs to
-	 * collections such as <code>users</code> defined by {@link #resourceMap}
+	 * Get the application root. The root is where the {@link Capabilities}
+	 * document is served, and also the base of the URIs to collections such as
+	 * <code>users</code> defined by {@link #resourceMap}
 	 * 
 	 * @return The application root as a {@link Reference}
 	 */
 	public Reference getApplicationRoot() {
-		if (applicationRoot==null || BASE_URI_CHANGED) {
-			DAOFactory daoFactory=DAOFactory.getFactory();
+		if (applicationRoot == null || BASE_URI_CHANGED) {
+			DAOFactory daoFactory = DAOFactory.getFactory();
 			Configuration config = daoFactory.getConfigurationDAO().getConfig();
-			String root=config.getBaseuri();
-			if (daoFactory.hasActiveTransaction()) daoFactory.rollback();
+			String root = config.getBaseuri();
+			if (daoFactory.hasActiveTransaction())
+				daoFactory.rollback();
 			daoFactory.close();
-			if (!root.endsWith("/")) root+="/";
-			applicationRoot=new Reference(root+URIFactory.V1+"/");
-			logger.info("Set application root to "+applicationRoot.toString());
-			BASE_URI_CHANGED=false;
+			if (!root.endsWith("/"))
+				root += "/";
+			applicationRoot = new Reference(root + URIFactory.V1 + "/");
+			logger
+					.info("Set application root to "
+							+ applicationRoot.toString());
+			BASE_URI_CHANGED = false;
 		}
 		return applicationRoot;
 	}
-	
 
 	/**
 	 * Get the calculated root of static HTML files. This is normally calculated
@@ -322,9 +332,9 @@ public class URIFactory {
 	 */
 	public String getHTMLRoot() {
 		if (htmlRoot == null) {
-			htmlRoot =
-				new Reference(getApplicationRoot(), getHTMLpath()).getTargetRef().toString();
-		} 
+			htmlRoot = new Reference(getApplicationRoot(), getHTMLpath())
+					.getTargetRef().toString();
+		}
 		return htmlRoot;
 	}
 
@@ -338,11 +348,34 @@ public class URIFactory {
 	}
 
 	public String getURIAddUser() {
-		return getURI(User.class)+getMappingAddUser();
+		return getURI(User.class) + getMappingAddUser();
+	}
+
+	public String getURIRegister() {
+		return getURI(User.class) + getMappingRegisterUser();
+	}
+
+	public String getURIEntityList(DataDoc dataDoc, String portName, String lsid) {
+		return getURI(dataDoc) + getMappingPorts() + "/" + portName + 
+			getMappingEntityList() + "/" + lsid;
+	}
+
+	public static String getMappingPorts() {
+		return "/ports";
 	}
 	
-	public String getURIRegister() {
-		return getURI(User.class)+getMappingRegisterUser();
+	public static String getMappingEntityList() {
+		return "/list";
+	}
+	
+	public static String getMappingStringLiteral() {
+		return "/entity";
+	}
+
+	public String getURIStringLiteral(DataDoc dataDoc, String portName,
+			String lsid) {
+		return getURI(dataDoc) + getMappingPorts() + "/" + portName + 
+		getMappingStringLiteral() + "/" + lsid;
 	}
 
 }
