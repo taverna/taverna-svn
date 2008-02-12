@@ -17,8 +17,8 @@ from elementtree import ElementTree
 
 from tavernaclient.client import TavernaService, Status
 
-#ÊServer and username of server to use for tests
-TEST_SERVER="http://rpc269.cs.man.ac.uk:8180/remotetaverna/v1/"
+# Server and username of server to use for tests
+TEST_SERVER="http://localhost:8080/remotetaverna/v1/"
 TEST_USER="snake"
 # Note: Set password in data/password.txt
 
@@ -117,7 +117,7 @@ class TestClient(unittest.TestCase):
         workflowURL = self.service.uploadWorkflow(ANIMAL_WF)
         jobURL = self.service.submitJob(workflowURL)
         now = time.time()
-        timeout = 10
+        timeout = 1
         status = self.service.waitForJob(jobURL, timeout)
         after = time.time()
         # Should be at least some milliseconds longer than the timeout

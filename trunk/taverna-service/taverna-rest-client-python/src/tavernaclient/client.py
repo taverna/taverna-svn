@@ -544,7 +544,7 @@ class TavernaService(object):
         status = self.waitForJob(jobURL, timeOut, refresh)
         
         if status != Status.COMPLETE:
-            raise NotCompleteError("Job " + jobURL + " not complete, status: " + status) 
+            raise NotCompleteError(jobURL, status) 
         outputs = self.getJobOutputs(jobURL)
         return outputs
     
@@ -680,8 +680,11 @@ class TavernaService(object):
         refresh -- In seconds (as a float), how often to check the job's 
             status while waiting. The default value is DEFAULT_REFRESH.
         """           
-        until = time.time() + timeOut
-        while not self.isFinished(jobURL) and until > time.time():
-            time.sleep(refresh)
+        now = time.time()
+        until = now + timeOut
+        while until > now and not self.isFinished(jobURL):
+            now = time.time() # isFinished() might have taken a while
+            time.sleep(max(min(refresh, until-now), 0))
+            now = time.time() # after the sleep
         return self.getJobStatus(jobURL)
 
