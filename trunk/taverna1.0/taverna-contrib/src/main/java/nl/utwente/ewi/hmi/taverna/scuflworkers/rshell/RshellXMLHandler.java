@@ -1,8 +1,8 @@
 /*
  * CVS
- * $Author: sowen70 $
- * $Date: 2006-07-20 14:51:32 $
- * $Revision: 1.1 $
+ * $Author: iandunlop $
+ * $Date: 2008-02-12 15:08:57 $
+ * $Revision: 1.2 $
  * University of Twente, Human Media Interaction Group
  */
 package nl.utwente.ewi.hmi.taverna.scuflworkers.rshell;
@@ -94,7 +94,7 @@ public class RshellXMLHandler implements XMLHandler {
 		// try to get the prototype
 		RshellProcessor prototype = null;
 		try {
-			prototype = (RshellProcessor) loadProcessorFromXML(clone, null,
+			prototype = (RshellProcessor) loadProcessorFromXML(processorElement, null,
 					PROCESSOR_TAG);
 		} catch (Exception ex) {
 			ex.printStackTrace();
