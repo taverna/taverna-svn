@@ -1,6 +1,6 @@
 package net.sf.taverna.service.rest.client;
 
-import net.sf.taverna.service.xml.Linked;
+import net.sf.taverna.service.linked.xml.Linked;
 
 import org.restlet.data.Reference;
 
