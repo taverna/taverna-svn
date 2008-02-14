@@ -2,6 +2,8 @@ package net.sf.taverna.t2.partition;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,25 +30,21 @@ import net.sf.taverna.t2.partition.ui.TableTreeNodeRenderer;
 public class PartitionTestApplication {
 
 	public static void main(String[] args) throws InterruptedException {
-		 try {
-			    // Set System L&F
-		        UIManager.setLookAndFeel(
-		            UIManager.getSystemLookAndFeelClassName());
-		    } 
-		    catch (UnsupportedLookAndFeelException e) {
-		       // handle exception
-		    }
-		    catch (ClassNotFoundException e) {
-		       // handle exception
-		    }
-		    catch (InstantiationException e) {
-		       // handle exception
-		    }
-		    catch (IllegalAccessException e) {
-		       // handle exception
-		    }
+		try {
+			// Set System L&F
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			//
+		}
 
 		JFrame frame = new JFrame("Partition test");
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+
+		});
 		final PropertyExtractorRegistry reg = new ExampleExtractorRegistry();
 		RootPartition<ExampleItem> partition = new RootPartition<ExampleItem>(
 				getAlgorithms(), reg);
@@ -131,7 +129,7 @@ public class PartitionTestApplication {
 				});
 
 		frame.getContentPane().add(new JScrollPane(partitionTree));
-		frame.setSize(400,200);
+		frame.setSize(400, 200);
 		frame.setVisible(true);
 		for (ExampleItem item : exampleItems) {
 			Thread.sleep(1000);

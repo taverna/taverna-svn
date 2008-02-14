@@ -6,13 +6,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.plaf.TreeUI;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
@@ -25,7 +29,7 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 	// The difference in indentation between a node and its child nodes, there
 	// isn't an easy way to get this other than constructing a JTree and
 	// measuring it - you'd think it would be a property of TreeUI but
-	// apparently not. 20 is a blatant guess for testing purposes!
+	// apparently not.
 	private static int perNodeOffset = -1;
 
 	// Use this to rubber stamp the original node renderer in before rendering
@@ -43,11 +47,72 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 	// Number of pixels to leave around the label rendered into the table cells
 	private int cellPadding = 4;
 
-	public Component getTreeCellRendererComponent(JTree tree,
-			final Object value, boolean selected, boolean expanded,
-			boolean leaf, final int row, boolean hasFocus) {
+	// Drawing borders?
+	private boolean drawingBorders = true;
+
+	// The number of pixels by which the height of the header is reduced
+	// compared to the row height, this leaves a small border above the header
+	// and separates it from the last row of the table above, if any.
+	private int headerTopPad = 2;
+
+	// The proportion of colour : black or colour : white used to create the
+	// darker or lighter shades is blendFactor : 1
+	private int blendFactor = 2;
+
+	/**
+	 * The blend factor determines how strong the colour component is in the
+	 * shadow and highlight colours used in the bevelled boxes, the ratio of
+	 * black / white to colour is 1 : blendFactor
+	 * 
+	 * @param blendFactor
+	 */
+	public void setBlendFactor(int blendFactor) {
+		this.blendFactor = blendFactor;
+	}
+
+	/**
+	 * Set whether the renderer will draw borders around the table cells - if
+	 * this is false the table still has the bevelled edges of the cell painters
+	 * so will still look semi-bordered. Defaults to true if not otherwise set.
+	 * 
+	 * @param drawingBorders
+	 */
+	public void setDrawBorders(boolean drawingBorders) {
+		this.drawingBorders = drawingBorders;
+	}
+
+	/**
+	 * Override and implement to get the list of columns for a given partition
+	 * node - currently assumes all partitions use the same column structure
+	 * which I need to fix so it doesn't take a partition as argument (yet).
+	 * 
+	 * @return an array of column specifications used to drive the renderer
+	 */
+	public abstract TableTreeNodeColumn[] getColumns();
+
+	/**
+	 * Construct a new TableTreeNodeRenderer
+	 * 
+	 * @param nodeRenderer
+	 *            The inner renderer used to render the node labels
+	 * @param nodeWidth
+	 *            Width of the cell space into which the node label is rendered
+	 *            in the table header and row nodes
+	 */
+	public TableTreeNodeRenderer(TreeCellRenderer nodeRenderer, int nodeWidth) {
+		super();
+		this.nodeRenderer = nodeRenderer;
+		this.nodeWidth = nodeWidth;
+	}
+
+	/**
+	 * Do the magic!
+	 */
+	public Component getTreeCellRendererComponent(final JTree tree,
+			final Object value, final boolean selected, final boolean expanded,
+			final boolean leaf, final int row, final boolean hasFocus) {
 		final Component nodeLabel = nodeRenderer.getTreeCellRendererComponent(
-				tree, value, selected, expanded, leaf, row, hasFocus);
+				tree, value, false, expanded, leaf, row, false);
 		final int nodeLabelHeight = (int) nodeLabel.getPreferredSize()
 				.getHeight();
 		if (leaf) {
@@ -68,74 +133,59 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 
 				@Override
 				protected void paintComponent(Graphics g) {
+
 					Graphics2D g2d = (Graphics2D) g.create();
+					AffineTransform originalTransform = g2d.getTransform();
 					// Enable anti-aliasing for the curved lines
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 							RenderingHints.VALUE_ANTIALIAS_ON);
 
-					GeneralPath path = new GeneralPath();
-					path.moveTo(0, 0);
-					path.lineTo(0, getHeight() - 1);
-					path.lineTo(nodeWidth + labelToTablePad, getHeight() - 1);
-					path.lineTo(nodeWidth + labelToTablePad, 0);
-					path.lineTo(0, 0);
-					g2d.setPaint(Color.white);
-					g2d.fill(path);
+					// This method should paint a bevelled container for the
+					// original label but it doesn't really work terribly well
+					// as we can't ensure that the original label is actually
+					// honouring any opaque flags.
+					if (drawingBorders) {
+						paintRectangleWithBevel(g2d, nodeWidth
+								+ labelToTablePad, getHeight(), Color.white);
+					}
 
-					nodeLabel
-							.setSize(new Dimension(nodeWidth, nodeLabelHeight));
-					nodeLabel.setBackground(new Color(200, 200, 200));
+					// Paint original node label
+					nodeLabel.setSize(new Dimension(
+							nodeWidth - cellPadding * 2, getHeight()
+									- (drawingBorders ? 2 : 1)));
+					g2d.translate(cellPadding, 0);
 					nodeLabel.paint(g2d);
+					g2d.translate(-cellPadding, 0);
 
-					path = new GeneralPath();
-					path.moveTo(1, 0);
-					path.lineTo(1, getHeight() - 2);
-					path.lineTo(nodeWidth + labelToTablePad - 1,
-							getHeight() - 2);
-					g2d.setPaint(new Color(210, 210, 210));
-					g2d.draw(path);
-
-					path = new GeneralPath();
-					path.moveTo(0, 0);
-					path.lineTo(0, getHeight() - 1);
-					path.lineTo(nodeWidth + labelToTablePad, getHeight() - 1);
-					g2d.setPaint(Color.black);
-					g2d.draw(path);
+					if (drawingBorders) {
+						paintRectangleBorder(g2d, nodeWidth + labelToTablePad,
+								getHeight(), 0, 0, 1, 1, Color.black);
+					}
 
 					g2d.translate(nodeWidth + labelToTablePad, 0);
 					boolean first = true;
 					for (TableTreeNodeColumn column : getColumns()) {
 
-						g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
-								BasicStroke.JOIN_MITER));
-
-						path = new GeneralPath();
-						path.moveTo(0, 0);
-						path.lineTo(0, getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1,
-								getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1, 0);
-						path.lineTo(0, 0);
-						Color fillColor = column.getColour().brighter();
-						if ((row & 1) == 1) {
-							fillColor = new Color((fillColor.getRed() + column
-									.getColour().getRed()) / 2,
-									(fillColor.getGreen() + column.getColour()
-											.getGreen()) / 2, (fillColor
+						Color fillColour = column.getColour().brighter();
+						Object parentNode = tree.getPathForRow(row)
+								.getParentPath().getLastPathComponent();
+						int indexInParent = tree.getModel().getIndexOfChild(
+								parentNode, value);
+						if ((indexInParent & 1) == 1) {
+							fillColour = new Color(
+									(fillColour.getRed() + column.getColour()
+											.getRed()) / 2, (fillColour
+											.getGreen() + column.getColour()
+											.getGreen()) / 2, (fillColour
 											.getBlue() + column.getColour()
 											.getBlue()) / 2);
 						}
-						g2d.setPaint(fillColor);
-						g2d.fill(path);
 
-						path = new GeneralPath();
-						g2d.setPaint(fillColor.brighter());
-						path.moveTo(0, 0);
-						path.lineTo(column.getColumnWidth() - 2, 0);
-						path.lineTo(column.getColumnWidth() - 2,
-								getHeight() - 1);
-						g2d.draw(path);
+						// Paint background and bevel
+						paintRectangleWithBevel(g2d, column.getColumnWidth(),
+								getHeight(), fillColour);
 
+						// Paint cell component
 						Component cellComponent = column.getCellRenderer(value);
 						cellComponent.setSize(new Dimension(column
 								.getColumnWidth()
@@ -144,23 +194,23 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 						cellComponent.paint(g2d);
 						g2d.translate(-cellPadding, 0);
 
-						path = new GeneralPath();
-						if (first) {
-							path.moveTo(0, 0);
-							path.lineTo(0, getHeight() - 1);
-						} else {
-							path.moveTo(0, getHeight() - 1);
+						// Draw border
+						if (drawingBorders) {
+							paintRectangleBorder(g2d, column.getColumnWidth(),
+									getHeight(), 0, 1, 1, first ? 1 : 0,
+									Color.black);
 						}
-						path.lineTo(column.getColumnWidth() - 1,
-								getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1, 0);
-
-						g2d.setPaint(Color.black);
-						g2d.draw(path);
-
 						first = false;
 
 						g2d.translate(column.getColumnWidth(), 0);
+
+					}
+					if (selected) {
+						g2d.setTransform(originalTransform);
+						g2d.translate(2, 0);
+						paintRectangleWithHighlightColour(g2d, getWidth()
+								- (drawingBorders ? 4 : 2), getHeight()
+								- (drawingBorders ? 2 : 0));
 					}
 				}
 			};
@@ -170,17 +220,17 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 			// child nodes and the first one is a leaf (we assume this means
 			// they all are!) then we render the table header after the label.
 			if (!expanded) {
-				return nodeLabel;
+				return getLabelWithHighlight(nodeLabel, selected);
 			}
 			// Expanded so do the model check...
 			TreeModel model = tree.getModel();
 			int childCount = model.getChildCount(value);
 			if (childCount == 0) {
-				return nodeLabel;
+				return getLabelWithHighlight(nodeLabel, selected);
 			}
 			Object childNode = model.getChild(value, 0);
 			if (!model.isLeaf(childNode)) {
-				return nodeLabel;
+				return getLabelWithHighlight(nodeLabel, selected);
 			}
 			getPerNodeIndentation(tree, row);
 			// Got to here so we need to render a table header.
@@ -193,13 +243,14 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 					for (TableTreeNodeColumn column : getColumns()) {
 						width += column.getColumnWidth();
 					}
-					return new Dimension(width, (int) nodeLabel
-							.getPreferredSize().getHeight());
+					return new Dimension(width, nodeLabelHeight);
 				}
 
 				@Override
 				protected void paintComponent(Graphics g) {
+
 					Graphics2D g2d = (Graphics2D) g.create();
+					AffineTransform originalTransform = g2d.getTransform();
 					// Enable anti-aliasing for the curved lines
 					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 							RenderingHints.VALUE_ANTIALIAS_ON);
@@ -209,74 +260,60 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 							getHeight()));
 					nodeLabel.paint(g2d);
 
-					GeneralPath path = new GeneralPath();
-					path.moveTo(perNodeOffset, getHeight() - 1);
-					path.lineTo(perNodeOffset + nodeWidth + labelToTablePad,
-							getHeight() - 1);
-					g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
-							BasicStroke.JOIN_MITER));
-					g2d.setPaint(Color.black);
-					g2d.draw(path);
+					// Draw line under label to act as line above table row
+					// below
+					if (drawingBorders) {
+						GeneralPath path = new GeneralPath();
+						path.moveTo(perNodeOffset, getHeight() - 1);
+						path.lineTo(
+								perNodeOffset + nodeWidth + labelToTablePad,
+								getHeight() - 1);
+						g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
+								BasicStroke.JOIN_MITER));
+						g2d.setPaint(Color.black);
+						g2d.draw(path);
+					}
 
+					// Move painting origin to the start of the header row
 					g2d.translate(nodeWidth + perNodeOffset + labelToTablePad,
 							0);
+
+					// Paint columns
 					boolean first = true;
 					for (TableTreeNodeColumn column : getColumns()) {
 
-						// Fill background
-						path = new GeneralPath();
-						path.moveTo(0, 2);
-						path.lineTo(0, getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1,
-								getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1, 2);
-						path.lineTo(0, 2);
-						Color fillColor = column.getColour();
-						g2d.setPaint(fillColor);
-						g2d.fill(path);
+						// Paint header cell background with bevel
+						g2d.translate(0, headerTopPad);
+						paintRectangleWithBevel(g2d, column.getColumnWidth(),
+								getHeight() - headerTopPad, column.getColour());
 
-						// Paint background highlight
-						path = new GeneralPath();
-						g2d.setPaint(fillColor.brighter());
-						path.moveTo(0, 2);
-						path.lineTo(column.getColumnWidth() - 2, 2);
-						path.lineTo(column.getColumnWidth() - 2,
-								getHeight() - 1);
-						g2d.draw(path);
-
-						// Paing header label
+						// Paint header label
 						JLabel columnLabel = new JLabel(column.getShortName());
 						columnLabel.setSize(new Dimension(column
 								.getColumnWidth()
-								- cellPadding * 2, getHeight() - 2));
-						g2d.translate(cellPadding, 2);
+								- cellPadding * 2, getHeight() - headerTopPad));
+						g2d.translate(cellPadding, 0);
 						columnLabel.paint(g2d);
-						g2d.translate(-cellPadding, -2);
+						g2d.translate(-cellPadding, 0);
 
-						// Paint border
-						path = new GeneralPath();
-						if (first) {
-							path.moveTo(0, 1);
-							path.lineTo(0, getHeight() - 1);
-						} else {
-							path.moveTo(0, getHeight() - 1);
+						// Paint header borders
+						if (drawingBorders) {
+							paintRectangleBorder(g2d, column.getColumnWidth(),
+									getHeight() - headerTopPad, 1, 1, 1,
+									first ? 1 : 0, Color.black);
 						}
-						path.lineTo(column.getColumnWidth() - 1,
-								getHeight() - 1);
-						path.lineTo(column.getColumnWidth() - 1, 1);
-						path.lineTo(0, 1);
+						g2d.translate(0, -headerTopPad);
 						first = false;
-						g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
-								BasicStroke.JOIN_MITER));
-						g2d.draw(path);
-						g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT,
-								BasicStroke.JOIN_MITER));
-						path = new GeneralPath();
-						path.moveTo(0, getHeight() - 1);
-						path.lineTo(column.getColumnWidth(), getHeight() - 1);
-						g2d.draw(path);
 						g2d.translate(column.getColumnWidth(), 0);
 
+					}
+					if (selected) {
+						g2d.setTransform(originalTransform);
+						g2d.translate(1, headerTopPad);
+						paintRectangleWithHighlightColour(g2d, perNodeOffset
+								+ nodeWidth + labelToTablePad
+								- (drawingBorders ? 2 : 0), getHeight()
+								- (headerTopPad + 2));
 					}
 				}
 			};
@@ -285,23 +322,201 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 
 	}
 
-	public abstract TableTreeNodeColumn[] getColumns();
+	private static Component getLabelWithHighlight(final Component c,
+			boolean selected) {
+		if (!selected) {
+			return c;
+		} else {
+			return new JComponent() {
+				private static final long serialVersionUID = -9175635475959046704L;
 
-	public TableTreeNodeRenderer(TreeCellRenderer nodeRenderer, int nodeWidth) {
-		super();
-		this.nodeRenderer = nodeRenderer;
-		this.nodeWidth = nodeWidth;
+				@Override
+				public Dimension getPreferredSize() {
+					return c.getPreferredSize();
+				}
+
+				@Override
+				protected void paintComponent(Graphics g) {
+					Graphics2D g2d = (Graphics2D) g.create();
+					c.setSize(new Dimension(getWidth(), getHeight()));
+					c.paint(g2d);
+					g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+							RenderingHints.VALUE_ANTIALIAS_ON);
+					g2d.translate(1, 1);
+					paintRectangleWithHighlightColour(g2d, getWidth() - 2,
+							getHeight() - 2);
+				}
+			};
+		}
 	}
-	
+
+	private static void paintRectangleBorder(Graphics2D g2d, int width,
+			int height, int north, int east, int south, int west, Color c) {
+		Paint oldPaint = g2d.getPaint();
+		Stroke oldStroke = g2d.getStroke();
+
+		g2d.setPaint(c);
+
+		GeneralPath path;
+
+		if (north > 0) {
+			g2d.setStroke(new BasicStroke(north, BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_MITER));
+			path = new GeneralPath();
+			path.moveTo(0, north - 1);
+			path.lineTo(width - 1, north - 1);
+			g2d.draw(path);
+		}
+		if (east > 0) {
+			g2d.setStroke(new BasicStroke(east, BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_MITER));
+			path = new GeneralPath();
+			path.moveTo(width - east, 0);
+			path.lineTo(width - east, height - 1);
+			g2d.draw(path);
+		}
+		if (south > 0) {
+			g2d.setStroke(new BasicStroke(south, BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_MITER));
+			path = new GeneralPath();
+			path.moveTo(0, height - south);
+			path.lineTo(width - 1, height - south);
+			g2d.draw(path);
+		}
+		if (west > 0) {
+			g2d.setStroke(new BasicStroke(west, BasicStroke.CAP_BUTT,
+					BasicStroke.JOIN_MITER));
+			path = new GeneralPath();
+			path.moveTo(west - 1, 0);
+			path.lineTo(west - 1, height - 1);
+			g2d.draw(path);
+		}
+
+		g2d.setPaint(oldPaint);
+		g2d.setStroke(oldStroke);
+	}
+
+	/**
+	 * Paint a rectangle with the border colour set from the UIManager
+	 * 'textHighlight' property and filled with the same colour at alpha 50/255.
+	 * Paints from 0,0 to width-1,height-1 into the specified Graphics2D,
+	 * preserving the existing paint and stroke properties on exit.
+	 */
+	private static void paintRectangleWithHighlightColour(Graphics2D g2d,
+			int width, int height) {
+		GeneralPath path = new GeneralPath();
+		path.moveTo(0, 0);
+		path.lineTo(width - 1, 0);
+		path.lineTo(width - 1, height - 1);
+		path.lineTo(0, height - 1);
+		path.closePath();
+
+		Paint oldPaint = g2d.getPaint();
+		Stroke oldStroke = g2d.getStroke();
+
+		Color c = UIManager.getColor("textHighlight");
+
+		g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_BUTT,
+				BasicStroke.JOIN_MITER));
+		g2d.setPaint(c);
+		g2d.draw(path);
+
+		Color alpha = new Color(c.getRed(), c.getGreen(), c.getBlue(), 50);
+		g2d.setPaint(alpha);
+		g2d.fill(path);
+
+		g2d.setPaint(oldPaint);
+		g2d.setStroke(oldStroke);
+
+	}
+
+	/**
+	 * Paint a bevelled rectangle into the specified Graphics2D with shape from
+	 * 0,0 to width-1,height-1 using the specified colour as a base and
+	 * preserving colour and stroke in the Graphics2D
+	 */
+	private void paintRectangleWithBevel(Graphics2D g2d, int width, int height,
+			Color c) {
+		if (drawingBorders) {
+			width = width - 1;
+			height = height - 1;
+		}
+
+		GeneralPath path = new GeneralPath();
+		path.moveTo(0, 0);
+		path.lineTo(width - 1, 0);
+		path.lineTo(width - 1, height - 1);
+		path.lineTo(0, height - 1);
+		path.closePath();
+
+		Paint oldPaint = g2d.getPaint();
+		Stroke oldStroke = g2d.getStroke();
+
+		g2d.setPaint(c);
+		g2d.fill(path);
+
+		g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
+				BasicStroke.JOIN_MITER));
+
+		// Draw highlight (Northeast)
+		path = new GeneralPath();
+		path.moveTo(0, 0);
+		path.lineTo(width - 1, 0);
+		path.lineTo(width - 1, height - 1);
+		Color highlightColour = new Color((c.getRed() * blendFactor + 255)
+				/ (blendFactor + 1), (c.getGreen() * blendFactor + 255)
+				/ (blendFactor + 1), (c.getBlue() * blendFactor + 255)
+				/ (blendFactor + 1));
+		g2d.setPaint(highlightColour);
+		g2d.draw(path);
+
+		// Draw shadow (Southwest)
+		path = new GeneralPath();
+		path.moveTo(0, 0);
+		path.lineTo(0, height - 1);
+		path.lineTo(width - 1, height - 1);
+		Color shadowColour = new Color((c.getRed() * blendFactor)
+				/ (blendFactor + 1), (c.getGreen() * blendFactor)
+				/ (blendFactor + 1), (c.getBlue() * blendFactor)
+				/ (blendFactor + 1));
+		g2d.setPaint(shadowColour);
+		g2d.draw(path);
+
+		g2d.setPaint(oldPaint);
+		g2d.setStroke(oldStroke);
+
+	}
+
+	/**
+	 * The TreeUI which was used to determine the per node indentation in the
+	 * JTree for which this is a renderer. If this hasn't been set yet then this
+	 * is null.
+	 */
+	private static TreeUI cachedTreeUI = null;
+
+	/**
+	 * Use the current TreeUI to determine the indentation per-node in the tree,
+	 * this only works when the treeRow passed in is not the root as it has to
+	 * traverse up to the parent to do anything sensible. Cached and associated
+	 * with the TreeUI so in theory if the look and feel changes the UI changes
+	 * and this is re-generated within the renderer code.
+	 * 
+	 * @param tree
+	 * @param treeRow
+	 * @return
+	 */
 	private static int getPerNodeIndentation(JTree tree, int treeRow) {
-		if (perNodeOffset > 0) {
+		if (perNodeOffset > 0 && tree.getUI() == cachedTreeUI) {
 			return perNodeOffset;
 		}
 		TreeUI uiModel = tree.getUI();
+		cachedTreeUI = uiModel;
 		TreePath path = tree.getPathForRow(treeRow);
 		Rectangle nodeBounds = uiModel.getPathBounds(tree, path);
-		Rectangle parentNodeBounds = uiModel.getPathBounds(tree, path.getParentPath());
-		perNodeOffset = (int)nodeBounds.getMinX() - (int)parentNodeBounds.getMinX();
+		Rectangle parentNodeBounds = uiModel.getPathBounds(tree, path
+				.getParentPath());
+		perNodeOffset = (int) nodeBounds.getMinX()
+				- (int) parentNodeBounds.getMinX();
 		return perNodeOffset;
 	}
 
