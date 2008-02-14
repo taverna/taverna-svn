@@ -39,5 +39,10 @@ public class LiteralValuePartitionAlgorithm implements
 	public void setPropertyName(String propertyName) {
 		this.propertyName = propertyName;
 	}
+	
+	@Override
+	public String toString() {
+		return this.propertyName+"=";
+	}
 
 }

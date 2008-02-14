@@ -30,7 +30,30 @@ public class RootPartition<ItemType> extends
 	private Map<ItemType, Partition<ItemType, ?, ?>> itemToLeafPartition;
 
 	private PropertyExtractorRegistry propertyExtractorRegistry;
-	
+
+	private final SetModelChangeListener<ItemType> setChangeListener = new SetModelChangeListener<ItemType>() {
+
+		public void itemsWereAdded(Set<ItemType> newItems) {
+			for (ItemType item : newItems) {
+				addOrUpdateItem(item);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		public void itemsWereRemoved(Set<Object> itemsRemoved) {
+			for (Object item : itemsRemoved) {
+				try {
+					removeItem((ItemType) item);
+				} catch (ClassCastException cce) {
+					// Obviously wasn't the right type of item but that means it
+					// couldn't have been added in the first place so we can
+					// safely ignore this.
+				}
+			}
+		}
+
+	};
+
 	/**
 	 * Build a new empty root partition with the specified list of partition
 	 * algorithm implementations used to recursively allocate new data items to
@@ -38,11 +61,25 @@ public class RootPartition<ItemType> extends
 	 * 
 	 * @param pa
 	 */
-	public RootPartition(List<PartitionAlgorithmSPI<?>> pa, PropertyExtractorRegistry per) {
+	public RootPartition(List<PartitionAlgorithmSPI<?>> pa,
+			PropertyExtractorRegistry per) {
 		super(null, pa, null, null);
 		this.root = this;
 		this.propertyExtractorRegistry = per;
 		this.itemToLeafPartition = new HashMap<ItemType, Partition<ItemType, ?, ?>>();
+	}
+
+	/**
+	 * The root partition comes with a convenience implementation of
+	 * SetModelChangeListener which can be used to attach it to a compliant
+	 * instance of SetModel (assuming the item types match). This allows the
+	 * SetModel to act as the backing data store for the partition - as Query
+	 * and the various subset / set union operators also implement this it
+	 * provides a relatively simple mechanism to link multiple sets of data to
+	 * this partition.
+	 */
+	public SetModelChangeListener<ItemType> getSetModelChangeListener() {
+		return this.setChangeListener;
 	}
 
 	/**
@@ -100,7 +137,8 @@ public class RootPartition<ItemType> extends
 				PartitionAlgorithmSPI<?> pa = getPartitionAlgorithms().get(
 						i - 1);
 				Object existingValue = partitions.get(i).getPartitionValue();
-				Object reclassifiedValue = pa.allocate(item, getPropertyExtractorRegistry());
+				Object reclassifiedValue = pa.allocate(item,
+						getPropertyExtractorRegistry());
 				if (existingValue.equals(reclassifiedValue) == false) {
 					// Items classify differently, remove it
 					removeItem(item);
@@ -179,10 +217,18 @@ public class RootPartition<ItemType> extends
 	public Object getChild(Object parent, int index) {
 		if (parent instanceof Partition) {
 			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
-			if (index < 0 || index >= p.getChildren().size()) {
-				return null;
+			if (p.getMembers().isEmpty() == false) {
+				if (index < 0 || index >= p.getMembers().size()) {
+					return null;
+				} else {
+					return p.getMembers().get(index);
+				}
 			} else {
-				return p.getChildren().get(index);
+				if (index < 0 || index >= p.getChildren().size()) {
+					return null;
+				} else {
+					return p.getChildren().get(index);
+				}
 			}
 		}
 		return null;
@@ -192,6 +238,9 @@ public class RootPartition<ItemType> extends
 	public int getChildCount(Object parent) {
 		if (parent instanceof Partition) {
 			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
+			if (p.getMembers().isEmpty() == false) {
+				return p.getMembers().size();
+			}
 			return p.getChildren().size();
 		}
 		return 0;
@@ -207,8 +256,13 @@ public class RootPartition<ItemType> extends
 				// Parent and child must both be members of this tree structure
 				return p.getChildren().indexOf(child);
 			}
+		} else if (parent != null && child != null
+				&& parent instanceof Partition) {
+			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
+			return p.getMembers().indexOf(child);
 		}
 		return -1;
+
 	}
 
 	public Object getRoot() {
@@ -220,7 +274,7 @@ public class RootPartition<ItemType> extends
 		// No leaves at the moment as we're only considering partitions which
 		// are by definition not leaves (the items within the last partition are
 		// but at the moment we're not including them in the tree model)
-		return false;
+		return (!(node instanceof Partition));
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {

@@ -47,7 +47,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	// A subset of the parent's member set containing items which have been
 	// allocated to this partition by the parent's partition algorithm. The
 	// partition is specified by the partitionValue field.
-	private Set<ItemType> members;
+	private List<ItemType> members;
 
 	// The parent partition of which this is a subset
 	private Partition<ItemType, ?, PartitionValueType> parent;
@@ -99,7 +99,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 			List<PartitionAlgorithmSPI<?>> pa, RootPartition<ItemType> root,
 			PartitionValueType pv) {
 		this.root = root;
-		this.members = new HashSet<ItemType>();
+		this.members = new ArrayList<ItemType>();
 		this.parent = parent;
 		this.partitionValue = pv;
 		this.partitionAlgorithms = pa;
@@ -163,6 +163,17 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 		return this.partitionValue;
 	}
 
+	@Override
+	public String toString() {
+		if (getParent() != null) {
+			return this.getParent().getPartitionAlgorithms().get(0).toString()
+					+ this.partitionValue.toString() + " (" + getItemCount()
+					+ ")";
+		} else {
+			return "root partition (" + getItemCount() + ")";
+		}
+	}
+
 	/**
 	 * Return a list of Partition objects from the root (at index 0) to this
 	 * node at the final position in the list. Computes the first time then
@@ -173,6 +184,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 		if (partitionPath == null) {
 			List<Partition<ItemType, ?, ?>> al = new ArrayList<Partition<ItemType, ?, ?>>();
 			Partition<ItemType, ?, ?> activePartition = this;
+			al.add(activePartition);
 			while (activePartition.getParent() != null) {
 				al.add(0, activePartition.getParent());
 				activePartition = activePartition.getParent();
@@ -188,8 +200,8 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	 * have been classified as belonging to this leaf partition. For non-leaf
 	 * partitions it will return an empty set.
 	 */
-	public final Set<ItemType> getMembers() {
-		return Collections.unmodifiableSet(this.members);
+	public final List<ItemType> getMembers() {
+		return Collections.unmodifiableList(this.members);
 	}
 
 	/**
@@ -226,6 +238,8 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 		if (partitionAlgorithms.isEmpty()) {
 			// Allocate directly to member set, no further partitioning
 			members.add(item);
+			root.treeNodesInserted(new TreeModelEvent(this, getTreePath(),
+					new int[] { members.size() - 1 }, new Object[] { item }));
 			// Increment item count for all partitions in the partition path
 			for (Partition<ItemType, ?, ?> p : getPartitionPath()) {
 				synchronized (p) {
@@ -244,7 +258,8 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 			PartitionAlgorithmSPI<ChildPartitionValueType> pa;
 			pa = (PartitionAlgorithmSPI<ChildPartitionValueType>) partitionAlgorithms
 					.get(0);
-			ChildPartitionValueType pvalue = pa.allocate(item, root.getPropertyExtractorRegistry());
+			ChildPartitionValueType pvalue = pa.allocate(item, root
+					.getPropertyExtractorRegistry());
 			// See if there's a partition with this value already in the child
 			// partition list
 			for (Partition<ItemType, ChildPartitionValueType, ?> potentialChild : children) {
@@ -265,7 +280,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 			// the list is empty
 			if (childPartitionOrder == null || children.isEmpty()) {
 				children.add(newPartition);
-				root.treeNodesInserted(new TreeModelEvent(null, getTreePath(),
+				root.treeNodesInserted(new TreeModelEvent(this, getTreePath(),
 						new int[] { children.size() - 1 },
 						new Object[] { newPartition }));
 			} else {
@@ -276,7 +291,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 					if (childPartitionOrder.compare(pvalue,
 							existingPartitionValue) <= 0) {
 						children.add(i, newPartition);
-						root.treeNodesInserted(new TreeModelEvent(null,
+						root.treeNodesInserted(new TreeModelEvent(this,
 								getTreePath(), new int[] { i },
 								new Object[] { newPartition }));
 						foundIndex = true;
@@ -291,7 +306,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 					// the
 					// comparator)
 					children.add(newPartition);
-					root.treeNodesInserted(new TreeModelEvent(null,
+					root.treeNodesInserted(new TreeModelEvent(this,
 							getTreePath(), new int[] { children.size() - 1 },
 							new Object[] { newPartition }));
 				}
@@ -337,13 +352,17 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 		// Message the root that the node structure under this node has changed
 		// (this is a bit lazy and we could almost certainly be more clever here
 		// as the nodes have been removed and added to re-order them)
-		root.treeStructureChanged(new TreeModelEvent(null, getTreePath()));
+		root.treeStructureChanged(new TreeModelEvent(this, getTreePath()));
 	}
 
 	/**
 	 * Return a TreePath object with this node as the final entry in the path
 	 */
 	protected final synchronized TreePath getTreePath() {
+		// System.out.println("Getting path..."+this.toString());
+		// for (Partition<?,?,?> p : getPartitionPath()) {
+		// System.out.println(p.toString());
+		// }
 		return new TreePath(getPartitionPath().toArray());
 	}
 

@@ -6,9 +6,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Implementation of SetModel based on a HashSet
+ * 
+ * @author Tom Oinn
+ */
 public class HashSetModel<ItemType> extends HashSet<ItemType> implements
 		SetModel<ItemType> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5763277571663880941L;
 	// Listeners for set change events
 	private List<SetModelChangeListener<ItemType>> changeListeners;
 
@@ -36,8 +45,15 @@ public class HashSetModel<ItemType> extends HashSet<ItemType> implements
 		changeListeners.remove(listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean add(ItemType item) {
+	public synchronized void clear() {
+		notifyRemoval((Set<Object>) this);
+		super.clear();
+	}
+
+	@Override
+	public synchronized boolean add(ItemType item) {
 		if (super.add(item)) {
 			notifyAddition(Collections.singleton(item));
 			return true;
@@ -46,7 +62,7 @@ public class HashSetModel<ItemType> extends HashSet<ItemType> implements
 	}
 
 	@Override
-	public boolean remove(Object item) {
+	public synchronized boolean remove(Object item) {
 		if (super.remove(item)) {
 			notifyRemoval(Collections.singleton(item));
 			return true;

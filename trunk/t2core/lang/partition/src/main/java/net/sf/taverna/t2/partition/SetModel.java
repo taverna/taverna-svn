@@ -4,7 +4,8 @@ import java.util.Set;
 
 /**
  * Extension of the java Set interface with the addition of change listener
- * support
+ * support. Intended to be plugged into the RootPartition class so the partition
+ * is synchronized with the set membership.
  * 
  * @author Tom Oinn
  * 
