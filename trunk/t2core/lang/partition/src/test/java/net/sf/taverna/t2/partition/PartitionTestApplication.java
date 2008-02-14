@@ -29,6 +29,8 @@ import net.sf.taverna.t2.partition.ui.TableTreeNodeRenderer;
  */
 public class PartitionTestApplication {
 
+	final static PropertyExtractorRegistry reg = new ExampleExtractorRegistry();
+
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			// Set System L&F
@@ -45,88 +47,28 @@ public class PartitionTestApplication {
 			}
 
 		});
-		final PropertyExtractorRegistry reg = new ExampleExtractorRegistry();
+
 		RootPartition<ExampleItem> partition = new RootPartition<ExampleItem>(
 				getAlgorithms(), reg);
 		JTree partitionTree = new JTree(partition);
 		partitionTree.setRowHeight(24);
 		TreeCellRenderer oldRenderer = partitionTree.getCellRenderer();
-		partitionTree
-				.setCellRenderer(new TableTreeNodeRenderer(oldRenderer, 80) {
-
-					@Override
-					public TableTreeNodeColumn[] getColumns() {
-						return new TableTreeNodeColumn[] {
-								new TableTreeNodeColumn() {
-
-									public Component getCellRenderer(
-											Object value) {
-										Object propertyValue = reg
-												.getAllPropertiesFor(value)
-												.get("float");
-										if (propertyValue == null) {
-											propertyValue = "Not defined";
-										}
-										return new JLabel(propertyValue
-												.toString());
-									}
-
-									public int getColumnWidth() {
-										return 100;
-									}
-
-									public String getDescription() {
-										// TODO Auto-generated method stub
-										return "Description....";
-									}
-
-									public String getShortName() {
-										return "float";
-									}
-
-									public Color getColour() {
-										return new Color(150, 150, 210);
-									}
-
-								}, new TableTreeNodeColumn() {
-
-									public Component getCellRenderer(
-											Object value) {
-										Object propertyValue = reg
-												.getAllPropertiesFor(value)
-												.get("int");
-										if (propertyValue == null) {
-											propertyValue = "Not defined";
-										}
-										return new JLabel(propertyValue
-												.toString());
-									}
-
-									public int getColumnWidth() {
-										// TODO Auto-generated method stub
-										return 100;
-									}
-
-									public String getDescription() {
-										// TODO Auto-generated method stub
-										return "blah blah";
-									}
-
-									public String getShortName() {
-										// TODO Auto-generated method stub
-										return "int";
-									}
-
-									public Color getColour() {
-										return new Color(150, 210, 150);
-									}
-
-								}
-
-						};
-
-					}
-				});
+		TableTreeNodeRenderer ttnr = new TableTreeNodeRenderer(oldRenderer, 50) {
+			@Override
+			public TableTreeNodeColumn[] getColumns() {
+				return new TableTreeNodeColumn[] {
+						new TableTreeNodeColumnImpl("int", new Color(150, 150,
+								210),60),
+						new TableTreeNodeColumnImpl("float", new Color(150,
+								210, 150),60),
+						new TableTreeNodeColumnImpl("name", new Color(210, 150,
+								150),60) };
+			}
+		};
+		
+		ttnr.setDrawBorders(false);
+		
+		partitionTree.setCellRenderer(ttnr);
 
 		frame.getContentPane().add(new JScrollPane(partitionTree));
 		frame.setSize(400, 200);
@@ -142,6 +84,45 @@ public class PartitionTestApplication {
 			new ExampleItem("foo", 1, 2.0f), new ExampleItem("bar", 1, 2.0f),
 			new ExampleItem("foo", 4, 3.7f), new ExampleItem("foo", 3, 2.0f),
 			new ExampleItem("bar", 1, 3.5f), new ExampleItem("bar", 1, 7.5f) };
+
+	static class TableTreeNodeColumnImpl implements TableTreeNodeColumn {
+
+		private String propertyName;
+		private Color colour;
+		private int columnWidth;
+
+		public TableTreeNodeColumnImpl(String propertyName, Color colour, int width) {
+			this.propertyName = propertyName;
+			this.colour = colour;
+			this.columnWidth = width;
+		}
+
+		public Component getCellRenderer(Object value) {
+			Object propertyValue = reg.getAllPropertiesFor(value).get(
+					propertyName);
+			if (propertyValue == null) {
+				propertyValue = "Not defined";
+			}
+			return new JLabel(propertyValue.toString());
+		}
+
+		public Color getColour() {
+			return this.colour;
+		}
+
+		public int getColumnWidth() {
+			return columnWidth;
+		}
+
+		public String getDescription() {
+			return "A description...";
+		}
+
+		public String getShortName() {
+			return propertyName;
+		}
+
+	}
 
 	static List<PartitionAlgorithmSPI<?>> getAlgorithms() {
 		List<PartitionAlgorithmSPI<?>> paList = new ArrayList<PartitionAlgorithmSPI<?>>();

@@ -168,7 +168,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 					+ this.partitionValue.toString() + " (" + getItemCount()
 					+ ")";
 		} else {
-			return "root partition (" + getItemCount() + ")";
+			return "Everything (" + getItemCount() + ")";
 		}
 	}
 
