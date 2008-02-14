@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 17:07:36 $
+ * Last modified on   $Date: 2008-02-14 07:51:13 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -216,8 +216,12 @@ public class WSDLSOAPInvoker {
 				Boolean.FALSE);
 		result
 				.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-		if (use.equalsIgnoreCase("literal")) {
+		
+		if (parser.getSOAPActionURI(operationName)!=null) {
 			result.setSOAPActionURI(parser.getSOAPActionURI(operationName));
+		}
+		
+		if (use.equalsIgnoreCase("literal")) {
 			result.setEncodingStyle(null);
 		}
 
