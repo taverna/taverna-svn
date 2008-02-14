@@ -170,6 +170,7 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	}
 	
 	@Test
+	//see TAV-721
 	public void testTranslateAndValidateWithMerge() throws Exception {
 		Dataflow dataflow = translateScuflFile("merge_lists_workflow.xml");
 		
