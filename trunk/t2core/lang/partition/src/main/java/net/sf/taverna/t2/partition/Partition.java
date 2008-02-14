@@ -3,9 +3,7 @@ package net.sf.taverna.t2.partition;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreePath;
@@ -244,8 +242,10 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 			for (Partition<ItemType, ?, ?> p : getPartitionPath()) {
 				synchronized (p) {
 					p.itemCount++;
+					root.treeNodesChanged(new TreeModelEvent(this, p.getTreePath()));
 				}
 			}
+			
 			// Cache the storage of this item to this partition in the root
 			// partition for more efficient removal if required (saves having to
 			// search the entire partition tree, although that wouldn't be too

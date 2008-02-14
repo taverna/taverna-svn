@@ -188,9 +188,17 @@ public class RootPartition<ItemType> extends
 						Partition<ItemType, ?, ?> parent = p.getParent();
 						int indexInParent = getIndexOfChild(parent, p);
 						parent.children.remove(indexInParent);
-						treeNodesRemoved(new TreeModelEvent(null, parent
+						treeNodesRemoved(new TreeModelEvent(this, parent
 								.getTreePath(), new int[] { indexInParent },
 								new Object[] { p }));
+						for (Partition<ItemType, ?, ?> parentPathElement : parent
+								.getPartitionPath()) {
+							// Notify path to root that the number of members
+							// has changed and it should update the renderers of
+							// any attached trees
+							treeNodesChanged(new TreeModelEvent(this,
+									parentPathElement.getTreePath()));
+						}
 						break;
 					}
 				}
