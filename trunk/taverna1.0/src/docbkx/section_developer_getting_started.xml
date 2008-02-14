@@ -169,7 +169,7 @@ java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.1.jar" %*</screen>
     <para>In Eclipse you can then configure a "Remote Java Application" from
     the Debug Dialog, using the port defined by the
     <emphasis>address</emphasis> setting within the connection properties
-    (8000 in the example) . You will also need add the Tavenra project from
+    (8000 in the example) . You will also need add the Taverna project from
     the Source tab.</para>
 
     <para>Once you have started Taverna using your modified startup script,
