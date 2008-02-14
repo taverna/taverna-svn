@@ -148,7 +148,6 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		inputs.add("two");
 		inputs.add("three");
 		
-		int i=0;
 		for (String input : inputs) {
 			
 			WorkflowInstanceFacade facade;
@@ -168,6 +167,17 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 			
 			assertEquals(input+"XXX", listener.getResult("output"));
 		}
+	}
+	
+	@Test
+	public void testTranslateAndValidateWithMerge() throws Exception {
+		Dataflow dataflow = translateScuflFile("merge_lists_workflow.xml");
+		
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
 	}
 }
 

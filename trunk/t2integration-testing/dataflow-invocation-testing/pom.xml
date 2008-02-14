@@ -147,6 +147,11 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-localworkers</artifactId>
+			<version>${depTaverna}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>localworker-translator</artifactId>
 			<version>${depT2core}</version>
