@@ -91,6 +91,8 @@
 		<module>drizzle-impl</module>
 		<module>cyclone-api</module>
 		<module>cyclone-impl</module>
+		<module>renderers-api</module>
+		<module>renderers-impl</module>
 		<!-- <module>persistent-store</module> -->
 	</modules>
 	<repositories>
