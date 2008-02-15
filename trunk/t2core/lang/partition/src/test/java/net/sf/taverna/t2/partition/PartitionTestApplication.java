@@ -13,9 +13,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 import net.sf.taverna.t2.partition.ui.TableTreeNodeColumn;
@@ -50,7 +53,7 @@ public class PartitionTestApplication {
 
 		RootPartition<ExampleItem> partition = new RootPartition<ExampleItem>(
 				getAlgorithms(), reg);
-		JTree partitionTree = new JTree(partition);
+		JTree partitionTree = new AlwaysOpenJTree(partition);
 		partitionTree.setRowHeight(24);
 		TreeCellRenderer oldRenderer = partitionTree.getCellRenderer();
 		TableTreeNodeRenderer ttnr = new TableTreeNodeRenderer(oldRenderer, 50) {
@@ -58,32 +61,43 @@ public class PartitionTestApplication {
 			public TableTreeNodeColumn[] getColumns() {
 				return new TableTreeNodeColumn[] {
 						new TableTreeNodeColumnImpl("int", new Color(150, 150,
-								210),60),
+								210), 60),
 						new TableTreeNodeColumnImpl("float", new Color(150,
-								210, 150),60),
+								210, 150), 60),
 						new TableTreeNodeColumnImpl("name", new Color(210, 150,
-								150),60) };
+								150), 60) };
 			}
 		};
-		
-		ttnr.setDrawBorders(false);
-		
+
+		ttnr.setBorderColour(new Color(150, 150, 150));
+
 		partitionTree.setCellRenderer(ttnr);
 
 		frame.getContentPane().add(new JScrollPane(partitionTree));
 		frame.setSize(400, 200);
 		frame.setVisible(true);
-		for (ExampleItem item : exampleItems) {
+		boolean showFrames = false;
+		while (true) {
+			ttnr.setDrawBorders(showFrames);
+			showFrames = !showFrames;
+			for (ExampleItem item : exampleItems) {
+				Thread.sleep(200);
+				partition.addOrUpdateItem(item);
+			}
 			Thread.sleep(1000);
-			partition.addOrUpdateItem(item);
+			for (ExampleItem item : exampleItems) {
+				Thread.sleep(400);
+				partition.removeItem(item);
+			}
 		}
-
 	}
 
 	static ExampleItem[] exampleItems = new ExampleItem[] {
 			new ExampleItem("foo", 1, 2.0f), new ExampleItem("bar", 1, 2.0f),
 			new ExampleItem("foo", 4, 3.7f), new ExampleItem("foo", 3, 2.0f),
-			new ExampleItem("bar", 1, 3.5f), new ExampleItem("bar", 1, 7.5f) };
+			new ExampleItem("bar", 1, 3.5f), new ExampleItem("bar", 1, 7.5f),
+			new ExampleItem("foo", 1, 2.1f), new ExampleItem("bar", 1, 2.3f),
+			new ExampleItem("foo", 4, 3.8f), new ExampleItem("foo", 3, 2.4f) };
 
 	static class TableTreeNodeColumnImpl implements TableTreeNodeColumn {
 
@@ -91,7 +105,8 @@ public class PartitionTestApplication {
 		private Color colour;
 		private int columnWidth;
 
-		public TableTreeNodeColumnImpl(String propertyName, Color colour, int width) {
+		public TableTreeNodeColumnImpl(String propertyName, Color colour,
+				int width) {
 			this.propertyName = propertyName;
 			this.colour = colour;
 			this.columnWidth = width;
@@ -174,6 +189,49 @@ public class PartitionTestApplication {
 			}
 			return properties;
 		}
+	}
+
+	static class AlwaysOpenJTree extends JTree {
+
+		private static final long serialVersionUID = -3769998854485605447L;
+
+		public AlwaysOpenJTree(TreeModel newModel) {
+			super(newModel);
+			setEditable(false);
+			setExpandsSelectedPaths(false);
+			setDragEnabled(false);
+			setScrollsOnExpand(false);
+			// setSelectionModel(SingleSelectionModel.sharedInstance());
+		}
+
+		@Override
+		public void setModel(TreeModel model) {
+			if (treeModel == model)
+				return;
+			if (treeModelListener == null)
+				treeModelListener = new TreeModelHandler() {
+					public void treeNodesInserted(final TreeModelEvent ev) {
+						if (ev.getChildren()[0] instanceof Partition == false) {
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									TreePath path = ev.getTreePath();
+									setExpandedState(path, true);
+									fireTreeExpanded(path);
+								}
+							});
+						}
+
+					}
+
+				};
+			if (model != null) {
+				model.addTreeModelListener(treeModelListener);
+			}
+			TreeModel oldValue = treeModel;
+			treeModel = model;
+			firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
+		}
+
 	}
 
 }

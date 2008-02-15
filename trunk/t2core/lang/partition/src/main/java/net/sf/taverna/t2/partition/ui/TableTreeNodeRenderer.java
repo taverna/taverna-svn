@@ -53,11 +53,22 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 	// The number of pixels by which the height of the header is reduced
 	// compared to the row height, this leaves a small border above the header
 	// and separates it from the last row of the table above, if any.
-	private int headerTopPad = 2;
+	private int headerTopPad = 4;
 
 	// The proportion of colour : black or colour : white used to create the
 	// darker or lighter shades is blendFactor : 1
 	private int blendFactor = 2;
+
+	// Colour to use to draw the table borders when they're enabled
+	private Color borderColour = Color.black;
+
+	/**
+	 * Set the colour to be used to draw the borders if they are displayed at
+	 * all. Defaults to black.
+	 */
+	public void setBorderColour(Color borderColour) {
+		this.borderColour = borderColour;
+	}
 
 	/**
 	 * The blend factor determines how strong the colour component is in the
@@ -159,7 +170,7 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 
 					if (drawingBorders) {
 						paintRectangleBorder(g2d, nodeWidth + labelToTablePad,
-								getHeight(), 0, 0, 1, 1, Color.black);
+								getHeight(), 0, 0, 1, 1, borderColour);
 					}
 
 					g2d.translate(nodeWidth + labelToTablePad, 0);
@@ -198,7 +209,7 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 						if (drawingBorders) {
 							paintRectangleBorder(g2d, column.getColumnWidth(),
 									getHeight(), 0, 1, 1, first ? 1 : 0,
-									Color.black);
+									borderColour);
 						}
 						first = false;
 
@@ -270,7 +281,7 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 								getHeight() - 1);
 						g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT,
 								BasicStroke.JOIN_MITER));
-						g2d.setPaint(Color.black);
+						g2d.setPaint(borderColour);
 						g2d.draw(path);
 					}
 
@@ -300,7 +311,7 @@ public abstract class TableTreeNodeRenderer implements TreeCellRenderer {
 						if (drawingBorders) {
 							paintRectangleBorder(g2d, column.getColumnWidth(),
 									getHeight() - headerTopPad, 1, 1, 1,
-									first ? 1 : 0, Color.black);
+									first ? 1 : 0, borderColour);
 						}
 						g2d.translate(0, -headerTopPad);
 						first = false;

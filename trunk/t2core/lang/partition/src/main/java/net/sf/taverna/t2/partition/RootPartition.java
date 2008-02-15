@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -170,6 +171,19 @@ public class RootPartition<ItemType> extends
 		Partition<ItemType, ?, ?> partition = itemToLeafPartition.get(item);
 		if (partition != null) {
 			// Remove the item from the leaf partition
+			int previousIndex = partition.getMembers().indexOf(item);
+			TreePath pathToPartition = partition.getTreePath();
+			//partition.removeMember(item);
+			for (Partition<ItemType, ?, ?> parentPathElement : partition
+					.getPartitionPath()) {
+				// Notify path to root that the number of members
+				// has changed and it should update the renderers of
+				// any attached trees
+				treeNodesChanged(new TreeModelEvent(this, parentPathElement
+						.getTreePath()));
+			}
+			treeNodesRemoved(new TreeModelEvent(this, pathToPartition,
+					new int[] { previousIndex }, new Object[] { item }));
 			partition.removeMember(item);
 			// Traverse up the partition path and decrement the item count. If
 			// any item count becomes zero we mark this as a partition to
@@ -191,14 +205,7 @@ public class RootPartition<ItemType> extends
 						treeNodesRemoved(new TreeModelEvent(this, parent
 								.getTreePath(), new int[] { indexInParent },
 								new Object[] { p }));
-						for (Partition<ItemType, ?, ?> parentPathElement : parent
-								.getPartitionPath()) {
-							// Notify path to root that the number of members
-							// has changed and it should update the renderers of
-							// any attached trees
-							treeNodesChanged(new TreeModelEvent(this,
-									parentPathElement.getTreePath()));
-						}
+
 						break;
 					}
 				}
@@ -222,7 +229,7 @@ public class RootPartition<ItemType> extends
 	private List<TreeModelListener> treeListeners = new ArrayList<TreeModelListener>();
 
 	@SuppressWarnings("unchecked")
-	public Object getChild(Object parent, int index) {
+	public synchronized Object getChild(Object parent, int index) {
 		if (parent instanceof Partition) {
 			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
 			if (p.getMembers().isEmpty() == false) {
@@ -243,7 +250,7 @@ public class RootPartition<ItemType> extends
 	}
 
 	@SuppressWarnings("unchecked")
-	public int getChildCount(Object parent) {
+	public synchronized int getChildCount(Object parent) {
 		if (parent instanceof Partition) {
 			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
 			if (p.getMembers().isEmpty() == false) {
@@ -255,7 +262,7 @@ public class RootPartition<ItemType> extends
 	}
 
 	@SuppressWarnings("unchecked")
-	public int getIndexOfChild(Object parent, Object child) {
+	public synchronized int getIndexOfChild(Object parent, Object child) {
 		if (parent != null && child != null && parent instanceof Partition
 				&& child instanceof Partition) {
 			Partition<ItemType, ?, ?> p = (Partition<ItemType, ?, ?>) parent;
@@ -304,32 +311,52 @@ public class RootPartition<ItemType> extends
 	// Tree event forwarding helper methods used by Partition //
 	// -------------------------------------------------------//
 
-	void treeNodesChanged(TreeModelEvent e) {
-		for (TreeModelListener listener : new ArrayList<TreeModelListener>(
-				treeListeners)) {
-			listener.treeNodesChanged(e);
-		}
+	void treeNodesChanged(final TreeModelEvent e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
+						treeListeners)) {
+					listener.treeNodesChanged(e);
+				}
+			}
+		});
 	}
 
-	void treeNodesInserted(TreeModelEvent e) {
-		for (TreeModelListener listener : new ArrayList<TreeModelListener>(
-				treeListeners)) {
-			listener.treeNodesInserted(e);
-		}
+	void treeNodesInserted(final TreeModelEvent e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
+						treeListeners)) {
+					listener.treeNodesInserted(e);
+				}
+			}
+		});
 	}
 
-	void treeNodesRemoved(TreeModelEvent e) {
-		for (TreeModelListener listener : new ArrayList<TreeModelListener>(
-				treeListeners)) {
-			listener.treeNodesRemoved(e);
-		}
+	void treeNodesRemoved(final TreeModelEvent e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
+						treeListeners)) {
+					listener.treeNodesRemoved(e);
+				}
+			}
+		});
 	}
 
-	void treeStructureChanged(TreeModelEvent e) {
-		for (TreeModelListener listener : new ArrayList<TreeModelListener>(
-				treeListeners)) {
-			listener.treeStructureChanged(e);
-		}
+	void treeStructureChanged(final TreeModelEvent e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// TODO Auto-generated method stub
+				for (TreeModelListener listener : new ArrayList<TreeModelListener>(
+						treeListeners)) {
+					listener.treeStructureChanged(e);
+				}
+			}
+		});
 	}
 
 	public PropertyExtractorRegistry getPropertyExtractorRegistry() {
