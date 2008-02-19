@@ -23,10 +23,22 @@ public class ResultTreeNode implements MutableTreeNode {
 	private EntityIdentifier token;
 	
 	private DataFacade dataFacade;
+
+	private final String mimeType;
 	
-	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade) {
+	public EntityIdentifier getToken() {
+		return token;
+	}
+
+	public String getMimeType() {
+		return mimeType;
+	}
+
+	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade, String mimeType) {
 		this.token = token;
 		this.dataFacade = dataFacade;
+		this.mimeType = mimeType;
+		System.out.println("Mime Type: " + mimeType);
 	}
 	
 	public Enumeration<MutableTreeNode> children() {
@@ -42,9 +54,12 @@ public class ResultTreeNode implements MutableTreeNode {
 			try {
 				children.add(new DefaultMutableTreeNode(dataFacade.resolve(token, String.class)));
 			} catch (RetrievalException e) {
-				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
+				//couldn't resolve since it was a blob etc so use renderer instead
+				//maybe change icon on the tree to something that isn't folder?
+				//what about setting the icon to a thumbnail of the rendered entity?
+//				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
 			} catch (NotFoundException e) {
-				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
+//				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
 			}
 		}
 		return children.get(index);
@@ -92,6 +107,10 @@ public class ResultTreeNode implements MutableTreeNode {
 	
 	public String toString() {
 		return token.toString();
+	}
+
+	public DataFacade getDataFacade() {
+		return dataFacade;
 	}
 
 }

@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.plugin;
 
+import java.util.Map;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -25,10 +27,13 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	int depth;
 	int depthSeen = -1;
 
-	public ResultTreeModel(String portName, int depth) {
+	private final Map<String, String> mimeTypes;
+
+	public ResultTreeModel(String portName, int depth, Map<String, String> mimeTypes) {
 		super(new DefaultMutableTreeNode("Results:"));
 		this.portName = portName;
 		this.depth = depth;
+		this.mimeTypes = mimeTypes;
 	}
 
 	public void resultTokenProduced(WorkflowDataToken dataToken, String portName) {
@@ -118,8 +123,10 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 				e.printStackTrace();
 			}
 		} else {
+			String mimeType = mimeTypes.get(this.portName);
 			int childIndex = parent.getIndex(child);
-			child = new ResultTreeNode(token, dataFacade);
+			//needs changing here
+			child = new ResultTreeNode(token, dataFacade, mimeType);
 			parent.remove(childIndex);
 			parent.insert(child, childIndex);
 		}

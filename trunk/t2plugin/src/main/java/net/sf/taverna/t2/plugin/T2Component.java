@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,6 +49,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
@@ -359,7 +361,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	protected void runWorkflow(final Dataflow dataflow,
 			Map<DataflowInputPort, EntityIdentifier> entities,
 			InvocationContext context) throws EditException {
-
+		resultComponent.setContext(context);
 		// Use the empty context by default to root this facade on the monitor
 		// tree
 		facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
@@ -382,6 +384,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			}
 
 		});
+		determineOutputMimeTypes();
 		resultComponent.register(facade);
 		facade.fire();
 		if (entities != null) {
@@ -399,6 +402,15 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			}
 		}
 
+	}
+
+	private void determineOutputMimeTypes() {
+		//FIXME get mime types from annotations on DataflowOutputPorts
+		Map<String,String> mimeTypeMap = new HashMap<String,String>();
+		for (Port port:this.model.getWorkflowSinkPorts()) {
+			mimeTypeMap.put(port.getName(), port.getSyntacticType());
+		}
+		this.resultComponent.setOutputMimeTypes(mimeTypeMap);
 	}
 
 	private void enableRun(boolean enabled) {
