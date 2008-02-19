@@ -82,7 +82,9 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 						String mimeType = ((ResultTreeNode) lastSelectedPathComponent).getMimeType();
 						RendererRegistry rendererRegistry = new RendererRegistry();
 						System.out.println("Mime type for translation: " + mimeType);
-						List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(mimeType);
+						EntityIdentifier token = ((ResultTreeNode)lastSelectedPathComponent).getToken();
+						DataFacade dataFacade = new DataFacade(context.getDataManager());
+						List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(dataFacade, token, mimeType);
 						if (renderersForMimeType.isEmpty()) {
 							JOptionPane.showMessageDialog(ResultComponent.this,
 									"Unable to display for mime type " + mimeType, "Unable to render",
@@ -92,8 +94,6 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 //							JOptionPane.showMessageDialog(ResultComponent.this,
 //									"Here is some stuff for " + mimeType, "Rendering",
 //									JOptionPane.WARNING_MESSAGE);
-							EntityIdentifier token = ((ResultTreeNode)lastSelectedPathComponent).getToken();
-							DataFacade dataFacade = new DataFacade(context.getDataManager());
 							System.out.println("result time for " + token);
 //							resultRenderer.removeAll();
 //							resultRenderer.add(renderersForMimeType.get(0).getComponent(token, dataFacade));
