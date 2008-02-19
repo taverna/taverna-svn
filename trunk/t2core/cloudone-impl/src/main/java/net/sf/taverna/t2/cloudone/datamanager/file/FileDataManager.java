@@ -223,7 +223,8 @@ public class FileDataManager extends AbstractDataManager {
 		}
 
 		File parentDir = entityPath.getParentFile();
-		parentDir.mkdirs();
+		FileUtil.mkdirs(parentDir);
+		
 		if (! parentDir.isDirectory()) {
 			throw new StorageException("Could not create directory " + parentDir);
 		}

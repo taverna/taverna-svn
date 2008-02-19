@@ -48,7 +48,9 @@ import org.apache.commons.io.IOUtils;
  * @author Stian Soiland
  * 
  */
+
 public class FileBlobStore implements BlobStore {
+
 	/*
 	 * Where are the blobs stored
 	 */
@@ -80,7 +82,7 @@ public class FileBlobStore implements BlobStore {
 					+ namespace);
 		}
 		this.namespace = namespace;
-		path.mkdirs();
+		FileUtil.mkdirs(path);
 		if (!path.isDirectory()) {
 			throw new IllegalArgumentException("Invalid directory " + path);
 		}
@@ -312,7 +314,7 @@ public class FileBlobStore implements BlobStore {
 	private File parentDirectory(File typeDir, String id) {
 		String newName = id.substring(0, 2);
 		File dirs = new File(typeDir, newName);
-		dirs.mkdirs();
+		FileUtil.mkdirs(dirs);
 		if (!dirs.isDirectory()) {
 			throw new IllegalStateException("Invalid directory" + dirs);
 		}

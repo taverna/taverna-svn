@@ -42,6 +42,7 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
  */
 public interface BlobStore {
 
+	
 	/**
 	 * The key for {@link LocationalContext#getValue(String...)} to uniquely
 	 * identify a BlobStore.
