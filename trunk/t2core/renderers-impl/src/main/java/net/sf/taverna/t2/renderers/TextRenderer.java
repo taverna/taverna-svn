@@ -48,4 +48,9 @@ public class TextRenderer implements Renderer {
 		
 		return theTextArea;
 	}
+
+	public boolean canHandle(DataFacade facade,
+			EntityIdentifier entityIdentifier, String mimeType) {
+		return canHandle(mimeType);
+	}
 }

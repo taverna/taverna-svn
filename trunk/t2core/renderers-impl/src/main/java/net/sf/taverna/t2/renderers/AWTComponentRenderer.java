@@ -51,5 +51,11 @@ public class AWTComponentRenderer implements Renderer{
 		return null;
 	}
 
+	public boolean canHandle(DataFacade facade,
+			EntityIdentifier entityIdentifier, String mimeType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }

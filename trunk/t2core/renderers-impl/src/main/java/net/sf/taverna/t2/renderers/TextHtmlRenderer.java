@@ -48,4 +48,9 @@ public class TextHtmlRenderer implements Renderer
 		}
 		return null;
 	}
+
+	public boolean canHandle(DataFacade facade,
+			EntityIdentifier entityIdentifier, String mimeType) {
+		return canHandle(mimeType);
+	}
 }

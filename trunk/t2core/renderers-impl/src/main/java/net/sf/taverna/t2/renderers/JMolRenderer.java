@@ -46,11 +46,7 @@ public class JMolRenderer implements Renderer {
 			e.printStackTrace();
 		}
 		if (resolve instanceof String) {
-			if (mimeType.matches(".*chemical/x-pdb.*")
-					|| mimeType.matches(".*chemical/x-mdl-molfile.*")
-					|| mimeType.matches(".*chemical/x-cml.*")) {
-				return true;
-			}
+			return canHandle(mimeType);
 		}
 
 		return false;

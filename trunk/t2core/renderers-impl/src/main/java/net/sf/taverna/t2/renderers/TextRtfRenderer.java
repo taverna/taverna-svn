@@ -45,4 +45,9 @@ public class TextRtfRenderer implements Renderer {
 	public boolean canHandle(String mimeType) {
 		return pattern.matcher(mimeType).matches();
 	}
+
+	public boolean canHandle(DataFacade facade,
+			EntityIdentifier entityIdentifier, String mimeType) {
+		return canHandle(mimeType);
+	}
 }

@@ -68,4 +68,9 @@ public class SVGRenderer implements Renderer {
 		}
 	}
 
+	public boolean canHandle(DataFacade facade,
+			EntityIdentifier entityIdentifier, String mimeType) {
+		return canHandle(mimeType);
+	}
+
 }
