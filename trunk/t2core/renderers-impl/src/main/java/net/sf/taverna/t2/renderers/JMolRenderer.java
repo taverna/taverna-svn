@@ -22,6 +22,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * Renders using the Jmol software for chemical structures
  * 
  * @author Tom Oinn
+ * @author Ian Dunlop
  */
 public class JMolRenderer implements Renderer {
 

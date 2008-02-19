@@ -9,6 +9,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Uses the SeqVista renderer to draw an EMBL or SwissProt sequence
+ * @author Ian Dunlop
  */
 public class SeqVistaRenderer implements Renderer {
 

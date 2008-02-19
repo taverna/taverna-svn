@@ -15,6 +15,7 @@ import org.jdom.input.SAXBuilder;
  * Viewer to display XML as a tree.
  * 
  * @author Matthew Pocock
+ * @auhor Ian Dunlop
  */
 public class TextXmlRenderer implements Renderer {
 	
@@ -47,6 +48,11 @@ public class TextXmlRenderer implements Renderer {
 		} catch (NotFoundException e) {
 			// TODO not a string so throw something
 			return null;
+		}
+		try {
+			return new XMLTree(resolve);
+		} catch (Exception ex) {
+			//throw something?
 		}
 		//return as an XML tree??
 //		DataThing dataThing) throws RendererException {

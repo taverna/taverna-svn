@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
  * Last edited by $Author: iandunlop $
  * 
  * @author Mark
- * @version $Revision: 1.1 $
+ * @author Ian Dunlop
  */
 public class SVGRenderer implements Renderer {
 

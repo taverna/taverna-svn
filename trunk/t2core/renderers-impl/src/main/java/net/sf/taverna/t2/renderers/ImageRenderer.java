@@ -13,7 +13,7 @@ import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
- * 
+ * @author Matthew Pocock
  * @author Ian Dunlop
  */
 public class ImageRenderer implements Renderer
