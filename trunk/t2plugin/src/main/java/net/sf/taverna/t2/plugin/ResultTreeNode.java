@@ -24,21 +24,28 @@ public class ResultTreeNode implements MutableTreeNode {
 	
 	private DataFacade dataFacade;
 
-	private final String mimeType;
+//	private final String mimeType;
+
+	private final List<String> mimeTypes;
 	
 	public EntityIdentifier getToken() {
 		return token;
 	}
 
-	public String getMimeType() {
-		return mimeType;
+//	public String getMimeType() {
+//		return mimeType;
+//	}
+	
+	public List<String> getMimeTypes() {
+		return mimeTypes;
 	}
 
-	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade, String mimeType) {
+	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade, List<String> mimeTypes) {
 		this.token = token;
 		this.dataFacade = dataFacade;
-		this.mimeType = mimeType;
-		System.out.println("Mime Type: " + mimeType);
+		this.mimeTypes = mimeTypes;
+//		this.mimeType = mimeType;
+//		System.out.println("Mime Type: " + mimeType);
 	}
 	
 	public Enumeration<MutableTreeNode> children() {
