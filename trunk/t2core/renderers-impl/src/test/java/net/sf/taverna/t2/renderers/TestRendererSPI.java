@@ -29,7 +29,7 @@ public class TestRendererSPI {
 	@Test
 	public void getAllRenderers() {
 		RendererRegistry rendererRegistry = new RendererRegistry();
-		assertEquals(rendererRegistry.getInstances().size(), 7);
+		assertEquals(rendererRegistry.getInstances().size(), 8);
 	}
 	
 	@Test
@@ -56,6 +56,19 @@ public class TestRendererSPI {
 		assertEquals(renderersForMimeType.get(0).getClass().getSimpleName(), "TextRenderer");
 		assertEquals(renderersForMimeType.get(1).getClass().getSimpleName(), "TextTavernaWebUrlRenderer");
 		assertTrue(renderersForMimeType.get(1).canHandle("text/x-taverna-web-url.text"));
+	}
+	
+	@Test
+	public void checkJMolMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="chemical/x-pdb";
+		String jmol = "jmol";
+		EntityIdentifier entityIdentifier = facade.register(jmol);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 1);
+		assertEquals(renderersForMimeType.get(0).getClass().getSimpleName(), "JMolRenderer");
+		assertTrue(renderersForMimeType.get(0).canHandle("chemical/x-mdl-molfile"));
+		assertTrue(renderersForMimeType.get(0).canHandle("chemical/x-cml"));
 	}
 	
 	@Before
