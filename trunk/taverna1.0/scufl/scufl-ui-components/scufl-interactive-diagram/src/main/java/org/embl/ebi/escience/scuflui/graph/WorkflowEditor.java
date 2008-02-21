@@ -320,6 +320,11 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		super();
 		setModel(new ScuflGraphModel());
 
+		initialiseUI();
+
+	}
+
+	private void initialiseUI() {
 		setUI(new BasicGraphUI() {
 			protected GraphModelListener createGraphModelListener() {
 				return new GraphModelHandler() {
@@ -334,18 +339,23 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		setUpGraphLayout();
 		
 		setUpRenderers();
-
 		
+		setMarqueeHandler(new MarqueeHandler());
+		setAntiAliased(true);
+		setBendable(true);
+		setMoveable(false);
+		setSizeable(false);
+		setGridVisible(false);
+		setHighlightColor(UIManager.getColor("Tree.selectionBackground"));
+		GraphConstants.SELECTION_STROKE = new BasicStroke(1,
+				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 	}
 
 	private void setUpRenderers() {
 		WorkflowEdgeRenderer edgeRenderer = new WorkflowEdgeRenderer();
 		edgeRenderer.setTension((float) 0.6);
-
-		// FIXME: modifying static variables binds class attribute to this
-		// workflow editor instance,
-		// leaking memory. We'll try to reset these in detachModel, though.
 		EdgeView.renderer = edgeRenderer;
+		
 		VertexView.renderer = new VertexViewRenderer();
 	}
 
@@ -359,19 +369,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#attachToModel(org.embl.ebi.escience.scufl.ScuflModel)
 	 */
 	public void attachToModel(final ScuflModel model) {
-
-		setMarqueeHandler(new MarqueeHandler());
-		setAntiAliased(true);
-		setBendable(true);
-		setMoveable(false);
-		setSizeable(false);
-		setGridVisible(false);
-		setHighlightColor(UIManager.getColor("Tree.selectionBackground"));
-		GraphConstants.SELECTION_STROKE = new BasicStroke(1,
-				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-		
 		setUpEventHandlers(model);
-
 		getScuflGraphModel().attachToModel(model);
 	}
 
@@ -388,6 +386,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				// Zoom zoom
 				setScale(getScale() + (e.getWheelRotation() / 10.0));
+				getMarqueeHandler().isForceMarqueeEvent(e);
 			}
 		});
 		addMouseListener(new MouseAdapter() {
