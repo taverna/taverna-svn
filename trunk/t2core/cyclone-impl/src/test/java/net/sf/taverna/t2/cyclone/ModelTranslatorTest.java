@@ -20,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
@@ -65,14 +66,14 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
 		
 		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
+		for (TokenProcessingEntity unsatisfiedProcessor : report.getUnsatisfiedEntities()) {
 			System.out.println(unsatisfiedProcessor.getLocalName());
 		}
-		assertTrue(report.getUnsatisfiedProcessors().size() == 0);
-		for (Processor failedProcessor : report.getFailedProcessors()) {
+		assertTrue(report.getUnsatisfiedEntities().size() == 0);
+		for (TokenProcessingEntity failedProcessor : report.getFailedEntities()) {
 			System.out.println(failedProcessor.getLocalName());
 		}
-		assertTrue(report.getFailedProcessors().size() == 0);
+		assertTrue(report.getFailedEntities().size() == 0);
 		for (DataflowOutputPort unresolvedOutput : report
 				.getUnresolvedOutputs()) {
 			System.out.println(unresolvedOutput.getName());

@@ -40,6 +40,11 @@ public class EditsImpl implements Edits {
 		return new AddProcessorEdit(dataflow, processor);
 	}
 
+	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
+			Merge merge) {
+		return new AddMergeEdit(dataflow, merge);
+	}
+	
 	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
 			Activity<?> activity) {
 		// TODO Auto-generated method stub

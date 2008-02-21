@@ -9,6 +9,7 @@ import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
 public class MergeImpl implements Merge {
 
@@ -100,4 +101,33 @@ public class MergeImpl implements Merge {
 		return result;
 	}
 
+	public boolean doTypeCheck() throws IterationTypeMismatchException {
+		if (inputs.size() == 0) {
+			// Arguable, but technically a merge with no inputs is valid, it may
+			// make more sense to throw an exception here though as it has no
+			// actual meaning.
+			return true;
+		}
+		// Return false if we have unbound input ports or bound ports where the
+		// resolved depth hasn't been calculated yet
+		for (MergeInputPort ip : inputs) {
+			if (ip.getIncomingLink() == null
+					|| ip.getIncomingLink().getResolvedDepth() == -1) {
+				return false;
+			}
+		}
+		// Got all input ports, now scan for input depths
+		int inputDepth = inputs.get(0).getIncomingLink().getResolvedDepth();
+		for (MergeInputPort ip : inputs) {
+			if (ip.getIncomingLink().getResolvedDepth() != inputDepth) {
+				throw new IterationTypeMismatchException();
+			}
+		}
+		// Got to here so all the input resolved depths match, push depth+1 to
+		// all outgoing links and return true
+		for (DatalinkImpl dli : output.outgoingLinks) {
+			dli.setResolvedDepth(inputDepth+1);
+		}
+		return true;
+	}
 }

@@ -13,14 +13,17 @@ import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
 public class DummyDataflow implements Dataflow{
 
 	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();
 	public  List<DataflowOutputPort> outputPorts = new ArrayList<DataflowOutputPort>();
 	public List<Processor> processors = new ArrayList<Processor>();
+	public List<Merge> merges = new ArrayList<Merge>();
 	
 	
 	
@@ -53,6 +56,10 @@ public class DummyDataflow implements Dataflow{
 		return processors;
 	}
 
+	public List<? extends Merge> getMerges() {
+		return merges;
+	}
+	
 	public Edit<? extends Dataflow> getAddAnnotationEdit(
 			AnnotationChain newAnnotation) {
 		// TODO Auto-generated method stub
@@ -88,6 +95,11 @@ public class DummyDataflow implements Dataflow{
 	public FailureTransmitter getFailureTransmitter() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	public boolean doTypeCheck() throws IterationTypeMismatchException {
+		throw new UnsupportedOperationException("Not implemented for this class");
 	}
 
 }

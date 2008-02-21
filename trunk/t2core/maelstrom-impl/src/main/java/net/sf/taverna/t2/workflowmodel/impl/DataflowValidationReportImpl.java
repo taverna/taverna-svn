@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
-import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 
 /**
  * Simple implementation of the DataflowValidationReport interface
@@ -16,14 +16,14 @@ import net.sf.taverna.t2.workflowmodel.Processor;
  */
 public class DataflowValidationReportImpl implements DataflowValidationReport {
 
-	private List<Processor> failed = new ArrayList<Processor>();
-	private List<Processor> unsatisfied = new ArrayList<Processor>();
+	private List<TokenProcessingEntity> failed = new ArrayList<TokenProcessingEntity>();
+	private List<TokenProcessingEntity> unsatisfied = new ArrayList<TokenProcessingEntity>();
 	private List<DataflowOutputPort> unresolvedOutputs = new ArrayList<DataflowOutputPort>();
 	private boolean valid;
 
 	DataflowValidationReportImpl(boolean isValid,
-			List<Processor> failedProcessors,
-			List<Processor> unsatisfiedProcessors,
+			List<TokenProcessingEntity> failedProcessors,
+			List<TokenProcessingEntity> unsatisfiedProcessors,
 			List<DataflowOutputPort> unresolvedOutputs) {
 		this.valid = isValid;
 		this.failed = Collections.unmodifiableList(failedProcessors);
@@ -31,11 +31,11 @@ public class DataflowValidationReportImpl implements DataflowValidationReport {
 		this.unresolvedOutputs = Collections.unmodifiableList(unresolvedOutputs);
 	}
 
-	public List<? extends Processor> getFailedProcessors() {
+	public List<? extends TokenProcessingEntity> getFailedEntities() {
 		return this.failed;
 	}
 
-	public List<? extends Processor> getUnsatisfiedProcessors() {
+	public List<? extends TokenProcessingEntity> getUnsatisfiedEntities() {
 		return this.unsatisfied;
 	}
 

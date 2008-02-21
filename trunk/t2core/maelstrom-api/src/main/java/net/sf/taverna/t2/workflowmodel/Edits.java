@@ -78,6 +78,9 @@ public interface Edits {
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
 			Processor processor);
 
+	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
+			Merge processor);
+	
 	/**
 	 * Create a new processor in the specified dataflow configured as a default
 	 * Taverna 1 style activity with output and input ports matching those of

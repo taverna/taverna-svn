@@ -10,7 +10,6 @@ import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
 /**
  * A single node within the dataflow digraph, the Processor is the basic
@@ -124,16 +123,4 @@ public interface Processor extends TokenProcessingEntity, Annotated<Processor> {
 	 */
 	public List<? extends Condition> getControlledPreconditionList();
 
-	/**
-	 * When called this method configures input port filters and the
-	 * crystalizer, pushing cardinality information into outgoing datalinks.
-	 * 
-	 * @return true if the typecheck was successful or false if the check failed
-	 *         because there were preconditions missing such as unsatisfied
-	 *         input types
-	 * @throws IterationTypeMismatchException
-	 *             if the typing occurred but didn't match because of an
-	 *             iteration mismatch
-	 */
-	public boolean doTypeCheck() throws IterationTypeMismatchException;
 }

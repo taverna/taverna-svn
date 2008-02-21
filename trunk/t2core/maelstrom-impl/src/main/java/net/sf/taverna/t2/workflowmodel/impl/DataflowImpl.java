@@ -18,12 +18,15 @@ import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
+import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.NamingException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
 /**
@@ -39,6 +42,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		Dataflow {
 
 	List<ProcessorImpl> processors;
+	List<MergeImpl> merges;
 	private String name;
 	private static int nameIndex = 0;
 	private List<DataflowInputPortImpl> inputs;
@@ -81,6 +85,32 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		processors.remove(processor);
 	}
 
+	/**
+	 * Adds a processor on the DataFlow.
+	 * 
+	 * @param processor
+	 *            the ProcessorImpl to be added to the Dataflow
+	 * @return
+	 * @throws NamingException
+	 *             if a processor already exists with the same local name
+	 */
+	protected synchronized void addMerge(MergeImpl merge)
+			throws NamingException {
+		for (Merge existingMerge : merges
+				.toArray(new Merge[] {})) {
+			if (existingMerge.getLocalName().equals(
+					merge.getLocalName()))
+				throw new NamingException("There already is a merge operation named:"
+						+ merge.getLocalName());
+		}
+		merges.add(merge);
+	}
+
+	protected synchronized void removeMerge(Merge merge) {
+		merges.remove(merge);
+	}
+	
+	
 	/**
 	 * Build a new dataflow input port, the granular depth is set for the input
 	 * port so it can be copied onto the internal output port
@@ -337,22 +367,11 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		List<Datalink> result = new ArrayList<Datalink>();
 		// All processors have a set of input ports each of which has at most
 		// one incoming data link
-		for (ProcessorImpl p : processors) {
-			for (ProcessorInputPort pip : p.getInputPorts()) {
+		for (TokenProcessingEntity p : getEntities(TokenProcessingEntity.class)) {
+			for (EventHandlingInputPort pip : p.getInputPorts()) {
 				Datalink dl = pip.getIncomingLink();
 				if (dl != null) {
 					result.add(dl);
-
-					// if the source is from a Merge, then gather the merge
-					// input links
-					if (dl.getSource() instanceof MergeOutputPortImpl) {
-						MergeOutputPortImpl mergeOutput = (MergeOutputPortImpl) dl
-								.getSource();
-						for (MergeInputPort inputPort : mergeOutput.getMerge()
-								.getInputPorts()) {
-							result.add(inputPort.getIncomingLink());
-						}
-					}
 				}
 			}
 		}
@@ -372,7 +391,14 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	 * Return the list of all processors within the dataflow
 	 */
 	public synchronized List<? extends Processor> getProcessors() {
-		return Collections.unmodifiableList(this.processors);
+		return getEntities(Processor.class);
+	}
+
+	/**
+	 * Return the list of all merge operations within the dataflow
+	 */
+	public synchronized List<? extends Merge> getMerges() {
+		return getEntities(Merge.class);
 	}
 
 	/**
@@ -415,10 +441,11 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 
 		// Firstly take a copy of the processor list, we'll processors from this
 		// list as they become either failed or resolved
-		List<Processor> unresolved = new ArrayList<Processor>(getProcessors());
+		List<TokenProcessingEntity> unresolved = new ArrayList<TokenProcessingEntity>(
+				getEntities(TokenProcessingEntity.class));
 
 		// Keep a list of processors that have failed, initially empty
-		List<Processor> failed = new ArrayList<Processor>();
+		List<TokenProcessingEntity> failed = new ArrayList<TokenProcessingEntity>();
 
 		/**
 		 * Is the dataflow valid? The flow is valid if and only if both
@@ -436,17 +463,17 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 			finished = true;
 			// Keep a list of processors to remove from the unresolved list
 			// because they've been resolved properly
-			List<Processor> removeValidated = new ArrayList<Processor>();
+			List<TokenProcessingEntity> removeValidated = new ArrayList<TokenProcessingEntity>();
 			// Keep another list of those that have failed
-			List<Processor> removeFailed = new ArrayList<Processor>();
+			List<TokenProcessingEntity> removeFailed = new ArrayList<TokenProcessingEntity>();
 
-			for (Processor p : unresolved) {
+			for (TokenProcessingEntity p : unresolved) {
 				try {
 					// true = checked and valid, false = can't check, the
 					// exception means the processor was checked but was invalid
 					// for some reason
-					boolean processorValid = p.doTypeCheck();
-					if (processorValid) {
+					boolean entityValid = p.doTypeCheck();
+					if (entityValid) {
 						removeValidated.add(p);
 					}
 				} catch (IterationTypeMismatchException e) {
@@ -459,11 +486,11 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 			 * anything was removed because it validated okay then we're not
 			 * finished yet and should reset the boolean finished flag
 			 */
-			for (Processor p : removeValidated) {
+			for (TokenProcessingEntity p : removeValidated) {
 				unresolved.remove(p);
 				finished = false;
 			}
-			for (Processor p : removeFailed) {
+			for (TokenProcessingEntity p : removeFailed) {
 				unresolved.remove(p);
 				failed.add(p);
 			}
@@ -518,7 +545,8 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	public <T extends NamedWorkflowEntity> List<? extends T> getEntities(
 			Class<T> entityType) {
 		List<T> result = new ArrayList<T>();
-		filterAndAdd(getProcessors(), result, entityType);
+		filterAndAdd(processors, result, entityType);
+		filterAndAdd(merges, result, entityType);
 		return Collections.unmodifiableList(result);
 	}
 
@@ -600,8 +628,6 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	 * Called when a token with index array length zero is sent from a dataflow
 	 * output port.
 	 * 
-	 * TODO - use this to deregister from the monitor!
-	 * 
 	 * @param portName
 	 */
 	public void sentFinalToken(String portName, String owningProcess) {
@@ -654,8 +680,13 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	}
 
 	public FailureTransmitter getFailureTransmitter() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException(
+				"Not implemented for DataflowImpl yet");
+	}
+
+	public boolean doTypeCheck() throws IterationTypeMismatchException {
+		throw new UnsupportedOperationException(
+				"Not implemented for DataflowImpl yet");
 	}
 
 }

@@ -122,7 +122,7 @@ public class WorkflowModelTranslator {
 
 			translator.createProcessors(dataflow);
 
-			translator.connectDataLinks();
+			translator.connectDataLinks(dataflow);
 
 			translator.connectConditions();
 
@@ -472,7 +472,7 @@ public class WorkflowModelTranslator {
 	 * @throws EditException
 	 * @throws WorkflowTranslationException
 	 */
-	private void connectDataLinks() throws EditException,
+	private void connectDataLinks(Dataflow targetFlow) throws EditException,
 			WorkflowTranslationException {
 		for (DataConstraint dataConstraint : scuflModel.getDataConstraints()) {
 			org.embl.ebi.escience.scufl.InputPort scuflSinkPort = (org.embl.ebi.escience.scufl.InputPort) dataConstraint
@@ -512,7 +512,7 @@ public class WorkflowModelTranslator {
 							sinkPort);
 					edits.getConnectDatalinkEdit(datalink).doEdit();
 				} else {
-					addMergedDatalink(sourcePort, sinkPort);
+					addMergedDatalink(sourcePort, sinkPort, targetFlow);
 				}
 
 			} else {
@@ -530,11 +530,13 @@ public class WorkflowModelTranslator {
 	}
 
 	private void addMergedDatalink(EventForwardingOutputPort sourcePort,
-			EventHandlingInputPort sinkPort) throws EditException,
+			EventHandlingInputPort sinkPort, Dataflow targetFlow) throws EditException,
 			WorkflowTranslationException {
 		Merge merge = null;
 		if (sinkPort.getIncomingLink() == null) {
 			merge = edits.createMerge(sinkPort);
+			// Add to the dataflow
+			edits.getAddMergeEdit(targetFlow, merge).doEdit();
 		} else {
 			if (sinkPort.getIncomingLink().getSource() instanceof MergeOutputPort) {
 				merge = ((MergeOutputPort) sinkPort.getIncomingLink()

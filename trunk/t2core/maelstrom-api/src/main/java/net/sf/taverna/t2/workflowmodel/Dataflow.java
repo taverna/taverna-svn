@@ -19,12 +19,21 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 
 	/**
 	 * A Dataflow consists of a set of named Processor instances. This method
-	 * returns an unmodifiable list of these processors
+	 * returns an unmodifiable list of these processors. Equivalent to calling
+	 * getEntities(Processor.class).
 	 * 
 	 * @return list of all processors in the dataflow
 	 */
 	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<? extends Processor> getProcessors();
+
+	/**
+	 * Dataflows also contain a set of merge operations, this method returns an
+	 * unmodifiable copy of the set. Equivalent to calling
+	 * getEntities(Merge.class)
+	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
+	public List<? extends Merge> getMerges();
 
 	/**
 	 * Dataflows have a list of input ports. These are the input ports the world
@@ -102,5 +111,5 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * process after the message has been received by the listener
 	 */
 	public FailureTransmitter getFailureTransmitter();
-	
+
 }

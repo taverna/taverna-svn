@@ -22,26 +22,25 @@ public interface DataflowValidationReport {
 	public boolean isValid();
 
 	/**
-	 * The workflow will be marked as invalid if there are processors with
+	 * The workflow will be marked as invalid if there are entities with
 	 * unlinked input ports or where there are cycles causing the type checking
 	 * algorithm to give up. In these cases offending processors or any
 	 * ancestors that are affected as a knock on effect will be returned in this
 	 * list.
 	 * 
-	 * @return list of Processor instances within the Dataflow for which it is
-	 *         impossible to determine validity due to missing inputs or cyclic
-	 *         dependencies
+	 * @return list of TokenProcessingEntity instances within the Dataflow for
+	 *         which it is impossible to determine validity due to missing
+	 *         inputs or cyclic dependencies
 	 */
-	public List<? extends Processor> getUnsatisfiedProcessors();
+	public List<? extends TokenProcessingEntity> getUnsatisfiedEntities();
 
 	/**
-	 * The workflow will be marked as invalid if any processor fails to type
-	 * check.
+	 * The workflow will be marked as invalid if any entity fails to type check.
 	 * 
-	 * @return list of Processor instances within the Dataflow which caused
-	 *         explicit type check failures
+	 * @return list of TokenProcessingEntity instances within the Dataflow which
+	 *         caused explicit type check failures
 	 */
-	public List<? extends Processor> getFailedProcessors();
+	public List<? extends TokenProcessingEntity> getFailedEntities();
 
 	/**
 	 * The workflow will be marked as invalid if any of the dataflow output
