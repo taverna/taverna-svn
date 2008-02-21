@@ -71,4 +71,8 @@ public class TextTavernaWebUrlRenderer
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
 	}
+
+	public String getType() {
+		return "URL";
+	}
 }

@@ -73,4 +73,8 @@ public class SVGRenderer implements Renderer {
 		return canHandle(mimeType);
 	}
 
+	public String getType() {
+		return "SVG";
+	}
+
 }

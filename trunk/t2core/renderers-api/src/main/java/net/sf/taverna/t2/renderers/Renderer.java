@@ -14,5 +14,7 @@ public interface Renderer {
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
 			DataFacade dataFacade);
+	
+	public String getType();
 
 }

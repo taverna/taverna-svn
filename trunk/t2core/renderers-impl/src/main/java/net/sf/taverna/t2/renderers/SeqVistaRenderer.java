@@ -3,9 +3,11 @@ package net.sf.taverna.t2.renderers;
 import javax.swing.JComponent;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
-//import cht.svista.SeqVISTA;
+import cht.svista.SeqVISTA;
 
 /**
  * Uses the SeqVista renderer to draw an EMBL or SwissProt sequence
@@ -56,29 +58,40 @@ public class SeqVistaRenderer implements Renderer {
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
 			DataFacade dataFacade) {
 		//no idea what is going on here
-//		SeqVISTA vista = new SeqVISTA() {
-//			public java.awt.Dimension getPreferredSize() {
-//				return new java.awt.Dimension(100, 100);
-//			}
-//		};
-//		try {
-//			System.out.println((String) dataThing.getDataObject());
-//			System.out.println(seqType);
-//			vista.loadFromText((String) dataThing.getDataObject(), false,
-//					seqType, np);
-//			return vista;
-//		} catch (Exception ex) {
-//			RendererException re = new RendererException(
-//					"Unable to launch seqvista!");
-//			re.initCause(ex);
-//			throw re;
-//		}
+		String resolve = null;
+		try {
+			resolve = (String) dataFacade.resolve(entityIdentifier, String.class);
+		} catch (RetrievalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		SeqVISTA vista = new SeqVISTA() {
+			public java.awt.Dimension getPreferredSize() {
+				return new java.awt.Dimension(100, 100);
+			}
+		};
+		try {
+			System.out.println(resolve);
+			System.out.println(seqType);
+			vista.loadFromText(resolve, false,
+					seqType, np);
+			return vista;
+		} catch (Exception ex) {
+			//throw some sort of exception
+		}
 		return null;
 	}
 
 	public boolean canHandle(DataFacade facade,
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
+	}
+
+	public String getType() {
+		return "Seq Vista";
 	}
 
 }

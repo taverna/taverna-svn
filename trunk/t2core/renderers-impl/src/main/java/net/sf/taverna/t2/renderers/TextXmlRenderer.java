@@ -73,4 +73,9 @@ public class TextXmlRenderer implements Renderer {
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
 	}
+
+
+	public String getType() {
+		return "XML tree";
+	}
 }

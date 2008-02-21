@@ -64,4 +64,8 @@ public class ImageRenderer implements Renderer
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
 	}
+
+	public String getType() {
+		return "Image";
+	}
 }

@@ -50,4 +50,8 @@ public class TextRtfRenderer implements Renderer {
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
 	}
+
+	public String getType() {
+		return "Text/Rtf";
+	}
 }

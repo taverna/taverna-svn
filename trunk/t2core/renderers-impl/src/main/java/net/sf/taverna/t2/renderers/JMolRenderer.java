@@ -37,7 +37,7 @@ public class JMolRenderer implements Renderer {
 			EntityIdentifier entityIdentifier, String mimeType) {
 		Object resolve = null;
 		try {
-			resolve = facade.resolve(entityIdentifier);
+			resolve = facade.resolve(entityIdentifier, String.class);
 		} catch (RetrievalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,6 +73,7 @@ public class JMolRenderer implements Renderer {
 		try {
 			coordinateText = (String) dataFacade.resolve(entityIdentifier,
 					String.class);
+			System.out.println(coordinateText);
 		} catch (RetrievalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,5 +118,9 @@ public class JMolRenderer implements Renderer {
 			g.getClipBounds(rectClip);
 			viewer.renderScreenImage(g, currentSize, rectClip);
 		}
+	}
+
+	public String getType() {
+		return "JMol";
 	}
 }

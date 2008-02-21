@@ -57,5 +57,9 @@ public class AWTComponentRenderer implements Renderer{
 		return false;
 	}
 
+	public String getType() {
+		return "AWT Component";
+	}
+
 
 }

@@ -57,4 +57,9 @@ public class TextTavernaWebUrlFetcherRenderer
 			EntityIdentifier entityIdentifier, String mimeType) {
 		return canHandle(mimeType);
 	}
+
+	public String getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
  }
