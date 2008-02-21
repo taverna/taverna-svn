@@ -56,6 +56,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	protected DataflowImpl() {
 		this.name = "dataflow" + (nameIndex++);
 		this.processors = new ArrayList<ProcessorImpl>();
+		this.merges = new ArrayList<MergeImpl>();
 		this.inputs = new ArrayList<DataflowInputPortImpl>();
 		this.outputs = new ArrayList<DataflowOutputPortImpl>();
 	}
