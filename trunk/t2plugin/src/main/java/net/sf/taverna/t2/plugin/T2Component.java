@@ -58,13 +58,15 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private static final long serialVersionUID = 6964568042620234711L;
 
 	private static final Logger logger = Logger.getLogger(T2Component.class);
-	
-	static final File defaultDataManagerDir = new File(System.getProperty("taverna.home"), "t2-datamanager");
-	
+
+	static final File defaultDataManagerDir = new File(System
+			.getProperty("taverna.home"), "t2-datamanager");
+
 	public static final String DATA_STORE_PROPERTY = "dataManagerDir";
 
-	private static Preferences userPrefs = Preferences.userNodeForPackage(T2Component.class);
-	
+	private static Preferences userPrefs = Preferences
+			.userNodeForPackage(T2Component.class);
+
 	private ScuflModel model;
 
 	private JButton runButton;
@@ -80,14 +82,14 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	private CardLayout cardLayout;
 
 	private JPanel topPanel;
-	
+
 	private JTree monitorTree;
 
 	private HealthCheckReportPanel reportPanel;
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
-	
+
 	private PreferencesFrame preferencesFrame = new PreferencesFrame();
 
 	private WorkflowInstanceFacadeImpl facade;
@@ -109,7 +111,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		});
 		stopButton.setEnabled(false);
-		
+
 		preferencesButton = new JButton("Preferences");
 		preferencesButton.addActionListener(new ActionListener() {
 
@@ -118,11 +120,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 				preferencesFrame.setLocationRelativeTo(T2Component.this);
 				preferencesFrame.setVisible(true);
 			}
-			
+
 		});
-		
+
 		runStatus = new JLabel(" ");
-		runStatus.setBorder(new EmptyBorder(5,5,5,5));
+		runStatus.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		cardLayout = new CardLayout();
 		topPanel = new JPanel(cardLayout);
@@ -130,7 +132,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		monitorTree = MonitorImpl.getJTree();
 		monitorTree.setRootVisible(false);
 		MonitorImpl.enableMonitoring(true);
-		
+
 		JPanel runStatusPanel = new JPanel(new BorderLayout());
 		runStatusPanel.add(runStatus, BorderLayout.NORTH);
 		runStatusPanel.add(new JScrollPane(monitorTree), BorderLayout.CENTER);
@@ -289,8 +291,10 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 				if (child instanceof DefaultMutableTreeNode) {
 					DefaultMutableTreeNode childTreeNode = (DefaultMutableTreeNode) child;
 					if (childTreeNode.getUserObject() instanceof MonitorNode) {
-						MonitorNode monitorNode = (MonitorNode) childTreeNode.getUserObject();
-						MonitorImpl.getMonitor().deregisterNode(monitorNode.getOwningProcess());
+						MonitorNode monitorNode = (MonitorNode) childTreeNode
+								.getUserObject();
+						MonitorImpl.getMonitor().deregisterNode(
+								monitorNode.getOwningProcess());
 					}
 				}
 			}
@@ -342,11 +346,11 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	protected InvocationContext createContext() {
 		// final DataManager dataManager = new InMemoryDataManager("namespace",
 		// Collections.EMPTY_SET);
-		
-		String dataManagerStore = userPrefs
-				.get(DATA_STORE_PROPERTY, defaultDataManagerDir.getAbsolutePath());
+
+		String dataManagerStore = userPrefs.get(DATA_STORE_PROPERTY,
+				defaultDataManagerDir.getAbsolutePath());
 		File dataManagerDir = new File(dataManagerStore);
-		
+
 		final DataManager dataManager = new FileDataManager(UUID.randomUUID()
 				.toString(), Collections.EMPTY_SET, dataManagerDir);
 
@@ -379,8 +383,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 						results = 0;
 					}
 				}
-//				updateStatus("Result " + indexString(token.getIndex())
-//						+ " for port " + portName);
+				// updateStatus("Result " + indexString(token.getIndex())
+				// + " for port " + portName);
 			}
 
 		});
@@ -394,7 +398,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 				EntityIdentifier identifier = entry.getValue();
 				int[] index = new int[] {};
 				try {
-					facade.pushData(new WorkflowDataToken("", index, identifier, context), inputPort.getName());
+					facade.pushData(new WorkflowDataToken("", index,
+							identifier, context), inputPort.getName());
 				} catch (TokenOrderException e) {
 					e.printStackTrace();
 					updateStatus("Could not submit data for port " + inputPort);
@@ -405,10 +410,17 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 	}
 
 	private void determineOutputMimeTypes() {
-		//FIXME get mime types from annotations on DataflowOutputPorts
-		Map<String,String> mimeTypeMap = new HashMap<String,String>();
-		for (Port port:this.model.getWorkflowSinkPorts()) {
-			mimeTypeMap.put(port.getName(), port.getSyntacticType());
+		// FIXME get mime types from annotations on DataflowOutputPorts
+		Map<String, List<String>> mimeTypeMap = new HashMap<String, List<String>>();
+		for (Port port : this.model.getWorkflowSinkPorts()) {
+			String name2 = port.getName();
+			String syntacticType = port.getSyntacticType();
+			List<String> typeList = port.getMetadata().getMIMETypeList();
+
+			if (!typeList.contains(syntacticType)) {
+				typeList.add(syntacticType);
+			}
+			mimeTypeMap.put(name2, typeList);
 		}
 		this.resultComponent.setOutputMimeTypes(mimeTypeMap);
 	}
