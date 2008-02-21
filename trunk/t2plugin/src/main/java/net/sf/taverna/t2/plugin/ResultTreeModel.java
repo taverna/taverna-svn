@@ -1,6 +1,11 @@
 package net.sf.taverna.t2.plugin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -27,13 +32,13 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 	int depth;
 	int depthSeen = -1;
 
-	private final Map<String, String> mimeTypes;
+	private final Map<String, List<String>> mimeTypes;
 
-	public ResultTreeModel(String portName, int depth, Map<String, String> mimeTypes) {
+	public ResultTreeModel(String portName, int depth, Map<String, List<String>> mimeTypes2) {
 		super(new DefaultMutableTreeNode("Results:"));
 		this.portName = portName;
 		this.depth = depth;
-		this.mimeTypes = mimeTypes;
+		this.mimeTypes = mimeTypes2;
 	}
 
 	public void resultTokenProduced(WorkflowDataToken dataToken, String portName) {
@@ -123,10 +128,21 @@ public class ResultTreeModel extends DefaultTreeModel implements ResultListener 
 				e.printStackTrace();
 			}
 		} else {
-			String mimeType = mimeTypes.get(this.portName);
+			List<String> mimeType = mimeTypes.get(this.portName);
 			int childIndex = parent.getIndex(child);
-			//needs changing here
-			child = new ResultTreeNode(token, dataFacade, mimeType);
+			List<String> mimeTypeList = new ArrayList<String>();
+//			Set<Entry<String, String>> entrySet = mimeTypes.entrySet();
+//			Iterator<Entry<String, String>> iterator = entrySet.iterator();
+			for(String type:mimeType) {
+				System.out.println("Adding mime type to node: " + type);
+				mimeTypeList.add(type);
+			}
+//			while (iterator.hasNext()) {
+//				String value = iterator.next().getValue();
+//				System.out.println("Adding mime type to node: " + value);
+//				mimeTypeList.add(value);
+//			}
+			child = new ResultTreeNode(token, dataFacade, mimeTypeList);
 			parent.remove(childIndex);
 			parent.insert(child, childIndex);
 		}
