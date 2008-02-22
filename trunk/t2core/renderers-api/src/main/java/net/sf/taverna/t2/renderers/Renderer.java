@@ -10,10 +10,10 @@ public interface Renderer {
 	public boolean canHandle(String mimeType);
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType);
+			EntityIdentifier entityIdentifier, String mimeType) throws RendererException;
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade);
+			DataFacade dataFacade) throws RendererException;
 	
 	public String getType();
 
