@@ -28,7 +28,7 @@ public class TextRenderer implements Renderer {
 	}
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+			DataFacade dataFacade) throws RendererException {
 		JTextArea theTextArea = new JTextArea();
 		String resolve = null;
 		try {
@@ -41,16 +41,19 @@ public class TextRenderer implements Renderer {
 			// TODO not a string so break - should handle this better
 			return null;
 		}
+		try {
+			theTextArea.setText(resolve);
+			theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+		} catch (Exception e) {
+			throw new RendererException("Unable to create text renderer", e);
+		}
 
-		theTextArea.setText(resolve);
-
-		theTextArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-		
 		return theTextArea;
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 

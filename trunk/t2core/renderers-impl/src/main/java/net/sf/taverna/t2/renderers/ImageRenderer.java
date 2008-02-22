@@ -29,12 +29,8 @@ public class ImageRenderer implements Renderer
 		return pattern.matcher(mimeType).matches();
 	}
 
-	// public boolean isTerminal() {
-	// return true;
-	// }
-
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+			DataFacade dataFacade) throws RendererException {
 		Object data = null;
 		try {
 			data = dataFacade.resolve(entityIdentifier, byte[].class);
@@ -47,8 +43,12 @@ public class ImageRenderer implements Renderer
 		}
 		if (data instanceof byte[]) {
 			// JLabel or something else?
-			ImageIcon theImage = new ImageIcon((byte[]) data);
-			return new JLabel(theImage);
+			try {
+				ImageIcon theImage = new ImageIcon((byte[]) data);
+				return new JLabel(theImage);
+			} catch (Exception e) {
+				throw new RendererException("Unable to generate image", e);
+			}
 		} else if (data instanceof ImageProducer) {
 			JLabel label = new JLabel();
 			java.awt.Image image = label.createImage((ImageProducer) data);
@@ -61,7 +61,8 @@ public class ImageRenderer implements Renderer
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 

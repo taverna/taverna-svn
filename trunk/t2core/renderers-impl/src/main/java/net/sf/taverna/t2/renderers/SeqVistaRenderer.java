@@ -11,7 +11,9 @@ import cht.svista.SeqVISTA;
 
 /**
  * Uses the SeqVista renderer to draw an EMBL or SwissProt sequence
+ * 
  * @author Ian Dunlop
+ * @author anonymous from T1
  */
 public class SeqVistaRenderer implements Renderer {
 
@@ -21,11 +23,6 @@ public class SeqVistaRenderer implements Renderer {
 
 	public SeqVistaRenderer() {
 	}
-
-	// public boolean isTerminal() {
-	// return true;
-	// }
-	
 
 	public boolean canHandle(String mimeType) {
 		if (mimeType.matches(".*chemical/x-swissprot.*")) {
@@ -56,17 +53,17 @@ public class SeqVistaRenderer implements Renderer {
 	}
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
-		//no idea what is going on here
+			DataFacade dataFacade) throws RendererException {
 		String resolve = null;
 		try {
-			resolve = (String) dataFacade.resolve(entityIdentifier, String.class);
+			resolve = (String) dataFacade.resolve(entityIdentifier,
+					String.class);
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
 		SeqVISTA vista = new SeqVISTA() {
 			public java.awt.Dimension getPreferredSize() {
@@ -74,19 +71,17 @@ public class SeqVistaRenderer implements Renderer {
 			}
 		};
 		try {
-			System.out.println(resolve);
-			System.out.println(seqType);
-			vista.loadFromText(resolve, false,
-					seqType, np);
-			return vista;
-		} catch (Exception ex) {
-			//throw some sort of exception
+			vista.loadFromText(resolve, false, seqType, np);
+		} catch (Exception e) {
+			throw new RendererException(
+					"Could not create Seq Vista renderer for "
+							+ entityIdentifier, e);
 		}
-		return null;
+		return vista;
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType) throws RendererException {
 		return canHandle(mimeType);
 	}
 

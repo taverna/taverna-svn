@@ -38,17 +38,17 @@ public class SVGRenderer implements Renderer {
 	}
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+			DataFacade dataFacade) throws RendererException {
 		JSVGCanvas svgCanvas = new JSVGCanvas();
 		Object resolve = null;
 		try {
 			resolve = dataFacade.resolve(entityIdentifier);
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
 		if (resolve != null && resolve instanceof String && !resolve.equals("")) {
 			String svgContent = (String) resolve;
@@ -58,18 +58,21 @@ public class SVGRenderer implements Renderer {
 				tmpFile.deleteOnExit();
 				FileUtils.writeStringToFile(tmpFile, svgContent, "utf8");
 			} catch (IOException e) {
-				//TODO needs exception handling
-				e.printStackTrace();
+				throw new RendererException("Could not create SVG renderer", e);
 			}
-			svgCanvas.setURI(tmpFile.toURI().toASCIIString());
+			try {
+				svgCanvas.setURI(tmpFile.toURI().toASCIIString());
+			} catch (Exception e) {
+				throw new RendererException("Could not create SVG renderer", e);
+			}
 			return svgCanvas;
-		} else {
-			return null;
 		}
+		return null;
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 

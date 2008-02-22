@@ -34,16 +34,17 @@ public class JMolRenderer implements Renderer {
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		Object resolve = null;
 		try {
 			resolve = facade.resolve(entityIdentifier, String.class);
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
 		if (resolve instanceof String) {
 			return canHandle(mimeType);
@@ -67,7 +68,7 @@ public class JMolRenderer implements Renderer {
 	static final String scriptString = "select *; spacefill 0.4; wireframe 0.2; colour cpk;";
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+			DataFacade dataFacade) throws RendererException {
 		JMolPanel panel = new JMolPanel();
 		String coordinateText = null;
 		try {
@@ -75,21 +76,26 @@ public class JMolRenderer implements Renderer {
 					String.class);
 			System.out.println(coordinateText);
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
-		JmolSimpleViewer viewer = panel.getViewer();
-		viewer.openStringInline(coordinateText);
-		if (((JmolViewer) viewer).getAtomCount() > 300) {
-			viewer.evalString(proteinScriptString);
-		} else {
-			viewer.evalString(scriptString);
+		JmolSimpleViewer viewer = null;
+		try {
+			viewer = panel.getViewer();
+			viewer.openStringInline(coordinateText);
+			if (((JmolViewer) viewer).getAtomCount() > 300) {
+				viewer.evalString(proteinScriptString);
+			} else {
+				viewer.evalString(scriptString);
+			}
+		} catch (Exception e) {
+			throw new RendererException("could not create JMOL Renderer for "
+					+ entityIdentifier, e);
 		}
 		return panel;
-		// return null;
 	}
 
 	class JMolPanel extends JPanel {

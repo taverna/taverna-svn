@@ -28,18 +28,25 @@ public class TextRtfRenderer implements Renderer {
 	}
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
-		// TODO Auto-generated method stub
+			DataFacade dataFacade) throws RendererException {
 		try {
-			return new JEditorPane("text/html", (String) dataFacade.resolve(entityIdentifier, String.class));
+			JEditorPane editorPane = null;
+			String resolve = (String) dataFacade.resolve(entityIdentifier,
+					String.class);
+			try {
+				editorPane = new JEditorPane("text/html", resolve);
+			} catch (Exception e) {
+				throw new RendererException(
+						"Unable to create text/rtf renderer", e);
+			}
+			return editorPane;
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
-		return null;
 	}
 
 	public boolean canHandle(String mimeType) {
@@ -47,7 +54,8 @@ public class TextRtfRenderer implements Renderer {
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 

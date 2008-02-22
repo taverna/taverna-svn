@@ -15,16 +15,14 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * 
  * @author Ian Dunlop
  */
-public class TextHtmlRenderer implements Renderer
-{
+public class TextHtmlRenderer implements Renderer {
 	private Pattern pattern;
 
 	public TextHtmlRenderer() {
 		pattern = Pattern.compile(".*text/html.*");
 	}
 
-	public boolean canHandle(
-			String mimeType) {
+	public boolean canHandle(String mimeType) {
 		return pattern.matcher(mimeType).matches();
 	}
 
@@ -32,25 +30,33 @@ public class TextHtmlRenderer implements Renderer
 		return true;
 	}
 
-
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+			DataFacade dataFacade) throws RendererException {
 
 		try {
-			return new JEditorPane("text/html", "<pre>"
-					+ (String) dataFacade.resolve(entityIdentifier, String.class) + "</pre>");
+			String resolve = (String) dataFacade.resolve(entityIdentifier,
+					String.class);
+			JEditorPane editorPane = null;
+			try {
+				editorPane = new JEditorPane("text/html", "<pre>" + resolve
+						+ "</pre>");
+			} catch (Exception e) {
+				throw new RendererException(
+						"Unable to generate text/html renderer", e);
+			}
+			return editorPane;
 		} catch (RetrievalException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException(
+					"Could not resolve " + entityIdentifier, e);
 		} catch (NotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RendererException("Data Manager Could not find "
+					+ entityIdentifier, e);
 		}
-		return null;
 	}
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 

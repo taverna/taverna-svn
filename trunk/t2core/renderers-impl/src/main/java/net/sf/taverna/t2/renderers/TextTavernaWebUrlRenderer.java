@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.renderers;
 
-
 import java.awt.Font;
 import java.util.regex.Pattern;
 
@@ -15,42 +14,32 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * View a URL as a clickable HTML URL.
- *
+ * 
  * @author Ian Dunlop
  */
-public class TextTavernaWebUrlRenderer
-        implements Renderer
-{
-    private Pattern pattern;
+public class TextTavernaWebUrlRenderer implements Renderer {
+	private Pattern pattern;
 
-	public TextTavernaWebUrlRenderer()
-    {
-        pattern = Pattern.compile(".*text/x-taverna-web-url.*");
-    }
-
-//    public boolean isTerminal()
-//    {
-//        return true;
-//    }
-
+	public TextTavernaWebUrlRenderer() {
+		pattern = Pattern.compile(".*text/x-taverna-web-url.*");
+	}
 
 	public boolean canHandle(String mimeType) {
 		return pattern.matcher(mimeType).matches();
 	}
 
 	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
-		// TODO Auto-generated method stub
+			DataFacade dataFacade) throws RendererException {
 		{
 			Object dataObject = null;
 			try {
 				dataObject = dataFacade.resolve(entityIdentifier);
 			} catch (RetrievalException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RendererException("Could not resolve "
+						+ entityIdentifier, e);
 			} catch (NotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RendererException("Data Manager Could not find "
+						+ entityIdentifier, e);
 			}
 			try {
 				JEditorPane jep = new JEditorPane();
@@ -59,16 +48,24 @@ public class TextTavernaWebUrlRenderer
 				jep.setText("<a href=\"" + url + "\">" + url + "</a>");
 				return jep;
 			} catch (Exception ex) {
-				JTextArea theTextArea = new JTextArea();
-				theTextArea.setText((String) dataObject);
-				theTextArea.setFont(Font.getFont("Monospaced"));
+				JTextArea theTextArea = null;
+				try {
+					theTextArea = new JTextArea();
+					theTextArea.setText((String) dataObject);
+					theTextArea.setFont(Font.getFont("Monospaced"));
+				} catch (Exception e) {
+					throw new RendererException(
+							"Could not create URL renderer for "
+									+ entityIdentifier, e);
+				}
 				return theTextArea;
 			}
+		}
 	}
- }
 
 	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
+			EntityIdentifier entityIdentifier, String mimeType)
+			throws RendererException {
 		return canHandle(mimeType);
 	}
 
