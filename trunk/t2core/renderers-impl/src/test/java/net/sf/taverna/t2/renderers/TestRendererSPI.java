@@ -71,6 +71,52 @@ public class TestRendererSPI {
 		assertTrue(renderersForMimeType.get(0).canHandle("chemical/x-cml"));
 	}
 	
+	@Test
+	public void checkSeqVistaMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="chemical/x-swissprot";
+		String type = "seqvista";
+		EntityIdentifier entityIdentifier = facade.register(type);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 1);
+		assertEquals(renderersForMimeType.get(0).getClass().getSimpleName(), "SeqVistaRenderer");
+		assertTrue(renderersForMimeType.get(0).canHandle("chemical/x-embl-dl-nucleotide"));
+		assertTrue(renderersForMimeType.get(0).canHandle("chemical/x-fasta"));
+	}
+	
+	@Test
+	public void checkSVGMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="image/svg+xml";
+		String type = "SVG";
+		EntityIdentifier entityIdentifier = facade.register(type);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 2);
+		assertEquals(renderersForMimeType.get(1).getClass().getSimpleName(), "SVGRenderer");
+	}
+	
+	@Test
+	public void checkTextMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="text/text";
+		String type = "text";
+		EntityIdentifier entityIdentifier = facade.register(type);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 1);
+		assertEquals(renderersForMimeType.get(0).getClass().getSimpleName(), "TextRenderer");
+	}
+	
+	@Test
+	public void checkTextRtfMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="text/rtf";
+		String type = "textRTF";
+		EntityIdentifier entityIdentifier = facade.register(type);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 2);
+		assertEquals(renderersForMimeType.get(1).getClass().getSimpleName(), "TextRtfRenderer");
+	}
+	
 	@Before
 	public void setDataManager() {
 		// dManager = new FileDataManager("testNS",
