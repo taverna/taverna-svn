@@ -31,8 +31,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis2.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 
@@ -67,8 +67,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	public void testUnboundPortsAndADefaultValue() throws Exception {
 		Dataflow dataflow = translateScuflFile("unbound_ports_with_default.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -90,8 +90,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 	public void testErrorPropogation() throws Exception {
 		Dataflow dataflow = translateScuflFile("test_error_propagation.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -114,8 +114,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		Dataflow dataflow = translateScuflFile("wsdl_test.xml");
 		
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -138,8 +138,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		Dataflow dataflow = translateScuflFile("simple_workflow_with_input.xml");
 		
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -175,8 +175,8 @@ public class TranslateAndRunTest extends TranslatorTestHelper {
 		Dataflow dataflow = translateScuflFile("merge_lists_workflow.xml");
 		
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 	}

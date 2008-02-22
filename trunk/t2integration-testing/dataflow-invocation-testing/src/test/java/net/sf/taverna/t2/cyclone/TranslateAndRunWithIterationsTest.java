@@ -21,8 +21,8 @@ public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
 	public void testIterateListOfLists() throws Exception {
 		Dataflow dataflow = translateScuflFile("test_iterate_list_of_lists.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -42,8 +42,8 @@ public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
 	public void testIterateOverList() throws Exception {
 		Dataflow dataflow = translateScuflFile("lists_iterate.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -64,8 +64,8 @@ public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
 	public void testIterationStrategy() throws Exception {
 		Dataflow dataflow = translateScuflFile("iteration-strategy.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -84,7 +84,7 @@ public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
 		}
 		
 		assertTrue("The result should be a list",listener.getResult("out") instanceof List);
-		List list = (List)listener.getResult("out");
+		List<?> list = (List<?>)listener.getResult("out");
 		assertEquals("There should be 3 items in the list",3,list.size());
 		assertEquals("invalid output","oneXXX",list.get(0));
 		assertEquals("invalid output","twoXXX",list.get(1));

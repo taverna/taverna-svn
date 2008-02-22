@@ -23,8 +23,8 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 	public void testRunInfo() throws Exception {
 		Dataflow dataflow = translateScuflFile("run_eInfo.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -69,8 +69,8 @@ public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
 	public void testKEGGListOrganisms() throws Exception {
 		Dataflow dataflow = translateScuflFile("KEGG-list_organisms.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		

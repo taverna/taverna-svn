@@ -25,8 +25,8 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 	public void simpleNested() throws Exception {
 		Dataflow dataflow = translateScuflFile("simple-nested-test.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 		
@@ -61,8 +61,8 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 	public void lessSimpleNestedIteratesListOfLists() throws Exception {
 		Dataflow dataflow = translateScuflFile("less-simple-nested-test.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 
@@ -101,8 +101,8 @@ public class TranslateAndRunNestedTest extends TranslatorTestHelper {
 	public void lessSimpleNestedIteratesListOfLists2() throws Exception {
 		Dataflow dataflow = translateScuflFile("less-simple-nested-test2.xml");
 		DataflowValidationReport report = validateDataflow(dataflow);
-		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedProcessors().size() == 0);
-		assertTrue("Failed processors found during validation",report.getFailedProcessors().size() == 0);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
 		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
 		assertTrue("Validation failed",report.isValid());
 

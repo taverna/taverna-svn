@@ -20,7 +20,7 @@ import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
-import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
@@ -115,11 +115,11 @@ public class TranslatorTestHelper {
 
 	protected DataflowValidationReport validateDataflow(Dataflow dataflow) {
 		DataflowValidationReport report = dataflow.checkValidity();
-		for (Processor unsatisfiedProcessor : report.getUnsatisfiedProcessors()) {
-			System.out.println(unsatisfiedProcessor.getLocalName());
+		for (TokenProcessingEntity unsatisfiedEntity : report.getUnsatisfiedEntities()) {
+			System.out.println(unsatisfiedEntity.getLocalName());
 		}
-		for (Processor failedProcessor : report.getFailedProcessors()) {
-			System.out.println(failedProcessor.getLocalName());
+		for (TokenProcessingEntity failedEntity : report.getFailedEntities()) {
+			System.out.println(failedEntity.getLocalName());
 		}
 		for (DataflowOutputPort unresolvedOutput : report
 				.getUnresolvedOutputs()) {
