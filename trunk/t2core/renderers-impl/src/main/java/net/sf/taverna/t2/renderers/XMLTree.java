@@ -52,6 +52,7 @@ import org.jdom.output.XMLOutputter;
  * @author Kyle Gabhart
  * @author Tom Oinn
  * @author Kevin Glover
+ * @author Ian Dunlop
  */
 public class XMLTree extends JTree {
 	private class XMLNode extends DefaultMutableTreeNode {

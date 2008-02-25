@@ -29,7 +29,7 @@ public class TestRendererSPI {
 	@Test
 	public void getAllRenderers() {
 		RendererRegistry rendererRegistry = new RendererRegistry();
-		assertEquals(rendererRegistry.getInstances().size(), 8);
+		assertEquals(rendererRegistry.getInstances().size(), 9);
 	}
 	
 	@Test
@@ -115,6 +115,17 @@ public class TestRendererSPI {
 		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
 		assertEquals(renderersForMimeType.size(), 2);
 		assertEquals(renderersForMimeType.get(1).getClass().getSimpleName(), "TextRtfRenderer");
+	}
+	
+	@Test
+	public void checkTextXMLMimeType() throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
+		String mimeType ="text/xml";
+		String type = "textXML";
+		EntityIdentifier entityIdentifier = facade.register(type);
+		RendererRegistry rendererRegistry = new RendererRegistry();
+		List<Renderer> renderersForMimeType = rendererRegistry.getRenderersForMimeType(facade, entityIdentifier, mimeType);
+		assertEquals(renderersForMimeType.size(), 2);
+		assertEquals(renderersForMimeType.get(1).getClass().getSimpleName(), "TextXMLRenderer");
 	}
 	
 	@Before

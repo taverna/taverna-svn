@@ -17,11 +17,11 @@ import org.jdom.input.SAXBuilder;
  * @author Matthew Pocock
  * @auhor Ian Dunlop
  */
-public class TextXmlRenderer implements Renderer {
+public class TextXMLRenderer implements Renderer {
 	
 	private Pattern pattern;
 
-	public TextXmlRenderer() {
+	public TextXMLRenderer() {
 			pattern = Pattern.compile(".*text/xml.*");
 	}
 	

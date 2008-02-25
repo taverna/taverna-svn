@@ -6,3 +6,4 @@ net.sf.taverna.t2.renderers.TextTavernaWebUrlRenderer
 net.sf.taverna.t2.renderers.SVGRenderer
 net.sf.taverna.t2.renderers.JMolRenderer
 net.sf.taverna.t2.renderers.SeqVistaRenderer
+net.sf.taverna.t2.renderers.TextXMLRenderer
