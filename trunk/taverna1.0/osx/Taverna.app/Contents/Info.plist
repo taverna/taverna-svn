@@ -1,54 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
-<plist version="0.9">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
 <dict>
-	<key>CFBundleName</key>
-	<string>Taverna</string>
-	<key>CFBundleVersion</key>
-	<string>2005-12-15</string>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<string>true</string>
-	<key>CFBundleExecutable</key>
-	<string>JavaApplicationStub</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+	<key>CFBundleGetInfoString</key>
+	<string>1.5.0</string>
+	<key>CFBundleIconFile</key>
+	<string>Taverna.icns</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Taverna</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.5.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleGetInfoString</key>
-	<string>1.5.0</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleIconFile</key>
-	<string>Taverna.icns</string>
+	<key>CFBundleVersion</key>
+	<string>2005-12-15</string>
 	<key>Java</key>
 	<dict>
-        <!--key>WorkingDirectory</key>
-            <string>$JAVAROOT/</string-->
-		<key>VMOptions</key>
-            <string>-Xmx300mm</string>
-		<key>MainClass</key>
-		    <string>net.sf.taverna.tools.Bootstrap</string>
-		<key>JVMVersion</key>
-		    <string>1.5+</string>
 		<key>ClassPath</key>
-			<string>$JAVAROOT/taverna-bootstrap-1.5.0.jar</string>
+		<string>$JAVAROOT/taverna-bootstrap-1.5.0.jar</string>
+		<key>JVMVersion</key>
+		<string>1.5+</string>
+		<key>MainClass</key>
+		<string>net.sf.taverna.tools.Bootstrap</string>
 		<key>Properties</key>
 		<dict>
-            <key>java.system.class.loader</key>
-             <string>net.sf.taverna.tools.BootstrapClassLoader</string>
+			<key>apple.laf.useScreenMenuBar</key>
+			<string>true</string>
 			<key>java.protocol.handler.pkgs</key>
-			 <string>uk.ac.rdg.resc.jstyx.client</string>
-            <key>taverna.dotlocation</key>
-             <string>$APP_PACKAGE/Contents/MacOS/dot</string>
-             <!--key>taverna.osxpresent</key>
-             <string>true</string-->
-            <key>apple.laf.useScreenMenuBar</key>
-             <string>true</string>
+			<string>uk.ac.rdg.resc.jstyx.client</string>
+			<key>java.system.class.loader</key>
+			<string>net.sf.taverna.tools.BootstrapClassLoader</string>
+			<key>taverna.dotlocation</key>
+			<string>$APP_PACKAGE/Contents/MacOS/dot</string>
 		</dict>
+		<key>VMOptions</key>
+		<string>-Xmx300m</string>
 	</dict>
 </dict>
 </plist>
