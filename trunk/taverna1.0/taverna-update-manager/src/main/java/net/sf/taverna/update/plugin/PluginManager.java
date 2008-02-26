@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.32 $
+ * Revision           $Revision: 1.33 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-17 14:36:02 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-02-26 09:41:28 $
+ *               by   $Author: iandunlop $
  * Created on 23 Nov 2006
  *****************************************************************/
 package net.sf.taverna.update.plugin;
@@ -41,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -150,10 +151,11 @@ public class PluginManager implements PluginListener {
 			for (String repositoryURL : plugin.getRepositories()) {
 				try {
 					if (repository instanceof LocalRepository) {
-						//fix for TAV-684, but didn't want to change the Repository interface API.
-						((LocalRepository)repository).prependRemoteRepository(new URL(repositoryURL));
-					}
-					else {
+						// fix for TAV-684, but didn't want to change the
+						// Repository interface API.
+						((LocalRepository) repository)
+								.prependRemoteRepository(new URL(repositoryURL));
+					} else {
 						repository.addRemoteRepository(new URL(repositoryURL));
 					}
 				} catch (MalformedURLException e) {
@@ -175,9 +177,9 @@ public class PluginManager implements PluginListener {
 							plugin, plugins.indexOf(plugin)));
 				}
 			}
-			
+
 			repository.update();
-		
+
 			if (plugin.isEnabled()) {
 				enablePlugin(plugin);
 			}
@@ -243,7 +245,8 @@ public class PluginManager implements PluginListener {
 	}
 
 	public void removePlugin(Plugin plugin) {
-		//might need a pop up to warn if there are any system artifacts - restart might be required
+		// might need a pop up to warn if there are any system artifacts -
+		// restart might be required
 		if (updatedPlugins.contains(plugin))
 			updatedPlugins.remove(plugin);
 
@@ -264,9 +267,13 @@ public class PluginManager implements PluginListener {
 				profile.addArtifact(artifact);
 				if (plugin.getProfile().getSystemArtifacts().contains(artifact)) {
 					try {
-						Bootstrap.addSystemArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
+						Bootstrap
+								.addSystemArtifact(artifact.getGroupId(),
+										artifact.getArtifactId(), artifact
+												.getVersion());
 					} catch (MalformedURLException e) {
-						logger.error("Error composing url for artifact "+artifact,e);
+						logger.error("Error composing url for artifact "
+								+ artifact, e);
 					}
 				}
 			}
@@ -275,7 +282,8 @@ public class PluginManager implements PluginListener {
 	}
 
 	private void disablePlugin(Plugin plugin) {
-		//might need a pop up to warn if there are any system artifacts - restart might be required
+		// might need a pop up to warn if there are any system artifacts -
+		// restart might be required
 		if (plugins.contains(plugin)) {
 			for (Artifact artifact : plugin.getProfile().getArtifacts()) {
 				profile.removeArtifact(artifact);
@@ -367,9 +375,8 @@ public class PluginManager implements PluginListener {
 
 		if (pluginSite.getUrl() == null) {
 			logger.error("No plugin site URL" + pluginSite);
-			return plugins;			
+			return plugins;
 		}
-		
 
 		URI pluginSiteURI;
 		try {
@@ -385,6 +392,10 @@ public class PluginManager implements PluginListener {
 		int statusCode;
 		try {
 			statusCode = client.executeMethod(getPlugins);
+		} catch (UnknownHostException e) {
+			logger.warn("Could not fetch plugins from non-existing host",
+					e);
+			return plugins;
 		} catch (IOException e) {
 			logger.warn("Could not fetch plugins " + pluginsXML, e);
 			return plugins;
@@ -673,7 +684,7 @@ public class PluginManager implements PluginListener {
 		List<TavernaPluginSite> result = new ArrayList<TavernaPluginSite>();
 		String prefix = "raven.pluginsite.";
 		if (Bootstrap.properties != null) {
-			Map<Integer, String> pluginSiteMap = new TreeMap<Integer, String>(); 
+			Map<Integer, String> pluginSiteMap = new TreeMap<Integer, String>();
 			// tree map will do the sorting for us
 			for (Entry prop : Bootstrap.properties.entrySet()) {
 				String propertyName = (String) prop.getKey();
