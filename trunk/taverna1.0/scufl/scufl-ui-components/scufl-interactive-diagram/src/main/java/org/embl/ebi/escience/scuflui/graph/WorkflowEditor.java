@@ -78,7 +78,10 @@ import org.jgraph.plaf.basic.BasicGraphUI;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
+ * 
+ * @author Stuart Owen
  */
+
 public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	private final class VertexViewRenderer extends VertexRenderer {
 		// Change to non 1 value to show only part of the progress bar and
@@ -384,9 +387,10 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		});
 		addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				// Zoom zoom
-				setScale(getScale() + (e.getWheelRotation() / 10.0));
-				getMarqueeHandler().isForceMarqueeEvent(e);
+				if (!isEditable()) { // don't allow zoom for editable view - as it messes up the Marquee when drawing links between nodes
+					// Zoom zoom
+					setScale(getScale() + (e.getWheelRotation() / 10.0));
+				}
 			}
 		});
 		addMouseListener(new MouseAdapter() {
@@ -560,9 +564,6 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		if (getScuflGraphModel() != null) {
 			getScuflGraphModel().detachFromModel();
 		}
-
-//		VertexView.renderer = null;
-//		EdgeView.renderer = null;
 	}
 
 	/*

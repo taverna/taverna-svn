@@ -3,10 +3,25 @@
     <znode classname="net.sf.taverna.zaria.ZSplitPane">
       <split ratio="0.47" orientation="horizontal">
         <right>
-          <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent>
-              <name>Workflow Diagram</name>
-            </namedcomponent>
+          <znode classname="net.sf.taverna.zaria.ZTabbedPane">
+            <tabs>
+              <tab>
+                <title>Interactive</title>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent scroll="true">
+                    <name>Interactive Workflow Editor</name>
+                  </namedcomponent>
+                </znode>
+              </tab>
+              <tab>
+                <title>Graphical</title>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent scroll="true">
+                    <name>Workflow Diagram</name>
+                  </namedcomponent>
+                </znode>
+              </tab>
+            </tabs>
           </znode>
         </right>
         <left>
@@ -50,6 +65,12 @@
       <artifact>advanced-model-explorer</artifact>
       <classname>org.embl.ebi.escience.scuflui.AdvancedModelExplorerFactory</classname>
       <name>Advanced Model Explorer</name>
-    </namedcomponent>    
+    </namedcomponent>   
+    <namedcomponent>
+      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
+      <artifact>scufl-interactive-diagram</artifact>
+      <classname>org.embl.ebi.escience.scuflui.graph.WorkflowEditorFactory</classname>
+      <name>Interactive Workflow Editor</name>
+    </namedcomponent>     
   </namedcomponents>
 </basepane>

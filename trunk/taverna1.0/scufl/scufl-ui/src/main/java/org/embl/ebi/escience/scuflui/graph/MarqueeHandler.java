@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {
@@ -48,6 +48,8 @@ public class MarqueeHandler extends BasicMarqueeHandler
 		CellView view = graph.getGraphLayoutCache().getMapping(startPort, false);
 		startView = getVertexView(view);
 	}
+	
+	
 
 	/**
 	 * @param view
@@ -57,6 +59,7 @@ public class MarqueeHandler extends BasicMarqueeHandler
 	{
 		CellView temp = view;
 		while (temp != null)
+	
 		{
 			if (temp instanceof VertexView)
 			{

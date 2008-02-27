@@ -32,7 +32,6 @@
 	<!-- perspectives -->
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-design" version="1.7.0.0"/>
 	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-enact" version="1.7.0.0"/>
-	<artifact groupId="uk.org.mygrid.taverna.perspectives" artifactId="perspective-interactive-design" version="1.7.0.0"/>
 
 	<!-- workbench -->
 	<artifact groupId="uk.org.mygrid.taverna" artifactId="taverna-workbench" version="1.7.0.0"/>
