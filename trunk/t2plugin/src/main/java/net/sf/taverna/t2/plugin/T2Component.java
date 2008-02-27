@@ -217,7 +217,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 									.getInputPorts();
 							final InvocationContext context = createContext();
 							if (!inputPorts.isEmpty()) {
-								JDialog dialog = new JDialog();
+								final JDialog dialog = new JDialog();
 								InputComponent inputComp = new InputComponent(
 										inputPorts,
 										new InputComponentCallback<DataflowInputPort>() {
@@ -229,6 +229,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 											public void invoke(
 													Map<DataflowInputPort, EntityIdentifier> entities) {
 												try {
+													dialog.setVisible(false);
 													logger
 															.info("Running workflow with "
 																	+ entities);
