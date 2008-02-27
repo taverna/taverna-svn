@@ -15,6 +15,5 @@
     <module>perspective-core</module>
     <module>perspective-design</module>    
     <module>perspective-enact</module>
-    <module>perspective-interactive-design</module>
   </modules>
 </project>
