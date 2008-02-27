@@ -5,49 +5,44 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+
+import org.apache.log4j.Logger;
 
 public class ResultTreeNode implements MutableTreeNode {
 
+	@SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(ResultTreeNode.class);
+
 	private MutableTreeNode parent;
-	
+
 	private List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
-	
+
 	private EntityIdentifier token;
-	
+
 	private DataFacade dataFacade;
 
-//	private final String mimeType;
-
 	private final List<String> mimeTypes;
-	
+
 	public EntityIdentifier getToken() {
 		return token;
 	}
 
-//	public String getMimeType() {
-//		return mimeType;
-//	}
-	
 	public List<String> getMimeTypes() {
 		return mimeTypes;
 	}
 
-	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade, List<String> mimeTypes) {
+	public ResultTreeNode(EntityIdentifier token, DataFacade dataFacade,
+			List<String> mimeTypes) {
 		this.token = token;
 		this.dataFacade = dataFacade;
 		this.mimeTypes = mimeTypes;
-//		this.mimeType = mimeType;
-//		System.out.println("Mime Type: " + mimeType);
 	}
-	
+
 	public Enumeration<MutableTreeNode> children() {
 		return Collections.enumeration(children);
 	}
@@ -59,14 +54,12 @@ public class ResultTreeNode implements MutableTreeNode {
 	public TreeNode getChildAt(int index) {
 		if (children.size() == 0) {
 			try {
-				children.add(new DefaultMutableTreeNode(dataFacade.resolve(token, String.class)));
-			} catch (RetrievalException e) {
-				//couldn't resolve since it was a blob etc so use renderer instead
-				//maybe change icon on the tree to something that isn't folder?
-				//what about setting the icon to a thumbnail of the rendered entity?
-//				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
-			} catch (NotFoundException e) {
-//				children.add(new DefaultMutableTreeNode("ERROR: " + e.getMessage()));
+				// add a node underneath the 'folder' which displays the mime
+				// types and can be right clicked on.  Similar to T1 functionality
+				children.add(new ResultTreeChildNode(mimeTypes, dataFacade,
+						token));
+			} catch (Exception e) {
+
 			}
 		}
 		return children.get(index);
@@ -101,7 +94,7 @@ public class ResultTreeNode implements MutableTreeNode {
 	}
 
 	public void removeFromParent() {
-		parent.remove(this);		
+		parent.remove(this);
 	}
 
 	public void setParent(MutableTreeNode node) {
@@ -109,9 +102,9 @@ public class ResultTreeNode implements MutableTreeNode {
 	}
 
 	public void setUserObject(Object arg0) {
-		
+
 	}
-	
+
 	public String toString() {
 		return token.toString();
 	}
