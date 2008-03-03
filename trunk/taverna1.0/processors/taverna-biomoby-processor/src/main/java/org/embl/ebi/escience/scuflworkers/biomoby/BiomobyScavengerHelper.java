@@ -49,7 +49,7 @@ public class BiomobyScavengerHelper implements ScavengerHelper {
 						JOptionPane.QUESTION_MESSAGE, null, null,
 						"http://moby.ucalgary.ca/moby/MOBY-Central.pl");
 				if (baseURL != null) {
-					s.scavengingStarting("Adding BioMoby ccavenger");
+					s.scavengingStarting("Adding BioMoby scavenger");
 					try {
 						s.addScavenger(new BiomobyScavenger(baseURL));
 					} catch (ScavengerCreationException sce) {
