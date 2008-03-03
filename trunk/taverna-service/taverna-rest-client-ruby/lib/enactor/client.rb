@@ -5,6 +5,8 @@ require 'rexml/document'
 require 'net/http'
 require 'baclava/reader'
 require 'baclava/writer'
+require 'document/report'
+require 'document/data'
 
 module Enactor
 
@@ -26,6 +28,7 @@ module Enactor
         	super("Expected 201 Created when uploading #url")
     	end
 	end
+	
 	
     #Status messages that can be returned from TavernaService.get_job_status().
     #
@@ -121,7 +124,7 @@ module Enactor
     #        or deeper lists.
     #        
     #Most or all of these methods might in addition to stated exceptions also raise
-    #Net::HTTPError if anything goes wrong in communicating with the service.
+    #Net::HTTPError or InvalidResponseError if anything goes wrong in communicating with the service.
 	class Client
     
     	#Name spaces used by various XML documents.
@@ -129,7 +132,8 @@ module Enactor
 			  :xscufl => 'http://org.embl.ebi.escience/xscufl/0.1alpha',
 			  :baclava => 'http://org.embl.ebi.escience/baclava/0.1alpha',
 			  :service => 'http://taverna.sf.net/service',
-			  :xlink => 'http://www.w3.org/1999/xlink'
+			  :xlink => 'http://www.w3.org/1999/xlink',
+			  :dcterms => 'http://purl.org/dc/terms/'
 		}
 
 		#Mime types used by the rest protocol.
@@ -170,10 +174,10 @@ module Enactor
         
 		#private
 		
-		#Get the capabilities document as a REXML::Element. 
+		#Get the capabilities document as a REXML::Document 
 		#
 		#This document contains the links to the main collections of the service.
-		def get_capabilities
+		def get_capabilities_doc
 			url = URI.parse(@url)
 			request = Net::HTTP::Get.new(url.path)
 			request['Accept'] = MIME_TYPES[:rest]
@@ -181,30 +185,33 @@ module Enactor
 			response = Net::HTTP.start(url.host, url.port) {|http|
 			  http.request(request)
 			}
-			REXML::Document.new(response.body).root
+			response.value
+			REXML::Document.new(response.body)
 		end
         
 		#Get the URL for the current user's home on the server.
 		def get_user_url
-			capabilities = get_capabilities()
-			#currentUser = capabilities.elements["{#{NAMESPACES[:service]}}currentUser"]
-			current_user = capabilities.elements['currentUser']
+			capabilities_doc = get_capabilities_doc()
+			#currentUser = capabilities_doc.root.elements["{#{NAMESPACES[:service]}}currentUser"]
+			current_user = capabilities_doc.root.elements['currentUser']
 			current_user_url = current_user.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value
 			
 			url = URI.parse(current_user_url)
 			request = Net::HTTP::Get.new(url.path)
 			request['Accept'] = MIME_TYPES[:rest]
 			request.basic_auth @username, @password
-			Net::HTTP.start(url.host, url.port) {|http|
+			response = Net::HTTP.start(url.host, url.port) {|http|
 				http.request(request)
-			}.header['Location']
+			}
+			response.error! unless response.kind_of?(Net::HTTPSuccess) or response.kind_of?(Net::HTTPRedirection)
+			response.header['Location']
 		end
  
-		#Get the user document as an REXML::Element object. 
+		#Get the user document as an REXML::Document object. 
 		#
 		#This document contains the links to the user owned collections, 
 		#such as where to upload workflows and jobs.
-		def get_user
+		def get_user_doc
 			url = URI.parse(get_user_url())
 			request = Net::HTTP::Get.new(url.path)
 			request['Accept'] = MIME_TYPES[:rest]
@@ -212,17 +219,18 @@ module Enactor
 			response = Net::HTTP.start(url.host, url.port) {|http|
 				http.request(request)
 			}
-			REXML::Document.new(response.body).root
+			response.value
+			REXML::Document.new(response.body)
 		end
 		
 		#Get the URL to a user-owned collection. 
 		#
 		#collectionType -- The collection, either "workflows" or "datas"
 		def get_user_collection_url(collection)
-			user = get_user()
+			user_doc = get_user_doc()
 
-			#collections = user.elements["{#{NAMESPACES[:service]}}#{collection}"]
-			collections = user.elements[collection]
+			#collections = user_doc.root.elements["{#{NAMESPACES[:service]}}#{collection}"]
+			collections = user_doc.root.elements[collection]
 			return collections.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value
 		end
 		
@@ -238,70 +246,91 @@ module Enactor
 		#	submit_job().
 		def get_job_outputs_url(job_url)
 			job_document = get_xml_doc(job_url)
-			#outputsElem = job_document.elements["{#{NAMESPACES[:service]}}outputs"]
-			outputsElem = job_document.elements['outputs']
-			return nil if not outputsElem
-			outputsElem.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value 
+			#outputs_element = job_document.root.elements["{#{NAMESPACES[:service]}}outputs"]
+			outputs_element = job_document.root.elements['outputs']
+			return nil if not outputs_element
+			outputs_element.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value 
 		end
 		
 		#Get the output document for a job.
 		#
-		#Return the output document as an REXML::Element object, or None
+		#Return the output document as an REXML::Document object, or None
 		#if the job didn't have an output document (yet). This document can be
 		#parsed using parse_data_doc().
 		#
 		#job_url -- The URL to a job resource previously created using
 		#	submit_job().
 		def get_job_outputs_doc(job_url)
-			outputsURL = get_job_outputs_url(job_url)
-			return nil if not outputsURL
-			get_xml_doc(outputsURL, MIME_TYPES[:baclava])
+			outputs_url = get_job_outputs_url(job_url)
+			return nil if not outputs_url
+			get_xml_doc(outputs_url, MIME_TYPES[:baclava])
 		end   
 		
 		#Retrieve an XML document from the given URL.
 		#
-		#Return the REXML::Element root element of the retrieved document.
+		#Return the retrieved document as a REXML::Document.
 		#
 		#url -- The URL to a resource retrievable as an XML document
 		#
 		#mimeType -- The mime-type to request using the Accept header, by default
 		#	MIME_TYPES[:rest]
-		def get_xml_doc(docUrl, mimeType=MIME_TYPES[:rest])
-			url = URI.parse(docUrl)			
+		def get_xml_doc(doc_url, mimeType=MIME_TYPES[:rest])
+			url = URI.parse(doc_url)			
 			request = Net::HTTP::Get.new(url.path)
 			request['Accept'] = mimeType
 			request.basic_auth @username, @password
 			response = Net::HTTP.start(url.host, url.port) {|http|
 			  http.request(request)
 			}
-			REXML::Document.new(response.body).root
+			puts "content length = #{response.content_length}"
+			response.value
+			REXML::Document.new(response.body)
 		end
 			
+		#Return the size of an XML document from the given URL without
+		#fetching the document.
+		#
+		#Return the size of a XML document .
+		#
+		#url -- The URL to a resource find the size of
+		#
+		#mimeType -- The mime-type to request using the Accept header, by default
+		#	MIME_TYPES[:rest]
+		def get_xml_doc_size(doc_url, mimeType=MIME_TYPES[:rest])
+			url = URI.parse(doc_url)			
+			request = Net::HTTP::Head.new(url.path)
+			request['Accept'] = mimeType
+			request.basic_auth @username, @password
+			response = Net::HTTP.start(url.host, url.port) {|http|
+			  http.request(request)
+			}
+			response.content_length
+		end
    
 		#Parse a data document as returned from get_job_outputs_doc().
 		#
 		#Return a hash where the keys are strings, matching the names of 
 		#	ports of the workflow. The values are Document::Data objects. 
 		#	
-		#xml -- A data document as XML. This data document can be created
+		#xml -- A data document as a REXML::Document. This data document can be created
 		#	using create_data_doc()
-		def parse_data_doc(xml)
-			Baclava::Reader.read(xml)
+		def parse_data_doc(xml_document)
+			Baclava::Reader.read(xml_document)
 		end
 		
 		#Upload a data document to the current user's collection.
 		#
 		#Return the URL of the created data resource.
 		#
-		#xml -- A data document as XML. This data document can be created
+		#xml -- A data document as a REXML::Document. This data document can be created
 		#	using create_data_doc()
 		#
 		#Raises:
 		#	CouldNotCreateError -- If the service returned 200 OK instead of
 		#		creating the resource
-		def upload_data_doc(xml)
+		def upload_data_doc(xml_document)
 			datas_url = get_user_collection_url("datas")
-			upload_to_collection(datas_url, xml, MIME_TYPES[:baclava])
+			upload_to_collection(datas_url, xml_document.to_s, MIME_TYPES[:baclava])
 		end
 		
 		#Tests if the url is valid for this server
@@ -345,20 +374,21 @@ module Enactor
 			response = Net::HTTP.start(url.host, url.port) {|http|
 			  http.request(request)
 			}
-			raise CouldNotCreateError(url) unless response.kind_of?(Net::HTTPCreated)
+			response.value			
+			raise CouldNotCreateError(url, response) unless response.kind_of?(Net::HTTPCreated)
 			response.header['Location']
 		end
 	
 		#Create a data document to be uploaded with upload_data_doc(). 
 		#
-		#Return the data document as XML. This data document can be parsed using
+		#Return the data document a REXML::Document. This data document can be parsed using
 		#parse_data_doc()
 		#
 		#hash -- A hash where the keys are strings, matching the names of input
 		#	ports of the workflow to run. The values are Document::Data objects. 
 		#
 		def create_data_doc(hash)
-			Baclava::Writer.write(hash)
+			Baclava::Writer.write_doc(hash)
 		end
 		
 		#Create a job document for submission with submit_job().
@@ -373,10 +403,10 @@ module Enactor
 		def create_job_doc(workflow_url, inputs_url=nil)
 			xml = Builder::XmlMarkup.new
 			xml.instruct!
-			xml.job('xmlns' => NAMESPACES[:service], 'xmlns:xlink' => NAMESPACES[:xlink]) {
+			REXML::Document.new(xml.job('xmlns' => NAMESPACES[:service], 'xmlns:xlink' => NAMESPACES[:xlink]) {
 				xml.inputs('xlink:href' => inputs_url) if inputs_url
 				xml.workflow('xlink:href' => workflow_url)
-			}
+			})
 		end
 
 		#Submit a job to be queued for execution on the server.
@@ -391,7 +421,7 @@ module Enactor
 		#		creating the resource
 		def submit_job_doc(job_document)
 			jobsURL = get_user_collection_url("jobs")
-			upload_to_collection(jobsURL, job_document, MIME_TYPES[:rest])    
+			upload_to_collection(jobsURL, job_document.to_s, MIME_TYPES[:rest])    
 		end
 		
 		public
@@ -405,36 +435,59 @@ module Enactor
 		def get_job_status(job_url)
 			job_document = get_xml_doc(job_url)
 			#status = job_document.elements["{#{NAMESPACES[:service]}}status"]
-			status = job_document.elements['status']
+			status = job_document.root.elements['status']
 			# TODO: For future checks, use: 
 			#status_url = status.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value
 			status.text
 		end
 		
+		#Get the date a previously submitted job was created.
+		#
+		#Return the date as a Datetime object.
+		#
+		#job_url -- The URL to a job resource previously created using
+		#	submit_job().
+		def get_job_created_date(job_url)
+			job_document = get_xml_doc(job_url)
+			#created = job_document.elements["{#{NAMESPACES[:dcterms]}}created"]
+			created = job_document.root.elements['dcterms:created'].text
+			DateTime.parse(created)
+		end
+		
+		#Get the date a previously submitted job was last modified.
+		#
+		#Return the date as a Datetime object.
+		#
+		#job_url -- The URL to a job resource previously created using
+		#	submit_job().
+		def get_job_modified_date(job_url)
+			job_document = get_xml_doc(job_url)
+			#modified = job_document.elements["{#{NAMESPACES[:dcterms]}}modified"]
+			modified = job_document.root.elements['dcterms:modified'].text
+			DateTime.parse(modified)
+		end
 		
 		#Get the job's internal progress report. This might be available
 		#while the job is running.
 		#
-		#Return the internal progress report as an REXML::Element object.
+		#Return the internal progress report as a Document::Report object.
 		#
-		#		job_url -- The URL to a job resource previously created using
-		#	submit_job().
+		#job_url -- The URL to a job resource previously created using submit_job().
 		def get_job_report(job_url)
 			job_document = get_xml_doc(job_url)
 			#report_element = job_document.elements["{#{NAMESPACES[:service]}}report"]
-			report_element = job_document.elements['report']
+			report_element = job_document.root.elements['report']
 			report_url = report_element.attributes.get_attribute_ns(NAMESPACES[:xlink], 'href').value
 			# TODO: Cache report_url per job
-			get_xml_doc(report_url, MIME_TYPES[:report])
+			job_report_document = get_xml_doc(report_url, MIME_TYPES[:report])
+			Document::Report.from_document(job_report_document)
 		end
-		
-		
+			
 		#Get the outputs of a job.
 		#
 		#Return the job outputs as a hash where the keys are strings, 
-		#matching the names of output ports of the workflow. The values can be 
-		#strings, lists of strings, or deeper lists. If no outputs exists, 
-		#nil is returned instead.
+		#matching the names of output ports of the workflow. The values are
+		#Document::Data objects. If no outputs exists, nil is returned instead.
 		#
 		#job_url -- The URL to a job resource previously created using
 		#	submit_job().
@@ -444,7 +497,19 @@ module Enactor
 			parse_data_doc(job_outputs)
 		end
 	
-        
+		#Get the size of the outputs of a job.
+		#
+		#Return the size of the outputs of a job in kilobytes.
+		#If no outputs exists, nil is returned instead.
+		#
+		#job_url -- The URL to a job resource previously created using
+		#	submit_job().
+		def get_job_outputs_size(job_url)
+			outputs_url = get_job_outputs_url(job_url)
+			return nil if not outputs_url
+			get_xml_doc_size(outputs_url, MIME_TYPES[:baclava])
+		end
+	
 		#Check if a job has finished in one way or another. 
 		#
 		#Note that the job might have finished unsuccessfully. To check 
@@ -463,7 +528,6 @@ module Enactor
 			Status.finished?(status)
 		end
 		
-	
 		#Submit a job to be queued for execution on the server.
 		#
 		#Return the URL to the created job resource.
@@ -483,7 +547,6 @@ module Enactor
 			submit_job_doc(job_document)
 		end
 		
-		
 		#Upload data to be used with submit_job().
 		#
 		#Return the URL to the created data resource.
@@ -500,11 +563,23 @@ module Enactor
 			upload_data_doc(inputs)
 		end
 		
-		#Checks if the workflow exists on the server			
+		#Checks if the workflow exists on the server
+		#			
+		#workflow_url -- The URL to a workflow previously uploaded using 
+		#	upload_workflow().
 		def workflow_exists?(workflow_url)
 			url_valid?(workflow_url)
 		end
 		
+		#Checks if the username and password is valid for the service
+		def service_valid?
+			begin
+				get_user_url
+				true
+			rescue
+				false
+			end
+		end
 		
 		#Upload a workflow XML document to the current users' collection.
 		#
@@ -551,7 +626,7 @@ module Enactor
 		#
 		#Return the parsed output document as a hash where the keys are 
 		#strings, matching the names of output ports of the workflow. The 
-		#values can be strings, lists of strings, or deeper lists. If the workflow
+		#values are Document::Data objects. If the workflow
 		#did not produce any output, nil might be returned instead.
 		#
 		#workflow_xml -- The workflow as a Taverna scufl XML string. This *or* the 

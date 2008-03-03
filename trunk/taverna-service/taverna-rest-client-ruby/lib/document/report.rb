@@ -9,8 +9,12 @@ module Document
 		  	@processors = Array.new
 		end
 		
-		def self.fromXML(xml)
+		def self.from_xml(xml)
 			Reader.read(xml)  
+		end
+	  
+		def self.from_document(document)
+			Reader.read(document)  
 		end
 	  
 	end
@@ -22,8 +26,11 @@ module Document
 	class Reader
 
 		def self.read(report)
-			document = REXML::Document.new(report)
-					  
+			if report.kind_of?(REXML::Document)
+				document = report
+			else
+				document = REXML::Document.new(report)
+			end
 			root = document.root
 					  
 			return nil if not root

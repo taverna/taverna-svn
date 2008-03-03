@@ -21,9 +21,9 @@ class TcClient < Test::Unit::TestCase
     end
 	
 	def test_connect
-        capabilities = @service.get_capabilities()
+		capabilities_doc = @service.get_capabilities_doc()
         #users = capabilities.elements["{http://taverna.sf.net/service}users"]
-        users = capabilities.elements["users"]
+        users = capabilities_doc.root.elements["users"]
         users_url = users.attributes.get_attribute_ns('http://www.w3.org/1999/xlink', 'href').value
         assert_equal(TEST_SERVER  + "users", users_url)
 	end
@@ -54,12 +54,16 @@ class TcClient < Test::Unit::TestCase
 		assert(!@service.workflow_exists?(workflow_url.chop))
 	end
 	
-    def tes_create_job
+	def test_service_valid
+		assert(@service.service_valid?)
+		assert(!Enactor::Client.new(TEST_SERVER, TEST_USER, TEST_PW.chop).service_valid?)
+	end
+	
+    def test_create_job
         workflow_url = @service.upload_workflow(ANIMAL_WF)
-        job_doc_xml = @service.create_job_doc(workflow_url)
-        job_doc = REXML::Document.new(job_doc_xml).root
+        job_doc = @service.create_job_doc(workflow_url)
         #workflow_element = job_doc.elements["{http://taverna.sf.net/service}workflow"]
-        workflow_element = job_doc.elements['workflow']
+        workflow_element = job_doc.root.elements['workflow']
         assert_equal(workflow_url, workflow_element.attributes.get_attribute_ns('http://www.w3.org/1999/xlink', 'href').value)
     end
     
@@ -104,6 +108,20 @@ class TcClient < Test::Unit::TestCase
         assert(Enactor::Status.valid?(status))
     end
         
+    def test_get_job_created_date
+        workflow_url = @service.upload_workflow(ANIMAL_WF)
+        job_url = @service.submit_job(workflow_url)
+		time = @service.get_job_created_date(job_url)
+		assert(time.kind_of?(DateTime))
+    end
+        
+    def test_get_job_modified_date
+        workflow_url = @service.upload_workflow(ANIMAL_WF)
+        job_url = @service.submit_job(workflow_url)
+		time = @service.get_job_modified_date(job_url)
+		assert(time.kind_of?(DateTime))
+    end
+        
     def test_finished
         workflow_url = @service.upload_workflow(ANIMAL_WF)
         job_url = @service.submit_job(workflow_url)
@@ -111,6 +129,13 @@ class TcClient < Test::Unit::TestCase
         assert(!@service.finished?(job_url))
     end
                          
+    def test_job_outputs_size
+        workflow_url = @service.upload_workflow(ANIMAL_WF)
+        job_url = @service.submit_job(workflow_url)
+        @service.wait_for_job(job_url, 30)
+		assert_equal(481, @service.get_job_outputs_size(job_url))
+    end
+        
     def test_wait_for_job
         workflow_url = @service.upload_workflow(ANIMAL_WF)
         job_url = @service.submit_job(workflow_url)

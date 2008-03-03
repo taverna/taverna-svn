@@ -6,17 +6,16 @@ module Baclava
   class Reader
     
     #Reads a baclava document amd returns a hash of Document::Data objects
-    def self.read(data_thing)
-      if data_thing.kind_of?(REXML::Element)
-      	create_data_map(data_thing)
+    def self.read(xml)
+      if xml.kind_of?(REXML::Document)
+      	document = xml
       else
-        document = REXML::Document.new(data_thing)
-      
-        root = document.root
-        raise "'#{root.name}' doesn't appear to be a data thing!" if root.name != "dataThingMap"
-      
-        create_data_map(root)
+        document = REXML::Document.new(xml)
       end
+      root = document.root
+      raise "'#{root.name}' doesn't appear to be a data thing!" if root.name != "dataThingMap"
+      
+      create_data_map(root)
     end
     
     def self.create_data_map(element)

@@ -6,6 +6,10 @@ module Baclava
   
   class Writer
     
+	def self.write_doc(data_map)
+		REXML::Document.new(write(data_map))
+	end  	
+
     def self.write(data_map)
       xml = Builder::XmlMarkup.new :indent => 2
       xml.instruct!
