@@ -282,7 +282,6 @@ module Enactor
 			response = Net::HTTP.start(url.host, url.port) {|http|
 			  http.request(request)
 			}
-			puts "content length = #{response.content_length}"
 			response.value
 			REXML::Document.new(response.body)
 		end
