@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceQueryConfigUIFactory.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 11:38:56 $
+ * Last modified on   $Date: 2008-03-04 16:46:53 $
  *               by   $Author: davidwithers $
  * Created on 21-Jun-2007
  *****************************************************************/
@@ -588,9 +588,7 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 					buttonBox.add(button);
 					componentMap.put(attributePages[i].getInternalName(),
 							component);
-					formatMap.put(attributePages[i].getInternalName(), Arrays
-							.asList(attributePages[i].getOutFormats()
-									.toUpperCase().split(",")));
+					formatMap.put(attributePages[i].getInternalName(), getFormatList(attributePages[i]));
 					attributePageNameToComponent.put(attributePages[i]
 							.getInternalName(), component);
 					attributePageNameToButton.put(attributePages[i]
@@ -1584,6 +1582,17 @@ public class MartServiceQueryConfigUIFactory implements QueryConfigUIFactory {
 				selectedButton.setSelected(true);
 			}
 		}
+	}
+
+	private List<String> getFormatList(AttributePage attributePage) {
+		List<String> formatList = new ArrayList<String>();
+		for (String format : attributePage.getOutFormats()
+				.toUpperCase().split(",")) {
+			if (!"".equals(format)) {
+				formatList.add(format);
+			}
+		}
+		return formatList;
 	}
 
 	private JComponent createHorizontalBox(Color background) {
