@@ -25,17 +25,15 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: QueryXMLHandler.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 11:38:57 $
+ * Last modified on   $Date: 2008-03-04 16:45:18 $
  *               by   $Author: davidwithers $
  * Created on 28-Apr-2006
  *****************************************************************/
 package org.biomart.martservice.query;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -68,6 +66,8 @@ public class QueryXMLHandler {
 	
 	public static final String FORMATTER_ATTRIBUTE = "formatter";
 	
+	public static final String HEADER_ATTRIBUTE = "header";
+	
 	public static final String REQUEST_ID_ATTRIBUTE = "requestId";
 
 	public static final String SCHEMA_ATTRIBUTE = "virtualSchemaName";
@@ -99,6 +99,7 @@ public class QueryXMLHandler {
 		String formatter = query.getFormatter();
 		if (formatter != null) {
 			queryElement.setAttribute(FORMATTER_ATTRIBUTE, formatter);			
+			queryElement.setAttribute(HEADER_ATTRIBUTE, "1");			
 		}
 		String requestId = query.getRequestId();
 		if (requestId != null) {
