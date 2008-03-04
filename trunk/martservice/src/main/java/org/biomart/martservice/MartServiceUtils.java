@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartServiceUtils.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 11:38:55 $
+ * Last modified on   $Date: 2008-03-04 16:43:40 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -372,6 +372,65 @@ public class MartServiceUtils {
 
 		return results;
 	}
+
+	public static void putResults(String martServiceLocation, String requestId,
+			Query query, ResultReceiver resultReceiver) throws MartServiceException, ResultReceiverException {
+		int attributeCount = getAttributeCount(query.getAttributes());
+		boolean count = query.getCount() == 1;
+		// if there are no attributes and we're not doing a count there's no
+		// point in doing the query
+		if (attributeCount > 0 || count) {
+			String queryXml = queryToXML(query);
+			logger.info(queryXml);
+			NameValuePair[] data = { new NameValuePair(QUERY_ATTRIBUTE,
+					queryXml) };
+			PostMethod method = new PostMethod(martServiceLocation);
+			method.setRequestBody(data);
+
+			try {
+				InputStream in = executeMethod(method, martServiceLocation);
+				if (query.getFormatter() == null) {
+					if (count) {
+						resultReceiver.receiveResult(tabSeparatedReaderToResults(new InputStreamReader(in), 1), 0);
+					} else {
+						List<Attribute> attributes = query.getAttributes();
+						Object[] result = new Object[attributes.size()];
+						BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+						String line = bufferedReader.readLine();
+						for (long i = 0; line != null; line = bufferedReader.readLine(), i++) {
+							String[] tokens = line.split("\t", -1);
+							for (int ri = 0, ti = 0; ri < result.length && ti < tokens.length; ri++) {
+								Attribute attribute = attributes.get(ri);
+								if (attribute.getAttributes() == null) {
+									result[ri] = tokens[ti];
+									ti++;
+								} else {
+									int nestedAttributeCount = attribute.getAttributesCount();
+									List<Object> list = new ArrayList<Object>();
+									for (int j = 0; j < nestedAttributeCount; j++) {
+										list.add(tokens[ti]);
+										ti++;
+									}
+									result[ri] = list;
+								}
+							}
+							resultReceiver.receiveResult(result, i);
+						}
+					}
+				} else {
+					resultReceiver.receiveResult(readResult(in, query.getFormatter()), 0);
+				}
+				in.close();
+			} catch (IOException e) {
+				String errorMessage = "Error reading data from "
+						+ martServiceLocation;
+				throw new MartServiceException(errorMessage, e);
+			} finally {
+				method.releaseConnection();
+			}
+
+		}
+	}
 	
 //	private static String getLocation(MartURLLocation martUrlLocation) {
 //		StringBuffer location = new StringBuffer("http://");
@@ -387,10 +446,7 @@ public class MartServiceUtils {
 			if (attribute.getAttributes() == null) {
 				result++;
 			} else {
-				String[] attributes = attribute.getAttributes().split(",");
-				for (int i = 0; i < attributes.length; i++) {
-					result++;
-				}
+				result += attribute.getAttributesCount();
 			}
 		}
 		return result;
@@ -404,9 +460,9 @@ public class MartServiceUtils {
 				result.add(lists[index]);
 				index++;
 			} else {
-				String[] attributes = attribute.getAttributes().split(",");
+				int attributesCount = attribute.getAttributesCount();
 				List<Object> list = new ArrayList<Object>();
-				for (int i = 0; i < attributes.length; i++) {
+				for (int i = 0; i < attributesCount; i++) {
 					list.add(lists[index]);
 					index++;
 				}

@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: AttributeTest.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:13 $
+ * Last modified on   $Date: 2008-03-04 16:43:40 $
  *               by   $Author: davidwithers $
  * Created on 02-May-2006
  *****************************************************************/
@@ -57,7 +57,6 @@ public class AttributeTest {
 		attributes = "attributes";
 		dataset = new Dataset("dataset name");
 		attribute = new Attribute(attributeName);
-		attribute.setAttributes(attributes);
 	}
 
 	@Test
@@ -113,7 +112,9 @@ public class AttributeTest {
 
 	@Test
 	public void getAttributes() {
-		assertEquals("Name should be '" + attributes + "'", attribute
+		assertNull(attribute.getAttributes());
+		attribute.setAttributes(attributes);
+		assertEquals("Attributes should be '" + attributes + "'", attribute
 				.getAttributes(), attributes);
 	}
 
@@ -127,6 +128,17 @@ public class AttributeTest {
 		assertNull(attribute.getAttributes());
 	}
 	
+	@Test
+	public void testGetAttributesCount() {
+		assertEquals(attribute.getAttributesCount(), 0);
+		attribute.setAttributes("a");
+		assertEquals(attribute.getAttributesCount(), 1);
+		attribute.setAttributes("a,b,c");
+		assertEquals(attribute.getAttributesCount(), 3);
+		attribute.setAttributes(null);
+		assertEquals(attribute.getAttributesCount(), 0);
+	}
+
 	@Test
 	public void getContainingDataset() {
 		assertNull(attribute.getContainingDataset());

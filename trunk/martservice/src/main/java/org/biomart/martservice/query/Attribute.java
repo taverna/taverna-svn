@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: Attribute.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-01-31 14:12:09 $
+ * Last modified on   $Date: 2008-03-04 16:43:40 $
  *               by   $Author: davidwithers $
  * Created on 26-Apr-2006
  *****************************************************************/
@@ -42,6 +42,8 @@ public class Attribute {
 	private String name;
 
 	private String attributes;
+	
+	private int attributesCount;
 
 	private Dataset containingDataset;
 
@@ -113,9 +115,9 @@ public class Attribute {
 	}
 
 	/**
-	 * Returns the attributes.
+	 * Returns the component attributes as a comma separated list.
 	 *
-	 * @return the attributes
+	 * @return the attributes as a comma separated list or null if there are no component attributes
 	 */
 	public String getAttributes() {
 		return attributes;
@@ -128,6 +130,20 @@ public class Attribute {
 	 */
 	public void setAttributes(String attributes) {
 		this.attributes = attributes;
+		if (attributes == null) {
+			attributesCount = 0;
+		} else {
+			attributesCount = attributes.split(",").length;
+		}
+	}
+	
+	/**
+	 * Returns the number of component attributes.
+	 * 
+	 * @return the number of component attributes
+	 */
+	public int getAttributesCount() {
+		return attributesCount;
 	}
 
 	/**

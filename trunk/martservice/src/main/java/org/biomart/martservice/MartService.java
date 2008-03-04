@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: MartService.java,v $errors/failure.html
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-13 11:38:55 $
+ * Last modified on   $Date: 2008-03-04 16:43:40 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -133,7 +133,7 @@ public class MartService {
 
 	/**
 	 * Returns the requestId.
-	 *
+	 * 
 	 * @return the requestId
 	 */
 	public String getRequestId() {
@@ -142,8 +142,9 @@ public class MartService {
 
 	/**
 	 * Sets the requestId.
-	 *
-	 * @param requestId the new requestId
+	 * 
+	 * @param requestId
+	 *            the new requestId
 	 */
 	public void setRequestId(String requestId) {
 		this.requestId = requestId;
@@ -151,7 +152,7 @@ public class MartService {
 
 	/**
 	 * Returns the cacheDirectory.
-	 *
+	 * 
 	 * @return the cacheDirectory
 	 */
 	public File getCacheDirectory() {
@@ -160,8 +161,9 @@ public class MartService {
 
 	/**
 	 * Sets the cacheDirectory.
-	 *
-	 * @param cacheDirectory the new cacheDirectory
+	 * 
+	 * @param cacheDirectory
+	 *            the new cacheDirectory
 	 */
 	public void setCacheDirectory(File cacheDirectory) {
 		this.cacheDirectory = cacheDirectory;
@@ -223,8 +225,7 @@ public class MartService {
 		for (int i = 0; i < locations.length; i++) {
 			datasets.addAll(Arrays.asList(getDatasets(locations[i])));
 		}
-		return datasets
-				.toArray(new MartDataset[datasets.size()]);
+		return datasets.toArray(new MartDataset[datasets.size()]);
 	}
 
 	/**
@@ -246,8 +247,7 @@ public class MartService {
 				datasets.addAll(Arrays.asList(getDatasets(locations[i])));
 			}
 		}
-		return datasets
-				.toArray(new MartDataset[datasets.size()]);
+		return datasets.toArray(new MartDataset[datasets.size()]);
 	}
 
 	/**
@@ -263,8 +263,8 @@ public class MartService {
 			throws MartServiceException {
 		String name = martURLLocation.getName();
 		if (!datasetsMap.containsKey(name)) {
-			datasetsMap.put(name, MartServiceUtils.getDatasets(location, requestId,
-					martURLLocation));
+			datasetsMap.put(name, MartServiceUtils.getDatasets(location,
+					requestId, martURLLocation));
 		}
 		return datasetsMap.get(name);
 	}
@@ -307,53 +307,64 @@ public class MartService {
 		String qualifiedName = dataset.getQualifiedName();
 		DatasetConfig datasetConfig;
 		if (!datasetConfigMap.containsKey(qualifiedName)) {
-			if (dataset.getModified() != null && cacheDirectory != null)	{
+			if (dataset.getModified() != null && cacheDirectory != null) {
 				datasetConfig = getDatasetConfigFromCache(dataset);
 			} else {
-				datasetConfig = MartServiceUtils.getDatasetConfig(location, requestId,
-						dataset);	
+				datasetConfig = MartServiceUtils.getDatasetConfig(location,
+						requestId, dataset);
 			}
 			datasetConfigMap.put(qualifiedName,
 					new SoftReference<DatasetConfig>(datasetConfig));
 		} else {
 			datasetConfig = datasetConfigMap.get(qualifiedName).get();
 			if (datasetConfig == null) {
-				if (dataset.getModified() != null && cacheDirectory != null)	{
+				if (dataset.getModified() != null && cacheDirectory != null) {
 					datasetConfig = getDatasetConfigFromCache(dataset);
 				} else {
-					datasetConfig = MartServiceUtils.getDatasetConfig(location, requestId,
-							dataset);	
+					datasetConfig = MartServiceUtils.getDatasetConfig(location,
+							requestId, dataset);
 				}
-				datasetConfigMap.put(qualifiedName, new SoftReference<DatasetConfig>(
-						datasetConfig));
+				datasetConfigMap.put(qualifiedName,
+						new SoftReference<DatasetConfig>(datasetConfig));
 			}
 
 		}
 		return datasetConfig;
 	}
 
-	private DatasetConfig getDatasetConfigFromCache(MartDataset dataset) throws MartServiceException {
+	private DatasetConfig getDatasetConfigFromCache(MartDataset dataset)
+			throws MartServiceException {
 		System.out.println("lookinf for " + dataset.getName());
 		DatasetConfig datasetConfig = null;
 		MartURLLocation mart = dataset.getMartURLLocation();
-		String path = mart.getHost()+fs+mart.getName()+fs+mart.getVirtualSchema();
+		String path = mart.getHost() + fs + mart.getName() + fs
+				+ mart.getVirtualSchema();
 		File martCacheDir = new File(cacheDirectory, path);
 		martCacheDir.mkdirs();
 		File cache = new File(martCacheDir, dataset.getName() + ".cfg");
-		DatasetConfigXMLUtils datasetConfigXMLUtils = new DatasetConfigXMLUtils(true);
+		DatasetConfigXMLUtils datasetConfigXMLUtils = new DatasetConfigXMLUtils(
+				true);
 		if (cache.exists()) {
 			try {
 				SAXBuilder builder = new SAXBuilder();
-				Document doc = builder.build(new InputSource(new GZIPInputStream(new FileInputStream(cache))));
+				Document doc = builder.build(new InputSource(
+						new GZIPInputStream(new FileInputStream(cache))));
 
-//			    Document doc = datasetConfigXMLUtils.getDocumentForXMLStream(new FileInputStream(cache));
+				// Document doc =
+				// datasetConfigXMLUtils.getDocumentForXMLStream(new
+				// FileInputStream(cache));
 
-				datasetConfig = datasetConfigXMLUtils.getDatasetConfigForDocument(doc);
-				datasetConfigXMLUtils.loadDatasetConfigWithDocument(datasetConfig,
-						doc);
-				if (!datasetConfig.getModified().trim().equals(dataset.getModified().trim())) {
-					System.out.println(" " + datasetConfig.getModified().trim() + " != " + dataset.getModified().trim());
-					System.out.println("  Database: " + dataset.getMartURLLocation().getDatabase() + ", Dataset: " + dataset.getName());
+				datasetConfig = datasetConfigXMLUtils
+						.getDatasetConfigForDocument(doc);
+				datasetConfigXMLUtils.loadDatasetConfigWithDocument(
+						datasetConfig, doc);
+				if (!datasetConfig.getModified().trim().equals(
+						dataset.getModified().trim())) {
+					System.out.println(" " + datasetConfig.getModified().trim()
+							+ " != " + dataset.getModified().trim());
+					System.out.println("  Database: "
+							+ dataset.getMartURLLocation().getDatabase()
+							+ ", Dataset: " + dataset.getName());
 					datasetConfig = null;
 				}
 			} catch (IOException e) {
@@ -368,10 +379,13 @@ public class MartService {
 			}
 		}
 		if (datasetConfig == null) {
-			datasetConfig = MartServiceUtils.getDatasetConfig(location, requestId, dataset);	
+			datasetConfig = MartServiceUtils.getDatasetConfig(location,
+					requestId, dataset);
 			try {
-				GZIPOutputStream zipOutputStream = new GZIPOutputStream(new FileOutputStream(cache));
-				datasetConfigXMLUtils.writeDatasetConfigToOutputStream(datasetConfig, zipOutputStream);
+				GZIPOutputStream zipOutputStream = new GZIPOutputStream(
+						new FileOutputStream(cache));
+				datasetConfigXMLUtils.writeDatasetConfigToOutputStream(
+						datasetConfig, zipOutputStream);
 				zipOutputStream.flush();
 				zipOutputStream.close();
 			} catch (IOException e) {
@@ -441,8 +455,26 @@ public class MartService {
 	 *             if the MartService returns an error or is unavailable
 	 */
 	public Object[] executeQuery(Query query) throws MartServiceException {
-//		System.out.println(MartServiceUtils.queryToXML(query));
+		// System.out.println(MartServiceUtils.queryToXML(query));
 		return MartServiceUtils.getResults(location, requestId, query);
+	}
+
+	/**
+	 * Sends a <code>Query</code> to the MartService and writes the results to
+	 * the <code>ResultReceiver</code> as each line of the result stream is
+	 * read.
+	 * 
+	 * @param query
+	 * @param resultReceiver
+	 * @throws MartServiceException
+	 *             if the MartService returns an error or is unavailable
+	 * @throws ResultReceiverException 
+	 *             if the ResultReceiver cannot receive the result
+	 * @see ResultReceiver
+	 */
+	public void executeQuery(Query query, ResultReceiver resultReceiver)
+			throws MartServiceException, ResultReceiverException {
+		MartServiceUtils.putResults(location, requestId, query, resultReceiver);
 	}
 
 	/**
@@ -626,10 +658,11 @@ public class MartService {
 		}
 	}
 
-	public Map<MartDataset, MartDataset> dijkstra(MartDataset dataset) throws MartServiceException {
+	public Map<MartDataset, MartDataset> dijkstra(MartDataset dataset)
+			throws MartServiceException {
 		Map<MartDataset, MartDataset> path = new HashMap<MartDataset, MartDataset>();
-		LinkedList<MartDataset> vertices = new LinkedList<MartDataset>(Arrays.asList(getDatasets(dataset
-				.getVirtualSchema())));
+		LinkedList<MartDataset> vertices = new LinkedList<MartDataset>(Arrays
+				.asList(getDatasets(dataset.getVirtualSchema())));
 		Map<MartDataset, Integer> dist = new HashMap<MartDataset, Integer>();
 		for (MartDataset vertex : vertices) {
 			dist.put(vertex, new Integer(10000));
