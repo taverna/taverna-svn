@@ -29,7 +29,7 @@ public class TestRendererSPI {
 	@Test
 	public void getAllRenderers() {
 		RendererRegistry rendererRegistry = new RendererRegistry();
-		assertEquals(rendererRegistry.getInstances().size(), 9);
+		assertEquals(rendererRegistry.getInstances().size(), 10);
 	}
 	
 	@Test
