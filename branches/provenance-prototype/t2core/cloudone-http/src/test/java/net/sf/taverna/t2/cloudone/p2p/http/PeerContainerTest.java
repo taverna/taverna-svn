@@ -27,7 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class PeerContainerTest extends AbstractCloudOneServerTest {
+public class PeerContainerTest extends AbstractTestCloudOneServer {
 	private static File tmpDir;
 
 	@BeforeClass

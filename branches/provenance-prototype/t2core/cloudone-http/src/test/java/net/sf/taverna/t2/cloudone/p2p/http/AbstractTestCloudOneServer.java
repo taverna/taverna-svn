@@ -3,13 +3,13 @@ package net.sf.taverna.t2.cloudone.p2p.http;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-public class AbstractCloudOneServerTest {
+public class AbstractTestCloudOneServer {
 
 	public static final String HOST = "localhost";
 	public static final int PORT = 7381;
 	protected static CloudOneApplication cloudApp;
 
-	public AbstractCloudOneServerTest() {
+	public AbstractTestCloudOneServer() {
 		super();
 	}
 

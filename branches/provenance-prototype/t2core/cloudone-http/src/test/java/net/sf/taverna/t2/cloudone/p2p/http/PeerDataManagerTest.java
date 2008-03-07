@@ -19,7 +19,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class PeerDataManagerTest extends AbstractCloudOneServerTest {
+public class PeerDataManagerTest extends AbstractTestCloudOneServer {
 
 	@Test
 	public void megaDM() throws Exception {
