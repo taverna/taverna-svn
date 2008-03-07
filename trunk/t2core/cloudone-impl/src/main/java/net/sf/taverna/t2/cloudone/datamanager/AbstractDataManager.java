@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.cloudone.datamanager;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -266,11 +267,11 @@ public abstract class AbstractDataManager implements DataManager {
 			throw new IllegalArgumentException(
 					"Cannot traverse to a negative depth");
 		}
-		Set<ContextualizedIdentifier> workingSet = new HashSet<ContextualizedIdentifier>();
+		List<ContextualizedIdentifier> workingSet = new ArrayList<ContextualizedIdentifier>();
 		workingSet.add(new ContextualizedIdentifier(identifier, new int[0]));
 		int currentDepth = identifier.getDepth();
 		while (currentDepth > desiredDepth) {
-			Set<ContextualizedIdentifier> newSet = new HashSet<ContextualizedIdentifier>();
+			List<ContextualizedIdentifier> newSet = new ArrayList<ContextualizedIdentifier>();
 			for (ContextualizedIdentifier ci : workingSet) {
 				switch (ci.getDataRef().getType()) {
 				case List:
