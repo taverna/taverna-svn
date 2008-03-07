@@ -109,7 +109,7 @@ output = ""+(i - 1000);</s:scriptvalue>
       <s:mimeTypes>
         <s:mimeType>text/plain</s:mimeType>
       </s:mimeTypes>
-      <s:description>List of Ensemble gene identifiers for human.</s:description>
+      <s:description>List of Ensemble gene identifiers for human.  For example ENSG00000205607</s:description>
       <s:semanticType>http://www.mygrid.org.uk/ontology#gene_id</s:semanticType>
     </s:metadata>
   </s:source>
