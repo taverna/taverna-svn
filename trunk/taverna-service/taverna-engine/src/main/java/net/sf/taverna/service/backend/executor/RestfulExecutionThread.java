@@ -8,6 +8,7 @@ import java.io.PipedOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.Set;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.service.rest.client.DataREST;
@@ -141,7 +143,7 @@ public class RestfulExecutionThread extends Thread {
 			try {
 				job.setStatus(StatusType.RUNNING);
 			} catch (NotSuccessException e2) {
-				logger.warn("Could not set status to running", e2); 
+				logger.warn("Could not set status to running", e2);
 				// OK for now..
 			}
 
@@ -172,11 +174,10 @@ public class RestfulExecutionThread extends Thread {
 			DataREST data = null;
 			try {
 				DatasREST datas = job.getOwner().getDatas();
-				String dataString = new XMLOutputter()
-						.outputString(doc);
-				ByteArrayInputStream dataStream = new ByteArrayInputStream(dataString.getBytes());
-				data = datas.add(
-						dataStream);
+				String dataString = new XMLOutputter().outputString(doc);
+				ByteArrayInputStream dataStream = new ByteArrayInputStream(
+						dataString.getBytes());
+				data = datas.add(dataStream);
 			} catch (NotSuccessException e1) {
 				logger.warn("Could not upload data for job " + job, e1);
 				// But we're still complete, so don't return
@@ -250,75 +251,91 @@ public class RestfulExecutionThread extends Thread {
 
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 
-		/*
-		 * systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
-		 * "scufl-tools", BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna.baclava", "baclava-core",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna.baclava", "baclava-tools",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-core",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-enactor",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna", "taverna-tools",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-core",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-model",
-		 * BASE_TAVERNA_VERSION)); systemArtifacts.add(new
-		 * BasicArtifact("uk.org.mygrid.taverna.scufl", "scufl-workflow",
-		 * BASE_TAVERNA_VERSION));
-		 */
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-tools", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-core", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.baclava",
+				"baclava-tools", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-core", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-enactor", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna",
+				"taverna-tools", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-core", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-model", BASE_TAVERNA_VERSION));
+		systemArtifacts.add(new BasicArtifact("uk.org.mygrid.taverna.scufl",
+				"scufl-workflow", BASE_TAVERNA_VERSION));
+
+		systemArtifacts.add(new BasicArtifact("xerces",
+				"xercesImpl", "2.6.2"));
+		systemArtifacts.add(new BasicArtifact("xalan",
+				"xalan", "2.5.2"));
+		systemArtifacts.add(new BasicArtifact("jaxen",
+				"jaxen", "1.0-FCS"));
+		systemArtifacts.add(new BasicArtifact("saxpath",
+				"saxpath", "1.0-FCS"));
+		systemArtifacts.add(new BasicArtifact("dom4j",
+				"dom4j", "1.6"));
+		systemArtifacts.add(new BasicArtifact("log4j",
+				"log4j", "1.2.12"));
+		
 		Repository repository = LocalRepository.getRepository(base, this
 				.getClass().getClassLoader(), systemArtifacts);
 		// FIXME: remove hard coded version. need to handle versions better with
 		// remote profile
-		/*
-		 * repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-localworkers",
-		 * "BASE_TAVERNA_VERSION")); repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
-		 * "BASE_TAVERNA_VERSION")); repository.addArtifact(new
-		 * BasicArtifact("biomoby.org", "taverna-biomoby",
-		 * "BASE_TAVERNA_VERSION"));
-		 * 
-		 * repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-java-processor",
-		 * BASE_TAVERNA_VERSION));
-		 * 
-		 * repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors",
-		 * "taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
-		 * 
-		 * repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
-		 * "taverna-contrib", BASE_TAVERNA_VERSION)); repository.addArtifact(new
-		 * BasicArtifact( "uk.org.mygrid.taverna.processors",
-		 * "taverna-beanshell-processor", BASE_TAVERNA_VERSION));
-		 * repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-biomart-processor",
-		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-soaplab-processor",
-		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-notification-processor",
-		 * BASE_TAVERNA_VERSION)); repository.addArtifact(new BasicArtifact(
-		 * "uk.org.mygrid.taverna.processors", "taverna-biomoby-processor",
-		 * BASE_TAVERNA_VERSION));
-		 * 
-		 * repository.addRemoteRepository(new URL(
-		 * "http://www.mygrid.org.uk/maven/repository/"));
-		 * repository.addRemoteRepository(new URL(
-		 * "http://mirrors.sunsite.dk/maven2/")); repository
-		 * .addRemoteRepository(new URL("http://www.ibiblio.org/maven2/"));
-		 * repository.addRemoteRepository(new URL(
-		 * "http://moby.ucalgary.ca/moby_maven/"));
-		 * repository.addRemoteRepository(new URL(
-		 * "http://www.mygrid.org.uk/maven/snapshot-repository/"));
-		 */
-		
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-localworkers",
+				"BASE_TAVERNA_VERSION"));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-wsdl-processor",
+				"BASE_TAVERNA_VERSION"));
+		repository.addArtifact(new BasicArtifact("biomoby.org",
+				"taverna-biomoby", "BASE_TAVERNA_VERSION"));
+
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors", "taverna-java-processor",
+				BASE_TAVERNA_VERSION));
+
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-stringconstant-processor", BASE_TAVERNA_VERSION));
+
+		repository.addArtifact(new BasicArtifact("uk.org.mygrid.taverna.",
+				"taverna-contrib", BASE_TAVERNA_VERSION));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-beanshell-processor", BASE_TAVERNA_VERSION));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-biomart-processor", BASE_TAVERNA_VERSION));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-soaplab-processor", BASE_TAVERNA_VERSION));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-notification-processor", BASE_TAVERNA_VERSION));
+		repository.addArtifact(new BasicArtifact(
+				"uk.org.mygrid.taverna.processors",
+				"taverna-biomoby-processor", BASE_TAVERNA_VERSION));
+
+		repository.addRemoteRepository(new URL(
+				"http://www.mygrid.org.uk/maven/repository/"));
+//		repository.addRemoteRepository(new URL(
+//				"http://mirrors.sunsite.dk/maven2/"));
+		repository
+				.addRemoteRepository(new URL("http://www.ibiblio.org/maven2/"));
+		repository.addRemoteRepository(new URL(
+				"http://moby.ucalgary.ca/moby_maven/"));
+		repository.addRemoteRepository(new URL(
+				"http://www.mygrid.org.uk/maven/snapshot-repository/"));
+
 		TavernaSPIRegistry.setRepository(repository);
 		Bootstrap.properties = new Properties();
-		// repository.update();
+		repository.update();
 
 		ByteArrayInputStream inStream = new ByteArrayInputStream(scufl
 				.getBytes());

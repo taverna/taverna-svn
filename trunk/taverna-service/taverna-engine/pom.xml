@@ -59,7 +59,40 @@
 			<artifactId>scufl-tools</artifactId>
 		</dependency>
 
+		<!-- System dependencies -->
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>jaxen</groupId>
+			<artifactId>jaxen</artifactId>
+			<version>1.0-FCS</version>
+		</dependency>
+		<dependency>
+			<groupId>saxpath</groupId>
+			<artifactId>saxpath</artifactId>
+			<version>1.0-FCS</version>
+		</dependency>
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.12</version>
+		</dependency>
+
 		<!--  Taverna processors -->
+		<!--
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-dependency-processor</artifactId>
@@ -124,7 +157,7 @@
 			<groupId>uk.org.mygrid.taverna</groupId>
 			<artifactId>taverna-contrib</artifactId>
 		</dependency>
-
+		-->
 	</dependencies>
 	<build>
 		<plugins>

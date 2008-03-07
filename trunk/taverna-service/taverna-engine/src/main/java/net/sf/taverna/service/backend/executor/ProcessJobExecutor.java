@@ -127,10 +127,10 @@ public class ProcessJobExecutor implements JobExecutor {
 		//javaProcess.addJavaArguments("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=localhost:8990");
 		
 		// Disable to use Raven to download artefacts
-		javaProcess.addSystemProperty("raven.eclipse", "true");
+//		javaProcess.addSystemProperty("raven.eclipse", "true");
 		
 		// Enable to use Raven to download Taverna 1.7.0.0
-		//javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.7.0/taverna-1.7.0.0-profile.xml");
+		javaProcess.addSystemProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.7.0/taverna-1.7.0.0-profile.xml");
 
 		javaProcess.addArguments("-base", baseUri);
 		javaProcess.addArguments("-username", username);
