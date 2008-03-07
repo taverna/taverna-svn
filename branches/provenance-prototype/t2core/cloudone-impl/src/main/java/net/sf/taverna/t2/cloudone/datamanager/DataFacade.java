@@ -17,7 +17,12 @@ import net.sf.taverna.t2.cloudone.entity.Entity;
 import net.sf.taverna.t2.cloudone.entity.EntityList;
 import net.sf.taverna.t2.cloudone.entity.ErrorDocument;
 import net.sf.taverna.t2.cloudone.entity.Literal;
+import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.EntityIdentifiers;
+import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.IDType;
 import net.sf.taverna.t2.cloudone.refscheme.BlobReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
@@ -474,6 +479,55 @@ public class DataFacade {
 			throw new IllegalArgumentException("Type " + entityId.getType()
 					+ " not yet supported");
 		}
+	}
+	/**
+	 * Given an {@link EntityIdentifier} as a string which represents a {@link EntityList} return all the other 
+	 * {@link EntityIdentifier}s which it contains as an XML formatted string
+	 * <List>
+	 * 	<parent>parentId</parent>
+	 * 	<id>childId1</id>
+	 * 	<id>childId2</id>
+	 * </List>
+	 * @param entityIdentifier
+	 * @return
+	 * @throws NotFoundException 
+	 * @throws RetrievalException 
+	 */
+	public String resolveToString(String entityIdentifier) throws RetrievalException, NotFoundException {
+		String entityList = "";
+
+			if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Literal)) {
+				entityList = entityList + "<literal id =\"" + entityIdentifier + "\"/>\n";
+			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Error)) {
+				ErrorDocumentIdentifier parseErrorIdentifier = EntityIdentifiers.parseErrorIdentifier(entityIdentifier);
+				Entity<?, ?> entity = dManager.getEntity(parseErrorIdentifier);
+				String stackTrace = ((ErrorDocument)entity).getStackTrace();
+				String message = ((ErrorDocument)entity).getMessage();
+				entityList = entityList + "<error id=\"" + entityIdentifier + "\">";
+				entityList = entityList + "<stackTrace>" + stackTrace + "</stackTrace>\n";
+				entityList = entityList + "<message>" + stackTrace + "</message>\n</error>\n";
+			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Data)) {
+				entityList = entityList + "<dataDocument id= \"" + entityIdentifier + "\">";
+				DataDocumentIdentifier parseDocumentIdentifier = EntityIdentifiers.parseDocumentIdentifier(entityIdentifier);
+				Entity<?,?> dataDoc = dManager.getEntity(parseDocumentIdentifier);
+				Set<ReferenceScheme> referenceSchemes = ((DataDocument)dataDoc).getReferenceSchemes();
+				for (ReferenceScheme ref:referenceSchemes) {
+					entityList = entityList + "<reference>" + ref.toString() + "</reference>\n";
+				}
+				entityList = entityList +"</dataDocument>\n";
+			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.List)) {
+				entityList = entityList +"<list id=\"" + entityIdentifier +"\">\n";
+				EntityListIdentifier entityListIdentifier = EntityIdentifiers.parseListIdentifier(entityIdentifier);
+				EntityList ent = (EntityList) dManager.getEntity(entityListIdentifier);
+				for (EntityIdentifier entityId:ent) {
+					entityList = entityList +resolveToString(entityId.getAsURI());
+				}
+				entityList = entityList + "</list>\n";
+			} else {
+				//throw something (maybe a tantrum)
+			}
+		
+		return entityList;
 	}
 
 	/**
