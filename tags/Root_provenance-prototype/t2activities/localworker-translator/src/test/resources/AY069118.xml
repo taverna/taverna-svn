@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE sciobj SYSTEM "agave.dtd">
+<sciobj version="2">
+    <bio_sequence seq_length="1502" molecule_type="DNA" element_id="AY069118">
+      <sequence>aagaatagagggagaatgaaaaaaatgacataaatggcggaaagcaaacctagcgccaacattcgtattttcgtttaatt
+ttcgctccaaagtgcaattaattccggcttcttgatcgctgcatattgagtgcagccacgcaaagagttacaaggacagg
+agtatagtcatcgagtcgattgcggaccatgtacaagcgcaaaaccgcgagtattgttaaaagagacagctccgcagcgg
+gcaccacctcctcggctatgatgatgaaggtggattcggctgagacttcggtccggtcgcagagctacgagtctacaccc
+gttagcatggacacatcaccggatcctccaacgccaatcaagtctccgtcgaattcacaatcgcaatcgcagcctggaca
+acagcgctccgtgggctcactggtcctgctcacacagaagtttgtggatctcgtgaaggccaacgaaggatccatcgacc
+tgaaagcggcaaccaaaatcttggacgtacagaagcgccgaatatacgatattaccaatgttttagagggcattggacta
+attgataagggcagacactgctccctagtgcgctggcgcggagggggctttaacaatgccaaggaccaagagaactacga
+cctggcacgtagccggactaatcatttgaaaatgttggaggatgacctagacaggcaactggagtatgcacagcgcaatc
+tgcgctacgttatgcaggatccctcgaataggtcgtatgcatatgtgacacgtgatgatctgctggacatctttggagat
+gattccgtattcacaatacctaattatgacgaggaagtagatatcaagcgtaatcattacgagctggccgtgtcgctgga
+caatggcagcgcaattgacattcgcctggtgacgaaccaaggaaagagtactacaaatccgcacgatgtggatgggttct
+ttgactatcaccgtctggacacgccctcaccctcgacgtcgtcgcactccagcgaggatggtaacgctccagcatgcgcg
+gggaacgtgatcaccgacgagcacggttactcgtgcaatcccgggatgaaagatgagatgaaacttttggagaacgagct
+gacggccaagataatcttccaaaattatctgtccggtcattcgctgcggcgattttatcccgatgatccgaatctagaaa
+acccgccgctgctgcagctgaatcctccgcaggaagacttcaactttgcgttaaaaagcgacgaaggtatttgcgagctg
+tttgatgttcagtgctcctaactgtggaaggggatgtacaccttaggactatagctacactgcaactggccgcgtgcatt
+gtgcaaatatttatgattagtacaattttgactttggatttctctatatcgtctagaaatttttaattagtgtaatacct
+tgtaatttcgcaaataacagcaaaaccaataaattcgtaaatgcaaaaaaaaaaaaaaaaaa</sequence>
+      <sequence_map>
+        <annotations>
+          <seq_feature feature_type="source">
+            <seq_location least_start="1" greatest_end="1502" on_complement_strand="false">1..1502</seq_location>
+            <qualifier qualifier_type="organism" data_type="varchar">Drosophila melanogaster</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">taxon:7227</qualifier>
+            <qualifier qualifier_type="map" data_type="varchar">39B3-39B3</qualifier>
+            <qualifier qualifier_type="strain" data_type="varchar">y; cn bw sp</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="CDS">
+            <seq_location least_start="189" greatest_end="1301" on_complement_strand="false">189..1301</seq_location>
+            <qualifier qualifier_type="product" data_type="varchar">GH13089p</qualifier>
+            <qualifier qualifier_type="translation" data_type="varchar">MYKRKTASIVKRDSSAAGTTSSAMMMKVDSAETSVRSQSYESTPVSMDTSPDPPTPIKSPSNSQSQSQPGQQRSVGSLVLLTQKFVDLVKANEGSIDLKAATKILDVQKRRIYDITNVLEGIGLIDKGRHCSLVRWRGGGFNNAKDQENYDLARSRTNHLKMLEDDLDRQLEYAQRNLRYVMQDPSNRSYAYVTRDDLLDIFGDDSVFTIPNYDEEVDIKRNHYELAVSLDNGSAIDIRLVTNQGKSTTNPHDVDGFFDYHRLDTPSPSTSSHSSEDGNAPACAGNVITDEHGYSCNPGMKDEMKLLENELTAKIIFQNYLSGHSLRRFYPDDPNLENPPLLQLNPPQEDFNFALKSDEGICELFDVQCS</qualifier>
+            <qualifier qualifier_type="gene" data_type="varchar">E2f2</qualifier>
+            <qualifier qualifier_type="protein_id" data_type="varchar">AAL39263.1</qualifier>
+            <qualifier qualifier_type="note" data_type="varchar">Longest ORF</qualifier>
+            <qualifier qualifier_type="codon_start" data_type="varchar">1</qualifier>
+          </seq_feature>
+          <seq_feature feature_type="gene">
+            <seq_location least_start="1" greatest_end="1502" on_complement_strand="false">1..1502</seq_location>
+            <qualifier qualifier_type="gene" data_type="varchar">E2f2</qualifier>
+            <qualifier qualifier_type="db_xref" data_type="varchar">FLYBASE:FBgn0024371</qualifier>
+            <qualifier qualifier_type="note" data_type="varchar">alignment with genomic scaffold AE003669</qualifier>
+          </seq_feature>
+        </annotations>
+      </sequence_map>
+  </bio_sequence>
+</sciobj>

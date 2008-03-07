@@ -1,0 +1,3 @@
+net.sf.taverna.t2.cloudone.translator.AnyToBlobTranslator 
+net.sf.taverna.t2.cloudone.translator.AnyToFileURLTranslator
+
