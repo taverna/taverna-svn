@@ -10,17 +10,18 @@
   be performed in a simpler fashion it should serve as a reasonable
   introduction to the basic features of Taverna. This section assumes that you
   are running on some modern version of the Windows operating system (Windows
-  2000, Windows XP), there may be some minor differences with other systems
-  such as linux and Solaris although the basics should be identical.</para>
+  2000, Windows XP, Vista), there may be some minor differences with other
+  systems such as Mac OS, Linux and Solaris although the basics should be
+  identical.</para>
 
   <section id="taverna_installation">
     <title>Installation</title>
 
-    <para>Both Windows and Linux installations require a modern (version 1.5)
-    Java installation to run. Windows machines may not have this by default,
-    so you will need to obtain it from http://java.sun.com. Linux users are
-    more likely to already have this but should check - the procedure for Java
-    installation on Linux is out of the bounds of this document.</para>
+    <para>Installations of Taverna require a Java 1.5 installation to run.
+    Windows machines may not have this by default, so you will need to obtain
+    it from http://java.sun.com. Linux users are more likely to already have
+    this but should check - the procedure for Java installation on Linux is
+    out of the bounds of this document.</para>
 
     <section id="taverna_on_windows">
       <title>Windows</title>
@@ -34,6 +35,13 @@
       file just as if it were a normal folder on the file system, however,
       this is not the case and the differences will cause Taverna to
       fail.</para>
+    </section>
+
+    <section>
+      <title>Mac OS</title>
+
+      <para>Download the Taverna dmg; open it and follow the instructions
+      shown.</para>
     </section>
 
     <section id="taverna_on_linux">
@@ -67,8 +75,8 @@
       in order to run, together with any updates if requested, and optional
       plugins. By default, this location is on Windows
       &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
-      Data/Taverna/repository, on Linux $HOME/.taverna-1.6.1/repository and on
-      the Mac $HOME/Library/Application Support/Taverna-1.6.1/repository. This
+      Data/Taverna/repository, on Linux $HOME/.taverna-1.7.1/repository and on
+      the Mac $HOME/Library/Application Support/Taverna-1.7.1/repository. This
       location can be changed by setting the property taverna.repository in
       the startup script. Be careful not to overwrite the existing other
       settings for ARGS by making sure you are appending your new setting. For
@@ -76,7 +84,7 @@
 
       <screen>set ARGS=%ARGS% -Dtaverna.repository=&lt;new location&gt; 
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
+java %ARGS% -jar "%~dp0\taverna-bootstrap-1.7.1.jar" %*</screen>
 
       <para>Note that spaces in the path name should be replaced with %20,
       e.g. Documents%20and%20Settings.</para>
@@ -85,7 +93,7 @@ java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.0.jar" %*</screen>
 
       <screen>ARGS="$ARGS –Dtaverna.repository=&lt;new location&gt;" 
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.0.jar $@</screen>
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.7.1.jar $@</screen>
 
       <para>In Taverna 1.5.0 and 1.5.1 the location of the repository was
       &lt;Drive&gt;:/Documents and Settings/&lt;You&gt;/Application
@@ -129,9 +137,9 @@ http.proxyPassword = theking</screen>
       file. Generally this file is found in the conf directory of the unpacked
       Taverna download. Optionally, you can override this file with the
       presence of a user specific mygrid.properties. In windows this would be
-      Documents and Setttings\&lt;user&gt;\Application Data\Taverna-1.5.2\, in
-      Linux $HOME/.taverna-1.5.2/, and on the Mac $HOME/Library/Application
-      Support/Taverna-1.5.2/. This is useful when Taverna is deployed within a
+      Documents and Setttings\&lt;user&gt;\Application Data\Taverna-1.7.1\, in
+      Linux $HOME/.taverna-1.7.1/, and on the Mac $HOME/Library/Application
+      Support/Taverna-1.7.1/. This is useful when Taverna is deployed within a
       multi-user environment, allowing each user to customise their individual
       settings.</para>
     </section>
@@ -170,7 +178,6 @@ http.proxyPassword = theking</screen>
       http://industry.ebi.ac.uk/soap/soaplab,\
       http://www.ebi.ac.uk/collab/mygrid/service4/soap/services
    taverna.defaultwsdl = \
-      http://www.ebi.ac.uk/collab/mygrid/service1/goviz/GoViz.jws?wsdl,\
       http://www.ebi.ac.uk/xembl/XEMBL.wsdl
    taverna.defaultbiomoby = \
       http://mobycentral.cbr.nrc.ca/cgi-bin/MOBY05/mobycentral.pl

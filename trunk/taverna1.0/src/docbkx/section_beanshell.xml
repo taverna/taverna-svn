@@ -7,9 +7,9 @@
   <para>There are often cases in workflow construction where the output of one
   processor is not quite right for the input of the next. There are various
   options to cover these cases - the user can make use of so called shim
-  services exposed in the same way as other operations, he or she could create
-  a new service to perform the transformation or, for relatively simple cases,
-  he or she could create a single non service component in the form of a
+  services exposed in the same way as other operations, they could create a
+  new service to perform the transformation or, for relatively simple cases,
+  they could create a single non service component in the form of a
   script.</para>
 
   <para>Beanshell scripts, as the name suggests, use the Beanshell scripting
@@ -434,7 +434,7 @@
       <programlisting>@echo off
 
 <emphasis role="bold">rem Set to %~dp0\lib for shared installations
-</emphasis><emphasis role="bold">set LIB_PATH="%APP_DATA\Taverna-1.5.2\lib"
+</emphasis><emphasis role="bold">set LIB_PATH="%APP_DATA\Taverna-1.7.1\lib"
 set PATH=%PATH%:%LIB_PATH%
 
 set ARGS=-Xmx300m "-Djava.library.path=%LIB_PATH"
@@ -452,7 +452,7 @@ TAVERNA_HOME="`dirname "$PRG"`"
 cd "$saveddir"
 
 <emphasis role="bold"># Set to $TAVERNA_HOME/lib for shared installation
-LIB_PATH="$HOME/.taverna-1.5.2/lib"
+LIB_PATH="$HOME/.taverna-1.7.1/lib"
 
 LD_LIBRARY_PATH="$LIB_PATH"
 export LD_LIBRARY_PATH
@@ -473,7 +473,7 @@ ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader
       <remark>Technically you can instead use almost the same solution as in
       Linux, but you would have to start Taverna using the command line
       <literal>DY_LD_LIBRARY_PATH=$HOME/Library/Application\
-      Support/Taverna-1.5.2/lib/
+      Support/Taverna-1.7.1/lib/
       /Applications/Taverna.app/Contents/MacOS/JavaApplicationStub</literal></remark>
 
       <para>Use the <guilabel>Terminal</guilabel> and change directory to

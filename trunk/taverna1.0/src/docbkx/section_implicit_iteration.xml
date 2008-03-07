@@ -17,23 +17,23 @@
   ML. While this might sound complex and foreign to most users it should be
   relatively intuitive to actually use.</para>
 
-  <para>Whereas an explicit iteration construct a la PERL requires the user to
-  code the iteration into their script with specific commands and code
-  structures, Taverna's implicit iteration framework requires (in the simplest
-  cases) no additional work at all. The user simply connects an output
-  containing a collection of items into an input which consumes a single item
-  of the same type. In the previous example the user might have access to a
-  processor which consumes a single DNA sequence and emits a single floating
-  point value corresponding to the GC concentration over that sequence. To
-  iterate over a set of sequences the user simply connects the set of
-  sequences into the same input - Taverna detects that there is a mismatch of
-  this kind and repeatedly runs the GC concentration analysis over each
-  sequence in the input set. As the normal output is a single floating point
-  value the new output is a list of such values, the first corresponding to
-  the first input sequence, the second to the second and so on. Of course,
-  this iteration will tend to 'bubble down' the workflow as a result, if the
-  next processor expected a single GC concentration number it will itself be
-  run repeatedly on all results.</para>
+  <para>Whereas an explicit iteration construct requires the user to code the
+  iteration into their script with specific commands and code structures,
+  Taverna's implicit iteration framework requires (in the simplest cases) no
+  additional work at all. The user simply connects an output containing a
+  collection of items into an input which consumes a single item of the same
+  type. In the previous example the user might have access to a processor
+  which consumes a single DNA sequence and emits a single floating point value
+  corresponding to the GC concentration over that sequence. To iterate over a
+  set of sequences the user simply connects the set of sequences into the same
+  input - Taverna detects that there is a mismatch of this kind and repeatedly
+  runs the GC concentration analysis over each sequence in the input set. As
+  the normal output is a single floating point value the new output is a list
+  of such values, the first corresponding to the first input sequence, the
+  second to the second and so on. Of course, this iteration will tend to
+  'bubble down' the workflow as a result, if the next processor expected a
+  single GC concentration number it will itself be run repeatedly on all
+  results.</para>
 
   <para>The corresponding wrapping logic also exists, if a processor expects a
   list of sequences and the user connects it to an output which provides a

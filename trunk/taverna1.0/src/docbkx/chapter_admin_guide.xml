@@ -24,7 +24,8 @@
     conflicts as well as manage extensions supplied by third parties and
     provide some level of automatic updates. This comes at a cost however, as
     the installation and configuration of Taverna is considerably more
-    complex.</para>
+    complex. Taverna 1.5.2 is used throughout this section as an example of a
+    fully specified Taverna version.</para>
 
     <para>When a fresh Taverna 1.5.2 installation is run for the first time
     after being downloaded from one of our download mirrors the following
@@ -360,7 +361,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
         <para>A specific profile can be forced by setting the property
         <property>raven.profile</property>. An example profile can be found at
         <ulink
-            url="http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml</ulink>.
+        url="http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml</ulink>.
         This profile will be used without prompting for an update.</para>
       </listitem>
 

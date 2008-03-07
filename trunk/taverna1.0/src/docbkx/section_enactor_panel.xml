@@ -375,9 +375,9 @@ wireframe on; colour cpk;
           becoming invisible. The script used in these cases for version 1.1
           onwards is as follows:</para>
 
-          <screen>select *; spacefill 0.4; wireframe 0.2; colour cpk;	</screen>
+          <screen>select *; spacefill 0.4; wireframe 0.2; colour cpk;</screen>
 
-          <para>Thanks to Egon for this change</para>
+          <para></para>
         </section>
       </section>
 

@@ -17,14 +17,14 @@
     <para>As a first quick demonstration of Taverna you can load one of the
     example workflows. Select open workflow from the file menu. You should be
     presented with a file chooser dialog box, the exact appearance of which
-    will be determined by your operating system. </para>
+    will be determined by your operating system.</para>
 
     <section id="loading_a_workflow">
       <title>Loading a workflow</title>
 
       <para>Workflow examples are stored in the 'examples' subdirectory of
       your Taverna installation, so use the file browser to navigate to this
-      directory and select the 'ShowGeneOntologyContext.xml' workflow. This
+      directory and select the 'SNPsForRegionsSurroundingGene' workflow. This
       should result in the Advanced Model Explorer and Workflow Diagram panels
       being populated with the workflow defined in this file. There may be a
       short delay while Taverna contacts the network to get more information
@@ -42,18 +42,14 @@
       from the file menu. If your workflow requires input, you will be
       presented with a new window - this is the place to enter the starting
       data on which the workflow is to run. In this case the workflow has a
-      single input called 'termID'. Select ‘termID’ and right-click. You
-      should see that the 'New Input' and 'New List' options are now available
-      at the top of the window, click on the 'New Input' to create a single
-      data input to the workflow. In this case, the workflow description has
-      helpfully included an example of a sensible input value, the string
-      'GO:0007601' (this term corresponds to 'vision' in the Gene Ontology -
-      http://www.geneontology.org). In panel that has just appeared you should
-      replace the 'Some input data goes here' with the input term, so try
-      entering 'GO:0007601' as the description suggests (but without the quote
-      marks). Once you have entered this input data you can press the 'Run
-      Workflow' button at the bottom of this window to actually start the
-      workflow engine off on the supplied input.</para>
+      single input called 'GeneIDList'. Select ‘GeneIDList’ and right-click.
+      You should see that the 'New Input' and 'New List' options are now
+      available at the top of the window, click on the 'New Input' to create a
+      single data input to the workflow. In the panel that has just appeared
+      you should replace the 'Some input data goes here' with the input term,
+      so try entering 'ENSG00000131959'. Once you have entered this input data
+      you can press the 'Run Workflow' button at the bottom of this window to
+      actually start the workflow engine off on the supplied input.</para>
 
       <para>The workflow run will be displayed in the ‘Results’ window. This
       window shows you the progress of the workflow and also the results on
@@ -71,14 +67,13 @@
     <section id="browsing_results">
       <title>Browsing results</title>
 
-      <para>This particular workflow has a single output called 'graphical',
-      which contains a single piece of data. Select the only available item in
-      the list on the left hand side of the window and you should see a
-      diagram of a sub graph of the Gene Ontology appear in the right hand
-      panel - this is your workflow result (the diagram can be quite large,
-      you might have to scroll around to see it). Congratulations, if this
-      worked then you have installed and configured Taverna correctly and run
-      your first workflow.</para>
+      <para>This particular workflow has two outputs called 'ReportList' and
+      'GeneIDList'. Select ReportList from the tabs. Select the only available
+      item in the list on the left hand side of the window and repeatedly
+      expand the list. You should see a list of results appear in the right
+      hand side of the window. Congratulations, if this worked then you have
+      installed and configured Taverna correctly and run your first
+      workflow.</para>
 
       <para>If you were to want to save the workflow (there's not much point
       as we haven't changed anything) you would select the 'Save' option from
