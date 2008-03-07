@@ -30,6 +30,16 @@
 	<a href="$uriFactory.URIForServices">all services</a>
 	.
 </p>
+<!-- Google CSE Search Box Begins  -->
+<form action="http://www.google.com/cse" id="searchbox_010260900301646126041:qsgudfnacz4">
+  <input type="hidden" name="cx" value="010260900301646126041:qsgudfnacz4" />
+  <input type="text" name="q" size="25" />
+  <input type="submit" name="sa" value="Search" />
+</form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_010260900301646126041%3Aqsgudfnacz4&lang=en"></script>
+<!-- Google CSE Search Box Ends -->
+
+
 <p>
 	This is a web presentation of all
 	<a
