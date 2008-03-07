@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -31,8 +30,6 @@ import org.openrdf.repository.sail.SailRepositoryConnection;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.memory.MemoryStore;
-
-import com.noelios.restlet.util.Base64;
 
 import uk.org.mygrid.mygridmobyservice.Operation;
 import uk.org.mygrid.mygridmobyservice.Organisation;
@@ -175,6 +172,7 @@ public class ServiceRegistry {
 		return getClassesForHaving(operation, "usesMethod");
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Class> getNamespaceClasses() {
 		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
 				+ "SELECT DISTINCT ?nsClass\n"
@@ -268,6 +266,7 @@ public class ServiceRegistry {
 		return getServicesParamPred("inputParameter", "inNamespaces", type);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<ServiceDescription> getServicesMethodHas(Class objectClass,
 			String predicate) {
 		QName predName = new QName(
@@ -287,6 +286,7 @@ public class ServiceRegistry {
 		return elmoQuery.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<ServiceDescription> getServicesParamPred(String hasParameter,
 			String paramPred, Class type) {
 		QName hasParameterName = new QName(
@@ -343,6 +343,7 @@ public class ServiceRegistry {
 		return getServicesMethodHas(resource, "usesResource");
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Class> getSubClasses(Class parent) {
 		String query = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n"
 				+ "SELECT ?class\n" + "WHERE {\n"
@@ -353,6 +354,7 @@ public class ServiceRegistry {
 		return elmoQuery.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Class> getTaskClasses() {
 		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
 				+ "SELECT DISTINCT ?taskClass\n"
@@ -368,6 +370,7 @@ public class ServiceRegistry {
 		return getClassesForHaving(operation, "performsTask");
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Class> getTypesClasses() {
 		String query = "PREFIX service: <http://www.mygrid.org.uk/mygrid-moby-service#>\n"
 				+ "SELECT DISTINCT ?nsClass\n"
