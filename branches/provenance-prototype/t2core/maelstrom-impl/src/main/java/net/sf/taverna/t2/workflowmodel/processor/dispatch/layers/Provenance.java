@@ -60,7 +60,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig> implemen
 
 	@Override
 	public void receiveError(DispatchErrorEvent errorEvent) {
-		logger.log(null, "Provenance layer received error event");
+		logger.info("Provenance layer received error event");
 //		System.out.println("Provenance layer received error event");
 		InvocationContext context = errorEvent.getContext();
 		ProvenanceConnector provenanceManager = context.getProvenanceManager();
@@ -87,7 +87,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig> implemen
 
 	@Override
 	public void receiveJob(DispatchJobEvent jobEvent) {
-		logger.log(null, "Provenance layer received job event");
+		logger.info("Provenance layer received job event");
 //		System.out.println("Provenance layer received job event");
 		InvocationContext context = jobEvent.getContext();
 		// get something from job event and write to provenance manager?
@@ -97,7 +97,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig> implemen
 
 	@Override
 	public void receiveJobQueue(DispatchJobQueueEvent jobQueueEvent) {
-		logger.log(null, "Provenance layer received job queue event");
+		logger.info("Provenance layer received job queue event");
 //		System.out.println("Provenance layer received job queue event");
 //		System.out.println(jobQueueEvent.getOwningProcess());
 		InvocationContext context = jobQueueEvent.getContext();
@@ -144,7 +144,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig> implemen
 	 */
 	@Override
 	public void receiveResult(DispatchResultEvent resultEvent) {
-		logger.log(null, "Provenance layer received result event");
+		logger.info("Provenance layer received result event");
 //		System.out.println("Provenance layer received result event");
 		InvocationContext context = resultEvent.getContext();
 		ProvenanceConnector provenanceConnector = context
@@ -185,7 +185,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig> implemen
 
 	@Override
 	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
-		logger.log(null, "Provenance layer received completion event");
+		logger.info("Provenance layer received completion event");
 //		System.out.println("Provenance layer received completion event");
 		InvocationContext context = completionEvent.getContext();
 		StateModel model = stateMap.get(completionEvent.getOwningProcess());
