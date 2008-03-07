@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.invocation;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.provenance.ProvenanceConnector;
 
 /**
  * Carries the context of a workflow invocation, the necessary data manager,
@@ -13,5 +14,7 @@ import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 public interface InvocationContext {
 
 	public DataManager getDataManager();
+	
+	public ProvenanceConnector getProvenanceManager();
 	
 }
