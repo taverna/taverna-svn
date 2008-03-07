@@ -14,6 +14,8 @@ import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.provenance.InMemoryProvenanceConnector;
+import net.sf.taverna.t2.provenance.ProvenanceConnector;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -48,16 +50,23 @@ public class TranslatorTestHelper {
 	protected AbstractDataManager dataManager;
 	protected DataFacade dataFacade;
 	protected InvocationContext context;
+	protected ProvenanceConnector provenanceConnector;
 	
 	@SuppressWarnings("unchecked")
 	@Before
 	public void makeDataManager() {
 		dataManager = new InMemoryDataManager("namespace",
 				Collections.EMPTY_SET);
+		provenanceConnector = new InMemoryProvenanceConnector();
 		dataFacade=new DataFacade(dataManager);
 		context =  new InvocationContext() {
 			public DataManager getDataManager() {
 				return dataManager;
+			}
+
+			public ProvenanceConnector getProvenanceManager() {
+				// TODO Auto-generated method stub
+				return provenanceConnector;
 			}
 		};
 	}

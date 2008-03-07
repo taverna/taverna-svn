@@ -13,6 +13,7 @@ import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.plugin.input.InputComponent.InputComponentCallback;
+import net.sf.taverna.t2.provenance.ProvenanceConnector;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -32,6 +33,11 @@ public class ViewInputs {
 
 			public DataManager getDataManager() {
 				return dataManager;
+			}
+
+			public ProvenanceConnector getProvenanceManager() {
+				// TODO Auto-generated method stub
+				return null;
 			}
 			
 		};
