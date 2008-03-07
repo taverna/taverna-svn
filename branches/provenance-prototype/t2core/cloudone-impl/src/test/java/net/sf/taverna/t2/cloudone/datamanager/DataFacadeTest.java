@@ -7,21 +7,31 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.cloudone.entity.DataDocument;
 import net.sf.taverna.t2.cloudone.entity.Literal;
 import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.cloudone.refscheme.DereferenceException;
+import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
+import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
+import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -253,6 +263,62 @@ public class DataFacadeTest {
 		assertNotSame(bigList, resolved);
 		assertEquals(Double.MIN_VALUE, resolved.get(0).get(2));
 		assertEquals(Long.MIN_VALUE, resolved.get(1).get(4));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void registerListOfListsforResolvingAsString() throws RetrievalException,
+			NotFoundException, DataManagerException, IOException {
+		
+		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
+		HttpReferenceScheme httpRefScheme = new HttpReferenceScheme(new URL("http://google.com"));
+		references.add(httpRefScheme);
+		File file = null;
+		try {
+			file = File.createTempFile("test", ".tmp");
+		} catch (IOException e) {
+
+		}
+		FileReferenceScheme fileRefScheme = new FileReferenceScheme(file);
+		references.add(fileRefScheme);
+		BlobReferenceSchemeImpl blobRefScheme = new BlobReferenceSchemeImpl(TEST_NS,UUID.randomUUID().toString());
+		references.add(blobRefScheme);
+		
+		DataDocumentIdentifier docId = dManager.registerDocument(references);
+		
+		Throwable ex = new IllegalArgumentException("Did not work",
+				new NullPointerException("No no"));
+		
+		int depth = 0;
+		int implicitDepth = 1;
+		
+		ErrorDocumentIdentifier errId1 = dManager.registerError(depth++,
+				implicitDepth, ex);
+		
+		List<Object> list1 = new ArrayList<Object>();
+		list1.add(-25);
+		list1.add((float) 30.56);
+		list1.add(Double.MIN_VALUE);
+		list1.add(true);
+		list1.add(Long.MAX_VALUE);
+		list1.add("hello");
+		list1.add(docId);
+
+		List<Object> list2 = new ArrayList<Object>();
+		list2.add(25);
+		list2.add((float) 32.546);
+		list2.add(Double.MAX_VALUE);
+		list2.add(false);
+		list2.add(Long.MIN_VALUE);
+		list2.add("hello there");
+		list2.add(errId1);
+
+		List<List<Object>> bigList = new ArrayList<List<Object>>();
+		bigList.add(list1);
+		bigList.add(list2);
+		EntityIdentifier bigListId = facade.register(bigList);
+		String resolveToString = facade.resolveToString(bigListId.getAsURI());
+		System.out.println(resolveToString);
 	}
 
 	@Test
