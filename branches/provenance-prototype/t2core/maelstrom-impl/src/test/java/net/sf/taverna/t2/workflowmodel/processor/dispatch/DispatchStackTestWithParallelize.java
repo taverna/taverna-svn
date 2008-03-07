@@ -19,6 +19,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Provenance;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import junit.framework.TestCase;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
@@ -96,6 +97,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 	public void testMultipleProcessIDs() {
 		System.out.println("Multiple jobs, multiple process identifiers");
 		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Activity<?>>());
+		d.addLayer(new Provenance());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
@@ -124,6 +126,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		System.out.println("Single job");
 		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Activity<?>>());
 		d.addLayer(new DiagnosticLayer());
+		d.addLayer(new Provenance());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
@@ -185,6 +188,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 				c.receiveEvent(e);
 			}
 		};
+		d.addLayer(new Provenance());
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
@@ -236,9 +240,13 @@ public class DispatchStackTestWithParallelize extends TestCase {
 		for (int i = 0; i < jobs; i++) {
 			Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 			dataMap.put("Input1", nextID());
-			events.add(new Job(processID+":processorName", new int[] { i }, dataMap, context));
+			Job job = new Job(processID+":processorName", new int[] { i }, dataMap, context);
+			
+			events.add(job);
 		}
-		events.add(new Completion(processID+":processorName", context));
+		Completion completion = new Completion(processID+":processorName", context);
+	
+		events.add(completion);
 		return events;
 	}
 

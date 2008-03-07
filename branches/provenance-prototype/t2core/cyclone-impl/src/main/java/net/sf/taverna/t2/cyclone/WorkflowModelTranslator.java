@@ -36,6 +36,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Provenance;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
@@ -44,6 +45,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 
+import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.AlternateProcessor;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
@@ -73,6 +75,8 @@ import org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor
  * 
  */
 public class WorkflowModelTranslator {
+	
+	private static Logger logger = Logger.getLogger(WorkflowModelTranslator.class);
 
 	private Edits edits = EditsRegistry.getEdits();
 
@@ -375,17 +379,20 @@ public class WorkflowModelTranslator {
 		int initialDelay = t1Processor.getRetryDelay();
 		int maxDelay = (int) (initialDelay * (Math.pow(backoffFactor,
 				maxRetries)));
-
+		//new provenance layer
+		DispatchLayer<?> provenance = new Provenance();
 		DispatchLayer<?> parallelize = new Parallelize(maxJobs);
 		DispatchLayer<?> failover = new Failover();
 		DispatchLayer<?> retry = new Retry(maxRetries, initialDelay, maxDelay,
 				backoffFactor);
 		DispatchLayer<?> invoke = new Invoke();
-
-		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, 0).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, failover, 1).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, retry, 2).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, invoke, 3).doEdit();
+		
+		//new provenance layer
+		edits.getAddDispatchLayerEdit(dispatchStack, provenance, 0).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, 1).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, failover, 2).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, retry, 3).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, invoke, 4).doEdit();
 	}
 
 	/**
