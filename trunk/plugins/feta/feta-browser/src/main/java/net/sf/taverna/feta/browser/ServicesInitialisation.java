@@ -1,14 +1,12 @@
 package net.sf.taverna.feta.browser;
 
 import java.io.File;
-import java.net.URI;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import net.sf.taverna.feta.browser.elmo.ServiceRegistry;
-import net.sf.taverna.feta.browser.util.URIFactory;
 
 public class ServicesInitialisation implements ServletContextListener {
 
@@ -17,6 +15,10 @@ public class ServicesInitialisation implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent contextEvent) {
 		ServletContext context = contextEvent.getServletContext();
+		setSesameDir(context);
+	}
+
+	private void setSesameDir(ServletContext context) {
 		File tmpDir = (File) context
 				.getAttribute("javax.servlet.context.tempdir");
 		File sesameDir = new File(tmpDir, "sesame");
