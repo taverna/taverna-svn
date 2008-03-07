@@ -139,14 +139,14 @@ public class ServiceResource extends AbstractResource {
 				
 		URI relativeUri = descriptionsRoot.relativize(descriptionLocation);
 		URI workflowUri =  examplesRoot.resolve(relativeUri).resolve(workflowName);
-		
+
+		// TODO: Check if it's actually there
 		Request request = new Request(Method.GET, workflowUri.toASCIIString());
 		Client client = new Client(Protocol.HTTP);
 		Response response = client.handle(request);
 		if (! response.getStatus().isSuccess()) {
 			return null;
 		}
-		// TODO: Check if it's there
 		return workflowUri;
 
 	}
