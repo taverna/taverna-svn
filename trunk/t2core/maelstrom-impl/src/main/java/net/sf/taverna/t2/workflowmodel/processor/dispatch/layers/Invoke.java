@@ -124,18 +124,10 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					}
 					
 					public void fail(String message, Throwable t) {
-						MonitorImpl.getMonitor().deregisterNode(
-								invocationProcessIdentifier.split(":"));
-						getAbove().receiveError(
-								new DispatchErrorEvent(jobEvent
-										.getOwningProcess(), jobEvent
-										.getIndex(), jobEvent.getContext(),
-										message, t, DispatchErrorType.INVOCATION, as));
+						fail(message, t, DispatchErrorType.INVOCATION);
 					}
 
 					public void fail(String message) {
-						MonitorImpl.getMonitor().deregisterNode(
-								invocationProcessIdentifier.split(":"));
 						fail(message, null);
 					}
 
