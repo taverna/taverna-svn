@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,6 +11,8 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.provenance.ProvenanceItem;
+import net.sf.taverna.t2.provenance.ProvenanceItemImpl;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -69,10 +72,23 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	 */
 	@Override
 	public void receiveJob(final DispatchJobEvent jobEvent) {
+		// start adding provenance info
+		Map<String, EntityIdentifier> data = jobEvent.getData();
+		int[] index = jobEvent.getIndex();
+		List<? extends Activity<?>> activities = jobEvent.getActivities();
+		ProvenanceItemImpl provItem = new ProvenanceItemImpl();
+		provItem.setActivities(activities);
+		
 
-		for (Activity<?> a : jobEvent.getActivities()) {
+		jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provItem);
 
-			if (a instanceof AsynchronousActivity) {
+		for (final Activity<?> a : jobEvent.getActivities()) {
+
+			if (a instanceof AsynchronousActivity) {// else what??
+				provItem.setActivity(a);
+				provItem.setIteration(index);
+				provItem.setInput(data);
+				provItem.setOwningProcess(jobEvent.getOwningProcess());
 
 				// Register with the monitor
 				final String invocationProcessIdentifier = jobEvent
@@ -88,6 +104,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				// callback methods to push results, completions and failures
 				// back to the invocation layer.
 				final AsynchronousActivity<?> as = (AsynchronousActivity<?>) a;
+				
 
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire
@@ -113,29 +130,29 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					private boolean sentJob = false;
 
-					public void fail(String message, Throwable t, DispatchErrorType errorType) {
+					public void fail(String message, Throwable t,
+							DispatchErrorType errorType) {
 						MonitorImpl.getMonitor().deregisterNode(
 								invocationProcessIdentifier.split(":"));
+						ProvenanceItemImpl provErrorItem = new ProvenanceItemImpl();
+						provErrorItem.setActivity(a);
+						provErrorItem.setIteration(jobEvent.getIndex());
+						provErrorItem.setOwningProcess(jobEvent.getOwningProcess());
+						provErrorItem.setError(t, message, errorType);
+
+						jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provErrorItem);
 						getAbove().receiveError(
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
 										.getIndex(), jobEvent.getContext(),
 										message, t, errorType, as));
 					}
-					
+
 					public void fail(String message, Throwable t) {
-						MonitorImpl.getMonitor().deregisterNode(
-								invocationProcessIdentifier.split(":"));
-						getAbove().receiveError(
-								new DispatchErrorEvent(jobEvent
-										.getOwningProcess(), jobEvent
-										.getIndex(), jobEvent.getContext(),
-										message, t, DispatchErrorType.INVOCATION, as));
+						fail(message, t, DispatchErrorType.INVOCATION);
 					}
 
 					public void fail(String message) {
-						MonitorImpl.getMonitor().deregisterNode(
-								invocationProcessIdentifier.split(":"));
 						fail(message, null);
 					}
 
@@ -233,6 +250,13 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 						// Push the modified data to the layer above in the
 						// dispatch stack
+						ProvenanceItemImpl provItemOutput = new ProvenanceItemImpl();
+						provItemOutput.setActivity(a);
+						provItemOutput.setOwningProcess(jobEvent.getOwningProcess());
+						provItemOutput.setOutput(resultMap);
+						provItemOutput.setIteration(index);
+						jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provItemOutput);
+
 						getAbove().receiveResult(resultEvent);
 
 						sentJob = true;

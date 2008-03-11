@@ -1,12 +1,22 @@
 package net.sf.taverna.t2.provenance;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 public class InMemoryProvenanceConnector implements ProvenanceConnector {
 
 	private static Logger logger = Logger.getLogger(InMemoryProvenanceConnector.class);
 	
+	private List<ProvenanceItem> provenanceCollection;
+	
 	private String provenance;
+	
+	public InMemoryProvenanceConnector() {
+		provenanceCollection = new ArrayList<ProvenanceItem>();
+	}
 	
 	public String getProvenance() {
 		return provenance;
@@ -15,6 +25,19 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	public void saveProvenance(String annotation) {
 		System.out.println(annotation);
 		provenance = annotation;
+	}
+
+	public List<ProvenanceItem> getProvenanceCollection() {
+		return provenanceCollection;
+	}
+
+	public void store() {
+		List<ProvenanceItem> provenanceCopy = new ArrayList<ProvenanceItem>();
+		Collections.copy(provenanceCopy, provenanceCollection);
+		for (ProvenanceItem item:provenanceCopy) {
+			System.out.println(item.getAsXML());
+			provenanceCollection.remove(item);
+		}
 	}
 
 }
