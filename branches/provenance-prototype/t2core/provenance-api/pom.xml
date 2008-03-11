@@ -14,5 +14,10 @@
 		API definition for the provenance data layer.
 	</description>
 	<dependencies>
+	<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>cloudone-api</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 	</dependencies>
 </project>
