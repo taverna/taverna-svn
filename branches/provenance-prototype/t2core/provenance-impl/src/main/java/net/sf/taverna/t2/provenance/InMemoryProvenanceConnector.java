@@ -10,7 +10,7 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 
 	private static Logger logger = Logger.getLogger(InMemoryProvenanceConnector.class);
 	
-	private List<ProvenanceItem> provenanceCollection;
+	private ArrayList<ProvenanceItem> provenanceCollection;
 	
 	private String provenance;
 	
@@ -31,10 +31,10 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 		return provenanceCollection;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void store() {
-		List<ProvenanceItem> provenanceCopy = new ArrayList<ProvenanceItem>();
-		Collections.copy(provenanceCopy, provenanceCollection);
-		for (ProvenanceItem item:provenanceCopy) {
+		List<ProvenanceItem> copiedList = (List<ProvenanceItem>)provenanceCollection.clone();
+		for (ProvenanceItem item:copiedList) {
 			System.out.println(item.getAsXML());
 			provenanceCollection.remove(item);
 		}
