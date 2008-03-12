@@ -31,6 +31,7 @@ import net.sf.taverna.t2.cloudone.refscheme.blob.BlobReferenceSchemeImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -482,52 +483,55 @@ public class DataFacade {
 	}
 	/**
 	 * Given an {@link EntityIdentifier} as a string which represents a {@link EntityList} return all the other 
-	 * {@link EntityIdentifier}s which it contains as an XML formatted string
-	 * <List>
-	 * 	<parent>parentId</parent>
-	 * 	<id>childId1</id>
-	 * 	<id>childId2</id>
-	 * </List>
+	 * {@link EntityIdentifier}s which it contains as an XML Element
 	 * @param entityIdentifier
 	 * @return
 	 * @throws NotFoundException 
 	 * @throws RetrievalException 
 	 */
-	public String resolveToString(String entityIdentifier) throws RetrievalException, NotFoundException {
-		String entityList = "";
+	public org.jdom.Element resolveToElement(String entityIdentifier) throws RetrievalException, NotFoundException {
 
-			if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Literal)) {
-				entityList = entityList + "<literal id =\"" + entityIdentifier + "\"/>\n";
-			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Error)) {
-				ErrorDocumentIdentifier parseErrorIdentifier = EntityIdentifiers.parseErrorIdentifier(entityIdentifier);
-				Entity<?, ?> entity = dManager.getEntity(parseErrorIdentifier);
-				String stackTrace = ((ErrorDocument)entity).getStackTrace();
-				String message = ((ErrorDocument)entity).getMessage();
-				entityList = entityList + "<error id=\"" + entityIdentifier + "\">";
-				entityList = entityList + "<stackTrace>" + stackTrace + "</stackTrace>\n";
-				entityList = entityList + "<message>" + stackTrace + "</message>\n</error>\n";
-			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Data)) {
-				entityList = entityList + "<dataDocument id= \"" + entityIdentifier + "\">";
-				DataDocumentIdentifier parseDocumentIdentifier = EntityIdentifiers.parseDocumentIdentifier(entityIdentifier);
-				Entity<?,?> dataDoc = dManager.getEntity(parseDocumentIdentifier);
-				Set<ReferenceScheme> referenceSchemes = ((DataDocument)dataDoc).getReferenceSchemes();
-				for (ReferenceScheme ref:referenceSchemes) {
-					entityList = entityList + "<reference>" + ref.toString() + "</reference>\n";
-				}
-				entityList = entityList +"</dataDocument>\n";
-			} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.List)) {
-				entityList = entityList +"<list id=\"" + entityIdentifier +"\">\n";
-				EntityListIdentifier entityListIdentifier = EntityIdentifiers.parseListIdentifier(entityIdentifier);
-				EntityList ent = (EntityList) dManager.getEntity(entityListIdentifier);
-				for (EntityIdentifier entityId:ent) {
-					entityList = entityList +resolveToString(entityId.getAsURI());
-				}
-				entityList = entityList + "</list>\n";
-			} else {
-				//throw something (maybe a tantrum)
-			}
+		org.jdom.Element element = new org.jdom.Element("a");
 		
-		return entityList;
+		if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Literal)) {
+			element.setName("literal");
+			element.setAttribute("id", entityIdentifier);
+		} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Error)) {
+			ErrorDocumentIdentifier parseErrorIdentifier = EntityIdentifiers.parseErrorIdentifier(entityIdentifier);
+			Entity<?, ?> entity = dManager.getEntity(parseErrorIdentifier);
+			String stackTrace = ((ErrorDocument)entity).getStackTrace();
+			String message = ((ErrorDocument)entity).getMessage();
+			element.setName("error");
+			element.setAttribute("id", entityIdentifier);
+			org.jdom.Element stackElement = new org.jdom.Element("stackTrace");
+			stackElement.addContent(stackTrace);
+			element.addContent(stackElement);
+			org.jdom.Element messageElement = new org.jdom.Element("message");
+			messageElement.addContent(message);
+			element.addContent(messageElement);
+		} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.Data)) {
+			element.setName("dataDocument");
+			element.setAttribute("id", entityIdentifier);
+			DataDocumentIdentifier parseDocumentIdentifier = EntityIdentifiers.parseDocumentIdentifier(entityIdentifier);
+			Entity<?,?> dataDoc = dManager.getEntity(parseDocumentIdentifier);
+			Set<ReferenceScheme> referenceSchemes = ((DataDocument)dataDoc).getReferenceSchemes();
+			for (ReferenceScheme ref:referenceSchemes) {
+				org.jdom.Element refElement = new org.jdom.Element("reference");
+				refElement.addContent(ref.toString());
+				element.addContent(refElement);
+			}
+		} else if (EntityIdentifiers.findType(entityIdentifier).equals(IDType.List)) {
+			element.setName("list");
+			element.setAttribute("id", entityIdentifier);
+			EntityListIdentifier entityListIdentifier = EntityIdentifiers.parseListIdentifier(entityIdentifier);
+			EntityList ent = (EntityList) dManager.getEntity(entityListIdentifier);
+			for (EntityIdentifier entityId:ent) {
+				element.addContent(resolveToElement(entityId.getAsURI()));
+			}
+		} else {
+			//throw something (maybe a tantrum)
+		}
+		return element;
 	}
 
 	/**

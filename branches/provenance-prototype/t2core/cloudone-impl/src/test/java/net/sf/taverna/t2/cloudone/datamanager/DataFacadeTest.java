@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 
 import org.apache.commons.io.IOUtils;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -264,14 +267,16 @@ public class DataFacadeTest {
 		assertEquals(Double.MIN_VALUE, resolved.get(0).get(2));
 		assertEquals(Long.MIN_VALUE, resolved.get(1).get(4));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void registerListOfListsforResolvingAsString() throws RetrievalException,
-			NotFoundException, DataManagerException, IOException {
-		
+	public void registerListOfListsforResolvingAsString()
+			throws RetrievalException, NotFoundException, DataManagerException,
+			IOException {
+
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-		HttpReferenceScheme httpRefScheme = new HttpReferenceScheme(new URL("http://google.com"));
+		HttpReferenceScheme httpRefScheme = new HttpReferenceScheme(new URL(
+				"http://google.com"));
 		references.add(httpRefScheme);
 		File file = null;
 		try {
@@ -281,20 +286,21 @@ public class DataFacadeTest {
 		}
 		FileReferenceScheme fileRefScheme = new FileReferenceScheme(file);
 		references.add(fileRefScheme);
-		BlobReferenceSchemeImpl blobRefScheme = new BlobReferenceSchemeImpl(TEST_NS,UUID.randomUUID().toString());
+		BlobReferenceSchemeImpl blobRefScheme = new BlobReferenceSchemeImpl(
+				TEST_NS, UUID.randomUUID().toString());
 		references.add(blobRefScheme);
-		
+
 		DataDocumentIdentifier docId = dManager.registerDocument(references);
-		
+
 		Throwable ex = new IllegalArgumentException("Did not work",
 				new NullPointerException("No no"));
-		
+
 		int depth = 0;
 		int implicitDepth = 1;
-		
+
 		ErrorDocumentIdentifier errId1 = dManager.registerError(depth++,
 				implicitDepth, ex);
-		
+
 		List<Object> list1 = new ArrayList<Object>();
 		list1.add(-25);
 		list1.add((float) 30.56);
@@ -317,8 +323,12 @@ public class DataFacadeTest {
 		bigList.add(list1);
 		bigList.add(list2);
 		EntityIdentifier bigListId = facade.register(bigList);
-		String resolveToString = facade.resolveToString(bigListId.getAsURI());
-		System.out.println(resolveToString);
+
+		Element element = facade.resolveToElement(bigListId.getAsURI());
+		XMLOutputter output = new XMLOutputter();
+		StringWriter writer = new StringWriter();
+		output.output(element, writer);
+		System.out.println(writer.toString());
 	}
 
 	@Test
@@ -664,8 +674,7 @@ public class DataFacadeTest {
 			MalformedListException, UnsupportedObjectTypeException,
 			IOException, RetrievalException, NotFoundException {
 		String[][] arrayOfStringArrays = new String[][] { {}, // empty
-				{ "attempt" },
-				{ "to", "create", "an", "array" } };
+				{ "attempt" }, { "to", "create", "an", "array" } };
 		EntityIdentifier entity = facade.register(arrayOfStringArrays);
 
 		assertEquals(2, entity.getDepth());
