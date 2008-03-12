@@ -81,7 +81,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	public void receiveJob(final DispatchJobEvent jobEvent) {
 		// start adding provenance info
 		ProcessProvenanceItem provenanceItem = new ProcessProvenanceItem(jobEvent.getOwningProcess());
-		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem(jobEvent.getActivities(),"A Processor");
+		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem("A Processor");
 		provenanceItem.setProcessorProvenanceItem(processorProvItem);
 		
 		jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provenanceItem);

@@ -3,6 +3,8 @@ package net.sf.taverna.t2.provenance;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
+import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 import org.jdom.Element;
@@ -23,7 +25,15 @@ public abstract class DataProvenanceItem implements ProvenanceItem {
 			Element portElement = new Element("port");
 			portElement.setAttribute("name",port);
 			result.addContent(portElement);
-			//dataFacade.resolveToString(dataMap.get(port));
+			try {
+				portElement.addContent(dataFacade.resolveToElement(dataMap.get(port).getAsURI()));
+			} catch (RetrievalException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return result;
 	}
