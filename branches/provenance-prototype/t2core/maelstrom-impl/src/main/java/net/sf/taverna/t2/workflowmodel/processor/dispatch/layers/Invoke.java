@@ -254,7 +254,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 						provItemOutput.setActivity(a);
 						provItemOutput.setOwningProcess(jobEvent.getOwningProcess());
 						provItemOutput.setOutput(resultMap);
-						provItemOutput.setIteration(index);
+						provItemOutput.setIteration(jobEvent.getIndex());
 						jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provItemOutput);
 
 						getAbove().receiveResult(resultEvent);
