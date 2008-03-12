@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.provenance;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+
 import org.jdom.Element;
 
 public class IterationProvenanceItem implements ProvenanceItem {
@@ -35,12 +37,12 @@ public class IterationProvenanceItem implements ProvenanceItem {
 
 
 
-	public Element getAsXML() {
+	public Element getAsXML(DataFacade dataFacade) {
 		Element result = new Element("iteration");
 		result.setAttribute("id", iterationToString());
-		if (inputDataItem!=null) result.addContent(inputDataItem.getAsXML());
-		if (outputDataItem!=null) result.addContent(outputDataItem.getAsXML());
-		if (errorItem!=null) result.addContent(errorItem.getAsXML());
+		if (inputDataItem!=null) result.addContent(inputDataItem.getAsXML(dataFacade));
+		if (outputDataItem!=null) result.addContent(outputDataItem.getAsXML(dataFacade));
+		if (errorItem!=null) result.addContent(errorItem.getAsXML(dataFacade));
 		return result;
 	}
 	

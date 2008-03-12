@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.provenance;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
 import org.jdom.Element;
@@ -22,7 +23,7 @@ public class ErrorProvenanceItem implements ProvenanceItem {
 
 
 
-	public Element getAsXML() {
+	public Element getAsXML(DataFacade dataFacade) {
 		Element result = new Element("error");
 		result.setAttribute("message",message);
 		result.setAttribute("type",errorType.toString());

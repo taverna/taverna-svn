@@ -1,18 +1,13 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
 import net.sf.taverna.t2.annotation.AnnotationChain;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.ProvenanceConnector;
-import net.sf.taverna.t2.workflowmodel.OutputPort;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -103,7 +98,7 @@ public class Provenance extends AbstractDispatchLayer<ProvenanceConfig>
 		InvocationContext context = resultEvent.getContext();
 		ProvenanceConnector provenanceConnector = context
 				.getProvenanceManager();
-		provenanceConnector.store();
+		provenanceConnector.store(new DataFacade(context.getDataManager()));
 		DispatchLayer above = getAbove();
 		above.receiveResult(resultEvent);
 	}

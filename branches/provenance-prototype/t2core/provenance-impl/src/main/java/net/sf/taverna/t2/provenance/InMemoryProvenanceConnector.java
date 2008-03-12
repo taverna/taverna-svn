@@ -3,6 +3,8 @@ package net.sf.taverna.t2.provenance;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
@@ -33,10 +35,10 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void store() {
+	public void store(DataFacade dataFacade) {
 		List<ProvenanceItem> copiedList = (List<ProvenanceItem>)provenanceCollection.clone();
 		for (ProvenanceItem item:copiedList) {
-			Element el = item.getAsXML();
+			Element el = item.getAsXML(dataFacade);
 			XMLOutputter outputter = new XMLOutputter();
 			System.out.println(outputter.outputString(el));
 		}

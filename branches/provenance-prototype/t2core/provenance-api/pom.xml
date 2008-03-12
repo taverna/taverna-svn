@@ -16,7 +16,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cloudone-api</artifactId>
+			<artifactId>cloudone-impl</artifactId>
 			<version>0.1.0</version>
 		</dependency>
 		<dependency>

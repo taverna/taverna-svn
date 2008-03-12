@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.provenance;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
+
 import org.jdom.Element;
 
 public class ProcessProvenanceItem implements ProvenanceItem {
@@ -20,12 +22,12 @@ public class ProcessProvenanceItem implements ProvenanceItem {
 	}
 	
 
-	public Element getAsXML() {
+	public Element getAsXML(DataFacade dataFacade) {
 		Element result = new Element("process");
 		result.setAttribute("facadeID",getFacadeID());
 		result.setAttribute("dataflowID",getDataflowID());
 		if (processorProvenanceItem!=null) {
-			result.addContent(processorProvenanceItem.getAsXML());
+			result.addContent(processorProvenanceItem.getAsXML(dataFacade));
 		}
 		return result;
 	}
