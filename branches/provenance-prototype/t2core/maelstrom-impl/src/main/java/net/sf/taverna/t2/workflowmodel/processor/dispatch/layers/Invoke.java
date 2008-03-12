@@ -1,8 +1,11 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.ERROR;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT_COMPLETION;
+
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -11,8 +14,13 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.impl.MonitorImpl;
-import net.sf.taverna.t2.provenance.ProvenanceItem;
-import net.sf.taverna.t2.provenance.ProvenanceItemImpl;
+import net.sf.taverna.t2.provenance.ActivityProvenanceItem;
+import net.sf.taverna.t2.provenance.ErrorProvenanceItem;
+import net.sf.taverna.t2.provenance.InputDataProvenanceItem;
+import net.sf.taverna.t2.provenance.IterationProvenanceItem;
+import net.sf.taverna.t2.provenance.OutputDataProvenanceItem;
+import net.sf.taverna.t2.provenance.ProcessProvenanceItem;
+import net.sf.taverna.t2.provenance.ProcessorProvenanceItem;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -26,7 +34,6 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEv
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
  * Context free invoker layer, does not pass index arrays of jobs into activity
@@ -73,23 +80,22 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	@Override
 	public void receiveJob(final DispatchJobEvent jobEvent) {
 		// start adding provenance info
-		Map<String, EntityIdentifier> data = jobEvent.getData();
-		int[] index = jobEvent.getIndex();
-		List<? extends Activity<?>> activities = jobEvent.getActivities();
-		ProvenanceItemImpl provItem = new ProvenanceItemImpl();
-		provItem.setActivities(activities);
+		ProcessProvenanceItem provenanceItem = new ProcessProvenanceItem(jobEvent.getOwningProcess());
+		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem(jobEvent.getActivities(),"A Processor");
+		provenanceItem.setProcessorProvenanceItem(processorProvItem);
 		
-
-		jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provItem);
+		jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provenanceItem);
 
 		for (final Activity<?> a : jobEvent.getActivities()) {
 
 			if (a instanceof AsynchronousActivity) {// else what??
-				provItem.setActivity(a);
-				provItem.setIteration(index);
-				provItem.setInput(data);
-				provItem.setOwningProcess(jobEvent.getOwningProcess());
-
+		
+				ActivityProvenanceItem activityProvItem = new ActivityProvenanceItem(a);
+				processorProvItem.setActivityProvenanceItem(activityProvItem);
+				final IterationProvenanceItem iterationProvItem = new IterationProvenanceItem(jobEvent.getIndex());
+				iterationProvItem.setInputDataItem(new InputDataProvenanceItem(jobEvent.getData()));
+				activityProvItem.setIterationProvenanceItem(iterationProvItem);
+				
 				// Register with the monitor
 				final String invocationProcessIdentifier = jobEvent
 						.pushOwningProcess(getNextProcessID())
@@ -134,13 +140,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 							DispatchErrorType errorType) {
 						MonitorImpl.getMonitor().deregisterNode(
 								invocationProcessIdentifier.split(":"));
-						ProvenanceItemImpl provErrorItem = new ProvenanceItemImpl();
-						provErrorItem.setActivity(a);
-						provErrorItem.setIteration(jobEvent.getIndex());
-						provErrorItem.setOwningProcess(jobEvent.getOwningProcess());
-						provErrorItem.setError(t, message, errorType);
+						iterationProvItem.setErrorItem(new ErrorProvenanceItem(t,message,errorType));
 
-						jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provErrorItem);
 						getAbove().receiveError(
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
@@ -248,15 +249,10 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 								jobEvent.getOwningProcess(), newIndex, jobEvent
 										.getContext(), resultMap, streaming);
 
+						iterationProvItem.setOutputDataItem(new OutputDataProvenanceItem(resultMap));
+
 						// Push the modified data to the layer above in the
 						// dispatch stack
-						ProvenanceItemImpl provItemOutput = new ProvenanceItemImpl();
-						provItemOutput.setActivity(a);
-						provItemOutput.setOwningProcess(jobEvent.getOwningProcess());
-						provItemOutput.setOutput(resultMap);
-						provItemOutput.setIteration(jobEvent.getIndex());
-						jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provItemOutput);
-
 						getAbove().receiveResult(resultEvent);
 
 						sentJob = true;

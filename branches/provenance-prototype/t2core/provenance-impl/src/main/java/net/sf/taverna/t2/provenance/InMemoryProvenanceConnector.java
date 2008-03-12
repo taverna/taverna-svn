@@ -1,10 +1,11 @@
 package net.sf.taverna.t2.provenance;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
 public class InMemoryProvenanceConnector implements ProvenanceConnector {
 
@@ -35,8 +36,9 @@ public class InMemoryProvenanceConnector implements ProvenanceConnector {
 	public void store() {
 		List<ProvenanceItem> copiedList = (List<ProvenanceItem>)provenanceCollection.clone();
 		for (ProvenanceItem item:copiedList) {
-			System.out.println(item.getAsXML());
-			provenanceCollection.remove(item);
+			Element el = item.getAsXML();
+			XMLOutputter outputter = new XMLOutputter();
+			System.out.println(outputter.outputString(el));
 		}
 	}
 

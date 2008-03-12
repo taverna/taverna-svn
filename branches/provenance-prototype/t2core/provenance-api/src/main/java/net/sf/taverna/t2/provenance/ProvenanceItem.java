@@ -1,7 +1,9 @@
 package net.sf.taverna.t2.provenance;
 
+import org.jdom.Element;
+
 public interface ProvenanceItem {
 
-	public String getAsXML();
+	public Element getAsXML();
 
 }
