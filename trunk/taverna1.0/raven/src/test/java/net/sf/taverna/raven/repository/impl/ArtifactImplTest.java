@@ -35,7 +35,8 @@ public class ArtifactImplTest {
 	public void setUp() throws IOException {
 		dir = LocalRepositoryTest.createTempDirectory();
 		r = new LocalRepository(dir);
-		testRepos = this.getClass().getResource("/net/sf/taverna/raven/repository/");
+		// To get "repository" under test-classes
+		testRepos = this.getClass().getResource("/net/sf/taverna/raven/repository/raventest/..");
 		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml");
 	}
 
