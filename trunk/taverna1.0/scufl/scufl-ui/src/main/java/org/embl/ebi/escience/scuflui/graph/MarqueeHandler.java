@@ -32,7 +32,7 @@ import org.jgraph.graph.VertexView;
  * COMMENT
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class MarqueeHandler extends BasicMarqueeHandler
 {
@@ -158,15 +158,20 @@ public class MarqueeHandler extends BasicMarqueeHandler
 						ports = processor.getInputPorts();
 					}
 
-					JPopupMenu popupMenu = new JPopupMenu();
-					popupMenu.add(new ShadedLabel("Connect to...", ShadedLabel.TAVERNA_GREEN));
-					popupMenu.addSeparator();
-					for (int index = 0; index < ports.length; index++)
-					{
-						popupMenu.add(new AddDataConstraintAction(startPort.getProcessor()
-								.getModel(), startPort, ports[index]));
+					if (startPort.getProcessor() != processor) {
+						JPopupMenu popupMenu = new JPopupMenu();
+						popupMenu.add(new ShadedLabel("Connect to...", ShadedLabel.TAVERNA_GREEN));
+						popupMenu.addSeparator();
+						for (int index = 0; index < ports.length; index++)
+						{
+							popupMenu.add(new AddDataConstraintAction(startPort.getProcessor()
+									.getModel(), startPort, ports[index]));
+						}
+						popupMenu.show(graph, e.getX(), e.getY());
 					}
-					popupMenu.show(graph, e.getX(), e.getY());
+					else {
+						return;
+					}
 				}
 				else if (((VertexView) target).getCell() instanceof Port)
 				{
