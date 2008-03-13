@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -46,7 +47,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener
 {
@@ -209,6 +210,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
 						"Inputs"));
 				GraphConstants.setEditable(map, false);
+				GraphConstants.setSelectable(map, false);
+				GraphConstants.setValue(map, "");
+				GraphConstants.setVerticalAlignment(map, JLabel.BOTTOM);
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
 			{
@@ -216,6 +220,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
 						"Outputs"));
 				GraphConstants.setEditable(map, false);
+				GraphConstants.setSelectable(map, false);
+				GraphConstants.setValue(map, "");
+				GraphConstants.setVerticalAlignment(map, JLabel.BOTTOM);
 			}
 			else
 			{
