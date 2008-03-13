@@ -8,12 +8,13 @@ package org.embl.ebi.escience.scuflui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -145,6 +146,8 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 	//The button that allows the enactment window to be closed
 	JButton closeButton=null;
 
+	private JPanel results;
+
 	/**
 	 * Returns the processor that user pointed to obtain a breakpoint
 	 */
@@ -195,10 +198,11 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		toolbar.removeAll();
 		// Show the results		
 		
-		tabs.add("Results", individualResults);
+		results = new JPanel(new BorderLayout());
+		tabs.add("Results", results);
 		// Populate the toolbar with all the buttons from
 		// the ResultMapSaveSPI
-		Map resultMap = workflowInstance.getOutput();
+		Map<String, DataThing> resultMap = workflowInstance.getOutput();
 		ResultMapSaveSPI[] savePlugins = ResultMapSaveRegistry.plugins();
 		for (int i = 0; i < savePlugins.length; i++) {
 			JButton saveAction = new JButton(savePlugins[i].getName(),
@@ -215,14 +219,47 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 
 		// saveResultsButton.setEnabled(true);
 		// Get the output map and create new result detail panes
-		for (Iterator i = resultMap.keySet().iterator(); i.hasNext();) {
-			String resultName = (String) i.next();
+		for (String resultName : resultMap.keySet()) {
 			DataThing resultValue = (DataThing) resultMap.get(resultName);
 			ResultItemPanel rip = new ResultItemPanel(resultValue,
 					workflowInstance);
 			individualResults.add(resultName, rip);
 		}
-		tabs.setSelectedComponent(individualResults);
+		
+		if (individualResults.getComponentCount() == 0) {
+			results.add(createNoResultsPanel(), BorderLayout.CENTER);
+		} else {
+			results.add(individualResults, BorderLayout.CENTER);
+		}
+		tabs.setSelectedComponent(results);
+	}
+
+	protected JPanel createNoResultsPanel() {
+		JPanel noResults = new JPanel(new GridBagLayout());
+		JLabel noResultsLabel = new JLabel("<html>"
+				+ "<center><h2>No outputs</h2></center>" + "<center>"
+				+ "The workflow completed, but did "
+				+ "not produce any results.<br><br>"
+				+ "Check the <strong>Status</strong> tab to see "
+				+ "if any services failed, also<br>"
+				+ "check your workflow to make sure you have "
+				+ "defined at least <br>" + "one <em>output port</em> that "
+				+ "is <em>connected</em> to a " + "processor.<br><br>"
+				+ "If you expected this workflow itself to "
+				+ "<em>fail</em> (say used as a<br>"
+				+ "service or as part of of a nested workflow), " + "turn "
+				+ "on <strong>Critical</strong> <br>"
+				+ "for the failing processors in "
+				+ "<strong>Advanced Model Explorer</strong>."
+				+ "</center></html>");
+
+		GridBagConstraints c = new GridBagConstraints();
+		c.fill = GridBagConstraints.NONE;
+		c.weightx = 0.1;
+		c.weighty = 0.1;
+		c.anchor = GridBagConstraints.CENTER;
+		noResults.add(noResultsLabel, c);
+		return noResults;
 	}
 	
 	private JButton getCloseActionButton() {
@@ -284,7 +321,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			// display.setEditable(false);
 			// display.setPreferredSize(new Dimension(0,0));
 			// tabs.add("Process report", display);
-			tabs.add("Process report", new JScrollPane(new XMLTree(
+			tabs.add("Prosess report", new JScrollPane(new XMLTree(
 					progressReport, false)));
 		} catch (Exception ex) {
 			//
@@ -509,7 +546,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 					// get the processor name
 					String processorName = (String) statusTableModel
 							.getValueAt(selectedRow, 1);
-					Map[] intermediateResultMaps;
+					Map<String, DataThing>[] intermediateResultMaps;
 					try {
 						intermediateResultMaps = workflowInstance
 								.getIntermediateResultsForProcessor(processorName);
@@ -521,20 +558,15 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 					intermediateInputs.removeAll();
 					intermediateOutputs.removeAll();
 					// Do the inputs
-					for (Iterator i = intermediateResultMaps[0].keySet()
-							.iterator(); i.hasNext();) {
-						String name = (String) i.next();
-						DataThing value = (DataThing) intermediateResultMaps[0]
+					for (String name : intermediateResultMaps[0].keySet()) {
+						DataThing value = intermediateResultMaps[0]
 								.get(name);
 						ResultItemPanel rip = new ResultItemPanel(value,
 								workflowInstance);
 						intermediateInputs.add(name, rip);
 					}
-					// And the outputs
-					for (Iterator i = intermediateResultMaps[1].keySet()
-							.iterator(); i.hasNext();) {
-						String name = (String) i.next();
-						DataThing value = (DataThing) intermediateResultMaps[1]
+					for (String name : intermediateResultMaps[1].keySet()) {
+						DataThing value = intermediateResultMaps[1]
 								.get(name);
 						ResultItemPanel rip = new ResultItemPanel(value,
 								workflowInstance);
