@@ -25,7 +25,7 @@ public class RunWorkflowAction extends AbstractAction {
 	
 	public void actionPerformed(ActionEvent e) {
 		WorkflowInputPanelFactory.invokeWorkflow(
-				(ScuflModel) modelMap.getNamedModel(ModelMap.CURRENT_WORKFLOW)); 
+				(ScuflModel) modelMap.getNamedModel(ModelMap.CURRENT_WORKFLOW), parentComponent); 
 	}
 
 }
