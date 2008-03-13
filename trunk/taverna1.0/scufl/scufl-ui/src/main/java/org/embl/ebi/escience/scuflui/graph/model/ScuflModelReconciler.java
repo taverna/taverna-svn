@@ -18,7 +18,7 @@ import org.jgraph.event.GraphModelEvent;
  * having waited for further changes for the configured duration of time.
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ScuflModelReconciler implements ScuflModelEventListener
 {
@@ -118,10 +118,12 @@ public class ScuflModelReconciler implements ScuflModelEventListener
 	/**
 	 * 
 	 */
-	public void detachFromModel()
+	public synchronized void detachFromModel()
 	{
-		model.getModel().removeListener(this);
-		model = null;
+		if (model != null) {
+			model.getModel().removeListener(this);
+			model = null;
+		}
 		synchronized (reconciler)
 		{
 			reconciler.notify();
