@@ -33,6 +33,7 @@ import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.ScuflModelEvent;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.graph.GraphUtilities;
 import org.embl.ebi.escience.scuflui.shared.GraphColours;
 import org.embl.ebi.escience.scuflworkers.ProcessorHelper;
@@ -47,7 +48,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener
 {
@@ -209,20 +210,22 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
 						"Inputs"));
+				GraphConstants.setBackground(map, Color.WHITE);
 				GraphConstants.setEditable(map, false);
 				GraphConstants.setSelectable(map, false);
+				GraphConstants.setInset(map, 5);
 				GraphConstants.setValue(map, "");
-				GraphConstants.setVerticalAlignment(map, JLabel.BOTTOM);
 			}
 			else if (processor == model.getWorkflowSinkProcessor())
 			{
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setBorder(map, new TitledBorder(new LineBorder(Color.GRAY),
 						"Outputs"));
+				GraphConstants.setBackground(map, Color.WHITE);
 				GraphConstants.setEditable(map, false);
 				GraphConstants.setSelectable(map, false);
+				GraphConstants.setInset(map, 5);
 				GraphConstants.setValue(map, "");
-				GraphConstants.setVerticalAlignment(map, JLabel.BOTTOM);
 			}
 			else
 			{
@@ -231,8 +234,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 						.getPreferredColour(processor), Color.WHITE));
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setResize(map, true);
-				GraphConstants.setBorder(map, new CompoundBorder(new RaisedBorder(),
-						new EmptyBorder(2, 7, 2, 7)));
+				GraphConstants.setBorder(map, new LineBorder(Color.BLACK));
+				GraphConstants.setInset(map, 3);
 			}
 		}
 		else if (node instanceof Port)
@@ -244,16 +247,18 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				{
 					GraphConstants.setBackground(map, GraphColours.getColour("lightsteelblue2",
 							Color.WHITE));
+					GraphConstants.setIcon(map, TavernaIcons.inputIcon);
 				}
 				else
 				{
 					GraphConstants.setBackground(map, GraphColours
 							.getColour("skyblue", Color.WHITE));
+					GraphConstants.setIcon(map, TavernaIcons.outputIcon);
 				}
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setResize(map, true);
-				GraphConstants.setBorder(map, new CompoundBorder(new RaisedBorder(),
-						new EmptyBorder(2, 7, 2, 7)));
+				GraphConstants.setInset(map, 3);
+				GraphConstants.setBorder(map, new LineBorder(Color.BLACK));
 			}
 			GraphConstants.setDisconnectable(map, false);
 		}
