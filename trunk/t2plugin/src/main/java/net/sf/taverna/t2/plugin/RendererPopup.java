@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.plugin;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -8,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,6 +37,7 @@ import net.sf.taverna.t2.renderers.Renderer;
 import net.sf.taverna.t2.renderers.RendererException;
 import net.sf.taverna.t2.renderers.RendererRegistry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -50,10 +55,12 @@ public class RendererPopup extends MouseAdapter {
 	private static Logger logger = Logger.getLogger(RendererPopup.class);
 	private JTree tree;
 	private final DataFacade dataFacade;
+	private JPanel renderedResultPanel;
 
 	public RendererPopup(JTree tree, DataFacade dataFacade) {
 		this.tree = tree;
 		this.dataFacade = dataFacade;
+		renderedResultPanel = new JPanel();
 	}
 
 	public void mousePressed(MouseEvent e) {
@@ -136,12 +143,11 @@ public class RendererPopup extends MouseAdapter {
 		menuItem.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				JDialog resultDialog = new JDialog();
 				JComponent component = null;
 				try {
 					component = guiRenderer.getComponent(guiEntityIdentifier,
 							guiDataFacade);
-				} catch (RendererException e1) {
+				} catch (RendererException e1) {//maybe this should be Exception
 					// show the user that something unexpected has happened but
 					// continue
 					component = new JTextArea(
@@ -152,9 +158,8 @@ public class RendererPopup extends MouseAdapter {
 					logger.warn("Couln not render using "
 							+ guiRenderer.getClass().getName(), e1);
 				}
-				resultDialog.add(new JScrollPane(component));
-				resultDialog.setSize(500, 500);
-				resultDialog.setVisible(true);
+				RenderedResultComponent rendererComponent = RendererResultComponentFactory.getInstance().getRendererComponent();
+				rendererComponent.setResultComponent(component);
 			}
 
 		});
@@ -199,15 +204,23 @@ public class RendererPopup extends MouseAdapter {
 			try {
 				FileOutputStream fos = new FileOutputStream(file);
 				if (resolve instanceof byte[]) {
+					logger.info("saving resolved entity as byte stream");
 					fos.write((byte[]) resolve);
 					fos.flush();
 					fos.close();
+				} else if (resolve instanceof InputStream ){ 
+					logger.info("saving resolved entity as input stream");
+					IOUtils.copy((InputStream) resolve, fos);
+			        fos.flush();
+			        fos.close();
 				} else {
-					// String
+					logger.info("saving resolved entity as a string");
 					Writer out =
 						new BufferedWriter(new OutputStreamWriter(fos));
-					out.write(resolve.toString());
+					out.write((String) resolve);
+					fos.flush();
 					out.flush();
+					fos.close();
 					out.close();
 				}
 			} catch (IOException ioe) {

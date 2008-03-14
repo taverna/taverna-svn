@@ -2,6 +2,7 @@ package net.sf.taverna.t2.plugin;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -23,6 +24,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -89,6 +91,8 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
+	
+	private RenderedResultComponent renderedResultComponent = (RenderedResultComponent) RendererResultComponentFactory.getInstance().getRendererComponent(); 
 
 	private PreferencesFrame preferencesFrame = new PreferencesFrame();
 
@@ -147,11 +151,22 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(preferencesButton);
-
+		
+		resultComponent.setPreferredSize(new Dimension(600,200));
+		renderedResultComponent.setPreferredSize(new Dimension(600,200));
+		
 		JSplitPane midPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		midPanel.add(topPanel);
-		midPanel.add(resultComponent);
-
+		topPanel.setPreferredSize(new Dimension(600,200));
+		midPanel.resetToPreferredSizes();
+		midPanel.add(renderedResultComponent);
+		
+		JSplitPane bottomPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		bottomPanel.add(resultComponent);
+		bottomPanel.add(renderedResultComponent);
+		bottomPanel.setPreferredSize(new Dimension(600,200));
+		bottomPanel.resetToPreferredSizes();
+		midPanel.add(bottomPanel);
 		add(buttonPanel, BorderLayout.NORTH);
 		add(midPanel, BorderLayout.CENTER);
 	}
