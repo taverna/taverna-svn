@@ -74,7 +74,6 @@ public class JMolRenderer implements Renderer {
 		try {
 			coordinateText = (String) dataFacade.resolve(entityIdentifier,
 					String.class);
-			System.out.println(coordinateText);
 		} catch (RetrievalException e) {
 			throw new RendererException(
 					"Could not resolve " + entityIdentifier, e);
