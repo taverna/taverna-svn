@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1.0</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>cloudone-api</artifactId>
-	<version>0.1.0</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>CloudOne API</name>
 	<description>
 		API definition for the CloudOne federating data layer. This is
@@ -19,17 +19,17 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanable-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>org.hibernate</groupId>

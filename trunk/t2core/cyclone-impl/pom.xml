@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1.0</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>cyclone-impl</artifactId>
-	<version>0.1.0</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Cyclone Implementation</name>
 	<description>
 		Translator between Taverna 1 ScuflModel instances and Taverna 2
@@ -37,12 +37,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cyclone-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-impl</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
@@ -74,13 +74,13 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanshell-activity-translator</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanshell-activity</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -92,13 +92,13 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity-translator</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -110,25 +110,25 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>soaplab-activity-translator</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>soaplab-activity</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>stringconstant-activity-translator</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>stringconstant-activity</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

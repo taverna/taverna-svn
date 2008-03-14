@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1.0</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>maelstrom-api</artifactId>
-	<version>0.1.0</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Maelstrom API</name>
 	<description>
 		Core workflow object model for Taverna 2 workflows. Depends on
@@ -20,21 +20,22 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>snowflake-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

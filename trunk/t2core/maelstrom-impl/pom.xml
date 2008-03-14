@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1.0</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>maelstrom-impl</artifactId>
-	<version>0.1.0</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>Maelstrom Impl.</name>
 	<description>
 		Implementation of the core workflow object model for Taverna 2
@@ -23,17 +23,17 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-impl</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>tsunami-api</artifactId>
-			<version>0.1.0</version>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
