@@ -40,8 +40,9 @@ import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorNode;
-import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.monitor.impl.MonitorTreeModel;
 import net.sf.taverna.t2.plugin.input.InputComponent;
 import net.sf.taverna.t2.plugin.input.InputComponent.InputComponentCallback;
 import net.sf.taverna.t2.plugin.pretest.HealthCheckReportPanel;
@@ -133,9 +134,10 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		cardLayout = new CardLayout();
 		topPanel = new JPanel(cardLayout);
 
-		monitorTree = MonitorImpl.getJTree();
+		MonitorTreeModel monitor = MonitorTreeModel.getInstance();
+		monitorTree = monitor.getJTree();
 		monitorTree.setRootVisible(false);
-		MonitorImpl.enableMonitoring(true);
+		MonitorManager.getInstance().addObserver(monitor);
 
 		JPanel runStatusPanel = new JPanel(new BorderLayout());
 		runStatusPanel.add(runStatus, BorderLayout.NORTH);
@@ -309,7 +311,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 					if (childTreeNode.getUserObject() instanceof MonitorNode) {
 						MonitorNode monitorNode = (MonitorNode) childTreeNode
 								.getUserObject();
-						MonitorImpl.getMonitor().deregisterNode(
+						MonitorManager.getInstance().deregisterNode(
 								monitorNode.getOwningProcess());
 					}
 				}
