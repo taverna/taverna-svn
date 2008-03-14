@@ -20,6 +20,7 @@ public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode 
 
 	Map<String, TreeCache[]> ownerToCache = new HashMap<String, TreeCache[]>();
 
+	@Override
 	public synchronized void innerReceiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
 		if (!ownerToCache.containsKey(owningProcess)) {
@@ -63,6 +64,7 @@ public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode 
 	 * the completion event is a final one. We can potentially implement finer
 	 * grained logic here in the future.
 	 */
+	@Override
 	public synchronized void innerReceiveCompletion(int inputIndex,
 			Completion completion) {
 		// Do nothing, let the superclass handle final completion events, ignore
@@ -70,6 +72,7 @@ public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode 
 		// than this really)
 	}
 
+	@Override
 	protected synchronized void cleanUp(String owningProcess) {
 		ownerToCache.remove(owningProcess);
 	}

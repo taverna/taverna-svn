@@ -61,6 +61,7 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 	 * 
 	 * @override
 	 */
+	@Override
 	public boolean isLeaf() {
 		return true;
 	}
@@ -70,6 +71,7 @@ public class NamedInputPortNode extends AbstractIterationStrategyNode {
 	 * 
 	 * @override
 	 */
+	@Override
 	public boolean getAllowsChildren() {
 		return false;
 	}

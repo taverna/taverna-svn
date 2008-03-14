@@ -23,14 +23,6 @@ public class PartitionAlgorithmListEditor extends JPanel {
 	// Index of currently selected 'tab' or -1 if none selected
 	private int selectedIndex = 1;
 
-	// Whether we have a drag in progress, in which case the dragged index is
-	// the selected one.
-	private boolean dragActive = false;
-
-	// In the event of a drag the current drop index is held here, initialized
-	// when the drag starts to be the same as the selected index.
-	private int dropTargetIndex = -1;
-
 	// List of partition algorithm instances acting as the model for this
 	// component
 	private List<PartitionAlgorithmSPI<?>> paList;
@@ -45,6 +37,7 @@ public class PartitionAlgorithmListEditor extends JPanel {
 		return null;
 	}
 
+	@Override
 	public Dimension getPreferredSize() {
 		if (paList.isEmpty()) {
 			return new Dimension(0, 16 + labelBottomPad + labelTopPad);
@@ -100,6 +93,8 @@ public class PartitionAlgorithmListEditor extends JPanel {
 			cumulativeTranslation += width;
 			g2d.translate(width, 0);
 		}
+			
+		
 		// Reset the transform
 		g2d.translate(-cumulativeTranslation, 0);
 		if (selectedIndex > 0) {
@@ -107,7 +102,9 @@ public class PartitionAlgorithmListEditor extends JPanel {
 					BasicStroke.JOIN_MITER));
 			int height = (int)(getHeight() - selectedStrokeWidth/2);
 			// Render the selected index line...
-			g2d.setPaint(frameColor.darker());
+			if (frameColor != null) {
+				g2d.setPaint(frameColor.darker());
+			}
 			GeneralPath path = new GeneralPath();
 			path.moveTo(0, height);
 			path.lineTo(selectedStartsAt, height);

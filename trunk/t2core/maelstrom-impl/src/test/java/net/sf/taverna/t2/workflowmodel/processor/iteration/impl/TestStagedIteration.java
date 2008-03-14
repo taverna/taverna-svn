@@ -27,6 +27,7 @@ public class TestStagedIteration  {
 			Collections.<LocationalContext> emptySet());
 	
 	public InvocationContext context = new TestInvocationContext() {
+		@Override
 		public DataManager getDataManager() {
 			return dManager;
 		}

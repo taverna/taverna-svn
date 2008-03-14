@@ -3,7 +3,6 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Merge;
-import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
  * An Edit class responsible for adding a Merge to the dataflow.

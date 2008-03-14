@@ -149,6 +149,7 @@ public final class PropertiedTreeModelImpl<O extends Beanable<?>> implements Pro
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private PropertiedTreeNode<O> createTwig(O object) {
 		TwigConstructor constructor = TwigConstructorRegistry.getTwigConstructor(object.getClass());
 		if (constructor == null) {

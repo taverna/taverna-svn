@@ -12,11 +12,7 @@ import net.sf.taverna.t2.cloudone.peer.PeerProxy;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser;
 
-import org.apache.log4j.Logger;
-
 public class HttpPeerProxy implements PeerProxy {
-
-	private static Logger logger = Logger.getLogger(HttpPeerProxy.class);
 
 	private String baseUrl;
 

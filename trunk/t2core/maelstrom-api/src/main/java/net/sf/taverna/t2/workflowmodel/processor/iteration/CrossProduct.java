@@ -28,6 +28,7 @@ public class CrossProduct extends CompletionHandlingAbstractIterationStrategyNod
 	 * Receive a job, emit jobs corresponding to the orthogonal join of the new
 	 * job with all jobs in all other input lists.
 	 */
+	@Override
 	public synchronized void innerReceiveJob(int inputIndex, Job newJob) {
 		if (!ownerToCache.containsKey(newJob.getOwningProcess())) {
 			List<Set<Job>> perInputCache = new ArrayList<Set<Job>>();
@@ -88,11 +89,13 @@ public class CrossProduct extends CompletionHandlingAbstractIterationStrategyNod
 		return newSet;
 	}
 
+	@Override
 	public synchronized void innerReceiveCompletion(int inputIndex,
 			Completion completion) {
 		// Do nothing, let the superclass handle final completion events
 	}
 
+	@Override
 	protected final synchronized void cleanUp(String owningProcess) {
 		ownerToCache.remove(owningProcess);
 	}

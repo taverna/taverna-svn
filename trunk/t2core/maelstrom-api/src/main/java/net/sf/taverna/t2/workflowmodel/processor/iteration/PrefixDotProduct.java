@@ -18,10 +18,12 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  */
 public class PrefixDotProduct extends DotProduct {
 
+	@Override
 	protected synchronized final void cleanUp(String owningProcess) {
 		ownerToCache.remove(owningProcess);
 	}
 	
+	@Override
 	public void innerReceiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
 		TreeCache[] caches;

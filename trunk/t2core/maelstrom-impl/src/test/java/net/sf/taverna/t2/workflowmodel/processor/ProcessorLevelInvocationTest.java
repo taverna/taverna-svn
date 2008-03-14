@@ -42,6 +42,7 @@ public class ProcessorLevelInvocationTest {
 
 	InvocationContext context = new TestInvocationContext() {
 
+		@Override
 		public DataManager getDataManager() {
 			return dManager;
 		}

@@ -42,6 +42,7 @@ public class DatalinkImpl extends AbstractAnnotatedThing<Datalink> implements
 		return source;
 	}
 	
+	@Override
 	public String toString() {
 		return "link("+resolvedDepth+")"+source.getName()+":"+sink.getName();
 	}

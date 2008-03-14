@@ -86,6 +86,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		}
 	}
 
+	@Override
 	public void receiveJobQueue(DispatchJobQueueEvent queueEvent) {
 		// System.out.println("Creating state for " + owningProcess);
 		StateModel model = new StateModel(queueEvent, config.getMaximumJobs());
@@ -98,6 +99,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 				"Parallelize layer cannot handle job events");
 	}
 
+	@Override
 	public void receiveError(DispatchErrorEvent errorEvent) {
 		// System.out.println(sentJobsCount);
 		StateModel model = stateMap.get(errorEvent.getOwningProcess());
@@ -105,6 +107,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 		model.finishWith(errorEvent.getIndex());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void receiveResult(DispatchResultEvent resultEvent) {
 		StateModel model = stateMap.get(resultEvent.getOwningProcess());
@@ -118,12 +121,14 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 	 * which case we need to handle all completion events and pass them up the
 	 * stack.
 	 */
+	@Override
 	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
 		StateModel model = stateMap.get(completionEvent.getOwningProcess());
 		getAbove().receiveResultCompletion(completionEvent);
 		model.finishWith(completionEvent.getIndex());
 	}
 
+	@Override
 	public void finishedWith(String owningProcess) {
 		// System.out.println("Removing state map for " + owningProcess);
 		stateMap.remove(owningProcess);

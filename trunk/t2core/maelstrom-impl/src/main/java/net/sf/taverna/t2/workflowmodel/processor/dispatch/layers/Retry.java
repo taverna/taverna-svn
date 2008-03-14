@@ -66,6 +66,7 @@ public class Retry extends AbstractErrorHandlerLayer<RetryConfig> {
 		 * 
 		 * @return
 		 */
+		@Override
 		public boolean handleError() {
 			if (currentRetryCount == config.getMaxRetries()) {
 				return false;

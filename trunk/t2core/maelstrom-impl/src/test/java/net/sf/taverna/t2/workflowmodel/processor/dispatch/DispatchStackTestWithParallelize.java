@@ -181,6 +181,7 @@ public class DispatchStackTestWithParallelize extends TestCase {
 			}
 		};
 		DispatchStackImpl d = new BasicDispatchStackImpl(new ArrayList<Activity<?>>()) {
+			@Override
 			protected void pushEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 				c.receiveEvent(e);
 			}

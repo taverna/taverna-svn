@@ -132,6 +132,7 @@ public class TypedTreeModelEvent<NodeType> {
 	/**
 	 * Returns a string that displays and identifies this object's properties.
 	 */
+	@Override
 	public String toString() {
 		return "Typed TreeModelEvent " + super.toString();
 	}

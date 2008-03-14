@@ -28,6 +28,7 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 		this.parent = parent;
 	}
 
+	@Override
 	public String transformOwningProcess(String oldOwner) {
 		return oldOwner + ":" + parent.getLocalName();
 	}

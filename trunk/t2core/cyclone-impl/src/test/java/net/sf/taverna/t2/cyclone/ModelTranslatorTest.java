@@ -280,6 +280,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 		return dataflow;
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testDataflowPortLinks() throws Exception {
 		Dataflow dataflow = translateScuflFile("translation-test-workflow-ports.xml");
@@ -332,6 +333,7 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 				.getIncomingLink().getSource().getName());
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testMerge() throws Exception {
 		Dataflow dataflow = translateScuflFile("translation-test-merge.xml");

@@ -119,6 +119,7 @@ public class JMolRenderer implements Renderer {
 		final Dimension currentSize = new Dimension();
 		final Rectangle rectClip = new Rectangle();
 
+		@Override
 		public void paint(Graphics g) {
 			getSize(currentSize);
 			g.getClipBounds(rectClip);

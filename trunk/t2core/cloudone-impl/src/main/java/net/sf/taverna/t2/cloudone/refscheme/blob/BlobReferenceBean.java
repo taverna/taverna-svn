@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.cloudone.refscheme.blob;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 

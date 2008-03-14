@@ -47,6 +47,7 @@ public class ConditionTest extends TestCase {
 		edits.getRenameProcessorEdit(p2, "processor2").doEdit();
 		edits.getCreateConditionEdit(p1, p2).doEdit();
 		deh1 = new DiagnosticEventHandler() {
+			@Override
 			public void receiveEvent(WorkflowDataToken t) {
 				eventCount++;
 				System.out.println("1 : " + t.toString());
@@ -54,6 +55,7 @@ public class ConditionTest extends TestCase {
 		};
 		edits.getConnectProcessorOutputEdit(p1, "output", deh1).doEdit();
 		deh2 = new DiagnosticEventHandler() {
+			@Override
 			public void receiveEvent(WorkflowDataToken t) {
 				eventCount++;
 				System.out.println("2 : " + t.toString());

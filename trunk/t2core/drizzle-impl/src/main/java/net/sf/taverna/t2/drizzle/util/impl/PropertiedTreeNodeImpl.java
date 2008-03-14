@@ -33,6 +33,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public void addChild(PropertiedTreeNode<O> child) {
 		if (child == null) {
 			throw new NullPointerException("child cannot be null"); //$NON-NLS-1$
@@ -163,6 +164,7 @@ public abstract class PropertiedTreeNodeImpl<O> implements
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public void removeAllChildren() {
 		for (PropertiedTreeNode<O> child : this.children) {
 			if (child instanceof PropertiedTreeNodeImpl) {

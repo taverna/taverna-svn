@@ -68,6 +68,7 @@ public abstract class AbstractBlobStoreTest {
 
 		if (retrievedRef instanceof BlobReferenceSchemeImpl) {
 			BlobReferenceSchemeImpl blobRef = (BlobReferenceSchemeImpl) retrievedRef;
+			// TODO: Test blobRef
 		}
 		
 		InputStream stream = retrievedRef.dereference(dManager);

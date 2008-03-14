@@ -13,6 +13,7 @@ import org.junit.Test;
 
 public class PortBindingTest extends TranslatorTestHelper {
 
+	@SuppressWarnings("null")
 	@Test
 	public void testRemovalOfUnboundPorts() throws Exception {
 		Dataflow dataflow = loadAndTranslateWorkflow("unbound_ports.xml");
@@ -40,6 +41,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertEquals("activity should have 3 input ports",3,activity.getInputPorts().size());
 	}
 	
+	@SuppressWarnings("null")
 	@Test
 	public void testReplaceDefaultWithStringConstant() throws Exception {
 		Dataflow dataflow = loadAndTranslateWorkflow("port_with_default.xml");
@@ -74,6 +76,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 		
 	}
 	
+	@SuppressWarnings("null")
 	@Test
 	public void testDefaultAndUnboundMixed() throws Exception {
 		Dataflow dataflow = loadAndTranslateWorkflow("unbound_ports_with_default.xml");
@@ -105,6 +108,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 		assertEquals("it should be linked to processor_A",processor_A.getInputPorts().get(0),link.getSink());
 	}
 	
+	@SuppressWarnings("null")
 	@Test
 	public void testBoundPortOverridesDefault() throws Exception {
 		Dataflow dataflow = loadAndTranslateWorkflow("bound_port_overides_default.xml");
@@ -145,6 +149,7 @@ public class PortBindingTest extends TranslatorTestHelper {
 	 * a processor, e.g '-'. This test checks that this is handled by stripping out the offending character.
 	 * @throws Exception
 	 */
+	@SuppressWarnings("null")
 	@Test
 	public void testInvalidDefaultPortName() throws Exception {
 		Dataflow dataflow = loadAndTranslateWorkflow("port_with_badly_named_default.xml");

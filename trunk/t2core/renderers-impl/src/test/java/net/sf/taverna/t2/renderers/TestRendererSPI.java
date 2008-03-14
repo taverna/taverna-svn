@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.renderers;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +14,6 @@ import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.peer.LocationalContext;
-import net.sf.taverna.t2.renderers.RendererRegistry;
 
 import org.junit.Before;
 import org.junit.Test;

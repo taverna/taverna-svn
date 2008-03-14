@@ -283,6 +283,7 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals (Object o) {
 		if (o instanceof PropertiedObject) {
@@ -294,6 +295,7 @@ public final class PropertiedObjectImpl<O> implements PropertiedObject<O> {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	public int compareTo(Object arg0) {
 		int result = 0;
 		if (arg0 instanceof PropertiedObject) {

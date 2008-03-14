@@ -19,6 +19,7 @@ public class DiagnosticLayer extends AbstractDispatchLayer<Object> {
 		super();
 	}
 
+	@Override
 	public void receiveResult(DispatchResultEvent resultEvent) {
 		System.out.println("  "
 				+ new Job(resultEvent.getOwningProcess(), resultEvent
@@ -27,6 +28,7 @@ public class DiagnosticLayer extends AbstractDispatchLayer<Object> {
 		getAbove().receiveResult(resultEvent);
 	}
 
+	@Override
 	public void receiveResultCompletion(DispatchCompletionEvent completionEvent) {
 		System.out.println("  "
 				+ new Completion(completionEvent.getOwningProcess(),
@@ -35,6 +37,7 @@ public class DiagnosticLayer extends AbstractDispatchLayer<Object> {
 		getAbove().receiveResultCompletion(completionEvent);
 	}
 
+	@Override
 	public void finishedWith(String process) {
 		System.out.println("  Purging caches for " + process);
 	}

@@ -69,6 +69,7 @@ public class Failover extends AbstractErrorHandlerLayer<Object> {
 			super(jobEvent);
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
 		public boolean handleError() {
 			currentActivityIndex++;

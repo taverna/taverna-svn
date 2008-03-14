@@ -298,12 +298,7 @@ public abstract class AbstractDataManagerTest {
 			RetrievalException, MalformedURLException {
 		// not sure what a reference scheme is so empty one will have to do
 		Set<ReferenceScheme> references = new HashSet<ReferenceScheme>();
-		File file = null;
-		try {
-			file = File.createTempFile("test", ".tmp");
-		} catch (IOException e) {
 
-		}
 		BlobReferenceSchemeImpl blobRefScheme = new BlobReferenceSchemeImpl(TEST_NS,UUID.randomUUID().toString());
 		references.add(blobRefScheme);
 		DataDocumentIdentifier docId = dManager.registerDocument(references);

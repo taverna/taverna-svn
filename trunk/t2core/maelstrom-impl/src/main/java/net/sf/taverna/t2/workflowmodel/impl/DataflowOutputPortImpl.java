@@ -49,6 +49,7 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 			/**
 			 * Always copy the value of the enclosing dataflow output port
 			 */
+			@Override
 			public int getDepth() {
 				return DataflowOutputPortImpl.this.getDepth();
 			}

@@ -173,6 +173,7 @@ public class PartitionTestApplication {
 			this.floatValue = floatValue;
 		}
 
+		@Override
 		public String toString() {
 			return this.name;
 		}
@@ -210,6 +211,7 @@ public class PartitionTestApplication {
 				return;
 			if (treeModelListener == null)
 				treeModelListener = new TreeModelHandler() {
+					@Override
 					public void treeNodesInserted(final TreeModelEvent ev) {
 						if (ev.getChildren()[0] instanceof Partition == false) {
 							SwingUtilities.invokeLater(new Runnable() {

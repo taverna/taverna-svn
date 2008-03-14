@@ -118,10 +118,12 @@ public class XMLTree extends JTree {
 		setModel(new DefaultTreeModel(createTreeNode(content)));
 		setCellRenderer(new DefaultTreeCellRenderer() {
 
+			@Override
 			public Color getBackgroundNonSelectionColor() {
 				return null;
 			}
 
+			@Override
 			public Color getBackground() {
 				return null;
 			}
@@ -130,6 +132,8 @@ public class XMLTree extends JTree {
 			 * @see javax.swing.tree.TreeCellRenderer#getTreeCellRendererComponent(javax.swing.JTree,
 			 *      java.lang.Object, boolean, boolean, boolean, int, boolean)
 			 */
+			@Override
+			@SuppressWarnings("unchecked")
 			public Component getTreeCellRendererComponent(JTree tree,
 					Object value, boolean sel, boolean expanded, boolean leaf,
 					int row, boolean hasFocus) {
@@ -211,12 +215,14 @@ public class XMLTree extends JTree {
 
 		// Add a listener to present the 'save as text' option
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doEvent(e);
 				}
 			}
 
+			@Override
 			public void mouseReleased(MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					doEvent(e);
@@ -270,6 +276,7 @@ public class XMLTree extends JTree {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void expandAll(JTree tree, TreePath parent, boolean expand) {
 		synchronized (this.getModel()) {
 			// Traverse children
@@ -296,6 +303,7 @@ public class XMLTree extends JTree {
 		textSizeLimit = sizeLimit;
 	}
 
+	@SuppressWarnings("unchecked")
 	private XMLNode createTreeNode(Content content) {
 		XMLNode node = new XMLNode(content);
 		if (content instanceof Parent) {

@@ -9,8 +9,6 @@ import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
 import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
-import org.jdom.input.SAXBuilder;
-
 /**
  * Viewer to display XML as a tree.
  * 
@@ -25,9 +23,6 @@ public class TextXMLRenderer implements Renderer {
 			pattern = Pattern.compile(".*text/xml.*");
 	}
 	
-	private SAXBuilder saxBuilder = new SAXBuilder(false);
-
-
 	public boolean isTerminal() {
 		return true;
 	}

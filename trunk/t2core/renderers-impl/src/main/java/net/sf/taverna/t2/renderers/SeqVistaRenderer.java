@@ -66,6 +66,7 @@ public class SeqVistaRenderer implements Renderer {
 					+ entityIdentifier, e);
 		}
 		SeqVISTA vista = new SeqVISTA() {
+			@Override
 			public java.awt.Dimension getPreferredSize() {
 				return new java.awt.Dimension(100, 100);
 			}

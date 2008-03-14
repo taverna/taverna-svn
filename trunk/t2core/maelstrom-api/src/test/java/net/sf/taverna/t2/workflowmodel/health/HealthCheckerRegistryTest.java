@@ -12,6 +12,7 @@ import org.junit.Test;
 public class HealthCheckerRegistryTest {
 
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetInstances() {
 		HealthCheckerRegistry registry = new HealthCheckerRegistry();

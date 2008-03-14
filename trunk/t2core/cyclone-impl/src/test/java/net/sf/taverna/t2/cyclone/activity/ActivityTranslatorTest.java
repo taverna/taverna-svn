@@ -22,6 +22,7 @@ public class ActivityTranslatorTest {
 		translator = (ActivityTranslator<BeanshellActivityConfigurationBean>) new BeanshellActivityTranslator();
 	}
 
+	@SuppressWarnings("null")
 	@Test
 	public void testPorts() throws Exception {
 		BeanshellProcessor processor = new BeanshellProcessor(null,
@@ -89,7 +90,7 @@ public class ActivityTranslatorTest {
 		assertNotNull("No input named input2 found", in2);
 
 		Port out1 = (Port) activity.getOutputPorts().toArray()[0];
-
+		
 		// TODO - this will have to wait until we have the AnnotationPerspective
 		// at least naively implemented as there's now an additional layer of
 		// stuff before you can get to the 'real' annotations on any given

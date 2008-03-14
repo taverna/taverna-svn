@@ -20,6 +20,7 @@ public class ExtensionFileFilter extends javax.swing.filechooser.FileFilter {
 		this.allowedExtensions = allowedExtensions;
 	}
 
+	@Override
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
 			return true;
@@ -45,6 +46,7 @@ public class ExtensionFileFilter extends javax.swing.filechooser.FileFilter {
 		return ext;
 	}
 
+	@Override
 	public String getDescription() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Filter for extensions : ");

@@ -50,6 +50,7 @@ public class OrderedPair<T> {
 	 * b, c and d are all the same type and the condition (a.equals(c) &
 	 * b.equals(d)) is true.
 	 */
+	@Override
 	public boolean equals(Object other) {
 		if (other instanceof OrderedPair) {
 			OrderedPair<?> op = (OrderedPair<?>) other;

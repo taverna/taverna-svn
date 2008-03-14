@@ -3,8 +3,6 @@ package net.sf.taverna.t2.cloudone.bean;
 import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -28,6 +26,8 @@ import net.sf.taverna.t2.util.beanable.Beanable;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ReferenceBean {
 	//needs a default value or else it breaks, even if you tell it to auto-generate
+	
+	@SuppressWarnings("unused")
 	@Id  //@GeneratedValue (strategy=GenerationType.AUTO)
 	private String identifier = UUID.randomUUID().toString();;
 
