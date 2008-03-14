@@ -27,5 +27,6 @@
     <module>taverna-talisman-processor</module>    
     <module>taverna-wsdl-processor</module>
     <module>taverna-localworkers</module>
+    <module>all</module>
   </modules>
 </project>
