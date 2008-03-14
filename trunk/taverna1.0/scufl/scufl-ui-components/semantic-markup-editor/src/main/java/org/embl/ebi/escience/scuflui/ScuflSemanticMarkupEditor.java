@@ -136,6 +136,14 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		JTabbedPane tabbedPane = new JTabbedPane();
 		add(tabbedPane);
 
+		tabbedPane.addTab("Description", createDescriptionPanel());
+		tabbedPane.addTab("MIME Types", createMimePanel());
+//		tabbedPane.addTab("Ontology", createOntologyPanel());
+		setVisible(true);
+		setSemanticMarkup(m);
+	}
+	
+	private JPanel createOntologyPanel() {
 		JPanel ontologyPanel = new JPanel(new BorderLayout());
 		ontologyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Pick from ontology"));
@@ -227,9 +235,10 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		filterPanel.add(showFromFilter);
 		filterPanel.add(filterText);
 		ontologyPanel.add(filterPanel, BorderLayout.NORTH);
-
-		tabbedPane.addTab("Ontology", ontologyPanel);
-
+		return ontologyPanel;
+	}
+	
+	private JPanel createDescriptionPanel() {
 		// Free text description
 		JPanel descriptionPanel = new JPanel(new BorderLayout());
 		descriptionPanel.setPreferredSize(new Dimension(400, 400));
@@ -256,8 +265,10 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 				}
 			}
 		});
-		tabbedPane.addTab("Description", descriptionPanel);
-
+		return descriptionPanel;
+	}
+	
+	private JPanel createMimePanel() {
 		// A panel to show the MIME mappings
 		JPanel topLevelMimePanel = new JPanel(new BorderLayout());
 		JPanel mimePanel = new JPanel(new BorderLayout());
@@ -275,8 +286,8 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 		mimePanel.add(mimeListPane, BorderLayout.CENTER);
 		final JTextField mimeEntryField = new JTextField();
 		mimeEditPanel.add(mimeEntryField, BorderLayout.NORTH);
-		JButton clearMimeTypes = new JButton(TavernaIcons.deleteIcon);
-		clearMimeTypes.setPreferredSize(new Dimension(32, 32));
+		JButton clearMimeTypes = new JButton("Clear mime types");
+//		clearMimeTypes.setPreferredSize(new Dimension(32, 32));
 		clearMimeTypes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				// Clear the list and the metadata container
@@ -299,9 +310,7 @@ public class ScuflSemanticMarkupEditor extends JPanel implements
 			}
 		});
 		mimeEditPanel.add(clearMimeTypes, BorderLayout.EAST);
-		tabbedPane.addTab("MIME Types", topLevelMimePanel);
-		setVisible(true);
-		setSemanticMarkup(m);
+		return topLevelMimePanel;
 	}
 
 	public javax.swing.ImageIcon getIcon() {
