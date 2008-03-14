@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2integration-testing</artifactId>
-		<version>0.1.0</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>dataflow-invocation-testing</artifactId>
