@@ -13,7 +13,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
 
 import net.sf.taverna.t2.monitor.Monitor;
 import net.sf.taverna.t2.monitor.MonitorNode;
@@ -35,12 +40,55 @@ import net.sf.taverna.t2.monitor.NoSuchPropertyException;
  */
 public final class MonitorImpl implements Monitor {
 
-	// ############################################################
-	// # Static code here
-	// ############################################################
-	private static Monitor monitorSingleton = null;
-	private static boolean isEnabled = false;
 	private static long deregisterDelay = 1000;
+	private static boolean isEnabled = false;
+	private static Monitor monitorSingleton = null;
+
+	/**
+	 * By default the monitor is linked to the code but disabled, mostly so our
+	 * unit tests don't all suddenly change or require the monitor to be working
+	 * correctly!
+	 * 
+	 * @param enable
+	 */
+	public static void enableMonitoring(boolean enable) {
+		isEnabled = enable;
+	}
+
+	/**
+	 * Returns a tree view over the monitor.
+	 * 
+	 * @return a tree view over the monitor
+	 */
+	public static JTree getJTree() {
+		MonitorImpl m = (MonitorImpl) (MonitorImpl.getMonitor());
+		return m.new AlwaysOpenJTree(m.monitorTree);
+	}
+
+	/**
+	 * Get the monitor singleton
+	 * 
+	 * @return
+	 */
+	public synchronized static Monitor getMonitor() {
+		if (monitorSingleton == null) {
+			monitorSingleton = new MonitorImpl();
+		}
+		return monitorSingleton;
+	}
+
+	/**
+	 * Nodes will be removed at least delayTime milliseconds after their initial
+	 * deregistration request, this allows UI components to show nodes which
+	 * would otherwise vanish almost instantaneously.
+	 * 
+	 * @param delayTime
+	 *            time in milliseconds between the deregistration request and
+	 *            attempt to actually remove the node in question
+	 */
+	public static void setNodeRemovalDelay(long delayTime) {
+		deregisterDelay = delayTime;
+	}
 
 	/**
 	 * Very simple UI!
@@ -61,52 +109,6 @@ public final class MonitorImpl implements Monitor {
 		}).start();
 	}
 
-	/**
-	 * Returns a tree view over the monitor.
-	 * 
-	 * @return a tree view over the monitor
-	 */
-	public static JTree getJTree() {
-		MonitorImpl m = (MonitorImpl) (MonitorImpl.getMonitor());
-		return m.new AlwaysOpenJTree(m.monitorTree);
-	}
-
-	/**
-	 * By default the monitor is linked to the code but disabled, mostly so our
-	 * unit tests don't all suddenly change or require the monitor to be working
-	 * correctly!
-	 * 
-	 * @param enable
-	 */
-	public static void enableMonitoring(boolean enable) {
-		isEnabled = enable;
-	}
-
-	/**
-	 * Nodes will be removed at least delayTime milliseconds after their initial
-	 * deregistration request, this allows UI components to show nodes which
-	 * would otherwise vanish almost instantaneously.
-	 * 
-	 * @param delayTime
-	 *            time in milliseconds between the deregistration request and
-	 *            attempt to actually remove the node in question
-	 */
-	public static void setNodeRemovalDelay(long delayTime) {
-		deregisterDelay = delayTime;
-	}
-
-	/**
-	 * Get the monitor singleton
-	 * 
-	 * @return
-	 */
-	public synchronized static Monitor getMonitor() {
-		if (monitorSingleton == null) {
-			monitorSingleton = new MonitorImpl();
-		}
-		return monitorSingleton;
-	}
-
 	// ############################################################
 	// # Static code ends
 	// ############################################################
@@ -119,6 +121,25 @@ public final class MonitorImpl implements Monitor {
 		monitorTree = new DefaultTreeModel(new DefaultMutableTreeNode(this));
 		// Create the node removal timer as a daemon thread
 		nodeRemovalTimer = new java.util.Timer(true);
+	}
+
+	/**
+	 * Inject properties into an existing node
+	 */
+	public void addPropertiesToNode(String[] owningProcess,
+			Set<MonitorableProperty<?>> newProperties) {
+		try {
+			DefaultMutableTreeNode node = nodeAtProcessPath(owningProcess, -1);
+			MonitorNode mn = (MonitorNode) node.getUserObject();
+			for (MonitorableProperty<?> prop : newProperties) {
+				mn.addMonitorableProperty(prop);
+			}
+		} catch (IndexOutOfBoundsException ioobe) {
+			// Fail silently here, the node wasn't found in the state tree
+		}
+
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
@@ -144,91 +165,6 @@ public final class MonitorImpl implements Monitor {
 		}
 	}
 
-	private String printProcess(String[] process) {
-		StringBuffer sb = new StringBuffer();
-		for (String part : process) {
-			sb.append("{" + part + "}");
-		}
-		return sb.toString();
-	}
-
-	class MonitorNodeImpl implements MonitorNode {
-
-		private Object workflowObject;
-		private String[] owningProcess;
-		private Set<MonitorableProperty<?>> properties;
-		private boolean expired = false;
-
-		MonitorNodeImpl(Object workflowObject, String[] owningProcess,
-				Set<MonitorableProperty<?>> properties) {
-			this.properties = properties;
-			this.workflowObject = workflowObject;
-			this.owningProcess = owningProcess;
-		}
-
-		public void expire() {
-			expired = true;
-		}
-
-		public String[] getOwningProcess() {
-			return owningProcess;
-		}
-
-		/**
-		 * Return an unmodifiable copy of the property set
-		 */
-		public Set<? extends MonitorableProperty<?>> getProperties() {
-			return Collections.unmodifiableSet(properties);
-		}
-
-		public Object getWorkflowObject() {
-			return workflowObject;
-		}
-
-		@Override
-		public String toString() {
-			StringBuffer sb = new StringBuffer();
-			sb.append(getWorkflowObject().getClass().getSimpleName());
-			sb.append(", ");
-			sb.append(owningProcess[owningProcess.length - 1]);
-			sb.append(" : ");
-			for (MonitorableProperty<?> prop : getProperties()) {
-				int i = 0;
-				for (String nameElement : prop.getName()) {
-					sb.append(nameElement);
-					i++;
-					if (i < prop.getName().length) {
-						sb.append(".");
-					}
-				}
-				sb.append("=");
-				try {
-					sb.append(prop.getValue().toString());
-				} catch (NoSuchPropertyException nspe) {
-					sb.append("EXPIRED");
-				}
-				sb.append(" ");
-			}
-			return sb.toString();
-		}
-
-		Date creationDate = new Date();
-
-		public Date getCreationDate() {
-			return creationDate;
-		}
-
-		public void addMonitorableProperty(MonitorableProperty<?> newProperty) {
-			properties.add(newProperty);
-
-		}
-
-		public boolean hasExpired() {
-			return this.expired;
-		}
-
-	}
-
 	/**
 	 * Create a new node in the monitor
 	 */
@@ -249,25 +185,6 @@ public final class MonitorImpl implements Monitor {
 						.getChildCount(parentNode));
 			}
 		}
-	}
-
-	/**
-	 * Inject properties into an existing node
-	 */
-	public void addPropertiesToNode(String[] owningProcess,
-			Set<MonitorableProperty<?>> newProperties) {
-		try {
-			DefaultMutableTreeNode node = nodeAtProcessPath(owningProcess, -1);
-			MonitorNode mn = (MonitorNode) node.getUserObject();
-			for (MonitorableProperty<?> prop : newProperties) {
-				mn.addMonitorableProperty(prop);
-			}
-		} catch (IndexOutOfBoundsException ioobe) {
-			// Fail silently here, the node wasn't found in the state tree
-		}
-
-		// TODO Auto-generated method stub
-
 	}
 
 	/**
@@ -308,6 +225,14 @@ public final class MonitorImpl implements Monitor {
 			}
 		}
 		return currentNode;
+	}
+
+	private String printProcess(String[] process) {
+		StringBuffer sb = new StringBuffer();
+		for (String part : process) {
+			sb.append("{" + part + "}");
+		}
+		return sb.toString();
 	}
 
 	class AlwaysOpenJTree extends JTree {
@@ -363,6 +288,7 @@ public final class MonitorImpl implements Monitor {
 							}
 						});
 					}
+
 					public void treeStructureChanged(final TreeModelEvent ev) {
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -379,6 +305,83 @@ public final class MonitorImpl implements Monitor {
 			TreeModel oldValue = treeModel;
 			treeModel = model;
 			firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
+		}
+
+	}
+
+	class MonitorNodeImpl implements MonitorNode {
+
+		private boolean expired = false;
+		private String[] owningProcess;
+		private Set<MonitorableProperty<?>> properties;
+		private Object workflowObject;
+
+		Date creationDate = new Date();
+
+		MonitorNodeImpl(Object workflowObject, String[] owningProcess,
+				Set<MonitorableProperty<?>> properties) {
+			this.properties = properties;
+			this.workflowObject = workflowObject;
+			this.owningProcess = owningProcess;
+		}
+
+		public void addMonitorableProperty(MonitorableProperty<?> newProperty) {
+			properties.add(newProperty);
+
+		}
+
+		public void expire() {
+			expired = true;
+		}
+
+		public Date getCreationDate() {
+			return creationDate;
+		}
+
+		public String[] getOwningProcess() {
+			return owningProcess;
+		}
+
+		/**
+		 * Return an unmodifiable copy of the property set
+		 */
+		public Set<? extends MonitorableProperty<?>> getProperties() {
+			return Collections.unmodifiableSet(properties);
+		}
+
+		public Object getWorkflowObject() {
+			return workflowObject;
+		}
+
+		public boolean hasExpired() {
+			return this.expired;
+		}
+
+		@Override
+		public String toString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(getWorkflowObject().getClass().getSimpleName());
+			sb.append(", ");
+			sb.append(owningProcess[owningProcess.length - 1]);
+			sb.append(" : ");
+			for (MonitorableProperty<?> prop : getProperties()) {
+				int i = 0;
+				for (String nameElement : prop.getName()) {
+					sb.append(nameElement);
+					i++;
+					if (i < prop.getName().length) {
+						sb.append(".");
+					}
+				}
+				sb.append("=");
+				try {
+					sb.append(prop.getValue().toString());
+				} catch (NoSuchPropertyException nspe) {
+					sb.append("EXPIRED");
+				}
+				sb.append(" ");
+			}
+			return sb.toString();
 		}
 
 	}
