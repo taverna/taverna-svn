@@ -3,15 +3,14 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.monitor.MonitorableProperty;
-import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -21,11 +20,9 @@ import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
 import net.sf.taverna.t2.workflowmodel.Merge;
-import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.NamingException;
 import net.sf.taverna.t2.workflowmodel.Processor;
-import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.TokenProcessingEntity;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
@@ -97,12 +94,11 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	 */
 	protected synchronized void addMerge(MergeImpl merge)
 			throws NamingException {
-		for (Merge existingMerge : merges
-				.toArray(new Merge[] {})) {
-			if (existingMerge.getLocalName().equals(
-					merge.getLocalName()))
-				throw new NamingException("There already is a merge operation named:"
-						+ merge.getLocalName());
+		for (Merge existingMerge : merges.toArray(new Merge[] {})) {
+			if (existingMerge.getLocalName().equals(merge.getLocalName()))
+				throw new NamingException(
+						"There already is a merge operation named:"
+								+ merge.getLocalName());
 		}
 		merges.add(merge);
 	}
@@ -110,8 +106,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	protected synchronized void removeMerge(Merge merge) {
 		merges.remove(merge);
 	}
-	
-	
+
 	/**
 	 * Build a new dataflow input port, the granular depth is set for the input
 	 * port so it can be copied onto the internal output port
@@ -585,10 +580,8 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	protected boolean tokenReceived(String owningProcess,
 			InvocationContext context) {
 		synchronized (activeProcessIdentifiers) {
-			if (activeProcessIdentifiers.keySet().contains(owningProcess) == false) {
-				MonitorImpl.getMonitor().registerNode(this,
-						owningProcess.split(":"),
-						new HashSet<MonitorableProperty<?>>());
+			if (! activeProcessIdentifiers.keySet().contains(owningProcess)) {
+				MonitorManager.getInstance().registerNode(this, owningProcess);
 				// Message each processor within the dataflow and instruct it to
 				// register any properties with the monitor including any
 				// processor level properties it can aggregate from its dispatch
@@ -664,13 +657,10 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 				// this
 				// seems cleaner)
 				for (Processor p : getEntities(Processor.class)) {
-					MonitorImpl.getMonitor()
-							.deregisterNode(
-									(owningProcess + ":" + p.getLocalName())
-											.split(":"));
+					MonitorManager.getInstance().deregisterNode(
+							owningProcess + ":" + p.getLocalName());
 				}
-				MonitorImpl.getMonitor().deregisterNode(
-						owningProcess.split(":"));
+				MonitorManager.getInstance().deregisterNode(owningProcess);
 
 				// Remove this entry from the active process map
 				activeProcessIdentifiers.remove(owningProcess);

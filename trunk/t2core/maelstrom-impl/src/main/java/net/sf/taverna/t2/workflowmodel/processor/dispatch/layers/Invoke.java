@@ -1,5 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.ERROR;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT_COMPLETION;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,8 +12,8 @@ import java.util.Set;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
-import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -23,7 +27,6 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEv
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.*;
 
 /**
  * Context free invoker layer, does not pass index arrays of jobs into activity
@@ -78,7 +81,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				final String invocationProcessIdentifier = jobEvent
 						.pushOwningProcess(getNextProcessID())
 						.getOwningProcess();
-				MonitorImpl.getMonitor().registerNode(a,
+				MonitorManager.getInstance().registerNode(a,
 						invocationProcessIdentifier.split(":"),
 						new HashSet<MonitorableProperty<?>>());
 
@@ -114,8 +117,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					private boolean sentJob = false;
 
 					public void fail(String message, Throwable t, DispatchErrorType errorType) {
-						MonitorImpl.getMonitor().deregisterNode(
-								invocationProcessIdentifier.split(":"));
+						MonitorManager.getInstance().deregisterNode(
+								invocationProcessIdentifier);
 						getAbove().receiveError(
 								new DispatchErrorEvent(jobEvent
 										.getOwningProcess(), jobEvent
@@ -138,8 +141,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					public void receiveCompletion(int[] completionIndex) {
 						if (completionIndex.length == 0) {
 							// Final result, clean up monitor state
-							MonitorImpl.getMonitor().deregisterNode(
-									invocationProcessIdentifier.split(":"));
+							MonitorManager.getInstance().deregisterNode(
+									invocationProcessIdentifier);
 						}
 						if (sentJob) {
 							int[] newIndex;
@@ -185,8 +188,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 						if (index.length == 0) {
 							// Final result, clean up monitor state
-							MonitorImpl.getMonitor().deregisterNode(
-									invocationProcessIdentifier.split(":"));
+							MonitorManager.getInstance().deregisterNode(
+									invocationProcessIdentifier);
 						}
 
 						// Construct a new result map using the activity mapping
@@ -250,7 +253,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 					MonitorableAsynchronousActivity<?> maa = (MonitorableAsynchronousActivity<?>) as;
 					Set<MonitorableProperty<?>> props = maa
 							.executeAsynchWithMonitoring(inputData, callback);
-					MonitorImpl.getMonitor().addPropertiesToNode(
+					MonitorManager.getInstance().addPropertiesToNode(
 							invocationProcessIdentifier.split(":"), props);
 				} else {
 					// Run the job, passing in the callback we've just created

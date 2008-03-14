@@ -1,31 +1,27 @@
 package net.sf.taverna.t2.monitor.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 
-import org.junit.Test;
-
-import net.sf.taverna.t2.monitor.Monitor;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 
-public class MonitorImplTest {
+import org.junit.Test;
+
+public class MonitorTreeModelTest {
 
 	@Test
 	public void testAddNodes() throws InterruptedException {
-		Monitor m = MonitorImpl.getMonitor();
-		MonitorImpl.enableMonitoring(true);
+		MonitorTreeModel m = MonitorTreeModel.getInstance();
 		m.registerNode(this, new String[] { "foo" },
 				new HashSet<MonitorableProperty<?>>());
 		m.registerNode(this, new String[] { "foo", "bar" },
 				new HashSet<MonitorableProperty<?>>());
-		MonitorImpl.enableMonitoring(false);
 	}
 
 	@Test
 	public void testAddNodesShouldFail() {
-		Monitor m = MonitorImpl.getMonitor();
-		MonitorImpl.enableMonitoring(true);
+		MonitorTreeModel m = MonitorTreeModel.getInstance();
 		m.registerNode(this, new String[] { "foo" },
 				new HashSet<MonitorableProperty<?>>());
 		try {
@@ -35,7 +31,6 @@ public class MonitorImplTest {
 		} catch (IndexOutOfBoundsException ioobe) {
 			// Okay, should see this
 		}
-		MonitorImpl.enableMonitoring(false);
 
 	}
 }

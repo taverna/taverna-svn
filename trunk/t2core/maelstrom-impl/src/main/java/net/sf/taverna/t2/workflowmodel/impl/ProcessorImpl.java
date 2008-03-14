@@ -15,8 +15,8 @@ import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
-import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -102,6 +102,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 		// Configure dispatch stack to push output events to the crystalizer
 		dispatchStack = new DispatchStackImpl() {
 
+			@Override
 			protected String getProcessName() {
 				return ProcessorImpl.this.name;
 			}
@@ -325,7 +326,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 	}
 
 	/* Utility methods */
-	
+
 	protected ProcessorInputPortImpl getInputPortWithName(String name) {
 		for (ProcessorInputPortImpl p : inputPorts) {
 			String portName = p.getName();
@@ -437,8 +438,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 
 		// Register the node with the monitor tree, including any aggregated
 		// properties from layers.
-		String[] processIDlist = (dataflowOwningProcess + ":" + getLocalName())
-				.split(":");
-		MonitorImpl.getMonitor().registerNode(this, processIDlist, properties);
+		MonitorManager.getInstance().registerNode(this,
+				dataflowOwningProcess + ":" + getLocalName(), properties);
 	}
 }

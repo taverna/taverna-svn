@@ -11,9 +11,9 @@ import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
-import net.sf.taverna.t2.monitor.impl.MonitorImpl;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -54,7 +54,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 						if (portsToComplete == 0) {
 							// Received complete events on all ports, can
 							// un-register this node from the monitor
-							MonitorImpl.getMonitor().deregisterNode(
+							MonitorManager.getInstance().deregisterNode(
 									instanceOwningProcessId.split(":"));
 						}
 					}
@@ -68,7 +68,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 
 		};
 
-		MonitorImpl.getMonitor().registerNode(this,
+		MonitorManager.getInstance().registerNode(this,
 				instanceOwningProcessId.split(":"),
 				new HashSet<MonitorableProperty<?>>());
 
