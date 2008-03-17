@@ -287,4 +287,8 @@ public class WorkflowProcessor extends Processor implements ScuflWorkflowProcess
 	public String getDefinitionURL() {
 		return definitionURL;
 	}
+
+	public void setDefinitionURL(String definitionURL) {
+		this.definitionURL = definitionURL;
+	}
 }
