@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>uk.org.mygrid.remotetaverna</groupId>
 		<artifactId>remotetaverna</artifactId>
-		<version>0.4-SNAPSHOT</version>
+		<version>0.5.0</version>
 	</parent>
 	<groupId>uk.org.mygrid.remotetaverna</groupId>
 	<artifactId>taverna-interface</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.5.0</version>
 	<packaging>jar</packaging>
 	<name>Taverna service interface</name>
 	<description>
