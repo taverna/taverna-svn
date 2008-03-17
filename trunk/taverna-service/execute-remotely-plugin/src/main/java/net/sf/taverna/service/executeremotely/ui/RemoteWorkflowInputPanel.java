@@ -1,5 +1,6 @@
 package net.sf.taverna.service.executeremotely.ui;
 
+import java.awt.Component;
 import java.util.Date;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import net.sf.taverna.service.rest.client.WorkflowREST;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.baclava.DataThing;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.WorkflowInputPanelFactory;
 import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
@@ -74,7 +76,12 @@ public class RemoteWorkflowInputPanel extends WorkflowInputPanel {
 		uiLog.log("Added " + job);
 	}
 
-	public static void run(ScuflModel model, RESTService service, UILogger uiLog) {
+	public static void run(ScuflModel model, RESTService service, UILogger uiLog, Component parentComponent) {
+		// Disabled until Taverna 1.7.1
+		//		if (! WorkflowInputPanelFactory.checkValidWorkflow(model, parentComponent)) {
+		//			return;
+		//		}
+		
 		if (model.getWorkflowSourcePorts().length > 0) {
 			RemoteWorkflowInputPanel panel =
 				new RemoteWorkflowInputPanel(model, service, uiLog);

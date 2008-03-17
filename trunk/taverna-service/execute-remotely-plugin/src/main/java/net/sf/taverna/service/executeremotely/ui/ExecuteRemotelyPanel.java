@@ -343,13 +343,14 @@ public class ExecuteRemotelyPanel extends JPanel implements
                         putValue(SHORT_DESCRIPTION, "Run the current workflow remotely");
                 }
                 
-                public void actionPerformed(ActionEvent ev) {
+         
+				public void actionPerformed(ActionEvent ev) {
                         if (context == null || model == null) {
                                 logger.info("Can't run workflow without connection or current workflow");
                                 checkButtons();
                                 return;
                         }
-                        RemoteWorkflowInputPanel.run(model, service, uiLog);
+                        RemoteWorkflowInputPanel.run(model, service, uiLog, ExecuteRemotelyPanel.this);
                         jobs.refresh();
                 }
         }
