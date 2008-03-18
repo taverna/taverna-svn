@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ScuflWorkflowProcessor.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-05-21 09:50:41 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-03-18 16:28:23 $
+ *               by   $Author: iandunlop $
  * Created on 30-Jun-2006
  *****************************************************************/
 package org.embl.ebi.escience.scufl;
@@ -43,4 +43,6 @@ public interface ScuflWorkflowProcessor {
 	public ScuflModel getInternalModel();
 	public ScuflModel getInternalModelForEditing();
 	public void removeInternalModelEventListener();
+	public String getDefinitionURL();
+	public void setDefinitionURL(String definitionURL);
 }
