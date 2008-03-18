@@ -25,6 +25,8 @@ import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 import org.embl.ebi.escience.scuflui.shared.ModelMap;
 import org.embl.ebi.escience.scuflui.shared.WorkflowChanges;
+import org.embl.ebi.escience.scuflui.workbench.NestedFileChooser;
+import org.embl.ebi.escience.scuflui.workbench.NestedWorkflowSwitcher;
 
 /**
  * Action and static methods for saving a workflow or workflow components.
@@ -39,6 +41,12 @@ public class SaveWorkflowAction extends AbstractAction {
 			.getInstance();
 
 	private static Logger logger = Logger.getLogger(SaveWorkflowAction.class);
+
+	/**
+	 * Remembers whether the user asked to save the nested workflow in full so
+	 * we can then reset it's URL back to the original value
+	 */
+	private static boolean saveNested;
 
 	private Component parentComponent;
 
@@ -82,6 +90,7 @@ public class SaveWorkflowAction extends AbstractAction {
 	public boolean saveToFile() throws FileNotFoundException, SecurityException {
 		ScuflModel currentModel = (ScuflModel) ModelMap.getInstance()
 				.getNamedModel(ModelMap.CURRENT_WORKFLOW);
+
 		if (currentModel == null) {
 			logger.warn("Can't save null model");
 			return false;
@@ -110,6 +119,7 @@ public class SaveWorkflowAction extends AbstractAction {
 	 *             method denies write access to the file.
 	 */
 	public static boolean saveToFile(Component parentComponent, ScuflModel model) {
+
 		// Make sure it is visible first so the user knows what he will save
 		ModelMap.getInstance().setModel(ModelMap.CURRENT_WORKFLOW, model);
 
@@ -160,11 +170,22 @@ public class SaveWorkflowAction extends AbstractAction {
 		OutputStreamWriter writer = new OutputStreamWriter(
 				new FileOutputStream(file), Charset.forName("UTF-8"));
 		PrintWriter out = new PrintWriter(writer);
+		NestedWorkflowSwitcher urlSetter = null;
+		if (saveNested) {
+			urlSetter = new NestedWorkflowSwitcher(model);
+			urlSetter.makeNestedEmbedded();
+		}
 		out.print(XScuflView.getXMLText(model));
 		out.flush();
 		out.close();
+		if (saveNested) {
+//			NestedFileChooser.setURLtoOriginal();
+			urlSetter.makeNestedReferenced();
+			saveNested = false;
+		}
+
 		logger.info("Saved " + model + " to " + file);
-		// FIXME: Safe to syncedWithFile() here? 
+		// FIXME: Safe to syncedWithFile() here?
 		workflowChanges.syncedWithFile(model, file);
 	}
 
@@ -187,7 +208,8 @@ public class SaveWorkflowAction extends AbstractAction {
 	 */
 	public static File saveDialogue(Component parentComponent,
 			ScuflModel model, String extension, String windowTitle) {
-		JFileChooser fc = new JFileChooser();
+		// JFileChooser fc = new JFileChooser();
+		NestedFileChooser fc = new NestedFileChooser();
 		Preferences prefs = Preferences
 				.userNodeForPackage(SaveWorkflowAction.class);
 
@@ -213,12 +235,16 @@ public class SaveWorkflowAction extends AbstractAction {
 			logger.info("Aborting save of " + title);
 			return null;
 		}
+		if (fc.getSaveNested()) {
+			saveNested = true;
+		}
+
 		File file = fixExtension(fc.getSelectedFile(), extension);
 		logger.debug("Selected " + file + " for save");
 		prefs.put("currentDir", fc.getCurrentDirectory().toString());
 		// FIXME: Should do "Do you want to overwrite?" if user selected an
 		// existing file that was not already set from lastSavedAs
-		
+
 		if (title.startsWith(WorkflowDescription.DEFAULT_TITLE)) {
 			// Set the title to the chosen filename (without extension),
 			// should be more reasonable than "Untitled workflow #34"
