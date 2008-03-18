@@ -11,7 +11,7 @@ public class ResultComponentFactory implements UIComponentFactorySPI {
 	
 	public UIComponentSPI getComponent() {
 		if (component == null) {
-			component = new ResultComponent();
+			component = new ResultComponent(null);
 		}
 		return component;
 	}

@@ -51,8 +51,11 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 	private Map<String, List<String>> mimeTypes;
 
 	private InvocationContext context;
+	
+	private RenderedResultComponent renderedResultComponent;
 
-	public ResultComponent() {
+	public ResultComponent(RenderedResultComponent renderedResultComponent) {
+		this.renderedResultComponent = renderedResultComponent;
 		setLayout(new BorderLayout());
 		add(new JLabel("Results"), BorderLayout.NORTH);
 
@@ -88,7 +91,7 @@ public class ResultComponent extends JPanel implements UIComponentSPI {
 			final JTree tree = new JTree(resultModel);
 			// add the renderer popup
 			tree.addMouseListener(new RendererPopup(tree, new DataFacade(
-					context.getDataManager())));
+					context.getDataManager()), renderedResultComponent));
 			tree.setExpandsSelectedPaths(true);
 			tree.setLargeModel(true);
 			resultModel.addTreeModelListener(new TreeModelListener() {

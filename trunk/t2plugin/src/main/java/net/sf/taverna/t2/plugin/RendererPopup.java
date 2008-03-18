@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.plugin;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -18,14 +16,11 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTree;
 
@@ -56,10 +51,12 @@ public class RendererPopup extends MouseAdapter {
 	private JTree tree;
 	private final DataFacade dataFacade;
 	private JPanel renderedResultPanel;
+	private RenderedResultComponent renderedResultComponent;
 
-	public RendererPopup(JTree tree, DataFacade dataFacade) {
+	public RendererPopup(JTree tree, DataFacade dataFacade, RenderedResultComponent renderedResultComponent) {
 		this.tree = tree;
 		this.dataFacade = dataFacade;
+		this.renderedResultComponent = renderedResultComponent;
 		renderedResultPanel = new JPanel();
 	}
 
@@ -158,8 +155,9 @@ public class RendererPopup extends MouseAdapter {
 					logger.warn("Couln not render using "
 							+ guiRenderer.getClass().getName(), e1);
 				}
-				RenderedResultComponent rendererComponent = RendererResultComponentFactory.getInstance().getRendererComponent();
-				rendererComponent.setResultComponent(component);
+//				RenderedResultComponent rendererComponent = RendererResultComponentFactory.getInstance().getRendererComponent();
+//				rendererComponent.setResultComponent(component);
+				renderedResultComponent.setResultComponent(component);
 			}
 
 		});
