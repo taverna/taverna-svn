@@ -60,6 +60,8 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 	int sentJobsCount = 0;
 
+	int completedJobsCount = 0;
+
 	public Parallelize() {
 		super();
 	}
@@ -214,7 +216,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 						synchronized (this) {
 							activeJobs++;
 						}
-						// sentJobsCount++;
+						sentJobsCount++;
 						getBelow()
 								.receiveJob(
 										new DispatchJobEvent(e
@@ -249,6 +251,7 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 							// current count of active jobs
 							pendingEvents.remove(e);
 							activeJobs--;
+							completedJobsCount++;
 							// Now pull any completion events that have reached
 							// the head of the queue - this indicates that all
 							// the job events which came in before them have
@@ -336,6 +339,42 @@ public class Parallelize extends AbstractDispatchLayer<ParallelizeConfig>
 
 		};
 		dispatchStack.receiveMonitorableProperty(queueSizeProperty,
+				owningProcess);
+
+		MonitorableProperty<Integer> sentJobsProperty = new MonitorableProperty<Integer>() {
+
+			public Date getLastModified() {
+				return new Date();
+			}
+
+			public String[] getName() {
+				return new String[] { "dispatch", "parallelize", "sentjobs" };
+			}
+
+			public Integer getValue() throws NoSuchPropertyException {
+				return sentJobsCount;
+			}
+
+		};
+		dispatchStack.receiveMonitorableProperty(sentJobsProperty,
+				owningProcess);
+
+		MonitorableProperty<Integer> completedJobsProperty = new MonitorableProperty<Integer>() {
+
+			public Date getLastModified() {
+				return new Date();
+			}
+
+			public String[] getName() {
+				return new String[] { "dispatch", "parallelize", "completedjobs" };
+			}
+
+			public Integer getValue() throws NoSuchPropertyException {
+				return completedJobsCount;
+			}
+
+		};
+		dispatchStack.receiveMonitorableProperty(completedJobsProperty,
 				owningProcess);
 
 	}
