@@ -1,22 +1,9 @@
 <basepane>
   <child>
-    <znode classname="net.sf.taverna.zaria.ZSplitPane">
-      <split ratio="0.4192872117400419" orientation="horizontal">
-        <right>
-          <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent scroll="false">
-               <name>T2 Panel</name>
-             </namedcomponent>
-          </znode>
-        </right>
-        <left>
-          <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-            <namedcomponent scroll="true">
-              <name>Workflow Diagram</name>
-             </namedcomponent>
-          </znode>
-        </left>
-      </split>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent scroll="false">
+        <name>T2 Panel</name>
+      </namedcomponent>
     </znode>
   </child>
   <namedcomponents>
@@ -25,12 +12,6 @@
       <artifact>t2-plugin</artifact>
       <classname>net.sf.taverna.t2.plugin.T2ComponentFactory</classname>
       <name>T2 Panel</name>
-    </namedcomponent>
-    <namedcomponent>
-      <groupid>uk.org.mygrid.taverna.scufl.scufl-ui-components</groupid>
-      <artifact>scufl-diagram-panel</artifact>
-      <classname>org.embl.ebi.escience.scuflui.ScuflDiagramPanelFactory</classname>
-      <name>Workflow Diagram</name>
     </namedcomponent>
   </namedcomponents>
 </basepane>
