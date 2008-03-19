@@ -718,38 +718,6 @@ public class ScuflModel implements Serializable {
 }
 
 /**
- * A Processor subclass to hold ports for the overal workflow inputs. These
- * ports are therefore output ports, as they are used as data sources for links
- * into the workflow
- */
-class InternalSourcePortHolder extends Processor {
-	protected InternalSourcePortHolder(ScuflModel model)
-		throws DuplicateProcessorNameException, ProcessorCreationException {
-		super(model, "SCUFL_INTERNAL_SOURCEPORTS");
-	}
-
-	public Properties getProperties() {
-		return null;
-	}
-}
-
-/**
- * A Processor subclass to hold ports for the overall workflow outputs, these
- * ports are therefore held as input ports, acting as they do as data sinks.
- */
-class InternalSinkPortHolder extends Processor {
-
-	protected InternalSinkPortHolder(ScuflModel model)
-		throws DuplicateProcessorNameException, ProcessorCreationException {
-		super(model, "SCUFL_INTERNAL_SINKPORTS");
-	}
-
-	public Properties getProperties() {
-		return null;
-	}
-}
-
-/**
  * A thread subclass to notify listeners of events. Starts itself on
  * construction, set loop=false and notify it to stop the thread.
  */
