@@ -20,6 +20,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceException;
+import org.biomart.martservice.ResultReceiver;
+import org.biomart.martservice.ResultReceiverException;
 import org.biomart.martservice.config.QueryConfigUtils;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
@@ -36,8 +38,10 @@ import org.biomart.martservice.query.Query;
 public class BiomartActivity extends
 		AbstractAsynchronousActivity<BiomartActivityConfigurationBean> {
 
-	private BiomartActivityConfigurationBean configurationBean;
+	private static boolean STREAM_RESULTS = true;
 	
+	private BiomartActivityConfigurationBean configurationBean;
+
 	private Map<String, OutputPort> outputMap;
 
 	// private QueryListener queryListener;
@@ -68,10 +72,10 @@ public class BiomartActivity extends
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				final DataFacade dataFacade = new DataFacade(callback
+						.getContext().getDataManager());
 
-				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				final Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
 
 				try {
 					// Get a query including data source etc, creating
@@ -97,21 +101,82 @@ public class BiomartActivity extends
 						}
 					}
 
-					Object[] resultList = biomartQuery.getMartService()
-							.executeQuery(query);
 					if (biomartQuery.getQuery().getFormatter() == null) {
-						// shouldn't need to reorder attributes for MartJ 0.5
-						List<Attribute> attributes = biomartQuery
-								.getAttributesInLinkOrder();
-						assert resultList.length == attributes.size();
-						for (int i = 0; i < resultList.length; i++) {
-							Attribute attribute = attributes.get(i);
-							String outputName = attribute.getQualifiedName();
-							int outputDepth = outputMap.get(outputName).getDepth();
-							outputData.put(outputName, dataFacade.register(
-									resultList[i], outputDepth));
+						if (STREAM_RESULTS) {
+							final List<Attribute> attributes = biomartQuery
+									.getAttributesInLinkOrder();
+							final Map<String, List<EntityIdentifier>> outputLists = new HashMap<String, List<EntityIdentifier>>();
+							for (Attribute attribute : attributes) {
+								outputLists.put(attribute.getQualifiedName(),
+										new ArrayList<EntityIdentifier>());
+							}
+
+							biomartQuery.getMartService().executeQuery(query,
+									new ResultReceiver() {
+
+										public void receiveResult(
+												Object[] resultLine, long index) {
+											Map<String, EntityIdentifier> partialOutputData = new HashMap<String, EntityIdentifier>();
+											for (int i = 0; i < resultLine.length; i++) {
+												Attribute attribute = attributes
+														.get(i);
+												String outputName = attribute
+														.getQualifiedName();
+												int outputDepth = outputMap
+														.get(outputName)
+														.getDepth();
+												try {
+													EntityIdentifier data = dataFacade
+															.register(resultLine[i], outputDepth - 1);
+													partialOutputData.put(
+															outputName, data);
+													outputLists.get(outputName)
+															.add((int) index, data);
+												} catch (EmptyListException e) {
+													callback.fail("Failure when registering a result", e);
+												} catch (MalformedListException e) {
+													callback.fail("Failure when registering a result", e);
+												} catch (UnsupportedObjectTypeException e) {
+													callback.fail("Failure when registering a result", e);
+												}
+											}
+											callback.receiveResult(
+													partialOutputData,
+													new int[] { (int) index });
+										}
+									});
+
+							for (Attribute attribute : attributes) {
+								String outputName = attribute
+										.getQualifiedName();
+								int outputDepth = outputMap.get(outputName)
+										.getDepth();
+								outputData.put(outputName, dataFacade.register(
+										outputLists.get(outputName),
+										outputDepth));
+							}
+
+						} else {
+							// shouldn't need to reorder attributes for MartJ
+							// 0.5
+							Object[] resultList = biomartQuery.getMartService()
+									.executeQuery(query);
+							List<Attribute> attributes = biomartQuery
+									.getAttributesInLinkOrder();
+							assert resultList.length == attributes.size();
+							for (int i = 0; i < resultList.length; i++) {
+								Attribute attribute = attributes.get(i);
+								String outputName = attribute
+										.getQualifiedName();
+								int outputDepth = outputMap.get(outputName)
+										.getDepth();
+								outputData.put(outputName, dataFacade.register(
+										resultList[i], outputDepth));
+							}
 						}
 					} else {
+						Object[] resultList = biomartQuery.getMartService()
+								.executeQuery(query);
 						assert resultList.length == 1;
 						Dataset dataset = biomartQuery.getQuery().getDatasets()
 								.get(0);
@@ -125,15 +190,17 @@ public class BiomartActivity extends
 				} catch (MartServiceException e) {
 					callback.fail("Failure calling biomart", e);
 				} catch (RetrievalException e) {
-					callback.fail("Failure calling biomart", e);
+					callback.fail("Failure when resolving an input", e);
 				} catch (NotFoundException e) {
-					callback.fail("Failure calling biomart", e);
+					callback.fail("Failure when resolving an input", e);
 				} catch (EmptyListException e) {
-					callback.fail("Failure calling biomart", e);
+					callback.fail("Failure when registering a result", e);
 				} catch (MalformedListException e) {
-					callback.fail("Failure calling biomart", e);
+					callback.fail("Failure when registering a result", e);
 				} catch (UnsupportedObjectTypeException e) {
 					callback.fail("Failure calling biomart", e);
+				} catch (ResultReceiverException e) {
+					callback.fail("Failure when receiving a result from biomart", e);
 				}
 			}
 
@@ -147,9 +214,13 @@ public class BiomartActivity extends
 		for (Filter filter : filters) {
 			String name = filter.getQualifiedName() + "_filter";
 			if (filter.isList()) {
-				addInput(name, 1, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+				addInput(name, 1, true,
+						new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+						String.class);
 			} else {
-				addInput(name, 0, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+				addInput(name, 0, true,
+						new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+						String.class);
 			}
 		}
 	}
@@ -163,9 +234,9 @@ public class BiomartActivity extends
 			for (Attribute attribute : attributes) {
 				String name = attribute.getQualifiedName();
 				if (attribute.getAttributes() != null) {
-					addOutput(name, 2, 2);
+					addOutput(name, 2, STREAM_RESULTS?1:2);
 				} else {
-					addOutput(name, 1, 1);
+					addOutput(name, 1, STREAM_RESULTS?0:1);
 				}
 			}
 		} else if (attributes.size() > 0) {
