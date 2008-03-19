@@ -88,21 +88,21 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		}
 	}
 	
-	private SymanticTypes getSymanticTypes(Port port) throws ActivityTranslationException {
+	private SymanticTypes getSymanticType(Port port) throws ActivityTranslationException {
 		try {
-			Method method = port.getClass().getMethod("getSymanticTypes");
+			Method method = port.getClass().getMethod("getSymanticType");
 			Enum<?> symanticType = (Enum<?>) method.invoke(port);
 			return SymanticTypes.valueOf(symanticType.name());
 		} catch (SecurityException e) {
-			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getSymanticTypes through introspection",e);
+			throw new ActivityTranslationException("There was a Security exception whilst trying to invoke getSymanticType through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getSymanticTypes, an therefore does not conform to being an Rshell processor",e);
+			throw new ActivityTranslationException("The processor does not have the method getSymanticType, an therefore does not conform to being an Rshell processor",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getSymanticTypes on the Rshell processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getSymanticType on the Rshell processor had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getSymanticTypes on the Rshell processor",e);
+			throw new ActivityTranslationException("Unable to access the method getSymanticType on the Rshell processor",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getSymanticTypes on the Rshell processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getSymanticType on the Rshell processor",e);
 		}
 	}
 	
@@ -114,14 +114,14 @@ public class RshellActivityTranslator extends AbstractActivityTranslator<RshellA
 		for (InputPort inputPort : processor.getInputPorts()) {
 			RShellPortSymanticTypeBean symanticTypeBean = new RShellPortSymanticTypeBean();
 			symanticTypeBean.setName(inputPort.getName());
-			symanticTypeBean.setSymanticType(getSymanticTypes(inputPort));
+			symanticTypeBean.setSymanticType(getSymanticType(inputPort));
 			inputDefinitions.add(symanticTypeBean);
 		}
 
 		for (OutputPort outPort : processor.getOutputPorts()) {
 			RShellPortSymanticTypeBean symanticTypeBean = new RShellPortSymanticTypeBean();
 			symanticTypeBean.setName(outPort.getName());
-			symanticTypeBean.setSymanticType(getSymanticTypes(outPort));
+			symanticTypeBean.setSymanticType(getSymanticType(outPort));
 			outputDefinitions.add(symanticTypeBean);
 		}
 		bean.setInputSymanticTypes(inputDefinitions);
