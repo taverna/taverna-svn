@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 import java.util.ArrayList;
 import java.util.List;

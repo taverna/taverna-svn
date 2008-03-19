@@ -1,10 +1,10 @@
 /**
  * CVS
  * $Author: davidwithers $
- * $Date: 2008-03-19 15:24:45 $
+ * $Date: 2008-03-19 15:48:10 $
  * $Revision: 1.1 $
  */
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 import org.rosuda.JRclient.RSrvException;
 import org.rosuda.JRclient.Rconnection;

@@ -1,11 +1,11 @@
 /*
  * CVS
  * $Author: davidwithers $
- * $Date: 2008-03-19 15:24:45 $
+ * $Date: 2008-03-19 15:48:10 $
  * $Revision: 1.1 $
  * University of Twente, Human Media Interaction Group
  */
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 /**
  * Class containing the conversion of java type stirngs to classes

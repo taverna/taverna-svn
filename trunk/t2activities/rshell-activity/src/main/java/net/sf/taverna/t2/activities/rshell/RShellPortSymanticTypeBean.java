@@ -1,6 +1,6 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
-import net.sf.taverna.t2.activities.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 
 public class RShellPortSymanticTypeBean {
 

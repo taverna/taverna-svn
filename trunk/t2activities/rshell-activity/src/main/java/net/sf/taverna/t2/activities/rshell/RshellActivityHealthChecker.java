@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 import net.sf.taverna.t2.workflowmodel.health.HealthChecker;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;

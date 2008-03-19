@@ -1,9 +1,11 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import net.sf.taverna.t2.activities.rshell.RshellActivity;
+import net.sf.taverna.t2.activities.rshell.RshellActivityHealthChecker;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractActivity;

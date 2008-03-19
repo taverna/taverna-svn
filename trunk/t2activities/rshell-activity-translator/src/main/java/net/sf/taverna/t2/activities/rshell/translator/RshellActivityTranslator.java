@@ -1,11 +1,15 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell.translator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.activities.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RShellPortSymanticTypeBean;
+import net.sf.taverna.t2.activities.rshell.RshellActivity;
+import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;

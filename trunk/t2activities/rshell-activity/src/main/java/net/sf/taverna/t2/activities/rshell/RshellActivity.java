@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities;
+package net.sf.taverna.t2.activities.rshell;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import net.sf.taverna.t2.activities.RshellPortTypes.SymanticTypes;
+import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
