@@ -47,6 +47,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>rhell-activity-translator</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>soaplab-activity-translator</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
