@@ -48,9 +48,9 @@ public class SVGDiagram extends JComponent {
 
 	private static Logger logger = Logger.getLogger(SVGDiagram.class);
 
-	private static final String COMPLETED_COLOUR = "grey";
+	private static final String COMPLETED_COLOUR = "green";
 
-	private static final String OUTPUT_COLOUR = "red";
+	private static final String OUTPUT_COLOUR = "blue";
 
 	private static final int OUTPUT_FLASH_PERIOD = 200;
 
@@ -203,7 +203,7 @@ public class SVGDiagram extends JComponent {
 	public void reset() {
 		for (SVGProcessor node : processorMap.values()) {
 			node.setCompleted(0f);
-			node.setIteration(0);
+			node.setIteration(0, 0);
 		}
 	}
 
@@ -254,11 +254,13 @@ public class SVGDiagram extends JComponent {
 	 * @param processorId
 	 *            the id of the processor
 	 * @param iteration
-	 *            the processor's iteration count
+	 *            the number of iterations completed
+	 * @param total
+	 *            the total number of iterations
 	 */
-	public void setIteration(String processorId, int iteration) {
+	public void setIteration(String processorId, int iteration, int total) {
 		if (processorMap.containsKey(processorId)) {
-			processorMap.get(processorId).setIteration(iteration);
+			processorMap.get(processorId).setIteration(iteration, total);
 		}
 	}
 
@@ -300,6 +302,10 @@ public class SVGDiagram extends JComponent {
 
 	}
 
+	public JSVGCanvas getSvgCanvas() {
+		return svgCanvas;
+	}
+	
 	/**
 	 * SVG representation of a processor.
 	 * 
@@ -342,7 +348,7 @@ public class SVGDiagram extends JComponent {
 			}
 		}
 
-		public void setIteration(final int iteration) {
+		public void setIteration(final int iteration, final int total) {
 			if (updateManager != null) {
 				if (iterationText == null) {
 					addIterationText();
@@ -350,9 +356,8 @@ public class SVGDiagram extends JComponent {
 				updateManager.getUpdateRunnableQueue().invokeLater(
 						new Runnable() {
 							public void run() {
-								if (iteration > 0) {
-									iterationText.setData(String
-											.valueOf(iteration));
+								if (iteration > 0 && total > 0) {
+									iterationText.setData(iteration + "/" + total);
 								} else {
 									iterationText.setData("");
 								}

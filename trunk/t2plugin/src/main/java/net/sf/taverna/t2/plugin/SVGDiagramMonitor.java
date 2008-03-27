@@ -1,6 +1,8 @@
 package net.sf.taverna.t2.plugin;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -33,11 +35,13 @@ public class SVGDiagramMonitor implements Observer<MonitorMessage> {
 
 	private static long deregisterDelay = 1000;
 
-	private static long monitorRate = 200;
+	private static long monitorRate = 300;
 
 	private SVGDiagram svgDiagram;
 
 	private Map<String, Object> workflowObjects = new HashMap<String, Object>();
+
+	private Set<String> datalinks = Collections.synchronizedSet(new HashSet<String>());
 
 	private Map<String, SVGDiagramMonitorNode> processors = new HashMap<String, SVGDiagramMonitorNode>();
 
@@ -117,6 +121,13 @@ public class SVGDiagramMonitor implements Observer<MonitorMessage> {
 									.values()) {
 								node.update();
 							}
+							synchronized (datalinks) {
+								for (String datalink : datalinks) {
+									svgDiagram.fireDatalink(datalink);																	
+								}
+								datalinks.clear();
+							}
+
 						}
 					};
 					updateTimer.schedule(updateTask, monitorRate, monitorRate);
@@ -180,8 +191,7 @@ public class SVGDiagramMonitor implements Observer<MonitorMessage> {
 		}
 
 		public void resultTokenProduced(WorkflowDataToken token, String portName) {
-			svgDiagram.fireDatalink(context + "WORKFLOWINTERNALSINK_"
-					+ portName);
+			datalinks.add(context + "WORKFLOWINTERNALSINK_" + portName);
 		}
 
 	}

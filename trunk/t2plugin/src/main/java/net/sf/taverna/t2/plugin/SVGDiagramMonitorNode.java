@@ -137,10 +137,10 @@ public class SVGDiagramMonitorNode implements MonitorNode {
 
 		if (queueSizeChanged || sentJobsChanged || completedJobsChanged) {
 			if (completedJobsChanged) {
-				svgDiagram.setIteration(processorId, completedJobs);
 			}
 			if (completedJobsChanged || queueSizeChanged) {
 				int totalJobs = completedJobs + queueSize;
+				svgDiagram.setIteration(processorId, completedJobs, totalJobs);
 				if (completedJobs > 0) {
 					svgDiagram.setProcessorCompleted(processorId,
 							((float) (completedJobs)) / (float) totalJobs);
