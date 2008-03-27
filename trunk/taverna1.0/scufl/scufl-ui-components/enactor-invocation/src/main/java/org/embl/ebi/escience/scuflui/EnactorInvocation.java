@@ -517,6 +517,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 		final ScuflModel workflowModel = theModel;
 		new Thread("Enactor invocation workflowEditor update") {
 			public void run() {
+				workflowEditor.detachFromModel();
 				workflowEditor.getScuflGraphModel().setShowBoring(false);
 				workflowEditor.attachToModel(workflowModel);
 				workflowEditor.updateStatus(getStatusText());
@@ -525,8 +526,6 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 				workflowStatusUpdateReady = true;
 			}
 		}.start();
-		// workflowEditor.updateStatus(getStatusText());
-		// workflowEditor.setEnabled(false);
 		intermediateResults.add("Graph", new JScrollPane(workflowEditor));
 		intermediateResults.add("Intermediate inputs", intermediateInputs);
 		intermediateResults.add("Intermediate outputs", intermediateOutputs);

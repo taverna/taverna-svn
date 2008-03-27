@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
+import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
+import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -32,7 +34,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ScuflGraphModelChange implements GraphModelChange
 {
@@ -60,12 +62,14 @@ public class ScuflGraphModelChange implements GraphModelChange
 		Processor processor = scuflModel.getWorkflowSinkProcessor();
 		if (processor.getPorts().length != 0)
 		{
-			newRoots.add(processor);
+			//newRoots.add(processor);
+			newRoots.addAll(Arrays.asList(processor.getPorts()));
 		}
 		processor = scuflModel.getWorkflowSourceProcessor();
 		if (processor.getPorts().length != 0)
 		{
-			newRoots.add(processor);
+			//newRoots.add(processor);
+			newRoots.addAll(Arrays.asList(processor.getPorts()));
 		}
 		if (model.isShowingBoring())
 		{
@@ -206,15 +210,13 @@ public class ScuflGraphModelChange implements GraphModelChange
 		if (!model.isPort(removedObject) && removedObject instanceof Port
 				&& ((Port) removedObject).getProcessor().getPorts().length == 0)
 		{
-			removedObject = model.getParent(removedObject);
+			if (!(removedObject instanceof Port)) {
+				removedObject = model.getParent(removedObject);
+			}
 		}
-		// if (model.isEdge(removedObject))
-		// {
-		// removedEdges.add(removedObject);
-		// }
 		addNode(removed, removedObject);
 		Object parent = model.getParent(removedObject);
-		if (parent != null)
+		if (parent != null && !(parent instanceof InternalSinkPortHolder || parent instanceof InternalSourcePortHolder))
 		{
 			changed.add(parent);
 		}
@@ -225,19 +227,55 @@ public class ScuflGraphModelChange implements GraphModelChange
 		if (!model.isPort(insertedObject) && insertedObject instanceof Port
 				&& !model.contains(((Port) insertedObject).getProcessor()))
 		{
-			insertedObject = model.getParent(insertedObject);
+			if (!(insertedObject instanceof Port)) {
+				insertedObject = model.getParent(insertedObject);
+			}
 		}
-		// if (model.isEdge(insertedObject))
-		// {
-		// insertedEdges.add(insertedObject);
-		// }
 		addNode(inserted, insertedObject);
 		Object parent = model.getParent(insertedObject);
-		if (parent != null)
+		if (parent != null && !(parent instanceof InternalSinkPortHolder || parent instanceof InternalSourcePortHolder))
 		{
 			changed.add(parent);
 		}
 	}
+	
+//	private void addRemovedObject(Object removedObject)
+//	{
+//		if (!model.isPort(removedObject) && removedObject instanceof Port
+//				&& ((Port) removedObject).getProcessor().getPorts().length == 0)
+//		{
+//			removedObject = model.getParent(removedObject);
+//		}
+//		// if (model.isEdge(removedObject))
+//		// {
+//		// removedEdges.add(removedObject);
+//		// }
+//		addNode(removed, removedObject);
+//		Object parent = model.getParent(removedObject);
+//		if (parent != null)
+//		{
+//			changed.add(parent);
+//		}
+//	}
+
+//	private void addInsertedObject(Object insertedObject)
+//	{
+//		if (!model.isPort(insertedObject) && insertedObject instanceof Port
+//				&& !model.contains(((Port) insertedObject).getProcessor()))
+//		{
+//			insertedObject = model.getParent(insertedObject);
+//		}
+//		// if (model.isEdge(insertedObject))
+//		// {
+//		// insertedEdges.add(insertedObject);
+//		// }
+//		addNode(inserted, insertedObject);
+//		Object parent = model.getParent(insertedObject);
+//		if (parent != null)
+//		{
+//			changed.add(parent);
+//		}
+//	}
 
 	public boolean isBoring(Object object)
 	{

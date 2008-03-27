@@ -22,7 +22,7 @@ import org.jgraph.graph.PortView;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
  */
 public class PositionLayout extends ModelSpanningTree
@@ -743,8 +743,10 @@ public class PositionLayout extends ModelSpanningTree
 					Object actualEdge = node.edge;
 
 					Object port = getPort(target, actualEdge);
-					PortView portView = (PortView) mapper.getMapping(port, false);
-					edgeLength = portView.getLocation().getX() - node.position.getX();
+					if (port!=null) {
+						PortView portView = (PortView) mapper.getMapping(port, false);
+						edgeLength = portView.getLocation().getX() - node.position.getX();
+					}
 				}
 			}
 		}

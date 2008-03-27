@@ -83,6 +83,7 @@ import org.jgraph.plaf.basic.BasicGraphUI;
  */
 
 public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
+	
 	private final class VertexViewRenderer extends VertexRenderer {
 		// Change to non 1 value to show only part of the progress bar and
 		// leave
@@ -322,9 +323,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	public WorkflowEditor() {
 		super();
 		setModel(new ScuflGraphModel());
-
 		initialiseUI();
-
 	}
 
 	private void initialiseUI() {
@@ -344,12 +343,18 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		setUpRenderers();
 		
 		setMarqueeHandler(new MarqueeHandler());
+		setDefaultSettings();
+	}
+
+	private void setDefaultSettings() {
 		setAntiAliased(true);
 		setBendable(true);
 		setMoveable(false);
 		setSizeable(false);
 		setGridVisible(false);
 		setHighlightColor(UIManager.getColor("Tree.selectionBackground"));
+		setEditable(true);
+		setEnabled(true);
 		GraphConstants.SELECTION_STROKE = new BasicStroke(1,
 				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 	}
@@ -363,6 +368,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	}
 
 	public ScuflGraphModel getScuflGraphModel() {
+		if (!(graphModel instanceof ScuflGraphModel)) return null;
 		return (ScuflGraphModel) graphModel;
 	}
 
@@ -373,7 +379,17 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	 */
 	public void attachToModel(final ScuflModel model) {
 		setUpEventHandlers(model);
+		//setDefaultSettings();
 		getScuflGraphModel().attachToModel(model);
+	}
+	
+	/*
+	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
+	 */
+	public void detachFromModel() {
+		if (getScuflGraphModel() != null) {
+			getScuflGraphModel().detachFromModel();
+		}
 	}
 
 	private void setUpEventHandlers(final ScuflModel model) {
@@ -555,15 +571,6 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 		layoutCache.setSelectsLocalInsertedCells(false);
 		layoutCache.setSelectsAllInsertedCells(false);
 		layoutCache.setFactory(new GraphCellViewFactory());
-	}
-
-	/*
-	 * @see org.embl.ebi.escience.scuflui.ScuflUIComponent#detachFromModel()
-	 */
-	public void detachFromModel() {
-		if (getScuflGraphModel() != null) {
-			getScuflGraphModel().detachFromModel();
-		}
 	}
 
 	/*

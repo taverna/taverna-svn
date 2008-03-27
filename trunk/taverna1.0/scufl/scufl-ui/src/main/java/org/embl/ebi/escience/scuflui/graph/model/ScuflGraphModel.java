@@ -28,6 +28,8 @@ import javax.swing.undo.UndoableEdit;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InputPort;
+import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
+import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
 import org.embl.ebi.escience.scufl.OutputPort;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
@@ -48,7 +50,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener
 {
@@ -172,6 +174,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		{
 			return (AttributeMap) attributes.get(node);
 		}
+		
 		return (AttributeMap) attributes.get(this);
 	}
 
@@ -247,13 +250,13 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 				{
 					GraphConstants.setBackground(map, GraphColours.getColour("lightsteelblue2",
 							Color.WHITE));
-					GraphConstants.setIcon(map, TavernaIcons.inputIcon);
+					GraphConstants.setIcon(map, TavernaIcons.outputIcon); //note - InputPorts relate to workflow output ports, and vice-versa
 				}
 				else
 				{
 					GraphConstants.setBackground(map, GraphColours
 							.getColour("skyblue", Color.WHITE));
-					GraphConstants.setIcon(map, TavernaIcons.outputIcon);
+					GraphConstants.setIcon(map, TavernaIcons.inputIcon); //note - OutputPorts are actually workflow input ports, and vice-versa
 				}
 				GraphConstants.setOpaque(map, true);
 				GraphConstants.setResize(map, true);
@@ -421,11 +424,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	{
 		if (port instanceof InputPort)
 		{
-			return ((Port) port).getProcessor() == model.getWorkflowSinkProcessor();
+			return ((Port) port).getProcessor() instanceof InternalSinkPortHolder;
 		}
 		else if (port instanceof OutputPort)
 		{
-			return ((Port) port).getProcessor() == model.getWorkflowSourceProcessor();
+			return ((Port) port).getProcessor() instanceof InternalSourcePortHolder;
 		}
 		return false;
 	}
@@ -437,11 +440,11 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 	 */
 	public Object getParent(Object child)
 	{
-		if (child instanceof Port)
+		if (child instanceof Port && !isPortOnWorkflowEdge(child))
 		{
 			return ((Port) child).getProcessor();
 		}
-		else if (child instanceof DummyPort)
+		if (child instanceof DummyPort)
 		{
 			return ((DummyPort) child).getParent();
 		}
@@ -521,7 +524,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		}
 		else if (parent instanceof Port && isPortOnWorkflowEdge(parent))
 		{
-			return 1;
+			return 0;
 		}
 		else if (parent instanceof List)
 		{
@@ -543,7 +546,7 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 		}
 		else if (node instanceof Port && isPortOnWorkflowEdge(node))
 		{
-			return false;
+			return true;
 		}
 		return true;
 	}
@@ -767,7 +770,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 
 	Map addNode(Object newNode, ConnectionSet cs)
 	{
-		if(getParent(newNode) == null && !roots.contains(newNode))
+		Object parent = getParent(newNode);
+		if(parent == null && !roots.contains(newNode))
 		{
 			roots.add(newNode);
 		}
@@ -785,7 +789,8 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 
 	void removeNode(Object node)
 	{
-		if(getParent(node) == null)
+		Object parent = getParent(node);
+		if(parent == null)
 		{
 			roots.remove(node);
 		}		
