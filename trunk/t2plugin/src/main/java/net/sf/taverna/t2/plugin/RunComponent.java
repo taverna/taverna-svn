@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -40,11 +42,14 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
+import org.apache.batik.swing.JSVGCanvas;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.ScuflModel;
 
 public class RunComponent extends JPanel {
+
+	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = Logger.getLogger(RunComponent.class);
 
@@ -56,8 +61,6 @@ public class RunComponent extends JPanel {
 
 	private JButton testButton;
 
-//	private JButton stopButton;
-
 	private JLabel runStatus;
 
 	private JPanel runStatusPanel;
@@ -65,6 +68,8 @@ public class RunComponent extends JPanel {
 	private Date runDate; 
 	
 	private SVGDiagram svgDiagram = new SVGDiagram();
+
+	private JSVGCanvas svgCanvas = svgDiagram.getSvgCanvas();
 
 	private SVGDiagramMonitor svgDiagramMonitor = new SVGDiagramMonitor();
 
@@ -87,18 +92,14 @@ public class RunComponent extends JPanel {
 		setLayout(new BorderLayout());
 		testButton = createTestButton();
 		runButton = createRunButton();
-//		stopButton = new JButton(new AbstractAction("Reset") {
-//
-//			private static final long serialVersionUID = -3675250815643062008L;
-//
-//			public void actionPerformed(ActionEvent e) {
-//				// TODO: Actually stop the workflow
-//				enableRun(true);
-//			}
-//
-//		});
-//		stopButton.setEnabled(false);
 
+		Action resetDiagramAction = svgCanvas.new ResetTransformAction();
+		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+		Action zoomInAction = svgCanvas.new ZoomAction(1.2);
+		zoomInAction.putValue(Action.NAME, "Zoom In");
+		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
+		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+		
 		runStatus = new JLabel(" ");
 		runStatus.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -113,8 +114,9 @@ public class RunComponent extends JPanel {
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(testButton);
 		buttonPanel.add(runButton);
-//		buttonPanel.add(stopButton);
-		
+		buttonPanel.add(new JButton(resetDiagramAction));
+		buttonPanel.add(new JButton(zoomInAction));
+		buttonPanel.add(new JButton(zoomOutAction));
 
 		midPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		midPanel.add(runStatusPanel);
@@ -385,7 +387,6 @@ public class RunComponent extends JPanel {
 	private void enableRun(boolean enabled) {
 		runButton.setEnabled(enabled);
 		testButton.setEnabled(enabled);
-//		stopButton.setEnabled(!enabled);
 	}
 
 }
