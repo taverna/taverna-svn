@@ -50,7 +50,7 @@ import org.jgraph.graph.ParentMap;
 /**
  * 
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class ScuflGraphModel implements GraphModel, GraphModelListener
 {
@@ -631,12 +631,9 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 					}
 				}
 			}
-			if (!attributes.isEmpty())
-			{
 				updateAttributes(attributes);
 				fireGraphChangedEvent(new GraphModelEvent(this, new ScuflGraphAttributeChange(
 						attributes)));
-			}
 		}
 	}
 
@@ -909,6 +906,19 @@ public class ScuflGraphModel implements GraphModel, GraphModelListener
 			Processor processor = (Processor) cell;
 			processor.setName(newValue.toString());
 			return processor.getName();
+		}
+		if (cell instanceof Port) {
+			
+			Port port = (Port) cell;
+			if (isPortOnWorkflowEdge(port)) {
+				for (Port p : port.getProcessor().getPorts()) { //prevent renaming if a port already has that name
+					if (p.getName().equals(newValue.toString())) {
+						return port.getName();
+					}
+				}
+				port.setName(newValue.toString());
+				return port.getName();
+			}
 		}
 		return null;
 	}

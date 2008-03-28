@@ -336,6 +336,13 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 					}
 				};
 			}
+
+			@Override
+			public boolean isToggleSelectionEvent(MouseEvent event) {
+				return super.isToggleSelectionEvent(event) && event.isPopupTrigger();
+			}
+			
+			
 		});
 		
 		setUpGraphLayout();
@@ -379,7 +386,6 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 	 */
 	public void attachToModel(final ScuflModel model) {
 		setUpEventHandlers(model);
-		//setDefaultSettings();
 		getScuflGraphModel().attachToModel(model);
 	}
 	
@@ -410,9 +416,11 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 			}
 		});
 		addMouseListener(new MouseAdapter() {
+			
 			public void mousePressed(MouseEvent e) {
 				showPopup(e);
 			}
+			
 
 			public void mouseReleased(MouseEvent e) {
 				showPopup(e);

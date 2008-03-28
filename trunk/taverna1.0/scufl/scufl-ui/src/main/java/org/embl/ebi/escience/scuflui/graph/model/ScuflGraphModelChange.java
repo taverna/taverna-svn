@@ -18,6 +18,7 @@ import org.embl.ebi.escience.scufl.ConcurrencyConstraint;
 import org.embl.ebi.escience.scufl.DataConstraint;
 import org.embl.ebi.escience.scufl.InternalSinkPortHolder;
 import org.embl.ebi.escience.scufl.InternalSourcePortHolder;
+import org.embl.ebi.escience.scufl.MinorScuflModelEvent;
 import org.embl.ebi.escience.scufl.Port;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
@@ -34,7 +35,7 @@ import org.jgraph.graph.ParentMap;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ScuflGraphModelChange implements GraphModelChange
 {
@@ -165,6 +166,25 @@ public class ScuflGraphModelChange implements GraphModelChange
 			}
 
 		}
+		else if (event instanceof MinorScuflModelEvent) {
+			if (event.getSource() instanceof Port) {
+				if (model.contains(source))
+				{
+					Map attrs = (Map) attributes.get(source);
+					if (attrs == null)
+					{
+						attrs = new HashMap();
+						attributes.put(source, attrs);
+					}
+					String newName = ((Port) source).getName();
+					GraphConstants.setValue(attrs, newName);
+					GraphConstants.setResize(attrs, true);
+					GraphConstants.setBounds(attrs, GraphConstants.getBounds(model
+							.getAttributes(source)));
+					changed.add(source);
+				}
+			}
+		}
 		else if (event instanceof ScuflModelRenameEvent)
 		{
 			if (model.contains(source))
@@ -238,44 +258,6 @@ public class ScuflGraphModelChange implements GraphModelChange
 			changed.add(parent);
 		}
 	}
-	
-//	private void addRemovedObject(Object removedObject)
-//	{
-//		if (!model.isPort(removedObject) && removedObject instanceof Port
-//				&& ((Port) removedObject).getProcessor().getPorts().length == 0)
-//		{
-//			removedObject = model.getParent(removedObject);
-//		}
-//		// if (model.isEdge(removedObject))
-//		// {
-//		// removedEdges.add(removedObject);
-//		// }
-//		addNode(removed, removedObject);
-//		Object parent = model.getParent(removedObject);
-//		if (parent != null)
-//		{
-//			changed.add(parent);
-//		}
-//	}
-
-//	private void addInsertedObject(Object insertedObject)
-//	{
-//		if (!model.isPort(insertedObject) && insertedObject instanceof Port
-//				&& !model.contains(((Port) insertedObject).getProcessor()))
-//		{
-//			insertedObject = model.getParent(insertedObject);
-//		}
-//		// if (model.isEdge(insertedObject))
-//		// {
-//		// insertedEdges.add(insertedObject);
-//		// }
-//		addNode(inserted, insertedObject);
-//		Object parent = model.getParent(insertedObject);
-//		if (parent != null)
-//		{
-//			changed.add(parent);
-//		}
-//	}
 
 	public boolean isBoring(Object object)
 	{
