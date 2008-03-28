@@ -40,6 +40,10 @@
 			<string>uk.ac.rdg.resc.jstyx.client</string>
 			<key>java.system.class.loader</key>
 			<string>net.sf.taverna.tools.BootstrapClassLoader</string>
+			<key>javax.net.ssl.trustStoreProvider</key>
+			<string>Apple</string>
+			<key>javax.net.ssl.trustStoreType</key>
+			<string>KeychainStore</string>
 			<key>taverna.dotlocation</key>
 			<string>$APP_PACKAGE/Contents/MacOS/dot</string>
 		</dict>
