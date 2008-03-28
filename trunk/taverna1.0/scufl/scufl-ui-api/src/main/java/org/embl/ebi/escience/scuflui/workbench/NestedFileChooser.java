@@ -19,18 +19,13 @@ import org.apache.log4j.Logger;
  * 
  */
 public class NestedFileChooser extends JFileChooser {
-	/**
-	 * {@link Map} of nested {@link WorkflowProcessor}s to their URL
-	 * {@link String}
-	 */
-//	private static Map<WorkflowProcessor, String> urlDefinition = new HashMap<WorkflowProcessor, String>();
-
+	
 	private Logger logger = Logger.getLogger(NestedFileChooser.class);
 
 	private Checkbox checkbox;
 
 	public NestedFileChooser() {
-		checkbox = new Checkbox("include full nested workflow");
+		checkbox = new Checkbox("Embed nested workflow(s)");
 	}
 
 	/**
