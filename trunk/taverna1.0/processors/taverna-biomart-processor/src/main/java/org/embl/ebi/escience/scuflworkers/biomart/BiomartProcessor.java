@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: BiomartProcessor.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-10-03 16:33:37 $
+ * Last modified on   $Date: 2008-03-28 15:57:07 $
  *               by   $Author: davidwithers $
  * Created on 17-Mar-2006
  *****************************************************************/
@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceUtils;
+import org.biomart.martservice.MartServiceXMLHandler;
 import org.biomart.martservice.query.Attribute;
 import org.biomart.martservice.query.Dataset;
 import org.biomart.martservice.query.Filter;
@@ -59,6 +60,8 @@ import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scufl.UnknownPortException;
 import org.embl.ebi.escience.scufl.view.WorkflowSummaryAsHTML;
 import org.embl.ebi.escience.scuflworkers.HTMLSummarisableProcessor;
+import org.jdom.Element;
+import org.jdom.Namespace;
 
 /**
  * 
@@ -164,6 +167,10 @@ public class BiomartProcessor extends Processor implements
 
 	public MartQuery getQuery() {
 		return query;
+	}
+
+	public Element getQueryElement(Namespace namespace) {
+		return MartServiceXMLHandler.martQueryToElement(getQuery(), namespace);
 	}
 
 	void pingModel() {
