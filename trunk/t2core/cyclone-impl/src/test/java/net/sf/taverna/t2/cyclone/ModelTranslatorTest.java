@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workflowmodel.impl.MergeInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.MergeOutputPortImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
@@ -222,32 +223,33 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 
 			List<DispatchLayer<?>> dispatchLayers = processor
 					.getDispatchStack().getLayers();
-			assertEquals(4, dispatchLayers.size());
+			assertEquals(5, dispatchLayers.size());
 			assertTrue(dispatchLayers.get(0) instanceof Parallelize);
-			assertTrue(dispatchLayers.get(1) instanceof Failover);
-			assertTrue(dispatchLayers.get(2) instanceof Retry);
-			assertTrue(dispatchLayers.get(3) instanceof Invoke);
+			assertTrue(dispatchLayers.get(1) instanceof ErrorBounce);
+			assertTrue(dispatchLayers.get(2) instanceof Failover);
+			assertTrue(dispatchLayers.get(3) instanceof Retry);
+			assertTrue(dispatchLayers.get(4) instanceof Invoke);
 			if (processor.getLocalName().equals("processor_a")) {
 				assertEquals(1, ((Parallelize) dispatchLayers.get(0))
 						.getConfiguration().getMaximumJobs());
-				assertEquals(0, ((Retry) dispatchLayers.get(2))
+				assertEquals(0, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getMaxRetries());
-				assertEquals(0, ((Retry) dispatchLayers.get(2))
+				assertEquals(0, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getInitialDelay());
-				assertEquals(0, ((Retry) dispatchLayers.get(2))
+				assertEquals(0, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getMaxDelay());
-				assertEquals(1, ((Retry) dispatchLayers.get(2))
+				assertEquals(1, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getBackoffFactor(), 0);
 			} else if (processor.getLocalName().equals("processor_b")) {
 				assertEquals(4, ((Parallelize) dispatchLayers.get(0))
 						.getConfiguration().getMaximumJobs());
-				assertEquals(2, ((Retry) dispatchLayers.get(2))
+				assertEquals(2, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getMaxRetries());
-				assertEquals(1000, ((Retry) dispatchLayers.get(2))
+				assertEquals(1000, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getInitialDelay());
-				assertEquals(2250, ((Retry) dispatchLayers.get(2))
+				assertEquals(2250, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getMaxDelay());
-				assertEquals(1.5, ((Retry) dispatchLayers.get(2))
+				assertEquals(1.5, ((Retry) dispatchLayers.get(3))
 						.getConfiguration().getBackoffFactor(), 0);
 			}
 		}

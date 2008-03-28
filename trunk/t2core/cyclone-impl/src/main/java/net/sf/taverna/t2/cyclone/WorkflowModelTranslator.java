@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
@@ -377,15 +378,18 @@ public class WorkflowModelTranslator {
 				maxRetries)));
 
 		DispatchLayer<?> parallelize = new Parallelize(maxJobs);
+		DispatchLayer<?> errorBounce = new ErrorBounce();
 		DispatchLayer<?> failover = new Failover();
 		DispatchLayer<?> retry = new Retry(maxRetries, initialDelay, maxDelay,
 				backoffFactor);
 		DispatchLayer<?> invoke = new Invoke();
 
-		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, 0).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, failover, 1).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, retry, 2).doEdit();
-		edits.getAddDispatchLayerEdit(dispatchStack, invoke, 3).doEdit();
+		int layer = 0;
+		edits.getAddDispatchLayerEdit(dispatchStack, parallelize, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, errorBounce, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, failover, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, retry, layer++).doEdit();
+		edits.getAddDispatchLayerEdit(dispatchStack, invoke, layer++).doEdit();
 	}
 
 	/**
