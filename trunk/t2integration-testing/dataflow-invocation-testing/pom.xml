@@ -51,12 +51,7 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.processors</groupId>
-			<artifactId>taverna-biomart-processor</artifactId>
-			<version>${depTaverna}</version>
-			<scope>test</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity-translator</artifactId>
@@ -69,6 +64,13 @@
 			<version>${depT2core}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.processors</groupId>
+			<artifactId>taverna-biomart-processor</artifactId>
+			<version>${depTaverna}</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.processors</groupId>
 			<artifactId>taverna-soaplab-processor</artifactId>
