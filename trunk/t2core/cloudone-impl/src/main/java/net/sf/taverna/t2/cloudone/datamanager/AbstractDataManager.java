@@ -161,12 +161,12 @@ public abstract class AbstractDataManager implements DataManager {
 	 *            The depth of the list
 	 * @return The new {@link EntityListIdentifier}.
 	 */
-	public EntityListIdentifier nextListIdentifier(int depth)
+	public EntityListIdentifier nextListIdentifier(int depth, boolean containsErrors)
 			throws IllegalArgumentException {
 		if (depth < 1) {
 			throw new IllegalArgumentException("Depth must be at least 1");
 		}
-		String id = generateId(IDType.List) + "/" + depth;
+		String id = generateId(IDType.List) + "/" + depth + "/" + (containsErrors?"t":"f");
 		return new EntityListIdentifier(id);
 	}
 
@@ -198,7 +198,7 @@ public abstract class AbstractDataManager implements DataManager {
 	 */
 	public EntityListIdentifier registerEmptyList(int depth)
 			throws StorageException {
-		EntityListIdentifier id = nextListIdentifier(depth);
+		EntityListIdentifier id = nextListIdentifier(depth, false);
 		EntityList newList = new EntityList(id, Collections
 				.<EntityIdentifier> emptyList());
 		storeEntity(newList);
@@ -242,7 +242,21 @@ public abstract class AbstractDataManager implements DataManager {
 			throw new IndexOutOfBoundsException(
 					"Cannot register an empty list through registerList method");
 		}
-		EntityListIdentifier id = nextListIdentifier(identifiers[0].getDepth() + 1);
+		boolean containsErrors = false;
+		for (EntityIdentifier ei : identifiers) {
+			if (ei instanceof ErrorDocumentIdentifier) {
+				containsErrors = true;
+				break;
+			}
+			else if (ei instanceof EntityListIdentifier) {
+				EntityListIdentifier eli = (EntityListIdentifier)ei;
+				if (eli.getContainsErrors()) {
+					containsErrors = true;
+					break;
+				}
+			}
+		}
+		EntityListIdentifier id = nextListIdentifier(identifiers[0].getDepth() + 1, containsErrors);
 		EntityList newList = new EntityList(id, Arrays.asList(identifiers));
 		storeEntity(newList);
 		return id;

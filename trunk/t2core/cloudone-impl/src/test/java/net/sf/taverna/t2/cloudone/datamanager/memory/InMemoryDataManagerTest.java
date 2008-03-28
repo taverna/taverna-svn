@@ -46,7 +46,7 @@ public class InMemoryDataManagerTest extends AbstractDataManagerTest {
 		EntityListIdentifier list1 = dManager.registerEmptyList(depth);
 		assertFalse(list0.equals(list1));
 		// InMemoryDataManager has a naive counter, list0, list1, etc.
-		assertEquals("urn:t2data:list://" + TEST_NS + "/list1/1", list1
+		assertEquals("urn:t2data:list://" + TEST_NS + "/list1/1/f", list1
 				.toString());
 	}
 	

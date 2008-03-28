@@ -1,12 +1,15 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import static net.sf.taverna.t2.annotation.HierarchyRole.CHILD;
+import static net.sf.taverna.t2.annotation.HierarchyRole.PARENT;
+
 
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
  * The dispatch stack is responsible for consuming a queue of jobs from the
@@ -31,6 +34,15 @@ public interface DispatchStack extends Annotated<DispatchStack> {
 	 */
 	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { CHILD })
 	public List<DispatchLayer<?>> getLayers();
+
+	/**
+	 * The dispatch stack is contained within a processor, this can be null if
+	 * the stack is being used out of this context but layers may be relying on
+	 * this link to get information about the processor input ports and their
+	 * annotations for various reasons.
+	 */
+	@HierarchyTraversal(hierarchies = { "workflowStructure" }, role = { PARENT })
+	public Processor getProcessor();
 
 	/**
 	 * Return the layer above (lower index!) the specified layer, or a reference

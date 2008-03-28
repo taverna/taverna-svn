@@ -91,7 +91,7 @@ public class FileDataManagerTest extends AbstractDataManagerTest {
 
 	@Test
 	public void nextListIdentifierUUID() {
-		EntityListIdentifier listId = fileDataManager.nextListIdentifier(2);
+		EntityListIdentifier listId = fileDataManager.nextListIdentifier(2, false);
 		UUID uuid = UUID.fromString(listId.getName());
 		assertEquals(4, uuid.version()); // random
 	}

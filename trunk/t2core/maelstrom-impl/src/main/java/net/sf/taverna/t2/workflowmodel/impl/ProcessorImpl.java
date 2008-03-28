@@ -107,6 +107,10 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 				return ProcessorImpl.this.name;
 			}
 
+			public Processor getProcessor() {
+				return ProcessorImpl.this;
+			}
+			
 			/**
 			 * Called when an event bubbles out of the top of the dispatch
 			 * stack. In this case we pass it into the crystalizer.

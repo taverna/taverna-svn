@@ -24,6 +24,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.AddDispatchLayerEdit;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
@@ -342,6 +343,7 @@ public class Tools {
 		int layer = 0;
 		new AddDispatchLayerEdit(stack, new Parallelize(MAX_JOBS), layer++)
 				.doEdit();
+		new AddDispatchLayerEdit(stack, new ErrorBounce(), layer++).doEdit();
 		new AddDispatchLayerEdit(stack, new Failover(), layer++).doEdit();
 		new AddDispatchLayerEdit(stack, new Retry(MAX_RETRIES, INITIAL_DELAY,
 				MAX_DELAY, BACKOFF_FACTOR), layer++).doEdit();

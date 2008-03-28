@@ -235,7 +235,7 @@ public class PersistentDataManagerTest{
 
 	@Test
 	public void nextListIdentifier() {
-		EntityListIdentifier listId = dManager.nextListIdentifier(2);
+		EntityListIdentifier listId = dManager.nextListIdentifier(2, false);
 		assertEquals(TEST_NS, listId.getNamespace());
 		assertEquals(2, listId.getDepth());
 	}
