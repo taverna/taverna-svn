@@ -456,7 +456,7 @@ public class WorkflowEditor extends JGraph implements WorkflowModelViewSPI {
 										Port[] ports = processor.getPorts();
 										if (ports.length > 0) {
 											JMenu linkMenu = new JMenu(
-													"Start link from...");
+													"Select port ...");
 											linkMenu
 													.setIcon(TavernaIcons.dataLinkIcon);
 											ports = processor.getInputPorts();
