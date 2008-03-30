@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class GraphSpanningTree
 {
@@ -451,7 +451,6 @@ public abstract class GraphSpanningTree
 
 				if (isTreeEdge(edge) && !visitedNodes.contains(neighbour))
 				{
-					if (neighbour==edge) System.out.println("XXXXXX");
 					Object result = findCutEdge(neighbour, edge,visitedNodes, timeStamp);
 					if (result != null)
 					{
