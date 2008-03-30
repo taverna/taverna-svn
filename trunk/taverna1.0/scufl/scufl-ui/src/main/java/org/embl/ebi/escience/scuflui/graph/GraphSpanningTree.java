@@ -15,7 +15,7 @@ import java.util.Set;
 
 /**
  * @author <a href="mailto:ktg@cs.nott.ac.uk">Kevin Glover </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class GraphSpanningTree
 {
@@ -154,7 +154,7 @@ public abstract class GraphSpanningTree
 	 */
 	private void getSet(Object node, Set tailSet, Object lastEdge)
 	{
-		if (!isRemoved(node))
+		if (!isRemoved(node) && !tailSet.contains(node))
 		{
 			tailSet.add(node);
 			Iterator edges = getEdges(node);
@@ -412,10 +412,10 @@ public abstract class GraphSpanningTree
 	 * @param timeStamp
 	 * @return the cut value for the given tree edge
 	 */
-	protected Object findCutEdge(Object node, Object treeEdge, String timeStamp)
+	protected Object findCutEdge(Object node, Object treeEdge, Set visitedNodes,String timeStamp)
 	{
 		assert isTreeEdge(treeEdge) : treeEdge;
-
+		visitedNodes.add(node);
 		if (getCutValue(treeEdge, timeStamp) != null)
 		{
 			return null;
@@ -449,9 +449,10 @@ public abstract class GraphSpanningTree
 					value *= direction;
 				}
 
-				if (isTreeEdge(edge))
+				if (isTreeEdge(edge) && !visitedNodes.contains(neighbour))
 				{
-					Object result = findCutEdge(neighbour, edge, timeStamp);
+					if (neighbour==edge) System.out.println("XXXXXX");
+					Object result = findCutEdge(neighbour, edge,visitedNodes, timeStamp);
 					if (result != null)
 					{
 						return result;
@@ -504,7 +505,7 @@ public abstract class GraphSpanningTree
 				}
 				else
 				{
-					Object cutEdge = findCutEdge(getSource(edge), edge, timeStamp);
+					Object cutEdge = findCutEdge(getSource(edge), edge, new HashSet(), timeStamp);
 					if (cutEdge != null)
 					{
 						List replacements = new ArrayList(getReplacementEdges(cutEdge, false));
