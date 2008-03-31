@@ -15,6 +15,7 @@ import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceXMLHandler;
 import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.junit.Test;
@@ -52,11 +53,11 @@ public class BiomartActivityTest {
 		assertTrue(((List<?>) outputs.get("hsapiens_gene_ensembl.go_description")).size() > 0);
 	}
 
-	private MartQuery parseQuery(String resourceName) throws JDOMException, IOException {
+	private Element parseQuery(String resourceName) throws JDOMException, IOException {
 		SAXBuilder builder = new SAXBuilder(false);
 		InputStream inStream = MartServiceXMLHandler.class.getResourceAsStream("/" + resourceName);
 		Document document = builder.build(inStream);
-		return MartServiceXMLHandler.elementToMartQuery(document.getRootElement(), null);
+		return document.getRootElement();
 	}
 	
 }

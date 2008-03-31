@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.activities.biomart;
 
-import org.biomart.martservice.MartQuery;
+import org.jdom.Element;
 
 /**
  * A configuration bean specific to a Biomart activity. In particular it provides details
@@ -10,14 +10,14 @@ import org.biomart.martservice.MartQuery;
  */
 public class BiomartActivityConfigurationBean {
 
-	private MartQuery query;
+	private Element query;
 
 	/**
 	 * Returns the Biomart query.
 	 * 
 	 * @return the Biomart query
 	 */
-	public MartQuery getQuery() {
+	public Element getQuery() {
 		return query;
 	}
 
@@ -26,7 +26,7 @@ public class BiomartActivityConfigurationBean {
 	 * 
 	 * @param query the Biomart query
 	 */
-	public void setQuery(MartQuery query) {
+	public void setQuery(Element query) {
 		this.query = query;
 	}
 	

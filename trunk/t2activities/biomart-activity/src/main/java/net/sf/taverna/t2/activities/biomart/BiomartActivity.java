@@ -20,6 +20,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCa
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceException;
+import org.biomart.martservice.MartServiceXMLHandler;
 import org.biomart.martservice.ResultReceiver;
 import org.biomart.martservice.ResultReceiverException;
 import org.biomart.martservice.config.QueryConfigUtils;
@@ -55,7 +56,7 @@ public class BiomartActivity extends
 	public void configure(BiomartActivityConfigurationBean configurationBean)
 			throws ActivityConfigurationException {
 		this.configurationBean = configurationBean;
-		biomartQuery = configurationBean.getQuery();
+		biomartQuery = MartServiceXMLHandler.elementToMartQuery(configurationBean.getQuery(), null);
 		buildInputPorts();
 		buildOutputPorts();
 		buildOutputPortMap();

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
+import org.biomart.martservice.MartServiceXMLHandler;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.biomart.BiomartProcessor;
@@ -69,7 +71,7 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 		BiomartActivityConfigurationBean bean = translator
 				.createConfigType(biomartProcessor);
 		assertNotNull(bean);
-		assertEquals(biomartProcessor.getQuery(), bean.getQuery());
+		assertEquals(biomartProcessor.getQueryElement(null).toString(), bean.getQuery().toString());
 	}
 
 	@Test
@@ -83,8 +85,8 @@ public class BiomartActivityTranslatorTest extends TranslatorTestHelper {
 	public void testDoTranslationProcessor() throws Exception {
 		BiomartActivity activity = (BiomartActivity) translator
 				.doTranslation(biomartProcessor);
-		assertEquals(biomartProcessor.getQuery(), activity.getConfiguration()
-				.getQuery());
+		assertEquals(biomartProcessor.getQueryElement(null).toString(), activity.getConfiguration()
+				.getQuery().toString());
 		assertEquals(inputPortNames.size(), activity.getInputPorts().size());
 		for (InputPort port : activity.getInputPorts()) {
 			assertTrue(inputPortNames.remove(port.getName()));

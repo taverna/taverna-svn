@@ -10,7 +10,10 @@ import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 
 import org.biomart.martservice.MartQuery;
+import org.biomart.martservice.MartServiceXMLHandler;
 import org.embl.ebi.escience.scufl.Processor;
+import org.jdom.Element;
+import org.jdom.Namespace;
 
 
 /**
@@ -30,24 +33,24 @@ public class BiomartActivityTranslator extends AbstractActivityTranslator<Biomar
 	protected BiomartActivityConfigurationBean createConfigType(
 			Processor processor) throws ActivityTranslationException {
 		BiomartActivityConfigurationBean bean = new BiomartActivityConfigurationBean();
-		bean.setQuery(getQuery(processor));
+		bean.setQuery(getQueryElement(processor));
 		return bean;
 	}
 	
-	private MartQuery getQuery(Processor processor) throws ActivityTranslationException {
+	private Element getQueryElement(Processor processor) throws ActivityTranslationException {
 		try {
-			Method method = processor.getClass().getMethod("getQuery");
-			return (MartQuery) method.invoke(processor);
+			Method method = processor.getClass().getMethod("getQueryElement", Namespace.class);
+			return (Element) method.invoke(processor, (Object) null);
 		} catch (SecurityException e) {
-			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getQuery through introspection",e);
+			throw new ActivityTranslationException("The was a Security exception whilst trying to invoke getQueryElement through introspection",e);
 		} catch (NoSuchMethodException e) {
-			throw new ActivityTranslationException("The processor does not have the method getQuery, and therefore does not conform to being a Biomart processor",e);
+			throw new ActivityTranslationException("The processor does not have the method getQueryElement, and therefore does not conform to being a Biomart processor",e);
 		} catch (IllegalArgumentException e) {
-			throw new ActivityTranslationException("The method getQuery on the Biomart processor had unexpected arguments",e);
+			throw new ActivityTranslationException("The method getQueryElement on the Biomart processor had unexpected arguments",e);
 		} catch (IllegalAccessException e) {
-			throw new ActivityTranslationException("Unable to access the method getQuery on the Biomart processor",e);
+			throw new ActivityTranslationException("Unable to access the method getQueryElement on the Biomart processor",e);
 		} catch (InvocationTargetException e) {
-			throw new ActivityTranslationException("An error occurred invoking the method getQuery on the Biomart processor",e);
+			throw new ActivityTranslationException("An error occurred invoking the method getQueryElement on the Biomart processor",e);
 		}
 	}
 	

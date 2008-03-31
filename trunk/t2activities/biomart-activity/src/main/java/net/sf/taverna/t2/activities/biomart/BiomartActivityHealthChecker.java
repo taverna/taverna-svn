@@ -12,6 +12,8 @@ import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 
 import org.biomart.martservice.MartQuery;
+import org.biomart.martservice.MartServiceXMLHandler;
+import org.jdom.Element;
 
 public class BiomartActivityHealthChecker implements HealthChecker<BiomartActivity> {
 
@@ -20,7 +22,8 @@ public class BiomartActivityHealthChecker implements HealthChecker<BiomartActivi
 	}
 
 	public HealthReport checkHealth(BiomartActivity activity) {
-		MartQuery biomartQuery = activity.getConfiguration().getQuery();
+		Element biomartQueryElement = activity.getConfiguration().getQuery();
+		MartQuery biomartQuery = MartServiceXMLHandler.elementToMartQuery(biomartQueryElement, null);
 		String location = biomartQuery.getMartService().getLocation();
 		Status status = Status.OK;
 		String message = "Responded OK";
