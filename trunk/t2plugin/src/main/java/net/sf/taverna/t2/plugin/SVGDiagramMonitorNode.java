@@ -37,6 +37,8 @@ public class SVGDiagramMonitorNode implements MonitorNode {
 
 	private int completedJobs = 0;
 
+	private int errors = 0;
+
 	/**
 	 * Constructs a new instance of SVGDiagramMonitorNode.
 	 *
@@ -92,6 +94,7 @@ public class SVGDiagramMonitorNode implements MonitorNode {
 		boolean queueSizeChanged = false;
 		boolean sentJobsChanged = false;
 		boolean completedJobsChanged = false;
+		boolean errorsChanged = false;
 
 		for (MonitorableProperty<?> property : getProperties()) {
 			String[] name = property.getName();
@@ -130,6 +133,18 @@ public class SVGDiagramMonitorNode implements MonitorNode {
 							} catch (NoSuchPropertyException e) {
 							}
 						}
+					} else if (name[1].equals("errorbounce")) {
+						if (name[2].equals("translated")) {
+							try {
+								int newErrors = (Integer) property
+										.getValue();
+								if (errors != newErrors) {
+									errors = newErrors;
+									errorsChanged = true;
+								}
+							} catch (NoSuchPropertyException e) {
+							}
+						}
 					}
 				}
 			}
@@ -137,17 +152,18 @@ public class SVGDiagramMonitorNode implements MonitorNode {
 
 		if (queueSizeChanged || sentJobsChanged || completedJobsChanged) {
 			if (completedJobsChanged) {
+				svgDiagram.setIteration(processorId, completedJobs);
 			}
-			if (completedJobsChanged || queueSizeChanged) {
-				int totalJobs = completedJobs + queueSize;
-				svgDiagram.setIteration(processorId, completedJobs, totalJobs);
-				if (completedJobs > 0) {
-					svgDiagram.setProcessorCompleted(processorId,
-							((float) (completedJobs)) / (float) totalJobs);
-				}
+			if (completedJobs > 0) {
+				int totalJobs = sentJobs + queueSize;
+				svgDiagram.setProcessorCompleted(processorId,
+						((float) (completedJobs)) / (float) totalJobs);
 			}
 			if (sentJobsChanged) {
 				svgDiagram.fireDatalink(processorId);
+			}
+			if (errorsChanged && errors > 0) {
+				svgDiagram.setErrors(processorId, errors);				
 			}
 		}
 	}

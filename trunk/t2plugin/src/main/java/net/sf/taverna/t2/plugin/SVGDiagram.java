@@ -48,9 +48,11 @@ public class SVGDiagram extends JComponent {
 
 	private static Logger logger = Logger.getLogger(SVGDiagram.class);
 
-	private static final String COMPLETED_COLOUR = "green";
+	private static final String COMPLETED_COLOUR = "grey";
 
 	private static final String OUTPUT_COLOUR = "blue";
+
+	private static final String ERROR_COLOUR = "red";
 
 	private static final int OUTPUT_FLASH_PERIOD = 200;
 
@@ -80,7 +82,7 @@ public class SVGDiagram extends JComponent {
 
 	/**
 	 * Constructs a new instance of SVGDiagram.
-	 *
+	 * 
 	 */
 	public SVGDiagram() {
 		setBackground(Color.white);
@@ -99,9 +101,11 @@ public class SVGDiagram extends JComponent {
 	}
 
 	/**
-	 * Traverses nodes in the SVG DOM and creates SVGProcessors and SVGDatalinks.
+	 * Traverses nodes in the SVG DOM and creates SVGProcessors and
+	 * SVGDatalinks.
 	 * 
-	 * @param nodes SVG diagram nodes
+	 * @param nodes
+	 *            SVG diagram nodes
 	 */
 	private void mapNodes(NodeList nodes) {
 		for (int i = 0; i < nodes.getLength(); i++) {
@@ -203,7 +207,8 @@ public class SVGDiagram extends JComponent {
 	public void reset() {
 		for (SVGProcessor node : processorMap.values()) {
 			node.setCompleted(0f);
-			node.setIteration(0, 0);
+			node.setIteration(0);
+			node.setErrors(0);
 		}
 	}
 
@@ -254,13 +259,25 @@ public class SVGDiagram extends JComponent {
 	 * @param processorId
 	 *            the id of the processor
 	 * @param iteration
-	 *            the number of iterations completed
-	 * @param total
-	 *            the total number of iterations
+	 *            the number of iteration count
 	 */
-	public void setIteration(String processorId, int iteration, int total) {
+	public void setIteration(String processorId, int iteration) {
 		if (processorMap.containsKey(processorId)) {
-			processorMap.get(processorId).setIteration(iteration, total);
+			processorMap.get(processorId).setIteration(iteration);
+		}
+	}
+
+	/**
+	 * Sets the processor's error count.
+	 * 
+	 * @param processorId
+	 *            the id of the processor
+	 * @param errors
+	 *            the number of error count
+	 */
+	public void setErrors(String processorId, int errors) {
+		if (processorMap.containsKey(processorId)) {
+			processorMap.get(processorId).setErrors(errors);
 		}
 	}
 
@@ -305,7 +322,7 @@ public class SVGDiagram extends JComponent {
 	public JSVGCanvas getSvgCanvas() {
 		return svgCanvas;
 	}
-	
+
 	/**
 	 * SVG representation of a processor.
 	 * 
@@ -325,15 +342,27 @@ public class SVGDiagram extends JComponent {
 
 		private SVGPoint iterationPosition;
 
+		private Text errorsText;
+
+		private SVGPoint errorsPosition;
+		
+		private String originalStyle;
+
+		private String errorStyle;
+
 		private boolean nested;
 
 		/**
 		 * Constructs a new instance of SVGProcessor.
-		 *
-		 * @param g the g element
-		 * @param polygon the polygon element
-		 * @param text the test element
-		 * @param nested true if this processor contains a nested dataflow
+		 * 
+		 * @param g
+		 *            the g element
+		 * @param polygon
+		 *            the polygon element
+		 * @param text
+		 *            the test element
+		 * @param nested
+		 *            true if this processor contains a nested dataflow
 		 */
 		public SVGProcessor(SVGOMGElement g, SVGOMPolygonElement polygon,
 				SVGOMTextElement text, boolean nested) {
@@ -346,9 +375,12 @@ public class SVGDiagram extends JComponent {
 			} else {
 				iterationPosition = polygon.getPoints().getItem(0);
 			}
+			errorsPosition = polygon.getPoints().getItem(3);
+			originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+			errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + ERROR_COLOUR + ";");
 		}
 
-		public void setIteration(final int iteration, final int total) {
+		public void setIteration(final int iteration) {
 			if (updateManager != null) {
 				if (iterationText == null) {
 					addIterationText();
@@ -356,10 +388,34 @@ public class SVGDiagram extends JComponent {
 				updateManager.getUpdateRunnableQueue().invokeLater(
 						new Runnable() {
 							public void run() {
-								if (iteration > 0 && total > 0) {
-									iterationText.setData(iteration + "/" + total);
+								if (iteration > 0) {
+									iterationText.setData(String
+											.valueOf(iteration));
 								} else {
 									iterationText.setData("");
+								}
+							}
+						});
+			}
+		}
+
+		public void setErrors(final int errors) {
+			if (updateManager != null) {
+				if (errorsText == null) {
+					addErrorsText();
+				}
+				updateManager.getUpdateRunnableQueue().invokeLater(
+						new Runnable() {
+							public void run() {
+								if (errors > 0) {
+									errorsText.setData(String.valueOf(errors));
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+
+								} else {
+									errorsText.setData("");
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);
 								}
 							}
 						});
@@ -417,13 +473,52 @@ public class SVGDiagram extends JComponent {
 								text.setAttribute(
 										SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
 										"sans-serif");
-								// text.setAttribute(SVGConstants.SVG_FILL_ATTRIBUTE,
-								// "red");
 								synchronized (g) {
 									if (iterationText == null) {
 										iterationText = svgDocument
 												.createTextNode("");
 										text.appendChild(iterationText);
+										g.appendChild(text);
+									}
+								}
+							}
+						});
+			}
+		}
+
+		private void addErrorsText() {
+			if (updateManager != null) {
+				updateManager.getUpdateRunnableQueue().invokeLater(
+						new Runnable() {
+							public void run() {
+								Element text = svgDocument.createElementNS(
+										svgNS, SVGConstants.SVG_TEXT_TAG);
+								text
+										.setAttribute(
+												SVGConstants.SVG_X_ATTRIBUTE,
+												String.valueOf(errorsPosition
+														.getX() - 1.5));
+								text
+										.setAttribute(
+												SVGConstants.SVG_Y_ATTRIBUTE,
+												String.valueOf(errorsPosition
+														.getY() - 1.0));
+								text.setAttribute(
+										SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
+										"end");
+								text.setAttribute(
+										SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
+										"5.5");
+								text.setAttribute(
+										SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
+										"sans-serif");
+								text.setAttribute(
+										SVGConstants.SVG_FILL_ATTRIBUTE, "red");
+								synchronized (g) {
+									if (errorsText == null) {
+										errorsText = svgDocument
+												.createTextNode("");
+										text.appendChild(errorsText);
 										g.appendChild(text);
 									}
 								}
@@ -455,14 +550,14 @@ public class SVGDiagram extends JComponent {
 												.setAttribute(
 														SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
 														"0.8");
-										completedBox
-												.setAttribute(
-														SVGConstants.SVG_STROKE_ATTRIBUTE,
-														"black");
-										completedBox
-												.setAttribute(
-														SVGConstants.SVG_STROKE_OPACITY_ATTRIBUTE,
-														"0.6");
+//										completedBox
+//												.setAttribute(
+//														SVGConstants.SVG_STROKE_ATTRIBUTE,
+//														"black");
+//										completedBox
+//												.setAttribute(
+//														SVGConstants.SVG_STROKE_OPACITY_ATTRIBUTE,
+//														"0.6");
 										g.insertBefore(completedBox, text);
 									}
 								}
@@ -474,7 +569,8 @@ public class SVGDiagram extends JComponent {
 		/**
 		 * Calculates the points that specify the proportion completed polygon.
 		 * 
-		 * @param complete the proportion completed
+		 * @param complete
+		 *            the proportion completed
 		 * @return the points that specify the proportion completed polygon
 		 */
 		private String calculatePoints(float complete) {
@@ -482,15 +578,15 @@ public class SVGDiagram extends JComponent {
 			SVGPointList points = polygon.getPoints();
 			float x1, x2, y1, y2;
 			if (nested) {
-				x1 = points.getItem(2).getX();
-				x2 = points.getItem(0).getX();
-				y1 = points.getItem(2).getY();
-				y2 = points.getItem(0).getY();
+				x1 = points.getItem(2).getX() - 0.4f;
+				x2 = points.getItem(0).getX() + 0.4f;
+				y1 = points.getItem(2).getY() + 0.4f;
+				y2 = points.getItem(0).getY() - 0.4f;
 			} else {
-				x1 = points.getItem(0).getX();
-				x2 = points.getItem(1).getX();
-				y1 = points.getItem(0).getY();
-				y2 = points.getItem(2).getY();
+				x1 = points.getItem(0).getX() - 0.4f;
+				x2 = points.getItem(1).getX() + 0.4f;
+				y1 = points.getItem(0).getY() + 0.4f;
+				y2 = points.getItem(2).getY() - 0.4f;
 			}
 			x1 = x2 + ((x1 - x2) * complete);
 			sb.append(x1 + "," + y1 + " ");
@@ -520,9 +616,11 @@ public class SVGDiagram extends JComponent {
 
 		/**
 		 * Constructs a new instance of an SVGDatalink.
-		 *
-		 * @param path the path element
-		 * @param polygon the polygon element
+		 * 
+		 * @param path
+		 *            the path element
+		 * @param polygon
+		 *            the polygon element
 		 */
 		public SVGDatalink(SVGOMPathElement path, SVGOMPolygonElement polygon) {
 			this.path = path;
@@ -536,7 +634,8 @@ public class SVGDiagram extends JComponent {
 		/**
 		 * Set the SVG colour attributes for the datalink.
 		 * 
-		 * @param colour the new colour
+		 * @param colour
+		 *            the new colour
 		 */
 		public void setColour(final String colour) {
 			if (updateManager != null) {
@@ -556,7 +655,8 @@ public class SVGDiagram extends JComponent {
 		}
 
 		/**
-		 * Resets the SVG style attributes of the datalink to their original values.
+		 * Resets the SVG style attributes of the datalink to their original
+		 * values.
 		 * 
 		 */
 		public void resetStyle() {
