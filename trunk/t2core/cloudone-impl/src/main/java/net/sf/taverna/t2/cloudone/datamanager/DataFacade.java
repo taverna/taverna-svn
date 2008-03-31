@@ -469,6 +469,21 @@ public class DataFacade {
 					"No dereferencable reference schemes (for desired type) found for "
 							+ entityId);
 
+		} else if (ent instanceof ErrorDocument) {
+			String errorMessage = "";
+			String stackTrace = ((ErrorDocument) ent).getStackTrace();
+			if (stackTrace != null) {
+				errorMessage = errorMessage + stackTrace + "\n";
+			}
+			String message = ((ErrorDocument) ent).getMessage();
+			if (message != null) {
+				errorMessage = errorMessage + message + "\n";
+			}
+			if (errorMessage == null && message == null) {
+				return "Error unknown";
+			} else {
+				return errorMessage;
+			}
 		} else {
 			// TODO: Support the other types
 			throw new IllegalArgumentException("Type " + entityId.getType()
