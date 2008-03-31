@@ -41,7 +41,7 @@ public class JMolRenderer implements Renderer {
 			resolve = facade.resolve(entityIdentifier, String.class);
 		} catch (RetrievalException e) {
 			throw new RendererException(
-					"Could not resolve " + entityIdentifier, e);
+					"Could not resolve " + entityIdentifier + " (probably is not a JMOL file");
 		} catch (NotFoundException e) {
 			throw new RendererException("Data Manager Could not find "
 					+ entityIdentifier, e);
