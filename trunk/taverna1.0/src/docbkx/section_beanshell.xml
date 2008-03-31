@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % versions SYSTEM "versions.txt" >
+%versions;
+]>
 <section id="beanshell_processor">
   <title>Beanshell scripting</title>
 
@@ -452,7 +455,7 @@ TAVERNA_HOME="`dirname "$PRG"`"
 cd "$saveddir"
 
 <emphasis role="bold"># Set to $TAVERNA_HOME/lib for shared installation
-LIB_PATH="$HOME/.taverna-1.7.1/lib"
+LIB_PATH="$HOME/.taverna-&VERSION;/lib"
 
 LD_LIBRARY_PATH="$LIB_PATH"
 export LD_LIBRARY_PATH
@@ -473,7 +476,7 @@ ARGS="$ARGS -Djava.system.class.loader=net.sf.taverna.tools.BootstrapClassLoader
       <remark>Technically you can instead use almost the same solution as in
       Linux, but you would have to start Taverna using the command line
       <literal>DY_LD_LIBRARY_PATH=$HOME/Library/Application\
-      Support/Taverna-1.7.1/lib/
+      Support/Taverna-&VERSION;/lib/
       /Applications/Taverna.app/Contents/MacOS/JavaApplicationStub</literal></remark>
 
       <para>Use the <guilabel>Terminal</guilabel> and change directory to

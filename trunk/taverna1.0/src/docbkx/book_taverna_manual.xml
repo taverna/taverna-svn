@@ -5,9 +5,11 @@
 <!ENTITY __chapter_developer_guide__ SYSTEM "chapter_developer_guide.xml">
 <!ENTITY __chapter_admin_guide__ SYSTEM "chapter_admin_guide.xml">
 <!ENTITY __chapter_t2_guide__ SYSTEM "chapter_t2_guide.xml">
+<!ENTITY % versions SYSTEM "versions.txt" >
+%versions;
 ]>
 <book>
-  <title>Taverna 1.7 Manual.</title>
+  <title>Taverna &VERSION; Manual.</title>
 
   &__chapter_user_guide__;
 

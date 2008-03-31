@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % versions SYSTEM "versions.txt" >
+%versions;
+]>
 <section id="plugins">
   <title>Creating Plugins.</title>
 
@@ -88,7 +93,7 @@
       <para>Its important that when you define your Taverna dependencies you
       use artifact versions that are consistent with the version of Taverna
       you are wish to install your plugin into. If the version of Taverna is
-      1.5.2.x then you will want your artifact versions to be 1.5.2.x, though x itself doesn't need to match.
+      &VERSION;.x then you will want your artifact versions to be &VERSION;.x, though x itself doesn't need to match.
       In general when moving between 3rd order versions most plugins will simply
       need their dependencies changing and the plugin rebuilding with minimal,
       if any, code changes. You should read the <link

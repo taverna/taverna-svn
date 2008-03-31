@@ -336,8 +336,7 @@
         <section id="jmol_renderer">
           <title>Jmol 3d structure renderer</title>
 
-          <para>Another custom renderer, new from version 1.0 onwards, is one
-          based on the Jmol structure renderer. By flagging an output as
+          <para>Another custom renderer based on the Jmol structure renderer. By flagging an output as
           <emphasis>chemical/x-pdb</emphasis> or
           <emphasis>chemical/x-mdl-molfile</emphasis> the user can cause the
           output to be passed to an interactive 3d visualiser. Although the
@@ -369,11 +368,7 @@ wireframe on; colour cpk;
 </screen>
 
           <para>Where there are fewer than 300 atoms (small molecules,
-          ligands, cheminformatics apps) a different script is used - with
-          versions of Taverna prior to 1.1 the same script was used for all
-          structures leading to some small molecule structures effectively
-          becoming invisible. The script used in these cases for version 1.1
-          onwards is as follows:</para>
+          ligands, cheminformatics apps) a different script is used:</para>
 
           <screen>select *; spacefill 0.4; wireframe 0.2; colour cpk;</screen>
 

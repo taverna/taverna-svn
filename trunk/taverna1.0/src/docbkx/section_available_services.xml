@@ -272,8 +272,7 @@
           </listitem>
 
           <listitem>
-            <para><emphasis role="bold">BioMart service</emphasis> New from
-            version 1.2 onwards, this allows the user to specify the location
+            <para><emphasis role="bold">BioMart service</emphasis> allows the user to specify the location
             online of a Biomart service. By default Taverna will load the
             public Ensembl+MSD+Vega+DbSNP registry hosted at the EBI and
             Sanger Institute in the UK.</para>

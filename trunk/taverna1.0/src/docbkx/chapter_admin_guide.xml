@@ -18,16 +18,15 @@
   <section id="admin_taverna_loads">
     <title>What happens when Taverna loads?</title>
 
-    <para>Taverna from version 1.5 onwards uses a plugin and code manager
+    <para>Taverna uses a plugin and code manager
     called Raven. This gives us the ability to include multiple versions of
     third party dependencies (i.e. Axis 1.3 and Axis 1.4) without version
     conflicts as well as manage extensions supplied by third parties and
     provide some level of automatic updates. This comes at a cost however, as
     the installation and configuration of Taverna is considerably more
-    complex. Taverna 1.5.2 is used throughout this section as an example of a
-    fully specified Taverna version.</para>
+    complex.</para>
 
-    <para>When a fresh Taverna 1.5.2 installation is run for the first time
+    <para>When a fresh Taverna &VERSION; installation is run for the first time
     after being downloaded from one of our download mirrors the following
     things happen, performed by the Bootstrap class in the taverna-bootstrap
     jar file :</para>
@@ -47,11 +46,11 @@
         system specific suffix added. In effect this means that the default on
         Windows platforms will be the <filename>Documents and
         Settings/<replaceable>USER</replaceable>/Application
-        Data/Taverna-1.5.2</filename>, on OSX
+        Data/Taverna-&VERSION;</filename>, on OSX
         <filename><replaceable>USER</replaceable>/Library/Application
-        Support/.taverna-1.5.2</filename> and on linux or other UNIX-like
+        Support/.taverna-&VERSION;</filename> and on linux or other UNIX-like
         platforms
-        <filename>~<replaceable>USER</replaceable>/.taverna-1.5.2</filename>.</para>
+        <filename>~<replaceable>USER</replaceable>/.taverna-&VERSION;</filename>.</para>
 
         <para>If the application home directory defined above does not exist
         then create it along with a <filename>conf</filename>
@@ -121,8 +120,7 @@ raven.repository.18 = http://www.mygrid.org.uk/maven/snapshot-repository/</liter
         is added as a repository. This is useful for bundling Taverna together
         with a repository as a complete package.</para>
 
-        <para>In addition to this, a check is made if an old Taverna 1.5.1, or
-        Taverna 1.5.0
+        <para>In addition to this, a check is made if an old Taverna 
         <property>taverna.home</property><filename>/repository</filename>
         exists and if so adds it, as a local repository, to the start of the
         list of repositories. The reason for this is that many 3rd party
@@ -204,7 +202,7 @@ raven.target.method = getInstance</literallayout></para>
         which can change over time (prompting an update). Using the list of
         profiles also provides the ability to switch between versions. On
         first run, the lowest version profile is used, and stored in the file
-        <filename><property>taverna.home</property>/conf/current-profile-1.5.2.xml</filename>.
+        <filename><property>taverna.home</property>/conf/current-profile-&VERSION;.xml</filename>.
         From then on, this is the profile used when Taverna starts up. This
         current profile is changed either by selecting to do an update, or by
         switching to a specific versions.</para>
@@ -271,9 +269,9 @@ raven.splashscreen.timeout = 10</literallayout></para>
 
     <para><literallayout>#raven.profilelist points to an XML document describing all the available taverna profiles
 #a space seperated list of URLs can be provided, and the first one that can be connected to will be used - this facilitates the use of mirrors
-raven.profilelist=http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml /
-                  http://bioinf.ncl.ac.uk/mirror/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml /
-                  http://mirror.omii.ac.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml</literallayout></para>
+raven.profilelist=http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;-profiles.xml /
+                  http://bioinf.ncl.ac.uk/mirror/taverna/updates/&VERSION;/taverna-&VERSION;-profiles.xml /
+                  http://mirror.omii.ac.uk/taverna/updates/&VERSION;/taverna-&VERSION;-profiles.xml</literallayout></para>
 
     <para>...and a list of plugin sites used by the plugin manager (the value
     for the <property>raven.pluginsite.1</property> is all one line, split
@@ -281,9 +279,9 @@ raven.profilelist=http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-p
 
     <para><literallayout># The default plugin update sites, with mirror sites seperated by commas 
 # the .name is optional and provides a name for the site 
-raven.pluginsite.1=http://www.mygrid.org.uk/taverna/updates/1.5.2/plugins/, 
-                   http://bioinf.ncl.ac.uk/mirror/taverna/updates/1.5.2/plugins/, 
-                   http://mirror.omii.ac.uk/taverna/updates/1.5.2/plugins/ 
+raven.pluginsite.1=http://www.mygrid.org.uk/taverna/updates/&VERSION;/plugins/, 
+                   http://bioinf.ncl.ac.uk/mirror/taverna/updates/&VERSION;/plugins/, 
+                   http://mirror.omii.ac.uk/taverna/updates/&VERSION;/plugins/ 
 raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
 
     <para>Also, as mentioned in <link linkend="admin_taverna_loads">What
@@ -342,7 +340,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
         <property>raven.repository.</property><replaceable>NUMBER</replaceable>
         and are checked in numeric order. In addition
         <property>taverna.startup</property><filename>/repository</filename>
-        is added to the start of the list if it exists. An old 1.5.1 or 1.5.0
+        is added to the start of the list if it exists. An old
         repository is also used if it exists to avoid duplication of common
         artifacts.</para>
       </listitem>
@@ -361,7 +359,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
         <para>A specific profile can be forced by setting the property
         <property>raven.profile</property>. An example profile can be found at
         <ulink
-        url="http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2.0-profile.xml</ulink>.
+        url="http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;.0-profile.xml">http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;.0-profile.xml</ulink>.
         This profile will be used without prompting for an update.</para>
       </listitem>
 
@@ -371,7 +369,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
         document that defines a list of profiles. Initially the lowest version
         profile is used, and if a higher version exists then an update is
         offered. An example of such an XML document can be found at <ulink
-        url="http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml">http://www.mygrid.org.uk/taverna/updates/1.5.2/taverna-1.5.2-profiles.xml</ulink>.</para>
+        url="http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;-profiles.xml">http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;-profiles.xml</ulink>.</para>
       </listitem>
 
       <listitem>

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % versions SYSTEM "versions.txt" >
+%versions;
+]>
 <section id="developer_getting_started">
   <title>Getting started.</title>
 
@@ -77,14 +82,14 @@ cvs -z3 -d:pserver:anonymous@taverna.cvs.sourceforge.net:/cvsroot/taverna co -P 
     <screen>mvn package assembly:directory</screen>
 
     <para>This builds the Taverna release into the directory
-    target/taverna-1.5.1-bin/taverna-1.5.1</para>
+    target/taverna-&VERSION;-bin/taverna-&VERSION;</para>
 
     <note>
       <para>In theory the goal 'package' is an unnessary step, but is sadly
       required due to a bug in the maven assembly plugin.</para>
     </note>
 
-    <para>Next change to the target/taverna-1.5.1-bin/taverna-1.5.1/
+    <para>Next change to the target/taverna-&VERSION;-bin/taverna-&VERSION;/
     directory. If you are making sourcecode changes, then before you can run
     Taverna you need to edit the startup script, runme.sh or runme.bat
     depending upon your platform. If you don't make the following change then
@@ -112,7 +117,7 @@ ARGS="$ARGS -Djava.protocol.handler.pkgs=uk.ac.rdg.resc.jstyx.client"
 
 ARGS="$ARGS -Draven.repository.0=file:/home/elvis/.m2/repository/"
 
-java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-1.5.1.jar $@
+java $ARGS -jar $TAVERNA_HOME/taverna-bootstrap-&VERSION;.jar $@
 </screen>
 
     <para>In Windows, note the spaces in the path need to be replaced with
@@ -132,7 +137,7 @@ REM set ARGS=%ARGS% "-Dhttp.proxyUser=&lt;username&gt; -Dhttp.proxyPassword=&lt;
 
 set ARGS=%ARGS% "-Draven.repository.0=file:/C:/Documents%20and%20Settings/Elvis/.m2/repository/"
 
-java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.1.jar" %*</screen>
+java %ARGS% -jar "%~dp0\taverna-bootstrap-&VERSION;.jar" %*</screen>
 
     <tip>
       <para>During constant development it can become a pain, to put it
@@ -140,14 +145,14 @@ java %ARGS% -jar "%~dp0\taverna-bootstrap-1.5.1.jar" %*</screen>
       runme script each time. Fortunately there is a way around this. Copy the
       edited runme script to the root folder of the Taverna project, and edit
       it once more so that the final java command invokes the
-      taverna-bootsrap-1.5.1.jar in taverna-bootstrap/target/, e.g. in
+      taverna-bootsrap-&VERSION;.jar in taverna-bootstrap/target/, e.g. in
       Linux:</para>
 
-      <screen>java $ARGS -jar taverna-bootstrap/target/taverna-bootstrap-1.5.1.jar $@</screen>
+      <screen>java $ARGS -jar taverna-bootstrap/target/taverna-bootstrap-&VERSION;.jar $@</screen>
 
       <para>or Windows:</para>
 
-      <screen>java %ARGS% -jar "target\taverna-bootstrap\taverna-bootstrap-1.5.1.jar" %*</screen>
+      <screen>java %ARGS% -jar "target\taverna-bootstrap\taverna-bootstrap-&VERSION;.jar" %*</screen>
 
       <para>You will then only need to run 'mvn install' each time and then
       start Taverna using your new script.</para>

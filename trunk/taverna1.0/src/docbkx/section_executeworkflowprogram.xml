@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY % versions SYSTEM "versions.txt" >
+%versions;
+]>
 <section id="executeworkflowprogram">
   <title>Using the Taverna API to programmatically execute a workflow</title>
 
@@ -329,7 +332,7 @@ public class WorkflowLauncherWrapper {
      * This version has to match the version of the real dependency you have to
      * Taverna libraries on your classpath (ie. the pom.xml dependencies).
      */
-    public static final String TAVERNA_BASE_VERSION = "1.7.0.0";
+    public static final String TAVERNA_BASE_VERSION = "&VERSION;.0";
 
     String workflowName;
 
@@ -421,10 +424,7 @@ public class WorkflowLauncherWrapper {
      */
     protected Repository initialiseRepository() throws IOException {
      
-        System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/1.7.0/taverna-1.7.0.0-profile.xml");
-
-        // this line is necessary if working with Taverna 1.5.2 or earlier:
-        // Bootstrap.properties = new Properties();
+        System.setProperty("raven.profile","http://www.mygrid.org.uk/taverna/updates/&VERSION;/taverna-&VERSION;.0-profile.xml");
 
         Set&lt;Artifact&gt; systemArtifacts = buildSystemArtifactSet();
         Set&lt;Artifact&gt; externalArtifacts = buildExternalArtifactSet();
