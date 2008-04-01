@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.4 $
+ * Revision           $Revision: 1.5 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-02-14 07:51:13 $
+ * Last modified on   $Date: 2008-04-01 12:27:26 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -113,6 +113,7 @@ public class WSDLSOAPInvoker {
 			throws Exception {
 
 		Call call = getCall();
+		
 		if (config != null) {
 			call.setClientHandlers(config.getGlobalRequest(), config
 					.getGlobalResponse());
