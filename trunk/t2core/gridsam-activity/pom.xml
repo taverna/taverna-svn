@@ -4,22 +4,22 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2.0</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>gridsam-activity</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<name>Gridsam Activity</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.0</version>
 		</dependency>
 				<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-impl</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -3,13 +3,13 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>net.sf.taverna.t2</groupId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.taverna.t2</groupId>
   <artifactId>ogsadai-activity</artifactId>
   <name>OGSA-DAI Activity</name>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2.0</version>
   <repositories>
     <repository>
       <releases />
@@ -25,12 +25,12 @@
     <dependency>
       <groupId>net.sf.taverna.t2</groupId>
       <artifactId>maelstrom-api</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.2.0</version>
     </dependency>
     <dependency>
       <groupId>net.sf.taverna.t2</groupId>
       <artifactId>maelstrom-impl</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.2.0</version>
     </dependency>
     <dependency>
       <groupId>axis</groupId>

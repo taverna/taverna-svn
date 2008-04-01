@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>drizzle-impl</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<name>Drizzle IMPL</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2.0</version>
 	</parent>
 	<description>
 		Implementation of the Drizzle layer. This is an implementation
@@ -18,7 +18,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>drizzle-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

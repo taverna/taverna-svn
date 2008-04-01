@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>drizzle-api</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<name>Drizzle API</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2.0</version>
 	</parent>
 	<description>
 		API definition for the Drizzle API layer. This is
@@ -18,12 +18,12 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cloudone-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2.0</version>
 		</dependency>
 	</dependencies>
 </project>
