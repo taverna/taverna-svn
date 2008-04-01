@@ -4,9 +4,10 @@
   <section id="t2preview">
     <title>Using the Taverna 2 preview</title>
 
-    <para>The preview contains 3 main panels: a view of the currently opened
-    workflow, the process being executed and the results. There are also 4
-    buttons: Test, Run, Reset &amp; Preferences.</para>
+    <para>The preview contains 3 main panels: a list of workflow runs, the
+    workflow diagram and the results (visible after running or testing a
+    workflow). There are also 6 buttons: Preferences, Test, Run, Reset
+    Diagram, Zoom In &amp; Zoom Out.</para>
 
     <para><inlinemediaobject>
         <imageobject>
@@ -16,16 +17,9 @@
 
     <para>Test allows you to perform a workflow healthcheck. This will check
     that the workflow can be translated from the old style scufl model to the
-    T2 style and that any web-service endpoints are responding.  The top screenshot 
-    is from a failed check while the bottom one is a success.</para>
+    T2 style and that any web-service endpoints are responding.</para>
 
     <para><inlinemediaobject>
-        <imageobject>
-          <imagedata fileref="./images/t2_healthcheck_fail.png" />
-        </imageobject>
-      </inlinemediaobject>
-      </para>
-      <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_healthcheck_pass.png" />
         </imageobject>
@@ -63,14 +57,32 @@
         </imageobject>
       </inlinemediaobject></para>
 
-    <para>Clicking on run workflow executes the workflow and generates the
-    results. During the run the workflow status is monitored and shown to you.  In the example results below a beanshell was concatenating “xxx”
-    to a string input of “Hello Taverna Users”.</para>
-<para><inlinemediaobject>
+    <para>Clicking on the Run button executes the workflow. The workflow run
+    is added to the list of workflows and the result panel is opened. During
+    the run the workflow status is monitored and shown on the diagram. In the
+    example below the seqret, emma and plot processors are in progress; the
+    number of complete iterations is shown in the top right of the processor
+    box.</para>
+
+    <para><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="images/t2_plugin_monitor.png" />
+          <imagedata fileref="./images/t2_plugin_monitor.png" />
         </imageobject>
       </inlinemediaobject></para>
+
+    <para>If a processor fails to run the border of the processor box changes
+    colour to red and the number of failed iterations is shown in the bottom
+    right of the box.</para>
+
+    <para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="./images/t2_plugin_monitor_fail.png" />
+        </imageobject>
+      </inlinemediaobject></para>
+
+    <para>As the workflow runs results are displayed in the Results
+    panel.</para>
+
     <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_plugin_workflow_complete.png" />
