@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 Activity Set</name>
 	<groupId>net.sf.taverna.t2</groupId>
-	<version>0.1.0</version>
+	<version>0.2.0</version>
 	<artifactId>activityset</artifactId>
 	<packaging>pom</packaging>
 	<dependencyManagement>
@@ -17,8 +17,6 @@
 	</dependencyManagement>
 	<modules>
 		<module>activitypalette</module>
-		<!--<module>gridsam-activity</module>
-			<module>ogsadai-activity</module>-->
 	</modules>
 	<licenses>
 		<license>
