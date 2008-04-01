@@ -39,23 +39,4 @@
                 <version>1.7.1</version>
         </taverna>
 </plugin>
-<plugin>
-        <name>Taverna 2 Activity Palette</name>
-        <description>The new Activity Palette</description>
-        <identifier>uk.org.mygrid.taverna.plugins.t2.activitypalette</identifier>
-        <version>0.2.0</version>
-        <provider>mygrid.org.uk</provider>
-        <enabled>true</enabled>
-        <repositories>
-                <repository>http://www.mygrid.org.uk/maven/repository</repository>
-        </repositories>
-        <profile>
-                <artifact groupId="net.sf.taverna.t2" artifactId="activitypalette" version="0.2.0" />
-                <artifact groupId="net.sf.taverna.t2" artifactId="drizzle-impl" version="0.2.0" />
-
-        </profile>
-        <taverna>
-                <version>1.7.1</version>
-        </taverna>
-</plugin>
 </plugins>
