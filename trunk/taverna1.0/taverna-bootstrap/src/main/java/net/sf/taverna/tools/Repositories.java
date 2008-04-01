@@ -29,7 +29,7 @@ public class Repositories {
 
 		//detect if an old repositorys from 1.5.1 onwards exist, and if so add them to the list of available repositories.
 		//this reduces duplication between the 2 repositories.
-		String [] applications=new String[]{"Taverna","Taverna-1.5.2","Taverna-1.6.0","Taverna-1.6.1","Taverna-1.6.2"};
+		String [] applications=new String[]{"Taverna","Taverna-1.5.2","Taverna-1.6.0","Taverna-1.6.1","Taverna-1.6.2","Taverna-1.7.0"};
 		for (String application : applications) {
 			URL oldRespository = findOldRepository(application);
 			if (oldRespository!=null) {

@@ -5,7 +5,7 @@
 	<artifactId>taverna</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna</name>
-	<version>1.7.0.0</version>
+	<version>1.7.1.0</version>
 	<issueManagement>
 		<system>jira</system>
 		<url>http://www.mygrid.org.uk/jira/</url>
