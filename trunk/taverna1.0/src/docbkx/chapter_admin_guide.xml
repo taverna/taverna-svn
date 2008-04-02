@@ -375,7 +375,7 @@ raven.pluginsite.1.name=Taverna Plugin Update Site</literallayout></para>
       <listitem>
         <para>Default plugins can be declared by the presence of
         <property>taverna.startup</property><filename>/plugins/plugins.xml</filename>.
-        To find out more about this XMl document read the section about <link
+        To find out more about this XML document read the section about <link
         linkend="installing_plugins">Installing Plugins</link>.</para>
       </listitem>
     </itemizedlist>
