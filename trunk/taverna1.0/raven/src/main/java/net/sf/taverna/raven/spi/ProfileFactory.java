@@ -25,10 +25,10 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.10 $
+ * Revision           $Revision: 1.11 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-18 13:29:28 $
- *               by   $Author: sowen70 $
+ * Last modified on   $Date: 2008-04-02 13:13:41 $
+ *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
@@ -54,16 +54,16 @@ public class ProfileFactory {
 	private static ProfileFactory instance = null;
 
 	/**
-	 * Don't instanciate, use singleton {@link #getInstance()}.
+	 * Don't instantiate, use singleton {@link #getInstance()}.
 	 */
 	private ProfileFactory() {
 	}
 
 	/**
-	 * Get the singleton factory.
+	 * Get the singleton ProfileFactory.
 	 * 
 	 */
-	public static ProfileFactory getInstance() {
+	public static synchronized ProfileFactory getInstance() {
 		if (instance == null) {
 			instance = new ProfileFactory();
 		}
