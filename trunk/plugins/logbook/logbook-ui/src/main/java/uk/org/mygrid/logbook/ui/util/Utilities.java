@@ -27,7 +27,7 @@
  * Filename           $RCSfile: Utilities.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:39 $
+ * Last modified on   $Date: 2008-04-02 16:24:38 $
  *               by   $Author: stain $
  * Created on 11-Jul-2006
  *****************************************************************/
@@ -47,7 +47,7 @@ import uk.org.mygrid.logbook.ui.ProcessRunsTreeTable;
 
 /**
  * @author dturi
- * @version $Id: Utilities.java,v 1.1 2007-12-14 12:48:39 stain Exp $
+ * @version $Id: Utilities.java,v 1.1 2008-04-02 16:24:38 stain Exp $
  */
 public class Utilities {
 

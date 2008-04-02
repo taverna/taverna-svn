@@ -27,7 +27,7 @@
  * Filename           $RCSfile: LogBookWeb.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:41 $
+ * Last modified on   $Date: 2008-04-02 16:24:14 $
  *               by   $Author: stain $
  * Created on 2 Feb 2007
  *****************************************************************/
@@ -65,7 +65,7 @@ import uk.org.mygrid.provenance.dataservice.DataServiceFactory;
  * in the <code>/WEB-INF/classes</code> folder.
  * 
  * @author dturi
- * @version $Id: LogBookWeb.java,v 1.1 2007-12-14 12:48:41 stain Exp $
+ * @version $Id: LogBookWeb.java,v 1.1 2008-04-02 16:24:14 stain Exp $
  */
 public class LogBookWeb {
 

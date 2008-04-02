@@ -24,33 +24,48 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: LogBookIcons.java,v $
+ * Filename           $RCSfile: DatabaseValidationException.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:39 $
+ * Last modified on   $Date: 2008-04-02 16:24:37 $
  *               by   $Author: stain $
- * Created on 21 Nov 2006
+ * Created on 28 Nov 2006
  *****************************************************************/
 package uk.org.mygrid.logbook.ui;
 
-import javax.swing.ImageIcon;
+import uk.org.mygrid.provenance.LogBookException;
 
-public class LogBookIcons {
 
-    public static ImageIcon levelsIcon, logBookIcon, rdfIcon, reloadIcon, rerunIcon;
+public class DatabaseValidationException extends LogBookException {
 
-    static {
-        // Load the image files found in this package into the class.
-        try {
-            Class c = LogBookIcons.class;
-            levelsIcon = new ImageIcon(c.getResource("icons/levels.png"));
-            logBookIcon = new ImageIcon(c.getResource("icons/logbook.png"));
-            rdfIcon = new ImageIcon(c.getResource("icons/rdf.gif"));
-            reloadIcon = new ImageIcon(c.getResource("icons/reload.png"));
-            rerunIcon = new ImageIcon(c.getResource("icons/rerun.png"));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println(ex.toString());
-        }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String databaseName;
+    
+    public String getDatabaseName() {
+        return databaseName;
     }
+
+    public void setDatabaseName(String databaseName) {
+        this.databaseName = databaseName;
+    }
+
+    public DatabaseValidationException() {
+        // default
+    }
+
+    public DatabaseValidationException(String message) {
+        super(message);
+    }
+
+    public DatabaseValidationException(Throwable cause) {
+        super(cause);
+    }
+
+    public DatabaseValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    
 }

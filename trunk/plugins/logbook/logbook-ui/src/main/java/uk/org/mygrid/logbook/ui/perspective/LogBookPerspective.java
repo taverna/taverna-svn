@@ -24,36 +24,35 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: LogBookWebError.java,v $
+ * Filename           $RCSfile: LogBookPerspective.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:41 $
+ * Last modified on   $Date: 2008-04-02 16:24:39 $
  *               by   $Author: stain $
- * Created on 6 Feb 2007
+ * Created on 8 Nov 2006
  *****************************************************************/
-package uk.org.mygrid.logbook.service;
+package uk.org.mygrid.logbook.ui.perspective;
 
-public class LogBookWebError extends RuntimeException {
+import java.io.InputStream;
 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+import javax.swing.ImageIcon;
 
-	public LogBookWebError() {
-        // default
-    }
+import net.sf.taverna.perspectives.AbstractPerspective;
+import uk.org.mygrid.logbook.ui.LogBookIcons;
 
-    public LogBookWebError(String message) {
-        super(message);
-    }
+public class LogBookPerspective extends AbstractPerspective {	
 
-    public LogBookWebError(Throwable cause) {
-        super(cause);
-    }
+	public ImageIcon getButtonIcon() {
+		return LogBookIcons.logBookIcon;
+	}	
 
-    public LogBookWebError(String message, Throwable cause) {
-        super(message, cause);
-    }
+	public String getText() {
+		return "LogBook";
+	}
 
+	@Override
+	protected InputStream getLayoutResourceStream() {
+		return LogBookPerspective.class.getResourceAsStream("/perspective-logbook.xml");
+	}	
+	
 }

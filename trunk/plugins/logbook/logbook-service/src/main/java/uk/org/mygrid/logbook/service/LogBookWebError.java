@@ -24,48 +24,36 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: DatabaseValidationException.java,v $
+ * Filename           $RCSfile: LogBookWebError.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:39 $
+ * Last modified on   $Date: 2008-04-02 16:24:14 $
  *               by   $Author: stain $
- * Created on 28 Nov 2006
+ * Created on 6 Feb 2007
  *****************************************************************/
-package uk.org.mygrid.logbook.ui;
+package uk.org.mygrid.logbook.service;
 
-import uk.org.mygrid.provenance.LogBookException;
-
-
-public class DatabaseValidationException extends LogBookException {
+public class LogBookWebError extends RuntimeException {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String databaseName;
-    
-    public String getDatabaseName() {
-        return databaseName;
-    }
 
-    public void setDatabaseName(String databaseName) {
-        this.databaseName = databaseName;
-    }
-
-    public DatabaseValidationException() {
+	public LogBookWebError() {
         // default
     }
 
-    public DatabaseValidationException(String message) {
+    public LogBookWebError(String message) {
         super(message);
     }
 
-    public DatabaseValidationException(Throwable cause) {
+    public LogBookWebError(Throwable cause) {
         super(cause);
     }
 
-    public DatabaseValidationException(String message, Throwable cause) {
+    public LogBookWebError(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

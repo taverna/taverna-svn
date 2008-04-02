@@ -59,7 +59,7 @@ import uk.org.mygrid.provenance.util.ProvenanceConfigurator;
  * 
  * @author Matthew Gamble
  * @author dturi
- * @version $Id: LogBookUI.java,v 1.1 2007-12-14 12:48:38 stain Exp $
+ * @version $Id: LogBookUI.java,v 1.1 2008-04-02 16:24:37 stain Exp $
  */
 public class LogBookUI extends JPanel implements UIComponentSPI {
 

@@ -24,35 +24,33 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: LogBookPerspective.java,v $
+ * Filename           $RCSfile: LogBookIcons.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-12-14 12:48:41 $
+ * Last modified on   $Date: 2008-04-02 16:24:37 $
  *               by   $Author: stain $
- * Created on 8 Nov 2006
+ * Created on 21 Nov 2006
  *****************************************************************/
-package uk.org.mygrid.logbook.ui.perspective;
-
-import java.io.InputStream;
+package uk.org.mygrid.logbook.ui;
 
 import javax.swing.ImageIcon;
 
-import net.sf.taverna.perspectives.AbstractPerspective;
-import uk.org.mygrid.logbook.ui.LogBookIcons;
+public class LogBookIcons {
 
-public class LogBookPerspective extends AbstractPerspective {	
+    public static ImageIcon levelsIcon, logBookIcon, rdfIcon, reloadIcon, rerunIcon;
 
-	public ImageIcon getButtonIcon() {
-		return LogBookIcons.logBookIcon;
-	}	
-
-	public String getText() {
-		return "LogBook";
-	}
-
-	@Override
-	protected InputStream getLayoutResourceStream() {
-		return LogBookPerspective.class.getResourceAsStream("/perspective-logbook.xml");
-	}	
-	
+    static {
+        // Load the image files found in this package into the class.
+        try {
+            Class c = LogBookIcons.class;
+            levelsIcon = new ImageIcon(c.getResource("icons/levels.png"));
+            logBookIcon = new ImageIcon(c.getResource("icons/logbook.png"));
+            rdfIcon = new ImageIcon(c.getResource("icons/rdf.gif"));
+            reloadIcon = new ImageIcon(c.getResource("icons/reload.png"));
+            rerunIcon = new ImageIcon(c.getResource("icons/rerun.png"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println(ex.toString());
+        }
+    }
 }
