@@ -81,9 +81,9 @@ public class JobResource extends AbstractJobResource {
 			return;
 		}
 		JobDocument jobDoc;
-                String text="";
+        String text = "";
 		try {
-                        text=entity.getText();
+			text = entity.getText();
 			jobDoc = JobDocument.Factory.parse(text);
 		} catch (XmlException ex) {
 			logger.warn("Could not parse job document\n"+text+"\n", ex);
