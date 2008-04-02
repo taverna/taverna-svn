@@ -20,9 +20,10 @@
   <section id="t2previewtest">
     <title>Testing a workflow</title>
 
-    <para>Test allows you to perform a workflow health check. This will check
-    that the workflow can be translated from the old style scufl model to the
-    T2 style and that any web-service endpoints are responding.</para>
+    <para>Clicking on the Test button performs a workflow health check. This
+    will check that the workflow can be translated from the old style scufl
+    model to the T2 style and that any web-service endpoints are
+    responding.</para>
 
     <para><inlinemediaobject>
         <imageobject>
