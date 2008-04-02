@@ -19,35 +19,32 @@ public class WorkersResource extends AbstractResource {
 
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(WorkersResource.class);
-	
+	private static final int MAX_WORKERS = 4;
+
 	public WorkersResource(Context context, Request request, Response response) {
 		super(context, request, response);
 		addRepresentation(new WorkersVelocityRepresentation());
 	}
-	
+
 	public boolean allowPost() {
 		return true;
 	}
 
 	public void handlePost() {
-		try {
-			if (getAuthUser().isAdmin() && daoFactory.getWorkerDAO().all().size()<4) {
-				
-				WorkerInitialisation.createNew();
-				getResponse().setRedirectRef(getRequest().getReferrerRef());
-				getResponse().setStatus(Status.REDIRECTION_FOUND);
-			}
-			else {
-				getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-			}
-		}
-		catch(Throwable e) {
-			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "An error occurred creating the worker: "+e.getCause().getMessage());
+		if (getAuthUser().isAdmin()
+				&& daoFactory.getWorkerDAO().all().size() < MAX_WORKERS) {
+
+			WorkerInitialisation.createNew();
+			getResponse().setRedirectRef(getRequest().getReferrerRef());
+			getResponse().setStatus(Status.REDIRECTION_FOUND);
+		} else {
+			logger.warn("Can't create more than " + MAX_WORKERS + " workers");
+			getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
 		}
 	}
 
 	class WorkersVelocityRepresentation extends VelocityRepresentation {
-		
+
 		@Override
 		protected Map<String, Object> getDataModel() {
 			List<Worker> workers = DAOFactory.getFactory().getWorkerDAO().all();
@@ -68,7 +65,6 @@ public class WorkersResource extends AbstractResource {
 		protected String templateName() {
 			return "workers.vm";
 		}
-		
-		
+
 	}
 }
