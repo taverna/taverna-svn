@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:www.mygrid.org.uk:operation:LDP0E14FGX0" author="cartilageThicknessAnalysis" title="" />
+  <s:processor name="initial" boring="true">
+    <s:stringconstant>http://www.mygrid.org.uk/wsdl/initial_alignment.jpg</s:stringconstant>
+  </s:processor>
+  <s:processor name="final" boring="true">
+    <s:stringconstant>http://www.mygrid.org.uk/wsdl/final_alignment.jpg</s:stringconstant>
+  </s:processor>
+  <s:processor name="bone_surface_file" boring="true">
+    <s:stringconstant>z013_1_7.pts</s:stringconstant>
+  </s:processor>
+  <s:processor name="cartSurface" boring="true">
+    <s:stringconstant>z013_1_7.pts</s:stringconstant>
+  </s:processor>
+  <s:processor name="final_alignment">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="initial_alignment">
+    <s:local>org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</s:local>
+  </s:processor>
+  <s:processor name="getBoneDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/points2boneStructure.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="seedTransform">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/transforms.jws?wsdl</s:wsdl>
+      <s:operation>getCartilageAnalysis</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getConnsFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnConnections.jws?wsdl</s:wsdl>
+      <s:operation>getConnsFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/findSegFile.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCrnFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnCrn.jws?wsdl</s:wsdl>
+      <s:operation>getCrnFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCartilage2Structure">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/cart2struct.jws?wsdl</s:wsdl>
+      <s:operation>getCartilage2Structure</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getThickness">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/registerSurfaces.jws?wsdl</s:wsdl>
+      <s:operation>getThickness</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="transformDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/seedTransform.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSegmentation">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/uploadSeg.jws?wsdl</s:wsdl>
+      <s:operation>getSegmentation</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getCartilageAnalysis">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/processCartScript.jws?wsdl</s:wsdl>
+      <s:operation>getCartilageAnalysis</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getBoneStructures">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/pts2boneScript.jws?wsdl</s:wsdl>
+      <s:operation>getBoneStructures</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="getSurfFile">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/returnSurface.jws?wsdl</s:wsdl>
+      <s:operation>getSurfFile</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="cart2boneDescription">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://phoebus.cs.man.ac.uk:8081/axis/cart2boneStructure.jws?wsdl</s:wsdl>
+      <s:operation>getDescription</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="retrieve">
+    <s:arbitrarywsdl>
+      <s:wsdl>http://rpc53.cs.man.ac.uk:8080/formatMetadata/services/SegmentationPortType?wsdl</s:wsdl>
+      <s:operation>retrieve</s:operation>
+    </s:arbitrarywsdl>
+  </s:processor>
+  <s:processor name="GetSegmentationFileFromStore" boring="true">
+    <s:stringconstant>urn:lsid:www.mygrid.org.uk:mias_segmentation:z004_f2</s:stringconstant>
+  </s:processor>
+  <s:processor name="nameSegmentation" boring="true">
+    <s:stringconstant>z004_f2</s:stringconstant>
+  </s:processor>
+  <s:link source="GetSegmentationFileFromStore:value" sink="retrieve:graphName" />
+  <s:link source="bone_surface_file:value" sink="getBoneDescription:pointsFile" />
+  <s:link source="cartSurface:value" sink="cart2boneDescription:pointsFile" />
+  <s:link source="final:value" sink="final_alignment:base" />
+  <s:link source="final:value" sink="final_alignment:url" />
+  <s:link source="nameSegmentation:value" sink="getDescription:segFile" />
+  <s:link source="final_alignment:image" sink="final_alignment" />
+  <s:link source="getBoneStructures:getBoneStructuresReturn" sink="transformDescription:pointsFile" />
+  <s:link source="getCartilageAnalysis:getCartilageAnalysisReturn" sink="logFileLocation" />
+  <s:link source="getConnsFile:getConnsFileReturn" sink="connsFile" />
+  <s:link source="getCrnFile:getCrnFileReturn" sink="CartilageSurfacesFile" />
+  <s:link source="getCrnFile:getCrnFileReturn" sink="crnFile" />
+  <s:link source="getDescription:getDescriptionReturn" sink="matlabScript" />
+  <s:link source="getSegmentation:getSegmentationReturn" sink="segFile" />
+  <s:link source="getSurfFile:getSurfFileReturn" sink="CartilageSurfaces" />
+  <s:link source="initial:value" sink="initial_alignment:base" />
+  <s:link source="initial:value" sink="initial_alignment:url" />
+  <s:link source="retrieve:retrieveReturn" sink="getSegmentation:segFile" />
+  <s:link source="getBoneDescription:getDescriptionReturn" sink="pts2struc" />
+  <s:link source="getBoneStructures:getBoneStructuresReturn" sink="boneStructures" />
+  <s:link source="getCartilage2Structure:getCartilage2StructureReturn" sink="cart2struc" />
+  <s:link source="getThickness:getThicknessReturn" sink="thicknessMap" />
+  <s:link source="initial_alignment:image" sink="initial_alignment" />
+  <s:link source="seedTransform:getCartilageAnalysisReturn" sink="transformResults" />
+  <s:link source="transformDescription:getDescriptionReturn" sink="seedTransform" />
+  <s:sink name="matlabScript" />
+  <s:sink name="segFile" />
+  <s:sink name="logFileLocation" />
+  <s:sink name="CartilageSurfaces" />
+  <s:sink name="connsFile" />
+  <s:sink name="crnFile" />
+  <s:sink name="CartilageSurfacesFile" />
+  <s:sink name="pts2struc" />
+  <s:sink name="boneStructures" />
+  <s:sink name="seedTransform" />
+  <s:sink name="cart2struc" />
+  <s:sink name="transformResults" />
+  <s:sink name="thicknessMap" />
+  <s:sink name="initial_alignment" />
+  <s:sink name="final_alignment" />
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getSegmentation">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getSegmentation</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCartilageAnalysis_BLOCKON_getDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilageAnalysis</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getConnsFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getConnsFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCrnFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCrnFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getSurfFile_BLOCKON_getCartilageAnalysis">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilageAnalysis</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getSurfFile</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getBoneStructures_BLOCKON_getDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getBoneDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getBoneStructures</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getCartilage2Structure_BLOCKON_cart2boneDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>cart2boneDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getCartilage2Structure</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="transformDescription_BLOCKON_getCartilage2Structure">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getCartilage2Structure</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>transformDescription</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="seedTransform_BLOCKON_transformDescription">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>transformDescription</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>seedTransform</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getThickness_BLOCKON_seedTransform">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>seedTransform</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getThickness</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="final_alignment_BLOCKON_getThickness">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getThickness</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>final_alignment</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="initial_alignment_BLOCKON_getThickness">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getThickness</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>initial_alignment</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="getBoneDescription_BLOCKON_getSurfFile">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getSurfFile</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>getBoneDescription</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+  <s:coordination name="cart2boneDescription_BLOCKON_getSurfFile">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>getSurfFile</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>cart2boneDescription</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
+</s:scufl>
+
+

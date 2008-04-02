@@ -1,0 +1,490 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.0="http://www.mygrid.org.uk/provenance#" >
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:b1b3088a-a003-4d0f-9bb1-cf7a6c951a00">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:d2d98a21-55f6-47d2-b469-5e8c6739ee81">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:52edd718-e7e4-4aa1-b691-e2831f608f43">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:fbfaf94d-6829-410a-a1f5-0bbce921ea01">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:73a0b01e-6633-4309-af27-592b57f6c574">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip_in_url"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:c3b6d741-45f6-4e94-aafb-fb13dbe5ac33"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#findComicURL_out_filteredlist"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:1c4807e9-42ce-456f-94d0-cb35b12955b5"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataCollection:78c069be-4511-4066-b1d4-5e0e7c7dac78"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335657568">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.FilterStringList</j.0:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:792242e7-c49d-4ad0-902b-7923ce695a9a">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:9c94a4be-9555-4fb1-a82b-40716f23b442">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:1174a0a6-2dfc-4e9f-96f5-3145a5e72df8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getComicStrip">
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335657999"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor</j.0:className>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335668293"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:0a677642-82b5-4a12-bbfe-89a7308f2757">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:wfInstance:517e062b-a0ad-4ac1-8237-6108fe49e6fe">
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335649461"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#WorkflowRun"/>
+    <j.0:workflowOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:06139913-9def-4c7a-a0bc-2be090067a03"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335657992"/>
+    <j.0:launchedBy rdf:resource="http://www.someplace/someuser"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335648915"/>
+    <j.0:runsWorkflow rdf:resource="urn:lsid:net.sf.taverna:wfDefinition:cb6fe076-249b-46bc-8cf1-a60c44c7b5e1"/>
+    <j.0:startTime>"2007-04-23T13:40:42.027Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:startTime>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335668283"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335649618"/>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335657561"/>
+    <j.0:endTime>"2007-04-23T13:41:08.451Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:executedProcessRun rdf:resource="urn:www.mygrid.org.uk/process_run#1177335655326"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:e2392ceb-c300-424e-a74f-a43e6cbe0608">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#url">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/x-taverna-web-url</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:c3b6d741-45f6-4e94-aafb-fb13dbe5ac33">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip_in_url"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getComicStrip_in_base">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain,text/x-taverna-web-url</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:04b9a9e9-b16f-48b5-b029-913e1c6ba758">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#document">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/html</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#dilbertURL_out_value">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain,text/x-taverna-web-url</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:03848b17-43d2-4283-87b8-78c92a326e28">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:f70303e5-4bd7-423a-8c86-ad909b40dcc8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:8bd38c3d-981d-49e4-9e11-76e4771bde13">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/workflow#VI9FMF5HBQ3_out_todaysDilbert">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(application/octet-stream,image/*)</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:bf03d71f-6807-488d-9092-47d5b3877c0a">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335649461">
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#dilbertURL"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <j.0:endTime>"2007-04-23T13:40:49.47Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:wfDefinition:cb6fe076-249b-46bc-8cf1-a60c44c7b5e1">
+    <j.0:workflowDescription rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Use the local java plugins and some filtering operations to fetch the comic strip image from http://www.dilbert.com</j.0:workflowDescription>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Workflow"/>
+    <j.0:workflowTitle rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fetch today's Dilbert comic</j.0:workflowTitle>
+    <j.0:workflowAuthor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tom Oinn</j.0:workflowAuthor>
+    <j.0:workflowInitialLSID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">urn:lsid:www.mygrid.org.uk:operation:VI9FMF5HBQ3</j.0:workflowInitialLSID>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getImageLinks_out_imagelinks">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain,text/x-taverna-web-url)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:3092732b-c83d-4e85-8f73-60155d8bf939">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:7c2aa02c-1262-4d70-bad8-d6b5b9b92848">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:e71116b7-a483-46f1-bb6e-d0ad7b55bf23">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335657561">
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:78c069be-4511-4066-b1d4-5e0e7c7dac78"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:73a0b01e-6633-4309-af27-592b57f6c574"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:1c4807e9-42ce-456f-94d0-cb35b12955b5"/>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#findComicURL"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-04-23T13:40:57.568Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:8542e1e8-d7ce-4ec6-b156-ac4e6b9598c7">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#findComicURL">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor</j.0:className>
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335657568"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:cff7e780-0ac5-4510-8600-1c907caa11b9">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:a74d6025-a885-4d84-bd92-f5943c4103f3">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335657999">
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</j.0:value>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#stringlist">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:d62c039f-9f0d-467d-be64-925dd6c79077">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getImageLinks_in_document">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain,text/html</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getComicStrip_in_url">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain,text/x-taverna-web-url)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:ee3b6464-05bc-4035-9638-4da2ceddb6ef">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335668293">
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.WebImageFetcher</j.0:value>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:759dd354-9ee4-43f7-a280-1bcf5139b9e4">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335668283">
+    <j.0:numberOfIterations rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</j.0:numberOfIterations>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:06139913-9def-4c7a-a0bc-2be090067a03"/>
+    <j.0:endTime>"2007-04-23T13:41:08.293Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:73a0b01e-6633-4309-af27-592b57f6c574"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRunWithIterations"/>
+    <j.0:iteration rdf:resource="urn:www.mygrid.org.uk/process_run#1177335657992"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:50eb68b3-a6e7-4095-bba3-c10c5cb7fd98">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:f5eaf452-360e-42c2-88e1-eb6372bd70c7">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:2b7f2a1e-b4f6-42ab-a997-5091f900ce8c">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#findComicURL_in_stringlist">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain,text/x-taverna-web-url)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getPage_out_contents">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain,text/html</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getPage_in_url">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain,text/x-taverna-web-url</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:65d653b6-8c0b-4847-8ae1-2db28fe2f01c">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:0a418170-ec53-41f6-9e80-fd952cd53c40">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#todaysDilbert">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">image/*</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:98504fde-e404-4f3c-a073-1ab990625eac">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335649470">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">String Value</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.dilbert.com/</j.0:value>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335648915">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-04-23T13:40:48.946Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#comicURLRegex"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataItem:1c4807e9-42ce-456f-94d0-cb35b12955b5"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:879fe9d0-9bc3-4a96-b2d3-8a1df81325a3">
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getPage_out_contents"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getImageLinks_in_document"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.someplace/somelab">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Organization"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#dilbertURL">
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335649470"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor</j.0:className>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:78c069be-4511-4066-b1d4-5e0e7c7dac78">
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:c5c7a83e-195d-4c65-b657-65750ceff0a9"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:f5eaf452-360e-42c2-88e1-eb6372bd70c7"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:2b79f2b4-c496-4e6c-a536-76a163af9e2f"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:aa25b25e-2fce-4468-930d-3ff6f74ed0e8"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:d62c039f-9f0d-467d-be64-925dd6c79077"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:52edd718-e7e4-4aa1-b691-e2831f608f43"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:65d653b6-8c0b-4847-8ae1-2db28fe2f01c"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:f70303e5-4bd7-423a-8c86-ad909b40dcc8"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:98504fde-e404-4f3c-a073-1ab990625eac"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:9c94a4be-9555-4fb1-a82b-40716f23b442"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:1174a0a6-2dfc-4e9f-96f5-3145a5e72df8"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:be62ff27-cf85-4762-a2f3-e770b6515ced"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:43a2e25c-290d-4968-b3e4-369e1dcdc6c5"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:9c009322-4ccd-4ffc-a6d7-36f97c457825"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:759dd354-9ee4-43f7-a280-1bcf5139b9e4"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:792242e7-c49d-4ad0-902b-7923ce695a9a"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:d94c944e-b30c-497e-bac5-7f891236bbd2"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:e71116b7-a483-46f1-bb6e-d0ad7b55bf23"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#findComicURL_in_stringlist"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:cff7e780-0ac5-4510-8600-1c907caa11b9"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:ac89290f-f39c-498a-a733-b923da506064"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:3092732b-c83d-4e85-8f73-60155d8bf939"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:8542e1e8-d7ce-4ec6-b156-ac4e6b9598c7"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:66ec5c81-9572-4e37-9969-f96c977953aa"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:8bd38c3d-981d-49e4-9e11-76e4771bde13"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:378ad7ee-7299-4bfd-a85b-aa9caa2414cd"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:e2392ceb-c300-424e-a74f-a43e6cbe0608"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:d2d98a21-55f6-47d2-b469-5e8c6739ee81"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:a74d6025-a885-4d84-bd92-f5943c4103f3"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:0a677642-82b5-4a12-bbfe-89a7308f2757"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:006c860e-d383-4872-ab9e-c1e276d8c223"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:04b9a9e9-b16f-48b5-b029-913e1c6ba758"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:2b7f2a1e-b4f6-42ab-a997-5091f900ce8c"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:bd9e2407-f49b-47ad-86cb-d318c1b0a268"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:fbfaf94d-6829-410a-a1f5-0bbce921ea01"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:b1b3088a-a003-4d0f-9bb1-cf7a6c951a00"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:0a418170-ec53-41f6-9e80-fd952cd53c40"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:4cd06679-e3c0-4de4-8d9a-2a026b339c04"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:8ecfc554-67d5-416b-a8e5-dde63a3c1382"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:dc22c5af-4558-44de-802d-92c34e8fc6ad"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:bf03d71f-6807-488d-9092-47d5b3877c0a"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:03848b17-43d2-4283-87b8-78c92a326e28"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:ee3b6464-05bc-4035-9638-4da2ceddb6ef"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:50eb68b3-a6e7-4095-bba3-c10c5cb7fd98"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:7c2aa02c-1262-4d70-bad8-d6b5b9b92848"/>
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:54b25602-cc61-4384-87e4-899538842161"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:879fe9d0-9bc3-4a96-b2d3-8a1df81325a3"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getImageLinks_out_imagelinks"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:54b25602-cc61-4384-87e4-899538842161">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#value">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd">
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#dilbertURL_out_value"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip_in_base"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getPage_in_url"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:006c860e-d383-4872-ab9e-c1e276d8c223">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:d94c944e-b30c-497e-bac5-7f891236bbd2">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#comicURLRegex">
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335648945"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.stringconstant.StringConstantProcessor</j.0:className>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.someplace/someuser">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Experimenter"/>
+    <j.0:belongsTo rdf:resource="http://www.someplace/somelab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335648945">
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">.*/archive/images/dilbert.*</j.0:value>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">String Value</j.0:key>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#contents">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/html</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335649618">
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#getPage"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+    <j.0:endTime>"2007-04-23T13:40:49.628Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataItem:879fe9d0-9bc3-4a96-b2d3-8a1df81325a3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335649627">
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.WebPageFetcher</j.0:value>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:378ad7ee-7299-4bfd-a85b-aa9caa2414cd">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:2b79f2b4-c496-4e6c-a536-76a163af9e2f">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:1c4807e9-42ce-456f-94d0-cb35b12955b5">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#comicURLRegex_out_value"/>
+    <j.0:inputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#findComicURL_in_regex"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:bd9e2407-f49b-47ad-86cb-d318c1b0a268">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_property#1177335655337">
+    <j.0:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.ExtractImageLinks</j.0:value>
+    <j.0:key rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WorkerClass</j.0:key>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:66ec5c81-9572-4e37-9969-f96c977953aa">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#findComicURL_out_filteredlist">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(text/plain,text/x-taverna-web-url)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getPage">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor</j.0:className>
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335649627"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#filteredlist">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335657992">
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataItem:9e3941f6-5cc6-4313-b571-9857bd4943e7"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:c3b6d741-45f6-4e94-aafb-fb13dbe5ac33"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessIteration"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip"/>
+    <j.0:endTime>"2007-04-23T13:40:57.999Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getComicStrip_out_image">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">application/octet-stream</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">l(application/octet-stream,image/*)</j.0:dataSyntacticType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:aa25b25e-2fce-4468-930d-3ff6f74ed0e8">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:43a2e25c-290d-4968-b3e4-369e1dcdc6c5">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#comicURLRegex_out_value">
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#OutputDataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:9e3941f6-5cc6-4313-b571-9857bd4943e7">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:c3b6d741-45f6-4e94-aafb-fb13dbe5ac33"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip_out_image"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#AtomicData"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:9c009322-4ccd-4ffc-a6d7-36f97c457825">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#image">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">image/*</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:dc22c5af-4558-44de-802d-92c34e8fc6ad">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#base">
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/x-taverna-web-url</j.0:mimeType>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:ac89290f-f39c-498a-a733-b923da506064">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#getImageLinks">
+    <j.0:hasProperty rdf:resource="urn:www.mygrid.org.uk/process_property#1177335655337"/>
+    <j.0:className rdf:datatype="http://www.w3.org/2001/XMLSchema#string">org.embl.ebi.escience.scuflworkers.java.LocalServiceProcessor</j.0:className>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#Process"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process_run#1177335655326">
+    <j.0:endTime>"2007-04-23T13:40:55.337Z"^^http://www.w3.org/2001/XMLSchema#dateTime</j.0:endTime>
+    <j.0:processOutput rdf:resource="urn:lsid:net.sf.taverna:dataCollection:78c069be-4511-4066-b1d4-5e0e7c7dac78"/>
+    <j.0:processInput rdf:resource="urn:lsid:net.sf.taverna:dataItem:879fe9d0-9bc3-4a96-b2d3-8a1df81325a3"/>
+    <j.0:runsProcess rdf:resource="urn:www.mygrid.org.uk/process#getImageLinks"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#ProcessRun"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:4cd06679-e3c0-4de4-8d9a-2a026b339c04">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:c5c7a83e-195d-4c65-b657-65750ceff0a9">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataCollection:06139913-9def-4c7a-a0bc-2be090067a03">
+    <j.0:containsData rdf:resource="urn:lsid:net.sf.taverna:dataItem:9e3941f6-5cc6-4313-b571-9857bd4943e7"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/workflow#VI9FMF5HBQ3_out_todaysDilbert"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataCollection"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataCollection:73a0b01e-6633-4309-af27-592b57f6c574"/>
+    <j.0:outputDataHasName rdf:resource="urn:www.mygrid.org.uk/process#getComicStrip_out_image"/>
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+    <j.0:dataDerivedFrom rdf:resource="urn:lsid:net.sf.taverna:dataItem:810349fe-ec7c-4fbd-bc8a-c2fba4f968dd"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:8ecfc554-67d5-416b-a8e5-dde63a3c1382">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:lsid:net.sf.taverna:dataItem:be62ff27-cf85-4762-a2f3-e770b6515ced">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataObject"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#regex">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#imagelinks">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#DataName"/>
+    <j.0:mimeType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/x-taverna-web-url</j.0:mimeType>
+  </rdf:Description>
+  <rdf:Description rdf:about="urn:www.mygrid.org.uk/process#findComicURL_in_regex">
+    <rdf:type rdf:resource="http://www.mygrid.org.uk/provenance#InputDataName"/>
+    <j.0:dataSyntacticType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">text/plain</j.0:dataSyntacticType>
+  </rdf:Description>
+</rdf:RDF>
