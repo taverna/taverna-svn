@@ -36,6 +36,7 @@ public class UserGuard extends Guard {
 	public int authenticate(Request req) {
 		req.getAttributes().remove(AUTHENTICATED_USER);
 		if (req.getChallengeResponse() == null) {
+			logger.debug("No authorisation info provided");
 			return 0;
 		}
 		if (!SCHEME.equals(req.getChallengeResponse().getScheme())) {

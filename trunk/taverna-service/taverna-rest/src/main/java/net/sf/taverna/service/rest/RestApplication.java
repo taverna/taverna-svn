@@ -142,6 +142,7 @@ public class RestApplication extends Application {
 		// Now, let's start the component!
 		// Note that the HTTP server connector is also automatically started.
 		try {
+			logger.debug("Starting server at port " + port);
 			component.start();
 		} catch (Exception ex) {
 			logger.error("Error starting the server", ex);
@@ -155,6 +156,7 @@ public class RestApplication extends Application {
 			} catch (Exception e) {
 				logger.warn("Could not stop server " + component, e);
 			}
+			logger.debug("Stopped server");
 		}
 		component = null;
 	}
@@ -191,6 +193,7 @@ public class RestApplication extends Application {
 			if (!adminFound) { // only check once. Once an admin exists it
 								// cannot be demoted.
 				if (daoFactory.getUserDAO().admins().isEmpty()) {
+					logger.info("Need to create admin, redirecting to " + createAdminRef);
 					resp.redirectTemporary(createAdminRef);
 					setNext(new Restlet()); // to avoid 404
 					// setNext(AdminCreationResource.class);

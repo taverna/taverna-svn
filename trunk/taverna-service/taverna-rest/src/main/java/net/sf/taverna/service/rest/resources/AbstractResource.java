@@ -76,6 +76,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	public Representation getRepresentation(Variant variant) {
 		Representation result = super.getRepresentation(variant);
 		if (result == null) {
+			logger.warn("No representation produced for " + this);
 			return null;
 		}
 		if (result.getModificationDate() == null
@@ -114,6 +115,8 @@ public abstract class AbstractResource extends RepresentationalResource {
 			return false;
 		}
 		if (entity.getSize() > maxSize()) {
+			logger.warn("Submitted representation (" + entity.getSize() + 
+					" bytes) was above maximum size (" + maxSize() + " bytes)");
 			getResponse().setStatus(Status.SERVER_ERROR_INSUFFICIENT_STORAGE,
 				"Maximum size is " + maxSize());
 			return true;
@@ -157,9 +160,11 @@ public abstract class AbstractResource extends RepresentationalResource {
 		logger.debug("Checking entity " + entity);
 		if (entity == null) {
 			notFound();
+			logger.debug("Entity was null");
 			return false;
 		}
 		if (!isEntityAuthorized(entity)) {
+			logger.debug("Entity was not authorized: " + entity);
 			challenge();
 			return false;
 		}
@@ -167,7 +172,9 @@ public abstract class AbstractResource extends RepresentationalResource {
 	}
 
 	public boolean checkIsAdmin() {
-		if (getAuthUser().isAdmin()) {
+		User authUser = getAuthUser();
+		if (authUser.isAdmin()) {
+			logger.debug("Authenticated user " + authUser + " was admin");
 			return true;
 		}
 		challenge();
@@ -189,6 +196,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	public boolean isEntityAuthorized(AbstractBean entity) {
 		User authUser = getAuthUser();
 		if (authUser!=null && authUser.isAdmin()) {
+			logger.debug("Authorized admin " + authUser + " for accessing " + entity);
 			return true;
 		}
 		
@@ -196,40 +204,48 @@ public abstract class AbstractResource extends RepresentationalResource {
 			logger.debug("Comparing " + entity + " with " + authUser);
 			// Users can access their own user
 			if (entity.equals(authUser))
+				logger.debug("Authorized user " + authUser + " for accessing itself");
 				return true;
 		}
 		if (entity instanceof AbstractOwned) {
-//			 Owned resources only readable by owner
+			// Owned resources only readable by owner
 			AbstractOwned owned = (AbstractOwned) entity;
 			if (owned.getOwner() == null) {
 				logger.debug("Not owned resource, access granted");
 				// No owner, also readable by all
 				return true;
 			}
-			logger.debug("Comparing owner " + owned.getOwner() + " with " + authUser);
+			logger.debug("Comparing owner " + owned.getOwner() + " with "
+					+ authUser);
 			if (owned.getOwner().equals(authUser)) {
+				logger.debug("Owner user " + authUser
+						+ " authorised for accessing " + owned);
 				return true;
 			}
-		}
-		else {
-			if (!(entity instanceof User)) { //anything, other than User, that is not owned should be accessible
+		} else {
+			if (!(entity instanceof User)) { // anything, other than User,
+												// that is not owned should be
+												// accessible
+				logger.debug("Authorised access to not ownable" + entity);
 				return true;
 			}
 		}
 		
 		if (authUser instanceof Worker
 			&& isWorkerAuthorized((Worker) authUser, entity)) {
+			logger.debug("Authorized worker " + authUser + " to " + entity);
 			return true;
 		}
 		if (entity instanceof Queue) {
 			if (entity.equals(daoFactory.getQueueDAO().defaultQueue())) {
-				// Access for everyone on default queue!
+				logger.debug("Authorized to default queue " + entity);
 				return true;
 			} else {
 				logger.warn("Can't check access on non-default queue");
 				// TODO: Implement ACLs on other queues
 			}
 		}
+		logger.debug("No access to " + entity + " for " + authUser);
 		return false;
 
 	}
@@ -241,22 +257,31 @@ public abstract class AbstractResource extends RepresentationalResource {
 
 		if (entity instanceof Queue) {
 			Queue queue = (Queue) entity;
-			return queue.getWorkers().contains(worker);
+			boolean authorized = queue.getWorkers().contains(worker);
+			if (authorized) {
+				logger.debug("Authorized worker " + worker + " access to queue " + entity);
+			}
+			return authorized;
 		}
 		if (entity instanceof Job) {
 			Job job = (Job) entity;
 			if (job.getWorker() == null) {
 				if (worker.getQueue().hasJob(job)) {
+					logger.debug("Authorized worker " + worker + " access to queued job " + job);
 					return true;
 				}
 			}
 			if (worker.equals(job.getWorker())) {
+				logger.debug("Authorized worker " + worker + " access to assigned job " + job);
 				return true;
 			}
 		}
 		if (entity instanceof Workflow) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getWorkflow())) {
+					logger.debug("Authorized worker " + worker
+							+ " access to workflow " + entity
+							+ " from assigned job " + job);
 					return true;
 				}
 			}
@@ -265,27 +290,22 @@ public abstract class AbstractResource extends RepresentationalResource {
 		if (entity instanceof User) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getOwner())) {
+					logger.debug("Authorized worker " + worker
+							+ " access to assigned job's owner " + entity);
 					return true;
 				}
 			}
 		}
 
-		if (entity instanceof Data) {
-			for (Job job : worker.getWorkerJobs()) {
-				if (entity.equals(job.getInputs())) {
-					return true;
-				}
-				if (entity.equals(job.getOutputs())) {
-					return true;
-				}
-			}
-		}
 		if (entity instanceof DataDoc) {
 			for (Job job : worker.getWorkerJobs()) {
 				if (entity.equals(job.getInputs())) {
+					logger.debug("Authorized worker " + worker + " access to inputs of job " + job);
+
 					return true;
 				}
 				if (entity.equals(job.getOutputs())) {
+					logger.debug("Authorized worker " + worker + " access to outputs of job " + job);
 					return true;
 				}
 			}
@@ -327,13 +347,16 @@ public abstract class AbstractResource extends RepresentationalResource {
 	 * @return <code>true</code> if the entity is valid.
 	 */
 	public boolean isEntityValid(Representation entity, MediaType mediaType) {
-		if (!mediaType.includes(entity.getMediaType())) {
+		MediaType entityMediaType = entity.getMediaType();
+		if (!mediaType.includes(entityMediaType)) {
+			logger.warn("Content type was " + entityMediaType
+					+ " but should be " + mediaType);
 			getResponse().setStatus(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE,
 				"Content type must be " + mediaType);
 			return false;
 		}
 		if (overMaxSize(entity)) {
-			logger.warn("Uploaded queue document was too large: "
+			logger.warn("Uploaded entity was too large: "
 				+ entity.getSize());
 			return false;
 		}
@@ -342,6 +365,7 @@ public abstract class AbstractResource extends RepresentationalResource {
 	
 	@Override
 	public String toString() {
+		// Classname and relative URI
 		return getClass().getSimpleName() + " " + getRequest().getResourceRef();
 	}
 
