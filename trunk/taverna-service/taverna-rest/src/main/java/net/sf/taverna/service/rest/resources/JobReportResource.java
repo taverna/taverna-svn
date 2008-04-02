@@ -2,6 +2,7 @@ package net.sf.taverna.service.rest.resources;
 
 import java.io.IOException;
 
+import net.sf.taverna.service.datastore.bean.Job;
 import net.sf.taverna.service.rest.resources.representation.AbstractText;
 
 import org.apache.log4j.Logger;
@@ -41,6 +42,11 @@ public class JobReportResource extends AbstractJobResource {
 	}
 	
 	@Override
+	public long maxSize() {
+		return Job.MAX_REPORT_SIZE;
+	}
+	
+	@Override
 	public void put(Representation entity) {
 		logger.debug("About to set progress report for " + job);
 		if (! isEntityValid(entity, reportType)) {
@@ -68,4 +74,6 @@ public class JobReportResource extends AbstractJobResource {
 		getResponse().setStatus(Status.SUCCESS_NO_CONTENT);
 		logger.info("Updated report " + job);
 	}
+	
+
 }
