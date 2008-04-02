@@ -195,8 +195,9 @@
 	</distributionManagement>
 	<modules>
 		<module>feta</module>
-		<module>logbook</module>
-		<module>localworker-jsdl</module>
+		<module>gt4</module>
 		<module>interaction</module>
+		<module>localworker-jsdl</module>
+		<module>logbook</module>
 	</modules>
 </project>

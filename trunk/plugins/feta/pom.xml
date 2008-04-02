@@ -12,7 +12,7 @@
 	<artifactId>feta</artifactId>
 	<name>Feta engine and client</name>
 	<packaging>pom</packaging>
-	<version>1.1.6</version>
+	<version>1.1.7</version>
 	<developers>
 		<developer>
 			<id>pinar</id>
@@ -88,37 +88,11 @@
 			http://taverna.cvs.sourceforge.net/taverna/plugins/feta/
 		</url>
 	</scm>
-	<distributionManagement>
-		<repository>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
-			</url>
-		</repository>
-		<snapshotRepository>
-			<id>mygrid-snapshot-repository</id>
-			<name>myGrid Snapshot Repository</name>
-			<url>
-				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
-			</url>
-		</snapshotRepository>
-	</distributionManagement>
+
 	<modules>
 		<module>feta-engine</module>
 		<module>feta-war</module>
 		<module>feta-client</module>
 		<module>feta-browser</module>
 	</modules>
-	<repositories>
-		<repository>
-			<releases />
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>mygrid-repository</id>
-			<name>myGrid Repository</name>
-			<url>http://www.mygrid.org.uk/maven/repository</url>
-		</repository>
-	</repositories>
 </project>

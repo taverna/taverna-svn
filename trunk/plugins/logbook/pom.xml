@@ -24,7 +24,7 @@
 		<module>logbook-ui</module>
 		<module>datalineage</module>
 		<!--<module>logbook-boca</module>-->
-		<!--<module>logbook-service</module>-->
+		<module>logbook-service</module>
 	</modules>
 	<repositories>
 		<repository>
