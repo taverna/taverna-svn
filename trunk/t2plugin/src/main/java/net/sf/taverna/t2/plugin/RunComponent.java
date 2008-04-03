@@ -165,6 +165,10 @@ public class RunComponent extends JPanel {
 
 		}
 	}
+	
+	public void hideHealthCheck() {
+		midPanel.setBottomComponent(null);
+	}
 
 	public String toString() {
 		if (runDate != null) {

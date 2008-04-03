@@ -117,6 +117,7 @@ public class T2Component extends JSplitPane implements WorkflowModelViewSPI {
 	public void attachToModel(ScuflModel model) {
 		this.model = model;
 		currentRun.setModel(model);
+		currentRun.hideHealthCheck();
 		runList.setSelectedIndex(0);
 	}
 
