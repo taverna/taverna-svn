@@ -2,7 +2,6 @@ package net.sf.taverna.t2.plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -50,7 +49,6 @@ public class RenderedResultComponent extends JPanel {
 			resultPanel.remove(resultComponent);
 		}
 		resultComponent = newResultComponent;
-		resultComponent.setPreferredSize(new Dimension(600, 600));
 		resultPanel.add(resultComponent);
 		revalidate();
 	}
