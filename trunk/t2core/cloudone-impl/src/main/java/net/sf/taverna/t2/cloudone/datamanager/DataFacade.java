@@ -471,19 +471,43 @@ public class DataFacade {
 
 		} else if (ent instanceof ErrorDocument) {
 			String errorMessage = "";
-			String stackTrace = ((ErrorDocument) ent).getStackTrace();
-			if (stackTrace != null) {
-				errorMessage = errorMessage + stackTrace + "\n";
-			}
+
 			String message = ((ErrorDocument) ent).getMessage();
 			if (message != null) {
 				errorMessage = errorMessage + message + "\n";
-			}
-			if (errorMessage == null && message == null) {
-				return "Error unknown";
 			} else {
-				return errorMessage;
+				Throwable throwable = ((ErrorDocument) ent).getCause();
+				if (throwable != null) {
+					String message2 = throwable.getMessage();
+					if (message2 != null) {
+						errorMessage = errorMessage + message2 + "\n";
+					} else {
+						errorMessage = errorMessage
+								+ "No error message was available \n";
+					}
+				} else {
+					errorMessage = errorMessage
+							+ "No error message was available";
+				}
 			}
+
+			String stackTrace = ((ErrorDocument) ent).getStackTrace();
+			if (stackTrace != null) {
+				errorMessage = errorMessage + stackTrace + "\n";
+			} else {
+				Throwable throwable = ((ErrorDocument) ent).getCause();
+				if (throwable != null) {
+					for (StackTraceElement element : throwable.getStackTrace()) {
+						errorMessage = errorMessage + element.toString() + "\n";
+					}
+				} else {
+					errorMessage = errorMessage
+							+ "No stack trace was available";
+				}
+			}
+
+			return errorMessage;
+
 		} else {
 			// TODO: Support the other types
 			throw new IllegalArgumentException("Type " + entityId.getType()
