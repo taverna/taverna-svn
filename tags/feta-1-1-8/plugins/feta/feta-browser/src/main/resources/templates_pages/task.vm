@@ -1,0 +1,8 @@
+<ul class="menu">
+	<li>
+		<a href="$uriFactory.getURIForTasks()">All tasks</a>
+	</li>
+</ul>
+		<h2>Services performing task</h2>
+		
+		#parse("templates_lib/list_services.vm")

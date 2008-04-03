@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+
+<globalConfiguration>
+  <parameter name="adminPassword" value="admin"/>  
+  <parameter name="sendXsiTypes" value="true"/>
+  <parameter name="sendMultiRefs" value="true"/>
+  <parameter name="sendXMLDeclaration" value="true"/>
+  <requestFlow>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="session"/>
+   </handler>
+   <handler type="java:org.apache.axis.handlers.JWSHandler">
+    <parameter name="scope" value="request"/>
+    <parameter name="extension" value=".jwr"/>
+   </handler>
+   
+   <handler type="java:com.ibm.lsid.server.soap.LSIDURLMapper"/>
+  </requestFlow>
+ </globalConfiguration>
+ <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <handler name="LSIDURLMapper" type="java:com.ibm.lsid.server.soap.LSIDURLMapper"/>
+
+ <!-- Services from LSID Metadata resolver -->
+ <service name="MetadataWebService" provider="java:MSG" use="literal">
+  <parameter name="allowedMethods" value="getMetadata"/>
+  <parameter name="className" value="com.ibm.lsid.server.soap.MetadataWebService"/>
+ </service>
+
+ <!-- Services from feta WSDL service -->
+
+  <service name="fetaAdmin" provider="java:RPC" style="document" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://mygrid.org.uk/2004/FETA"/>
+      <parameter name="wsdlServiceElement" value="feta"/>
+      <parameter name="wsdlServicePort" value="fetaAdmin"/>
+      <parameter name="className" value="uk.ac.man.cs.img.fetaEngine.webservice.FetaAdminPortTypeBindingImpl"/>
+      <parameter name="wsdlPortType" value="fetaAdminPortType"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="getStoreContent" qname="getStoreContent" returnQName="storeContentOut" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+      </operation>
+      <parameter name="allowedMethods" value="getStoreContent"/>
+
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:fetaCannedRequestType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaCannedRequestType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:publishResultType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.PublishResultType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaRemoveResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaRemoveResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaCompositeSearchRequestType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaCompositeSearchRequestType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:cannedQueryType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaPublishResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaPublishResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaSearchResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaSearchResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+  <service name="feta" provider="java:RPC" style="document" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://mygrid.org.uk/2004/FETA"/>
+      <parameter name="wsdlServiceElement" value="feta"/>
+      <parameter name="wsdlServicePort" value="feta"/>
+      <parameter name="className" value="uk.ac.man.cs.img.fetaEngine.webservice.FetaPortTypeBindingImpl"/>
+      <parameter name="wsdlPortType" value="fetaPortType"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="inquire" qname="operNS:inquire" xmlns:operNS="http://mygrid.org.uk/2004/FETA" returnQName="retNS:FetaSearchResponse" xmlns:retNS="http://mygrid.org.uk/2004/FETA" returnType="rtns:FetaSearchResponseType" xmlns:rtns="http://mygrid.org.uk/2004/FETA" >
+        <parameter qname="pns:FetaSearchRequest" xmlns:pns="http://mygrid.org.uk/2004/FETA" type="tns:FetaCompositeSearchRequestType" xmlns:tns="http://mygrid.org.uk/2004/FETA"/>
+      </operation>
+      <operation name="publishDescription" qname="operNS:publishDescription" xmlns:operNS="http://mygrid.org.uk/2004/FETA" returnQName="retNS:FetaPublishResponse" xmlns:retNS="http://mygrid.org.uk/2004/FETA" returnType="rtns:FetaPublishResponseType" xmlns:rtns="http://mygrid.org.uk/2004/FETA" >
+        <parameter qname="publicationRequest" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="removeDescription" qname="operNS:removeDescription" xmlns:operNS="http://mygrid.org.uk/2004/FETA" returnQName="retNS:FetaRemoveResponse" xmlns:retNS="http://mygrid.org.uk/2004/FETA" returnType="rtns:FetaRemoveResponseType" xmlns:rtns="http://mygrid.org.uk/2004/FETA" >
+        <parameter qname="removalRequest" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="freeFormQuery" qname="freeFormQuery" returnQName="freeQueryOut" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" >
+        <parameter qname="freeQueryIn" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <parameter name="allowedMethods" value="removeDescription inquire freeFormQuery publishDescription"/>
+
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:fetaCannedRequestType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaCannedRequestType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:publishResultType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.PublishResultType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaRemoveResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaRemoveResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaCompositeSearchRequestType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaCompositeSearchRequestType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:cannedQueryType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.CannedQueryType"
+        serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaPublishResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaPublishResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://mygrid.org.uk/2004/FETA"
+        qname="ns:FetaSearchResponseType"
+        type="java:uk.ac.man.cs.img.fetaEngine.webservice.FetaSearchResponseType"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+  
+ <transport name="http">
+  <requestFlow>
+   <handler type="URLMapper"/>
+   <handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </requestFlow>
+  <parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </transport>
+ <transport name="local">
+  <responseFlow>
+   <handler type="LocalResponder"/>
+  </responseFlow>
+ </transport>
+
+</deployment>

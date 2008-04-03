@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>$pageTitle</title>
+		<style type="text/css">
+			<!--
+				#parse("templates_lib/style.css")
+				//  -->
+		</style>
+	</head>
+	<body>
+		<div id="page">
+			<div id="header">#parse("templates_lib/header.vm")</div>
+			<div id="content">
+			#parse("templates_pages/$pageTemplate")
+			</div>
+		</div>
+	</body>
+</html>
