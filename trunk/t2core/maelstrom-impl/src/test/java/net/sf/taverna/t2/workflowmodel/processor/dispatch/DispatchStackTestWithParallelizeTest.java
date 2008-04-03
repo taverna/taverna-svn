@@ -24,7 +24,7 @@ import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import junit.framework.TestCase;
 import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
-public class DispatchStackTestWithParallelize extends TestCase {
+public class DispatchStackTestWithParallelizeTest extends TestCase {
 
 	public final DataManager dManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
 	
