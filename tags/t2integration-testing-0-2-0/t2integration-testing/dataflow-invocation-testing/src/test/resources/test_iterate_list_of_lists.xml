@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
+  <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:e1273366-1f95-4c53-a6d6-e7107c46e051" author="" title="Test iterate list of lists" />
+  <s:processor name="Make_list_of_lists">
+    <s:beanshell>
+      <s:scriptvalue>List out=new ArrayList();
+List in1=new ArrayList();
+List in2=new ArrayList();
+List in3=new ArrayList();
+in1.add("1");
+in1.add("2");
+in2.add("3");
+in2.add("4");
+in3.add("5");
+in3.add("6");
+out.add(in1);
+out.add(in2);
+out.add(in3);</s:scriptvalue>
+      <s:beanshellinputlist />
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="l(l('text/plain'))">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:processor name="List_To_String">
+    <s:beanshell>
+      <s:scriptvalue>out="";
+for (String s : in) {
+	out+=s;
+}</s:scriptvalue>
+      <s:beanshellinputlist>
+        <s:beanshellinput s:syntactictype="l('text/plain')">in</s:beanshellinput>
+      </s:beanshellinputlist>
+      <s:beanshelloutputlist>
+        <s:beanshelloutput s:syntactictype="'text/plain'">out</s:beanshelloutput>
+      </s:beanshelloutputlist>
+      <s:dependencies s:classloader="iteration" />
+    </s:beanshell>
+  </s:processor>
+  <s:link source="List_To_String:out" sink="out" />
+  <s:link source="Make_list_of_lists:out" sink="List_To_String:in" />
+  <s:sink name="out" />
+</s:scufl>
+
