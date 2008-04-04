@@ -8,6 +8,7 @@
       <directory>src/main/resources/workbench</directory>
       <excludes>
       	<exclude>broken-examples/</exclude>
+      	<exclude>dubious-examples/</exclude>
       </excludes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
