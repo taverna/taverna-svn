@@ -19,12 +19,12 @@
     <title>Adding new processors to a workflow</title>
 
     <para>New processors can be added to the workflow model by dragging from
-    the <link linkend="available_services">Services panel</link> directly onto
+    the <link linkend="available_services">available services panel</link> directly onto
     the workflow canvas. The processor will assume the default name for that
     processor, but can be renamed by either double clicking and editing the
     name directly, or right-clicking and selecting "Rename".</para>
 
-    <para>Can also still add new processors to the workflow by dragging to the
+    <para>You can also still add new processors to the workflow by dragging to the
     Advanced Model Explorer or right-clicking and selecting "Add to model", or
     "Add to model with name".</para>
   </section>
@@ -35,7 +35,7 @@
     <para>New inputs and outputs are added to the workflow by right-clicking a
     blank area of the diagram, and select "Create new Input ..." or "Create
     new Output ...". A dialogue box will then appear asking you to provide a
-    name for you input or output - you must provide a unique name for this
+    name for the input or output - you must provide a unique name for this
     input or output.</para>
 
     <para>Once within the diagram, inputs and outputs can be distinguished
@@ -105,7 +105,7 @@
     <para>Processors that require additional configuration, such as Beanshell
     or Biomoby processors, can be configured by right-clicking and selecting
     the appropriate menu item. These configure options are identical to
-    configurating a processor in the Advanced Model Explorer.</para>
+    configuring a processor in the Advanced Model Explorer.</para>
 
     <screenshot>
       <screeninfo>Configuring processors</screeninfo>

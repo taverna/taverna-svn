@@ -50,7 +50,8 @@
 
     <para>If a processor fails to run the border of the processor box changes
     colour to red and the number of failed iterations is shown in the bottom
-    right of the box.</para>
+    right of the box.  For example. in the run shown below, append_string and echo have both run 10 iterations.
+    One iteration of append_string generated an error.</para>
 
     <para><inlinemediaobject>
         <imageobject>
@@ -88,16 +89,23 @@
   <section id="t2previewoutputs">
     <title>Workflow outputs</title>
 
-    <para>As the workflow runs results are displayed in the Results panel. To
-    display the result using a renderer, right click on the output in the
-    Results list and select the required renderer. The result will be shown in
-    the Rendered Results section.</para>
-
-    <para><inlinemediaobject>
+    <para>As the workflow runs results are displayed in the Results panel.</para>
+     <para><inlinemediaobject>
         <imageobject>
           <imagedata fileref="./images/t2_plugin_workflow_complete.png" />
         </imageobject>
       </inlinemediaobject></para>
+         
+    <para>To
+    display the result using a renderer, right click on the mime type of the output in the
+    Results list and select the required renderer. The result will be shown in
+    the Rendered Results section.</para>
+     <para><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="./images/t2_plugin_render_result.png" />
+        </imageobject>
+      </inlinemediaobject></para>
+
   </section>
 
   <section>

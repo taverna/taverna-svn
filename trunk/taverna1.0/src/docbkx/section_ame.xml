@@ -94,23 +94,8 @@
       <para>Once a workflow input or output has been created it can be further
       specified by selecting the input or output node in the tree and opening
       the newly available tab, <emphasis role="bold">'Metadata for [input or
-      output name]'</emphasis>. This tab has three sub-tabs for different
-      parts of the input description. The first of these allows the user to
-      select a term from an ontology, which describes the data type for this
-      port. The example below shows a port being annotated with information
-      specifying that it is of type 'Gene ontology Term ID':</para>
-
-      <screenshot>
-        <screeninfo></screeninfo>
-
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="images/gene_ontology_term_id.png" />
-          </imageobject>
-        </mediaobject>
-      </screenshot>
-
-      <para>Additional tabs allow entry of a free text description (for
+      output name]'</emphasis>. This tab two sub-tabs for different
+      parts of the input description. These tabs allow entry of a free text description (for
       workflow inputs this is shown in the workflow launch panel so is a good
       place to put information which users of the workflow would need to
       populate the inputs) and tagging of the input or output with MIME types.

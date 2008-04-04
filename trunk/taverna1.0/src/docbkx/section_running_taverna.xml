@@ -74,13 +74,33 @@
       hand side of the window. Congratulations, if this worked then you have
       installed and configured Taverna correctly and run your first
       workflow.</para>
+    </section>
+    
+    <section id="saving_a_workflow">
+     <title>Saving a workflow</title>
 
       <para>If you were to want to save the workflow (there's not much point
       as we haven't changed anything) you would select the 'Save' option from
-      the Advanced Model Explorer and save the document in the usual fashion
+      the file menu and save the document in the usual fashion
       for your operating system. You probably don't want to do this for now as
       there are no changes.</para>
+      
+      <para>When saving a workflow you can select to save any Nested Workflows in
+      their full form rather than just as URLs.  Check the box marked "include full nested workflow"
+      before selecting "Save"</para>
+      
+      <screenshot>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/save_nested_workflow.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+      
+    </section>
 
+    <section id="closing_a_workflow">
+     <title>Closing a workflow</title>
       <para>To finish, and prepare for the next part of the introduction,
       you'll want to reset the workflow. Select the ‘Design’ view from the top
       of the workbench and then click on the red 'close workflow' icon in the
@@ -175,9 +195,7 @@
       a purple icon and the text 'Metadata for 'sequenceID''. Select this tab
       by clicking on it.</para>
 
-      <para>This is the metadata editor. For now we're only going to look at
-      the free text description, the ontology and mime type tabs are too
-      complex for this introduction. Select the 'Description' tab, enter some
+      <para>This is the metadata editor. Select the 'Description' tab, enter some
       description of the input (i.e. a quick paragraph explaining that this
       input should hold the sequence ID to fetch and perhaps an example value
       - 'swallid:ops2_*' is a reasonable one), click the 'Update' button when
