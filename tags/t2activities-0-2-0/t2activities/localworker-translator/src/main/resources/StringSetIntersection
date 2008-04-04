@@ -1,0 +1,7 @@
+List intersection = new ArrayList();
+for (Iterator i = list1.iterator(); i.hasNext();) {
+	Object o = i.next();
+	if (list2.contains(o)) {
+		intersection.add(o);
+	}
+}

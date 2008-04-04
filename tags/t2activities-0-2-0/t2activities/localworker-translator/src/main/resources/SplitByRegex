@@ -1,0 +1,11 @@
+List split = new ArrayList();
+if (!string.equals("")) {
+	String regexString = ",";
+	if (regex != void) {
+		regexString = regex;
+	}
+	String[] result = string.split(regexString);
+	for (int i = 0; i < result.length; i++) {
+		split.add(result[i]);
+	}
+}

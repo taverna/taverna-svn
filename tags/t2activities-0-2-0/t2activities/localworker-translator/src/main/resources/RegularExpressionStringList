@@ -1,0 +1,14 @@
+import java.util.regex.*;
+
+filteredlist = new ArrayList();
+Pattern thePat = Pattern.compile(regex);
+int theGroup = Integer.parseInt(group);
+
+for (Iterator i = stringlist.iterator(); i.hasNext();) {
+	String item = (String) i.next();
+	Matcher matcher = thePat.matcher(item);
+
+	if (matcher.find()) {
+		filteredlist.add(matcher.group(theGroup));
+	}
+}
