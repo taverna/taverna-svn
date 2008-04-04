@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2integration-testing</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.2.0</version>
 	<packaging>pom</packaging>
 	<name>Taverna 2 Integration Testing</name>
 	<description>
@@ -12,9 +12,9 @@
 
 	<properties>
 		<!--  Common version numbers of dependencies -->
-		<depT2core>0.1-SNAPSHOT</depT2core>
-		<depTaverna>1.7.0.0</depTaverna>
-		<depRaven>1.7.0.0</depRaven>
+		<depT2core>0.2.0</depT2core>
+		<depTaverna>1.7.1.0</depTaverna>
+		<depRaven>1.7.1.0</depRaven>
 		<depLog4j>1.2.13</depLog4j>
 		<depJunit>4.4</depJunit>
 		<depCommonsIO>1.3</depCommonsIO>

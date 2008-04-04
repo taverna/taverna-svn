@@ -4,11 +4,10 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2integration-testing</artifactId>
-		<version>0.1-SNAPSHOT</version>
+		<version>0.2.0</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>activity-testing</artifactId>
-	<version>${depT2core}</version>
 	<name>Testing of Activities</name>
 	<packaging>jar</packaging>
 	
