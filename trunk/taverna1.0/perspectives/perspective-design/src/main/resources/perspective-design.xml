@@ -6,18 +6,18 @@
           <znode classname="net.sf.taverna.zaria.ZTabbedPane">
             <tabs>
               <tab>
-                <title>Interactive</title>
-                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-                  <namedcomponent scroll="true">
-                    <name>Interactive Workflow Editor</name>
-                  </namedcomponent>
-                </znode>
-              </tab>
-              <tab>
                 <title>Graphical</title>
                 <znode classname="net.sf.taverna.zaria.ZRavenComponent">
                   <namedcomponent scroll="true">
                     <name>Workflow Diagram</name>
+                  </namedcomponent>
+                </znode>
+              </tab>
+              <tab>
+                <title>Interactive (experimental)</title>
+                <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+                  <namedcomponent scroll="true">
+                    <name>Interactive Workflow Editor</name>
                   </namedcomponent>
                 </znode>
               </tab>
