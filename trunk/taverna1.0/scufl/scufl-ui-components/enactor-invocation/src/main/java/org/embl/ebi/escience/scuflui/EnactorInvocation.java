@@ -321,7 +321,7 @@ public class EnactorInvocation extends JPanel implements UIComponentSPI {
 			// display.setEditable(false);
 			// display.setPreferredSize(new Dimension(0,0));
 			// tabs.add("Process report", display);
-			tabs.add("Prosess report", new JScrollPane(new XMLTree(
+			tabs.add("Process report", new JScrollPane(new XMLTree(
 					progressReport, false)));
 		} catch (Exception ex) {
 			//
