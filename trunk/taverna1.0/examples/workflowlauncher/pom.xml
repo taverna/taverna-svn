@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.org.mygrid.taverna.examples</groupId>
 	<artifactId>workflowlauncher</artifactId>
-	<version>0.1.1</version>
+	<version>0.1.2</version>
 	<name>Workflow launcher example</name>
 	<description>
 		An example of how to invoke the workflow launcher via the
