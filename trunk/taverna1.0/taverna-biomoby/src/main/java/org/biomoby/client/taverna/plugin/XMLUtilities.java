@@ -1194,7 +1194,8 @@ public class XMLUtilities {
 	public static Element createServiceInput(Element[] elements, String queryID)
 			throws MobyException {
 		// create the main elements
-		Element MOBY = new Element("MOBY", MOBY_NS);
+		Element MOBY = new Element("MOBY", MOBY_NS.getURI());
+		MOBY.addNamespaceDeclaration(MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element mobyData = new Element("mobyData", MOBY_NS);
 		mobyData.setAttribute("queryID", (queryID == null ? "" : queryID),
@@ -1368,7 +1369,8 @@ public class XMLUtilities {
 	public static Element createMobyDataElementWrapper(Element element,
 			String queryID, Element serviceNotes) throws MobyException {
 		Element e = (Element) element.clone();
-		Element MOBY = new Element("MOBY", MOBY_NS);
+		Element MOBY = new Element("MOBY", MOBY_NS.getURI());
+		MOBY.addNamespaceDeclaration(MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element mobyData = new Element("mobyData", MOBY_NS);
 		mobyData.setAttribute("queryID", queryID, MOBY_NS);
@@ -1411,7 +1413,8 @@ public class XMLUtilities {
 		if (serviceNotes != null)
 			e = (Element) serviceNotes.clone();
 
-		Element MOBY = new Element("MOBY", MOBY_NS);
+		Element MOBY = new Element("MOBY", MOBY_NS.getURI());
+		MOBY.addNamespaceDeclaration(MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		if (e != null)
 			mobyContent.addContent(e.detach());
@@ -1460,7 +1463,7 @@ public class XMLUtilities {
 		Element serviceNotes = getServiceNotes(getDOMDocument(xml)
 				.getRootElement());
 		Element element = createMobyDataElementWrapper(getDOMDocument(xml)
-				.getRootElement(), queryID, serviceNotes);
+				.getRootElement(), queryID, serviceNotes);		
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat()
 				.setOmitDeclaration(false));
 		return (element == null ? null : outputter.outputString(element));
@@ -1485,7 +1488,8 @@ public class XMLUtilities {
 	 */
 	public static Element createMultipleInvokations(Element[] elements)
 			throws MobyException {
-		Element MOBY = new Element("MOBY", MOBY_NS);
+		Element MOBY = new Element("MOBY", MOBY_NS.getURI());
+		MOBY.addNamespaceDeclaration(MOBY_NS);
 		Element mobyContent = new Element("mobyContent", MOBY_NS);
 		Element serviceNotes = null;
 		for (int i = 0; i < elements.length; i++) {
