@@ -13,5 +13,6 @@
   <version>1.7.1.0</version>
   <modules>
     <module>archetype-localworker</module>
+    <module>archetype-perspective</module>
   </modules>
 </project>
