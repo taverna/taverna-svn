@@ -77,7 +77,7 @@ public class WSDLActivityHealthChecker implements HealthChecker<WSDLActivity> {
 									+ " rather than 200", Status.WARNING);
 				} else {
 					report = new HealthReport("WSDL Test", "The WSDL ["
-							+ wsdl + "] repsonded OK", Status.OK);
+							+ wsdl + "] responded OK", Status.OK);
 				}
 			}
 			else {
