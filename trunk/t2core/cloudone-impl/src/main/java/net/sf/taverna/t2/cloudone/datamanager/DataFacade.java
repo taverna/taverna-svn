@@ -216,6 +216,9 @@ public class DataFacade {
 	public EntityIdentifier register(Object obj, int depth, String charSet)
 			throws EmptyListException, MalformedListException,
 			UnsupportedObjectTypeException {
+		if (obj == null) {
+			throw new NullPointerException("Can't register null");
+		}
 		if (obj instanceof EntityIdentifier) {
 			return (EntityIdentifier) obj;
 		}
