@@ -3,8 +3,11 @@ package net.sf.taverna.wsdl.soap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.testutils.LocationConstants;
@@ -78,6 +81,43 @@ public class LiteralBodyBuilderTest implements LocationConstants{
 		Node itemElement = body.getFirstChild().getNextSibling();
 		assertEquals("Array element should be named item. xml = "+xml,"item",itemElement.getNodeName());
 		assertEquals("First Array element should have the value '1'. xml = "+xml,"1",itemElement.getFirstChild().getNodeValue());
+	}
+	
+	@Test 
+	public void testOperationElementNameEUtils() throws Exception {
+		BodyBuilder builder = createBuilder(WSDL_TEST_BASE+"eutils/eutils_lite.wsdl", "run_eInfo");
+
+		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
+		Map<String,Object> inputMap = new HashMap<String, Object>();
+		inputMap.put("parameters",
+		// Note: Don't use xmlns="" as it would also affect <parameters>
+				// - which should not affect the namespace of the soap body
+				// element. The element qname of the SOAPBodyElement should be
+				// determined by the schema only
+				"<parameters xmlns:e='http://www.ncbi.nlm.nih.gov/soap/eutils/einfo'>"
+						+ "<e:db>database</e:db>" + "<e:tool>myTool</e:tool>"
+						+ "<e:email>nobody@nowhere.net</e:email>"
+						+ "</parameters>");
+		SOAPBodyElement body = builder.build(inputMap);
+		assertEquals("QName of SOAP body's element did not match expected qname ", 
+				new QName("http://www.ncbi.nlm.nih.gov/soap/eutils/einfo", "eInfoRequest"), 
+				body.getQName());
+	}
+	
+	@Test 
+	public void testOperationElementNameTAV744() throws Exception {
+		URL tav744Url = getClass().getResource(
+				"/net/sf/taverna/wsdl/parser/TAV-744/InstrumentService__.wsdl");
+		
+		BodyBuilder builder = createBuilder(tav744Url.toExternalForm(), "getList");
+
+		assertTrue("Wrong type of builder, it should be Literal based",builder instanceof LiteralBodyBuilder);
+		Map<String,Object> inputMap = new HashMap<String, Object>();
+		// No inputs
+		SOAPBodyElement body = builder.build(inputMap);
+		assertEquals("QName of SOAP body's element did not match expected qname ", 
+				new QName("http://InstrumentService.uniparthenope.it/InstrumentService", "GetListRequest"), 
+				body.getQName());
 	}
 	
 	@Test

@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.net.URL;
 import java.util.List;
 
 import javax.wsdl.Operation;
+import javax.xml.namespace.QName;
 
 import org.junit.Test;
 
@@ -240,5 +242,30 @@ public class WSDLParserTest {
 		assertEquals("operation namespace is wrong",
 				"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",
 				operationNamespace);
+	}
+	
+	@Test
+	public void testGetOperationElementQName() throws Exception {
+		WSDLParser parser = new WSDLParser(
+				WSDL_TEST_BASE+"eutils/eutils_lite.wsdl");
+		QName operationQName = parser
+				.getOperationQname("run_eInfo");
+		assertEquals("element name is wrong", "eInfoRequest", operationQName.getLocalPart());
+		assertEquals("operation namespace is wrong",
+				"http://www.ncbi.nlm.nih.gov/soap/eutils/einfo",
+				operationQName.getNamespaceURI());
+	}
+
+	@Test
+	public void testGetOperationElementQName2() throws Exception {
+		URL tav744Url = getClass().getResource(
+				"/net/sf/taverna/wsdl/parser/TAV-744/InstrumentService__.wsdl");
+		WSDLParser parser = new WSDLParser(tav744Url.toExternalForm());
+		QName operationQName = parser.getOperationQname("getList");
+		assertEquals("operation element name is wrong", "GetListRequest",
+				operationQName.getLocalPart());
+		assertEquals("operation namespace is wrong",
+				"http://InstrumentService.uniparthenope.it/InstrumentService",
+				operationQName.getNamespaceURI());
 	}
 }
