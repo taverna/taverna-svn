@@ -10,10 +10,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>all-activity-translators</artifactId>
+	<version>0.2.1</version>
 	<name>
 		Taverna 2 All official Activity Translators (meta artifact)
 	</name>
-	<version>0.2.0</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>
-			<version>0.2.0</version>
+			<version>0.2.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -11,7 +11,7 @@
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>wsdl-activity</artifactId>
 	<name>Taverna 2 WSDL Activity.</name>
-	<version>0.2.0</version>
+	<version>0.2.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>net.sf.taverna</groupId>
 			<artifactId>wsdl-generic</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
