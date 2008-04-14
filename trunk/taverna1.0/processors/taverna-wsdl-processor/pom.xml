@@ -9,7 +9,7 @@
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>taverna-wsdl-processor</artifactId>
   <name>WSDL Processor</name>
-  <version>1.7.1.0</version>
+  <version>1.7.1.1</version>
   <dependencies>
     <dependency>
       <groupId>uk.org.mygrid.taverna</groupId>
@@ -59,11 +59,11 @@
       <version>1.7.1.0</version>
     </dependency>
     <!-- the generic wsdl parsing and invocation code has been moved to a 
-    seperate CVS repository: wsdl-generic -->
+    separate CVS repository: wsdl-generic -->
     <dependency>
     	<groupId>net.sf.taverna</groupId>
     	<artifactId>wsdl-generic</artifactId>
-    	<version>1.1</version>
+    	<version>1.2</version>
     </dependency>
   </dependencies>
 </project>

@@ -9,7 +9,7 @@
   <groupId>uk.org.mygrid.taverna.processors</groupId>
   <artifactId>all</artifactId>
   <name>All official processors (meta artifact)</name>
-  <version>1.7.1.0</version>
+  <version>1.7.1.1</version>
   <dependencies>
         <dependency>
             <groupId>uk.org.mygrid.taverna.processors</groupId>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>uk.org.mygrid.taverna.processors</groupId>
             <artifactId>taverna-wsdl-processor</artifactId>
-            <version>1.7.1.0</version>
+            <version>1.7.1.1</version>
         </dependency>
   </dependencies>
 </project>
