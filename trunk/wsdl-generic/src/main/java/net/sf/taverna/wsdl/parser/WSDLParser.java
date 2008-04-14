@@ -38,6 +38,7 @@ import org.apache.axis.wsdl.symbolTable.Parameter;
 import org.apache.axis.wsdl.symbolTable.Parameters;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
+import org.apache.log4j.Logger;
 import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
 import org.apache.wsif.util.WSIFPluggableProviders;
 import org.xml.sax.SAXException;
@@ -54,6 +55,9 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
 
 @SuppressWarnings("unchecked")
 public class WSDLParser {
+	
+	private static Logger logger = Logger.getLogger(WSDLParser.class);
+	
 	private String wsdlLocation;
 
 	/**
@@ -291,8 +295,13 @@ public class WSDLParser {
 	/**
 	 * returns the namespace uri for the given operation name, throws
 	 * UnknownOperationException if the operationName is not matched to one
-	 * described by the WSDL
+	 * described by the WSDL.
+	 * <p>
+	 * Note that if you need the namespace for constructing the fully qualified
+	 * element name of the operation, you might want to use
+	 * {@link #getOperationQname(String)} instead.
 	 * 
+	 * @see #getOperationQname(String)
 	 * @param operationName
 	 * @return
 	 * @throws UnknownOperationException
@@ -337,6 +346,25 @@ public class WSDLParser {
 		return result;
 	}
 
+	public QName getOperationQname(String operationName) throws UnknownOperationException {
+		if (getStyle().equals("document")) {
+			try {
+			// Get the QName of the first element of the input message
+				return ((Part) getBindingOperation(operationName)
+						.getOperation().getInput().getMessage()
+						.getOrderedParts(null).get(0)).getElementName();
+			} catch (RuntimeException e) {
+				logger.warn("Could not find qname of message for operation "
+						+ operationName, e);
+				String ns = getDefinition().getTargetNamespace();
+				return new QName(ns, operationName);
+			}
+		} else {
+			String ns = getOperationNamespaceURI(operationName);
+			return new QName(ns, operationName);
+		}
+	}
+	
 	/**
 	 * Returns either literal or encoded, describing the 'use' for this
 	 * operation

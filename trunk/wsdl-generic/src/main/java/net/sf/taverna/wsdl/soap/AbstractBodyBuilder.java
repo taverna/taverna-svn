@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.wsdl.WSDLException;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,6 +77,10 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 	private String getOperationNamespace() throws UnknownOperationException {
 		return parser.getOperationNamespaceURI(operationName);
 	}
+	
+	private QName getOperationQname() throws UnknownOperationException {
+		return parser.getOperationQname(operationName);	
+	}
 
 	public SOAPBodyElement build(Map inputMap) throws WSDLException,
 			ParserConfigurationException, SOAPException, IOException,
@@ -84,10 +89,10 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 		List inputs = parser.getOperationInputParameters(operationName);
 
 		namespaceMappings = generateNamespaceMappings(inputs);
-		String operationNamespace = getOperationNamespace();
 
-		SOAPBodyElement body = new SOAPBodyElement(operationNamespace,
-				operationName);
+		QName operationQname = getOperationQname();
+		
+		SOAPBodyElement body = new SOAPBodyElement(operationQname);
 
 		// its important to preserve the order of the inputs!
 		for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
@@ -96,11 +101,13 @@ public abstract class AbstractBodyBuilder implements BodyBuilder {
 			Object dataValue = inputMap.get(inputName);
 
 			body = createBodyElementForData(operationName, namespaceMappings,
-					operationNamespace, body, descriptor, inputName, dataValue);
+					operationQname.getNamespaceURI(), body, descriptor, inputName, dataValue);
 		}
 
 		return body;
 	}
+
+
 
 	protected SOAPBodyElement createBodyElementForData(String operationName,
 			Map<String, String> namespaceMappings, String operationNamespace,
