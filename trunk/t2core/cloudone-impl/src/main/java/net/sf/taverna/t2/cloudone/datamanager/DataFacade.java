@@ -95,6 +95,9 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
+	 * @throws NullPointerException
+	 *             If attempting to register <code>null</code>, which is not
+	 *             supported.
 	 * @see #register(Object, int) for list of supported object types
 	 * 
 	 */
@@ -144,6 +147,9 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
+	 * @throws NullPointerException
+	 *             If attempting to register <code>null</code>, which is not
+	 *             supported.
 	 */
 	public EntityIdentifier register(Object obj, int unknownDepth)
 			throws EmptyListException, MalformedListException,
@@ -211,6 +217,9 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
+	 * @throws NullPointerException
+	 *             If attempting to register <code>null</code>, which is not
+	 *             supported.
 	 */
 	@SuppressWarnings("unchecked")
 	public EntityIdentifier register(Object obj, int depth, String charSet)
@@ -330,6 +339,9 @@ public class DataFacade {
 	 *             {@link MalformedListException}
 	 * @throws UnsupportedObjectTypeException
 	 *             If the object, or an object within the list is not supported
+	 * @throws NullPointerException
+	 *             If attempting to register <code>null</code>, which is not
+	 *             supported.
 	 */
 	public EntityIdentifier register(Object obj, String charSet)
 			throws EmptyListException, MalformedListException,
