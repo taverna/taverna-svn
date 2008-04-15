@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.facade.FailureListener;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
@@ -14,6 +15,7 @@ import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.provenance.WorkflowProvenanceItem;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -91,6 +93,11 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		if (pushDataCalled)
 			throw new IllegalStateException(
 					"Data has already been pushed, fire must be called first!");
+		//send dataflow across to the provenance context and store it
+		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
+		context.getProvenanceManager().getProvenanceCollection().add(worklowItem);
+		context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
+		
 		dataflow.fire(instanceOwningProcessId, context);
 	}
 
