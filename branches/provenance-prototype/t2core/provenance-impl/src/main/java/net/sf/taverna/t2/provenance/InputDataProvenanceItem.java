@@ -14,4 +14,9 @@ public class InputDataProvenanceItem extends DataProvenanceItem {
 		super(dataMap);
 	}
 
+	public String getAsString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

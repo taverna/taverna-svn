@@ -31,4 +31,10 @@ public class ProcessorProvenanceItem implements ProvenanceItem {
 		this.activityProvenanceItem = activityProvenanceItem;
 	}
 
+
+	public String getAsString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

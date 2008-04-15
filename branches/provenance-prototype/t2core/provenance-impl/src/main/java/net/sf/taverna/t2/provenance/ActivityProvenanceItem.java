@@ -31,4 +31,8 @@ public class ActivityProvenanceItem implements ProvenanceItem {
 		this.iterationProvenanceItem = iterationProvenanceItem;
 	}
 
+	public String getAsString() {
+		return null;
+	}
+
 }

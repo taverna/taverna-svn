@@ -39,4 +39,9 @@ public class ProcessProvenanceItem implements ProvenanceItem {
 		this.processorProvenanceItem = processorProvenanceItem;
 	}
 
+	public String getAsString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
