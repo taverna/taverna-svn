@@ -5,6 +5,7 @@
   <artifactId>t2-workbench</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <name>Taverna 2 workbench</name>
   <description>The encapsulating workbench for Taverna 2</description>
   <licenses>
 		<license>
