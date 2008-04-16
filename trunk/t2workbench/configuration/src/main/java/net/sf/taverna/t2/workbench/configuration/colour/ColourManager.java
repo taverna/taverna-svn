@@ -2,13 +2,32 @@ package net.sf.taverna.t2.workbench.configuration.colour;
 
 import java.awt.Color;
 
+/**
+ * A factory class that determines the colour that a Colourable UI component should be displayed
+ * as, according to a schema configured by the user.
+ * 
+ * @author Stuart Owen
+ * @see Colourable
+ *
+ */
 public class ColourManager {
 	private static ColourManager instance = new ColourManager();
 	
+	private ColourManager() {
+		
+	}
+	
+	/**
+	 * @return a Singleton instance of the ColourManager
+	 */
 	public static ColourManager getInstance() {
 		return instance;
 	}
 	
+	/**
+	 * @param item - Colourable item that we wish to know the preferred colour for
+	 * @return the preferred colour for that item
+	 */
 	public Color getPreferredColour(Colourable item) {
 		
 		//FIXME: dummy code for now
