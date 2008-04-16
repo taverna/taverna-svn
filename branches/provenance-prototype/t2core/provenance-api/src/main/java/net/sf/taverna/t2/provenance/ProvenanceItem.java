@@ -7,5 +7,7 @@ import org.jdom.Element;
 public interface ProvenanceItem {
 
 	public Element getAsXML(DataFacade dataFacade);
+	
+	public String getAsString();
 
 }
