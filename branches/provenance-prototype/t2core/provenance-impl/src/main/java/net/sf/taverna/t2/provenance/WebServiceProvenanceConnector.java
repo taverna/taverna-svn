@@ -7,16 +7,17 @@ import java.util.List;
 import javax.xml.rpc.ServiceException;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.service.provenance.ProvenanceCollector;
-import net.sf.taverna.t2.service.provenance.ProvenanceCollectorService;
-import net.sf.taverna.t2.service.provenance.ProvenanceCollectorServiceLocator;
 
 import org.jdom.output.XMLOutputter;
+
+import provenance.ProvenanceLocator;
+import provenance.ProvenancePortType;
 
 public class WebServiceProvenanceConnector implements ProvenanceConnector {
 
 	private ArrayList<ProvenanceItem> provenanceCollection;
-	private ProvenanceCollector provenanceCollector;
+//	private Provenance provenanceCollector;
+	private ProvenancePortType provenanceHttpPort;
 
 	public WebServiceProvenanceConnector() {
 		provenanceCollection = new ArrayList<ProvenanceItem>();
@@ -34,10 +35,11 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 		webServiceConnector();
 		for (ProvenanceItem provItem : provenanceCollection) {
 			String asString = provItem.getAsString();
+			//get type of provItem and send this info as well
 			if (asString != null) {
 				try {
 					System.out.println("************saving provenance************");
-					provenanceCollector.acceptProvenanceRawEvent(asString,
+					provenanceHttpPort.acceptRawProvenanceEvent(asString,
 							"dataflow");
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -49,7 +51,7 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 						.getAsXML(dataFacade));
 				try {
 					System.out.println("************saving provenance************");
-					provenanceCollector.acceptProvenanceRawEvent(outputString,
+					provenanceHttpPort.acceptRawProvenanceEvent(outputString,
 							"dataflow");
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -61,12 +63,11 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 	}
 
 	private void webServiceConnector() {
-		if (provenanceCollector == null) {
-			ProvenanceCollectorService provenanceCollectorService = new ProvenanceCollectorServiceLocator();
+		if (provenanceHttpPort == null) {
+			ProvenanceLocator provenanceCollectorService = new ProvenanceLocator();
 
 			try {
-				provenanceCollector = provenanceCollectorService
-						.getProvenance();
+				provenanceHttpPort = provenanceCollectorService.getProvenanceHttpPort();
 			} catch (ServiceException e) {
 				System.out.println("Could not get provenance service " + e);
 			}

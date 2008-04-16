@@ -32,6 +32,7 @@ public class ActivityProvenanceItem implements ProvenanceItem {
 	}
 
 	public String getAsString() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

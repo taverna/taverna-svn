@@ -1,13 +1,13 @@
 package net.sf.taverna.t2.provenance;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.util.tools.DataflowSerialiser;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
-import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -15,17 +15,24 @@ import org.jdom.input.SAXBuilder;
 public class WorkflowProvenanceItem implements ProvenanceItem {
 
 	private Dataflow dataflow;
+	private DataflowSerialiser serialiser;
 
 	public WorkflowProvenanceItem(Dataflow dataflow) {
-		super();
 		this.dataflow = dataflow;
+		serialiser = new DataflowSerialiser(dataflow);
+	}
+
+	public String getAsString() {
+		String serialiseWorkflow = serialiser.serialiseWorkflow();
+		return serialiseWorkflow;
 	}
 
 	public Element getAsXML(DataFacade dataFacade) {
+		SAXBuilder saxBuilder=new SAXBuilder("org.apache.xerces.parsers.SAXParser");
+		Reader stringReader=new StringReader(serialiser.serialiseWorkflow());
+		org.jdom.Document document = null;
 		try {
-			Document build = new SAXBuilder().build((new StringReader(
-					getAsString())));
-			return build.getRootElement();
+			document = saxBuilder.build(stringReader);
 		} catch (JDOMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,14 +40,7 @@ public class WorkflowProvenanceItem implements ProvenanceItem {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
-	}
-
-	public String getAsString() {
-		DataflowSerialiser dataflowSerialiser = new DataflowSerialiser(
-				this.dataflow);
-		String serialiseWorkflow = dataflowSerialiser.serialiseWorkflow();
-		return serialiseWorkflow;
+		return document.getRootElement();
 	}
 
 }
