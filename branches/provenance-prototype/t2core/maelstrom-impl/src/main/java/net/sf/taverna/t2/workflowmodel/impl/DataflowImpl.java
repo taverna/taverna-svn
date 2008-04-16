@@ -690,4 +690,8 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 				"Not implemented for DataflowImpl yet");
 	}
 
+	public String getName() {
+		return this.name;
+	}
+
 }
