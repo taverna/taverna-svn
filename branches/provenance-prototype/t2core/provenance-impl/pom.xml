@@ -19,10 +19,30 @@
 			<artifactId>provenance-api</artifactId>
 			<version>0.1.0</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>maelstrom-api</artifactId>
 			<version>0.1.0</version>
+			</dependency> -->
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>tools</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.service</groupId>
+			<artifactId>provenance-webservice-client</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
