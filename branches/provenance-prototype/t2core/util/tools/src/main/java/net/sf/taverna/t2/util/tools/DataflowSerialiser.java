@@ -67,15 +67,16 @@ public class DataflowSerialiser {
 						+ link.getSink().getName() + "</outputport>\n</sink>\n";
 			}
 			if (link.getSource() instanceof ProcessorPort) {
+				
 				datalinks = datalinks
 						+ "<source>\n<processor>"
 						+ ((ProcessorPort) link.getSource()).getProcessor()
 								.getLocalName() + "</processor>\n";
-				datalinks = datalinks + "<inputport>" + link.getSink().getName()
+				datalinks = datalinks + "<inputport>" + link.getSource().getName()
 						+ "</inputport>\n</source>\n";
 			} else {
 				datalinks = datalinks + "<source>\n<inputport>"
-						+ link.getSink().getName() + "</inputport>\n</source>\n";
+						+ link.getSource().getName() + "</inputport>\n</source>\n";
 			}
 			datalinks = datalinks + "</datalink>\n";
 		}
