@@ -223,10 +223,8 @@
 				<module>taverna-biomoby</module>
 				<module>taverna-contrib</module>
 				<module>taverna-update-manager</module>
-				<module>raven</module>
-				<module>raven-log4j</module>
-				<module>zaria</module>
 				<module>examples</module>
+				<module>integration-testing</module>
 			</modules>
 		</profile>
 		<profile>
