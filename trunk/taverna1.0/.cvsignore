@@ -6,3 +6,4 @@ bin
 .hg
 .hgtags
 .hgignore
+target-eclipse
