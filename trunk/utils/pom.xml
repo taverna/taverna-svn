@@ -197,5 +197,8 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<modules>
+		<module>raven</module>
+		<module>raven-log4j</module>
+		<module>zaria</module>
 	</modules>
 </project>
