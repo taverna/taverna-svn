@@ -14,6 +14,6 @@
 	<modules>
 		<module>beanable-api</module>
 		<module>beanable-jaxb</module>
-
+		<module>tools</module>
 	</modules>
 </project>
