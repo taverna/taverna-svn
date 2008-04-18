@@ -1,13 +1,17 @@
 package net.sf.taverna.t2.workbench.configuration;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 /**
- * Hansles the configuration for a {@link Configurable} object
+ * Handles the configuration for a {@link Configurable} object
  * 
  * @author Ian Dunlop
  * @author Stuart Owen
@@ -19,16 +23,65 @@ public class ConfigurationManager {
 
 	private static ConfigurationManager configManager;
 
-	private Map<String, PropertiesConfiguration> propertiesConfigMap;
+//	private Map<String, PropertiesConfiguration> propertiesConfigMap;
 
 	private ConfigurationManager() {
-		//TODO does this need a config file itself?
-		propertiesConfigMap = new HashMap<String, PropertiesConfiguration>();
+		// TODO does this need a config file itself?
+		//propertiesConfigMap = new HashMap<String, PropertiesConfiguration>();
 	}
 
-	public void store(Configurable configurable) {
-		// write out the propertiesConfig somewhere, ie get from the Map based
-		// on the UUID and store it
+	/**
+	 * Write out the properties configuration to disk based on the UUID of the
+	 * {@link Configurable}
+	 * 
+	 * @param configurable
+	 * @throws Exception 
+	 */
+	public void store(Configurable configurable) throws Exception {
+		try {
+			Map<String, Object> propertyMap = configurable.getPropertyMap();
+			PropertiesConfiguration propConfig = new PropertiesConfiguration();
+			for (String key : propertyMap.keySet()) {
+				propConfig.addProperty(key, propertyMap.get(key));
+			}
+			propConfig.save(new File(baseConfigLocation, configurable.getUUID()
+					+ ".config"));
+		} catch (ConfigurationException e) {
+			throw new Exception("Failed to store the configuration: " + e);
+		} catch (Exception e) {
+			throw new Exception("Configuration storage failed: " + e);
+		}
+	}
+
+	private void storeObject(PropertiesConfiguration propConfig, Object object)
+			throws Exception {
+		// TODO don't think this is needed, something similar might be needed on
+		// the loading of the properties
+		if (object instanceof Integer) {
+
+		} else if (object instanceof Object[]) {
+
+		} else if (object instanceof String) {
+
+		} else if (object instanceof List) {
+
+		} else if (object instanceof Long) {
+
+		} else if (object instanceof Boolean) {
+
+		} else if (object instanceof Byte) {
+
+		} else if (object instanceof Short) {
+
+		} else if (object instanceof Float) {
+
+		} else if (object instanceof Double) {
+
+		} else if (object instanceof BigDecimal) {
+
+		} else {
+			throw new Exception("Type of property not recognised");
+		}
 	}
 
 	/**
@@ -39,22 +92,30 @@ public class ConfigurationManager {
 	 * @throws Exception
 	 *             if there are no configuration details available
 	 */
-	public PropertiesConfiguration populate(Configurable configurable)
+	public Map<String, Object> populate(Configurable configurable)
 			throws Exception {
-		// get config from disk or from the Map if available
-		PropertiesConfiguration propertiesConfiguration = propertiesConfigMap
-				.get(configurable.getUUID());
-		if (propertiesConfiguration != null) {
-			return propertiesConfiguration;
-		} else {
-			// load from disk in the baseConfigLocation and return
-			try {
-				return null;
-			} catch (Exception e) {
-				throw new Exception("No properties file exists");
-			}
+		try {
+			PropertiesConfiguration propertiesConfig = new PropertiesConfiguration();
+			propertiesConfig.load(new File(baseConfigLocation, configurable
+					.getUUID()
+					+ ".config"));
+			return restoreObjects(propertiesConfig);
+		} catch (Exception e) {
+			throw new Exception("No properties file exists");
 		}
+	}
 
+	private Map<String, Object> restoreObjects(
+			PropertiesConfiguration propertiesConfiguration) {
+		Map<String, Object> propMap = new HashMap<String, Object>();
+		Iterator keys = propertiesConfiguration.getKeys();
+		while (keys.hasNext()) {
+			Object next = keys.next();
+			Object property = propertiesConfiguration
+					.getProperty((String) next);
+			propMap.put((String) next, property);
+		}
+		return propMap;
 	}
 
 	/**
