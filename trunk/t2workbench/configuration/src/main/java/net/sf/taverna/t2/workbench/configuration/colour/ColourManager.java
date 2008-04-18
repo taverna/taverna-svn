@@ -60,5 +60,10 @@ public class ColourManager implements Configurable {
 		//FIXME: dummy code for now
 		return new Color(1f,1f,1f);
 	}
+
+	public void restoreDefaults() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
