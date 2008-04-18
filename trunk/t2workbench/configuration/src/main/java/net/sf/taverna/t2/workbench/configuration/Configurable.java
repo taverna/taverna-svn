@@ -31,4 +31,8 @@ public interface Configurable {
 	 * @return a String defining the category of configurations that this item belongs to.
 	 */
 	public String getCategory();
+	/**
+	 * Restore the default property map
+	 */
+	public void restoreDefaults();
 }
