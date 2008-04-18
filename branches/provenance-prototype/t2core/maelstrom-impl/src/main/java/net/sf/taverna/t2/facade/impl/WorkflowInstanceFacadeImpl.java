@@ -3,6 +3,7 @@ package net.sf.taverna.t2.facade.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
@@ -37,7 +38,7 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 			InvocationContext context, String parentProcess) {
 		this.dataflow = dataflow;
 		this.context = context;
-		this.localName = "facade" + owningProcessId.getAndIncrement();
+		this.localName = "facade(" + UUID.randomUUID() +")"+ owningProcessId.getAndIncrement();
 		if (parentProcess.equals("")) {
 			this.instanceOwningProcessId = localName;
 		} else {

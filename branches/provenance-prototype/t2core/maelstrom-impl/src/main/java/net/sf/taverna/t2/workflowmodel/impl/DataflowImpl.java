@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.UUID;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.InvocationContext;
@@ -54,7 +55,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	 * interface
 	 */
 	protected DataflowImpl() {
-		this.name = "dataflow" + (nameIndex++);
+		this.name = "dataflow(" + UUID.randomUUID()+")"+(nameIndex++);
 		this.processors = new ArrayList<ProcessorImpl>();
 		this.merges = new ArrayList<MergeImpl>();
 		this.inputs = new ArrayList<DataflowInputPortImpl>();
