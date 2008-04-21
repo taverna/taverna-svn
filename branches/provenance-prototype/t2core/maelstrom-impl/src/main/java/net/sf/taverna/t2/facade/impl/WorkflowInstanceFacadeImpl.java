@@ -39,6 +39,11 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 		this.dataflow = dataflow;
 		this.context = context;
 		this.localName = "facade(" + UUID.randomUUID() +")"+ owningProcessId.getAndIncrement();
+		
+		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
+		context.getProvenanceManager().getProvenanceCollection().add(worklowItem);
+		context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
+		
 		if (parentProcess.equals("")) {
 			this.instanceOwningProcessId = localName;
 		} else {
@@ -95,9 +100,9 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 			throw new IllegalStateException(
 					"Data has already been pushed, fire must be called first!");
 		//send dataflow across to the provenance context and store it
-		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
-		context.getProvenanceManager().getProvenanceCollection().add(worklowItem);
-		context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
+//		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
+//		context.getProvenanceManager().getProvenanceCollection().add(worklowItem);
+//		context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
 		
 		dataflow.fire(instanceOwningProcessId, context);
 	}
