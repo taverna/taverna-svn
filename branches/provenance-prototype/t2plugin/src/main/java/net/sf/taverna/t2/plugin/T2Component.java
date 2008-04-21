@@ -45,7 +45,6 @@ import net.sf.taverna.t2.plugin.input.InputComponent.InputComponentCallback;
 import net.sf.taverna.t2.plugin.pretest.HealthCheckReportPanel;
 import net.sf.taverna.t2.provenance.InMemoryProvenanceConnector;
 import net.sf.taverna.t2.provenance.ProvenanceConnector;
-import net.sf.taverna.t2.provenance.FileProvenanceConnector;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -71,8 +70,6 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 			.userNodeForPackage(T2Component.class);
 
 	private ScuflModel model;
-	
-	private JButton viewProvenanceButton;
 
 	private JButton runButton;
 
@@ -94,8 +91,6 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 	private ResultComponent resultComponent = (ResultComponent) new ResultComponentFactory()
 			.getComponent();
-	
-	private ProvenanceFrame provenanceFrame = new ProvenanceFrame();
 
 	private PreferencesFrame preferencesFrame = new PreferencesFrame();
 
@@ -130,23 +125,7 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 
 		});
 		
-		viewProvenanceButton = new JButton("View Provenance");
-		viewProvenanceButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("show provenance");
-				try {
-				provenanceFrame.pack();
-				provenanceFrame.updateProvenance();
-				provenanceFrame.setLocationRelativeTo(T2Component.this);
-				provenanceFrame.setVisible(true);
-				} catch (Exception e1) {
-					System.out.println("provenance frame bust: " + e1.toString());
-				}
-			}
-			
-		});
-		viewProvenanceButton.setEnabled(true);
+		
 
 		runStatus = new JLabel(" ");
 		runStatus.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -172,7 +151,6 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		buttonPanel.add(runButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(preferencesButton);
-		buttonPanel.add(viewProvenanceButton);
 
 		JSplitPane midPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		midPanel.add(topPanel);
@@ -379,7 +357,6 @@ public class T2Component extends JPanel implements WorkflowModelViewSPI {
 		File dataManagerDir = new File(dataManagerStore);
 		final ProvenanceConnector provenanceConnector = new InMemoryProvenanceConnector();
 		
-		provenanceFrame.setProvenanceConnector(provenanceConnector);
 
 		final DataManager dataManager = new FileDataManager(UUID.randomUUID()
 				.toString(), Collections.EMPTY_SET, dataManagerDir);
