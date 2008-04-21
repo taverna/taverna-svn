@@ -81,7 +81,11 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	public void receiveJob(final DispatchJobEvent jobEvent) {
 		// start adding provenance info
 		ProcessProvenanceItem provenanceItem = new ProcessProvenanceItem(jobEvent.getOwningProcess());
-		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem("A Processor");
+		//FIXME: a nasty hack to get the Processor Name - suitable for the prototype. Not sure if it will work with nested workflows
+		String [] split=jobEvent.getOwningProcess().split(":");
+		String procName=split[split.length-1];
+		System.out.println("Proc name = "+procName);
+		ProcessorProvenanceItem processorProvItem = new ProcessorProvenanceItem(procName);
 		provenanceItem.setProcessorProvenanceItem(processorProvItem);
 		
 		jobEvent.getContext().getProvenanceManager().getProvenanceCollection().add(provenanceItem);
@@ -299,3 +303,4 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 	}
 
 }
+
