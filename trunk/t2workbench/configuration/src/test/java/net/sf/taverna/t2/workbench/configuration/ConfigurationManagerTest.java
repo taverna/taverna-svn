@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.Map;
 
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
+import net.sf.taverna.t2.workbench.configuration.colour.DummyColour;
 
 import org.junit.Test;
 
@@ -44,6 +45,30 @@ public class ConfigurationManagerTest {
 		
 		assertEquals("Properties do not match", propertyMap.get("colour.first"), manager.getPropertyMap().get("colour.first"));
 		assertEquals("Properties do not match", propertyMap.get("colour.second"), manager.getPropertyMap().get("colour.second"));
+		
+		
+	}
+	
+	@Test
+	public void saveColoursForDummyColourable() {
+		DummyColour dummy = new DummyColour();
+		ColourManager manager=ColourManager.getInstance();
+		manager.getPropertyMap().put(dummy.getClass().getCanonicalName(), new String[] {"10", "20", "56"});
+		
+		ConfigurationManager instance = ConfigurationManager.getInstance();
+		instance.setBaseConfigLocation(new File("/tmp/scratch"));
+		try {
+			instance.store(manager);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			instance.populate(manager);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
