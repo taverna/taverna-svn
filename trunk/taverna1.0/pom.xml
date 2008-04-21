@@ -224,7 +224,6 @@
 				<module>taverna-contrib</module>
 				<module>taverna-update-manager</module>
 				<module>examples</module>
-				<module>integration-testing</module>
 			</modules>
 		</profile>
 		<profile>
