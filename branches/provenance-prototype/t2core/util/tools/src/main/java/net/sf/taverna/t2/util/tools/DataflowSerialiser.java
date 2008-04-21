@@ -35,11 +35,11 @@ public class DataflowSerialiser {
 		String serialiseProcessor = serialiseProcessor(dataflow.getProcessors());
 		String serialiseInputPorts = serialiseInputPorts(dataflow
 				.getInputPorts());
-		String serialiseOutpustPorts = serialiseOutpustPorts(dataflow
+		String serialiseOutpustPorts = serialiseOutputPorts(dataflow
 				.getOutputPorts());
 		String serialiseLinks = serialiseLinks(dataflow.getLinks());
 
-		return "<dataflow>\n" + serialiseProcessor + serialiseInputPorts
+		return "<dataflow>\n" + "<name>" + dataflow.getLocalName() + "</name>\n" + serialiseProcessor + serialiseInputPorts
 				+ serialiseOutpustPorts + serialiseLinks + "</dataflow>\n";
 
 	}
@@ -60,11 +60,11 @@ public class DataflowSerialiser {
 						+ "<sink>\n<processor>"
 						+ ((ProcessorPort) link.getSink()).getProcessor()
 								.getLocalName() + "</processor>\n";
-				datalinks = datalinks + "<outputport>" + link.getSink().getName()
-						+ "</outputport>\n</sink>\n";
+				datalinks = datalinks + "<inputport>" + link.getSink().getName()
+						+ "</inputport>\n</sink>\n";
 			} else {
-				datalinks = datalinks + "<sink>\n<outputport>"
-						+ link.getSink().getName() + "</outputport>\n</sink>\n";
+				datalinks = datalinks + "<sink>\n<inputport>"
+						+ link.getSink().getName() + "</inputport>\n</sink>\n";
 			}
 			if (link.getSource() instanceof ProcessorPort) {
 				
@@ -72,11 +72,11 @@ public class DataflowSerialiser {
 						+ "<source>\n<processor>"
 						+ ((ProcessorPort) link.getSource()).getProcessor()
 								.getLocalName() + "</processor>\n";
-				datalinks = datalinks + "<inputport>" + link.getSource().getName()
-						+ "</inputport>\n</source>\n";
+				datalinks = datalinks + "<outputport>" + link.getSource().getName()
+						+ "</outputport>\n</source>\n";
 			} else {
-				datalinks = datalinks + "<source>\n<inputport>"
-						+ link.getSource().getName() + "</inputport>\n</source>\n";
+				datalinks = datalinks + "<source>\n<outputport>"
+						+ link.getSource().getName() + "</outputport>\n</source>\n";
 			}
 			datalinks = datalinks + "</datalink>\n";
 		}
@@ -85,7 +85,7 @@ public class DataflowSerialiser {
 		return datalinks;
 	}
 
-	private String serialiseOutpustPorts(
+	private String serialiseOutputPorts(
 			List<? extends DataflowOutputPort> outputPorts) {
 		String ports = "<outputPorts>\n";
 		for (DataflowOutputPort outputPort : outputPorts) {
