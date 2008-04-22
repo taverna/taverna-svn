@@ -5,13 +5,12 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>raven-parent</artifactId>
-		<version>1.7.1.0</version>
+		<version>1.7-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.org.mygrid.taverna.raven</groupId>
 	<artifactId>raven</artifactId>
 	<name>Raven</name>
-	<version>1.7.1.0</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
