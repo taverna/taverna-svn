@@ -94,6 +94,7 @@ public class ArtifactImplTest {
 		}
 	}
 	
+	@SuppressWarnings("null")
 	@Test
 	public void testDependenciesWithPropertiesInterpolation() throws MalformedURLException, InterruptedException, ArtifactStateException {
 		r.addRemoteRepository(new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY));
@@ -134,6 +135,7 @@ public class ArtifactImplTest {
 		assertEquals(5, dom4jDependencies.size());
 	}
 	
+	@SuppressWarnings("null")
 	@Test
 	public void testPropertiesInterpolation() throws MalformedURLException, InterruptedException, ArtifactStateException, FileNotFoundException {
 		r.addRemoteRepository(new URL(LoaderTest.MAVEN_UNIONTRANSIT_REPOSITORY));
@@ -173,6 +175,8 @@ public class ArtifactImplTest {
 		assertTrue("No geronimo dependency found", geronimoDependencies.size()>0);
 	}
 	
+	@SuppressWarnings("null")
+	@Ignore
 	@Test
 	public void testBocaPropertiesInterpolation() throws MalformedURLException, InterruptedException, ArtifactStateException, FileNotFoundException {
 		r.addRemoteRepository(new URL("http://repository.aduna-software.org/maven2"));

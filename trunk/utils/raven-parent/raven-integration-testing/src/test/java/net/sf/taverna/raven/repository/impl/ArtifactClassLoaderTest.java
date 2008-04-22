@@ -1,114 +1,128 @@
 package net.sf.taverna.raven.repository.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import junit.framework.TestCase;
-import net.sf.taverna.raven.RavenException;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.JavaLog;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.LogInterface.Priority;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
+import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.JUnitCore;
 
-import static org.junit.Assert.*;
+public class ArtifactClassLoaderTest {
 
-public abstract class ArtifactClassLoaderTest {
+	private static final String SPI = "org.embl.ebi.escience.scuflworkers.ProcessorInfoBean";
 
 	// Sleep up to 200 ms
-	private static final int MAXSLEEP = 300;
-	private static final int THREADS = 200;
-	
-	private static final String CLASSNAME = "org.jdom.Namespace";
-	//private static final String CLASSNAME = "org.embl.ebi.escience.scufl.XScufl";
-	
+	private static final int MAXSLEEP = 5000;
+	private static final int THREADS = 20;
+	private static final int LOOPS = 100;
+
 	private File dir;
-	private LocalRepository repository;
-	BasicArtifact tavernaCore;
-	BasicArtifact baclavaCore;
+	BasicArtifact wsdlProcessor;
 	private ClassLoader oldContextLoader;
-	private BasicArtifact xerces;
-	private ClassLoader xerxesLoader;
-	private BasicArtifact jdom;
+
+	private List<String> classes;
 
 	@Before
-	public void setUp() throws IOException, ArtifactNotFoundException, ArtifactStateException {
+	public void setUp() throws IOException, ArtifactNotFoundException,
+			ArtifactStateException {
 		Log.setImplementation(new ConsoleLog());
 		ConsoleLog.level = Priority.WARN;
-		dir = LocalRepositoryTest.createTempDirectory();
-		repository = new LocalRepository(dir);
-		repository.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
-		repository.addRemoteRepository(new URL("http://rpc268.cs.man.ac.uk/repository/"));
-		tavernaCore = new BasicArtifact("uk.org.mygrid.taverna",
-				"taverna-core","1.5.1-SNAPSHOT");
-		baclavaCore = new BasicArtifact("uk.org.mygrid.taverna.baclava",
-				"baclava-core","1.5.1-SNAPSHOT");
-		jdom = new BasicArtifact("jdom", "jdom", "1.0");
-		xerces = new BasicArtifact("xerces", "xercesImpl", "2.6.2");
-		repository.addArtifact(xerces);
-		repository.addArtifact(jdom);
-		repository.addArtifact(tavernaCore);
-		repository.addArtifact(baclavaCore);
-		repository.update();
+		dir = new File("/tmp/fish");
+		dir.mkdir();
+		// dir = LocalRepositoryTest.createTempDirectory();
+		LocalRepository repository = createRepository();
 		ConsoleLog.level = Priority.DEBUG;
-		//ConsoleLog.console = new PrintStream(new FileOutputStream(new File("/tmp/fish.log"), true));
-		
-		// Make xerces available in context class loader
-		oldContextLoader = Thread.currentThread().getContextClassLoader();
-		xerxesLoader = repository.getLoader(xerces, oldContextLoader);
-		Thread.currentThread().setContextClassLoader(xerxesLoader);
+		// ConsoleLog.console = new PrintStream(new FileOutputStream(new
+		// File("/tmp/fish.log"), true));
+		assertEquals("Could not download " + wsdlProcessor,
+				ArtifactStatus.Ready, repository.getStatus(wsdlProcessor));
+
+		// SpiRegistry spiRegistry = new SpiRegistry(repository, SPI, getClass()
+		// .getClassLoader());
+		classes = new ArrayList<String>();
+		// for (Class spiClass : spiRegistry.getClasses()) {
+		// classes.add(spiClass.getCanonicalName());
+		// }
+		classes.add("org.embl.ebi.escience.scuflworkers.wsdl.WSDLProcessorInfoBean");
+		assertFalse("No SPIs found for " + SPI, classes.isEmpty());
+
 	}
-	
+
+	private LocalRepository createRepository() throws MalformedURLException {
+		LocalRepository.loaderMap.clear();
+		LocalRepository.repositoryCache.clear();
+		LocalRepository repository = new LocalRepository(dir);
+		repository.addRemoteRepository(new URL(
+				"http://www.mygrid.org.uk/maven/repository/"));
+		repository.addRemoteRepository(new URL(
+				"http://mirrors.dotsrc.org/maven2/"));
+		wsdlProcessor = new BasicArtifact("uk.org.mygrid.taverna.processors",
+				"taverna-wsdl-processor", "1.7.1.0");
+		repository.addArtifact(wsdlProcessor);
+		repository.update();
+		return repository;
+	}
+
 	@After
 	public void tearDown() throws InterruptedException {
 		Thread.currentThread().setContextClassLoader(oldContextLoader);
-		baclavaCore = null;
-		tavernaCore = null;
-		repository = null;
-		try {
-			FileUtils.deleteDirectory(dir);
-		} catch (IOException e) {
-			// ignore
-		}
+		wsdlProcessor = null;
+		// try {
+		// FileUtils.deleteDirectory(dir);
+		// } catch (IOException e) {
+		// // ignore
+		// }
 		System.gc();
 		Thread.sleep(500);
 		System.gc();
 		ConsoleLog.console.flush();
 		Log.setImplementation(new JavaLog());
 	}
-	
+
 	public void runManyThreads(final Runnable target) {
 		List<Thread> threads = new ArrayList<Thread>();
-		Random r = new Random();
-		for (int i=0; i<THREADS; i++) {
-			final int sleep = r.nextInt(MAXSLEEP);
-			threads.add(new Thread("ArtifactClassLoaderTest manythreads"){
+		final Object lock = new Object();
+		for (int i = 0; i < THREADS; i++) {
+			threads.add(new Thread("ArtifactClassLoaderTest manythreads") {
+				@Override
 				public void run() {
-					// Make sure we are not alone
-					try {
-						Thread.sleep(sleep);
-					} catch (InterruptedException e) {
-						System.out.print("x");
+					synchronized (lock) {
+						try {
+							// Make sure we are not alone
+							lock.wait(MAXSLEEP);
+						} catch (InterruptedException e) {
+							System.out.print("X");
+						}
 					}
+					System.out.println(":");
 					target.run();
-					//System.out.print(".");
+					System.out.print("|");
 				}
 			});
 		}
 		for (Thread t : threads) {
 			t.start();
+		}
+		// Start all threads at once
+		synchronized (lock) {
+			lock.notifyAll();
 		}
 		for (Thread t : threads) {
 			try {
@@ -118,71 +132,82 @@ public abstract class ArtifactClassLoaderTest {
 			}
 		}
 	}
-	
+
 	public void testRunManyThreads() {
 		final List<Object> runs = new ArrayList<Object>();
 		runManyThreads(new Runnable() {
 			public void run() {
 				synchronized (runs) {
-					runs.add(null);							
+					runs.add(null);
 				}
 			}
 		});
 		assertEquals(THREADS, runs.size());
 	}
 
+	public void loadClasses(final ClassLoader loader)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException {
+		for (String className : classes) {
+			Class<?> loadedClass = loader.loadClass(className);
+			loadedClass.newInstance();
+			System.out.println("OK #" + Thread.currentThread().getId() + " in "
+					+ loader);
+		}
+	}
 
-	// WARNING: This test don't work from mvn test
+	@Test
+	public void testSimpleLoad() throws Throwable {
+		final LocalRepository repository = createRepository();
+		final ClassLoader loader = repository.getLoader(wsdlProcessor, null);
+		loadClasses(loader);
+	}
+
+	@Test
+	public void testUnique() throws Throwable {
+		final LocalRepository repository1 = createRepository();
+		final ClassLoader loader1 = repository1.getLoader(wsdlProcessor, null);
+
+		final LocalRepository repository2 = createRepository();
+		final ClassLoader loader2 = repository2.getLoader(wsdlProcessor, null);
+
+		assertTrue("Loaders were not different", loader1 != loader2);
+
+		Class<?> class1 = loader1.loadClass(classes.get(0));
+		Class<?> class2 = loader2.loadClass(classes.get(0));
+
+		assertTrue("Classes were not different", class1 != class2);
+	}
+
 	@Test
 	public void testMultipleLoad() throws Throwable {
 		final List<Throwable> exceptions = new ArrayList<Throwable>();
-		runManyThreads(new Runnable() {
-			public void run() {
-				BasicArtifact artifact;
-				if (Thread.currentThread().getId() % 2 == 1) {
-					artifact = tavernaCore;
-				} else {
-					artifact = baclavaCore;
-				}
-				ClassLoader loader = null;
-				try {
-					loader = repository.getLoader(artifact, null);
-					Class c = loader.loadClass(CLASSNAME);
-					System.out.println(Thread.currentThread().getId() + ": " + loader + 
-							" found " + c.getName() + " in " + c.getClassLoader());
-				} catch (Throwable e) {
-					System.out.println(Thread.currentThread().getId() + ": failed using " + loader);
-					synchronized (exceptions) {
-						exceptions.add(e);						
+		for (int loop = 0; loop < LOOPS; loop++) {
+			System.out.println("Loop " + loop);
+			final LocalRepository repository = createRepository();
+			final ClassLoader loader = repository
+					.getLoader(wsdlProcessor, null);
+			runManyThreads(new Runnable() {
+				public void run() {
+					try {
+						loadClasses(loader);
+					} catch (Throwable e) {
+						System.err.println("FAILED #"
+								+ Thread.currentThread().getId() + ": in "
+								+ loader);
+						synchronized (exceptions) {
+							exceptions.add(e);
+						}
 					}
 				}
+			});
+
+			for (Throwable t : exceptions) {
+				t.printStackTrace();
 			}
-		});
-		for (Throwable t : exceptions) {
-			t.printStackTrace();
-		}
-		if (exceptions.size() > 0) {
-			throw exceptions.get(0);
+			if (exceptions.size() > 0) {
+				throw exceptions.get(0);
+			}
 		}
 	}
-
-	// WARNING: This test don't work from mvn test
-	@Test
-	public void testSimpleLoad() throws RavenException, ClassNotFoundException {
-		ClassLoader jdomLoader = repository.getLoader(jdom, xerxesLoader);
-		jdomLoader.loadClass(CLASSNAME);
-		ClassLoader baclavaCoreLoader = repository.getLoader(baclavaCore, xerxesLoader);
-		ClassLoader tavernaCoreLoader = repository.getLoader(tavernaCore, xerxesLoader);
-		tavernaCoreLoader.loadClass(CLASSNAME);
-		baclavaCoreLoader.loadClass(CLASSNAME);
-	}
-
-	// Try running this test suite as:
-	// : stain@mira ~/Documents/workspace/taverna1.x/raven;
-	//   java -classpath test-classes/:classes/:/Users/stain/.m2/repository/junit/junit/4.0/junit-4.0.jar net.sf.taverna.raven.repository.impl.ArtifactClassLoaderTest
-	
-	public static void main(String args[]) {
-	      JUnitCore.main(ArtifactClassLoaderTest.class.getName());
-	}
-	
 }
