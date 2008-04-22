@@ -5,9 +5,9 @@ import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.util.beanable.RetrievalException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 public class CaptureResultsListener implements ResultListener {
