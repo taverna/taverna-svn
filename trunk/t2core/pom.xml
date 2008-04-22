@@ -77,7 +77,6 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>lang</module>
 		<module>util</module>
 		<module>data-api</module>
 		<module>data-impl</module>
