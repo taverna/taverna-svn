@@ -16,6 +16,7 @@ import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.monitor.MonitorNode;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.impl.MonitorImpl;
+import net.sf.taverna.t2.provenance.DataflowRunComplete;
 import net.sf.taverna.t2.provenance.WorkflowProvenanceItem;
 import net.sf.taverna.t2.utility.TypedTreeModel;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -35,11 +36,10 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 	private String localName;
 
 	public WorkflowInstanceFacadeImpl(final Dataflow dataflow,
-			InvocationContext context, String parentProcess) {
+			final InvocationContext context, String parentProcess) {
 		this.dataflow = dataflow;
 		this.context = context;
 		this.localName = "facade(" + UUID.randomUUID() +")"+ owningProcessId.getAndIncrement();
-		
 		WorkflowProvenanceItem worklowItem = new WorkflowProvenanceItem(dataflow);
 		context.getProvenanceManager().getProvenanceCollection().add(worklowItem);
 		context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
@@ -64,6 +64,10 @@ public class WorkflowInstanceFacadeImpl implements WorkflowInstanceFacade {
 							// un-register this node from the monitor
 							MonitorImpl.getMonitor().deregisterNode(
 									instanceOwningProcessId.split(":"));
+							//send "end of provenance" to the provenance connector
+							 DataflowRunComplete dataflowRunComplete = new DataflowRunComplete();
+							 context.getProvenanceManager().getProvenanceCollection().add(dataflowRunComplete);
+							 context.getProvenanceManager().store(new DataFacade(context.getDataManager()));
 						}
 					}
 					for (ResultListener resultListener : resultListeners
