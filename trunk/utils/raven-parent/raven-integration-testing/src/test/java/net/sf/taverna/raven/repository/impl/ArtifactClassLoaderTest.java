@@ -29,9 +29,9 @@ public class ArtifactClassLoaderTest {
 	private static final String SPI = "org.embl.ebi.escience.scuflworkers.ProcessorInfoBean";
 
 	// Sleep up to 200 ms
-	private static final int MAXSLEEP = 5000;
+	private static final int MAXSLEEP = 1000;
 	private static final int THREADS = 20;
-	private static final int LOOPS = 100;
+	private static final int LOOPS = 10;
 
 	private File dir;
 	BasicArtifact wsdlProcessor;
