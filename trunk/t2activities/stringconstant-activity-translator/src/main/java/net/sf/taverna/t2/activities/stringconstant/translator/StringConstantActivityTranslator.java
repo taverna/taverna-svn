@@ -3,14 +3,14 @@ package net.sf.taverna.t2.activities.stringconstant.translator;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.embl.ebi.escience.scufl.Processor;
-
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * An ActivityTranslator specifically for translating a Taverna 1 StringConstant Processor to an equivalent Taverna 2 StringConstant Activity

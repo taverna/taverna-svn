@@ -772,6 +772,7 @@ public class LocalworkerTranslatorTest {
 		invoke(activity, inputs, expectedOutputs);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testDoTranslationFileListByExtTask() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,
@@ -806,6 +807,7 @@ public class LocalworkerTranslatorTest {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testDoTranslationFileListByRegexTask() throws Exception {
 		LocalServiceProcessor processor = new LocalServiceProcessor(null,

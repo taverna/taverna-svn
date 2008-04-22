@@ -2,7 +2,6 @@ package net.sf.taverna.t2.activities.dataflow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
@@ -14,7 +13,6 @@ import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
-import net.sf.taverna.t2.workflowmodel.DataflowPort;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
@@ -33,6 +31,7 @@ import org.apache.log4j.Logger;
 public class DataflowActivity extends
 		AbstractAsynchronousActivity<DataflowActivityConfigurationBean> {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger
 			.getLogger(DataflowActivity.class);
 
@@ -120,11 +119,6 @@ public class DataflowActivity extends
 			addOutput(dataflowOutputPort.getName(), dataflowOutputPort
 					.getDepth(), dataflowOutputPort.getGranularDepth());
 		}
-	}
-
-	private List<String> getMimeTypes(DataflowPort outputPort) {
-		// TODO get the mime types from the annotation
-		return new ArrayList<String>();
 	}
 
 }

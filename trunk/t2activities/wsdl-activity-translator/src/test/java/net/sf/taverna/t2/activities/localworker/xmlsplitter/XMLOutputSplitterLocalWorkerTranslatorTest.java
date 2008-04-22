@@ -1,7 +1,8 @@
 package net.sf.taverna.t2.activities.localworker.xmlsplitter;
 
-import static org.junit.Assert.*;
-
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.activities.wsdl.xmlsplitter.XMLOutputSplitterActivity;

@@ -12,7 +12,6 @@ import java.util.Map;
 
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
 
-import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceXMLHandler;
 import org.jdom.Document;
 import org.jdom.Element;

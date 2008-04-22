@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
 
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;

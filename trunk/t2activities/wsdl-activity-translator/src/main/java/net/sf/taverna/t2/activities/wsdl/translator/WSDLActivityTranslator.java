@@ -2,11 +2,13 @@ package net.sf.taverna.t2.activities.wsdl.translator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
 import org.embl.ebi.escience.scufl.Processor;
 
 /**
@@ -19,7 +21,8 @@ import org.embl.ebi.escience.scufl.Processor;
  */
 public class WSDLActivityTranslator extends AbstractActivityTranslator<WSDLActivityConfigurationBean>{
     
-    protected WSDLActivityConfigurationBean createConfigType(Processor processor) throws ActivityTranslationException {
+    @Override
+	protected WSDLActivityConfigurationBean createConfigType(Processor processor) throws ActivityTranslationException {
         WSDLActivityConfigurationBean bean = new WSDLActivityConfigurationBean();
         bean.setWsdl(determineWSDL(processor));
         bean.setOperation(determineOperation(processor));
@@ -36,7 +39,8 @@ public class WSDLActivityTranslator extends AbstractActivityTranslator<WSDLActiv
     /**
      * Creates a new instance an unconfigured Activity and returns it.
      */
-    protected Activity<WSDLActivityConfigurationBean> createUnconfiguredActivity() {
+    @Override
+	protected Activity<WSDLActivityConfigurationBean> createUnconfiguredActivity() {
         return new WSDLActivity();
     }
     

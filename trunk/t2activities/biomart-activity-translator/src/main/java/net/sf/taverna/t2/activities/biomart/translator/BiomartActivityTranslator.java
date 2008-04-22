@@ -9,8 +9,6 @@ import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
 
-import org.biomart.martservice.MartQuery;
-import org.biomart.martservice.MartServiceXMLHandler;
 import org.embl.ebi.escience.scufl.Processor;
 import org.jdom.Element;
 import org.jdom.Namespace;

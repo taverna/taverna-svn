@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.stringconstant;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

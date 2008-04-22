@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.activities.testutils;
 
 import java.util.Properties;
+
 import org.embl.ebi.escience.scufl.Processor;
 
 /**
@@ -14,7 +15,8 @@ public class DummyProcessor extends Processor {
 		public DummyProcessor() throws Exception {
             super(null,"wsdl");
         }
-        public Properties getProperties() {
+        @Override
+		public Properties getProperties() {
             return new Properties();
         }	
 }

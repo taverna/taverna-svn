@@ -1,12 +1,12 @@
 package net.sf.taverna.t2.activities.apiconsumer.translator;
 
-import org.embl.ebi.escience.scufl.Processor;
-
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivity;
 import net.sf.taverna.t2.activities.apiconsumer.ApiConsumerActivityConfigBean;
 import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 public class ApiConsumerActivityTranslator extends AbstractActivityTranslator<ApiConsumerActivityConfigBean>{
 

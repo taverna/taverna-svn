@@ -44,7 +44,8 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
      * During this process the WSDL is parsed to determine the input and output ports.
      * @param bean the {@link WSDLActivityConfigurationBean} configuration bean
      */
-    public void configure(WSDLActivityConfigurationBean bean) throws ActivityConfigurationException {
+    @Override
+	public void configure(WSDLActivityConfigurationBean bean) throws ActivityConfigurationException {
         this.configurationBean = bean;
         try {
             parseWSDL();
@@ -57,7 +58,8 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
     /**
      * @return a {@link WSDLActivityConfigurationBean} representing the WSDLActivity configuration
      */
-    public WSDLActivityConfigurationBean getConfiguration() {
+    @Override
+	public WSDLActivityConfigurationBean getConfiguration() {
         return configurationBean;
     }
     

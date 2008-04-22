@@ -15,10 +15,10 @@ import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
 import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
 import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
 import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.util.beanable.RetrievalException;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -67,6 +67,7 @@ public class SoaplabActivity extends
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
+			@SuppressWarnings("unchecked")
 			public void run() {
 				DataFacade dataFacade = new DataFacade(callback.getContext()
 						.getDataManager());
@@ -278,6 +279,7 @@ public class SoaplabActivity extends
 		return listOfBytes;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void generatePorts() throws ActivityConfigurationException {
 		// Wipe the existing port declarations
 		// ports = new ArrayList();

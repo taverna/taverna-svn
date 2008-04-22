@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.biomart.martservice.MartQuery;
-import org.biomart.martservice.MartServiceXMLHandler;
 import org.jdom.Element;
 import org.junit.Before;
 import org.junit.Test;
