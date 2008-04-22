@@ -1,15 +1,15 @@
-package net.sf.taverna.t2.cloudone.datamanager;
+package net.sf.taverna.t2.util.beanable;
 
 
 /**
- * Thrown when an entity or blob can't be retrieved from a {@link DataManager},
+ * Thrown when an object can't be retrieved from the underlying store,
  * for instance because of access failure.
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
  * 
  */
-public class RetrievalException extends net.sf.taverna.t2.util.beanable.RetrievalException {
+public class RetrievalException extends RuntimeException {
 
 	public RetrievalException() {
 	}

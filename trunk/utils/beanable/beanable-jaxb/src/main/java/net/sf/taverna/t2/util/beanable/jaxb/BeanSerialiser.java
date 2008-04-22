@@ -19,8 +19,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.datamanager.StorageException;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.spi.SPIRegistry;
@@ -28,6 +26,8 @@ import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.util.beanable.Beanable;
 import net.sf.taverna.t2.util.beanable.BeanableFactory;
 import net.sf.taverna.t2.util.beanable.BeanableFactoryRegistry;
+import net.sf.taverna.t2.util.beanable.RetrievalException;
+import net.sf.taverna.t2.util.beanable.StorageException;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;

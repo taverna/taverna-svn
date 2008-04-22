@@ -1,15 +1,13 @@
-package net.sf.taverna.t2.cloudone.datamanager;
-
+package net.sf.taverna.t2.util.beanable;
 
 /**
- * Thrown when a {@link DataManager} can't store an entity or blob, for instance
- * because a disk is full.
+ * Thrown when an object can be stored, for instance because a disk is full.
  * 
  * @author Ian Dunlop
  * @author Stian Soiland
  * 
  */
-public class StorageException extends net.sf.taverna.t2.util.beanable.StorageException {
+public class StorageException extends RuntimeException {
 
 	public StorageException() {
 	}

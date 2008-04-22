@@ -198,6 +198,7 @@
 	</distributionManagement>
 	
 	<modules>
+		<module>beanable</module>
 		<module>lang</module>
 		<module>raven-parent</module>
 	</modules>

@@ -2,34 +2,26 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>beanable-jaxb</artifactId>
+	<artifactId>beanable-api</artifactId>
 	<version>0.3-SNAPSHOT</version>
-	<name>Beanable JAXB implementation</name>
+	<name>Beanable API</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>util</artifactId>
+		<artifactId>beanable</artifactId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
-	<description>
-		Serialisation framework for t2, JAXB-based implementation
-	</description>
+	<description>Serialisation framework for t2</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>beanable-api</artifactId>
+			<artifactId>spi-discovery-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.0</version>
 		</dependency>
-				<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.0.3</version>
-		</dependency>
-		
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
@@ -38,10 +30,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>jdom</groupId>
-			<artifactId>jdom</artifactId>
 		</dependency>
 	</dependencies>
 </project>
