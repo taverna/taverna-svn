@@ -8,3 +8,5 @@ javadoc
 .checkstyle
 bin
 .DS_Store
+.hg
+.hgignore

@@ -7,22 +7,20 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>renderers-api</artifactId>
+	<artifactId>compatibility-api</artifactId>
 	<version>0.3-SNAPSHOT</version>
-	<name>Renderers API</name>
-	<description>
-		
-	</description>
+	<name>Compatibility API</name>
+	<description>Translator between Taverna 1 ScuflModel instances and Taverna 2 Dataflow instances</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>spi-discovery-api</artifactId>
+			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>data-impl</artifactId>
-		<version>0.3-SNAPSHOT</version>
+			<groupId>uk.org.mygrid.taverna.scufl</groupId>
+			<artifactId>scufl-model</artifactId>
+			<version>1.7.1.0</version>
 		</dependency>
 	</dependencies>
 </project>

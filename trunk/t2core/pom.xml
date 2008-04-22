@@ -5,7 +5,7 @@
 	<artifactId>core</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna 2 Core</name>
-	<version>0.2.0</version>
+	<version>0.3-SNAPSHOT</version>
 	<licenses>
 		<license>
 			<name>GNU Lesser General Public License</name>
@@ -79,18 +79,18 @@
 	<modules>
 		<module>lang</module>
 		<module>util</module>
-		<module>cloudone-api</module>
-		<module>cloudone-impl</module>
-		<module>cloudone-http</module>
-		<module>cloudone-gui</module>
-		<module>maelstrom-api</module>
-		<module>maelstrom-impl</module>
-		<module>tsunami-api</module>
-		<module>snowflake-api</module>
+		<module>data-api</module>
+		<module>data-impl</module>
+		<module>data-http</module>
+		<module>data-gui</module>
+		<module>workflowmodel-api</module>
+		<module>workflowmodel-impl</module>
+		<module>security-api</module>
+		<module>spi-discovery-api</module>
 		<module>drizzle-api</module>
 		<module>drizzle-impl</module>
-		<module>cyclone-api</module>
-		<module>cyclone-impl</module>
+		<module>compatibility-api</module>
+		<module>compatibility-impl</module>
 		<module>renderers-api</module>
 		<module>renderers-impl</module>
 		<!-- <module>persistent-store</module> -->

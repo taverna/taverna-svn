@@ -4,23 +4,23 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>core</artifactId>
-		<version>0.2.0</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>persistent-store</artifactId>
-	<version>0.2.0</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Persistent entity store</name>
 	<description>Implementation using hibernate and JPA</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cloudone-impl</artifactId>
-			<version>0.2.0</version>
+			<artifactId>data-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 				<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cloudone-api</artifactId>
-			<version>0.2.0</version>
+			<artifactId>data-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

@@ -7,21 +7,22 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>renderers-impl</artifactId>
+	<artifactId>data-gui</artifactId>
 	<version>0.3-SNAPSHOT</version>
-	<name>Renderers Implementation</name>
+	<name>Data GUI for data manager</name>
 	<description>
-
+		User interface for viewing and creating entities for a
+		DataManager.
 	</description>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>renderers-api</artifactId>
+			<artifactId>observer</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-api</artifactId>
+			<artifactId>data-impl</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -30,19 +31,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.org.mygrid.resources</groupId>
-			<artifactId>Jmol</artifactId>
-			<version>NO-VERSION</version>
+			<groupId>jmimemagic</groupId>
+			<artifactId>jmimemagic</artifactId>
+			<version>0.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-swing</artifactId>
-			<version>1.6-1</version>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
 		</dependency>
-		<dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>seqvista-hacked</artifactId>
-      <version>NO-VERSION</version>
-    </dependency>
 	</dependencies>
 </project>

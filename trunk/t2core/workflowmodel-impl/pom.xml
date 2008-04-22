@@ -7,21 +7,32 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>renderers-impl</artifactId>
+	<artifactId>workflowmodel-impl</artifactId>
 	<version>0.3-SNAPSHOT</version>
-	<name>Renderers Implementation</name>
+	<name>Workflow Model Impl.</name>
 	<description>
-
+		Implementation of the core workflow object model for Taverna 2
+		workflows including concrete instances of the workflow
+		definition objects and enactment behaviours.
 	</description>
 	<dependencies>
 		<dependency>
+			<groupId>jdom</groupId>
+			<artifactId>jdom</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>renderers-api</artifactId>
+			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-api</artifactId>
+			<artifactId>data-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>security-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -29,20 +40,5 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.resources</groupId>
-			<artifactId>Jmol</artifactId>
-			<version>NO-VERSION</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-swing</artifactId>
-			<version>1.6-1</version>
-		</dependency>
-		<dependency>
-      <groupId>uk.org.mygrid.resources</groupId>
-      <artifactId>seqvista-hacked</artifactId>
-      <version>NO-VERSION</version>
-    </dependency>
 	</dependencies>
 </project>
