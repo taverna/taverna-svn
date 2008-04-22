@@ -2,3 +2,4 @@ target
 .checkstyle
 .settings
 .classpath
+target-eclipse
