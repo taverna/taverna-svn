@@ -5,58 +5,58 @@
 	<parent>
 		<artifactId>activities</artifactId>
 		<groupId>net.sf.taverna.t2</groupId>
-		<version>0.2.0</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>all-activities</artifactId>
-	<version>0.2.1</version>
+	<version>0.3-SNAPSHOT</version>
 	<name>Taverna 2 All official activities (meta artifact)</name>
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>apiconsumer-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>beanshell-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomoby-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>dataflow-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>soaplab-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>rshell-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>stringconstant-activity</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity</artifactId>
-			<version>0.2.1</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

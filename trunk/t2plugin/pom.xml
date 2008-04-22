@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2-plugin</artifactId>
-	<version>0.2.0</version>
+	<version>0.3-SNAPSHOT</version>
 	<description>Preview of Taverna 2 enactment</description>
 	<name>Taverna 2 enactment plugin</name>
 	<licenses>
@@ -132,38 +132,38 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cyclone-api</artifactId>
-			<version>0.2.0</version>
+			<artifactId>compatibility-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cloudone-impl</artifactId>
-			<version>0.2.0</version>
+			<artifactId>compatibility-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cloudone-gui</artifactId>
-			<version>0.2.0</version>
+			<artifactId>data-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cyclone-impl</artifactId>
-			<version>0.2.0</version>
+			<artifactId>data-gui</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>maelstrom-impl</artifactId>
-			<version>0.2.0</version>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>renderers-api</artifactId>
-			<version>0.2.0</version>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>renderers-impl</artifactId>
-		<version>0.2.0</version>
+		<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>

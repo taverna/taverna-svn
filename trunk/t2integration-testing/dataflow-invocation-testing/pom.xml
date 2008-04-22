@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2integration-testing</artifactId>
-		<version>0.2.0</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>dataflow-invocation-testing</artifactId>
@@ -14,12 +14,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>cyclone-impl</artifactId>
+			<artifactId>compatibility-impl</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>maelstrom-impl</artifactId>
+			<artifactId>workflowmodel-impl</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
 		<dependency>
