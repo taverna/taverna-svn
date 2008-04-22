@@ -33,7 +33,11 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 	 */
 	public void store(DataFacade dataFacade) {
 		webServiceConnector();
-		for (ProvenanceItem provItem : provenanceCollection) {
+		
+		int size = provenanceCollection.size();
+		if (size >0) {
+			//retrieve last event stored and send to the service for storage
+			ProvenanceItem provItem = provenanceCollection.get(size-1);
 			String asString = provItem.getAsString();
 			//get type of provItem and send this info as well
 			if (asString != null) {
@@ -58,8 +62,34 @@ public class WebServiceProvenanceConnector implements ProvenanceConnector {
 					System.out.println("Could not store provenance from xml" + e);
 				}
 			}
-
 		}
+//		for (ProvenanceItem provItem : provenanceCollection) {
+//			String asString = provItem.getAsString();
+//			//get type of provItem and send this info as well
+//			if (asString != null) {
+//				try {
+//					System.out.println("************saving provenance************");
+//					provenanceHttpPort.acceptRawProvenanceEvent(asString,
+//							"dataflow");
+//				} catch (RemoteException e) {
+//					// TODO Auto-generated catch block
+//					System.out.println("Could not store provenance from xml" + e);
+//				}
+//			} else {
+//				XMLOutputter outputter = new XMLOutputter();
+//				String outputString = outputter.outputString(provItem
+//						.getAsXML(dataFacade));
+//				try {
+//					System.out.println("************saving provenance************");
+//					provenanceHttpPort.acceptRawProvenanceEvent(outputString,
+//							"dataflow");
+//				} catch (RemoteException e) {
+//					// TODO Auto-generated catch block
+//					System.out.println("Could not store provenance from xml" + e);
+//				}
+//			}
+//
+//		}
 	}
 
 	private void webServiceConnector() {
