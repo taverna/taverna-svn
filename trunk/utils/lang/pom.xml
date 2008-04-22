@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>net.sf.taverna</groupId>
 		<artifactId>utils</artifactId>
-		<version>1.0</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Taverna 2 language extensions</name>
 	<groupId>net.sf.taverna.t2</groupId>
-	<version>0.2.0</version>
+	<version>0.3-SNAPSHOT</version>
 	<artifactId>lang</artifactId>
 	<packaging>pom</packaging>
 	<dependencyManagement>
