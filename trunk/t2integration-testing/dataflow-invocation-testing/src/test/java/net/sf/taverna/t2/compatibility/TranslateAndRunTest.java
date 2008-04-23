@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.compatibility.CaptureResultsListener;
-import net.sf.taverna.t2.compatibility.TranslatorTestHelper;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -27,7 +25,7 @@ import org.junit.Test;
  * @author Stuart Owen
  * 
  */
-public class TranslateAndRunTest extends TranslatorTestHelper {
+public class TranslateAndRunTest extends InvocationTestHelper {
 
 	@Test
 	public void translateAndValidateBiomartAndEMBOSSTest() throws Exception {

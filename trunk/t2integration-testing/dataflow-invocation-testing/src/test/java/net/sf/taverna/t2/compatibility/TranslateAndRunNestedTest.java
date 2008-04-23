@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import net.sf.taverna.t2.compatibility.CaptureResultsListener;
-import net.sf.taverna.t2.compatibility.TranslatorTestHelper;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -20,7 +18,7 @@ import org.junit.Test;
  * @author Stuart Owen
  *
  */
-public class TranslateAndRunNestedTest extends TranslatorTestHelper {
+public class TranslateAndRunNestedTest extends InvocationTestHelper {
 	
 	@SuppressWarnings("unchecked")
 	@Test

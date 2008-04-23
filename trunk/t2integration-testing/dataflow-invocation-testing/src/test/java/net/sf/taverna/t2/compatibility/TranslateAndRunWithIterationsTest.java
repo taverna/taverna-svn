@@ -6,9 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import net.sf.taverna.t2.compatibility.CaptureResultsListener;
-import net.sf.taverna.t2.compatibility.DataflowTimeoutException;
-import net.sf.taverna.t2.compatibility.TranslatorTestHelper;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -16,7 +13,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.junit.Test;
 
-public class TranslateAndRunWithIterationsTest extends TranslatorTestHelper {
+public class TranslateAndRunWithIterationsTest extends InvocationTestHelper {
 
 	@Test
 	

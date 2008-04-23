@@ -7,17 +7,18 @@
 		<version>0.3-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>dataflow-invocation-testing</artifactId>
-	<name>Testing of Dataflow invocation after Translation from a ScuflModel</name>
+	<artifactId>dataflow-serialization-testing</artifactId>
+	<name>Testing of Dataflow Serialization</name>
 	<packaging>jar</packaging>
 	
 	<dependencies>
+	
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>integration-testing-common</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
-		
+	
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>compatibility-impl</artifactId>

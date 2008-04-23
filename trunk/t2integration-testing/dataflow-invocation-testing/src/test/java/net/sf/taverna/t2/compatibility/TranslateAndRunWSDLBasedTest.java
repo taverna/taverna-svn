@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import net.sf.taverna.t2.compatibility.CaptureResultsListener;
-import net.sf.taverna.t2.compatibility.TranslatorTestHelper;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -15,7 +13,7 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.junit.Test;
 
-public class TranslateAndRunWSDLBasedTest extends TranslatorTestHelper {
+public class TranslateAndRunWSDLBasedTest extends InvocationTestHelper {
 
 	@SuppressWarnings("unchecked")
 	@Test
