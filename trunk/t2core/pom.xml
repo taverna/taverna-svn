@@ -84,7 +84,6 @@
 		<module>workflowmodel-api</module>
 		<module>workflowmodel-impl</module>
 		<module>security-api</module>
-		<module>spi-discovery-api</module>
 		<module>drizzle-api</module>
 		<module>drizzle-impl</module>
 		<module>compatibility-api</module>

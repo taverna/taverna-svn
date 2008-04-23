@@ -84,17 +84,6 @@
 		<repository>
 			<id>mobycentral</id>
 			<name>MobyCentral Repository</name>
-			<url>http://mobycentral.icapture.ubc.ca/maven</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<repository>
-			<id>mobycentral</id>
-			<name>MobyCentral Repository</name>
 			<url>http://moby.ucalgary.ca/moby_maven/</url>
 			<snapshots>
 				<enabled>false</enabled>
@@ -201,6 +190,7 @@
 		<module>beanable</module>
 		<module>lang</module>
 		<module>raven-parent</module>
+		<module>spi-discovery-api</module>
 	</modules>
 
 </project>
