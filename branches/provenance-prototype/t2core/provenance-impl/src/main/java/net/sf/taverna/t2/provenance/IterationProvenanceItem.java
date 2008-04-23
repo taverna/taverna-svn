@@ -63,4 +63,22 @@ public class IterationProvenanceItem implements ProvenanceItem {
 		return null;
 	}
 
+
+
+	public int[] getIteration() {
+		return iteration;
+	}
+
+
+
+	public InputDataProvenanceItem getInputDataItem() {
+		return inputDataItem;
+	}
+
+
+
+	public OutputDataProvenanceItem getOutputDataItem() {
+		return outputDataItem;
+	}
+
 }

@@ -30,6 +30,10 @@ public class ActivityProvenanceItem implements ProvenanceItem {
 			IterationProvenanceItem iterationProvenanceItem) {
 		this.iterationProvenanceItem = iterationProvenanceItem;
 	}
+	
+	public IterationProvenanceItem getIterationProvenanceItem() {
+		return iterationProvenanceItem;
+	}
 
 	public String getAsString() {
 		// TODO Auto-generated method stub

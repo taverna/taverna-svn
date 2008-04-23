@@ -37,5 +37,8 @@ public abstract class DataProvenanceItem implements ProvenanceItem {
 		}
 		return result;
 	}
+	public Map<String, EntityIdentifier> getDataMap() {
+		return dataMap;
+	}
 
 }

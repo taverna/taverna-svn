@@ -30,11 +30,20 @@ public class ProcessorProvenanceItem implements ProvenanceItem {
 			ActivityProvenanceItem activityProvenanceItem) {
 		this.activityProvenanceItem = activityProvenanceItem;
 	}
+	
+	public ActivityProvenanceItem getActivityProvenanceItem() {
+		return activityProvenanceItem;
+	}
 
 
 	public String getAsString() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	public String getProcessorID() {
+		return processorID;
 	}
 
 }
