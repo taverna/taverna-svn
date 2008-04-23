@@ -10,9 +10,9 @@ import net.sf.taverna.t2.activities.rshell.RshellActivity;
 import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.rshell.RshellConnectionSettings;
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.InputPort;

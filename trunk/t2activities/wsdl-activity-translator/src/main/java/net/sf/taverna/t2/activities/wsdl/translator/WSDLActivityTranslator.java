@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;

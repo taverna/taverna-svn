@@ -13,7 +13,7 @@ import net.sf.taverna.t2.activities.biomart.BiomartActivity;
 import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
 import net.sf.taverna.t2.activities.testutils.TranslatorTestHelper;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 

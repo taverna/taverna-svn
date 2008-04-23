@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.embl.ebi.escience.scufl.Processor;

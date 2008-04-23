@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivityConfigurationBean;
-import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
-import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
+import net.sf.taverna.t2.compatibility.WorkflowTranslationException;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 

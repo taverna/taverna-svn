@@ -12,8 +12,8 @@ import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
-import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
+import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
+import net.sf.taverna.t2.compatibility.WorkflowTranslationException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Processor;

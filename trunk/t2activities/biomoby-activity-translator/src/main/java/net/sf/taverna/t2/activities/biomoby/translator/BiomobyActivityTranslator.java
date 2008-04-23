@@ -3,14 +3,14 @@ package net.sf.taverna.t2.activities.biomoby.translator;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.embl.ebi.escience.scufl.Processor;
-
 import net.sf.taverna.t2.activities.biomoby.BiomobyActivity;
 import net.sf.taverna.t2.activities.biomoby.BiomobyActivityConfigurationBean;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
+import org.embl.ebi.escience.scufl.Processor;
 
 /**
  * An ActivityTranslator specifically for translating a Taverna 1 Biomoby Processor to an equivalent Taverna 2 Biomoby Activity

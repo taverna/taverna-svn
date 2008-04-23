@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -26,8 +25,8 @@ import javax.swing.border.EmptyBorder;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.file.FileDataManager;
 import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cyclone.WorkflowModelTranslator;
-import net.sf.taverna.t2.cyclone.WorkflowTranslationException;
+import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
+import net.sf.taverna.t2.compatibility.WorkflowTranslationException;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;

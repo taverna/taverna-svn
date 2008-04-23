@@ -6,9 +6,9 @@ import java.net.URL;
 
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
-import net.sf.taverna.t2.cyclone.activity.AbstractActivityTranslator;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslationException;
-import net.sf.taverna.t2.cyclone.activity.ActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
+import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
 
 import org.embl.ebi.escience.scufl.Processor;
 
