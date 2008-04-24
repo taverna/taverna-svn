@@ -167,6 +167,7 @@ public abstract class ZBasePane extends ZPane {
 	 * will always be extended, the only reason to avoid making this entire
 	 * class abstract is for testing purposes (not a very good reason really)
 	 */
+	@SuppressWarnings("unchecked")
 	public abstract JComponent getComponent(Class theClass);
 
 	public Element getElement() {
@@ -211,6 +212,7 @@ public abstract class ZBasePane extends ZPane {
 	 * this method any more specialized to avoid dependencies on the potential
 	 * range of SPI interfaces.
 	 */
+	@SuppressWarnings("unchecked")
 	public abstract JMenuItem getMenuItem(Class theClass);
 
 	/**
@@ -281,6 +283,7 @@ public abstract class ZBasePane extends ZPane {
 	/**
 	 * Call setEditable on the single child
 	 */
+	@Override
 	public void setEditable(boolean b) {
 		super.setEditable(b);
 		if (child != null) {
@@ -383,6 +386,7 @@ public abstract class ZBasePane extends ZPane {
 	 * @param componentName
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	JComponent getNamedComponent(String componentName) {
 		synchronized (namedComponents) {
 			if (namedComponents.containsKey(componentName)) {
@@ -430,6 +434,7 @@ public abstract class ZBasePane extends ZPane {
 			this.className = className;
 		}
 
+		@SuppressWarnings("unchecked")
 		public Class getComponentClass() throws ArtifactNotFoundException,
 				ArtifactStateException, ClassNotFoundException {
 			ClassLoader acl = repository.getLoader(artifact, null);

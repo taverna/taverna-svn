@@ -125,6 +125,7 @@ public class ZTabbedPane extends ZPane {
 	/**
 	 * Get the tab name editor
 	 */
+	@Override
 	public List<Component> getToolbarComponents() {
 		List<Component> components = new ArrayList<Component>();
 		components.add(Box.createRigidArea(new Dimension(5, 5)));
@@ -156,6 +157,7 @@ public class ZTabbedPane extends ZPane {
 	 * Call superclass method to show or hide toolbar and recursively call on
 	 * all child elements.
 	 */
+	@Override
 	public void setEditable(boolean editable) {
 		super.setEditable(editable);
 		for (ZTreeNode child : getZChildren()) {

@@ -99,6 +99,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 	public void mouseReleased(MouseEvent e) {
 	}
 
+	@Override
 	public void paintComponent(Graphics g) {
 		if (!started) {
 			return;
@@ -167,6 +168,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private Area buildPrimitive() {
 		Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
 		Ellipse2D.Double head = new Ellipse2D.Double(0, 0, 12, 12);

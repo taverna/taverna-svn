@@ -56,6 +56,10 @@ public class LocalRepository implements Repository {
 
 	private static Log logger = Log.getLogger(LocalRepository.class);
 
+	private static final String RAVEN_ARTIFACT = "raven";
+
+	private static final String RAVEN_GROUPID = "uk.org.mygrid.taverna.raven";
+
 	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
 
 	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
@@ -99,6 +103,7 @@ public class LocalRepository implements Repository {
 		return repositoryCache.get(base);
 
 	}
+
 	/**
 	 * Map of Artifact to a two element array of total size in current download
 	 * and bytes downloaded. If the artifact has no pending downloads it will
@@ -135,7 +140,7 @@ public class LocalRepository implements Repository {
 
 	// the version of raven to used as the artifact for the faked classloader
 	// used during initialisation.
-	private final String RAVEN_VERSION = "1.7.1.0";
+	private final String RAVEN_VERSION = "1.7-SNAPSHOT";
 
 	/**
 	 * URL list of remote repository base URLs. Modified by
@@ -171,7 +176,7 @@ public class LocalRepository implements Repository {
 		}
 		// Fake in our own classloader
 		Artifact ravenArtifact = new BasicArtifact(
-				"uk.org.mygrid.taverna.raven", "raven", RAVEN_VERSION);
+				RAVEN_GROUPID, RAVEN_ARTIFACT, RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
@@ -201,7 +206,7 @@ public class LocalRepository implements Repository {
 		}
 		// Fake in our own classloader
 		Artifact ravenArtifact = new BasicArtifact(
-				"uk.org.mygrid.taverna.raven", "raven", RAVEN_VERSION);
+				RAVEN_GROUPID, RAVEN_ARTIFACT, RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
@@ -251,7 +256,7 @@ public class LocalRepository implements Repository {
 	 * created it. If the classloader was not an instance of
 	 * LocalArtifactClassLoader then return null
 	 */
-	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
+	public Artifact artifactForClass(Class<?> c) throws ArtifactNotFoundException {
 		synchronized (loaderMap) {
 			for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap
 					.entrySet()) {
@@ -468,7 +473,13 @@ public class LocalRepository implements Repository {
 			ArtifactStatus s = status.get(a);
 			if (s.equals(ArtifactStatus.Pom)) {
 				// logger.debug(a.toString());
-				if (!"jar".equals(a.getPackageType())) {
+				if (!"jar".equals(a.getPackageType())
+						&& !"bundle".equals(a.getPackageType())) {
+					/**
+					 * "jar" is the normal package type, bundle is a special JAR
+					 * that contains also the unpacked dependencies - see
+					 * http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
+					 */
 					setStatus(a, ArtifactStatus.PomNonJar);
 				} else {
 					try {

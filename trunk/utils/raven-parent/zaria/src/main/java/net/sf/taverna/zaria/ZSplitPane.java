@@ -132,6 +132,7 @@ public class ZSplitPane extends ZPane {
 	 * Call superclass method to show or hide toolbar and recursively call on
 	 * all child elements.
 	 */
+	@Override
 	public void setEditable(boolean editable) {
 		super.setEditable(editable);
 		for (ZTreeNode child : getZChildren()) {
@@ -206,6 +207,7 @@ public class ZSplitPane extends ZPane {
 	public class DividerLocationSplitPane extends JSplitPane {
 		private boolean initialDividerSet = false;
 
+		@Override
 		public int getDividerLocation() {
 			if (!initialDividerSet && getWidth() > 0) {
 				setDividerLocation(dividerLocation);

@@ -65,6 +65,7 @@ public class ZRavenComponent extends ZPane {
 		add(contentArea, BorderLayout.CENTER);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void configure(Element confElement) {
 		Element e = confElement.getChild("component");
 		if (e == null) {
@@ -349,6 +350,7 @@ public class ZRavenComponent extends ZPane {
 			setEnabled(false);
 		}
 
+		@SuppressWarnings("unchecked")
 		public void actionPerformed(ActionEvent e) {
 			JPopupMenu menu = new JPopupMenu("Available Components");
 			for (final Class theClass : registry.getClasses()) {

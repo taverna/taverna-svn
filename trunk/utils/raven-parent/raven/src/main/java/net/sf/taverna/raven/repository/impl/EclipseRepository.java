@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-24 15:05:11 $
+ * Last modified on   $Date: 2008-04-24 18:24:55 $
  *               by   $Author: stain $
  * Created on 18 Oct 2006
  *****************************************************************/
@@ -86,6 +86,7 @@ public class EclipseRepository implements Repository {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
 		return null;
 	}

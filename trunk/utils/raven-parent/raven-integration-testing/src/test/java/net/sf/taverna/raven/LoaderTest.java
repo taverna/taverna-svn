@@ -74,6 +74,7 @@ public class LoaderTest {
 	 * @throws InterruptedException
 	 */
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void shouldTestDynamic() throws MalformedURLException,
 			ClassNotFoundException, SecurityException, NoSuchMethodException,
@@ -129,6 +130,7 @@ public class LoaderTest {
 		// workbenchMain.invoke(null,new Object[]{new String[0]});
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testDynamicNonGui() throws ClassNotFoundException,
 			NoSuchMethodException, MalformedURLException,

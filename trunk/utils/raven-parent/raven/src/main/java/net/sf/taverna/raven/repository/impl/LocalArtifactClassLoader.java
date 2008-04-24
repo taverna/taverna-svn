@@ -29,6 +29,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	private List<LocalArtifactClassLoader> childLoaders = new ArrayList<LocalArtifactClassLoader>();
 
+	@SuppressWarnings("unchecked")
 	private Map<String, Class> classMap = new HashMap<String, Class>();
 
 	private String name;
@@ -91,6 +92,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		return repository;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	/**
 	 * Overridden to prevent it checking parents if the parent is the
@@ -180,6 +182,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	private Class<?> loadClass(String name, Set<ClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		Class result = null;
@@ -196,7 +199,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 						if (parent instanceof LocalArtifactClassLoader) {
 							result = ((LocalArtifactClassLoader) parent)
 									.loadClass(name, seenLoaders);
-						} else if (parent != null) {
+						} else {
 							if (validClassLoaderForName(parent, name))
 								result = parent.loadClass(name);
 						}
@@ -258,6 +261,7 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Class<?> findClass(String name, Set<ClassLoader> seenLoaders)
 			throws ClassNotFoundException {
 		Class result = null;
