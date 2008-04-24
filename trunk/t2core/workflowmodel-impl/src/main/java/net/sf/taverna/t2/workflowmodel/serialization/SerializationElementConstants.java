@@ -10,6 +10,7 @@ public interface SerializationElementConstants {
 	static final String ACTIVITY = "activity";
 	static final String NAME="name";
 	static final String PROCESSOR = "processor";
+	static final String PROCESSORS = "processors";
 	static final String JAVA = "java";
 	static final String OUTPUT_MAP = "outputMap";
 	static final String TO = "to";
@@ -27,5 +28,17 @@ public interface SerializationElementConstants {
 	static final String CONDITION = "condition";
 	static final String ANNOTATIONS = "annotations";
 	static final String ANNOTATION = "annotation";
+	static final String DATAFLOW = "dataflow";
+	static final String DATALINK = "datalink";
+	static final String DATALINKS = "datalinks";
+	static final String SINK = "sink";
+	static final String SOURCE = "source";
+	static final String PORT = "port";
+	static final String PROCESSOR_PORT = "port";
+	static final String DEPTH="depth";
+	static final String GRANULAR_DEPTH="granularDepth";
+	static final String DATAFLOW_INPUT_PORTS="inputPorts";
+	static final String DATAFLOW_OUTPUT_PORTS="outputPorts";
+	static final String DATAFLOW_PORT="port";
 	
 }

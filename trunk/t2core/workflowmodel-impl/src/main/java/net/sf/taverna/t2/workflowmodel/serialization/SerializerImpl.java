@@ -13,8 +13,13 @@ import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
@@ -28,9 +33,80 @@ import org.jdom.input.SAXBuilder;
 public class SerializerImpl implements Serializer,SerializationElementConstants {
 
 	public Element serializeDataflowToXML(Dataflow df) throws SerializationException {
-		// TODO Auto-generated method stub
+		Element result = new Element(DATAFLOW);
+		try {
+			
+			//do dataflow inputs and outputs
+			result.addContent(dataflowInputPortsToXML(df.getInputPorts()));
+			result.addContent(dataflowOutputPortsToXML(df.getOutputPorts()));
+			
+			//do processors
+			Element processors = new Element(PROCESSORS);
+			for (Processor processor : df.getProcessors()) {
+				processors.addContent(processorToXML(processor));
+			}
+			result.addContent(processors);
+			
+			//do conditions
+			result.addContent(conditionsToXML(df.getProcessors()));
+			
+			//do datalinks
+			result.addContent(datalinksToXML(df.getLinks()));
+			
+			//do annotations
+		}
+		//FIXME: improve error reporting
+		catch(JDOMException jdomException) {
+			throw new SerializationException("There was a problem generating the XML for the dataflow",jdomException);
+		}
+		catch(IOException ioException) {
+			throw new SerializationException("There was a problem generating the XML for the dataflow",ioException);
+		}
+		return result;
+	}
+
+	protected Element dataflowInputPortsToXML(
+			List<? extends DataflowInputPort> inputPorts) {
+		Element result = new Element(DATAFLOW_INPUT_PORTS);
+		for (DataflowInputPort port : inputPorts) {
+			Element portElement = new Element(DATAFLOW_PORT);
+			Element name = new Element(NAME);
+			Element depth = new Element(DEPTH);
+			Element granularDepth=new Element(GRANULAR_DEPTH);
+			
+			name.setText(port.getName());
+			depth.setText(String.valueOf(port.getDepth()));
+			granularDepth.setText(String.valueOf(port.getGranularInputDepth()));
+			
+			portElement.addContent(name);
+			portElement.addContent(depth);
+			portElement.addContent(granularDepth);
+			result.addContent(portElement);
+		}
+		return result;
+	}
+	
+	protected Element dataflowOutputPortsToXML(
+			List<? extends DataflowOutputPort> outputPorts) {
+		Element result = new Element(DATAFLOW_OUTPUT_PORTS);
+		for (DataflowOutputPort port : outputPorts) {
+			Element portElement = new Element(DATAFLOW_PORT);
+			Element name = new Element(NAME);
+			name.setText(port.getName());
+			
+			portElement.addContent(name);
+			result.addContent(portElement);
+		}
+		return result;
 		
-		return null;
+	}
+
+	protected Element datalinksToXML(List<? extends Datalink> links) throws SerializationException {
+		Element result = new Element(DATALINKS);
+		for (Datalink link : links) {
+			result.addContent(datalinkToXML(link));
+		}
+		return result;
 	}
 
 	protected Element activityToXML(Activity<?> activity) throws JDOMException,IOException {
@@ -118,8 +194,8 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		result.addContent(nameElement);
 		
 		//input and output ports
-		Element inputPorts = new Element(PROCESSOR_INPUT_PORTS);
-		Element outputPorts = new Element(PROCESSOR_OUTPUT_PORTS);
+		Element inputPorts = processorInputPortsToXML(processor);
+		Element outputPorts = processorOutputPortsToXML(processor);
 		result.addContent(inputPorts);
 		result.addContent(outputPorts);
 		
@@ -140,6 +216,39 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		result.addContent(iterationStrategyStackToXML(processor.getIterationStrategy()));
 		
 		return result;
+	}
+
+	private Element processorOutputPortsToXML(Processor processor) {
+		Element outputPorts = new Element(PROCESSOR_OUTPUT_PORTS);
+		for (ProcessorOutputPort port : processor.getOutputPorts()) {
+			Element portElement = new Element(PROCESSOR_PORT);
+			Element name=new Element(NAME);
+			Element depth=new Element(DEPTH);
+			Element granularDepth=new Element(GRANULAR_DEPTH);
+			name.setText(port.getName());
+			depth.setText(String.valueOf(port.getDepth()));
+			granularDepth.setText(String.valueOf(port.getGranularDepth()));
+			portElement.addContent(name);
+			portElement.addContent(depth);
+			portElement.addContent(granularDepth);
+			outputPorts.addContent(portElement);
+		}
+		return outputPorts;
+	}
+
+	private Element processorInputPortsToXML(Processor processor) {
+		Element inputPorts = new Element(PROCESSOR_INPUT_PORTS);
+		for (ProcessorInputPort port : processor.getInputPorts()) {
+			Element portElement = new Element(PROCESSOR_PORT);
+			Element name=new Element(NAME);
+			Element depth=new Element(DEPTH);
+			name.setText(port.getName());
+			depth.setText(String.valueOf(port.getDepth()));
+			portElement.addContent(name);
+			portElement.addContent(depth);
+			inputPorts.addContent(portElement);
+		}
+		return inputPorts;
 	}
 	
 	/**
@@ -192,11 +301,41 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		return configElement;
 	}
 	
-	protected Element dataLinkToXML(Datalink link) {
-		return null;
+	protected Element datalinkToXML(Datalink link) throws SerializationException{
+		Element element = new Element(DATALINK);
+		Element sink = new Element(SINK);
+		Element source = new Element(SOURCE);
+		sink.setAttribute("class",link.getSink().getClass().getName());
+		source.setAttribute("class",link.getSource().getClass().getName());
+		if (link.getSink() instanceof ProcessorPort) {
+			ProcessorPort port = (ProcessorPort)link.getSink();
+			Element proc=new Element(PROCESSOR);
+			proc.setText(port.getProcessor().getLocalName());
+			sink.addContent(proc);
+		}
+		Element portElement = new Element(PORT);
+		portElement.setText(link.getSink().getName());
+		sink.addContent(portElement);
+		
+		if (link.getSource() instanceof ProcessorPort) {
+			ProcessorPort port = (ProcessorPort)link.getSource();
+			Element proc=new Element(PROCESSOR);
+			proc.setText(port.getProcessor().getLocalName());
+			source.addContent(proc);
+		}
+		portElement = new Element(PORT);
+		portElement.setText(link.getSource().getName());
+		source.addContent(portElement);
+		
+		
+		element.addContent(sink);
+		element.addContent(source);
+		
+		return element;
 	}
-	
-	protected Element conditionsToXML(List<Processor> processors) {
+
+
+	protected Element conditionsToXML(List<? extends Processor> processors) {
 		Element result = new Element(CONDITIONS);
 		
 		//gather conditions

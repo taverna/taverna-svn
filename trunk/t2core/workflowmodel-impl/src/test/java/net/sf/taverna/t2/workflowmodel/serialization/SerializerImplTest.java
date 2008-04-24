@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
@@ -28,6 +30,81 @@ public class SerializerImplTest {
 	
 	private SerializerImpl serializer=new SerializerImpl();
 	private EditsImpl edits = new EditsImpl();
+	
+	@Test
+	public void testDatalinks() throws Exception {
+		Processor p = edits.createProcessor("top");
+		Processor p2 = edits.createProcessor("bottom");
+		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
+		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		Datalink link = edits.createDatalink(p.getOutputPorts().get(0), p2.getInputPorts().get(0));
+		List<Datalink> links = new ArrayList<Datalink>();
+		links.add(link);
+		
+		Element el = serializer.datalinksToXML(links);
+		
+		assertEquals("Root name should be datalinks","datalinks",el.getName());
+		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink").size());
+		
+	}
+	
+	@Test
+	public void testDataflowInputPorts() throws Exception {
+		Dataflow df = edits.createDataflow();
+		edits.getCreateDataflowInputPortEdit(df, "dataflow_in", 1, 0).doEdit();
+		
+		Element el = serializer.dataflowInputPortsToXML(df.getInputPorts());
+		
+		logger.info("dataflow input ports xml = "+elementToString(el));
+		
+		assertEquals("root name should be inputPorts","inputPorts",el.getName());
+		assertEquals("there should be 1 child called port",1,el.getChildren("port").size());
+		Element port=el.getChild("port");
+		assertEquals("name should be dataflow_in","dataflow_in",port.getChild("name").getText());
+		assertEquals("depth should be 1","1",port.getChild("depth").getText());
+		assertEquals("granular depth should be 0","0",port.getChild("granularDepth").getText());
+		
+	}
+	
+	@Test
+	public void testDataflowOutputPorts() throws Exception {
+		Dataflow df = edits.createDataflow();
+		edits.getCreateDataflowOutputPortEdit(df, "dataflow_out").doEdit();
+		Element el = serializer.dataflowOutputPortsToXML(df.getOutputPorts());
+		
+		logger.info("dataflow output ports xml = "+elementToString(el));
+		
+		assertEquals("root name should be outputPorts","outputPorts",el.getName());
+		assertEquals("there should be 1 child called port",1,el.getChildren("port").size());
+		Element port=el.getChild("port");
+		assertEquals("name should be dataflow_out","dataflow_out",port.getChild("name").getText());
+	}
+	
+	@Test
+	public void testDatalink() throws Exception {
+		Processor p = edits.createProcessor("top");
+		Processor p2 = edits.createProcessor("bottom");
+		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
+		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		Datalink link = edits.createDatalink(p.getOutputPorts().get(0), p2.getInputPorts().get(0));
+		edits.getConnectDatalinkEdit(link).doEdit();
+		
+		Element el = serializer.datalinkToXML(link);
+		
+		logger.info("Serialized datalink xml = "+elementToString(el));
+		
+		assertEquals("root name should be datalink","datalink",el.getName());
+		assertEquals("there should be 1 child called source",1,el.getChildren("source").size());
+		assertEquals("there should be 1 child called sink",1,el.getChildren("sink").size());
+		Element sink=el.getChild("sink");
+		Element source=el.getChild("source");
+		
+		assertEquals("source processor should be called 'top'","top",source.getChild("processor").getText());
+		assertEquals("sink processor should be called 'bottom'","bottom",sink.getChild("processor").getText());
+		
+		assertEquals("source port should be called 'output'","output",source.getChild("port").getText());
+		assertEquals("sink port should be called 'input'","input",sink.getChild("port").getText());
+	}
 	
 	@Test
 	public void testActivitySerialization() throws Exception
@@ -60,6 +137,9 @@ public class SerializerImplTest {
 	@Test
 	public void testProcessorSerialization() throws Exception {
 		Processor p = edits.createProcessor("fred");
+		edits.getCreateProcessorInputPortEdit(p, "input", 0).doEdit();
+		edits.getCreateProcessorOutputPortEdit(p, "output", 1, 0).doEdit();
+		
 		Element el = serializer.processorToXML(p);
 		
 		logger.info("processor serialization xml = "+elementToString(el));
@@ -76,7 +156,17 @@ public class SerializerImplTest {
 		assertEquals("there should be an dispatch statck child (even if its empty)",1,el.getChildren("dispatchStack").size());
 		assertEquals("there should be an iteration strategy stack child (even if its empty)",1,el.getChildren("iterationStrategyStack").size());
 		assertEquals("there should be an input ports child (even if its empty)",1,el.getChildren("inputPorts").size());
+		Element inputPorts = el.getChild("inputPorts");
+		assertEquals("there should be 1 port element",1,inputPorts.getChildren("port").size());
+		Element port = inputPorts.getChild("port");
+		assertEquals("name should be input","input",port.getChild("name").getText());
+		assertEquals("depth should be 0","0",port.getChild("depth").getText());
+		Element outputPorts = el.getChild("outputPorts");
 		assertEquals("there should be an output ports child (even if its empty)",1,el.getChildren("outputPorts").size());
+		port = outputPorts.getChild("port");
+		assertEquals("name should be output","output",port.getChild("name").getText());
+		assertEquals("depth should be 1","1",port.getChild("depth").getText());
+		assertEquals("granularDepth should be 0","0",port.getChild("granularDepth").getText());
 	}
 	
 	@Test
