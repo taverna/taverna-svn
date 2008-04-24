@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -18,7 +19,7 @@ import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 
-public class DummyDataflow implements Dataflow{
+public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements Dataflow{
 
 	public  List<DataflowInputPort> inputPorts = new ArrayList<DataflowInputPort>();
 	public  List<DataflowOutputPort> outputPorts = new ArrayList<DataflowOutputPort>();
@@ -60,22 +61,6 @@ public class DummyDataflow implements Dataflow{
 		return merges;
 	}
 	
-	public Edit<? extends Dataflow> getAddAnnotationEdit(
-			AnnotationChain newAnnotation) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Set<? extends AnnotationChain> getAnnotations() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Edit<? extends Dataflow> getRemoveAnnotationEdit(
-			AnnotationChain annotationToRemove) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public String getLocalName() {
 		return "test_dataflow";
