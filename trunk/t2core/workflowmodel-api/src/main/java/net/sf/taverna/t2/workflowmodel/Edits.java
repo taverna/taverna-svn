@@ -80,21 +80,6 @@ public interface Edits {
 
 	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
 			Merge processor);
-	
-	/**
-	 * Create a new processor in the specified dataflow configured as a default
-	 * Taverna 1 style activity with output and input ports matching those of
-	 * the Activity instance supplied, a default cross product iteration
-	 * strategy and a dispatch stack consisting of a parallelize, failover,
-	 * retry and invoke layer set.
-	 * 
-	 * @param dataflow
-	 *            the dataflow to add this processor to
-	 * @param activity
-	 *            a single activity to build the processor around
-	 */
-	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
-			Activity<?> activity);
 
 	/**
 	 * Connect the output port of the specified processor to a target input

@@ -42,5 +42,6 @@ public interface IterationStrategyStack {
 	public int getIterationDepth(Map<String, Integer> inputDepths)
 			throws IterationTypeMismatchException,
 			MissingIterationInputException;
+	
 
 }

@@ -44,12 +44,6 @@ public class EditsImpl implements Edits {
 			Merge merge) {
 		return new AddMergeEdit(dataflow, merge);
 	}
-	
-	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
-			Activity<?> activity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public Edit<DispatchStack> getAddDispatchLayerEdit(DispatchStack stack,
 			DispatchLayer<?> layer, int position) {
