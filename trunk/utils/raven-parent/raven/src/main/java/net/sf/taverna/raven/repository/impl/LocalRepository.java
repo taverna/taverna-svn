@@ -52,13 +52,13 @@ import org.xml.sax.SAXException;
  */
 public class LocalRepository implements Repository {
 
-	private static Log logger = Log.getLogger(LocalRepository.class);
-
 	private static FileFilter isDirectory = new AcceptDirectoryFilter();
 
-	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
+	private static Log logger = Log.getLogger(LocalRepository.class);
 
 	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
+
+	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
 
 	/**
 	 * Get a new or cached instance of LocalRepository for the supplied base
@@ -99,21 +99,12 @@ public class LocalRepository implements Repository {
 		return repositoryCache.get(base);
 
 	}
-	// the version of raven to used as the artifact for the faked classloader
-	// used during initialisation.
-	private final String RAVEN_VERSION = "1.7.1.0";
-
-	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
-
-	private ClassLoader parentLoader = null;
-
-	private final List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
-
 	/**
-	 * URL list of remote repository base URLs. Modified by
-	 * {@link #addRemoteRepository(URL)}
+	 * Map of Artifact to a two element array of total size in current download
+	 * and bytes downloaded. If the artifact has no pending downloads it will
+	 * not appear as a key in this map.
 	 */
-	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
+	private Map<ArtifactImpl, DownloadStatusImpl> dlstatus = new HashMap<ArtifactImpl, DownloadStatusImpl>();
 
 	/**
 	 * Subset of repositories that are hosted locally, ie. which URLs start with
@@ -125,16 +116,15 @@ public class LocalRepository implements Repository {
 	private LinkedHashSet<URL> fileRepositories = new LinkedHashSet<URL>();
 
 	/**
-	 * Map of artifact to artifact status
+	 * Cache of jar files for given artifacts, supports pomFile(). File entries
+	 * can be both within the base repository, or from a local file://
+	 * repository
 	 */
-	private Map<ArtifactImpl, ArtifactStatus> status = new HashMap<ArtifactImpl, ArtifactStatus>();
+	private Map<Artifact, File> jarFiles = new HashMap<Artifact, File>();
 
-	/**
-	 * Map of Artifact to a two element array of total size in current download
-	 * and bytes downloaded. If the artifact has no pending downloads it will
-	 * not appear as a key in this map.
-	 */
-	private Map<ArtifactImpl, DownloadStatusImpl> dlstatus = new HashMap<ArtifactImpl, DownloadStatusImpl>();
+	private final List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
+
+	private ClassLoader parentLoader = null;
 
 	/**
 	 * Cache of pom files for given artifacts, supports pomFile(). File entries
@@ -143,12 +133,22 @@ public class LocalRepository implements Repository {
 	 */
 	private Map<Artifact, File> pomFiles = new HashMap<Artifact, File>();
 
+	// the version of raven to used as the artifact for the faked classloader
+	// used during initialisation.
+	private final String RAVEN_VERSION = "1.7.1.0";
+
 	/**
-	 * Cache of jar files for given artifacts, supports pomFile(). File entries
-	 * can be both within the base repository, or from a local file://
-	 * repository
+	 * URL list of remote repository base URLs. Modified by
+	 * {@link #addRemoteRepository(URL)}
 	 */
-	private Map<Artifact, File> jarFiles = new HashMap<Artifact, File>();
+	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
+
+	/**
+	 * Map of artifact to artifact status
+	 */
+	private Map<ArtifactImpl, ArtifactStatus> status = new HashMap<ArtifactImpl, ArtifactStatus>();
+
+	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 
 	/**
 	 * Base directory for the local repository
@@ -978,41 +978,6 @@ public class LocalRepository implements Repository {
 			// Don't need to check previous content, finished
 			return;
 		}
-
-		/*
-		 * // NO, do NOT load up all the existing crap // Fetch all
-		 * subdirectories, assuming that each // subdirectory corresponds to a
-		 * groupId Set<File> groupDirs = enumerateDirs(base);
-		 * 
-		 * List<String> groupIds = new ArrayList<String>(); for (File f :
-		 * groupDirs) { File temp = f; String groupName = ""; while
-		 * (!temp.equals(base)) { if (!"".equals(groupName)) { groupName = "." +
-		 * groupName; } groupName = temp.getName() + groupName; temp =
-		 * temp.getParentFile(); } groupIds.add(groupName); } // For each
-		 * subdirectory collect all artifacts for (String groupId : groupIds) {
-		 * File groupDirectory = base; for (String part : groupId.split("\\.")) {
-		 * groupDirectory = new File(groupDirectory, part); } File[] artifacts =
-		 * groupDirectory.listFiles(isDirectory); for (File artifactDir :
-		 * artifacts) { String artifactId = artifactDir.getName(); File[]
-		 * versions = artifactDir.listFiles(isDirectory); if (versions == null) {
-		 * logger.debug("Null version list at " + artifactDir); continue; } for
-		 * (File versionDir : versions) { String version = versionDir.getName();
-		 * ArtifactImpl artifact = new ArtifactImpl(groupId, artifactId,
-		 * version, this); // If there are any directories inside here we're not
-		 * in a // valid // artifact and have accidentally wandered down the
-		 * wrong // branch // of the file system. Blame the idiotic maven2
-		 * directory // structure // with groups split into subdirectories!
-		 * File[] subDirs = versionDir.listFiles(isDirectory); if (subDirs !=
-		 * null && subDirs.length > 0) { // Not a valid version directory!
-		 * continue; } File[] files = versionDir.listFiles(); if (files != null &&
-		 * files.length == 0) { // No POM or JAR - ignore directory, should be
-		 * deleted continue; } status.put(artifact, ArtifactStatus.Queued); File
-		 * pomFile = new File(versionDir, artifactId + "-" + version + ".pom");
-		 * if (pomFile.exists()) { status.put(artifact, ArtifactStatus.Pom); }
-		 * File jarFile = new File(versionDir, artifactId + "-" + version +
-		 * ".jar"); if (jarFile.exists()) { status.put(artifact,
-		 * ArtifactStatus.Jar); } } } }
-		 */
 	}
 
 	private String repositoryPath(ArtifactImpl a, String suffix) {
