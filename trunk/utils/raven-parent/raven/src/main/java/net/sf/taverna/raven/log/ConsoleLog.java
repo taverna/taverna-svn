@@ -18,7 +18,7 @@ import java.io.PrintStream;
  * provided, but this can be disabled by setting <code>printStackTrace</code>
  * to <code>false</code>
  * 
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  */
 public class ConsoleLog implements LogInterface {
 	/**
@@ -45,10 +45,12 @@ public class ConsoleLog implements LogInterface {
 		this(ConsoleLog.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ConsoleLog(Class c) {
 		this.callingClass = c.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public LogInterface getLogger(Class c) {
 		return new ConsoleLog(c);
 	}

@@ -28,6 +28,7 @@ import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
  * 
  * @author Tom Oinn
  */
+@SuppressWarnings("unchecked")
 public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 
 	private static Log logger = Log.getLogger(SpiRegistry.class);

@@ -39,6 +39,7 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 	private List<InstanceRegistryListener> listeners = new ArrayList<InstanceRegistryListener>();
 	private List<IType> instances = null;
 	private Object[] cArgs;
+	@SuppressWarnings("unchecked")
 	private Class[] cArgTypes;
 	private SpiRegistry registry;
 

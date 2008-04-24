@@ -46,6 +46,7 @@ public class Log4jLog implements LogInterface {
 		this(Log4jLog.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Log4jLog(Class c) {
 		if (Logger.class.getClassLoader() instanceof LocalArtifactClassLoader) {
 			throw new IllegalStateException(
@@ -54,6 +55,7 @@ public class Log4jLog implements LogInterface {
 		log4j = Logger.getLogger(c);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Log4jLog getLogger(Class c) {
 		return new Log4jLog(c);
 	}

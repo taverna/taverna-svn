@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * FATAL --&gt; SEVERE
  * </pre>
  * 
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 public class JavaLog implements LogInterface {
@@ -63,13 +63,15 @@ public class JavaLog implements LogInterface {
 		this(JavaLog.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	public JavaLog(Class c) {
 		// We'll use the full classname as our identifier to be
 		// slightly log4j compatible
 		callingClass = c.getName();
 		logger = Logger.getLogger(callingClass);
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public JavaLog getLogger(Class c) {
 		return new JavaLog(c);
 	}

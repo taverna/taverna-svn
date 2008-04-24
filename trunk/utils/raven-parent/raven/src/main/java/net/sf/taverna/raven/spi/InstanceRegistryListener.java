@@ -8,6 +8,7 @@ package net.sf.taverna.raven.spi;
  */
 public interface InstanceRegistryListener {
 
+	@SuppressWarnings("unchecked")
 	public abstract void instanceRegistryUpdated(InstanceRegistry registry);
 
 }

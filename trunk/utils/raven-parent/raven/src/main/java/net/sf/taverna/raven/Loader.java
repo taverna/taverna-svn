@@ -54,6 +54,7 @@ public class Loader {
 	 * @throws ArtifactStateException
 	 * @throws ClassNotFoundException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Class doRavenMagic(File localRepositoryLocation,
 			URL[] remoteRepositories, String targetGroup,
 			String targetArtifact, String targetVersion, String className,
@@ -111,6 +112,7 @@ public class Loader {
 	 * @throws ArtifactStateException
 	 * @throws ClassNotFoundException
 	 */
+	@SuppressWarnings("unchecked")
 	public static Class doRavenMagic(String ravenVersion,
 			File localRepositoryLocation, URL[] remoteRepositories,
 			String targetGroup, String targetArtifact, String targetVersion,

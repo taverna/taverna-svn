@@ -35,12 +35,14 @@ public class TestBasePane extends TestCase {
 
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public JComponent getComponent(Class theClass) {
 				// TODO Auto-generated method stub
 				return null;
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public JMenuItem getMenuItem(Class theClass) {
 				// TODO Auto-generated method stub

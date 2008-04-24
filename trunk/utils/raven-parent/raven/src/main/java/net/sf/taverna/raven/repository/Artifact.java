@@ -13,8 +13,9 @@ package net.sf.taverna.raven.repository;
  * 
  * @see BasicArtifact
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  */
+@SuppressWarnings("unchecked")
 public interface Artifact extends Comparable {
 
 	/**

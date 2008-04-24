@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-24 15:35:52 $
+ * Last modified on   $Date: 2008-04-24 18:14:33 $
  *               by   $Author: stain $
  * Created on 18 Jan 2007
  *****************************************************************/
@@ -105,6 +105,7 @@ public class SplashScreen extends JWindow {
 		// If the mouse is clicked then we can close the splash
 		// screen once all raven activity has ceased
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent me) {
 				requestCloseFromMouse();
 			}

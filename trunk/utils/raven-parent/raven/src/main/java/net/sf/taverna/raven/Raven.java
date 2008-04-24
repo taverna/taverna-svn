@@ -97,6 +97,6 @@ public class Raven {
 				appClassName, listener);
 
 		Method main = appClass.getMethod("main", String[].class);
-		main.invoke(null, argL.toArray(new String[] {}));
+		main.invoke(null, (Object[])argL.toArray(new String[] {}));
 	}
 }

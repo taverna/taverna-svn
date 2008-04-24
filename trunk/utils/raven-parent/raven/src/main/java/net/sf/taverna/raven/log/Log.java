@@ -35,7 +35,7 @@ package net.sf.taverna.raven.log;
  * @see ConsoleLog
  * @see Log4jLog
  * @see Log.setImplementation(LogInterface)
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 public class Log {
@@ -45,6 +45,7 @@ public class Log {
 	// Implementation as set with setImplementation() - possibly null (no
 	// logging)
 	private static LogInterface logImplementation = new JavaLog();
+	@SuppressWarnings("unchecked")
 	public static Log getLogger(Class c) {
 		return new Log(c);
 	}
@@ -62,6 +63,7 @@ public class Log {
 	}
 
 	// The class that constructed this logger with getLogger(Class)
+	@SuppressWarnings("unchecked")
 	private Class callingClass;
 
 	// The instance of our implementation
@@ -73,6 +75,7 @@ public class Log {
 	 * @param c
 	 *            Class that
 	 */
+	@SuppressWarnings("unchecked")
 	private Log(Class c) {
 		this.callingClass = c;
 		this.logInstance = null;

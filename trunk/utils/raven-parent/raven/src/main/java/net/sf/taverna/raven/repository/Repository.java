@@ -42,7 +42,7 @@ public interface Repository {
 	 * created it. If the classloader was not an instance of
 	 * LocalArtifactClassLoader an ArtifactNotFoundException is thrown
 	 */
-	public abstract Artifact artifactForClass(Class c)
+	public abstract Artifact artifactForClass(Class<?> c)
 			throws ArtifactNotFoundException;
 
 	/**
