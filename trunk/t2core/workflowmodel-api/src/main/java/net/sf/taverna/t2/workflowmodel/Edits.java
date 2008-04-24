@@ -2,6 +2,8 @@ package net.sf.taverna.t2.workflowmodel;
 
 import java.util.List;
 
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
@@ -56,6 +58,17 @@ public interface Edits {
 	public Processor createProcessor(String name);
 
 	/**
+	 * Add an {@link AnnotationAssertion} to an {@link AnnotationChain}
+	 * 
+	 * @param annotationChain
+	 * @param annotationAssertion
+	 * @return an {@link Edit}able object with undo feature
+	 */
+	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(
+			AnnotationChain annotationChain,
+			AnnotationAssertion annotationAssertion);
+
+	/**
 	 * Builds a new Datalink with the given source and sink ports
 	 * 
 	 * @param source
@@ -78,8 +91,22 @@ public interface Edits {
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
 			Processor processor);
 
-	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
-			Merge processor);
+	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow, Merge processor);
+
+	/**
+	 * Create a new processor in the specified dataflow configured as a default
+	 * Taverna 1 style activity with output and input ports matching those of
+	 * the Activity instance supplied, a default cross product iteration
+	 * strategy and a dispatch stack consisting of a parallelize, failover,
+	 * retry and invoke layer set.
+	 * 
+	 * @param dataflow
+	 *            the dataflow to add this processor to
+	 * @param activity
+	 *            a single activity to build the processor around
+	 */
+	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
+			Activity<?> activity);
 
 	/**
 	 * Connect the output port of the specified processor to a target input

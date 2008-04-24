@@ -1,6 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.List;
+
+import net.sf.taverna.t2.annotation.AddAnnotationAssertionEdit;
+import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
@@ -43,6 +47,12 @@ public class EditsImpl implements Edits {
 	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow,
 			Merge merge) {
 		return new AddMergeEdit(dataflow, merge);
+	}
+	
+	public Edit<Processor> createProcessorFromActivity(Dataflow dataflow,
+			Activity<?> activity) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public Edit<DispatchStack> getAddDispatchLayerEdit(DispatchStack stack,
@@ -96,6 +106,11 @@ public class EditsImpl implements Edits {
 
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink) {
 		return new ConnectDatalinkEdit(datalink);
+	}
+	
+	
+	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(AnnotationChain annotationChain, AnnotationAssertion annotationAssertion) {
+		return new AddAnnotationAssertionEdit(annotationChain, annotationAssertion);
 	}
 
 	/**
