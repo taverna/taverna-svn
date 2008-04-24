@@ -44,8 +44,6 @@ import java.util.logging.Logger;
  * 
  */
 public class JavaLog implements LogInterface {
-	private Logger logger;
-	private String callingClass;
 	private static Map<Priority, Level> priorityMap = new HashMap<Priority, Level>();
 	static {
 		priorityMap.put(Priority.DEBUG, Level.FINER);
@@ -58,6 +56,8 @@ public class JavaLog implements LogInterface {
 		// Should now have all priorities
 		assert priorityMap.size() == Priority.values().length;
 	}
+	private Logger logger;
+	private String callingClass;
 
 	public JavaLog() {
 		this(JavaLog.class);

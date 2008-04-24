@@ -33,6 +33,52 @@ public interface Repository {
 	public abstract void addRemoteRepository(URL repositoryURL);
 
 	/**
+	 * Add a listener to be notified on changes to the repository status
+	 */
+	public abstract void addRepositoryListener(RepositoryListener l);
+
+	/**
+	 * Given a Class object return the Artifact whose LocalArtifactClassLoader
+	 * created it. If the classloader was not an instance of
+	 * LocalArtifactClassLoader an ArtifactNotFoundException is thrown
+	 */
+	public abstract Artifact artifactForClass(Class c)
+			throws ArtifactNotFoundException;
+
+	/**
+	 * Get the list of known Artifacts for this Repository
+	 * 
+	 * @return a copy of the current list of all known Artifacts within the
+	 *         Repository
+	 */
+	public abstract List<Artifact> getArtifacts();
+
+	/**
+	 * Get the list of known Artifacts for this Repository with the specified
+	 * ArtifactStatus
+	 * 
+	 * @return a list of all known Artifacts with the given ArtifactStatus
+	 *         within this Repository
+	 */
+	public abstract List<Artifact> getArtifacts(ArtifactStatus s);
+
+	/**
+	 * Fetch the DownloadStatus for the given Artifact, only valid for
+	 * PomFetching and JarFetching Artifact states.
+	 * 
+	 * @param a
+	 *            Artifact to query
+	 * @return DownloadStatus corresponding to the state of the download in
+	 *         progress for this artifact, if any. The artifact must be in the
+	 *         state ArtifactStatus.PomFetching or ArtifactStatus.JarFetching
+	 * @throws ArtifactStateException
+	 *             if the artifact is not in an appropriate state
+	 * @throws ArtifactNotFoundException
+	 */
+	public abstract DownloadStatus getDownloadStatus(Artifact a)
+			throws ArtifactStateException, ArtifactNotFoundException;
+
+	/**
 	 * Get a ClassLoader for the specified artifact
 	 * 
 	 * @param a
@@ -59,37 +105,9 @@ public interface Repository {
 	public abstract ArtifactStatus getStatus(Artifact a);
 
 	/**
-	 * Fetch the DownloadStatus for the given Artifact, only valid for
-	 * PomFetching and JarFetching Artifact states.
-	 * 
-	 * @param a
-	 *            Artifact to query
-	 * @return DownloadStatus corresponding to the state of the download in
-	 *         progress for this artifact, if any. The artifact must be in the
-	 *         state ArtifactStatus.PomFetching or ArtifactStatus.JarFetching
-	 * @throws ArtifactStateException
-	 *             if the artifact is not in an appropriate state
-	 * @throws ArtifactNotFoundException
+	 * Remove a listener from the list of interested observers
 	 */
-	public abstract DownloadStatus getDownloadStatus(Artifact a)
-			throws ArtifactStateException, ArtifactNotFoundException;
-
-	/**
-	 * Get the list of known Artifacts for this Repository
-	 * 
-	 * @return a copy of the current list of all known Artifacts within the
-	 *         Repository
-	 */
-	public abstract List<Artifact> getArtifacts();
-
-	/**
-	 * Get the list of known Artifacts for this Repository with the specified
-	 * ArtifactStatus
-	 * 
-	 * @return a list of all known Artifacts with the given ArtifactStatus
-	 *         within this Repository
-	 */
-	public abstract List<Artifact> getArtifacts(ArtifactStatus s);
+	public abstract void removeRepositoryListener(RepositoryListener l);
 
 	/**
 	 * Scan the status table, perform actions on each item based on the status.
@@ -101,23 +119,5 @@ public interface Repository {
 	 * until all dependencies are resolved or failed
 	 */
 	public abstract void update();
-
-	/**
-	 * Add a listener to be notified on changes to the repository status
-	 */
-	public abstract void addRepositoryListener(RepositoryListener l);
-
-	/**
-	 * Remove a listener from the list of interested observers
-	 */
-	public abstract void removeRepositoryListener(RepositoryListener l);
-
-	/**
-	 * Given a Class object return the Artifact whose LocalArtifactClassLoader
-	 * created it. If the classloader was not an instance of
-	 * LocalArtifactClassLoader an ArtifactNotFoundException is thrown
-	 */
-	public abstract Artifact artifactForClass(Class c)
-			throws ArtifactNotFoundException;
 
 }

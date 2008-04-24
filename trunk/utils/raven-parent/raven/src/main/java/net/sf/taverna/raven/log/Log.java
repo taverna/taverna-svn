@@ -45,8 +45,25 @@ public class Log {
 	// Implementation as set with setImplementation() - possibly null (no
 	// logging)
 	private static LogInterface logImplementation = new JavaLog();
+	public static Log getLogger(Class c) {
+		return new Log(c);
+	}
+	/**
+	 * Set the implementation
+	 * 
+	 * @param implementation
+	 */
+	public synchronized static void setImplementation(
+			LogInterface implementation) {
+		LogInterface oldImplementation = logImplementation;
+		logImplementation = implementation;
+		logger.info("Changed log implementation from " + oldImplementation
+				+ " to " + implementation);
+	}
+
 	// The class that constructed this logger with getLogger(Class)
 	private Class callingClass;
+
 	// The instance of our implementation
 	private LogInterface logInstance;
 
@@ -61,61 +78,36 @@ public class Log {
 		this.logInstance = null;
 	}
 
-	/**
-	 * Set the implementation
-	 * 
-	 * @param implementation
-	 */
-	public synchronized static void setImplementation(
-			LogInterface implementation) {
-		LogInterface oldImplementation = logImplementation;
-		logImplementation = implementation;
-		logger.info("Changed log implementation from " + oldImplementation
-				+ " to " + implementation);
-	}
-
-	public static Log getLogger(Class c) {
-		return new Log(c);
-	}
-
 	public void debug(Object msg) {
 		log(LogInterface.Priority.DEBUG, msg, null);
-	}
-
-	public void info(Object msg) {
-		log(LogInterface.Priority.INFO, msg, null);
-	}
-
-	public void warn(Object msg) {
-		log(LogInterface.Priority.WARN, msg, null);
-	}
-
-	public void error(Object msg) {
-		log(LogInterface.Priority.ERROR, msg, null);
-	}
-
-	public void fatal(Object msg) {
-		log(LogInterface.Priority.FATAL, msg, null);
 	}
 
 	public void debug(Object msg, Throwable ex) {
 		log(LogInterface.Priority.DEBUG, msg, ex);
 	}
 
-	public void info(Object msg, Throwable ex) {
-		log(LogInterface.Priority.INFO, msg, ex);
-	}
-
-	public void warn(Object msg, Throwable ex) {
-		log(LogInterface.Priority.WARN, msg, ex);
+	public void error(Object msg) {
+		log(LogInterface.Priority.ERROR, msg, null);
 	}
 
 	public void error(Object msg, Throwable ex) {
 		log(LogInterface.Priority.ERROR, msg, ex);
 	}
 
+	public void fatal(Object msg) {
+		log(LogInterface.Priority.FATAL, msg, null);
+	}
+
 	public void fatal(Object msg, Throwable ex) {
 		log(LogInterface.Priority.FATAL, msg, ex);
+	}
+
+	public void info(Object msg) {
+		log(LogInterface.Priority.INFO, msg, null);
+	}
+
+	public void info(Object msg, Throwable ex) {
+		log(LogInterface.Priority.INFO, msg, ex);
 	}
 
 	public synchronized void log(LogInterface.Priority priority, Object msg,
@@ -131,6 +123,14 @@ public class Log {
 			System.err.println("Disabling Raven logging");
 			setImplementation(null);
 		}
+	}
+
+	public void warn(Object msg) {
+		log(LogInterface.Priority.WARN, msg, null);
+	}
+
+	public void warn(Object msg, Throwable ex) {
+		log(LogInterface.Priority.WARN, msg, ex);
 	}
 
 	private synchronized boolean checkImplementation() {

@@ -71,32 +71,8 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 				RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 	}
 
-	public void setText(String text) {
-		repaint();
-		this.text = text;
-	}
-
 	public String getText() {
 		return text;
-	}
-
-	public void start() {
-		addMouseListener(this);
-		setVisible(true);
-		ticker = buildTicker();
-		animation = new Thread(new Animator(true), "Infinite progress animator");
-		animation.setDaemon(true);
-		animation.start();
-	}
-
-	public void stop() {
-		if (animation != null) {
-			animation.interrupt();
-			animation = null;
-			animation = new Thread(new Animator(false),
-					"Infinite progress animator");
-			animation.start();
-		}
 	}
 
 	public void interrupt() {
@@ -106,6 +82,21 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 			removeMouseListener(this);
 			setVisible(false);
 		}
+	}
+
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+	}
+
+	public void mouseReleased(MouseEvent e) {
 	}
 
 	public void paintComponent(Graphics g) {
@@ -152,6 +143,30 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 
 	}
 
+	public void setText(String text) {
+		repaint();
+		this.text = text;
+	}
+
+	public void start() {
+		addMouseListener(this);
+		setVisible(true);
+		ticker = buildTicker();
+		animation = new Thread(new Animator(true), "Infinite progress animator");
+		animation.setDaemon(true);
+		animation.start();
+	}
+
+	public void stop() {
+		if (animation != null) {
+			animation.interrupt();
+			animation = null;
+			animation = new Thread(new Animator(false),
+					"Infinite progress animator");
+			animation.start();
+		}
+	}
+
 	private Area buildPrimitive() {
 		Rectangle2D.Double body = new Rectangle2D.Double(6, 0, 30, 12);
 		Ellipse2D.Double head = new Ellipse2D.Double(0, 0, 12, 12);
@@ -161,21 +176,6 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		tick.add(new Area(head));
 		tick.add(new Area(tail));
 		return tick;
-	}
-
-	private Area[] buildTicker() {
-		Area[] ticker = new Area[barsCount];
-		double fixedAngle = 2.0 * Math.PI / ((double) barsCount);
-
-		for (int i = 0; i < barsCount; i++) {
-			Area primitive = buildSectorPrimitive(barsCount, 60, 100, 0.9f);
-			AffineTransform toCircle = AffineTransform.getRotateInstance(
-					-(double) i * fixedAngle, 0.0d, 0.0d);
-			primitive.transform(toCircle);
-			ticker[i] = primitive;
-		}
-
-		return ticker;
 	}
 
 	/**
@@ -209,6 +209,21 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		intersection.addPoint(-(int) p1.getX(), (int) p1.getY());
 		tick.intersect(new Area(intersection));
 		return tick;
+	}
+
+	private Area[] buildTicker() {
+		Area[] ticker = new Area[barsCount];
+		double fixedAngle = 2.0 * Math.PI / ((double) barsCount);
+
+		for (int i = 0; i < barsCount; i++) {
+			Area primitive = buildSectorPrimitive(barsCount, 60, 100, 0.9f);
+			AffineTransform toCircle = AffineTransform.getRotateInstance(
+					-(double) i * fixedAngle, 0.0d, 0.0d);
+			primitive.transform(toCircle);
+			ticker[i] = primitive;
+		}
+
+		return ticker;
 	}
 
 	protected class Animator implements Runnable {
@@ -272,20 +287,5 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 				removeMouseListener(InfiniteProgressPanel.this);
 			}
 		}
-	}
-
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
 	}
 }

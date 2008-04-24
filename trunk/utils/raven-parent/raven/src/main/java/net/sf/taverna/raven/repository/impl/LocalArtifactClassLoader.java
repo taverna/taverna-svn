@@ -37,14 +37,6 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 
 	private Set<String> unknownClasses = new HashSet<String>();
 
-	public Repository getRepository() {
-		return repository;
-	}
-
-	public Artifact getArtifact() {
-		return this.artifact;
-	}
-
 	private Artifact artifact;
 
 	protected LocalArtifactClassLoader(LocalRepository r, ArtifactImpl a)
@@ -77,26 +69,6 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		this.artifact = ravenArtifact;
 	}
 
-	private void init(ArtifactImpl a) throws ArtifactStateException {
-		List<ArtifactImpl> deps = a.getDependencies();
-		name = a.toString();
-		for (ArtifactImpl dep : deps) {
-			synchronized (LocalRepository.loaderMap) {
-				LocalArtifactClassLoader ac = LocalRepository.loaderMap
-						.get(dep);
-				if (ac == null) {
-					try {
-						ac = new LocalArtifactClassLoader(repository, dep);
-					} catch (MalformedURLException e) {
-						logger.error("Malformed URL when loading " + dep, e);
-					}
-					// LocalRepository.loaderMap.put(a, ac);
-				}
-				childLoaders.add(ac);
-			}
-		}
-	}
-
 	@Override
 	public URL findResource(String name) {
 		return findFirstInstanceOfResource(
@@ -109,6 +81,51 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		enumerateResources(new HashSet<LocalArtifactClassLoader>(),
 				resourceLocations, name);
 		return Collections.enumeration(resourceLocations);
+	}
+
+	public Artifact getArtifact() {
+		return this.artifact;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	@Override
+	/**
+	 * Overridden to prevent it checking parents if the parent is the
+	 * URLClassLoader used to bootstrap raven. Otherwise it has to download and
+	 * search each raven.jar for every repository, including mirror
+	 * repositories, defined.
+	 */
+	public Enumeration<URL> getResources(String name) throws IOException {
+		if (getParent() == null || !isParentRavenClassLoader()) {
+			return super.getResources(name);
+		}
+		Enumeration[] tmp = new Enumeration[2];
+		tmp[1] = findResources(name);
+
+		return new CompoundEnumeration<URL>(tmp);
+	}
+
+	@Override
+	public String toString() {
+		return "loader{" + name + "} from "
+				+ System.identityHashCode(repository);
+	}
+
+	private void enumerateResources(Set<LocalArtifactClassLoader> alreadySeen,
+			Set<URL> resourceLocations, String name) throws IOException {
+		alreadySeen.add(this);
+		URL resourceURL = super.findResource(name);
+		if (resourceURL != null) {
+			resourceLocations.add(resourceURL);
+		}
+		for (LocalArtifactClassLoader cl : childLoaders) {
+			if (!alreadySeen.contains(cl)) {
+				cl.enumerateResources(alreadySeen, resourceLocations, name);
+			}
+		}
 	}
 
 	private URL findFirstInstanceOfResource(
@@ -129,76 +146,37 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 		return null;
 	}
 
-	private void enumerateResources(Set<LocalArtifactClassLoader> alreadySeen,
-			Set<URL> resourceLocations, String name) throws IOException {
-		alreadySeen.add(this);
-		URL resourceURL = super.findResource(name);
-		if (resourceURL != null) {
-			resourceLocations.add(resourceURL);
-		}
-		for (LocalArtifactClassLoader cl : childLoaders) {
-			if (!alreadySeen.contains(cl)) {
-				cl.enumerateResources(alreadySeen, resourceLocations, name);
-			}
-		}
-	}
-
-	@Override
-	public String toString() {
-		return "loader{" + name + "} from "
-				+ System.identityHashCode(repository);
-	}
-
-	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		try {
-			return findClass(name, new HashSet<ClassLoader>());
-		} catch (ClassNotFoundException ex) {
-			if (!unknownClasses.contains(name)) {
-				// Only log it once
-				unknownClasses.add(name);
-				logger.info("Could not find " + name + " in " + this.name);
-				logger.debug(ex);
-			}
-			throw ex;
-		}
-	}
-
-	protected Class<?> findClass(String name, Set<ClassLoader> seenLoaders)
-			throws ClassNotFoundException {
-		Class result = null;
-		logger.debug("Searching for '" + name + "' - " + this);
-		seenLoaders.add(this);
-
-		if (classMap.containsKey(name)) {
-			logger.debug("Returning cached '" + name + "' - " + this);
-			result = classMap.get(name);
-		} else {
-			try {
-				result = super.findClass(name);
-				logger.debug("Returning found '" + name + "' - " + this);
-			} catch (ClassNotFoundException e) {
-				for (LocalArtifactClassLoader ac : childLoaders) {
-					if (!seenLoaders.contains(ac)) {
-						try {
-							result = ac.loadClass(name, seenLoaders);
-						} catch (ClassNotFoundException cnfe) {
-							logger.debug("No '" + name + "' in " + this);
-						}
+	private void init(ArtifactImpl a) throws ArtifactStateException {
+		List<ArtifactImpl> deps = a.getDependencies();
+		name = a.toString();
+		for (ArtifactImpl dep : deps) {
+			synchronized (LocalRepository.loaderMap) {
+				LocalArtifactClassLoader ac = LocalRepository.loaderMap
+						.get(dep);
+				if (ac == null) {
+					try {
+						ac = new LocalArtifactClassLoader(repository, dep);
+					} catch (MalformedURLException e) {
+						logger.error("Malformed URL when loading " + dep, e);
 					}
+					// LocalRepository.loaderMap.put(a, ac);
 				}
-			} catch (Error e) {
-				logger.error("Error finding class " + name + " ACL=" + this, e);
+				childLoaders.add(ac);
 			}
 		}
-		if (result == null) {
-			throw new ClassNotFoundException(name);
-		}
+	}
 
-		if (!classMap.containsKey(name)) {
-			classMap.put(name, result);
+	private boolean isParentRavenClassLoader() {
+		boolean result = false;
+		if (getParent() != null && getParent() instanceof URLClassLoader) {
+			URLClassLoader loader = (URLClassLoader) getParent();
+			for (URL url : loader.getURLs()) {
+				if (url.toExternalForm().contains(
+						"uk/org/mygrid/taverna/raven/raven/"))
+					result = true;
+				break;
+			}
 		}
-
 		return result;
 	}
 
@@ -266,33 +244,55 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	}
 
 	@Override
-	/**
-	 * Overridden to prevent it checking parents if the parent is the
-	 * URLClassLoader used to bootstrap raven. Otherwise it has to download and
-	 * search each raven.jar for every repository, including mirror
-	 * repositories, defined.
-	 */
-	public Enumeration<URL> getResources(String name) throws IOException {
-		if (getParent() == null || !isParentRavenClassLoader()) {
-			return super.getResources(name);
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		try {
+			return findClass(name, new HashSet<ClassLoader>());
+		} catch (ClassNotFoundException ex) {
+			if (!unknownClasses.contains(name)) {
+				// Only log it once
+				unknownClasses.add(name);
+				logger.info("Could not find " + name + " in " + this.name);
+				logger.debug(ex);
+			}
+			throw ex;
 		}
-		Enumeration[] tmp = new Enumeration[2];
-		tmp[1] = findResources(name);
-
-		return new CompoundEnumeration<URL>(tmp);
 	}
 
-	private boolean isParentRavenClassLoader() {
-		boolean result = false;
-		if (getParent() != null && getParent() instanceof URLClassLoader) {
-			URLClassLoader loader = (URLClassLoader) getParent();
-			for (URL url : loader.getURLs()) {
-				if (url.toExternalForm().contains(
-						"uk/org/mygrid/taverna/raven/raven/"))
-					result = true;
-				break;
+	protected Class<?> findClass(String name, Set<ClassLoader> seenLoaders)
+			throws ClassNotFoundException {
+		Class result = null;
+		logger.debug("Searching for '" + name + "' - " + this);
+		seenLoaders.add(this);
+
+		if (classMap.containsKey(name)) {
+			logger.debug("Returning cached '" + name + "' - " + this);
+			result = classMap.get(name);
+		} else {
+			try {
+				result = super.findClass(name);
+				logger.debug("Returning found '" + name + "' - " + this);
+			} catch (ClassNotFoundException e) {
+				for (LocalArtifactClassLoader ac : childLoaders) {
+					if (!seenLoaders.contains(ac)) {
+						try {
+							result = ac.loadClass(name, seenLoaders);
+						} catch (ClassNotFoundException cnfe) {
+							logger.debug("No '" + name + "' in " + this);
+						}
+					}
+				}
+			} catch (Error e) {
+				logger.error("Error finding class " + name + " ACL=" + this, e);
 			}
 		}
+		if (result == null) {
+			throw new ClassNotFoundException(name);
+		}
+
+		if (!classMap.containsKey(name)) {
+			classMap.put(name, result);
+		}
+
 		return result;
 	}
 

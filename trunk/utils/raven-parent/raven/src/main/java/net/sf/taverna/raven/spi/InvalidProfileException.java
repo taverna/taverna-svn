@@ -13,12 +13,12 @@ public class InvalidProfileException extends RavenException {
 
 	private static final long serialVersionUID = 1L;
 
-	public InvalidProfileException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
 	public InvalidProfileException(String message) {
 		super(message);
+	}
+
+	public InvalidProfileException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

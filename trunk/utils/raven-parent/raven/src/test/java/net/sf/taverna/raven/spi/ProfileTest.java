@@ -7,16 +7,6 @@ import net.sf.taverna.raven.repository.Artifact;
 
 public class ProfileTest extends TestCase {
 
-	/*
-	 * Test method for 'net.sf.taverna.raven.spi.Profile.Profile(InputStream,
-	 * boolean)'
-	 */
-	public void testGoodProfile() throws InvalidProfileException {
-		Profile p = new Profile(getClass().getResourceAsStream(
-				"goodProfile.xml"), true);
-		assertEquals("NO VERSION", p.getVersion());
-	}
-
 	public void testBadProfile1() {
 		try {
 			new Profile(getClass().getResourceAsStream("badProfile1.xml"), true);
@@ -33,40 +23,6 @@ public class ProfileTest extends TestCase {
 		} catch (InvalidProfileException e) {
 			// expected
 		}
-	}
-
-	public void testVersionedProfile() throws InvalidProfileException {
-		Profile p = new Profile(getClass().getResourceAsStream(
-				"versionedProfile.xml"), true);
-		assertEquals("0.1", p.getVersion());
-	}
-
-	/*
-	 * Test method for 'net.sf.taverna.raven.spi.Profile.getArtifacts()'
-	 */
-	public void testGetArtifacts() throws InvalidProfileException {
-		Profile p = new Profile(getClass().getResourceAsStream(
-				"goodProfile.xml"), true);
-		Set<Artifact> artifacts = p.getArtifacts();
-		assertEquals(2, artifacts.size());
-		boolean found1 = false;
-		boolean found2 = false;
-		for (Artifact artifact : artifacts) {
-			if (artifact.getGroupId().equals("group1")) {
-				assertFalse("Found two group1 artifacts", found1);
-				found1 = true;
-				assertEquals("artifact1", artifact.getArtifactId());
-				assertEquals("1.0.0", artifact.getVersion());
-			} else {
-				assertEquals("group2", artifact.getGroupId());
-				assertFalse("Found two group2 artifacts", found2);
-				found2 = true;
-				assertEquals("artifact2", artifact.getArtifactId());
-				assertEquals("1.0.2", artifact.getVersion());
-			}
-		}
-		assertTrue("Did not find artifact1", found1);
-		assertTrue("Did not find artifact2", found2);
 	}
 
 	/*
@@ -132,5 +88,49 @@ public class ProfileTest extends TestCase {
 		}
 		assertTrue("Did not find artifact1", found1);
 		assertTrue("Did not find artifact3", found3);
+	}
+
+	/*
+	 * Test method for 'net.sf.taverna.raven.spi.Profile.getArtifacts()'
+	 */
+	public void testGetArtifacts() throws InvalidProfileException {
+		Profile p = new Profile(getClass().getResourceAsStream(
+				"goodProfile.xml"), true);
+		Set<Artifact> artifacts = p.getArtifacts();
+		assertEquals(2, artifacts.size());
+		boolean found1 = false;
+		boolean found2 = false;
+		for (Artifact artifact : artifacts) {
+			if (artifact.getGroupId().equals("group1")) {
+				assertFalse("Found two group1 artifacts", found1);
+				found1 = true;
+				assertEquals("artifact1", artifact.getArtifactId());
+				assertEquals("1.0.0", artifact.getVersion());
+			} else {
+				assertEquals("group2", artifact.getGroupId());
+				assertFalse("Found two group2 artifacts", found2);
+				found2 = true;
+				assertEquals("artifact2", artifact.getArtifactId());
+				assertEquals("1.0.2", artifact.getVersion());
+			}
+		}
+		assertTrue("Did not find artifact1", found1);
+		assertTrue("Did not find artifact2", found2);
+	}
+
+	/*
+	 * Test method for 'net.sf.taverna.raven.spi.Profile.Profile(InputStream,
+	 * boolean)'
+	 */
+	public void testGoodProfile() throws InvalidProfileException {
+		Profile p = new Profile(getClass().getResourceAsStream(
+				"goodProfile.xml"), true);
+		assertEquals("NO VERSION", p.getVersion());
+	}
+
+	public void testVersionedProfile() throws InvalidProfileException {
+		Profile p = new Profile(getClass().getResourceAsStream(
+				"versionedProfile.xml"), true);
+		assertEquals("0.1", p.getVersion());
 	}
 }

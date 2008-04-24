@@ -19,23 +19,23 @@ public class DownloadStatusImpl implements DownloadStatus {
 		this.finished = false;
 	}
 
-	void setReadBytes(int read) {
-		this.read = read;
+	public int getReadBytes() {
+		return this.read;
 	}
 
 	public int getTotalBytes() {
 		return this.total;
 	}
 
-	public int getReadBytes() {
-		return this.read;
+	public boolean isFinished() {
+		return finished;
 	}
 
 	public void setFinished() {
 		finished = true;
 	}
 
-	public boolean isFinished() {
-		return finished;
+	void setReadBytes(int read) {
+		this.read = read;
 	}
 }

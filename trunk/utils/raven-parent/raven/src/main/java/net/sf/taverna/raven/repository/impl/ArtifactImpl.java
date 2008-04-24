@@ -39,24 +39,10 @@ public class ArtifactImpl extends BasicArtifact {
 
 	private LocalRepository repository;
 	private String packageType = null;
-	protected Set<Artifact> exclusions = null;
 	private Map<String, String> dependencyManagement = null;
 	private ArtifactImpl parentArtifact = null;
 	private List<ArtifactImpl> dependencies = null;
-
-	/**
-	 * Create a new Artifact description
-	 * 
-	 * @param groupId
-	 * @param artifactId
-	 * @param version
-	 * @param repository
-	 */
-	ArtifactImpl(String groupId, String artifactId, String version,
-			LocalRepository repository) {
-		super(groupId, artifactId, version);
-		this.repository = repository;
-	}
+	protected Set<Artifact> exclusions = null;
 
 	/**
 	 * Create a new ArtifactImpl from an Artifact and a Repository
@@ -70,6 +56,20 @@ public class ArtifactImpl extends BasicArtifact {
 				setExclusions(new HashSet<Artifact>(other.exclusions));
 			}
 		}
+	}
+
+	/**
+	 * Create a new Artifact description
+	 * 
+	 * @param groupId
+	 * @param artifactId
+	 * @param version
+	 * @param repository
+	 */
+	ArtifactImpl(String groupId, String artifactId, String version,
+			LocalRepository repository) {
+		super(groupId, artifactId, version);
+		this.repository = repository;
 	}
 
 	/**
@@ -237,45 +237,6 @@ public class ArtifactImpl extends BasicArtifact {
 		return result;
 	}
 
-	private String interpolate(Properties properties, String version) {
-		if (version.startsWith("${") && version.endsWith("}")) {
-			String versionKey = version.substring(2, version.length() - 1);
-			if (versionKey.equals("pom.version")
-					|| versionKey.equals("project.version")) {
-				return getVersion();
-			}
-			version = properties.getProperty(versionKey);
-		}
-		return version;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Properties getProperties(File pomFile) throws IOException,
-			MalformedURLException, ParserConfigurationException, SAXException {
-		Properties properties = new Properties();
-		InputStream is;
-		is = pomFile.toURI().toURL().openStream();
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document document = builder.parse(is);
-		is.close();
-		NodeList propertyNodes = document.getElementsByTagName("properties");
-		for (int j = 0; j < propertyNodes.getLength(); j++) {
-			Node propertiesNode = propertyNodes.item(j);
-			NodeList list = propertiesNode.getChildNodes();
-			for (int i = 0; i < list.getLength(); i++) {
-				Node item = list.item(i);
-				item.normalize();
-				String textContent = item.getTextContent().trim();
-				if (!textContent.equals("")) {
-					String key = item.getNodeName();
-					properties.put(key, textContent);
-				}
-			}
-		}
-		return properties;
-	}
-
 	public String getPackageType() {
 		if (packageType != null) {
 			return packageType;
@@ -309,26 +270,6 @@ public class ArtifactImpl extends BasicArtifact {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Set the exclusions for this artifact.
-	 * <p>
-	 * The exclusions consists of a set of Artifacts, but with a "version" field
-	 * set to "". When calculating <code>getDependencies()</code> the excluded
-	 * artifacts will not be included. Additionally, this list of exclusions
-	 * will be inherited down as exclusions for the dependencies that are found.
-	 * <p>
-	 * This comes from the <code>&lt;exclusions&gt;</code> block of the
-	 * <code>.pom</code> file.
-	 * 
-	 * @param exclusions
-	 */
-	private void setExclusions(Set<Artifact> exclusions) {
-		if (exclusions.isEmpty()) {
-			exclusions = null;
-		}
-		this.exclusions = exclusions;
 	}
 
 	/**
@@ -386,6 +327,134 @@ public class ArtifactImpl extends BasicArtifact {
 			}
 		}
 		parentArtifact.checkParent(repository.pomFile(parentArtifact));
+	}
+
+	/**
+	 * Find any descendants of the given node with the specified element name
+	 * 
+	 * @param fromnode
+	 * @param name
+	 * @return
+	 */
+	private List<Node> findElements(Node fromnode, String name) {
+		NodeList nodelist = fromnode.getChildNodes();
+		List<Node> list = new ArrayList<Node>();
+		for (int i = 0; i < nodelist.getLength(); i++) {
+			Node node = nodelist.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				if (name.equals(node.getNodeName())) {
+					list.add(node);
+				}
+				list.addAll(findElements(node, name));
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Find all descendants of the given node with the specified sequence of
+	 * element names - must be an exact match for the path from the specified
+	 * node to a found node with the names of elements in the path corresponding
+	 * to those in the names[] array.
+	 * 
+	 * @param fromNode
+	 * @param names
+	 * @return
+	 */
+	private List<Node> findElements(Node fromNode, String[] names) {
+		List<Node> fromNodes = new ArrayList<Node>();
+		fromNodes.add(fromNode);
+		List<Node> foundNodes = new ArrayList<Node>();
+		for (String name : names) {
+			for (Node from : fromNodes) {
+				foundNodes.addAll(findImmediateElements(from, name));
+			}
+			fromNodes = foundNodes;
+			foundNodes = new ArrayList<Node>();
+		}
+		return fromNodes;
+	}
+
+	/**
+	 * Find all immediate children of the given node with the specified element
+	 * name
+	 * 
+	 * @param fromnode
+	 * @param name
+	 * @return
+	 */
+	private List<Node> findImmediateElements(Node fromnode, String name) {
+		NodeList nodelist = fromnode.getChildNodes();
+		List<Node> list = new ArrayList<Node>();
+		for (int i = 0; i < nodelist.getLength(); i++) {
+			Node node = nodelist.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				if (name.equals(node.getNodeName())) {
+					list.add(node);
+				}
+				// list.addAll(findElements(node, name));
+			}
+		}
+		return list;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Properties getProperties(File pomFile) throws IOException,
+			MalformedURLException, ParserConfigurationException, SAXException {
+		Properties properties = new Properties();
+		InputStream is;
+		is = pomFile.toURI().toURL().openStream();
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = factory.newDocumentBuilder();
+		Document document = builder.parse(is);
+		is.close();
+		NodeList propertyNodes = document.getElementsByTagName("properties");
+		for (int j = 0; j < propertyNodes.getLength(); j++) {
+			Node propertiesNode = propertyNodes.item(j);
+			NodeList list = propertiesNode.getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				Node item = list.item(i);
+				item.normalize();
+				String textContent = item.getTextContent().trim();
+				if (!textContent.equals("")) {
+					String key = item.getNodeName();
+					properties.put(key, textContent);
+				}
+			}
+		}
+		return properties;
+	}
+
+	private String interpolate(Properties properties, String version) {
+		if (version.startsWith("${") && version.endsWith("}")) {
+			String versionKey = version.substring(2, version.length() - 1);
+			if (versionKey.equals("pom.version")
+					|| versionKey.equals("project.version")) {
+				return getVersion();
+			}
+			version = properties.getProperty(versionKey);
+		}
+		return version;
+	}
+
+	/**
+	 * Set the exclusions for this artifact.
+	 * <p>
+	 * The exclusions consists of a set of Artifacts, but with a "version" field
+	 * set to "". When calculating <code>getDependencies()</code> the excluded
+	 * artifacts will not be included. Additionally, this list of exclusions
+	 * will be inherited down as exclusions for the dependencies that are found.
+	 * <p>
+	 * This comes from the <code>&lt;exclusions&gt;</code> block of the
+	 * <code>.pom</code> file.
+	 * 
+	 * @param exclusions
+	 */
+	private void setExclusions(Set<Artifact> exclusions) {
+		if (exclusions.isEmpty()) {
+			exclusions = null;
+		}
+		this.exclusions = exclusions;
 	}
 
 	private String versionFor(String group, String artifact) {
@@ -459,75 +528,6 @@ public class ArtifactImpl extends BasicArtifact {
 			}
 		}
 		return dependencyManagement.get(group + ":" + artifact);
-	}
-
-	/**
-	 * Find any descendants of the given node with the specified element name
-	 * 
-	 * @param fromnode
-	 * @param name
-	 * @return
-	 */
-	private List<Node> findElements(Node fromnode, String name) {
-		NodeList nodelist = fromnode.getChildNodes();
-		List<Node> list = new ArrayList<Node>();
-		for (int i = 0; i < nodelist.getLength(); i++) {
-			Node node = nodelist.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				if (name.equals(node.getNodeName())) {
-					list.add(node);
-				}
-				list.addAll(findElements(node, name));
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * Find all immediate children of the given node with the specified element
-	 * name
-	 * 
-	 * @param fromnode
-	 * @param name
-	 * @return
-	 */
-	private List<Node> findImmediateElements(Node fromnode, String name) {
-		NodeList nodelist = fromnode.getChildNodes();
-		List<Node> list = new ArrayList<Node>();
-		for (int i = 0; i < nodelist.getLength(); i++) {
-			Node node = nodelist.item(i);
-			if (node.getNodeType() == Node.ELEMENT_NODE) {
-				if (name.equals(node.getNodeName())) {
-					list.add(node);
-				}
-				// list.addAll(findElements(node, name));
-			}
-		}
-		return list;
-	}
-
-	/**
-	 * Find all descendants of the given node with the specified sequence of
-	 * element names - must be an exact match for the path from the specified
-	 * node to a found node with the names of elements in the path corresponding
-	 * to those in the names[] array.
-	 * 
-	 * @param fromNode
-	 * @param names
-	 * @return
-	 */
-	private List<Node> findElements(Node fromNode, String[] names) {
-		List<Node> fromNodes = new ArrayList<Node>();
-		fromNodes.add(fromNode);
-		List<Node> foundNodes = new ArrayList<Node>();
-		for (String name : names) {
-			for (Node from : fromNodes) {
-				foundNodes.addAll(findImmediateElements(from, name));
-			}
-			fromNodes = foundNodes;
-			foundNodes = new ArrayList<Node>();
-		}
-		return fromNodes;
 	}
 
 }

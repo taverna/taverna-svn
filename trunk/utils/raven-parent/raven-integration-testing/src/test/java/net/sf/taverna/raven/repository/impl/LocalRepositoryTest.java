@@ -32,47 +32,6 @@ import org.junit.Test;
  */
 public class LocalRepositoryTest {
 
-	File dir = null;
-	LocalRepository r = null;
-	URL mavenMirror;
-
-	public LocalRepositoryTest() throws MalformedURLException {
-		super();
-		mavenMirror = new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY);
-	}
-
-	/*
-	 * Test method for
-	 * 'net.sf.taverna.raven.repository.Repository.Repository(File)'
-	 */
-	@Test
-	public void testRepository() {
-		dir.delete();
-		new LocalRepository(dir);
-	}
-
-	@Before
-	public void setUp() throws IOException {
-		dir = createTempDirectory().getAbsoluteFile();
-		// reset static members that screw up/fake testing
-		LocalRepository.loaderMap.clear();
-		LocalRepository.repositoryCache.clear();
-		r = new LocalRepository(dir);
-		System
-				.setProperty("raven.profile",
-						"http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
-	}
-
-	@After
-	public void tearDown() {
-		r = null;
-		try {
-			FileUtils.deleteDirectory(dir);
-		} catch (IOException e) {
-			// OK
-		}
-	}
-
 	public static File createTempDirectory() throws IOException {
 		File tempFile;
 		try {
@@ -86,14 +45,14 @@ public class LocalRepositoryTest {
 		assert tempFile.mkdir();
 		return tempFile;
 	}
+	File dir = null;
+	LocalRepository r = null;
 
-	@Test
-	public void createEmpty() {
-		// Should create directory if it is not existing
-		dir.delete();
-		assertFalse(dir.isDirectory());
-		new LocalRepository(dir);
-		assertTrue(dir.isDirectory());
+	URL mavenMirror;
+
+	public LocalRepositoryTest() throws MalformedURLException {
+		super();
+		mavenMirror = new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY);
 	}
 
 	/*
@@ -114,24 +73,27 @@ public class LocalRepositoryTest {
 	}
 
 	@Test
-	public void madeLocalJarFile() throws ArtifactNotFoundException,
-			ArtifactStateException, IOException {
-		r.addRemoteRepository(mavenMirror);
-		BasicArtifact junit = new BasicArtifact("junit", "junit", "4.0");
-		File junitJar = new File(dir, "junit/junit/4.0/junit-4.0.jar");
-		assertFalse("Already existed " + junitJar, junitJar.isFile());
-		r.addArtifact(junit);
-		r.update();
-		assertTrue("Did not create " + junitJar, junitJar.isFile());
-		// To avoid /private/tmp vs /tmp etc.
-		junitJar = junitJar.getCanonicalFile();
-		ClassLoader loader = r.getLoader(junit, null);
-		assertNotNull("ClassLoader was null ", loader);
-		URL junitResource = loader.getResource("junit");
-		String shouldStartWith = "jar:" + junitJar.toURI().toURL();
-		assertTrue("Did not start with " + shouldStartWith + ": "
-				+ junitResource, junitResource.toString().startsWith(
-				shouldStartWith));
+	public void cleanEmpty() {
+		File emptyDir = new File(dir, "some/artifact/1.1");
+		emptyDir.mkdirs();
+		assertTrue(emptyDir.isDirectory());
+		r.clean();
+		// some/artifact/1.1
+		assertFalse(emptyDir.isDirectory());
+		// some/artifact
+		assertFalse(emptyDir.getParentFile().isDirectory());
+		// some
+		assertFalse(emptyDir.getParentFile().getParentFile().isDirectory());
+		assertTrue(dir.isDirectory());
+	}
+
+	@Test
+	public void createEmpty() {
+		// Should create directory if it is not existing
+		dir.delete();
+		assertFalse(dir.isDirectory());
+		new LocalRepository(dir);
+		assertTrue(dir.isDirectory());
 	}
 
 	/**
@@ -180,6 +142,44 @@ public class LocalRepositoryTest {
 
 	}
 
+	/*
+	 * Test method for
+	 * 'net.sf.taverna.raven.repository.Repository.getLoader(Artifact,
+	 * ClassLoader)'
+	 */
+	@Test
+	public void getLoader() throws MalformedURLException,
+			ClassNotFoundException, ArtifactNotFoundException,
+			ArtifactStateException {
+		Artifact a = new BasicArtifact("batik", "batik-rasterizer", "1.6");
+		r.addRemoteRepository(mavenMirror);
+		r.addArtifact(a);
+		r.update();
+		ClassLoader cl = r.getLoader(a, null);
+		cl.loadClass("org.apache.batik.apps.rasterizer.Main");
+	}
+
+	@Test
+	public void madeLocalJarFile() throws ArtifactNotFoundException,
+			ArtifactStateException, IOException {
+		r.addRemoteRepository(mavenMirror);
+		BasicArtifact junit = new BasicArtifact("junit", "junit", "4.0");
+		File junitJar = new File(dir, "junit/junit/4.0/junit-4.0.jar");
+		assertFalse("Already existed " + junitJar, junitJar.isFile());
+		r.addArtifact(junit);
+		r.update();
+		assertTrue("Did not create " + junitJar, junitJar.isFile());
+		// To avoid /private/tmp vs /tmp etc.
+		junitJar = junitJar.getCanonicalFile();
+		ClassLoader loader = r.getLoader(junit, null);
+		assertNotNull("ClassLoader was null ", loader);
+		URL junitResource = loader.getResource("junit");
+		String shouldStartWith = "jar:" + junitJar.toURI().toURL();
+		assertTrue("Did not start with " + shouldStartWith + ": "
+				+ junitResource, junitResource.toString().startsWith(
+				shouldStartWith));
+	}
+
 	@Test
 	public void repositoryWithExistingContents() throws MalformedURLException {
 		r.addRemoteRepository(mavenMirror);
@@ -189,19 +189,57 @@ public class LocalRepositoryTest {
 		assertTrue(r.getArtifacts().containsAll(r2.getArtifacts()));
 	}
 
+	@Before
+	public void setUp() throws IOException {
+		dir = createTempDirectory().getAbsoluteFile();
+		// reset static members that screw up/fake testing
+		LocalRepository.loaderMap.clear();
+		LocalRepository.repositoryCache.clear();
+		r = new LocalRepository(dir);
+		System
+				.setProperty("raven.profile",
+						"http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
+	}
+
+	@After
+	public void tearDown() {
+		r = null;
+		try {
+			FileUtils.deleteDirectory(dir);
+		} catch (IOException e) {
+			// OK
+		}
+	}
+
 	@Test
-	public void cleanEmpty() {
-		File emptyDir = new File(dir, "some/artifact/1.1");
-		emptyDir.mkdirs();
-		assertTrue(emptyDir.isDirectory());
-		r.clean();
-		// some/artifact/1.1
-		assertFalse(emptyDir.isDirectory());
-		// some/artifact
-		assertFalse(emptyDir.getParentFile().isDirectory());
-		// some
-		assertFalse(emptyDir.getParentFile().getParentFile().isDirectory());
-		assertTrue(dir.isDirectory());
+	public void testPrependRemoteRepository() throws Exception {
+		assertEquals(0, r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.google.com"));
+		assertEquals(1, r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.yahoo.com"));
+		assertEquals(2, r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.bbc.co.uk"));
+		assertEquals(3, r.getRemoteRepositories().size());
+		r.prependRemoteRepository(new URL("http://www.mygrid.org.uk"));
+		assertEquals(4, r.getRemoteRepositories().size());
+		int i = 0;
+		String[] expectedURLS = new String[] { "http://www.mygrid.org.uk",
+				"http://www.bbc.co.uk", "http://www.yahoo.com",
+				"http://www.google.com" };
+		for (URL url : r.getRemoteRepositories()) {
+			assertEquals(expectedURLS[i], url.toExternalForm());
+			i++;
+		}
+	}
+
+	/*
+	 * Test method for
+	 * 'net.sf.taverna.raven.repository.Repository.Repository(File)'
+	 */
+	@Test
+	public void testRepository() {
+		dir.delete();
+		new LocalRepository(dir);
 	}
 
 	/*
@@ -238,43 +276,5 @@ public class LocalRepositoryTest {
 		r.update();
 		assertTrue(r.getArtifacts().contains(a));
 		assertTrue(r.getStatus(a).equals(ArtifactStatus.PomNonJar));
-	}
-
-	/*
-	 * Test method for
-	 * 'net.sf.taverna.raven.repository.Repository.getLoader(Artifact,
-	 * ClassLoader)'
-	 */
-	@Test
-	public void getLoader() throws MalformedURLException,
-			ClassNotFoundException, ArtifactNotFoundException,
-			ArtifactStateException {
-		Artifact a = new BasicArtifact("batik", "batik-rasterizer", "1.6");
-		r.addRemoteRepository(mavenMirror);
-		r.addArtifact(a);
-		r.update();
-		ClassLoader cl = r.getLoader(a, null);
-		cl.loadClass("org.apache.batik.apps.rasterizer.Main");
-	}
-
-	@Test
-	public void testPrependRemoteRepository() throws Exception {
-		assertEquals(0, r.getRemoteRepositories().size());
-		r.prependRemoteRepository(new URL("http://www.google.com"));
-		assertEquals(1, r.getRemoteRepositories().size());
-		r.prependRemoteRepository(new URL("http://www.yahoo.com"));
-		assertEquals(2, r.getRemoteRepositories().size());
-		r.prependRemoteRepository(new URL("http://www.bbc.co.uk"));
-		assertEquals(3, r.getRemoteRepositories().size());
-		r.prependRemoteRepository(new URL("http://www.mygrid.org.uk"));
-		assertEquals(4, r.getRemoteRepositories().size());
-		int i = 0;
-		String[] expectedURLS = new String[] { "http://www.mygrid.org.uk",
-				"http://www.bbc.co.uk", "http://www.yahoo.com",
-				"http://www.google.com" };
-		for (URL url : r.getRemoteRepositories()) {
-			assertEquals(expectedURLS[i], url.toExternalForm());
-			i++;
-		}
 	}
 }

@@ -21,37 +21,17 @@ public class AggregatingClassLoader extends ClassLoader {
 
 	List<ClassLoader> loaders = new ArrayList<ClassLoader>();
 
-	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts,
-			ClassLoader parent) throws ArtifactStateException,
-			ArtifactNotFoundException {
-		super(parent);
-		init(rep, artifacts);
-	}
-
 	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts)
 			throws ArtifactStateException, ArtifactNotFoundException {
 		super();
 		init(rep, artifacts);
 	}
 
-	private void init(Repository rep, List<Artifact> artifacts)
-			throws ArtifactStateException, ArtifactNotFoundException {
-		for (Artifact a : artifacts) {
-			loaders.add(rep.getLoader(a, null));
-		}
-	}
-
-	@Override
-	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		for (ClassLoader loader : loaders) {
-			try {
-				return loader.loadClass(name);
-			} catch (ClassNotFoundException cnfe) {
-				//
-			}
-		}
-		throw new ClassNotFoundException("Unable to locate a loader for "
-				+ name);
+	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts,
+			ClassLoader parent) throws ArtifactStateException,
+			ArtifactNotFoundException {
+		super(parent);
+		init(rep, artifacts);
 	}
 
 	@Override
@@ -85,6 +65,26 @@ public class AggregatingClassLoader extends ClassLoader {
 			}
 		};
 
+	}
+
+	private void init(Repository rep, List<Artifact> artifacts)
+			throws ArtifactStateException, ArtifactNotFoundException {
+		for (Artifact a : artifacts) {
+			loaders.add(rep.getLoader(a, null));
+		}
+	}
+
+	@Override
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
+		for (ClassLoader loader : loaders) {
+			try {
+				return loader.loadClass(name);
+			} catch (ClassNotFoundException cnfe) {
+				//
+			}
+		}
+		throw new ClassNotFoundException("Unable to locate a loader for "
+				+ name);
 	}
 
 }

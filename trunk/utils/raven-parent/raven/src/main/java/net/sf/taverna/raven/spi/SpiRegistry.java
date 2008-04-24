@@ -67,32 +67,20 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		newArtifacts.addAll(r.getArtifacts(ArtifactStatus.Ready));
 	}
 
+	/**
+	 * Add a new ArtifactFilter
+	 */
+	public synchronized void addFilter(ArtifactFilter af) {
+		implementations = null;
+		filters.add(af);
+		af.addArtifactFilterListener(this);
+		newArtifacts.clear();
+		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
+		updateRegistry();
+	}
+
 	public void addNewArtifact(Artifact a) {
 		newArtifacts.add(a);
-	}
-
-	@Override
-	public void finalize() {
-		// FIXME: Will this ever work? rlistener references repository
-		// and we reference rlistener...
-		repository.removeRepositoryListener(rlistener);
-	}
-
-	/**
-	 * The class name for the registry to search over
-	 */
-	public String getClassName() {
-		return classname;
-	}
-
-	/**
-	 * Get the Class objects for all implementations of this SPI currently known
-	 */
-	public synchronized List<Class> getClasses() {
-		if (implementations == null) {
-			updateRegistry();
-		}
-		return implementations;
 	}
 
 	/**
@@ -110,29 +98,6 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 	}
 
 	/**
-	 * Remove a listener from this SpiRegistry
-	 * 
-	 * @param l
-	 */
-	public void removeRegistryListener(RegistryListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
-
-	/**
-	 * Add a new ArtifactFilter
-	 */
-	public synchronized void addFilter(ArtifactFilter af) {
-		implementations = null;
-		filters.add(af);
-		af.addArtifactFilterListener(this);
-		newArtifacts.clear();
-		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		updateRegistry();
-	}
-
-	/**
 	 * Clear all ArtifactFilter objects
 	 */
 	public synchronized void clearFilters() {
@@ -144,6 +109,52 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
 		updateRegistry();
+	}
+
+	public void filterChanged(ArtifactFilter filter) {
+		implementations = null;
+		newArtifacts.clear();
+		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
+		updateRegistry();
+	}
+
+	@Override
+	public void finalize() {
+		// FIXME: Will this ever work? rlistener references repository
+		// and we reference rlistener...
+		repository.removeRepositoryListener(rlistener);
+	}
+
+	/**
+	 * Get the Class objects for all implementations of this SPI currently known
+	 */
+	public synchronized List<Class> getClasses() {
+		if (implementations == null) {
+			updateRegistry();
+		}
+		return implementations;
+	}
+
+	/**
+	 * The class name for the registry to search over
+	 */
+	public String getClassName() {
+		return classname;
+	}
+
+	public Iterator<Class> iterator() {
+		return getClasses().iterator();
+	}
+
+	/**
+	 * Remove a listener from this SpiRegistry
+	 * 
+	 * @param l
+	 */
+	public void removeRegistryListener(RegistryListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
 	}
 
 	/**
@@ -158,13 +169,6 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 		for (ArtifactFilter filter : filters) {
 			filter.addArtifactFilterListener(this);
 		}
-		newArtifacts.clear();
-		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
-		updateRegistry();
-	}
-
-	public void filterChanged(ArtifactFilter filter) {
-		implementations = null;
 		newArtifacts.clear();
 		newArtifacts.addAll(repository.getArtifacts(ArtifactStatus.Ready));
 		updateRegistry();
@@ -303,10 +307,6 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 				rl.spiRegistryUpdated(this);
 			}
 		}
-	}
-
-	public Iterator<Class> iterator() {
-		return getClasses().iterator();
 	}
 
 }

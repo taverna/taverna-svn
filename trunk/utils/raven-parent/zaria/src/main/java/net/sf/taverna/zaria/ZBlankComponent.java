@@ -25,6 +25,27 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 
 	private List<Action> actions;
 
+	private Action createSplitPaneAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent arg0) {
+			replaceWith(new ZSplitPane());
+		}
+	};
+
+	private Action createTabbedPaneAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent arg0) {
+			ZTabbedPane tabbedPane = new ZTabbedPane();
+			// Make an initial tab inside
+			tabbedPane.newTab();
+			replaceWith(tabbedPane);
+		}
+	};
+
+	private Action createRavenPaneAction = new AbstractAction() {
+		public void actionPerformed(ActionEvent arg0) {
+			replaceWith(new ZRavenComponent());
+		}
+	};
+
 	public ZBlankComponent() {
 		super();
 		actions = new ArrayList<Action>();
@@ -50,50 +71,29 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 		revalidate();
 	}
 
-	private Action createSplitPaneAction = new AbstractAction() {
-		public void actionPerformed(ActionEvent arg0) {
-			replaceWith(new ZSplitPane());
-		}
-	};
-
-	private Action createTabbedPaneAction = new AbstractAction() {
-		public void actionPerformed(ActionEvent arg0) {
-			ZTabbedPane tabbedPane = new ZTabbedPane();
-			// Make an initial tab inside
-			tabbedPane.newTab();
-			replaceWith(tabbedPane);
-		}
-	};
-
-	private Action createRavenPaneAction = new AbstractAction() {
-		public void actionPerformed(ActionEvent arg0) {
-			replaceWith(new ZRavenComponent());
-		}
-	};
-
-	public List<ZTreeNode> getZChildren() {
-		return new ArrayList<ZTreeNode>();
-	}
-
-	public Element getElement() {
-		return new Element("blank");
-	}
-
 	public void configure(Element e) {
 		// No configuration for blank component
+	}
+
+	public void discard() {
+		// Do nothing
+
 	}
 
 	public List<Action> getActions() {
 		return actions;
 	}
 
-	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
-		// Do nothing, this has no children
+	public Element getElement() {
+		return new Element("blank");
 	}
 
-	public void discard() {
-		// Do nothing
+	public List<ZTreeNode> getZChildren() {
+		return new ArrayList<ZTreeNode>();
+	}
 
+	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
+		// Do nothing, this has no children
 	}
 
 }

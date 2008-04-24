@@ -34,67 +34,20 @@ public class ArtifactClassLoaderTest {
 	private static final int LOOPS = 10;
 
 	private File dir;
-	BasicArtifact wsdlProcessor;
 	private ClassLoader oldContextLoader;
-
 	private List<String> classes;
 
-	@Before
-	public void setUp() throws IOException, ArtifactNotFoundException,
-			ArtifactStateException {
-		Log.setImplementation(new ConsoleLog());
-		ConsoleLog.level = Priority.WARN;
-		dir = new File("/tmp/fish");
-		dir.mkdir();
-		// dir = LocalRepositoryTest.createTempDirectory();
-		LocalRepository repository = createRepository();
-		ConsoleLog.level = Priority.DEBUG;
-		// ConsoleLog.console = new PrintStream(new FileOutputStream(new
-		// File("/tmp/fish.log"), true));
-		assertEquals("Could not download " + wsdlProcessor,
-				ArtifactStatus.Ready, repository.getStatus(wsdlProcessor));
+	BasicArtifact wsdlProcessor;
 
-		// SpiRegistry spiRegistry = new SpiRegistry(repository, SPI, getClass()
-		// .getClassLoader());
-		classes = new ArrayList<String>();
-		// for (Class spiClass : spiRegistry.getClasses()) {
-		// classes.add(spiClass.getCanonicalName());
-		// }
-		classes
-				.add("org.embl.ebi.escience.scuflworkers.wsdl.WSDLProcessorInfoBean");
-		assertFalse("No SPIs found for " + SPI, classes.isEmpty());
-
-	}
-
-	private LocalRepository createRepository() throws MalformedURLException {
-		LocalRepository.loaderMap.clear();
-		LocalRepository.repositoryCache.clear();
-		LocalRepository repository = new LocalRepository(dir);
-		repository.addRemoteRepository(new URL(
-				"http://www.mygrid.org.uk/maven/repository/"));
-		repository.addRemoteRepository(new URL(
-				"http://mirrors.dotsrc.org/maven2/"));
-		wsdlProcessor = new BasicArtifact("uk.org.mygrid.taverna.processors",
-				"taverna-wsdl-processor", "1.7.1.0");
-		repository.addArtifact(wsdlProcessor);
-		repository.update();
-		return repository;
-	}
-
-	@After
-	public void tearDown() throws InterruptedException {
-		Thread.currentThread().setContextClassLoader(oldContextLoader);
-		wsdlProcessor = null;
-		// try {
-		// FileUtils.deleteDirectory(dir);
-		// } catch (IOException e) {
-		// // ignore
-		// }
-		System.gc();
-		Thread.sleep(500);
-		System.gc();
-		ConsoleLog.console.flush();
-		Log.setImplementation(new JavaLog());
+	public void loadClasses(final ClassLoader loader)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException {
+		for (String className : classes) {
+			Class<?> loadedClass = loader.loadClass(className);
+			loadedClass.newInstance();
+			System.out.println("OK #" + Thread.currentThread().getId() + " in "
+					+ loader);
+		}
 	}
 
 	public void runManyThreads(final Runnable target) {
@@ -134,50 +87,47 @@ public class ArtifactClassLoaderTest {
 		}
 	}
 
-	public void testRunManyThreads() {
-		final List<Object> runs = new ArrayList<Object>();
-		runManyThreads(new Runnable() {
-			public void run() {
-				synchronized (runs) {
-					runs.add(null);
-				}
-			}
-		});
-		assertEquals(THREADS, runs.size());
+	@Before
+	public void setUp() throws IOException, ArtifactNotFoundException,
+			ArtifactStateException {
+		Log.setImplementation(new ConsoleLog());
+		ConsoleLog.level = Priority.WARN;
+		dir = new File("/tmp/fish");
+		dir.mkdir();
+		// dir = LocalRepositoryTest.createTempDirectory();
+		LocalRepository repository = createRepository();
+		ConsoleLog.level = Priority.DEBUG;
+		// ConsoleLog.console = new PrintStream(new FileOutputStream(new
+		// File("/tmp/fish.log"), true));
+		assertEquals("Could not download " + wsdlProcessor,
+				ArtifactStatus.Ready, repository.getStatus(wsdlProcessor));
+
+		// SpiRegistry spiRegistry = new SpiRegistry(repository, SPI, getClass()
+		// .getClassLoader());
+		classes = new ArrayList<String>();
+		// for (Class spiClass : spiRegistry.getClasses()) {
+		// classes.add(spiClass.getCanonicalName());
+		// }
+		classes
+				.add("org.embl.ebi.escience.scuflworkers.wsdl.WSDLProcessorInfoBean");
+		assertFalse("No SPIs found for " + SPI, classes.isEmpty());
+
 	}
 
-	public void loadClasses(final ClassLoader loader)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		for (String className : classes) {
-			Class<?> loadedClass = loader.loadClass(className);
-			loadedClass.newInstance();
-			System.out.println("OK #" + Thread.currentThread().getId() + " in "
-					+ loader);
-		}
-	}
-
-	@Test
-	public void testSimpleLoad() throws Throwable {
-		final LocalRepository repository = createRepository();
-		final ClassLoader loader = repository.getLoader(wsdlProcessor, null);
-		loadClasses(loader);
-	}
-
-	@Test
-	public void testUnique() throws Throwable {
-		final LocalRepository repository1 = createRepository();
-		final ClassLoader loader1 = repository1.getLoader(wsdlProcessor, null);
-
-		final LocalRepository repository2 = createRepository();
-		final ClassLoader loader2 = repository2.getLoader(wsdlProcessor, null);
-
-		assertTrue("Loaders were not different", loader1 != loader2);
-
-		Class<?> class1 = loader1.loadClass(classes.get(0));
-		Class<?> class2 = loader2.loadClass(classes.get(0));
-
-		assertTrue("Classes were not different", class1 != class2);
+	@After
+	public void tearDown() throws InterruptedException {
+		Thread.currentThread().setContextClassLoader(oldContextLoader);
+		wsdlProcessor = null;
+		// try {
+		// FileUtils.deleteDirectory(dir);
+		// } catch (IOException e) {
+		// // ignore
+		// }
+		System.gc();
+		Thread.sleep(500);
+		System.gc();
+		ConsoleLog.console.flush();
+		Log.setImplementation(new JavaLog());
 	}
 
 	@Test
@@ -210,5 +160,55 @@ public class ArtifactClassLoaderTest {
 				throw exceptions.get(0);
 			}
 		}
+	}
+
+	public void testRunManyThreads() {
+		final List<Object> runs = new ArrayList<Object>();
+		runManyThreads(new Runnable() {
+			public void run() {
+				synchronized (runs) {
+					runs.add(null);
+				}
+			}
+		});
+		assertEquals(THREADS, runs.size());
+	}
+
+	@Test
+	public void testSimpleLoad() throws Throwable {
+		final LocalRepository repository = createRepository();
+		final ClassLoader loader = repository.getLoader(wsdlProcessor, null);
+		loadClasses(loader);
+	}
+
+	@Test
+	public void testUnique() throws Throwable {
+		final LocalRepository repository1 = createRepository();
+		final ClassLoader loader1 = repository1.getLoader(wsdlProcessor, null);
+
+		final LocalRepository repository2 = createRepository();
+		final ClassLoader loader2 = repository2.getLoader(wsdlProcessor, null);
+
+		assertTrue("Loaders were not different", loader1 != loader2);
+
+		Class<?> class1 = loader1.loadClass(classes.get(0));
+		Class<?> class2 = loader2.loadClass(classes.get(0));
+
+		assertTrue("Classes were not different", class1 != class2);
+	}
+
+	private LocalRepository createRepository() throws MalformedURLException {
+		LocalRepository.loaderMap.clear();
+		LocalRepository.repositoryCache.clear();
+		LocalRepository repository = new LocalRepository(dir);
+		repository.addRemoteRepository(new URL(
+				"http://www.mygrid.org.uk/maven/repository/"));
+		repository.addRemoteRepository(new URL(
+				"http://mirrors.dotsrc.org/maven2/"));
+		wsdlProcessor = new BasicArtifact("uk.org.mygrid.taverna.processors",
+				"taverna-wsdl-processor", "1.7.1.0");
+		repository.addArtifact(wsdlProcessor);
+		repository.update();
+		return repository;
 	}
 }

@@ -42,58 +42,6 @@ public class BasicArtifact implements Artifact {
 	}
 
 	/**
-	 * Compare with another object.
-	 * 
-	 * @return true if the other object is also an instance of Artifact and all
-	 *         fields (artifactId, groupId and version) are equal according to
-	 *         string comparison
-	 * @see Artifact#equals(Object)
-	 * @see Object#equals(Object)
-	 */
-	@Override
-	public boolean equals(Object other) {
-		if (other == this) {
-			return true;
-		}
-		if (!(other instanceof Artifact)) {
-			return false;
-		}
-		Artifact otherDep = (Artifact) other;
-		return (getArtifactId().equals(otherDep.getArtifactId())
-				&& getGroupId().equals(otherDep.getGroupId()) && getVersion()
-				.equals(otherDep.getVersion()));
-	}
-
-	/**
-	 * Calculate the hash code of the artifact.
-	 * 
-	 * @return hashcode of the concatenation of the three string fields
-	 * @see Artifact#hashCode()
-	 * @see Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return (getArtifactId() + getGroupId() + getVersion()).hashCode();
-	}
-
-	public String getArtifactId() {
-		return artifactId;
-	}
-
-	public String getGroupId() {
-		return groupId;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	@Override
-	public String toString() {
-		return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
-	}
-
-	/**
 	 * Compare with another object. If the other instance is an Artifact, it
 	 * will be compared by group, artifact and version in that order.
 	 */
@@ -116,6 +64,58 @@ public class BasicArtifact implements Artifact {
 			}
 		}
 		throw new ClassCastException("Cannot compare Artifact to other type");
+	}
+
+	/**
+	 * Compare with another object.
+	 * 
+	 * @return true if the other object is also an instance of Artifact and all
+	 *         fields (artifactId, groupId and version) are equal according to
+	 *         string comparison
+	 * @see Artifact#equals(Object)
+	 * @see Object#equals(Object)
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (other == this) {
+			return true;
+		}
+		if (!(other instanceof Artifact)) {
+			return false;
+		}
+		Artifact otherDep = (Artifact) other;
+		return (getArtifactId().equals(otherDep.getArtifactId())
+				&& getGroupId().equals(otherDep.getGroupId()) && getVersion()
+				.equals(otherDep.getVersion()));
+	}
+
+	public String getArtifactId() {
+		return artifactId;
+	}
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * Calculate the hash code of the artifact.
+	 * 
+	 * @return hashcode of the concatenation of the three string fields
+	 * @see Artifact#hashCode()
+	 * @see Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return (getArtifactId() + getGroupId() + getVersion()).hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getGroupId() + ":" + getArtifactId() + ":" + getVersion();
 	}
 
 }

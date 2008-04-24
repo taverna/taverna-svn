@@ -30,6 +30,11 @@ public class TestBasePane extends TestCase {
 		myFrame.setSize(300, 300);
 		ZBasePane pane = new ZBasePane() {
 
+			public void discard() {
+				// TODO Auto-generated method stub
+
+			}
+
 			@Override
 			public JComponent getComponent(Class theClass) {
 				// TODO Auto-generated method stub
@@ -40,11 +45,6 @@ public class TestBasePane extends TestCase {
 			public JMenuItem getMenuItem(Class theClass) {
 				// TODO Auto-generated method stub
 				return null;
-			}
-
-			public void discard() {
-				// TODO Auto-generated method stub
-
 			}
 
 		};

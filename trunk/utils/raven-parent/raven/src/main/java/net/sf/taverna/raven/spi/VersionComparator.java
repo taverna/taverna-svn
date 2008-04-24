@@ -28,9 +28,6 @@ class VersionComparator implements Comparator<Artifact> {
 	// Singleton pattern
 	private static VersionComparator instance = null;
 
-	protected VersionComparator() {
-	}
-
 	public static VersionComparator getInstance() {
 		if (instance == null) {
 			instance = new VersionComparator();
@@ -45,6 +42,9 @@ class VersionComparator implements Comparator<Artifact> {
 	 */
 	public static void sort(List<Artifact> artifacts) {
 		Collections.sort(artifacts, new VersionComparator());
+	}
+
+	protected VersionComparator() {
 	}
 
 	public int compare(Artifact a, Artifact b) {

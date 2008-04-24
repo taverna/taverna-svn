@@ -60,15 +60,15 @@ public class ZTabbedPane extends ZPane {
 			}
 		});
 		tabName.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent arg0) {
+				doName();
+			}
+
 			public void insertUpdate(DocumentEvent arg0) {
 				doName();
 			}
 
 			public void removeUpdate(DocumentEvent arg0) {
-				doName();
-			}
-
-			public void changedUpdate(DocumentEvent arg0) {
 				doName();
 			}
 
@@ -82,18 +82,29 @@ public class ZTabbedPane extends ZPane {
 		checkValidity();
 	}
 
+	public void configure(Element e) {
+		Element tabsElement = e.getChild("tabs");
+		if (tabsElement != null) {
+			for (Object tabElement : tabsElement.getChildren("tab")) {
+				Element t = (Element) tabElement;
+				String tabName = t.getChildTextTrim("title");
+				ZTreeNode znode = componentFor(t.getChild("znode"));
+				// Add to tabs then configure so we have a valid
+				// component heirarchy in place to find the base pane etc
+				tabs.addTab(tabName, (JComponent) znode);
+				znode.configure(t.getChild("znode"));
+			}
+		}
+	}
+
 	public void discard() {
 		for (ZTreeNode child : getZChildren()) {
 			child.discard();
 		}
 	}
 
-	public List<ZTreeNode> getZChildren() {
-		List<ZTreeNode> children = new ArrayList<ZTreeNode>();
-		for (int i = 0; i < tabs.getComponentCount(); i++) {
-			children.add((ZPane) tabs.getComponentAt(i));
-		}
-		return children;
+	public List<Action> getActions() {
+		return actions;
 	}
 
 	public Element getElement() {
@@ -111,6 +122,24 @@ public class ZTabbedPane extends ZPane {
 		return tabsElement;
 	}
 
+	/**
+	 * Get the tab name editor
+	 */
+	public List<Component> getToolbarComponents() {
+		List<Component> components = new ArrayList<Component>();
+		components.add(Box.createRigidArea(new Dimension(5, 5)));
+		components.add(tabName);
+		return components;
+	}
+
+	public List<ZTreeNode> getZChildren() {
+		List<ZTreeNode> children = new ArrayList<ZTreeNode>();
+		for (int i = 0; i < tabs.getComponentCount(); i++) {
+			children.add((ZPane) tabs.getComponentAt(i));
+		}
+		return children;
+	}
+
 	public void newTab() {
 		newTab("Tab " + tabs.getComponentCount());
 	}
@@ -123,19 +152,32 @@ public class ZTabbedPane extends ZPane {
 		checkValidity();
 	}
 
-	public void configure(Element e) {
-		Element tabsElement = e.getChild("tabs");
-		if (tabsElement != null) {
-			for (Object tabElement : tabsElement.getChildren("tab")) {
-				Element t = (Element) tabElement;
-				String tabName = t.getChildTextTrim("title");
-				ZTreeNode znode = componentFor(t.getChild("znode"));
-				// Add to tabs then configure so we have a valid
-				// component heirarchy in place to find the base pane etc
-				tabs.addTab(tabName, (JComponent) znode);
-				znode.configure(t.getChild("znode"));
+	/**
+	 * Call superclass method to show or hide toolbar and recursively call on
+	 * all child elements.
+	 */
+	public void setEditable(boolean editable) {
+		super.setEditable(editable);
+		for (ZTreeNode child : getZChildren()) {
+			child.setEditable(editable);
+		}
+	};
+
+	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
+		// Find the tab index, if any, of the old component
+		int componentIndex = -1;
+		for (int i = 0; i < tabs.getComponentCount() && componentIndex < 0; i++) {
+			if (tabs.getComponentAt(i) == oldComponent) {
+				componentIndex = i;
 			}
 		}
+		if (componentIndex == -1) {
+			// Give up, couldn't find the old component
+			return;
+		}
+		oldComponent.discard();
+		newComponent.setEditable(editable);
+		tabs.setComponentAt(componentIndex, (JComponent) newComponent);
 	}
 
 	private void checkValidity() {
@@ -169,6 +211,34 @@ public class ZTabbedPane extends ZPane {
 		// have the other controls...
 	}
 
+	/**
+	 * Swap the tab at index i with that at index i+1
+	 */
+	private void swapTabs(int i) {
+		Component c = tabs.getComponentAt(i);
+		String text = tabs.getTitleAt(i);
+		Icon icon = tabs.getIconAt(i);
+		tabs.remove(i);
+		tabs.add(c, text, i + 1);
+		if (icon != null) {
+			tabs.setIconAt(i + 1, icon);
+		}
+	}
+
+	private class AddTabAction extends AbstractAction {
+
+		public AddTabAction() {
+			super();
+			putValue(Action.SHORT_DESCRIPTION, "Add tab");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("addtab"));
+		}
+
+		public void actionPerformed(ActionEvent arg0) {
+			newTab();
+		}
+
+	}
+
 	private class ColourTabAction extends AbstractAction {
 
 		public ColourTabAction() {
@@ -189,32 +259,18 @@ public class ZTabbedPane extends ZPane {
 
 	}
 
-	private class AddTabAction extends AbstractAction {
+	private class DemoteTabAction extends AbstractAction {
 
-		public AddTabAction() {
+		public DemoteTabAction() {
 			super();
-			putValue(Action.SHORT_DESCRIPTION, "Add tab");
-			putValue(Action.SMALL_ICON, ZIcons.iconFor("addtab"));
+			putValue(Action.SHORT_DESCRIPTION, "Shift tab left");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("demotetab"));
 		}
 
-		public void actionPerformed(ActionEvent arg0) {
-			newTab();
-		}
-
-	};
-
-	private class RemoveCurrentTabAction extends AbstractAction {
-
-		public RemoveCurrentTabAction() {
-			super();
-			putValue(Action.SHORT_DESCRIPTION, "Remove tab");
-			putValue(Action.SMALL_ICON, ZIcons.iconFor("deletetab"));
-		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			int index = tabs.getSelectedIndex();
-			tabs.remove(index);
-			checkValidity();
+		public void actionPerformed(ActionEvent e) {
+			int selectedIndex = tabs.getSelectedIndex();
+			swapTabs(selectedIndex - 1);
+			tabs.setSelectedIndex(selectedIndex - 1);
 		}
 
 	}
@@ -235,76 +291,20 @@ public class ZTabbedPane extends ZPane {
 
 	}
 
-	private class DemoteTabAction extends AbstractAction {
+	private class RemoveCurrentTabAction extends AbstractAction {
 
-		public DemoteTabAction() {
+		public RemoveCurrentTabAction() {
 			super();
-			putValue(Action.SHORT_DESCRIPTION, "Shift tab left");
-			putValue(Action.SMALL_ICON, ZIcons.iconFor("demotetab"));
+			putValue(Action.SHORT_DESCRIPTION, "Remove tab");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("deletetab"));
 		}
 
-		public void actionPerformed(ActionEvent e) {
-			int selectedIndex = tabs.getSelectedIndex();
-			swapTabs(selectedIndex - 1);
-			tabs.setSelectedIndex(selectedIndex - 1);
+		public void actionPerformed(ActionEvent arg0) {
+			int index = tabs.getSelectedIndex();
+			tabs.remove(index);
+			checkValidity();
 		}
 
-	}
-
-	public List<Action> getActions() {
-		return actions;
-	}
-
-	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent) {
-		// Find the tab index, if any, of the old component
-		int componentIndex = -1;
-		for (int i = 0; i < tabs.getComponentCount() && componentIndex < 0; i++) {
-			if (tabs.getComponentAt(i) == oldComponent) {
-				componentIndex = i;
-			}
-		}
-		if (componentIndex == -1) {
-			// Give up, couldn't find the old component
-			return;
-		}
-		oldComponent.discard();
-		newComponent.setEditable(editable);
-		tabs.setComponentAt(componentIndex, (JComponent) newComponent);
-	}
-
-	/**
-	 * Swap the tab at index i with that at index i+1
-	 */
-	private void swapTabs(int i) {
-		Component c = tabs.getComponentAt(i);
-		String text = tabs.getTitleAt(i);
-		Icon icon = tabs.getIconAt(i);
-		tabs.remove(i);
-		tabs.add(c, text, i + 1);
-		if (icon != null) {
-			tabs.setIconAt(i + 1, icon);
-		}
-	}
-
-	/**
-	 * Call superclass method to show or hide toolbar and recursively call on
-	 * all child elements.
-	 */
-	public void setEditable(boolean editable) {
-		super.setEditable(editable);
-		for (ZTreeNode child : getZChildren()) {
-			child.setEditable(editable);
-		}
-	}
-
-	/**
-	 * Get the tab name editor
-	 */
-	public List<Component> getToolbarComponents() {
-		List<Component> components = new ArrayList<Component>();
-		components.add(Box.createRigidArea(new Dimension(5, 5)));
-		components.add(tabName);
-		return components;
 	}
 
 }

@@ -30,7 +30,7 @@ public class BlurredGlassPane extends JComponent {
 		filter.setRadius(1);
 		filter.setIterations(3);
 		listener = new ComponentListener() {
-			public void componentResized(ComponentEvent e) {
+			public void componentHidden(ComponentEvent e) {
 				createBlur();
 			}
 
@@ -38,16 +38,35 @@ public class BlurredGlassPane extends JComponent {
 				createBlur();
 			}
 
+			public void componentResized(ComponentEvent e) {
+				createBlur();
+			}
+
 			public void componentShown(ComponentEvent e) {
 				createBlur();
 
 			}
-
-			public void componentHidden(ComponentEvent e) {
-				createBlur();
-			}
 		};
 
+	}
+
+	@Override
+	public synchronized void paintComponent(Graphics g) {
+		if (this.active) {
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.drawImage(blur, 0, 0, null);
+			/**
+			 * String text = "Hello"; if (text != null && text.length() > 0) {
+			 * FontRenderContext context = g2d.getFontRenderContext();
+			 * TextLayout layout = new TextLayout(text, getFont(), context);
+			 * Rectangle2D bounds = layout.getBounds();
+			 * g2d.setColor(getForeground()); layout.draw(g2d, (float)
+			 * (getWidth() - bounds.getWidth()) / 2, (float) (getHeight()/2 +
+			 * layout.getLeading() + 2 * layout.getAscent())); }
+			 */
+		} else {
+			super.paintComponent(g);
+		}
 	}
 
 	public synchronized void setActive(boolean active) {
@@ -76,25 +95,6 @@ public class BlurredGlassPane extends JComponent {
 		blur = filter.filter(original, null);
 		logger.debug("Creating blurred image : " + width + "," + height);
 		repaint();
-	}
-
-	@Override
-	public synchronized void paintComponent(Graphics g) {
-		if (this.active) {
-			Graphics2D g2d = (Graphics2D) g;
-			g2d.drawImage(blur, 0, 0, null);
-			/**
-			 * String text = "Hello"; if (text != null && text.length() > 0) {
-			 * FontRenderContext context = g2d.getFontRenderContext();
-			 * TextLayout layout = new TextLayout(text, getFont(), context);
-			 * Rectangle2D bounds = layout.getBounds();
-			 * g2d.setColor(getForeground()); layout.draw(g2d, (float)
-			 * (getWidth() - bounds.getWidth()) / 2, (float) (getHeight()/2 +
-			 * layout.getLeading() + 2 * layout.getAscent())); }
-			 */
-		} else {
-			super.paintComponent(g);
-		}
 	}
 
 }

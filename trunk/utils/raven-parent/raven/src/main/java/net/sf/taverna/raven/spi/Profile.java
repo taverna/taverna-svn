@@ -141,41 +141,6 @@ public class Profile extends AbstractArtifactFilter {
 		readProfileArtifactNodes(nodelist);
 	}
 
-	private void readProfileArtifactNodes(NodeList nodelist)
-			throws InvalidProfileException {
-		for (int i = 0; i < nodelist.getLength(); i++) {
-			Node n = nodelist.item(i);
-			if (n instanceof Element) {
-				NamedNodeMap atts = n.getAttributes();
-				Node gnode = atts.getNamedItem("groupId");
-				Node anode = atts.getNamedItem("artifactId");
-				Node vnode = atts.getNamedItem("version");
-				if (gnode == null || anode == null || vnode == null) {
-					throw new InvalidProfileException(
-							"Entries must contain groupId, artifactId, version");
-				}
-				Artifact artifact = new BasicArtifact(gnode.getNodeValue(),
-						anode.getNodeValue(), vnode.getNodeValue());
-				artifacts.add(artifact);
-				Node snode = atts.getNamedItem("system");
-				if (snode != null && "true".equals(snode.getNodeValue())) {
-					systemArtifacts.add(artifact);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Return the version string of the Profile, or 'NO VERSION' if a version is
-	 * not defined
-	 */
-	public String getVersion() {
-		if (version == null) {
-			return "NO VERSION";
-		}
-		return version;
-	}
-
 	/**
 	 * Allow an artifact to be added to the profile at runtime
 	 * 
@@ -186,97 +151,59 @@ public class Profile extends AbstractArtifactFilter {
 		fireFilterChanged(this);
 	}
 
+	/**
+	 * Adds artifacts contains in the profile definition for a Plugin. These
+	 * need to be added early in the startup process so that system artifacts
+	 * get added to the correct classloader. It also prevents a long delay
+	 * between the splash screen and the workbench appearing when first
+	 * initialising default plugins.
+	 * 
+	 * @param pluginsDefinitionStream
+	 */
+	public void addArtifactsForPlugins(InputStream pluginsDefinitionStream) {
+		Document document;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		try {
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			try {
+				document = builder.parse(pluginsDefinitionStream);
+				NodeList pluginNodes = document.getElementsByTagName("plugin");
+				for (int i = 0; i < pluginNodes.getLength(); i++) {
+					Node node = pluginNodes.item(i);
+					Node child = node.getFirstChild();
+					Node profileNode = null;
+					boolean enabled = false;
+					while (child != null) {
+						if (child.getNodeName().equals("enabled")) {
+							enabled = child.getTextContent() != null
+									&& child.getTextContent().trim().equals(
+											"true");
+						}
+						if (child.getNodeName().equals("profile")) {
+							profileNode = child;
+						}
+						child = child.getNextSibling();
+					}
+					if (enabled && profileNode != null) {
+						readProfileArtifactNodes(profileNode.getChildNodes());
+					}
+				}
+			} catch (SAXException e) {
+				logger.error("Error reading plugin xml", e);
+			} catch (IOException e) {
+				logger.error("Error reading plugin xml stream", e);
+			} catch (InvalidProfileException e) {
+				logger.error("The plugin xml contains an invalid profile", e);
+			}
+		} catch (ParserConfigurationException e) {
+			logger.error("The XML parser is incorrectly configured", e);
+		}
+	}
+
 	// new
 	public void addSystemArtifact(Artifact artifact) {
 		systemArtifacts.add(artifact);
 		fireFilterChanged(this);
-	}
-
-	/**
-	 * Allow an artifact to be removed from the profile at runtime
-	 * 
-	 * @param artifact
-	 */
-	public void removeArtifact(Artifact artifact) {
-		artifacts.remove(artifact);
-		systemArtifacts.remove(artifacts);
-		fireFilterChanged(this);
-	}
-
-	// new (probably not needed)
-	public void removeSystemArtifact(Artifact artifact) {
-		systemArtifacts.remove(artifact);
-		fireFilterChanged(this);
-	}
-
-	/**
-	 * Return the name of the profile, or null if no name is defined
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Get the artifacts that forms part of this profile.
-	 * 
-	 * @return a copy of the internal {@link Set} of {@link Artifact}.
-	 */
-	public Set<Artifact> getArtifacts() {
-		return new HashSet<Artifact>(artifacts);
-	}
-
-	/**
-	 * Get the subset of {@link #getArtifacts()} that is marked as being system
-	 * artifacts by this profile. A system artifact is supposed to be put into
-	 * the {@link net.sf.taverna.tools.BootstrapClassLoader} and thereby
-	 * available even to artifacts that don't declare it as a dependency. This
-	 * is mainly useful for global XML parsers.
-	 * 
-	 * @return a copy of the internal Set of system Artifacts
-	 */
-	public Set<Artifact> getSystemArtifacts() {
-		return new HashSet<Artifact>(systemArtifacts);
-	}
-
-	/**
-	 * Return the intersection of the set of Artifacts in this Profile and that
-	 * presented to this method if strict is true, otherwise return the
-	 * intersection plus all artifacts in the set which have no match within the
-	 * profile when only groupId and artifactId are taken into account.
-	 * 
-	 * @return filtered list of Artifact objects
-	 */
-	public Set<Artifact> filter(Set<Artifact> intersecting) {
-		Set<Artifact> result = new HashSet<Artifact>();
-		for (Artifact artifact : intersecting) {
-			if (artifacts.contains(artifact)) {
-				// Exact match to an entry in the profile so include it
-				result.add(artifact);
-			} else if (!strict) {
-				// We will include the artifact as long as we don't have it in
-				// another version
-				if (!containsOtherVersion(artifact)) {
-					result.add(artifact);
-				}
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * @param artifact
-	 *            Artifact to look for ignoring version information
-	 * @return whether there is a matching pair of groupId,artifactId in this
-	 *         profile
-	 */
-	private boolean containsOtherVersion(Artifact artifact) {
-		for (Artifact existing : artifacts) {
-			if (existing.getArtifactId().equals(artifact.getArtifactId())
-					&& existing.getGroupId().equals(artifact.getGroupId())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -307,6 +234,88 @@ public class Profile extends AbstractArtifactFilter {
 			result = matches.get(matches.size() - 1);
 		}
 		return result;
+	}
+
+	/**
+	 * Return the intersection of the set of Artifacts in this Profile and that
+	 * presented to this method if strict is true, otherwise return the
+	 * intersection plus all artifacts in the set which have no match within the
+	 * profile when only groupId and artifactId are taken into account.
+	 * 
+	 * @return filtered list of Artifact objects
+	 */
+	public Set<Artifact> filter(Set<Artifact> intersecting) {
+		Set<Artifact> result = new HashSet<Artifact>();
+		for (Artifact artifact : intersecting) {
+			if (artifacts.contains(artifact)) {
+				// Exact match to an entry in the profile so include it
+				result.add(artifact);
+			} else if (!strict) {
+				// We will include the artifact as long as we don't have it in
+				// another version
+				if (!containsOtherVersion(artifact)) {
+					result.add(artifact);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Get the artifacts that forms part of this profile.
+	 * 
+	 * @return a copy of the internal {@link Set} of {@link Artifact}.
+	 */
+	public Set<Artifact> getArtifacts() {
+		return new HashSet<Artifact>(artifacts);
+	}
+
+	/**
+	 * Return the name of the profile, or null if no name is defined
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Get the subset of {@link #getArtifacts()} that is marked as being system
+	 * artifacts by this profile. A system artifact is supposed to be put into
+	 * the {@link net.sf.taverna.tools.BootstrapClassLoader} and thereby
+	 * available even to artifacts that don't declare it as a dependency. This
+	 * is mainly useful for global XML parsers.
+	 * 
+	 * @return a copy of the internal Set of system Artifacts
+	 */
+	public Set<Artifact> getSystemArtifacts() {
+		return new HashSet<Artifact>(systemArtifacts);
+	}
+
+	/**
+	 * Return the version string of the Profile, or 'NO VERSION' if a version is
+	 * not defined
+	 */
+	public String getVersion() {
+		if (version == null) {
+			return "NO VERSION";
+		}
+		return version;
+	}
+
+	/**
+	 * Allow an artifact to be removed from the profile at runtime
+	 * 
+	 * @param artifact
+	 */
+	public void removeArtifact(Artifact artifact) {
+		artifacts.remove(artifact);
+		systemArtifacts.remove(artifacts);
+		fireFilterChanged(this);
+	}
+
+	// new (probably not needed)
+	public void removeSystemArtifact(Artifact artifact) {
+		systemArtifacts.remove(artifact);
+		fireFilterChanged(this);
 	}
 
 	/**
@@ -361,51 +370,42 @@ public class Profile extends AbstractArtifactFilter {
 	}
 
 	/**
-	 * Adds artifacts contains in the profile definition for a Plugin. These
-	 * need to be added early in the startup process so that system artifacts
-	 * get added to the correct classloader. It also prevents a long delay
-	 * between the splash screen and the workbench appearing when first
-	 * initialising default plugins.
-	 * 
-	 * @param pluginsDefinitionStream
+	 * @param artifact
+	 *            Artifact to look for ignoring version information
+	 * @return whether there is a matching pair of groupId,artifactId in this
+	 *         profile
 	 */
-	public void addArtifactsForPlugins(InputStream pluginsDefinitionStream) {
-		Document document;
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		try {
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			try {
-				document = builder.parse(pluginsDefinitionStream);
-				NodeList pluginNodes = document.getElementsByTagName("plugin");
-				for (int i = 0; i < pluginNodes.getLength(); i++) {
-					Node node = pluginNodes.item(i);
-					Node child = node.getFirstChild();
-					Node profileNode = null;
-					boolean enabled = false;
-					while (child != null) {
-						if (child.getNodeName().equals("enabled")) {
-							enabled = child.getTextContent() != null
-									&& child.getTextContent().trim().equals(
-											"true");
-						}
-						if (child.getNodeName().equals("profile")) {
-							profileNode = child;
-						}
-						child = child.getNextSibling();
-					}
-					if (enabled && profileNode != null) {
-						readProfileArtifactNodes(profileNode.getChildNodes());
-					}
-				}
-			} catch (SAXException e) {
-				logger.error("Error reading plugin xml", e);
-			} catch (IOException e) {
-				logger.error("Error reading plugin xml stream", e);
-			} catch (InvalidProfileException e) {
-				logger.error("The plugin xml contains an invalid profile", e);
+	private boolean containsOtherVersion(Artifact artifact) {
+		for (Artifact existing : artifacts) {
+			if (existing.getArtifactId().equals(artifact.getArtifactId())
+					&& existing.getGroupId().equals(artifact.getGroupId())) {
+				return true;
 			}
-		} catch (ParserConfigurationException e) {
-			logger.error("The XML parser is incorrectly configured", e);
+		}
+		return false;
+	}
+
+	private void readProfileArtifactNodes(NodeList nodelist)
+			throws InvalidProfileException {
+		for (int i = 0; i < nodelist.getLength(); i++) {
+			Node n = nodelist.item(i);
+			if (n instanceof Element) {
+				NamedNodeMap atts = n.getAttributes();
+				Node gnode = atts.getNamedItem("groupId");
+				Node anode = atts.getNamedItem("artifactId");
+				Node vnode = atts.getNamedItem("version");
+				if (gnode == null || anode == null || vnode == null) {
+					throw new InvalidProfileException(
+							"Entries must contain groupId, artifactId, version");
+				}
+				Artifact artifact = new BasicArtifact(gnode.getNodeValue(),
+						anode.getNodeValue(), vnode.getNodeValue());
+				artifacts.add(artifact);
+				Node snode = atts.getNamedItem("system");
+				if (snode != null && "true".equals(snode.getNodeValue())) {
+					systemArtifacts.add(artifact);
+				}
+			}
 		}
 	}
 

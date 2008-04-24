@@ -30,7 +30,45 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 
 	private static Log logger = Log.getLogger(ZPane.class);
 
+	/**
+	 * Returns the base element for the ZPane but does not configure it, we
+	 * don't configure here as we want the configure() method to have access to
+	 * the ZBasePane so it can get at the Repository etc.
+	 * 
+	 * @param e
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	static ZTreeNode componentFor(Element e) {
+		String className = e.getAttributeValue("classname");
+		try {
+			Class<ZTreeNode> theClass = (Class<ZTreeNode>) ZPane.class
+					.getClassLoader().loadClass(className);
+			return theClass.newInstance();
+		} catch (ClassNotFoundException e1) {
+			logger.warn("Could not find class " + className, e1);
+		} catch (InstantiationException e1) {
+			logger.warn("Could not instantiate class " + className, e1);
+		} catch (IllegalAccessException e1) {
+			logger.warn("Could not access class " + className, e1);
+		}
+		return null;
+	}
+	/**
+	 * Return the base element + configuration for the given ZPane subclass
+	 * 
+	 * @param z
+	 * @return
+	 */
+	static Element elementFor(ZTreeNode z) {
+		Element zPaneElement = new Element("znode");
+		zPaneElement.setAttribute("classname", z.getClass().getName());
+		zPaneElement.addContent(z.getElement());
+		return zPaneElement;
+	}
+
 	protected boolean editable = false;
+
 	protected JToolBar toolBar = new JToolBar();
 
 	protected ZPane() {
@@ -41,17 +79,19 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		setLayout(new BorderLayout());
 	}
 
-	@SuppressWarnings("serial")
-	protected class ReplaceWithBlankAction extends AbstractAction {
-		public ReplaceWithBlankAction() {
-			super();
-			putValue(Action.SHORT_DESCRIPTION, "Clear");
-			putValue(Action.SMALL_ICON, ZIcons.iconFor("delete"));
+	/**
+	 * Traverse up to the JFrame this component is contained within, used for
+	 * showing dialogues and locking the frame using the glass pane.
+	 */
+	public JFrame getFrame() {
+		Component c = this;
+		while (c != null) {
+			c = c.getParent();
+			if (c instanceof JFrame) {
+				return (JFrame) c;
+			}
 		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			replaceWith(new ZBlankComponent());
-		}
+		return null;
 	}
 
 	/**
@@ -73,19 +113,12 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		}
 	}
 
-	/**
-	 * Traverse up to the JFrame this component is contained within, used for
-	 * showing dialogues and locking the frame using the glass pane.
-	 */
-	public JFrame getFrame() {
-		Component c = this;
-		while (c != null) {
-			c = c.getParent();
-			if (c instanceof JFrame) {
-				return (JFrame) c;
-			}
-		}
-		return null;
+	public List<Component> getToolbarComponents() {
+		return new ArrayList<Component>();
+	}
+
+	public int getZChildCount() {
+		return getZChildren().size();
 	}
 
 	/**
@@ -104,20 +137,20 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		return null;
 	}
 
-	public int getZChildCount() {
-		return getZChildren().size();
-	}
-
-	public boolean isZRoot() {
-		return (getZParent() == null);
+	/**
+	 * 
+	 * @return boolean to indicate whether the pane is in edit mode
+	 */
+	public boolean isEditable() {
+		return this.editable;
 	}
 
 	public boolean isZLeaf() {
 		return (getZChildren().isEmpty());
 	}
 
-	public List<Component> getToolbarComponents() {
-		return new ArrayList<Component>();
+	public boolean isZRoot() {
+		return (getZParent() == null);
 	}
 
 	/**
@@ -157,11 +190,19 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 	}
 
 	/**
+	 * Determines whether an artifact exists in the profile, if one exists.
 	 * 
-	 * @return boolean to indicate whether the pane is in edit mode
+	 * @param artifact
+	 * @return true if a profile exists and the artifact exists in it, other
+	 *         false
 	 */
-	public boolean isEditable() {
-		return this.editable;
+	protected boolean artifactExistsInProfile(Artifact artifact) {
+		boolean result = false;
+		Profile profile = ProfileFactory.getInstance().getProfile();
+		if (profile != null) {
+			result = profile.getArtifacts().contains(artifact);
+		}
+		return result;
 	}
 
 	/**
@@ -179,58 +220,17 @@ public abstract class ZPane extends JComponent implements ZTreeNode {
 		}
 	}
 
-	/**
-	 * Returns the base element for the ZPane but does not configure it, we
-	 * don't configure here as we want the configure() method to have access to
-	 * the ZBasePane so it can get at the Repository etc.
-	 * 
-	 * @param e
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	static ZTreeNode componentFor(Element e) {
-		String className = e.getAttributeValue("classname");
-		try {
-			Class<ZTreeNode> theClass = (Class<ZTreeNode>) ZPane.class
-					.getClassLoader().loadClass(className);
-			return theClass.newInstance();
-		} catch (ClassNotFoundException e1) {
-			logger.warn("Could not find class " + className, e1);
-		} catch (InstantiationException e1) {
-			logger.warn("Could not instantiate class " + className, e1);
-		} catch (IllegalAccessException e1) {
-			logger.warn("Could not access class " + className, e1);
+	@SuppressWarnings("serial")
+	protected class ReplaceWithBlankAction extends AbstractAction {
+		public ReplaceWithBlankAction() {
+			super();
+			putValue(Action.SHORT_DESCRIPTION, "Clear");
+			putValue(Action.SMALL_ICON, ZIcons.iconFor("delete"));
 		}
-		return null;
-	}
 
-	/**
-	 * Return the base element + configuration for the given ZPane subclass
-	 * 
-	 * @param z
-	 * @return
-	 */
-	static Element elementFor(ZTreeNode z) {
-		Element zPaneElement = new Element("znode");
-		zPaneElement.setAttribute("classname", z.getClass().getName());
-		zPaneElement.addContent(z.getElement());
-		return zPaneElement;
-	}
-
-	/**
-	 * Determines whether an artifact exists in the profile, if one exists.
-	 * 
-	 * @param artifact
-	 * @return true if a profile exists and the artifact exists in it, other
-	 *         false
-	 */
-	protected boolean artifactExistsInProfile(Artifact artifact) {
-		boolean result = false;
-		Profile profile = ProfileFactory.getInstance().getProfile();
-		if (profile != null) {
-			result = profile.getArtifacts().contains(artifact);
+		public void actionPerformed(ActionEvent arg0) {
+			replaceWith(new ZBlankComponent());
 		}
-		return result;
 	}
 
 }

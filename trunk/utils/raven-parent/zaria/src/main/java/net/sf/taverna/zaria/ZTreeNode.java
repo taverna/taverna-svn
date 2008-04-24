@@ -20,18 +20,39 @@ import org.jdom.Element;
 public interface ZTreeNode {
 
 	/**
-	 * Parent ZTreeNode
-	 * 
-	 * @return parent node or null if this is a root
+	 * Set current state of this node, including construction of nested
+	 * containers, from the specified JDOM Element
 	 */
-	public ZTreeNode getZParent();
+	public void configure(Element e);
 
 	/**
-	 * Immediate children
-	 * 
-	 * @return List<ZTreeNode> of child nodes
+	 * Indicates that the component is about to be discarded, and any cleaning
+	 * up should be carried out here.
 	 */
-	public List<ZTreeNode> getZChildren();
+	public void discard();
+
+	/**
+	 * Return a list of Action objects that can act on this ZTreeNode,
+	 * implemented largely by subclasses.
+	 */
+	public List<Action> getActions();
+
+	/**
+	 * Build current state of this node in the form of a JDOM element
+	 */
+	public Element getElement();
+
+	/**
+	 * Get the ZBasePane at the root of the component heirarchy or null if there
+	 * isn't one (there will be for all cases where the component is visible)
+	 */
+	public ZBasePane getRoot();
+
+	/**
+	 * Return a list of JComponent items that should be added on the left hand
+	 * side of the toolbar when in edit mode
+	 */
+	public List<Component> getToolbarComponents();
 
 	/**
 	 * Get number of immediate children
@@ -41,11 +62,18 @@ public interface ZTreeNode {
 	public int getZChildCount();
 
 	/**
-	 * Is this a root node?
+	 * Immediate children
 	 * 
-	 * @return whether the node is a root
+	 * @return List<ZTreeNode> of child nodes
 	 */
-	public boolean isZRoot();
+	public List<ZTreeNode> getZChildren();
+
+	/**
+	 * Parent ZTreeNode
+	 * 
+	 * @return parent node or null if this is a root
+	 */
+	public ZTreeNode getZParent();
 
 	/**
 	 * Is this a leaf node?
@@ -55,33 +83,17 @@ public interface ZTreeNode {
 	public boolean isZLeaf();
 
 	/**
-	 * Build current state of this node in the form of a JDOM element
+	 * Is this a root node?
+	 * 
+	 * @return whether the node is a root
 	 */
-	public Element getElement();
-
-	/**
-	 * Set current state of this node, including construction of nested
-	 * containers, from the specified JDOM Element
-	 */
-	public void configure(Element e);
+	public boolean isZRoot();
 
 	/**
 	 * Set editable status on this node, implementations will recursively set
 	 * the status on all children
 	 */
 	public void setEditable(boolean editable);
-
-	/**
-	 * Return a list of Action objects that can act on this ZTreeNode,
-	 * implemented largely by subclasses.
-	 */
-	public List<Action> getActions();
-
-	/**
-	 * Return a list of JComponent items that should be added on the left hand
-	 * side of the toolbar when in edit mode
-	 */
-	public List<Component> getToolbarComponents();
 
 	/**
 	 * Swap out the given child for the new one
@@ -92,17 +104,5 @@ public interface ZTreeNode {
 	 *            the ZTreeNode to insert in its place
 	 */
 	public void swap(ZTreeNode oldComponent, ZTreeNode newComponent);
-
-	/**
-	 * Get the ZBasePane at the root of the component heirarchy or null if there
-	 * isn't one (there will be for all cases where the component is visible)
-	 */
-	public ZBasePane getRoot();
-
-	/**
-	 * Indicates that the component is about to be discarded, and any cleaning
-	 * up should be carried out here.
-	 */
-	public void discard();
 
 }

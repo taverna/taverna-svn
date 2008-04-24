@@ -18,6 +18,19 @@ package net.sf.taverna.raven.repository;
 public interface Artifact extends Comparable {
 
 	/**
+	 * Compare with another object. Two Artifact instanceses are considered
+	 * equal if they are both Artifact instances, and their
+	 * {@link #getArtifactId()}, {@link #getGroupId()} and
+	 * {@link #getVersion()} all equals.
+	 * 
+	 * @param other
+	 *            Object to compare
+	 * @return true if other is an Artifact and the artifactId, groupId and
+	 *         version equals
+	 */
+	public boolean equals(Object other);
+
+	/**
 	 * Get the artifact ID for this Artifact
 	 * 
 	 * @return The artifactId
@@ -47,18 +60,5 @@ public interface Artifact extends Comparable {
 	 * @return Hash of the concatination of the artifactId, groupId and version
 	 */
 	public int hashCode();
-
-	/**
-	 * Compare with another object. Two Artifact instanceses are considered
-	 * equal if they are both Artifact instances, and their
-	 * {@link #getArtifactId()}, {@link #getGroupId()} and
-	 * {@link #getVersion()} all equals.
-	 * 
-	 * @param other
-	 *            Object to compare
-	 * @return true if other is an Artifact and the artifactId, groupId and
-	 *         version equals
-	 */
-	public boolean equals(Object other);
 
 }

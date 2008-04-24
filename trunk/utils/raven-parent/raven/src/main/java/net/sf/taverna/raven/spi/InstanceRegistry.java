@@ -78,18 +78,23 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 		registry.addRegistryListener(this);
 	}
 
+	/**
+	 * Add a new registry listener to be notified of any updates to this
+	 * SpiRegistry
+	 * 
+	 * @param l
+	 */
+	public void addRegistryListener(InstanceRegistryListener l) {
+		synchronized (listeners) {
+			if (!listeners.contains(l)) {
+				listeners.add(l);
+			}
+		}
+	}
+
 	@Override
 	public void finalize() {
 		registry.removeRegistryListener(this);
-	}
-
-	/**
-	 * Returns an iterator over a copy of the instance list to avoid potential
-	 * concurrent modification exceptions when update events occur in the
-	 * underlying registry.
-	 */
-	public Iterator<IType> iterator() {
-		return getInstances().iterator();
 	}
 
 	/**
@@ -108,6 +113,26 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 	}
 
 	/**
+	 * Returns an iterator over a copy of the instance list to avoid potential
+	 * concurrent modification exceptions when update events occur in the
+	 * underlying registry.
+	 */
+	public Iterator<IType> iterator() {
+		return getInstances().iterator();
+	}
+
+	/**
+	 * Remove a listener from this SpiRegistry
+	 * 
+	 * @param l
+	 */
+	public void removeRegistryListener(InstanceRegistryListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
+	}
+
+	/**
 	 * If the instance list exists then update it, if set to null then we don't
 	 * need to as it will be updated automatically when the list is first
 	 * accessed through the getInstances method
@@ -115,6 +140,14 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 	public void spiRegistryUpdated(SpiRegistry registry) {
 		if (instances != null) {
 			update(registry.getClasses());
+		}
+	}
+
+	private void notifyListeners() {
+		synchronized (listeners) {
+			for (InstanceRegistryListener rl : listeners) {
+				rl.instanceRegistryUpdated(this);
+			}
 		}
 	}
 
@@ -182,39 +215,6 @@ public class InstanceRegistry<IType> implements Iterable<IType>,
 			notifyListeners();
 		}
 
-	}
-
-	/**
-	 * Add a new registry listener to be notified of any updates to this
-	 * SpiRegistry
-	 * 
-	 * @param l
-	 */
-	public void addRegistryListener(InstanceRegistryListener l) {
-		synchronized (listeners) {
-			if (!listeners.contains(l)) {
-				listeners.add(l);
-			}
-		}
-	}
-
-	/**
-	 * Remove a listener from this SpiRegistry
-	 * 
-	 * @param l
-	 */
-	public void removeRegistryListener(InstanceRegistryListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
-
-	private void notifyListeners() {
-		synchronized (listeners) {
-			for (InstanceRegistryListener rl : listeners) {
-				rl.instanceRegistryUpdated(this);
-			}
-		}
 	}
 
 }

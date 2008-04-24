@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-24 15:05:08 $
+ * Last modified on   $Date: 2008-04-24 15:35:52 $
  *               by   $Author: stain $
  * Created on 18 Jan 2007
  *****************************************************************/
@@ -59,10 +59,9 @@ public class SplashScreen extends JWindow {
 
 	private static SplashScreen splashscreen;
 
-	public static SplashScreen getSplashScreen(URL imageUrl, int timeout) {
-		if (splashscreen == null) {
-			splashscreen = new SplashScreen(imageUrl, timeout);
-		}
+	private static final long serialVersionUID = -3444472402764959095L;
+
+	public static SplashScreen getSplashScreen() {
 		return splashscreen;
 	}
 
@@ -73,67 +72,17 @@ public class SplashScreen extends JWindow {
 		return splashscreen;
 	}
 
-	public static SplashScreen getSplashScreen() {
+	public static SplashScreen getSplashScreen(URL imageUrl, int timeout) {
+		if (splashscreen == null) {
+			splashscreen = new SplashScreen(imageUrl, timeout);
+		}
 		return splashscreen;
 	}
 
-	private static class SplashListener implements RepositoryListener {
-
-		private final Repository repository;
-		private final SplashScreen splash;
-
-		private SplashListener(Repository repository, SplashScreen splash) {
-			this.repository = repository;
-			this.splash = splash;
-		}
-
-		public void statusChanged(Artifact a, ArtifactStatus oldStatus,
-				ArtifactStatus newStatus) {
-			splash.setText(a.getArtifactId() + "-" + a.getVersion() + " : "
-					+ newStatus.toString());
-			if (newStatus.isError()) {
-				// logger.debug(a.toString()+" :: "+newStatus.toString());
-			}
-			if (!newStatus.equals(ArtifactStatus.JarFetching)) {
-				return;
-			}
-			final DownloadStatus dls;
-			try {
-				dls = repository.getDownloadStatus(a);
-			} catch (RavenException ex) {
-				logger.warn("Could not get download status for: " + a, ex);
-				return;
-			}
-			// FIXME: What if there are several artifacts JarFetching at the
-			// same time? Would we get many progressThreads?
-			Thread progressThread = new Thread(new Runnable() {
-				public void run() {
-					while (true) {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							logger.warn("Progress thread interrupted", e);
-							return;
-						}
-						int progress = Math.min(100, (dls.getReadBytes() * 100)
-								/ dls.getTotalBytes());
-						splash.setProgress(progress);
-						if (dls.isFinished()) {
-							return;
-						}
-					}
-				}
-			}, "Splashscreen progress bar");
-			progressThread.start();
-		}
-	}
-
-	private static final long serialVersionUID = -3444472402764959095L;
 	private boolean canClose = false;
 	private boolean timedOut = false;
 	private JProgressBar progress = new JProgressBar();
 	private SplashListener listener;
-
 	private SplashScreen(URL imageURL) {
 		this(imageURL, 0);
 	}
@@ -186,18 +135,6 @@ public class SplashScreen extends JWindow {
 	}
 
 	/**
-	 * Remove listener as set by listenToRepository(Repository repository).
-	 * 
-	 * @see listenToRepository(Repository repository)
-	 */
-	public void removeListener() {
-		if (listener != null) {
-			listener.repository.removeRepositoryListener(listener);
-			listener = null;
-		}
-	}
-
-	/**
 	 * Add a listener to the repository that will update this splashscreen. Any
 	 * old listeners connected to this splashscreen will be removed. Remove the
 	 * listener with removeListener() when finished.
@@ -211,8 +148,27 @@ public class SplashScreen extends JWindow {
 		repository.addRepositoryListener(listener);
 	}
 
-	public void setText(String text) {
-		progress.setString(text);
+	/**
+	 * Remove listener as set by listenToRepository(Repository repository).
+	 * 
+	 * @see listenToRepository(Repository repository)
+	 */
+	public void removeListener() {
+		if (listener != null) {
+			listener.repository.removeRepositoryListener(listener);
+			listener = null;
+		}
+	}
+
+	public synchronized void requestClose() {
+		canClose = true;
+		if (timedOut) {
+			closeMe();
+		}
+	}
+
+	public synchronized void setClosable() {
+		canClose = true;
 	}
 
 	public void setProgress(int percentage) {
@@ -223,28 +179,8 @@ public class SplashScreen extends JWindow {
 		}
 	}
 
-	public synchronized void setClosable() {
-		canClose = true;
-	}
-
-	public synchronized void requestClose() {
-		canClose = true;
-		if (timedOut) {
-			closeMe();
-		}
-	}
-
-	private synchronized void requestCloseFromTimeout() {
-		timedOut = true;
-		if (canClose) {
-			closeMe();
-		}
-	}
-
-	private synchronized void requestCloseFromMouse() {
-		setClosable();
-		timedOut = true;
-		closeMe();
+	public void setText(String text) {
+		progress.setString(text);
 	}
 
 	private synchronized void closeMe() {
@@ -255,5 +191,69 @@ public class SplashScreen extends JWindow {
 				splashscreen = null;
 			}
 		});
+	}
+
+	private synchronized void requestCloseFromMouse() {
+		setClosable();
+		timedOut = true;
+		closeMe();
+	}
+
+	private synchronized void requestCloseFromTimeout() {
+		timedOut = true;
+		if (canClose) {
+			closeMe();
+		}
+	}
+
+	private static class SplashListener implements RepositoryListener {
+
+		private final Repository repository;
+		private final SplashScreen splash;
+
+		private SplashListener(Repository repository, SplashScreen splash) {
+			this.repository = repository;
+			this.splash = splash;
+		}
+
+		public void statusChanged(Artifact a, ArtifactStatus oldStatus,
+				ArtifactStatus newStatus) {
+			splash.setText(a.getArtifactId() + "-" + a.getVersion() + " : "
+					+ newStatus.toString());
+			if (newStatus.isError()) {
+				// logger.debug(a.toString()+" :: "+newStatus.toString());
+			}
+			if (!newStatus.equals(ArtifactStatus.JarFetching)) {
+				return;
+			}
+			final DownloadStatus dls;
+			try {
+				dls = repository.getDownloadStatus(a);
+			} catch (RavenException ex) {
+				logger.warn("Could not get download status for: " + a, ex);
+				return;
+			}
+			// FIXME: What if there are several artifacts JarFetching at the
+			// same time? Would we get many progressThreads?
+			Thread progressThread = new Thread(new Runnable() {
+				public void run() {
+					while (true) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							logger.warn("Progress thread interrupted", e);
+							return;
+						}
+						int progress = Math.min(100, (dls.getReadBytes() * 100)
+								/ dls.getTotalBytes());
+						splash.setProgress(progress);
+						if (dls.isFinished()) {
+							return;
+						}
+					}
+				}
+			}, "Splashscreen progress bar");
+			progressThread.start();
+		}
 	}
 }

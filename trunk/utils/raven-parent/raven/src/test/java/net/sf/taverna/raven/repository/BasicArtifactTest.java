@@ -4,13 +4,6 @@ import junit.framework.TestCase;
 
 public class BasicArtifactTest extends TestCase {
 
-	public void testToString() {
-		BasicArtifact mavenReporting = new BasicArtifact(
-				"org.apache.maven.reporting", "maven-reporting-api", "2.0");
-		assertEquals("org.apache.maven.reporting:maven-reporting-api:2.0",
-				mavenReporting.toString());
-	}
-
 	public void testEqual() {
 		BasicArtifact batik = new BasicArtifact("batik", "batik-swing", "1.6");
 		BasicArtifact batikSame = new BasicArtifact("batik", "batik-swing",
@@ -33,6 +26,13 @@ public class BasicArtifactTest extends TestCase {
 		assertTrue(batik.compareTo(batikGroup) < 0);
 		assertTrue(batikVersion.compareTo(batikGroup) < 0);
 
+	}
+
+	public void testToString() {
+		BasicArtifact mavenReporting = new BasicArtifact(
+				"org.apache.maven.reporting", "maven-reporting-api", "2.0");
+		assertEquals("org.apache.maven.reporting:maven-reporting-api:2.0",
+				mavenReporting.toString());
 	}
 
 }

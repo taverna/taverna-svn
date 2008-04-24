@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-24 15:05:08 $
+ * Last modified on   $Date: 2008-04-24 15:35:51 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -54,12 +54,6 @@ public class ProfileFactory {
 	private static ProfileFactory instance = null;
 
 	/**
-	 * Don't instantiate, use singleton {@link #getInstance()}.
-	 */
-	private ProfileFactory() {
-	}
-
-	/**
 	 * Get the singleton ProfileFactory.
 	 * 
 	 */
@@ -70,8 +64,10 @@ public class ProfileFactory {
 		return instance;
 	}
 
-	public boolean isProfileDefined() {
-		return System.getProperty("raven.profile") != null;
+	/**
+	 * Don't instantiate, use singleton {@link #getInstance()}.
+	 */
+	private ProfileFactory() {
 	}
 
 	/**
@@ -102,6 +98,24 @@ public class ProfileFactory {
 		}
 	}
 
+	public boolean isProfileDefined() {
+		return System.getProperty("raven.profile") != null;
+	}
+
+	private void updateProfileWithPluginsProfile(File pluginsFile,
+			Profile profile2) {
+		try {
+			profile.addArtifactsForPlugins(pluginsFile.toURI().toURL()
+					.openStream());
+		} catch (MalformedURLException e) {
+			logger.error("Invalid URL to plugins file:"
+					+ pluginsFile.getAbsolutePath(), e);
+		} catch (IOException e) {
+			logger.error("Unable to ppen stream to plugins file:"
+					+ pluginsFile.getAbsolutePath(), e);
+		}
+	}
+
 	private void updateWithPluginArtifacts(Profile profile) {
 		if (System.getProperty("taverna.home") != null) {
 			File pluginsFile = new File(System.getProperty("taverna.home"),
@@ -118,20 +132,6 @@ public class ProfileFactory {
 					}
 				}
 			}
-		}
-	}
-
-	private void updateProfileWithPluginsProfile(File pluginsFile,
-			Profile profile2) {
-		try {
-			profile.addArtifactsForPlugins(pluginsFile.toURI().toURL()
-					.openStream());
-		} catch (MalformedURLException e) {
-			logger.error("Invalid URL to plugins file:"
-					+ pluginsFile.getAbsolutePath(), e);
-		} catch (IOException e) {
-			logger.error("Unable to ppen stream to plugins file:"
-					+ pluginsFile.getAbsolutePath(), e);
 		}
 	}
 

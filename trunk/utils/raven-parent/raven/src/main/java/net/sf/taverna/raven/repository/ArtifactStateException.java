@@ -21,12 +21,12 @@ public class ArtifactStateException extends RavenException {
 		this.validStates = validStates;
 	}
 
-	public ArtifactStatus[] getValidStates() {
-		return this.validStates;
-	}
-
 	public ArtifactStatus getState() {
 		return this.state;
+	}
+
+	public ArtifactStatus[] getValidStates() {
+		return this.validStates;
 	}
 
 }

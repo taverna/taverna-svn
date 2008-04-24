@@ -111,13 +111,6 @@ public enum ArtifactStatus implements Comparable<ArtifactStatus> {
 	}
 
 	/**
-	 * @return the index in the partial order of ArtifactStatus enumeration
-	 */
-	public int getOrder() {
-		return this.order;
-	}
-
-	/**
 	 * @return Returns the Date this status object was created.
 	 */
 	public Date getCreated() {
@@ -139,11 +132,10 @@ public enum ArtifactStatus implements Comparable<ArtifactStatus> {
 	}
 
 	/**
-	 * @param exception
-	 *            The exception to set.
+	 * @return the index in the partial order of ArtifactStatus enumeration
 	 */
-	public void setException(Exception exception) {
-		this.exception = exception;
+	public int getOrder() {
+		return this.order;
 	}
 
 	/**
@@ -151,6 +143,14 @@ public enum ArtifactStatus implements Comparable<ArtifactStatus> {
 	 */
 	public boolean isError() {
 		return this.error;
+	}
+
+	/**
+	 * @param exception
+	 *            The exception to set.
+	 */
+	public void setException(Exception exception) {
+		this.exception = exception;
 	}
 
 }

@@ -52,13 +52,108 @@ import org.xml.sax.SAXException;
  */
 public class LocalRepository implements Repository {
 
+	private static Log logger = Log.getLogger(LocalRepository.class);
+
+	private static FileFilter isDirectory = new AcceptDirectoryFilter();
+
+	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
+
+	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
+
+	/**
+	 * Get a new or cached instance of LocalRepository for the supplied base
+	 * directory, this is the method to use when you want to get hold of a
+	 * Repository.
+	 * 
+	 * @param base
+	 *            The base directory for the m2 repository on disk
+	 * @return Repository instance for the base directory
+	 */
+	public static synchronized Repository getRepository(File base) {
+		if (!repositoryCache.containsKey(base)) {
+			if (System.getProperty("raven.eclipse") == null) {
+				repositoryCache.put(base, new LocalRepository(base));
+			} else {
+				repositoryCache.put(base, new EclipseRepository());
+			}
+		}
+		return repositoryCache.get(base);
+	}
+
+	/**
+	 * Get a new or cached instance of LocalRepository. If the instance is
+	 * created then use the supplied ClassLoader for the specified set of
+	 * Artifacts should they be required.
+	 */
+	public static synchronized Repository getRepository(File base,
+			ClassLoader loader, Set<Artifact> systemArtifacts) {
+		if (!repositoryCache.containsKey(base)) {
+			if (System.getProperty("raven.eclipse") == null) {
+				LocalRepository lr = new LocalRepository(base, loader,
+						systemArtifacts);
+				repositoryCache.put(base, lr);
+			} else {
+				repositoryCache.put(base, new EclipseRepository());
+			}
+		}
+		return repositoryCache.get(base);
+
+	}
 	// the version of raven to used as the artifact for the faked classloader
 	// used during initialisation.
 	private final String RAVEN_VERSION = "1.7.1.0";
 
-	private static Log logger = Log.getLogger(LocalRepository.class);
+	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 
-	private static FileFilter isDirectory = new AcceptDirectoryFilter();
+	private ClassLoader parentLoader = null;
+
+	private final List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
+
+	/**
+	 * URL list of remote repository base URLs. Modified by
+	 * {@link #addRemoteRepository(URL)}
+	 */
+	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
+
+	/**
+	 * Subset of repositories that are hosted locally, ie. which URLs start with
+	 * 
+	 * <pre>
+	 * file:
+	 * </pre>. Modified by {@link #addRemoteRepository(URL)}.
+	 */
+	private LinkedHashSet<URL> fileRepositories = new LinkedHashSet<URL>();
+
+	/**
+	 * Map of artifact to artifact status
+	 */
+	private Map<ArtifactImpl, ArtifactStatus> status = new HashMap<ArtifactImpl, ArtifactStatus>();
+
+	/**
+	 * Map of Artifact to a two element array of total size in current download
+	 * and bytes downloaded. If the artifact has no pending downloads it will
+	 * not appear as a key in this map.
+	 */
+	private Map<ArtifactImpl, DownloadStatusImpl> dlstatus = new HashMap<ArtifactImpl, DownloadStatusImpl>();
+
+	/**
+	 * Cache of pom files for given artifacts, supports pomFile(). File entries
+	 * can be both within the base repository, or from a local file://
+	 * repository
+	 */
+	private Map<Artifact, File> pomFiles = new HashMap<Artifact, File>();
+
+	/**
+	 * Cache of jar files for given artifacts, supports pomFile(). File entries
+	 * can be both within the base repository, or from a local file://
+	 * repository
+	 */
+	private Map<Artifact, File> jarFiles = new HashMap<Artifact, File>();
+
+	/**
+	 * Base directory for the local repository
+	 */
+	File base;
 
 	/**
 	 * Create a new Repository object with the specified base.
@@ -114,51 +209,6 @@ public class LocalRepository implements Repository {
 		initialize();
 	}
 
-	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
-	private ClassLoader parentLoader = null;
-
-	static Map<File, Repository> repositoryCache = new HashMap<File, Repository>();
-
-	/**
-	 * Get a new or cached instance of LocalRepository for the supplied base
-	 * directory, this is the method to use when you want to get hold of a
-	 * Repository.
-	 * 
-	 * @param base
-	 *            The base directory for the m2 repository on disk
-	 * @return Repository instance for the base directory
-	 */
-	public static synchronized Repository getRepository(File base) {
-		if (!repositoryCache.containsKey(base)) {
-			if (System.getProperty("raven.eclipse") == null) {
-				repositoryCache.put(base, new LocalRepository(base));
-			} else {
-				repositoryCache.put(base, new EclipseRepository());
-			}
-		}
-		return repositoryCache.get(base);
-	}
-
-	/**
-	 * Get a new or cached instance of LocalRepository. If the instance is
-	 * created then use the supplied ClassLoader for the specified set of
-	 * Artifacts should they be required.
-	 */
-	public static synchronized Repository getRepository(File base,
-			ClassLoader loader, Set<Artifact> systemArtifacts) {
-		if (!repositoryCache.containsKey(base)) {
-			if (System.getProperty("raven.eclipse") == null) {
-				LocalRepository lr = new LocalRepository(base, loader,
-						systemArtifacts);
-				repositoryCache.put(base, lr);
-			} else {
-				repositoryCache.put(base, new EclipseRepository());
-			}
-		}
-		return repositoryCache.get(base);
-
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -185,20 +235,116 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Adds a remote repository, but adds it at the start of the list. This is
-	 * used by Plugins that specify their repositories that we know need to be
-	 * checked first.
-	 * 
-	 * @param repositoryURL
+	 * Add a new repository listener to be notified of status changes within
+	 * this Repository implementation
 	 */
-	public void prependRemoteRepository(URL repositoryURL) {
-		LinkedHashSet<URL> tmpRepositories = new LinkedHashSet<URL>();
-		tmpRepositories.add(repositoryURL);
-		tmpRepositories.addAll(repositories);
-		repositories = tmpRepositories;
-		if (repositoryURL.getProtocol().equals("file")) {
-			fileRepositories.add(repositoryURL);
+	public void addRepositoryListener(RepositoryListener l) {
+		synchronized (listeners) {
+			if (!listeners.contains(l)) {
+				listeners.add(l);
+			}
 		}
+	}
+
+	/**
+	 * Given a Class object return the Artifact whose LocalArtifactClassLoader
+	 * created it. If the classloader was not an instance of
+	 * LocalArtifactClassLoader then return null
+	 */
+	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
+		synchronized (loaderMap) {
+			for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap
+					.entrySet()) {
+				if (entry.getValue() == c.getClassLoader()) {
+					return entry.getKey();
+				}
+			}
+		}
+		throw new ArtifactNotFoundException("No artifact for Class : "
+				+ c.getName());
+	}
+
+	/**
+	 * Clean the local repository by removing invalid artifacts and directories.
+	 * <p>
+	 * Empty directories will always be removed.
+	 * <p>
+	 * <!-- removeFailing/removeUnknown not implemented If
+	 * <code>removeFailing</code> is true, all artifacts will be attempted
+	 * re-downloaded, if this fails, the artifact will be removed. This option
+	 * should only be used after verifying network access to the repositories.
+	 * <p>
+	 * If <code>removeUnknown</code> is true, files and directories not native
+	 * to the Raven repositories will be removed. Be sure that the local
+	 * repository directory is only used as a Raven repository before enabling
+	 * this option.
+	 * 
+	 * @param removeFailing
+	 *            Remove artifacts that can no longer be downloaded from
+	 *            repositories
+	 * @param removeUnknown
+	 *            Remove unknown (non-Raven) files and directories -->
+	 */
+	public synchronized void clean() {
+		if (!base.isDirectory()) {
+			logger.warn("Could not clean non-directory " + base);
+			return;
+		}
+		Set<File> groupDirs = enumerateDirs(base);
+		for (File groupDir : groupDirs) {
+			deleteEmptyDirs(groupDir);
+		}
+	}
+
+	/**
+	 * Return all Artifacts within this repository
+	 */
+	public synchronized List<Artifact> getArtifacts() {
+		return new ArrayList<Artifact>(status.keySet());
+	}
+
+	/**
+	 * Return all artifacts with the specified ArtifactStatus
+	 */
+	public synchronized List<Artifact> getArtifacts(ArtifactStatus s) {
+		List<Artifact> result = new ArrayList<Artifact>();
+		for (Artifact a : status.keySet()) {
+			if (status.get(a).equals(s)) {
+				result.add(a);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * If the artifact specified is in either PomFetching or JarFetching state
+	 * this returns a DownloadStatus object which provides a non updating
+	 * snapshot of the file size (if known) and total bytes downloaded. The
+	 * intent is to use this for progress bars within any client GUI code.
+	 * 
+	 * @return DownloadStatus object representing the state of the current
+	 *         download for this artifact
+	 * @param a
+	 *            Artifact to get status for
+	 * @throws ArtifactNotFoundException
+	 *             if this repository doesn't contain the specified artifact.
+	 * @throws ArtifactStateException
+	 *             if the artifact is found but isn't involved in a download at
+	 *             the present time.
+	 */
+	public DownloadStatus getDownloadStatus(Artifact a)
+			throws ArtifactStateException, ArtifactNotFoundException {
+		if (status.containsKey(a)) {
+			ArtifactStatus astatus = status.get(a);
+			if (dlstatus.containsKey(a)) {
+				return dlstatus.get(a);
+			} else {
+				throw new ArtifactStateException(astatus,
+						new ArtifactStatus[] { ArtifactStatus.PomFetching,
+								ArtifactStatus.JarFetching });
+			}
+		}
+		throw new ArtifactNotFoundException("Cant find artifact for: " + a);
 	}
 
 	/*
@@ -239,86 +385,6 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Given a Class object return the Artifact whose LocalArtifactClassLoader
-	 * created it. If the classloader was not an instance of
-	 * LocalArtifactClassLoader then return null
-	 */
-	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
-		synchronized (loaderMap) {
-			for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap
-					.entrySet()) {
-				if (entry.getValue() == c.getClassLoader()) {
-					return entry.getKey();
-				}
-			}
-		}
-		throw new ArtifactNotFoundException("No artifact for Class : "
-				+ c.getName());
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.raven.repository.impl.Repository#update()
-	 */
-	public synchronized void update() {
-		while (act()) {
-			// nothing
-		}
-	}
-
-	/**
-	 * Return all Artifacts within this repository
-	 */
-	public synchronized List<Artifact> getArtifacts() {
-		return new ArrayList<Artifact>(status.keySet());
-	}
-
-	/**
-	 * Return all artifacts with the specified ArtifactStatus
-	 */
-	public synchronized List<Artifact> getArtifacts(ArtifactStatus s) {
-		List<Artifact> result = new ArrayList<Artifact>();
-		for (Artifact a : status.keySet()) {
-			if (status.get(a).equals(s)) {
-				result.add(a);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Add a new repository listener to be notified of status changes within
-	 * this Repository implementation
-	 */
-	public void addRepositoryListener(RepositoryListener l) {
-		synchronized (listeners) {
-			if (!listeners.contains(l)) {
-				listeners.add(l);
-			}
-		}
-	}
-
-	public void removeRepositoryListener(RepositoryListener l) {
-		synchronized (listeners) {
-			listeners.remove(l);
-		}
-	}
-
-	private synchronized void setStatus(ArtifactImpl a, ArtifactStatus newStatus) {
-		if (status.containsKey(a) && status.get(a) != newStatus) {
-			synchronized (listeners) {
-				ArtifactStatus oldStatus = status.get(a);
-				status.put(a, newStatus);
-				for (RepositoryListener l : new ArrayList<RepositoryListener>(
-						listeners)) {
-					l.statusChanged(a, oldStatus, newStatus);
-				}
-			}
-		}
-	}
-
-	/**
 	 * Status for a given Artifact
 	 * 
 	 * @param a
@@ -334,9 +400,58 @@ public class LocalRepository implements Repository {
 		return status.get(a);
 	}
 
-	static final Map<Artifact, LocalArtifactClassLoader> loaderMap = new HashMap<Artifact, LocalArtifactClassLoader>();
+	/**
+	 * File object for JAR for the specified artifact. Note that this file might
+	 * be outside {@link #artifactDir(Artifact)} as it could have been found in
+	 * a local repository by {@link #fetchLocal(ArtifactImpl, String)}.
+	 */
+	public File jarFile(Artifact a) {
+		return file(a, ".jar", jarFiles);
+	}
 
-	private final List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
+	/**
+	 * Adds a remote repository, but adds it at the start of the list. This is
+	 * used by Plugins that specify their repositories that we know need to be
+	 * checked first.
+	 * 
+	 * @param repositoryURL
+	 */
+	public void prependRemoteRepository(URL repositoryURL) {
+		LinkedHashSet<URL> tmpRepositories = new LinkedHashSet<URL>();
+		tmpRepositories.add(repositoryURL);
+		tmpRepositories.addAll(repositories);
+		repositories = tmpRepositories;
+		if (repositoryURL.getProtocol().equals("file")) {
+			fileRepositories.add(repositoryURL);
+		}
+	}
+
+	public void removeRepositoryListener(RepositoryListener l) {
+		synchronized (listeners) {
+			listeners.remove(l);
+		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (Artifact a : status.keySet()) {
+			sb.append(getStatus(a)).append("\t").append(a.toString()).append(
+					"\n");
+		}
+		return sb.toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.raven.repository.impl.Repository#update()
+	 */
+	public synchronized void update() {
+		while (act()) {
+			// nothing
+		}
+	}
 
 	/**
 	 * Scan the status table, perform actions on each item based on the status.
@@ -424,91 +539,6 @@ public class LocalRepository implements Repository {
 	}
 
 	/**
-	 * Returns true if the artifact is fully resolved. A fully resolved jar has:
-	 * <ul>
-	 * <li>a status of 'Ready', or</li>
-	 * <li>a status of 'Jar' and all its dependencies are 'Ready' or have
-	 * already been seen.</li>
-	 * </ul>
-	 * 
-	 * @param artifact
-	 * @param seenArtifacts
-	 * @return true if the artifact is fully resolved
-	 */
-	private boolean fullyResolved(ArtifactImpl artifact,
-			Set<Artifact> seenArtifacts) {
-		ArtifactStatus artifactStatus = getStatus(artifact);
-		if (artifactStatus.equals(ArtifactStatus.Ready)) {
-			return true;
-		}
-		if (artifactStatus.equals(ArtifactStatus.Jar)) {
-			if (seenArtifacts.contains(artifact)) {
-				return true;
-			}
-			seenArtifacts.add(artifact);
-			try {
-				List<ArtifactImpl> deps = artifact.getDependencies();
-				for (ArtifactImpl dep : deps) {
-					if (!fullyResolved(dep, seenArtifacts)) {
-						return false;
-					}
-				}
-				return true;
-			} catch (ArtifactStateException e) {
-				logger.error("Artifact state for " + artifact
-						+ " should have been Jar", e);
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Base directory for the local repository
-	 */
-	File base;
-
-	/**
-	 * URL list of remote repository base URLs. Modified by
-	 * {@link #addRemoteRepository(URL)}
-	 */
-	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
-
-	/**
-	 * Subset of repositories that are hosted locally, ie. which URLs start with
-	 * 
-	 * <pre>
-	 * file:
-	 * </pre>. Modified by {@link #addRemoteRepository(URL)}.
-	 */
-	private LinkedHashSet<URL> fileRepositories = new LinkedHashSet<URL>();
-
-	/**
-	 * Map of artifact to artifact status
-	 */
-	private Map<ArtifactImpl, ArtifactStatus> status = new HashMap<ArtifactImpl, ArtifactStatus>();
-
-	/**
-	 * Map of Artifact to a two element array of total size in current download
-	 * and bytes downloaded. If the artifact has no pending downloads it will
-	 * not appear as a key in this map.
-	 */
-	private Map<ArtifactImpl, DownloadStatusImpl> dlstatus = new HashMap<ArtifactImpl, DownloadStatusImpl>();
-
-	/**
-	 * Cache of pom files for given artifacts, supports pomFile(). File entries
-	 * can be both within the base repository, or from a local file://
-	 * repository
-	 */
-	private Map<Artifact, File> pomFiles = new HashMap<Artifact, File>();
-
-	/**
-	 * Cache of jar files for given artifacts, supports pomFile(). File entries
-	 * can be both within the base repository, or from a local file://
-	 * repository
-	 */
-	private Map<Artifact, File> jarFiles = new HashMap<Artifact, File>();
-
-	/**
 	 * Local base directory for the specified artifact in the {@link #base}
 	 * repository. The directory will be created if createDirs is true and it
 	 * doesn't exist.
@@ -551,74 +581,66 @@ public class LocalRepository implements Repository {
 				+ a.getVersion() + extension);
 	}
 
-	/**
-	 * File object for POM for the specified artifact. Note that this file might
-	 * be outside {@link #artifactDir(Artifact)} as it could have been found in
-	 * a local repository by {@link #fetchLocal(ArtifactImpl, String)}.
-	 */
-	File pomFile(Artifact a) {
-		return file(a, ".pom", pomFiles);
-	}
-
-	/**
-	 * File object for JAR for the specified artifact. Note that this file might
-	 * be outside {@link #artifactDir(Artifact)} as it could have been found in
-	 * a local repository by {@link #fetchLocal(ArtifactImpl, String)}.
-	 */
-	public File jarFile(Artifact a) {
-		return file(a, ".jar", jarFiles);
-	}
-
-	/**
-	 * Utillity function for {@link #pomFile(Artifact)}) and
-	 * {@link #jarFile(Artifact)}. Return {@link File} object from cache, or
-	 * construct a new using {@link #artifactFile(Artifact, String)}
-	 * 
-	 * @param a
-	 *            {@link Artifact} which file is referenced
-	 * @param extension
-	 *            of file, ".pom" or ".jar"
-	 * @param cache
-	 *            to check/put file in, {@link #pomFiles} or {@link #jarFiles}
-	 * @return
-	 */
-	private File file(Artifact a, String extension, Map<Artifact, File> cache) {
-		File file = cache.get(a);
-		if (file == null) {
-			file = artifactFile(a, extension, true);
-			cache.put(a, file);
-		}
-		return file;
-	}
-
-	/**
-	 * Copy the input stream to the output stream. Why doesn't java include this
-	 * as a utility method somewhere?
-	 * 
-	 * @param is
-	 * @param os
-	 * @throws IOException
-	 */
-	void copyStream(InputStream is, OutputStream os, Artifact a)
-			throws IOException {
-		int totalbytes = 0;
-		byte[] buffer = new byte[1024];
-		int bytesRead;
+	private void deleteEmptyDirs(File dir) {
 		try {
-			while ((bytesRead = is.read(buffer)) != -1) {
-				totalbytes += bytesRead;
-				os.write(buffer, 0, bytesRead);
-				dlstatus.get(a).setReadBytes(totalbytes);
+			dir = dir.getCanonicalFile();
+		} catch (IOException e) {
+			logger.warn("Could not check: " + dir, e);
+			// bad sign.. Let's stay away
+			return;
+		}
+		File[] subdirs = dir.listFiles(isDirectory);
+		for (File child : subdirs) {
+			try {
+				// Make sure we don't climb out following a symlink or something
+				if (!child.getCanonicalFile().getParentFile().equals(dir)) {
+					logger.warn("Skipping not a real child: " + child);
+					continue;
+				}
+			} catch (IOException e) {
+				// bad sign.. Let's stay away
+				logger.warn("Could not check child: " + child, e);
+				continue;
 			}
-		} finally {
-			dlstatus.get(a).setFinished();
-			os.flush();
-			os.close();
+			deleteEmptyDirs(child);
+		}
+		// OK.. we've checked our subdirs.. they might have all be
+		// gone now, so let's see if we can disappear as well
+		File[] content = dir.listFiles();
+		if (content == null || content.length == 0) {
+			// logger.debug("Deleting " + dir);
+			dir.delete();
 		}
 	}
 
-	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
-		fetch(a, "pom");
+	private Set<File> enumerateDirs(File current) {
+		Set<File> groupDirs = new HashSet<File>();
+		enumerateDirs(current, groupDirs);
+		return groupDirs;
+	}
+
+	private void enumerateDirs(File current, Set<File> groupDirs) {
+		try {
+			current = current.getCanonicalFile();
+		} catch (IOException e) {
+			logger.warn("Could not make canonical path " + current, e);
+			return;
+		}
+		// assumes base is canonical path (as by constructor)
+		if (!current.getPath().startsWith(base.getPath())) {
+			logger.warn(current + " is outside base root " + base);
+			return;
+		}
+		File[] subdirs = current.listFiles(isDirectory);
+		if (subdirs == null || subdirs.length == 0) {
+			if (!current.equals(base)) {
+				groupDirs.add(current.getParentFile().getParentFile());
+			}
+		} else {
+			for (File subDir : subdirs) {
+				enumerateDirs(subDir, groupDirs);
+			}
+		}
 	}
 
 	/**
@@ -731,14 +753,6 @@ public class LocalRepository implements Repository {
 		throw new ArtifactNotFoundException("Can't find artifact for: " + a);
 	}
 
-	private String repositoryPath(ArtifactImpl a, String suffix) {
-		String fname = a.getArtifactId() + "-" + a.getVersion() + "." + suffix;
-		String repositoryDir = a.getGroupId().replaceAll("\\.", "/") + "/"
-				+ a.getArtifactId() + "/" + a.getVersion();
-		String repositoryPath = repositoryDir + "/" + fname;
-		return repositoryPath;
-	}
-
 	/**
 	 * Try to fetch artifact file from one of the local <code>file:/</code>
 	 * repositories. If the artifact exists in one of the local repositories, it
@@ -796,6 +810,67 @@ public class LocalRepository implements Repository {
 			return true; // OK to use cache
 		}
 		return false; // Didn't find it
+	}
+
+	/**
+	 * Utillity function for {@link #pomFile(Artifact)}) and
+	 * {@link #jarFile(Artifact)}. Return {@link File} object from cache, or
+	 * construct a new using {@link #artifactFile(Artifact, String)}
+	 * 
+	 * @param a
+	 *            {@link Artifact} which file is referenced
+	 * @param extension
+	 *            of file, ".pom" or ".jar"
+	 * @param cache
+	 *            to check/put file in, {@link #pomFiles} or {@link #jarFiles}
+	 * @return
+	 */
+	private File file(Artifact a, String extension, Map<Artifact, File> cache) {
+		File file = cache.get(a);
+		if (file == null) {
+			file = artifactFile(a, extension, true);
+			cache.put(a, file);
+		}
+		return file;
+	}
+
+	/**
+	 * Returns true if the artifact is fully resolved. A fully resolved jar has:
+	 * <ul>
+	 * <li>a status of 'Ready', or</li>
+	 * <li>a status of 'Jar' and all its dependencies are 'Ready' or have
+	 * already been seen.</li>
+	 * </ul>
+	 * 
+	 * @param artifact
+	 * @param seenArtifacts
+	 * @return true if the artifact is fully resolved
+	 */
+	private boolean fullyResolved(ArtifactImpl artifact,
+			Set<Artifact> seenArtifacts) {
+		ArtifactStatus artifactStatus = getStatus(artifact);
+		if (artifactStatus.equals(ArtifactStatus.Ready)) {
+			return true;
+		}
+		if (artifactStatus.equals(ArtifactStatus.Jar)) {
+			if (seenArtifacts.contains(artifact)) {
+				return true;
+			}
+			seenArtifacts.add(artifact);
+			try {
+				List<ArtifactImpl> deps = artifact.getDependencies();
+				for (ArtifactImpl dep : deps) {
+					if (!fullyResolved(dep, seenArtifacts)) {
+						return false;
+					}
+				}
+				return true;
+			} catch (ArtifactStateException e) {
+				logger.error("Artifact state for " + artifact
+						+ " should have been Jar", e);
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -892,106 +967,6 @@ public class LocalRepository implements Repository {
 		return filename;
 	}
 
-	private static class AcceptDirectoryFilter implements FileFilter {
-		public boolean accept(File f) {
-			return f.isDirectory();
-		}
-	}
-
-	private Set<File> enumerateDirs(File current) {
-		Set<File> groupDirs = new HashSet<File>();
-		enumerateDirs(current, groupDirs);
-		return groupDirs;
-	}
-
-	private void enumerateDirs(File current, Set<File> groupDirs) {
-		try {
-			current = current.getCanonicalFile();
-		} catch (IOException e) {
-			logger.warn("Could not make canonical path " + current, e);
-			return;
-		}
-		// assumes base is canonical path (as by constructor)
-		if (!current.getPath().startsWith(base.getPath())) {
-			logger.warn(current + " is outside base root " + base);
-			return;
-		}
-		File[] subdirs = current.listFiles(isDirectory);
-		if (subdirs == null || subdirs.length == 0) {
-			if (!current.equals(base)) {
-				groupDirs.add(current.getParentFile().getParentFile());
-			}
-		} else {
-			for (File subDir : subdirs) {
-				enumerateDirs(subDir, groupDirs);
-			}
-		}
-	}
-
-	/**
-	 * Clean the local repository by removing invalid artifacts and directories.
-	 * <p>
-	 * Empty directories will always be removed.
-	 * <p>
-	 * <!-- removeFailing/removeUnknown not implemented If
-	 * <code>removeFailing</code> is true, all artifacts will be attempted
-	 * re-downloaded, if this fails, the artifact will be removed. This option
-	 * should only be used after verifying network access to the repositories.
-	 * <p>
-	 * If <code>removeUnknown</code> is true, files and directories not native
-	 * to the Raven repositories will be removed. Be sure that the local
-	 * repository directory is only used as a Raven repository before enabling
-	 * this option.
-	 * 
-	 * @param removeFailing
-	 *            Remove artifacts that can no longer be downloaded from
-	 *            repositories
-	 * @param removeUnknown
-	 *            Remove unknown (non-Raven) files and directories -->
-	 */
-	public synchronized void clean() {
-		if (!base.isDirectory()) {
-			logger.warn("Could not clean non-directory " + base);
-			return;
-		}
-		Set<File> groupDirs = enumerateDirs(base);
-		for (File groupDir : groupDirs) {
-			deleteEmptyDirs(groupDir);
-		}
-	}
-
-	private void deleteEmptyDirs(File dir) {
-		try {
-			dir = dir.getCanonicalFile();
-		} catch (IOException e) {
-			logger.warn("Could not check: " + dir, e);
-			// bad sign.. Let's stay away
-			return;
-		}
-		File[] subdirs = dir.listFiles(isDirectory);
-		for (File child : subdirs) {
-			try {
-				// Make sure we don't climb out following a symlink or something
-				if (!child.getCanonicalFile().getParentFile().equals(dir)) {
-					logger.warn("Skipping not a real child: " + child);
-					continue;
-				}
-			} catch (IOException e) {
-				// bad sign.. Let's stay away
-				logger.warn("Could not check child: " + child, e);
-				continue;
-			}
-			deleteEmptyDirs(child);
-		}
-		// OK.. we've checked our subdirs.. they might have all be
-		// gone now, so let's see if we can disappear as well
-		File[] content = dir.listFiles();
-		if (content == null || content.length == 0) {
-			// logger.debug("Deleting " + dir);
-			dir.delete();
-		}
-	}
-
 	/**
 	 * Scan the local repository for artifacts and populate the status map
 	 * accordingly
@@ -1040,49 +1015,74 @@ public class LocalRepository implements Repository {
 		 */
 	}
 
-	/**
-	 * If the artifact specified is in either PomFetching or JarFetching state
-	 * this returns a DownloadStatus object which provides a non updating
-	 * snapshot of the file size (if known) and total bytes downloaded. The
-	 * intent is to use this for progress bars within any client GUI code.
-	 * 
-	 * @return DownloadStatus object representing the state of the current
-	 *         download for this artifact
-	 * @param a
-	 *            Artifact to get status for
-	 * @throws ArtifactNotFoundException
-	 *             if this repository doesn't contain the specified artifact.
-	 * @throws ArtifactStateException
-	 *             if the artifact is found but isn't involved in a download at
-	 *             the present time.
-	 */
-	public DownloadStatus getDownloadStatus(Artifact a)
-			throws ArtifactStateException, ArtifactNotFoundException {
-		if (status.containsKey(a)) {
-			ArtifactStatus astatus = status.get(a);
-			if (dlstatus.containsKey(a)) {
-				return dlstatus.get(a);
-			} else {
-				throw new ArtifactStateException(astatus,
-						new ArtifactStatus[] { ArtifactStatus.PomFetching,
-								ArtifactStatus.JarFetching });
-			}
-		}
-		throw new ArtifactNotFoundException("Cant find artifact for: " + a);
+	private String repositoryPath(ArtifactImpl a, String suffix) {
+		String fname = a.getArtifactId() + "-" + a.getVersion() + "." + suffix;
+		String repositoryDir = a.getGroupId().replaceAll("\\.", "/") + "/"
+				+ a.getArtifactId() + "/" + a.getVersion();
+		String repositoryPath = repositoryDir + "/" + fname;
+		return repositoryPath;
 	}
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		for (Artifact a : status.keySet()) {
-			sb.append(getStatus(a)).append("\t").append(a.toString()).append(
-					"\n");
+	private synchronized void setStatus(ArtifactImpl a, ArtifactStatus newStatus) {
+		if (status.containsKey(a) && status.get(a) != newStatus) {
+			synchronized (listeners) {
+				ArtifactStatus oldStatus = status.get(a);
+				status.put(a, newStatus);
+				for (RepositoryListener l : new ArrayList<RepositoryListener>(
+						listeners)) {
+					l.statusChanged(a, oldStatus, newStatus);
+				}
+			}
 		}
-		return sb.toString();
 	}
 
 	protected LinkedHashSet<URL> getRemoteRepositories() {
 		return repositories;
+	}
+
+	/**
+	 * Copy the input stream to the output stream. Why doesn't java include this
+	 * as a utility method somewhere?
+	 * 
+	 * @param is
+	 * @param os
+	 * @throws IOException
+	 */
+	void copyStream(InputStream is, OutputStream os, Artifact a)
+			throws IOException {
+		int totalbytes = 0;
+		byte[] buffer = new byte[1024];
+		int bytesRead;
+		try {
+			while ((bytesRead = is.read(buffer)) != -1) {
+				totalbytes += bytesRead;
+				os.write(buffer, 0, bytesRead);
+				dlstatus.get(a).setReadBytes(totalbytes);
+			}
+		} finally {
+			dlstatus.get(a).setFinished();
+			os.flush();
+			os.close();
+		}
+	}
+
+	synchronized void forcePom(ArtifactImpl a) throws ArtifactNotFoundException {
+		fetch(a, "pom");
+	}
+
+	/**
+	 * File object for POM for the specified artifact. Note that this file might
+	 * be outside {@link #artifactDir(Artifact)} as it could have been found in
+	 * a local repository by {@link #fetchLocal(ArtifactImpl, String)}.
+	 */
+	File pomFile(Artifact a) {
+		return file(a, ".pom", pomFiles);
+	}
+
+	private static class AcceptDirectoryFilter implements FileFilter {
+		public boolean accept(File f) {
+			return f.isDirectory();
+		}
 	}
 
 }

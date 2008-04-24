@@ -19,6 +19,17 @@ import net.sf.taverna.raven.repository.RepositoryListener;
  * @author Matthew Pocock
  */
 public class Raven {
+	public static void failure() {
+		System.out
+				.println("Use exactly the following command-line, with options in exactly "
+						+ "this order:\n"
+						+ "localRepository remoteRepositoryURL1..n groupId artifactId"
+						+ " version applicationClassName debug [options-to-pass-through]\n"
+						+ "where remoteRepositoryX is a URL containing a protocol and"
+						+ " debug is true/false");
+		System.exit(-1);
+	}
+
 	public static void main(String[] args) throws Throwable {
 		LinkedList<String> argL = new LinkedList<String>(Arrays.asList(args));
 
@@ -87,16 +98,5 @@ public class Raven {
 
 		Method main = appClass.getMethod("main", String[].class);
 		main.invoke(null, argL.toArray(new String[] {}));
-	}
-
-	public static void failure() {
-		System.out
-				.println("Use exactly the following command-line, with options in exactly "
-						+ "this order:\n"
-						+ "localRepository remoteRepositoryURL1..n groupId artifactId"
-						+ " version applicationClassName debug [options-to-pass-through]\n"
-						+ "where remoteRepositoryX is a URL containing a protocol and"
-						+ " debug is true/false");
-		System.exit(-1);
 	}
 }

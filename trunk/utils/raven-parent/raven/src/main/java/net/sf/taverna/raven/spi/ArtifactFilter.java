@@ -11,6 +11,9 @@ import net.sf.taverna.raven.repository.Artifact;
  */
 public interface ArtifactFilter {
 
+	public abstract void addArtifactFilterListener(
+			ArtifactFilterListener listener);
+
 	/**
 	 * Given a set of Artifacts returns a subset according to the filtering
 	 * criteria defined by implementations of this interface.
@@ -20,9 +23,6 @@ public interface ArtifactFilter {
 	 * @return filtered subset of the input
 	 */
 	public abstract Set<Artifact> filter(Set<Artifact> artifacts);
-
-	public abstract void addArtifactFilterListener(
-			ArtifactFilterListener listener);
 
 	public abstract void removeArtifactFilterListener(
 			ArtifactFilterListener listener);
