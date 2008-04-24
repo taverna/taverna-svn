@@ -1,16 +1,16 @@
 package net.sf.taverna.raven;
 
-import net.sf.taverna.raven.repository.RepositoryListener;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
-
-import java.util.LinkedList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.File;
-import java.net.URL;
-import java.lang.reflect.Method;
+import net.sf.taverna.raven.repository.RepositoryListener;
 
 /**
  * Applicaton to run a normal Java application from a classloader acquired by

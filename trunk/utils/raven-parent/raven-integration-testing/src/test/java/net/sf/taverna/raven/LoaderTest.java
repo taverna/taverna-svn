@@ -1,8 +1,8 @@
 package net.sf.taverna.raven;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,16 +14,15 @@ import java.net.URLClassLoader;
 
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.RepositoryListener;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class LoaderTest {
 

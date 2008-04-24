@@ -2,9 +2,8 @@ package net.sf.taverna.raven.spi;
 
 import java.util.Set;
 
-import net.sf.taverna.raven.repository.Artifact;
-
 import junit.framework.TestCase;
+import net.sf.taverna.raven.repository.Artifact;
 
 public class ProfileTest extends TestCase {
 
