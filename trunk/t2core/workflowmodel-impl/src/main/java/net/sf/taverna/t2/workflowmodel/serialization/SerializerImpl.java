@@ -282,7 +282,7 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 	 * bean as a JDOM {@link Element}.
 	 * 
 	 * @see net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser
-	 * @param obj
+	 * @param bean
 	 *            Object to serialise
 	 * @return &lt;java&gt; element for serialised bean
 	 * @throws JDOMException
@@ -290,6 +290,7 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 	 */
 	protected Element beanAsElement(Object obj) throws JDOMException,
 			IOException {
+		Element bean=new Element(BEAN);
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		XMLEncoder xenc = new XMLEncoder(bos);
 		xenc.writeObject(obj);
@@ -298,7 +299,8 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		Element configElement = new SAXBuilder().build(bis).getRootElement();
 		configElement.getParent().removeContent(configElement);
-		return configElement;
+		bean.addContent(configElement);
+		return bean;
 	}
 	
 	protected Element datalinkToXML(Datalink link) throws SerializationException{

@@ -129,8 +129,11 @@ public class SerializerImplTest {
 		assertEquals("input map should define the map for 'in'","<map from=\"in\" to=\"in\" />",elementToString(inputMap.getChild("map")));
 		assertEquals("output map should define the map for 'out'","<map from=\"out\" to=\"out\" />",elementToString(outputMap.getChild("map")));
 		
-		Element java = el.getChild("java");
-		assertNotNull("there should be a child called java",java);
+		Element bean = el.getChild("bean");
+		assertNotNull("there should be a child called bean",bean);
+		
+		Element java = bean.getChild("java");
+		assertNotNull("bean should have a child called java",java);
 		assertEquals("java child should describe an int with value 5","<int>5</int>",elementToString(java.getChild("int")));
 	}
 	
@@ -182,10 +185,24 @@ public class SerializerImplTest {
 		
 		assertNotNull("There should be a child called class",classChild);
 		assertEquals("Incorrect class name for Parellalize","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize",classChild.getText());
-		assertEquals("There should be a child called java (that described the config bean)",1,el.getChildren("java").size());
 		
-		Element javaElement = el.getChild("java");
+		Element bean = el.getChild("bean");
+		assertNotNull("there should be a child called bean",bean);
+		
+		assertEquals("There should be a child called java (that described the config bean)",1,bean.getChildren("java").size());
+		Element javaElement = bean.getChild("java");
 		assertEquals("the java child element,object, should have a class attribute that describes the ParellizeConfig bean","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig",javaElement.getChild("object").getAttribute("class").getValue());
+	}
+	
+	@Test
+	public void testBeanAsElement() throws Exception {
+		String helloWorld="hello world";
+		Element el = serializer.beanAsElement(helloWorld);
+		assertEquals("root should be bean","bean",el.getName());
+		assertEquals("there should be 1 java child",1,el.getChildren("java").size());
+		Element java=el.getChild("java");
+		String innerXML=elementToString(java.getChild("string"));
+		assertEquals("Unexpected xml for the string","<string>hello world</string>",innerXML);
 	}
 	
 	@Test
