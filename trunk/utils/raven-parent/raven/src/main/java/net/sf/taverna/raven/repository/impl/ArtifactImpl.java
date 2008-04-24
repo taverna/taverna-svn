@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +25,7 @@ import net.sf.taverna.raven.repository.ArtifactNotFoundException;
 import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
+import net.sf.taverna.raven.util.NodeListIterable;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -31,17 +35,29 @@ import org.xml.sax.SAXException;
 /**
  * A single Maven2 artifact with group, artifact and version
  * 
- * @author Tom
- * @author dturi
+ * @author Tom Oinn
+ * @author Danielle Turi
+ * @author Stian Soiland-Reyes
  */
 public class ArtifactImpl extends BasicArtifact {
+
+	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+			.newInstance();
+	
 	private static Log logger = Log.getLogger(ArtifactImpl.class);
 
-	private LocalRepository repository;
-	private String packageType = null;
-	private Map<String, String> dependencyManagement = null;
-	private ArtifactImpl parentArtifact = null;
+	/**
+	 * Matches ${project.artifactId} etc.
+	 */
+	private static Pattern propertyPattern = Pattern.compile("\\$\\{([^}]*)\\}");
+
 	private List<ArtifactImpl> dependencies = null;
+	private Map<String, String> dependencyManagement = null;
+	private String packageType = null;
+	private ArtifactImpl parentArtifact = null;
+	private Properties properties;
+	private LocalRepository repository;
+
 	protected Set<Artifact> exclusions = null;
 
 	/**
@@ -88,8 +104,7 @@ public class ArtifactImpl extends BasicArtifact {
 		if (repository == null) {
 			logger.error("Repository is null");
 			// Should never get here, it's impossible to construct an
-			// ArtifactImpl with
-			// a null repository.
+			// ArtifactImpl with a null repository.
 			return result;
 		}
 		ArtifactStatus status = repository.getStatus(this);
@@ -101,23 +116,16 @@ public class ArtifactImpl extends BasicArtifact {
 					ArtifactStatus.Pom, ArtifactStatus.Ready });
 		}
 
-		File pomFile = repository.pomFile(this);
-		if (!pomFile.exists()) {
-			logger.error("Pom file does not exist: " + pomFile);
+		File pomFile = getPomFile();
+		if (pomFile == null) {
 			// TODO Handle absence of pom file here
 			return result;
 		}
 		checkParent(pomFile);
-		InputStream is;
-		try {
-			is = pomFile.toURI().toURL().openStream();
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.parse(is);
-			is.close();
 
-			Properties properties = getProperties(pomFile);
+		try {
+			Document document = readXML(pomFile);
+			Properties properties = getProperties();
 
 			List<Node> elementList = findElements(document, new String[] {
 					"project", "dependencies", "dependency" });
@@ -125,16 +133,11 @@ public class ArtifactImpl extends BasicArtifact {
 				node.normalize();
 				Node n = findElements(node, "groupId").iterator().next();
 				String groupId = n.getFirstChild().getNodeValue().trim();
-				if (groupId.equals("${pom.groupId}")
-						|| groupId.equals("${project.groupId}")) {
-					groupId = getGroupId();
-				}
+				groupId = expandProperties(properties, groupId);
+
 				n = findElements(node, "artifactId").iterator().next();
 				String artifactId = n.getFirstChild().getNodeValue().trim();
-				if (artifactId.equals("${pom.artifactId}")
-						|| artifactId.equals("${project.artifactId}")) {
-					artifactId = getArtifactId();
-				}
+				artifactId = expandProperties(properties, artifactId);
 
 				// Check if we should exclude it
 				if (exclusions != null
@@ -142,7 +145,6 @@ public class ArtifactImpl extends BasicArtifact {
 								artifactId, ""))) {
 					continue;
 				}
-
 				List<Node> versionNodeList = findElements(node, "version");
 				String version;
 				if (versionNodeList.isEmpty()) {
@@ -150,7 +152,7 @@ public class ArtifactImpl extends BasicArtifact {
 				} else {
 					n = findElements(node, "version").iterator().next();
 					version = n.getFirstChild().getNodeValue().trim();
-					version = interpolate(properties, version);
+					version = expandProperties(properties, version);
 				}
 				if (version == null) {
 					logger.warn("Unable to find a version for the dependency "
@@ -243,13 +245,8 @@ public class ArtifactImpl extends BasicArtifact {
 		}
 		File pomFile = repository.pomFile(this);
 		if (pomFile.exists()) {
-			InputStream is;
 			try {
-				is = pomFile.toURI().toURL().openStream();
-				DocumentBuilderFactory factory = DocumentBuilderFactory
-						.newInstance();
-				DocumentBuilder builder = factory.newDocumentBuilder();
-				Document document = builder.parse(is);
+				Document document = readXML(pomFile);
 				List<Node> l = findElements(document, "packaging");
 				if (l.isEmpty()) {
 					packageType = "jar";
@@ -277,26 +274,16 @@ public class ArtifactImpl extends BasicArtifact {
 	 * parentArtifact field if one is found
 	 */
 	private synchronized void checkParent(File pomFile) {
-		InputStream is;
 		Document document;
 		try {
-			is = pomFile.toURI().toURL().openStream();
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
-			DocumentBuilder builder;
 			try {
-				builder = factory.newDocumentBuilder();
+				document = readXML(pomFile);
 			} catch (ParserConfigurationException ex) {
 				logger.error("Could not create XML document builder", ex);
 				return;
-			}
-			try {
-				document = builder.parse(is);
 			} catch (SAXException e) {
 				logger.warn("Could not parse XML " + pomFile, e);
 				return;
-			} finally {
-				is.close();
 			}
 		} catch (IOException e) {
 			logger.warn("Could not read " + pomFile, e);
@@ -329,6 +316,28 @@ public class ArtifactImpl extends BasicArtifact {
 		parentArtifact.checkParent(repository.pomFile(parentArtifact));
 	}
 
+	private String expandProperties(Properties properties, String string) {
+		if (string == null) {
+			throw new NullPointerException("Value can't be null");
+		}
+		Matcher matcher = propertyPattern.matcher(string);
+		String newString = string;		
+		while (matcher.find()) {
+			String key = matcher.group(1);
+			String keyVariable = "${" + key + "}";
+			String value = properties.getProperty(key);
+			if (value == null) {
+				//logger.info("Can't resolve property " + key + " from " + this);
+			} else {
+				newString = newString.replace(keyVariable, value);
+			}
+		}
+//		if (! string.equals(newString)) {
+//			logger.debug("Expanded " + string + " to " + newString);
+//		}
+		return newString;
+	}
+
 	/**
 	 * Find any descendants of the given node with the specified element name
 	 * 
@@ -337,10 +346,8 @@ public class ArtifactImpl extends BasicArtifact {
 	 * @return
 	 */
 	private List<Node> findElements(Node fromnode, String name) {
-		NodeList nodelist = fromnode.getChildNodes();
 		List<Node> list = new ArrayList<Node>();
-		for (int i = 0; i < nodelist.getLength(); i++) {
-			Node node = nodelist.item(i);
+		for (Node node : new NodeListIterable(fromnode.getChildNodes())) {
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				if (name.equals(node.getNodeName())) {
 					list.add(node);
@@ -398,43 +405,114 @@ public class ArtifactImpl extends BasicArtifact {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
-	private Properties getProperties(File pomFile) throws IOException,
-			MalformedURLException, ParserConfigurationException, SAXException {
+	/**
+	 * Return the list of ancestor, oldest parent first.
+	 * 
+	 * @return
+	 */
+	private List<ArtifactImpl> getAncestors() {
+		List<ArtifactImpl> parents = new ArrayList<ArtifactImpl>();
+		ArtifactImpl parent = parentArtifact;
+		while (parent != null) {
+			parents.add(0, parent);
+			parent = parent.parentArtifact;
+		}
+		return parents;
+	}
+
+	/**
+	 * Get maven properties calculated from the current POM, such as
+	 * ${project.version}.
+	 * 
+	 * @return A new {@link Properties} object with calculated properties
+	 */
+	private Properties getCalculatedProperties() {
+		// Loosely based on
+		// http://docs.codehaus.org/display/MAVENUSER/MavenPropertiesGuide
 		Properties properties = new Properties();
-		InputStream is;
-		is = pomFile.toURI().toURL().openStream();
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document document = builder.parse(is);
-		is.close();
-		NodeList propertyNodes = document.getElementsByTagName("properties");
-		for (int j = 0; j < propertyNodes.getLength(); j++) {
-			Node propertiesNode = propertyNodes.item(j);
-			NodeList list = propertiesNode.getChildNodes();
-			for (int i = 0; i < list.getLength(); i++) {
-				Node item = list.item(i);
-				item.normalize();
-				String textContent = item.getTextContent().trim();
-				if (!textContent.equals("")) {
-					String key = item.getNodeName();
-					properties.put(key, textContent);
-				}
-			}
+		for (String prefix : new String[] { "", "pom.", "project." }) {
+			properties.put(prefix + "groupId", getGroupId());
+			properties.put(prefix + "artifactId", getArtifactId());
+			properties.put(prefix + "version", getVersion());
 		}
 		return properties;
 	}
 
-	private String interpolate(Properties properties, String version) {
-		if (version.startsWith("${") && version.endsWith("}")) {
-			String versionKey = version.substring(2, version.length() - 1);
-			if (versionKey.equals("pom.version")
-					|| versionKey.equals("project.version")) {
-				return getVersion();
-			}
-			version = properties.getProperty(versionKey);
+	private File getPomFile() {
+		File pomFile = repository.pomFile(this);
+		if (!pomFile.exists()) {
+			logger.error("Pom file does not exist: " + pomFile);
+			// TODO Handle absence of pom file here
+			return null;
 		}
-		return version;
+		return pomFile;
+	}
+
+	/**
+	 * Get the Maven properties defined, inherited and calculated within this
+	 * POM. To be used with {@link #expandProperties(Properties, String)}.
+	 * 
+	 * @see #expandProperties(Properties, String)
+	 * @return
+	 * @throws IOException
+	 * @throws MalformedURLException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 */
+	@SuppressWarnings("unchecked")
+	private Properties getProperties() throws IOException,
+			MalformedURLException, ParserConfigurationException, SAXException {
+		if (properties != null) {
+			// Note - not synchronized - but no big harm in two threads reading
+			// the properties
+			// at the same time because we don't assing until the end
+			return properties;
+		}
+		File pomFile = getPomFile();
+		if (pomFile == null) {
+			throw new IOException("Can't find pom file for " + this);
+		}
+
+		Properties props = getCalculatedProperties();
+		if (parentArtifact != null) {
+			props.putAll(parentArtifact.getProperties());
+		}
+		props.putAll(getCalculatedProperties());
+
+		Document document = readXML(pomFile);
+		NodeList propertyNodes = document.getElementsByTagName("properties");
+
+		for (Node propertiesNode : new NodeListIterable(propertyNodes)) {
+			for (Node item : new NodeListIterable(propertiesNode
+					.getChildNodes())) {
+				item.normalize();
+				String textContent = item.getTextContent().trim();
+				if (!textContent.equals("")) {
+					String key = item.getNodeName();
+					props.put(key, expandProperties(props, textContent));
+				}
+			}
+		}
+		properties = props;
+		return props;
+	}
+
+	private Document readXML(File xmlFile) throws MalformedURLException,
+			ParserConfigurationException, SAXException, IOException {
+		return readXML(xmlFile.toURI().toURL());
+	}
+
+	private Document readXML(URL url) throws ParserConfigurationException,
+			SAXException, IOException {
+		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+		InputStream stream = url.openStream();
+		Document document;
+		try {
+			document = builder.parse(stream);
+		} finally {
+			stream.close();
+		}
+		return document;
 	}
 
 	/**
@@ -463,67 +541,48 @@ public class ArtifactImpl extends BasicArtifact {
 			// Need to take all parent poms and traverse them to find
 			// the dependency versions
 			dependencyManagement = new HashMap<String, String>();
-			List<ArtifactImpl> parents = new ArrayList<ArtifactImpl>();
-			ArtifactImpl parent = parentArtifact;
-			while (parent != null) {
-				parents.add(0, parent);
-				parent = parent.parentArtifact;
-			}
-			for (ArtifactImpl a : parents) {
-				File pomFile = repository.pomFile(a);
+			for (ArtifactImpl ancestor : getAncestors()) {
+				File pomFile = repository.pomFile(ancestor);
 				try {
-					InputStream is = pomFile.toURI().toURL().openStream();
-					DocumentBuilderFactory factory = DocumentBuilderFactory
-							.newInstance();
-					DocumentBuilder builder = factory.newDocumentBuilder();
-					Document document = builder.parse(is);
-					is.close();
-
-					Properties properties = getProperties(pomFile);
-
+					Document document = readXML(pomFile);
+					Properties ancestorProperties = ancestor.getProperties();
 					List<Node> managerElementList = findElements(document,
 							"dependencyManagement");
 					for (Node depManagerNode : managerElementList) {
 						List<Node> elementList = findElements(depManagerNode,
 								"dependency");
 						for (Node depNode : elementList) {
-							Node n = findElements(depNode, "groupId")
+							Node groupNode = findElements(depNode, "groupId")
 									.iterator().next();
-							String groupId = n.getFirstChild().getNodeValue()
-									.trim();
-							if (groupId.equals("${pom.groupId}")
-									|| groupId.equals("${project.groupId}")) {
-								groupId = a.getGroupId();
-							}
-							n = findElements(depNode, "artifactId").iterator()
-									.next();
-							String artifactId = n.getFirstChild()
+							String groupId = groupNode.getFirstChild()
 									.getNodeValue().trim();
-							if (artifactId.equals("${pom.artifactId}")
-									|| artifactId
-											.equals("${project.artifactId}")) {
-								artifactId = a.getArtifactId();
-							}
-							n = findElements(depNode, "version").iterator()
-									.next();
-							version = n.getFirstChild().getNodeValue().trim();
-							version = interpolate(properties, version);
-							/**
-							 * logger.debug(this); logger.debug("Parent : "+a);
-							 * logger.debug(groupId); logger.debug(artifactId);
-							 * logger.debug(version);
-							 */
+							groupId = expandProperties(ancestorProperties,
+									groupId);
+
+							Node artifactNode = findElements(depNode,
+									"artifactId").iterator().next();
+							String artifactId = artifactNode.getFirstChild()
+									.getNodeValue().trim();
+							artifactId = expandProperties(ancestorProperties,
+									artifactId);
+
+							Node versionNode = findElements(depNode, "version")
+									.iterator().next();
+							version = versionNode.getFirstChild()
+									.getNodeValue().trim();
+							version = expandProperties(ancestorProperties,
+									version);
 							dependencyManagement.put(
 									groupId + ":" + artifactId, version);
 						}
 					}
 
 				} catch (IOException e) {
-					logger.warn("IO error reading " + a, e);
+					logger.warn("IO error reading " + ancestor, e);
 				} catch (ParserConfigurationException e) {
 					logger.error("XML parser configuration error", e);
 				} catch (SAXException e) {
-					logger.warn("XML SAX error reading " + a, e);
+					logger.warn("XML SAX error reading " + ancestor, e);
 				}
 			}
 		}
