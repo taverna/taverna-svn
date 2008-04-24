@@ -27,8 +27,8 @@ public abstract class AbstractArtifactFilter implements ArtifactFilter {
 	@SuppressWarnings("unchecked")
 	protected void fireFilterChanged(ArtifactFilter filter) {
 		synchronized (artifactFilterListeners) {
-			ArrayList<ArtifactFilterListener> listeners =
-				(ArrayList<ArtifactFilterListener>) artifactFilterListeners.clone();
+			ArrayList<ArtifactFilterListener> listeners = (ArrayList<ArtifactFilterListener>) artifactFilterListeners
+					.clone();
 			for (ArtifactFilterListener listener : listeners) {
 				listener.filterChanged(filter);
 			}

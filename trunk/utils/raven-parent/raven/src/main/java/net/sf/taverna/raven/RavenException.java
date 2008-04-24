@@ -6,7 +6,7 @@ public class RavenException extends Exception {
 	public RavenException() {
 		super();
 	}
-	
+
 	public RavenException(String message) {
 		super(message);
 	}
@@ -14,10 +14,9 @@ public class RavenException extends Exception {
 	public RavenException(Throwable cause) {
 		super(cause);
 	}
-	
+
 	public RavenException(String message, Throwable cause) {
 		super(message, cause);
 	}
-	
-	
+
 }

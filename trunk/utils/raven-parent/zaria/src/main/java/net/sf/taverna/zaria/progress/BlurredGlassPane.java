@@ -23,7 +23,6 @@ public class BlurredGlassPane extends JComponent {
 	private BoxBlurFilter filter = new BoxBlurFilter();
 	private ComponentListener listener = null;
 
-	
 	public BlurredGlassPane(JFrame frame) {
 		super();
 		this.frame = frame;
@@ -34,20 +33,23 @@ public class BlurredGlassPane extends JComponent {
 			public void componentResized(ComponentEvent e) {
 				createBlur();
 			}
+
 			public void componentMoved(ComponentEvent e) {
-				createBlur();				
+				createBlur();
 			}
+
 			public void componentShown(ComponentEvent e) {
 				createBlur();
-				
+
 			}
+
 			public void componentHidden(ComponentEvent e) {
 				createBlur();
 			}
 		};
 
 	}
-	
+
 	public synchronized void setActive(boolean active) {
 		if (active != this.active) {
 			this.active = active;
@@ -55,46 +57,42 @@ public class BlurredGlassPane extends JComponent {
 				createBlur();
 				setVisible(true);
 				frame.getContentPane().addComponentListener(listener);
-			}
-			else {
+			} else {
 				setVisible(false);
 				frame.getContentPane().removeComponentListener(listener);
 			}
 			repaint();
 		}
 	}
-	
+
 	private synchronized void createBlur() {
 		Container contentPane = frame.getContentPane();
 		int width = contentPane.getWidth();
 		int height = contentPane.getHeight();
-		BufferedImage original =
-			new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		BufferedImage original = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
 		Graphics g = original.getGraphics();
 		contentPane.paintAll(g);
 		blur = filter.filter(original, null);
-		logger.debug("Creating blurred image : "+width+","+height);
+		logger.debug("Creating blurred image : " + width + "," + height);
 		repaint();
 	}
-	
+
 	@Override
 	public synchronized void paintComponent(Graphics g) {
 		if (this.active) {
-			Graphics2D g2d = (Graphics2D)g;
-			g2d.drawImage(blur,0,0,null);
+			Graphics2D g2d = (Graphics2D) g;
+			g2d.drawImage(blur, 0, 0, null);
 			/**
-			String text = "Hello";
-			if (text != null && text.length() > 0) {
-				FontRenderContext context = g2d.getFontRenderContext();
-				TextLayout layout = new TextLayout(text, getFont(), context);
-				Rectangle2D bounds = layout.getBounds();
-				g2d.setColor(getForeground());
-				layout.draw(g2d, (float) (getWidth() - bounds.getWidth()) / 2,
-						(float) (getHeight()/2 + layout.getLeading() + 2 * layout.getAscent()));
-			}
-			*/
-		}
-		else {
+			 * String text = "Hello"; if (text != null && text.length() > 0) {
+			 * FontRenderContext context = g2d.getFontRenderContext();
+			 * TextLayout layout = new TextLayout(text, getFont(), context);
+			 * Rectangle2D bounds = layout.getBounds();
+			 * g2d.setColor(getForeground()); layout.draw(g2d, (float)
+			 * (getWidth() - bounds.getWidth()) / 2, (float) (getHeight()/2 +
+			 * layout.getLeading() + 2 * layout.getAscent())); }
+			 */
+		} else {
 			super.paintComponent(g);
 		}
 	}

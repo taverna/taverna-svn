@@ -60,7 +60,8 @@ public class ArtifactClassLoaderTest {
 		// for (Class spiClass : spiRegistry.getClasses()) {
 		// classes.add(spiClass.getCanonicalName());
 		// }
-		classes.add("org.embl.ebi.escience.scuflworkers.wsdl.WSDLProcessorInfoBean");
+		classes
+				.add("org.embl.ebi.escience.scuflworkers.wsdl.WSDLProcessorInfoBean");
 		assertFalse("No SPIs found for " + SPI, classes.isEmpty());
 
 	}

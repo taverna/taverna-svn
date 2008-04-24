@@ -14,33 +14,39 @@ import javax.swing.JPanel;
 import org.jdom.Element;
 
 /**
- * The blank component used when there isn't anything else,
- * contains actions to create the other components (which will
- * therefore be created empty by default).
+ * The blank component used when there isn't anything else, contains actions to
+ * create the other components (which will therefore be created empty by
+ * default).
+ * 
  * @author Tom Oinn
  */
 @SuppressWarnings("serial")
 public class ZBlankComponent extends ZPane implements ZTreeNode {
 
 	private List<Action> actions;
-	
+
 	public ZBlankComponent() {
 		super();
 		actions = new ArrayList<Action>();
 		actions.add(createSplitPaneAction);
-		createSplitPaneAction.putValue(Action.SHORT_DESCRIPTION,"Create split pane");
-		createSplitPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addsplit"));
+		createSplitPaneAction.putValue(Action.SHORT_DESCRIPTION,
+				"Create split pane");
+		createSplitPaneAction.putValue(Action.SMALL_ICON, ZIcons
+				.iconFor("addsplit"));
 		actions.add(createTabbedPaneAction);
-		createTabbedPaneAction.putValue(Action.SHORT_DESCRIPTION,"New tabs");
-		createTabbedPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addtab"));
+		createTabbedPaneAction.putValue(Action.SHORT_DESCRIPTION, "New tabs");
+		createTabbedPaneAction.putValue(Action.SMALL_ICON, ZIcons
+				.iconFor("addtab"));
 		actions.add(createRavenPaneAction);
-		createRavenPaneAction.putValue(Action.SHORT_DESCRIPTION,"Add component from Raven");
-		createRavenPaneAction.putValue(Action.SMALL_ICON,ZIcons.iconFor("addraven"));
+		createRavenPaneAction.putValue(Action.SHORT_DESCRIPTION,
+				"Add component from Raven");
+		createRavenPaneAction.putValue(Action.SMALL_ICON, ZIcons
+				.iconFor("addraven"));
 		JPanel panel = new JPanel();
 		panel.setOpaque(true);
 		panel.setBackground(Color.WHITE);
 		add(panel, BorderLayout.CENTER);
-		setPreferredSize(new Dimension(100,100));
+		setPreferredSize(new Dimension(100, 100));
 		revalidate();
 	}
 
@@ -49,7 +55,7 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 			replaceWith(new ZSplitPane());
 		}
 	};
-	
+
 	private Action createTabbedPaneAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent arg0) {
 			ZTabbedPane tabbedPane = new ZTabbedPane();
@@ -58,13 +64,13 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 			replaceWith(tabbedPane);
 		}
 	};
-	
+
 	private Action createRavenPaneAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent arg0) {
 			replaceWith(new ZRavenComponent());
 		}
 	};
-	
+
 	public List<ZTreeNode> getZChildren() {
 		return new ArrayList<ZTreeNode>();
 	}
@@ -87,8 +93,7 @@ public class ZBlankComponent extends ZPane implements ZTreeNode {
 
 	public void discard() {
 		// Do nothing
-		
+
 	}
 
-	
 }

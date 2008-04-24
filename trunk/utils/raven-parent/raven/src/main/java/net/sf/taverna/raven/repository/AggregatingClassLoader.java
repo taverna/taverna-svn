@@ -14,44 +14,46 @@ import java.util.List;
  * classes from multiple independant artifacts this class can aggregate a set of
  * classloaders, delegating to each in turn until an appropriate match is found
  * for a class or resource.
+ * 
  * @author Tom Oinn
  */
 public class AggregatingClassLoader extends ClassLoader {
 
 	List<ClassLoader> loaders = new ArrayList<ClassLoader>();
-	
-	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts, ClassLoader parent) 
-	throws ArtifactStateException, ArtifactNotFoundException {
-			super(parent);
-			init(rep, artifacts);
+
+	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts,
+			ClassLoader parent) throws ArtifactStateException,
+			ArtifactNotFoundException {
+		super(parent);
+		init(rep, artifacts);
 	}
-	
-	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts) 
-	throws ArtifactStateException, ArtifactNotFoundException  {
+
+	public AggregatingClassLoader(Repository rep, List<Artifact> artifacts)
+			throws ArtifactStateException, ArtifactNotFoundException {
 		super();
 		init(rep, artifacts);
 	}
-	
-	private void init(Repository rep, List<Artifact> artifacts) 
-	throws ArtifactStateException, ArtifactNotFoundException {
+
+	private void init(Repository rep, List<Artifact> artifacts)
+			throws ArtifactStateException, ArtifactNotFoundException {
 		for (Artifact a : artifacts) {
 			loaders.add(rep.getLoader(a, null));
 		}
 	}
-	
+
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
 		for (ClassLoader loader : loaders) {
 			try {
 				return loader.loadClass(name);
-			}
-			catch (ClassNotFoundException cnfe) {
+			} catch (ClassNotFoundException cnfe) {
 				//
 			}
 		}
-		throw new ClassNotFoundException("Unable to locate a loader for "+name);
+		throw new ClassNotFoundException("Unable to locate a loader for "
+				+ name);
 	}
-	
+
 	@Override
 	public URL findResource(String name) {
 		for (ClassLoader loader : loaders) {
@@ -62,13 +64,13 @@ public class AggregatingClassLoader extends ClassLoader {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Enumeration<URL> findResources(String name) throws IOException {
 		List<URL> results = new ArrayList<URL>();
 		for (ClassLoader loader : loaders) {
 			Enumeration<URL> en = loader.getResources(name);
-			for (;en.hasMoreElements();) {
+			for (; en.hasMoreElements();) {
 				results.add(en.nextElement());
 			}
 		}
@@ -77,12 +79,12 @@ public class AggregatingClassLoader extends ClassLoader {
 			public boolean hasMoreElements() {
 				return i.hasNext();
 			}
+
 			public URL nextElement() {
 				return i.next();
 			}
 		};
-		
+
 	}
-	
-	
+
 }

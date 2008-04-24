@@ -51,9 +51,10 @@ import org.xml.sax.SAXException;
  * @author Tom Oinn
  */
 public class LocalRepository implements Repository {
-	
-	//the version of raven to used as the artifact for the faked classloader used during initialisation.
-	private final String RAVEN_VERSION="1.7.1.0";
+
+	// the version of raven to used as the artifact for the faked classloader
+	// used during initialisation.
+	private final String RAVEN_VERSION = "1.7.1.0";
 
 	private static Log logger = Log.getLogger(LocalRepository.class);
 
@@ -93,7 +94,8 @@ public class LocalRepository implements Repository {
 	 * artifacts within that set. If not you'll get all manner of linkage errors
 	 * at runtime.
 	 */
-	protected LocalRepository(File base, ClassLoader loader, Set<Artifact> systemArtifacts) {
+	protected LocalRepository(File base, ClassLoader loader,
+			Set<Artifact> systemArtifacts) {
 		this.systemArtifacts = systemArtifacts;
 		this.parentLoader = loader;
 		try {
@@ -111,7 +113,7 @@ public class LocalRepository implements Repository {
 		}
 		initialize();
 	}
-	
+
 	private Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 	private ClassLoader parentLoader = null;
 
@@ -181,10 +183,11 @@ public class LocalRepository implements Repository {
 			fileRepositories.add(repositoryURL);
 		}
 	}
-	
+
 	/**
-	 * Adds a remote repository, but adds it at the start of the list. This is used by Plugins that specify their
-	 * repositories that we know need to be checked first. 
+	 * Adds a remote repository, but adds it at the start of the list. This is
+	 * used by Plugins that specify their repositories that we know need to be
+	 * checked first.
 	 * 
 	 * @param repositoryURL
 	 */
@@ -192,7 +195,7 @@ public class LocalRepository implements Repository {
 		LinkedHashSet<URL> tmpRepositories = new LinkedHashSet<URL>();
 		tmpRepositories.add(repositoryURL);
 		tmpRepositories.addAll(repositories);
-		repositories=tmpRepositories;
+		repositories = tmpRepositories;
 		if (repositoryURL.getProtocol().equals("file")) {
 			fileRepositories.add(repositoryURL);
 		}
@@ -307,7 +310,8 @@ public class LocalRepository implements Repository {
 			synchronized (listeners) {
 				ArtifactStatus oldStatus = status.get(a);
 				status.put(a, newStatus);
-				for (RepositoryListener l : new ArrayList<RepositoryListener>(listeners)) {
+				for (RepositoryListener l : new ArrayList<RepositoryListener>(
+						listeners)) {
 					l.statusChanged(a, oldStatus, newStatus);
 				}
 			}
@@ -392,10 +396,10 @@ public class LocalRepository implements Repository {
 						if (!status.containsKey(dep)) {
 							addArtifact(dep);
 						}
-//						if (! status.get(dep).equals(ArtifactStatus.Ready)) {
-//							fullyResolved = false;
-//							break;
-//						}
+						// if (! status.get(dep).equals(ArtifactStatus.Ready)) {
+						// fullyResolved = false;
+						// break;
+						// }
 						if (!fullyResolved(dep, seenArtifacts)) {
 							fullyResolved = false;
 						}
@@ -752,10 +756,12 @@ public class LocalRepository implements Repository {
 	private boolean fetchLocal(ArtifactImpl artifact, String suffix) {
 		String repositoryPath = repositoryPath(artifact, suffix);
 		// Let's see if any of our file:// repositories have it
-		//check if artifact is defined as a system artifact in the profile, if one is defined.
+		// check if artifact is defined as a system artifact in the profile, if
+		// one is defined.
 		ProfileFactory profileFactory = ProfileFactory.getInstance();
 		if (profileFactory.isProfileDefined()) {
-			Set<Artifact> systemArtifacts = profileFactory.getProfile().getSystemArtifacts();
+			Set<Artifact> systemArtifacts = profileFactory.getProfile()
+					.getSystemArtifacts();
 			if (systemArtifacts.contains(artifact)) {
 				// Need to copy it so that the system classloader can
 				// find it (We can't interact with it here as Raven shouldn't
@@ -1074,9 +1080,9 @@ public class LocalRepository implements Repository {
 		}
 		return sb.toString();
 	}
-	
+
 	protected LinkedHashSet<URL> getRemoteRepositories() {
 		return repositories;
 	}
-	
+
 }

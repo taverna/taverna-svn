@@ -359,12 +359,14 @@ public class Profile extends AbstractArtifactFilter {
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.transform(source, dest);
 	}
-	
+
 	/**
-	 * Adds artifacts contains in the profile definition for a Plugin.
-	 * These need to be added early in the startup process so that system artifacts
-	 * get added to the correct classloader.
-	 * It also prevents a long delay between the splash screen and the workbench appearing when first initialising default plugins.
+	 * Adds artifacts contains in the profile definition for a Plugin. These
+	 * need to be added early in the startup process so that system artifacts
+	 * get added to the correct classloader. It also prevents a long delay
+	 * between the splash screen and the workbench appearing when first
+	 * initialising default plugins.
+	 * 
 	 * @param pluginsDefinitionStream
 	 */
 	public void addArtifactsForPlugins(InputStream pluginsDefinitionStream) {
@@ -375,33 +377,35 @@ public class Profile extends AbstractArtifactFilter {
 			try {
 				document = builder.parse(pluginsDefinitionStream);
 				NodeList pluginNodes = document.getElementsByTagName("plugin");
-				for (int i=0;i<pluginNodes.getLength();i++) {
+				for (int i = 0; i < pluginNodes.getLength(); i++) {
 					Node node = pluginNodes.item(i);
 					Node child = node.getFirstChild();
-					Node profileNode=null;
+					Node profileNode = null;
 					boolean enabled = false;
-					while (child!=null) {
+					while (child != null) {
 						if (child.getNodeName().equals("enabled")) {
-							enabled = child.getTextContent()!=null && child.getTextContent().trim().equals("true");
+							enabled = child.getTextContent() != null
+									&& child.getTextContent().trim().equals(
+											"true");
 						}
 						if (child.getNodeName().equals("profile")) {
-							profileNode=child;
+							profileNode = child;
 						}
-						child=child.getNextSibling();
+						child = child.getNextSibling();
 					}
-					if (enabled && profileNode!=null) {
+					if (enabled && profileNode != null) {
 						readProfileArtifactNodes(profileNode.getChildNodes());
 					}
 				}
 			} catch (SAXException e) {
-				logger.error("Error reading plugin xml",e);
+				logger.error("Error reading plugin xml", e);
 			} catch (IOException e) {
-				logger.error("Error reading plugin xml stream",e);
+				logger.error("Error reading plugin xml stream", e);
 			} catch (InvalidProfileException e) {
-				logger.error("The plugin xml contains an invalid profile",e);
+				logger.error("The plugin xml contains an invalid profile", e);
 			}
 		} catch (ParserConfigurationException e) {
-			logger.error("The XML parser is incorrectly configured",e);
+			logger.error("The XML parser is incorrectly configured", e);
 		}
 	}
 

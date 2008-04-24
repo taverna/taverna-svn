@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: SplashScreen.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-21 13:32:56 $
+ * Last modified on   $Date: 2008-04-24 15:05:08 $
  *               by   $Author: stain $
  * Created on 18 Jan 2007
  *****************************************************************/
@@ -56,29 +56,29 @@ import net.sf.taverna.raven.repository.RepositoryListener;
 public class SplashScreen extends JWindow {
 
 	private static Log logger = Log.getLogger(SplashScreen.class);
-	
+
 	private static SplashScreen splashscreen;
-	
-	public static SplashScreen getSplashScreen(URL imageUrl,int timeout) {
-		if (splashscreen==null) {
-			splashscreen = new SplashScreen(imageUrl,timeout);
+
+	public static SplashScreen getSplashScreen(URL imageUrl, int timeout) {
+		if (splashscreen == null) {
+			splashscreen = new SplashScreen(imageUrl, timeout);
 		}
 		return splashscreen;
 	}
-	
+
 	public static SplashScreen getSplashScreen(URL imageUrl) {
-		if (splashscreen==null) {
+		if (splashscreen == null) {
 			splashscreen = new SplashScreen(imageUrl);
 		}
 		return splashscreen;
 	}
-	
+
 	public static SplashScreen getSplashScreen() {
 		return splashscreen;
 	}
-	
+
 	private static class SplashListener implements RepositoryListener {
-		
+
 		private final Repository repository;
 		private final SplashScreen splash;
 
@@ -87,12 +87,14 @@ public class SplashScreen extends JWindow {
 			this.splash = splash;
 		}
 
-		public void statusChanged(Artifact a, ArtifactStatus oldStatus, ArtifactStatus newStatus) {
-			splash.setText(a.getArtifactId()+"-"+a.getVersion()+" : "+newStatus.toString());				
+		public void statusChanged(Artifact a, ArtifactStatus oldStatus,
+				ArtifactStatus newStatus) {
+			splash.setText(a.getArtifactId() + "-" + a.getVersion() + " : "
+					+ newStatus.toString());
 			if (newStatus.isError()) {
-				//logger.debug(a.toString()+" :: "+newStatus.toString());
+				// logger.debug(a.toString()+" :: "+newStatus.toString());
 			}
-			if (! newStatus.equals(ArtifactStatus.JarFetching)) {
+			if (!newStatus.equals(ArtifactStatus.JarFetching)) {
 				return;
 			}
 			final DownloadStatus dls;
@@ -102,7 +104,7 @@ public class SplashScreen extends JWindow {
 				logger.warn("Could not get download status for: " + a, ex);
 				return;
 			}
-			// FIXME: What if there are several artifacts JarFetching at the 
+			// FIXME: What if there are several artifacts JarFetching at the
 			// same time? Would we get many progressThreads?
 			Thread progressThread = new Thread(new Runnable() {
 				public void run() {
@@ -113,8 +115,8 @@ public class SplashScreen extends JWindow {
 							logger.warn("Progress thread interrupted", e);
 							return;
 						}
-						int progress = Math.min(100, 
-								(dls.getReadBytes() * 100) / dls.getTotalBytes());
+						int progress = Math.min(100, (dls.getReadBytes() * 100)
+								/ dls.getTotalBytes());
 						splash.setProgress(progress);
 						if (dls.isFinished()) {
 							return;
@@ -122,7 +124,7 @@ public class SplashScreen extends JWindow {
 					}
 				}
 			}, "Splashscreen progress bar");
-			progressThread.start();			
+			progressThread.start();
 		}
 	}
 
@@ -131,9 +133,9 @@ public class SplashScreen extends JWindow {
 	private boolean timedOut = false;
 	private JProgressBar progress = new JProgressBar();
 	private SplashListener listener;
-		
+
 	private SplashScreen(URL imageURL) {
-		this (imageURL,0);
+		this(imageURL, 0);
 	}
 
 	private SplashScreen(URL imageURL, final int timeout) {
@@ -143,7 +145,7 @@ public class SplashScreen extends JWindow {
 		getContentPane().add(label, BorderLayout.CENTER);
 		progress.setStringPainted(true);
 		progress.setString("Initializing");
-		//progress.setIndeterminate(true);
+		// progress.setIndeterminate(true);
 		getContentPane().add(progress, BorderLayout.SOUTH);
 		pack();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -155,12 +157,12 @@ public class SplashScreen extends JWindow {
 		// screen once all raven activity has ceased
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent me) {
-				requestCloseFromMouse();					
+				requestCloseFromMouse();
 			}
 		});
 
-		if (timeout>0) {
-		
+		if (timeout > 0) {
+
 			Runnable waitRunner = new Runnable() {
 				public void run() {
 					try {
@@ -171,22 +173,21 @@ public class SplashScreen extends JWindow {
 					requestCloseFromTimeout();
 				}
 			};
-			
+
 			Thread timerThread = new Thread(waitRunner, "SplashThread");
 			timerThread.setDaemon(true);
 			timerThread.start();
-		}	
-		else {
-			timedOut=true;
+		} else {
+			timedOut = true;
 		}
 
 		setVisible(true);
-		
+
 	}
 
 	/**
 	 * Remove listener as set by listenToRepository(Repository repository).
-	 *
+	 * 
 	 * @see listenToRepository(Repository repository)
 	 */
 	public void removeListener() {
@@ -197,11 +198,9 @@ public class SplashScreen extends JWindow {
 	}
 
 	/**
-	 * Add a listener to the repository that will update this
-	 * splashscreen. Any old listeners connected to this
-	 * splashscreen will be removed. 
-	 * Remove the listener with removeListener()
-	 * when finished. 
+	 * Add a listener to the repository that will update this splashscreen. Any
+	 * old listeners connected to this splashscreen will be removed. Remove the
+	 * listener with removeListener() when finished.
 	 * 
 	 * @see removeListener()
 	 * @param repository
@@ -236,15 +235,15 @@ public class SplashScreen extends JWindow {
 	}
 
 	private synchronized void requestCloseFromTimeout() {
-		timedOut = true;		
+		timedOut = true;
 		if (canClose) {
 			closeMe();
 		}
 	}
 
-	private synchronized void requestCloseFromMouse() {		
+	private synchronized void requestCloseFromMouse() {
 		setClosable();
-		timedOut=true;
+		timedOut = true;
 		closeMe();
 	}
 
@@ -253,7 +252,7 @@ public class SplashScreen extends JWindow {
 			public void run() {
 				setVisible(false);
 				dispose();
-				splashscreen=null;
+				splashscreen = null;
 			}
 		});
 	}

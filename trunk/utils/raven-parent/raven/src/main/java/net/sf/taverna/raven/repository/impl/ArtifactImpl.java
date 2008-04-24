@@ -125,12 +125,14 @@ public class ArtifactImpl extends BasicArtifact {
 				node.normalize();
 				Node n = findElements(node, "groupId").iterator().next();
 				String groupId = n.getFirstChild().getNodeValue().trim();
-				if (groupId.equals("${pom.groupId}") || groupId.equals("${project.groupId}")) {
+				if (groupId.equals("${pom.groupId}")
+						|| groupId.equals("${project.groupId}")) {
 					groupId = getGroupId();
 				}
 				n = findElements(node, "artifactId").iterator().next();
 				String artifactId = n.getFirstChild().getNodeValue().trim();
-				if (artifactId.equals("${pom.artifactId}") || artifactId.equals("${project.artifactId}")) {
+				if (artifactId.equals("${pom.artifactId}")
+						|| artifactId.equals("${project.artifactId}")) {
 					artifactId = getArtifactId();
 				}
 
@@ -420,14 +422,17 @@ public class ArtifactImpl extends BasicArtifact {
 									.iterator().next();
 							String groupId = n.getFirstChild().getNodeValue()
 									.trim();
-							if (groupId.equals("${pom.groupId}") || groupId.equals("${project.groupId}")) {
+							if (groupId.equals("${pom.groupId}")
+									|| groupId.equals("${project.groupId}")) {
 								groupId = a.getGroupId();
 							}
 							n = findElements(depNode, "artifactId").iterator()
 									.next();
 							String artifactId = n.getFirstChild()
 									.getNodeValue().trim();
-							if (artifactId.equals("${pom.artifactId}") || artifactId.equals("${project.artifactId}")) {
+							if (artifactId.equals("${pom.artifactId}")
+									|| artifactId
+											.equals("${project.artifactId}")) {
 								artifactId = a.getArtifactId();
 							}
 							n = findElements(depNode, "version").iterator()

@@ -4,24 +4,25 @@ import net.sf.taverna.raven.repository.DownloadStatus;
 
 /**
  * Container bean for download progress tracking
+ * 
  * @author Tom
  */
 public class DownloadStatusImpl implements DownloadStatus {
 
 	private int total;
-  private int read;
-  private boolean finished;
-	
-  DownloadStatusImpl(int total) {
+	private int read;
+	private boolean finished;
+
+	DownloadStatusImpl(int total) {
 		this.total = total;
 		this.read = 0;
-    this.finished = false;
-  }
-	
+		this.finished = false;
+	}
+
 	void setReadBytes(int read) {
 		this.read = read;
 	}
-	
+
 	public int getTotalBytes() {
 		return this.total;
 	}
@@ -30,13 +31,11 @@ public class DownloadStatusImpl implements DownloadStatus {
 		return this.read;
 	}
 
-  public void setFinished()
-  {
-    finished = true;
-  }
+	public void setFinished() {
+		finished = true;
+	}
 
-  public boolean isFinished()
-  {
-    return finished;
-  }
+	public boolean isFinished() {
+		return finished;
+	}
 }

@@ -25,20 +25,20 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ArtifactFilterListener.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-21 13:32:56 $
+ * Last modified on   $Date: 2008-04-24 15:05:08 $
  *               by   $Author: stain $
  * Created on 4 Dec 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
 
 /**
- *
+ * 
  * @author David Withers
  */
 public interface ArtifactFilterListener {
 
 	public void filterChanged(ArtifactFilter filter);
-	
+
 }

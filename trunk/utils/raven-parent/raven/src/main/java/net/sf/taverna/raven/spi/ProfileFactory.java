@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-21 13:32:56 $
+ * Last modified on   $Date: 2008-04-24 15:05:08 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -69,15 +69,15 @@ public class ProfileFactory {
 		}
 		return instance;
 	}
-	
+
 	public boolean isProfileDefined() {
-		return System.getProperty("raven.profile")!=null;
+		return System.getProperty("raven.profile") != null;
 	}
 
 	/**
-	 * Get the current system profile as specified by 
-	 * system property <code>raven.profile</code>. Subsequent
-	 * calls will return the same instance.
+	 * Get the current system profile as specified by system property
+	 * <code>raven.profile</code>. Subsequent calls will return the same
+	 * instance.
 	 * 
 	 * @return Global {@link Profile} instance, or null if an error occured
 	 */
@@ -97,22 +97,24 @@ public class ProfileFactory {
 			return profile;
 		} catch (Exception e) {
 			logger.warn("Could not fetch profile from: " + profileStr
-				+ " using stored profile.", e);
+					+ " using stored profile.", e);
 			return null;
 		}
 	}
 
 	private void updateWithPluginArtifacts(Profile profile) {
-		if (System.getProperty("taverna.home")!=null) {
-			File pluginsFile = new File(System.getProperty("taverna.home"),"plugins/plugins.xml");
+		if (System.getProperty("taverna.home") != null) {
+			File pluginsFile = new File(System.getProperty("taverna.home"),
+					"plugins/plugins.xml");
 			if (pluginsFile.exists()) {
-				updateProfileWithPluginsProfile(pluginsFile,profile);
-			}
-			else {
-				if (System.getProperty("taverna.startup")!=null) {
-					pluginsFile = new File(System.getProperty("taverna.startup"),"plugins/plugins.xml");
+				updateProfileWithPluginsProfile(pluginsFile, profile);
+			} else {
+				if (System.getProperty("taverna.startup") != null) {
+					pluginsFile = new File(System
+							.getProperty("taverna.startup"),
+							"plugins/plugins.xml");
 					if (pluginsFile.exists()) {
-						updateProfileWithPluginsProfile(pluginsFile,profile);
+						updateProfileWithPluginsProfile(pluginsFile, profile);
 					}
 				}
 			}
@@ -122,13 +124,15 @@ public class ProfileFactory {
 	private void updateProfileWithPluginsProfile(File pluginsFile,
 			Profile profile2) {
 		try {
-			profile.addArtifactsForPlugins(pluginsFile.toURI().toURL().openStream());
+			profile.addArtifactsForPlugins(pluginsFile.toURI().toURL()
+					.openStream());
 		} catch (MalformedURLException e) {
-			logger.error("Invalid URL to plugins file:"+pluginsFile.getAbsolutePath(),e);
+			logger.error("Invalid URL to plugins file:"
+					+ pluginsFile.getAbsolutePath(), e);
 		} catch (IOException e) {
-			logger.error("Unable to ppen stream to plugins file:"+pluginsFile.getAbsolutePath(),e);
+			logger.error("Unable to ppen stream to plugins file:"
+					+ pluginsFile.getAbsolutePath(), e);
 		}
 	}
-	
 
 }

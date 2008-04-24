@@ -60,8 +60,8 @@ public class BasicArtifact implements Artifact {
 		}
 		Artifact otherDep = (Artifact) other;
 		return (getArtifactId().equals(otherDep.getArtifactId())
-			&& getGroupId().equals(otherDep.getGroupId()) 
-			&& getVersion().equals(otherDep.getVersion()));
+				&& getGroupId().equals(otherDep.getGroupId()) && getVersion()
+				.equals(otherDep.getVersion()));
 	}
 
 	/**
@@ -107,8 +107,8 @@ public class BasicArtifact implements Artifact {
 			if (groupIdComp != 0) {
 				return groupIdComp;
 			}
-			int artifactIdComp =
-				getArtifactId().compareTo(artifact.getArtifactId());
+			int artifactIdComp = getArtifactId().compareTo(
+					artifact.getArtifactId());
 			if (artifactIdComp == 0) {
 				return getVersion().compareTo(artifact.getVersion());
 			} else {

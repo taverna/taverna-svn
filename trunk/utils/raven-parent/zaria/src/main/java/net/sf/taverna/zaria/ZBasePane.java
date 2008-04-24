@@ -119,12 +119,12 @@ public abstract class ZBasePane extends ZPane {
 	class NamedRavenComponentSpecifier {
 
 		private Artifact artifact;
-		private String className;		
+		private String className;
 
 		public NamedRavenComponentSpecifier(Artifact artifact,
 				String className, String componentName) {
 			this.artifact = artifact;
-			this.className = className;			
+			this.className = className;
 		}
 
 		public Class getComponentClass() throws ArtifactNotFoundException,
@@ -163,8 +163,8 @@ public abstract class ZBasePane extends ZPane {
 	}
 
 	public Element getElement() {
-		
-		Element baseElement = new Element("basepane");				
+
+		Element baseElement = new Element("basepane");
 		Element childElement = new Element("child");
 		childElement.addContent(elementFor(child));
 		baseElement.addContent(childElement);
@@ -187,7 +187,7 @@ public abstract class ZBasePane extends ZPane {
 			addChildText(namedComponentElement, "name", name);
 		}
 		return baseElement;
-	}	
+	}
 
 	private static void addChildText(Element parent, String elementName,
 			String text) {
@@ -200,8 +200,8 @@ public abstract class ZBasePane extends ZPane {
 	 * Automatically intializes the repository with any named components that
 	 * aren't already there.
 	 */
-	public void configure(Element e) {		
-		
+	public void configure(Element e) {
+
 		// Initialize any named component definitions we may have
 		// lying around. This needs doing before the children
 		Element namedComponentSetElement = e.getChild("namedcomponents");
@@ -209,30 +209,30 @@ public abstract class ZBasePane extends ZPane {
 			boolean needUpdate = false;
 			for (Object childObj : namedComponentSetElement
 					.getChildren("namedcomponent")) {
-				Element compElement = (Element)childObj;
+				Element compElement = (Element) childObj;
 				String groupId = compElement.getChildTextTrim("groupid");
 				String artifactId = compElement.getChildTextTrim("artifact");
-				String version=null;
+				String version = null;
 				if (compElement.getChildTextTrim("version") != null) {
 					version = compElement.getChildTextTrim("version");
 				}
 				String className = compElement.getChildTextTrim("classname");
 				String name = compElement.getChildTextTrim("name");
-				
-				Artifact a=null;
-				if (version!=null) {
-					 a = new BasicArtifact(groupId, artifactId, version);
-				}
-				else {
-					Profile prof=ProfileFactory.getInstance().getProfile();
-					if (prof!=null) {
+
+				Artifact a = null;
+				if (version != null) {
+					a = new BasicArtifact(groupId, artifactId, version);
+				} else {
+					Profile prof = ProfileFactory.getInstance().getProfile();
+					if (prof != null) {
 						a = prof.discoverArtifact(groupId, artifactId);
-						if (a==null) {
-							logger.warn("No artifact found in profile for:"+groupId+":"+artifactId);
+						if (a == null) {
+							logger.warn("No artifact found in profile for:"
+									+ groupId + ":" + artifactId);
 						}
 					}
 				}
-				if (a!=null) {
+				if (a != null) {
 					NamedRavenComponentSpecifier nrcs = new NamedRavenComponentSpecifier(
 							a, className, name);
 					namedComponentDefinitions.put(name, nrcs);
@@ -240,9 +240,9 @@ public abstract class ZBasePane extends ZPane {
 					if (repository.getStatus(a).equals(ArtifactStatus.Ready) == false) {
 						needUpdate = true;
 					}
-				}
-				else {
-					logger.warn("Cannot determine version for artifact "+groupId+":"+artifactId);
+				} else {
+					logger.warn("Cannot determine version for artifact "
+							+ groupId + ":" + artifactId);
 				}
 			}
 			if (needUpdate) {
@@ -250,20 +250,20 @@ public abstract class ZBasePane extends ZPane {
 				repository.update();
 				unlockFrame();
 			}
-		}	
-		
+		}
+
 		Element childElement = e.getChild("child");
 		if (childElement != null) {
 			childElement = childElement.getChild("znode");
 			if (childElement != null) {
-				ZTreeNode node = componentFor(childElement);					
-				swap(child, node);							
-				node.configure(childElement);				
+				ZTreeNode node = componentFor(childElement);
+				swap(child, node);
+				node.configure(childElement);
 			}
 		}
-				
-		//ensure editable status is correct on this and all children
-		setEditable(this.editable);				
+
+		// ensure editable status is correct on this and all children
+		setEditable(this.editable);
 	}
 
 	/**
@@ -285,8 +285,8 @@ public abstract class ZBasePane extends ZPane {
 			}
 			child = newComponent;
 			add((Component) newComponent, BorderLayout.CENTER);
-			newComponent.setEditable(this.editable);			
-			revalidate();			
+			newComponent.setEditable(this.editable);
+			revalidate();
 		}
 	}
 
@@ -298,7 +298,7 @@ public abstract class ZBasePane extends ZPane {
 		if (child != null) {
 			child.setEditable(b);
 		}
-		setEditActionState();		
+		setEditActionState();
 		revalidate();
 		repaint();
 	}

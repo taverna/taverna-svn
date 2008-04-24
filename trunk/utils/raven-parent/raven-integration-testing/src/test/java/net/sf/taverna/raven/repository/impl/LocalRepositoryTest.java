@@ -28,28 +28,29 @@ import org.junit.Test;
 /**
  * @author Tom Oinn
  * @author Stian Soiland
- *
+ * 
  */
 public class LocalRepositoryTest {
 
 	File dir = null;
 	LocalRepository r = null;
 	URL mavenMirror;
-	
+
 	public LocalRepositoryTest() throws MalformedURLException {
 		super();
 		mavenMirror = new URL(LoaderTest.MAVEN_MYGRID_PROXY_REPOSITORY);
 	}
-	
+
 	/*
-	 * Test method for 'net.sf.taverna.raven.repository.Repository.Repository(File)'
+	 * Test method for
+	 * 'net.sf.taverna.raven.repository.Repository.Repository(File)'
 	 */
 	@Test
 	public void testRepository() {
 		dir.delete();
 		new LocalRepository(dir);
 	}
-	
+
 	@Before
 	public void setUp() throws IOException {
 		dir = createTempDirectory().getAbsoluteFile();
@@ -57,7 +58,9 @@ public class LocalRepositoryTest {
 		LocalRepository.loaderMap.clear();
 		LocalRepository.repositoryCache.clear();
 		r = new LocalRepository(dir);
-		System.setProperty("raven.profile", "http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
+		System
+				.setProperty("raven.profile",
+						"http://www.mygrid.org.uk/taverna/updates/1.5/taverna-1.5.1.0-profile.xml");
 	}
 
 	@After
@@ -69,7 +72,7 @@ public class LocalRepositoryTest {
 			// OK
 		}
 	}
-	
+
 	public static File createTempDirectory() throws IOException {
 		File tempFile;
 		try {
@@ -93,14 +96,14 @@ public class LocalRepositoryTest {
 		assertTrue(dir.isDirectory());
 	}
 
-
 	/*
-	 * Test method for 'net.sf.taverna.raven.repository.Repository.addArtifact(Artifact)'
+	 * Test method for
+	 * 'net.sf.taverna.raven.repository.Repository.addArtifact(Artifact)'
 	 */
 	@Test
 	public void addArtifact() throws MalformedURLException {
 		r.addRemoteRepository(mavenMirror);
-		BasicArtifact batik = new BasicArtifact("batik","batik-swing","1.6");
+		BasicArtifact batik = new BasicArtifact("batik", "batik-swing", "1.6");
 		File batikDir = new File(dir, "batik/batik-swing/1.6");
 		assertFalse(batikDir.isDirectory());
 		r.addArtifact(batik);
@@ -109,10 +112,10 @@ public class LocalRepositoryTest {
 		// Assumes batik-swing don't have any dependencies
 		assertEquals(1, r.getArtifacts().size());
 	}
-	
+
 	@Test
 	public void madeLocalJarFile() throws ArtifactNotFoundException,
-		ArtifactStateException, IOException {
+			ArtifactStateException, IOException {
 		r.addRemoteRepository(mavenMirror);
 		BasicArtifact junit = new BasicArtifact("junit", "junit", "4.0");
 		File junitJar = new File(dir, "junit/junit/4.0/junit-4.0.jar");
@@ -127,10 +130,10 @@ public class LocalRepositoryTest {
 		URL junitResource = loader.getResource("junit");
 		String shouldStartWith = "jar:" + junitJar.toURI().toURL();
 		assertTrue("Did not start with " + shouldStartWith + ": "
-			+ junitResource, junitResource.toString().startsWith(
-			shouldStartWith));
+				+ junitResource, junitResource.toString().startsWith(
+				shouldStartWith));
 	}
-	
+
 	/**
 	 * Should not copy from file:/// repositories. Assumes
 	 * $HOME/.m2/repositories have junit/junit/4.0, as needed for these tests.
@@ -143,9 +146,9 @@ public class LocalRepositoryTest {
 	 */
 	@Test
 	public void didntMadeLocalJarFile() throws ArtifactNotFoundException,
-		ArtifactStateException, ClassNotFoundException, IOException {
-		File m2Repo =
-			new File(System.getProperty("user.home"), ".m2/repository");
+			ArtifactStateException, ClassNotFoundException, IOException {
+		File m2Repo = new File(System.getProperty("user.home"),
+				".m2/repository");
 		if (!m2Repo.isDirectory()) {
 			System.err.println("Warning: Could not test using " + m2Repo);
 			return;
@@ -172,20 +175,20 @@ public class LocalRepositoryTest {
 		URL junitResource = loader.getResource("junit");
 		String shouldStartWith = "jar:" + junitRepo.toURI().toURL();
 		assertTrue("Did not start with " + shouldStartWith + ": "
-			+ junitResource, junitResource.toString().startsWith(
-			shouldStartWith));
+				+ junitResource, junitResource.toString().startsWith(
+				shouldStartWith));
 
 	}
 
 	@Test
-	public void repositoryWithExistingContents() throws MalformedURLException {	
+	public void repositoryWithExistingContents() throws MalformedURLException {
 		r.addRemoteRepository(mavenMirror);
-		r.addArtifact(new BasicArtifact("batik","batik-swing","1.6"));
+		r.addArtifact(new BasicArtifact("batik", "batik-swing", "1.6"));
 		r.update();
 		LocalRepository r2 = new LocalRepository(dir);
 		assertTrue(r.getArtifacts().containsAll(r2.getArtifacts()));
 	}
-	
+
 	@Test
 	public void cleanEmpty() {
 		File emptyDir = new File(dir, "some/artifact/1.1");
@@ -200,52 +203,53 @@ public class LocalRepositoryTest {
 		assertFalse(emptyDir.getParentFile().getParentFile().isDirectory());
 		assertTrue(dir.isDirectory());
 	}
-	
-	
-	
+
 	/*
 	 * Test method for 'net.sf.taverna.raven.repository.Repository.update()'
 	 */
 	@Test
 	public void update() throws MalformedURLException {
 		r.addRemoteRepository(new URL("http://mirrors.dotsrc.org/maven2/"));
-		r.addArtifact(new BasicArtifact("batik","batik-rasterizer","1.6"));
+		r.addArtifact(new BasicArtifact("batik", "batik-rasterizer", "1.6"));
 		r.update();
 	}
-	
+
 	/*
-	 * Test method for error from groupID with '.' in
-	 * @throws MalformedURLException
-	 * @throws ClassNotFoundException
-	 * @throws ArtifactNotFoundException
-	 * @throws ArtifactStateException
+	 * Test method for error from groupID with '.' in @throws
+	 * MalformedURLException @throws ClassNotFoundException @throws
+	 * ArtifactNotFoundException @throws ArtifactStateException
 	 */
 	@Test
 	public void updateWithDots() throws MalformedURLException {
 		r.addRemoteRepository(mavenMirror);
-		Artifact a = new BasicArtifact("org.xbean","xbean-kernel","2.1");
+		Artifact a = new BasicArtifact("org.xbean", "xbean-kernel", "2.1");
 		r.addArtifact(a);
 		r.update();
 		assertTrue(r.getArtifacts().contains(a));
 		assertTrue(r.getStatus(a).equals(ArtifactStatus.Ready));
 	}
-	
+
 	@Test
 	public void updateWithPackageOnlyPom() throws MalformedURLException {
 		r.addRemoteRepository(mavenMirror);
-		Artifact a = new BasicArtifact("org.codehaus.xfire","xfire-parent","1.0");
+		Artifact a = new BasicArtifact("org.codehaus.xfire", "xfire-parent",
+				"1.0");
 		r.addArtifact(a);
 		r.update();
 		assertTrue(r.getArtifacts().contains(a));
 		assertTrue(r.getStatus(a).equals(ArtifactStatus.PomNonJar));
 	}
-	
+
 	/*
-	 * Test method for 'net.sf.taverna.raven.repository.Repository.getLoader(Artifact, ClassLoader)'
+	 * Test method for
+	 * 'net.sf.taverna.raven.repository.Repository.getLoader(Artifact,
+	 * ClassLoader)'
 	 */
 	@Test
-	public void getLoader() throws MalformedURLException, ClassNotFoundException, ArtifactNotFoundException, ArtifactStateException {
-		Artifact a = new BasicArtifact("batik","batik-rasterizer","1.6");
+	public void getLoader() throws MalformedURLException,
+			ClassNotFoundException, ArtifactNotFoundException,
+			ArtifactStateException {
+		Artifact a = new BasicArtifact("batik", "batik-rasterizer", "1.6");
 		r.addRemoteRepository(mavenMirror);
 		r.addArtifact(a);
 		r.update();
@@ -255,19 +259,21 @@ public class LocalRepositoryTest {
 
 	@Test
 	public void testPrependRemoteRepository() throws Exception {
-		assertEquals(0,r.getRemoteRepositories().size());
+		assertEquals(0, r.getRemoteRepositories().size());
 		r.prependRemoteRepository(new URL("http://www.google.com"));
-		assertEquals(1,r.getRemoteRepositories().size());
+		assertEquals(1, r.getRemoteRepositories().size());
 		r.prependRemoteRepository(new URL("http://www.yahoo.com"));
-		assertEquals(2,r.getRemoteRepositories().size());
+		assertEquals(2, r.getRemoteRepositories().size());
 		r.prependRemoteRepository(new URL("http://www.bbc.co.uk"));
-		assertEquals(3,r.getRemoteRepositories().size());
+		assertEquals(3, r.getRemoteRepositories().size());
 		r.prependRemoteRepository(new URL("http://www.mygrid.org.uk"));
-		assertEquals(4,r.getRemoteRepositories().size());
-		int i=0;
-		String [] expectedURLS = new String[] {"http://www.mygrid.org.uk","http://www.bbc.co.uk","http://www.yahoo.com","http://www.google.com"};
+		assertEquals(4, r.getRemoteRepositories().size());
+		int i = 0;
+		String[] expectedURLS = new String[] { "http://www.mygrid.org.uk",
+				"http://www.bbc.co.uk", "http://www.yahoo.com",
+				"http://www.google.com" };
 		for (URL url : r.getRemoteRepositories()) {
-			assertEquals(expectedURLS[i],url.toExternalForm());
+			assertEquals(expectedURLS[i], url.toExternalForm());
 			i++;
 		}
 	}

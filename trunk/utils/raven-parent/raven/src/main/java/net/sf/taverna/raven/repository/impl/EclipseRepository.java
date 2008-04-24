@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: EclipseRepository.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-21 13:33:06 $
+ * Last modified on   $Date: 2008-04-24 15:05:11 $
  *               by   $Author: stain $
  * Created on 18 Oct 2006
  *****************************************************************/
@@ -49,41 +49,44 @@ import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
 
 /**
- * Nasty hack, but does allow Taverna to be run within eclipse for the purposes of debugging and
- * writing new code for a specific component - allowing code changes to be picked up immediately without
- * the need to 'mvn install' and refresh the repository Cache.
- * It does this by replacing the normal LocalRepository and enforsing that the class loader used is always the
- * SystemClassLoader. It also returns a dummy artifact for getArtifacts(ArtifactStatus) when status is Ready, to trick
- * the SpiRegistry into thinking there are new artifacts and thereby looks for new SPI's using teh system classloader.
+ * Nasty hack, but does allow Taverna to be run within eclipse for the purposes
+ * of debugging and writing new code for a specific component - allowing code
+ * changes to be picked up immediately without the need to 'mvn install' and
+ * refresh the repository Cache. It does this by replacing the normal
+ * LocalRepository and enforsing that the class loader used is always the
+ * SystemClassLoader. It also returns a dummy artifact for
+ * getArtifacts(ArtifactStatus) when status is Ready, to trick the SpiRegistry
+ * into thinking there are new artifacts and thereby looks for new SPI's using
+ * teh system classloader.
  * 
- * The use of this repository is triggered by the presence of the system property 'raven.eclipse'
+ * The use of this repository is triggered by the presence of the system
+ * property 'raven.eclipse'
  * 
- * IMPORTANT NOTE: This is a nasty experimental hack for development purposes only and shouldn't be used
- * to run the system for real. Any changes that *appear* to work using this Repository should also be checked
- * by running the code outside as Eclipse.
+ * IMPORTANT NOTE: This is a nasty experimental hack for development purposes
+ * only and shouldn't be used to run the system for real. Any changes that
+ * *appear* to work using this Repository should also be checked by running the
+ * code outside as Eclipse.
  * 
  * @author sowen
  */
 
 public class EclipseRepository implements Repository {
 
-	private static List<Artifact> artifacts=new ArrayList<Artifact>();
-		
-	
+	private static List<Artifact> artifacts = new ArrayList<Artifact>();
+
 	public void addArtifact(Artifact a) {
-		
+
 	}
 
 	public void addRemoteRepository(URL repositoryURL) {
-		
+
 	}
 
 	public void addRepositoryListener(RepositoryListener l) {
-		
 
 	}
 
-	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {		
+	public Artifact artifactForClass(Class c) throws ArtifactNotFoundException {
 		return null;
 	}
 
@@ -92,18 +95,19 @@ public class EclipseRepository implements Repository {
 	}
 
 	public List<Artifact> getArtifacts(ArtifactStatus s) {
-		//adds a dummy artifact, tricks SPIRegistry into looking up SPI registered items (which it gets from the system classpath).
-		Artifact a=new BasicArtifact("dummy","dummy","dummy");
-		if (artifacts.size()==0) {
+		// adds a dummy artifact, tricks SPIRegistry into looking up SPI
+		// registered items (which it gets from the system classpath).
+		Artifact a = new BasicArtifact("dummy", "dummy", "dummy");
+		if (artifacts.size() == 0) {
 			artifacts.add(a);
-		
-			//add artifact to profile so it doesn't get filtered out
+
+			// add artifact to profile so it doesn't get filtered out
 			Profile p = ProfileFactory.getInstance().getProfile();
 			if (p != null) {
 				p.addArtifact(a);
 			}
-		}		
-		
+		}
+
 		if (s.equals(ArtifactStatus.Ready))
 			return artifacts;
 		else
@@ -112,13 +116,13 @@ public class EclipseRepository implements Repository {
 
 	public DownloadStatus getDownloadStatus(Artifact a)
 			throws ArtifactStateException, ArtifactNotFoundException {
-		DownloadStatusImpl status=new DownloadStatusImpl(0);
+		DownloadStatusImpl status = new DownloadStatusImpl(0);
 		status.setFinished();
 		return status;
 	}
 
 	public ClassLoader getLoader(Artifact a, ClassLoader parent)
-		throws ArtifactNotFoundException, ArtifactStateException {
+			throws ArtifactNotFoundException, ArtifactStateException {
 		ClassLoader cl = getClass().getClassLoader();
 		if (cl != null) {
 			return cl;
@@ -131,12 +135,11 @@ public class EclipseRepository implements Repository {
 	}
 
 	public void removeRepositoryListener(RepositoryListener l) {
-		
 
 	}
 
 	public void update() {
-		
+
 	}
 
 }
