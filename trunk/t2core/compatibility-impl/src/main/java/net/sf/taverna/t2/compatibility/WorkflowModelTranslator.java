@@ -535,13 +535,13 @@ public class WorkflowModelTranslator {
 	}
 
 	private void addMergedDatalink(EventForwardingOutputPort sourcePort,
-			EventHandlingInputPort sinkPort, Dataflow targetFlow) throws EditException,
+			EventHandlingInputPort sinkPort, Dataflow targetDataflow) throws EditException,
 			WorkflowTranslationException {
 		Merge merge = null;
 		if (sinkPort.getIncomingLink() == null) {
 			merge = edits.createMerge(sinkPort);
 			// Add to the dataflow
-			edits.getAddMergeEdit(targetFlow, merge).doEdit();
+			edits.getAddMergeEdit(targetDataflow, merge).doEdit();
 		} else {
 			if (sinkPort.getIncomingLink().getSource() instanceof MergeOutputPort) {
 				merge = ((MergeOutputPort) sinkPort.getIncomingLink()
