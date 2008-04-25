@@ -3,7 +3,12 @@ package net.sf.taverna.t2.workflowmodel;
 import java.util.List;
 
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.AnnotationRole;
+import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
+import net.sf.taverna.t2.annotation.CurationEvent;
+import net.sf.taverna.t2.annotation.Person;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
@@ -124,7 +129,24 @@ public interface Edits {
 	 */
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort);
+	
+	
+	
+	/**
+	 * Add an {@link AnnotationBeanSPI} to an {@link AnnotationAssertion}
+	 * @param annotationAssertion
+	 * @param annotationBean
+	 * @return the edit which has do/undo functionality
+	 */
+	public Edit<AnnotationAssertion> getAddAnnotationBean(AnnotationAssertion annotationAssertion, AnnotationBeanSPI annotationBean);
+	
+	public Edit<AnnotationAssertion> getAddCurationEvent(AnnotationAssertion annotationAssertion, CurationEvent curationEvent);
 
+	public Edit<AnnotationAssertion> getAddCreator(AnnotationAssertion annotationAssertion, Person person);
+	
+	public Edit<AnnotationAssertion> getAddAnnotationRole(AnnotationAssertion annotationAssertion, AnnotationRole annotationRole);
+	
+	public Edit<AnnotationAssertion> getAddAnnotationSource(AnnotationAssertion annotationAssertion, AnnotationSourceSPI annotationSource);
 	/**
 	 * Connect a datalink to its source and sink.
 	 * 
