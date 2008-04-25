@@ -19,7 +19,7 @@ public class TestAnnotationRegistries {
 	}
 	
 	@Test
-	public void testCurationEventBeanSPI() {
+	public void testAnnotationSourceSPICurationEventBeanSPI() {
 		
 		AnnotationSourceRegistry registry = new AnnotationSourceRegistry();
 		for (AnnotationSourceSPI source:registry.getInstances()) {
@@ -29,7 +29,7 @@ public class TestAnnotationRegistries {
 	}
 	
 	@Test
-	public void testAnnotationSourceSPI() {
+	public void testCurationEventBeanSPI() {
 		
 		CurationEventBeanRegistry registry = new CurationEventBeanRegistry();
 		for (CurationEventBeanSPI bean:registry.getInstances()) {
