@@ -14,4 +14,15 @@ public class URISource implements AnnotationSourceSPI{
 		this.uri = uri;
 	}
 
+	public void setUri(URI uri) {
+//		if (uri != null) {
+//			throw new RuntimeException("URI has already been set");
+//		}
+		this.uri = uri;
+	}
+
+	public URI getUri() {
+		return uri;
+	}
+
 }
