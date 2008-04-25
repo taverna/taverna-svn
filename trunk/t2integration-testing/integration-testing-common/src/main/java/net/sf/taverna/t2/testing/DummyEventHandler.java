@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.compatibility;
+package net.sf.taverna.t2.testing;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;

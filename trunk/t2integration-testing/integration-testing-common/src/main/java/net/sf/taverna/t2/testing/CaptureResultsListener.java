@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.compatibility;
+package net.sf.taverna.t2.testing;
 
 import java.util.HashMap;
 import java.util.Map;

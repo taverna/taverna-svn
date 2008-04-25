@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.compatibility;
+package net.sf.taverna.t2.testing;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,8 +8,8 @@ import net.sf.taverna.t2.cloudone.datamanager.AbstractDataManager;
 import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
+import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import net.sf.taverna.t2.testing.DataflowTranslationHelper;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -46,7 +46,6 @@ public class InvocationTestHelper extends DataflowTranslationHelper {
 		};
 	}
 
-	
 
 	protected Map<String, DummyEventHandler> addDummyEventHandlersToOutputs(
 			Dataflow dataflow) throws EditException {

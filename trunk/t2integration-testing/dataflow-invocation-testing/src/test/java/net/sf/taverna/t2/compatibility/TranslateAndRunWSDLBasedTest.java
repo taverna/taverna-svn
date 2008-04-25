@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
+import net.sf.taverna.t2.testing.CaptureResultsListener;
+import net.sf.taverna.t2.testing.InvocationTestHelper;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;

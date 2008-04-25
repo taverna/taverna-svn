@@ -14,13 +14,38 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>compatibility-api</artifactId>
+			<version>${depT2core}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>compatibility-impl</artifactId>
+			<version>${depT2core}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>${depT2core}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>data-api</artifactId>
+			<version>${depT2core}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>data-impl</artifactId>
+			<version>${depT2core}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${depJunit}</version>
 		</dependency>
 	</dependencies>
 	
