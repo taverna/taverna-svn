@@ -1,0 +1,12 @@
+<beans xmlns="http://xfire.codehaus.org/config/1.0">
+  <service>
+    <name>Provenance</name>
+    <namespace>urn:provenance</namespace>
+    <serviceClass>net.sf.taverna.t2.service.Provenance</serviceClass>
+    <implementationClass>net.sf.taverna.t2.service.Provenance</implementationClass>
+    <style>wrapped</style>
+    <use>literal</use>
+  </service>
+  
+</beans>
+
