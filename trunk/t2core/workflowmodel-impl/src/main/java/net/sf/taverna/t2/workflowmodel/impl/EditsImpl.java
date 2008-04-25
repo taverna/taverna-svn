@@ -4,7 +4,12 @@ import java.util.List;
 
 import net.sf.taverna.t2.annotation.AddAnnotationAssertionEdit;
 import net.sf.taverna.t2.annotation.AnnotationAssertion;
+import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.annotation.AnnotationChain;
+import net.sf.taverna.t2.annotation.AnnotationRole;
+import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
+import net.sf.taverna.t2.annotation.CurationEvent;
+import net.sf.taverna.t2.annotation.Person;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
@@ -179,6 +184,36 @@ public class EditsImpl implements Edits {
 	public WorkflowInstanceFacade createWorkflowInstanceFacade(
 			Dataflow dataflow, InvocationContext context, String parentProcess) {
 		return new WorkflowInstanceFacadeImpl(dataflow, context, parentProcess);
+	}
+
+	public Edit<AnnotationAssertion> getAddAnnotationBean(
+			AnnotationAssertion annotationAssertion,
+			AnnotationBeanSPI annotationBean) {
+		return new AddAnnotationBeanEdit(annotationAssertion, annotationBean);
+	}
+
+	public Edit<AnnotationAssertion> getAddCurationEvent(
+			AnnotationAssertion annotationAssertion, CurationEvent curationEvent) {
+		return new AddCurationEventEdit(annotationAssertion, curationEvent);
+	}
+
+	public Edit<AnnotationAssertion> getAddAnnotationRole(
+			AnnotationAssertion annotationAssertion,
+			AnnotationRole annotationRole) {
+		// TODO Auto-generated method stub
+		return new AddAnnotationRoleEdit(annotationAssertion, annotationRole);
+	}
+
+	public Edit<AnnotationAssertion> getAddAnnotationSource(
+			AnnotationAssertion annotationAssertion,
+			AnnotationSourceSPI annotationSource) {
+		return new AddAnnotationSourceEdit(annotationAssertion, annotationSource);
+	}
+
+	public Edit<AnnotationAssertion> getAddCreator(
+			AnnotationAssertion annotationAssertion, Person person) {
+		// TODO Auto-generated method stub
+		return new AddCreatorEdit(annotationAssertion, person);
 	}
 
 }
