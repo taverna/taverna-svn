@@ -5,6 +5,10 @@ public class DisputeEvent implements CurationEvent<DisputeEventDetails>{
 	private DisputeEventDetails disputeEventDetails;
 	private CurationEventType curationEventType;
 	private Curateable targetEvent;
+	
+	public DisputeEvent() {
+		
+	}
 
 	public DisputeEvent(DisputeEventDetails disputeEventDetails, CurationEventType curationEventType, Curateable targetEvent) {
 		this.disputeEventDetails = disputeEventDetails;
