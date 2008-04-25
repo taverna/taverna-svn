@@ -6,7 +6,6 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.junit.Assert.*;
 
 public class XMLUtilitiesTest {
@@ -809,7 +808,7 @@ public class XMLUtilitiesTest {
 	public void testCreateMobyDataElementWrapper() {
 	}
 
-	@Ignore("Temporarily disabled")
+	
 	@Test
 	public void testCreateMultipleInvokations() {
 
@@ -818,10 +817,8 @@ public class XMLUtilitiesTest {
 					.getSingleInvokationsFromMultipleInvokations(mim_xml);
 			assertNotNull(invocations);
 			String inv = XMLUtilities.createMultipleInvokations(invocations);
-			assertEquals(new XMLOutputter(Format.getPrettyFormat())
-					.outputString(XMLUtilities.getDOMDocument(mim_xml)),
-					new XMLOutputter(Format.getPrettyFormat())
-							.outputString(XMLUtilities.getDOMDocument(inv)));
+			assertEquals(invocations.length, XMLUtilities.getSingleInvokationsFromMultipleInvokations(inv).length);
+			
 		} catch (MobyException e) {
 			fail();
 		}
@@ -830,12 +827,8 @@ public class XMLUtilitiesTest {
 					.getSingleInvokationsFromMultipleInvokations(mixed_single_xml);
 			assertNotNull(invocations);
 			String inv = XMLUtilities.createMultipleInvokations(invocations);
-			assertEquals(
-					new XMLOutputter(Format.getPrettyFormat())
-							.outputString(XMLUtilities
-									.getDOMDocument(mixed_single_xml)),
-					new XMLOutputter(Format.getPrettyFormat())
-							.outputString(XMLUtilities.getDOMDocument(inv)));
+			assertEquals(invocations.length, XMLUtilities.getSingleInvokationsFromMultipleInvokations(inv).length);
+			
 		} catch (MobyException e) {
 			fail();
 		}
@@ -1011,62 +1004,64 @@ public class XMLUtilitiesTest {
 			+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
 			+ "      </moby:Simple>" + "    </moby:mobyData>" + "</moby:MOBY>";
 
-	private String mim_xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
-			+ "  <moby:mobyContent>"
-			+ "    <moby:mobyData moby:queryID=\"a10\">"
-			+ "      <moby:Collection moby:articleName=\"outputString\">"
-			+ "      <moby:Simple moby:articleName=\"\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">aa</moby:String>"
-			+ "      </moby:Simple>"
-			+ "      <moby:Simple moby:articleName=\"\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>"
-			+ "      </moby:Simple>"
-			+ "      </moby:Collection >"
-			+ "      <moby:Simple moby:articleName=\"sim1\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>"
-			+ "      </moby:Simple>"
-			+ "    </moby:mobyData>"
-			+ "    <moby:mobyData moby:queryID=\"a11\">"
-			+ "      <moby:Simple moby:articleName=\"outputString\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">b</moby:String>"
-			+ "      </moby:Simple>"
-			+ "    </moby:mobyData>"
-			+ "    <moby:mobyData moby:queryID=\"a12\">"
-			+ "      <moby:Simple moby:articleName=\"outputString\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">c</moby:String>"
-			+ "      </moby:Simple>"
-			+ "    </moby:mobyData>"
-			+ "<moby:mobyData moby:queryID=\"my_collection\">"
-			+ "		      <moby:Collection articleName=\"myCollection\">"
-			+ "		      <moby:Simple>"
-			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
-			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-			+ "			  </moby:DNASequence>		"
-			+ "		      </moby:Simple>"
-			+ "		      </moby:Collection>"
-			+ "		    </moby:mobyData>"
-			+ "		    <moby:mobyData moby:queryID=\"my_simple\">"
-			+ "		      <moby:Simple articleName=\"mySimple\">"
-			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
-			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-			+ "			  </moby:DNASequence>		"
-			+ "		      </moby:Simple>"
-			+ "		    </moby:mobyData>"
-			+ "		    <moby:mobyData moby:queryID=\"q2\">"
-			+ "		      <moby:Simple articleName=\"myDNA\">"
-			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
-			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-			+ "			  </moby:DNASequence>		"
-			+ "		      </moby:Simple>"
-			+ "		    </moby:mobyData>"
-			+ "    <moby:mobyData moby:queryID=\"a13\">"
-			+ "      <moby:Simple moby:articleName=\"outputString\">"
-			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">d</moby:String>"
-			+ "      </moby:Simple>"
-			+ "    </moby:mobyData>"
-			+ "  </moby:mobyContent>" + "</moby:MOBY>";
+	private String mim_xml = 
+		"<MOBY xmlns=\"http://www.biomoby.org/moby\" xmlns:moby=\"http://www.biomoby.org/moby\">" + 
+		"  <moby:mobyContent>" + 
+		"    <moby:mobyData moby:queryID=\"a10\">" + 
+		"      <moby:Collection moby:articleName=\"outputString\">" + 
+		"        <moby:Simple moby:articleName=\"\">" + 
+		"          <moby:String moby:id=\"\" moby:namespace=\"\">aa</moby:String>" + 
+		"        </moby:Simple>" + 
+		"        <moby:Simple moby:articleName=\"\">" + 
+		"          <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>" + 
+		"        </moby:Simple>" + 
+		"      </moby:Collection>" + 
+		"      <moby:Simple moby:articleName=\"sim1\">" + 
+		"        <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"a11\">" + 
+		"      <moby:Simple moby:articleName=\"outputString\">" + 
+		"        <moby:String moby:id=\"\" moby:namespace=\"\">b</moby:String>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"a12\">" + 
+		"      <moby:Simple moby:articleName=\"outputString\">" + 
+		"        <moby:String moby:id=\"\" moby:namespace=\"\">c</moby:String>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"my_collection\">" + 
+		"      <moby:Collection articleName=\"myCollection\">" + 
+		"        <moby:Simple>" + 
+		"          <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">" + 
+		"            <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\" />" + 
+		"            <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>" + 
+		"          </moby:DNASequence>" + 
+		"        </moby:Simple>" + 
+		"      </moby:Collection>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"my_simple\">" + 
+		"      <moby:Simple articleName=\"mySimple\">" + 
+		"        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">" + 
+		"          <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\" />" + 
+		"          <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>" + 
+		"        </moby:DNASequence>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"q2\">" + 
+		"      <moby:Simple articleName=\"myDNA\">" + 
+		"        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">" + 
+		"          <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\" />" + 
+		"          <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>" + 
+		"        </moby:DNASequence>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"    <moby:mobyData moby:queryID=\"a13\">" + 
+		"      <moby:Simple moby:articleName=\"outputString\">" + 
+		"        <moby:String moby:id=\"\" moby:namespace=\"\">d</moby:String>" + 
+		"      </moby:Simple>" + 
+		"    </moby:mobyData>" + 
+		"  </moby:mobyContent>" + 
+		"</MOBY>";
 
 }
