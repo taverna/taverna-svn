@@ -26,6 +26,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
+import net.sf.taverna.t2.workflowmodel.serialization.SerializationElementConstants;
 
 /**
  * A single layer of iteration strategy, consuming individual named inputs and
@@ -111,7 +112,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @return
 	 */
 	protected Element asXML() {
-		Element strategyElement = new Element("strategy");
+		Element strategyElement = new Element("strategy",SerializationElementConstants.DATAFLOW_NAMESPACE);
 		if (terminal.getChildCount() > 0) {
 			AbstractIterationStrategyNode node = (AbstractIterationStrategyNode) (terminal
 					.getChildAt(0));
@@ -123,14 +124,14 @@ public class IterationStrategyImpl implements IterationStrategy {
 	private static Element elementForNode(AbstractIterationStrategyNode node) {
 		Element nodeElement = null;
 		if (node instanceof DotProduct) {
-			nodeElement = new Element("dot");
+			nodeElement = new Element("dot",SerializationElementConstants.DATAFLOW_NAMESPACE);
 		} else if (node instanceof CrossProduct) {
-			nodeElement = new Element("cross");
+			nodeElement = new Element("cross",SerializationElementConstants.DATAFLOW_NAMESPACE);
 		} else if (node instanceof PrefixDotProduct) {
-			nodeElement = new Element("prefix");
+			nodeElement = new Element("prefix",SerializationElementConstants.DATAFLOW_NAMESPACE);
 		} else if (node instanceof NamedInputPortNode) {
 			NamedInputPortNode nipn = (NamedInputPortNode) node;
-			nodeElement = new Element("port");
+			nodeElement = new Element("port",SerializationElementConstants.DATAFLOW_NAMESPACE);
 			nodeElement.setAttribute("name", nipn.getPortName());
 			nodeElement.setAttribute("depth", nipn.getCardinality() + "");
 		} else {

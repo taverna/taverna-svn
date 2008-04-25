@@ -33,6 +33,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.SerializationElementConstants;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -317,7 +318,7 @@ public final class ProcessorImpl extends AbstractAnnotatedThing<Processor>
 			outputPorts.add(popi);
 		}
 		dispatchStack.configureFromElement(e.getChild("dispatch"));
-		iterationStack.configureFromElement(e.getChild("iteration"));
+		iterationStack.configureFromElement(e.getChild("iteration",SerializationElementConstants.DATAFLOW_NAMESPACE));
 		activityList.clear();
 		for (Element activityElement : (List<Element>) e.getChild("activities")
 				.getChildren("activitycontainer")) {

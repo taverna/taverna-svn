@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
+import net.sf.taverna.t2.workflowmodel.serialization.SerializationElementConstants;
 
 /**
  * Contains an ordered list of IterationStrategyImpl objects. The top of the
@@ -102,7 +103,7 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	}
 
 	public Element asXML() {
-		Element strategyStackElement = new Element("iteration");
+		Element strategyStackElement = new Element("iteration",SerializationElementConstants.DATAFLOW_NAMESPACE);
 		for (IterationStrategyImpl is : strategies) {
 			strategyStackElement.addContent(is.asXML());
 		}
@@ -111,7 +112,7 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 
 	public void configureFromElement(Element e) {
 		strategies.clear();
-		for (Object child : e.getChildren("strategy")) {
+		for (Object child : e.getChildren("strategy",SerializationElementConstants.DATAFLOW_NAMESPACE)) {
 			Element strategyElement = (Element) child;
 			IterationStrategyImpl strategy = new IterationStrategyImpl();
 			strategy.configureFromXML(strategyElement);

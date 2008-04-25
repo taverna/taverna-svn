@@ -1,7 +1,10 @@
 package net.sf.taverna.t2.workflowmodel.serialization;
 
+import org.jdom.Namespace;
+
 public interface SerializationElementConstants {
 
+	static final Namespace DATAFLOW_NAMESPACE=Namespace.getNamespace("http://taverna.sf.net/2008/xml/dataflow");
 	// XML element names
 	static final String DISPATCH_LAYER = "dispatchLayer";
 	static final String PROCESSOR_INPUT_PORTS = "inputPorts";
@@ -41,5 +44,7 @@ public interface SerializationElementConstants {
 	static final String DATAFLOW_OUTPUT_PORTS="outputPorts";
 	static final String DATAFLOW_PORT="port";
 	static final String BEAN="bean";
+	static final String MERGE="merge";
+	static final String MERGES="merges";
 	
 }
