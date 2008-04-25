@@ -1,9 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.serialization;
 
 import java.beans.XMLEncoder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,10 +25,13 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
 
+import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class SerializerImpl implements Serializer,SerializationElementConstants {
 
@@ -278,29 +280,22 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		return element;
 	}
 	
-	/**
-	 * Get the &lt;java&gt; element from the {@link XMLEncoder} for the given
-	 * bean as a JDOM {@link Element}.
-	 * 
-	 * @see net.sf.taverna.t2.util.beanable.jaxb.BeanSerialiser
-	 * @param bean
-	 *            Object to serialise
-	 * @return &lt;java&gt; element for serialised bean
-	 * @throws JDOMException
-	 * @throws IOException
-	 */
 	protected Element beanAsElement(Object obj) throws JDOMException,
 			IOException {
-		Element bean=new Element(BEAN,DATAFLOW_NAMESPACE);
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		XMLEncoder xenc = new XMLEncoder(bos);
-		xenc.writeObject(obj);
-		xenc.close();
-		byte[] bytes = bos.toByteArray();
-		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		Element configElement = new SAXBuilder().build(bis).getRootElement();
-		configElement.getParent().removeContent(configElement);
-		bean.addContent(configElement);
+		//FIXME: turn into seperate handlers when adding the Dataflow case. Don't want loads of if/elses
+		Element bean=new Element(CONFIG_BEAN,DATAFLOW_NAMESPACE);
+		if (obj instanceof Element) {
+			bean.setAttribute(BEAN_ENCODING,JDOMXML_ENCODING);
+			bean.addContent((Element)obj);
+		}
+		else {
+			bean.setAttribute(BEAN_ENCODING,XSTREAM_ENCODING);
+			XStream xstream = new XStream(new DomDriver());
+			SAXBuilder builder=new SAXBuilder();
+			Element configElement = builder.build(new StringReader(xstream.toXML(obj))).getRootElement();
+			configElement.getParent().removeContent(configElement);
+			bean.addContent(configElement);
+		}
 		return bean;
 	}
 	
@@ -329,7 +324,6 @@ public class SerializerImpl implements Serializer,SerializationElementConstants 
 		portElement = new Element(PORT,DATAFLOW_NAMESPACE);
 		portElement.setText(link.getSource().getName());
 		source.addContent(portElement);
-		
 		
 		element.addContent(sink);
 		element.addContent(source);

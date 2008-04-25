@@ -43,8 +43,14 @@ public interface SerializationElementConstants {
 	static final String DATAFLOW_INPUT_PORTS="inputPorts";
 	static final String DATAFLOW_OUTPUT_PORTS="outputPorts";
 	static final String DATAFLOW_PORT="port";
-	static final String BEAN="bean";
+	static final String CONFIG_BEAN="configBean";
 	static final String MERGE="merge";
 	static final String MERGES="merges";
+	
+	//Attribute names
+	static final String BEAN_ENCODING="encoding";
+	
+	static final String JDOMXML_ENCODING="jdomxml";
+	static final String XSTREAM_ENCODING="xstream";
 	
 }

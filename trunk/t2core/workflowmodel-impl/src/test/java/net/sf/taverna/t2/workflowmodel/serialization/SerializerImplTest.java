@@ -135,12 +135,12 @@ public class SerializerImplTest implements SerializationElementConstants{
 		assertEquals("map to should be 'out'","out",map.getAttribute("to").getValue());
 		assertEquals("map from should be 'out'","out",map.getAttribute("from").getValue());
 		
-		Element bean = el.getChild("bean",DATAFLOW_NAMESPACE);
-		assertNotNull("there should be a child called bean",bean);
+		Element bean = el.getChild("configBean",DATAFLOW_NAMESPACE);
+		assertNotNull("there should be a child called configBean",bean);
 		
-		Element java = bean.getChild("java");
-		assertNotNull("bean should have a child called java",java);
-		assertEquals("java child should describe an int with value 5","<int>5</int>",elementToString(java.getChild("int")));
+		Element intChild = bean.getChild("int");
+		assertNotNull("bean should have a child called int",intChild);
+		assertEquals("java child should describe an int with value 5","<int>5</int>",elementToString(intChild));
 	}
 	
 	@Test
@@ -202,23 +202,41 @@ public class SerializerImplTest implements SerializationElementConstants{
 		assertNotNull("There should be a child called class",classChild);
 		assertEquals("Incorrect class name for Parellalize","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize",classChild.getText());
 		
-		Element bean = el.getChild("bean",DATAFLOW_NAMESPACE);
-		assertNotNull("there should be a child called bean",bean);
+		Element bean = el.getChild("configBean",DATAFLOW_NAMESPACE);
+		assertNotNull("there should be a child called configBean",bean);
+		assertEquals("the type should be xstream","xstream",bean.getAttribute("encoding").getValue());
+		assertEquals("there should be 1 child that describes the class",1,bean.getChildren().size());
 		
-		assertEquals("There should be a child called java (that described the config bean)",1,bean.getChildren("java").size());
-		Element javaElement = bean.getChild("java");
-		assertEquals("the java child element,object, should have a class attribute that describes the ParellizeConfig bean","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig",javaElement.getChild("object").getAttribute("class").getValue());
+		classChild=(Element)bean.getChildren().get(0);
+		assertEquals("the element name should describe the Parallelize child","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig",classChild.getName());
 	}
 	
 	@Test
 	public void testBeanAsElement() throws Exception {
 		String helloWorld="hello world";
 		Element el = serializer.beanAsElement(helloWorld);
-		assertEquals("root should be bean","bean",el.getName());
-		assertEquals("there should be 1 java child",1,el.getChildren("java").size());
-		Element java=el.getChild("java");
-		String innerXML=elementToString(java.getChild("string"));
+		assertEquals("root should be configBean","configBean",el.getName());
+		assertEquals("the type should be xstream","xstream",el.getAttribute("encoding").getValue());
+		assertEquals("there should be 1 string",1,el.getChildren("string").size());
+		String innerXML=elementToString(el.getChild("string"));
 		assertEquals("Unexpected xml for the string","<string>hello world</string>",innerXML);
+	}
+	
+	@Test
+	public void testElementBean() throws Exception {
+		Element person = new Element("person");
+		person.addContent(new Element("name"));
+		person.getChild("name").setText("fred smith");
+		
+		Element el = serializer.beanAsElement(person);
+		assertEquals("root should be configBean","configBean",el.getName());
+		assertEquals("the type should be jdomxml","jdomxml",el.getAttribute("encoding").getValue());
+		assertEquals("there should be 1 person",1,el.getChildren("person").size());
+		
+		Element person2=el.getChild("person");
+		
+		assertEquals("XML for person should match",elementToString(person),elementToString(person2));
+		
 	}
 	
 	@Test
