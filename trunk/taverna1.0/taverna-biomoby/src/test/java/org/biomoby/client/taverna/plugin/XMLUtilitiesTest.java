@@ -4,32 +4,36 @@ import org.biomoby.shared.MobyException;
 import org.jdom.Document;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class XMLUtilitiesTest extends TestCase {
+public class XMLUtilitiesTest {
 
+	@Test
 	public void testIsMultipleInvocationMessage() {
 		try {
 			assertFalse(XMLUtilities.isMultipleInvocationMessage(sim_xml));
 		} catch (MobyException e) {
 			fail(e.getLocalizedMessage());
 		}
-		
+
 		try {
-			assertFalse(XMLUtilities.isMultipleInvocationMessage(mixed_single_xml));
+			assertFalse(XMLUtilities
+					.isMultipleInvocationMessage(mixed_single_xml));
 		} catch (MobyException e) {
 			fail(e.getLocalizedMessage());
 		}
-		
+
 		try {
 			assertTrue(XMLUtilities.isMultipleInvocationMessage(mim_xml));
 		} catch (MobyException e) {
 			fail(e.getLocalizedMessage());
 		}
-		
+
 		try {
-			assertFalse(XMLUtilities.isMultipleInvocationMessage((String)null));
+			assertFalse(XMLUtilities.isMultipleInvocationMessage((String) null));
 		} catch (MobyException e) {
 		}
 		try {
@@ -43,6 +47,7 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetListOfSimples() {
 		try {
 			// an invalid message should not return anything
@@ -51,7 +56,7 @@ public class XMLUtilitiesTest extends TestCase {
 				fail("getListOfSimples should not return simples from an invalid XML message.");
 		} catch (MobyException e) {
 		}
-		
+
 		try {
 			// a message containing a collection should not return anything
 			String[] simples = XMLUtilities.getListOfSimples(sim_xml);
@@ -59,15 +64,16 @@ public class XMLUtilitiesTest extends TestCase {
 				fail("getListOfSimples should not return simples from an XML message that contains a collection.");
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			// a message containing multiple invocations should not return anything
+			// a message containing multiple invocations should not return
+			// anything
 			String[] simples = XMLUtilities.getListOfSimples(mim_xml);
 			if (simples.length > 0)
 				fail("getListOfSimples should not return simples from an XML message that contains a MIM message.");
 		} catch (MobyException e) {
 		}
-		
+
 		try {
 			// here 5 simples should be returned
 			String[] simples = XMLUtilities.getListOfSimples(mixed_single_xml);
@@ -87,7 +93,7 @@ public class XMLUtilitiesTest extends TestCase {
 		} catch (MobyException e) {
 			fail(e.getLocalizedMessage());
 		}
-		
+
 		try {
 			// here 2 simples should be returned
 			String[] simples = XMLUtilities.getListOfSimples(simples_xml);
@@ -103,6 +109,7 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetListOfCollections() {
 		try {
 			String[] collections = XMLUtilities.getListOfCollections(invalid);
@@ -116,7 +123,7 @@ public class XMLUtilitiesTest extends TestCase {
 				fail("Multiple invocation bioMOBY messages should not return any collections");
 		} catch (MobyException e) {
 		}
-		
+
 		try {
 			// one collection
 			String[] collections = XMLUtilities.getListOfCollections(sim_xml);
@@ -127,18 +134,21 @@ public class XMLUtilitiesTest extends TestCase {
 			assertNotNull(collections[0]);
 		} catch (MobyException e) {
 		}
-		
+
 		try {
 			// one collection
-			String[] collections = XMLUtilities.getListOfCollections(simples_xml);
+			String[] collections = XMLUtilities
+					.getListOfCollections(simples_xml);
 			if (collections.length > 0)
-				fail("Collections should not have been found in\n" + simples_xml);
+				fail("Collections should not have been found in\n"
+						+ simples_xml);
 		} catch (MobyException e) {
 		}
-		
+
 		try {
 			// one collection
-			String[] collections = XMLUtilities.getListOfCollections(mixed_single_xml);
+			String[] collections = XMLUtilities
+					.getListOfCollections(mixed_single_xml);
 			assertNotNull(collections);
 			if (collections.length <= 0)
 				fail("BioMOBY message should have returned a collection");
@@ -150,10 +160,11 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetSimple() {
 		try {
 			// one simple
-			XMLUtilities.getSimple("sim1",mim_xml);
+			XMLUtilities.getSimple("sim1", mim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
@@ -165,28 +176,31 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 		try {
 			// one simple
-			XMLUtilities.getSimple("mySimple",mim_xml);
+			XMLUtilities.getSimple("mySimple", mim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
 			// one simple
-			XMLUtilities.getSimple("myDNA",mim_xml);
+			XMLUtilities.getSimple("myDNA", mim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
 			// one simple
-			XMLUtilities.getSimple("sim1",invalid);
+			XMLUtilities.getSimple("sim1", invalid);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			String simple = XMLUtilities.getSimple("outputString3",mixed_single_xml);
+			String simple = XMLUtilities.getSimple("outputString3",
+					mixed_single_xml);
 			assertNotNull(simple);
-			String simple2 = XMLUtilities.getSimple("outputString2",mixed_single_xml);
+			String simple2 = XMLUtilities.getSimple("outputString2",
+					mixed_single_xml);
 			assertNotNull(simple2);
-			String simple3 = XMLUtilities.getSimple("outputString",mixed_single_xml);
+			String simple3 = XMLUtilities.getSimple("outputString",
+					mixed_single_xml);
 			assertNotNull(simple3);
 			assertNotSame(simple, simple2);
 			assertNotSame(simple3, simple2);
@@ -196,69 +210,71 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 		try {
 			// should fail because simple inside collection
-			XMLUtilities.getSimple("mySimple",sim_xml);
-			fail();	
+			XMLUtilities.getSimple("mySimple", sim_xml);
+			fail();
 		} catch (MobyException e) {
 		}
 		try {
 			// should fail because simple inside collection
-			XMLUtilities.getSimple("outputString",sim_xml);
-			fail();	
+			XMLUtilities.getSimple("outputString", sim_xml);
+			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			String simple = XMLUtilities.getSimple("Simple2",simples_xml);
+			String simple = XMLUtilities.getSimple("Simple2", simples_xml);
 			assertNotNull(simple);
-			String simple2 = XMLUtilities.getSimple("Simple1",simples_xml);
+			String simple2 = XMLUtilities.getSimple("Simple1", simples_xml);
 			assertNotNull(simple2);
-			assertNotSame(simple, simple2);			
+			assertNotSame(simple, simple2);
 		} catch (MobyException e) {
 			fail();
-		}		
+		}
 	}
 
+	@Test
 	public void testGetQueryID() {
 		try {
-			//FIXME should fail?
+			// FIXME should fail?
 			XMLUtilities.getQueryID(invalid);
-			//fail();	
+			// fail();
 		} catch (MobyException e) {
 		}
 		try {
 			// should fail
 			XMLUtilities.getQueryID(mim_xml);
-			fail();	
+			fail();
 		} catch (MobyException e) {
 		}
 		try {
 			String id = XMLUtilities.getQueryID(mixed_single_xml);
 			assertNotNull(id);
-			assertEquals(id,"a10");
+			assertEquals(id, "a10");
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
 			String id = XMLUtilities.getQueryID(sim_xml);
 			assertNotNull(id);
-			assertEquals(id,"a10");
+			assertEquals(id, "a10");
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
 			String id = XMLUtilities.getQueryID(simples_xml);
 			assertNotNull(id);
-			assertEquals(id,"a10");
+			assertEquals(id, "a10");
 		} catch (MobyException e) {
 			fail();
-		}		
+		}
 	}
 
+	@Test
 	public void testSetQueryID() {
 		try {
 			// FIXME should fail?
 			String xml = XMLUtilities.setQueryID(invalid, "a11");
 			assertEquals("a11", XMLUtilities.getQueryID(xml));
-			//fail();
+			// fail();
 		} catch (MobyException e) {
 		}
 		try {
@@ -286,25 +302,29 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetWrappedSimple() {
 		try {
-			XMLUtilities.getWrappedSimple("sim1",invalid);
+			XMLUtilities.getWrappedSimple("sim1", invalid);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			XMLUtilities.getWrappedSimple("sim1",mim_xml);
+			XMLUtilities.getWrappedSimple("sim1", mim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			String simple = XMLUtilities.getWrappedSimple("outputString",mixed_single_xml);
+			String simple = XMLUtilities.getWrappedSimple("outputString",
+					mixed_single_xml);
 			assertNotNull(simple);
-			String simple2 = XMLUtilities.getWrappedSimple("outputString2",mixed_single_xml);
+			String simple2 = XMLUtilities.getWrappedSimple("outputString2",
+					mixed_single_xml);
 			assertNotNull(simple2);
-			String simple3 = XMLUtilities.getWrappedSimple("outputString3",mixed_single_xml);
+			String simple3 = XMLUtilities.getWrappedSimple("outputString3",
+					mixed_single_xml);
 			assertNotNull(simple3);
 			assertTrue(!simple.equalsIgnoreCase(simple2));
 			assertTrue(!simple.equalsIgnoreCase(simple3));
@@ -312,163 +332,186 @@ public class XMLUtilitiesTest extends TestCase {
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			XMLUtilities.getWrappedSimple("outputString",sim_xml);
+			XMLUtilities.getWrappedSimple("outputString", sim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			String simple = XMLUtilities.getWrappedSimple("Simple1",simples_xml);
+			String simple = XMLUtilities.getWrappedSimple("Simple1",
+					simples_xml);
 			assertNotNull(simple);
-			String simple2 = XMLUtilities.getWrappedSimple("Simple2",simples_xml);
+			String simple2 = XMLUtilities.getWrappedSimple("Simple2",
+					simples_xml);
 			assertNotNull(simple2);
 			assertTrue(!simple.equalsIgnoreCase(simple2));
 		} catch (MobyException e) {
 			fail();
 		}
-				
+
 	}
 
+	@Test
 	public void testGetCollection() {
 		try {
-			XMLUtilities.getCollection("outputString",invalid);
+			XMLUtilities.getCollection("outputString", invalid);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			XMLUtilities.getCollection("outputString",mim_xml);
-			fail();
-		} catch (MobyException e) {
-		}
-		try {
-			XMLUtilities.getCollection("myCollection",mim_xml);
+			XMLUtilities.getCollection("outputString", mim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			String collection = XMLUtilities.getCollection("outputString",sim_xml);
+			XMLUtilities.getCollection("myCollection", mim_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			String collection = XMLUtilities.getCollection("outputString",
+					sim_xml);
 			assertNotNull(collection);
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			XMLUtilities.getCollection("Simple1",simples_xml);
+			XMLUtilities.getCollection("Simple1", simples_xml);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			String collection = XMLUtilities.getCollection("outputString",mixed_single_xml);
+			String collection = XMLUtilities.getCollection("outputString",
+					mixed_single_xml);
 			assertNotNull(collection);
-			String collection2 = XMLUtilities.getCollection("myCollection",mixed_single_xml);
+			String collection2 = XMLUtilities.getCollection("myCollection",
+					mixed_single_xml);
 			assertNotNull(collection2);
-			assertTrue(!collection.equalsIgnoreCase( collection2));
+			assertTrue(!collection.equalsIgnoreCase(collection2));
 		} catch (MobyException e) {
 			fail();
 		}
 	}
 
+	@Test
 	public void testGetWrappedCollection() {
-			try {
-				XMLUtilities.getWrappedCollection("outputString",invalid);
-				fail();
-			} catch (MobyException e) {
-			}
-			
-			try {
-				XMLUtilities.getWrappedCollection("outputString",mim_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				XMLUtilities.getWrappedCollection("myCollection",mim_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				String collection = XMLUtilities.getWrappedCollection("outputString",sim_xml);
-				assertNotNull(collection);
-				assertEquals(2, XMLUtilities.getSimplesFromCollection(collection).length);
-			} catch (MobyException e) {
-				fail();
-			}
-			try {
-				XMLUtilities.getWrappedCollection("Simple1",simples_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				String collection = XMLUtilities.getWrappedCollection("outputString",mixed_single_xml);
-				assertNotNull(collection);
-				assertEquals(2, XMLUtilities.getSimplesFromCollection(collection).length);
-				String collection2 = XMLUtilities.getWrappedCollection("myCollection",mixed_single_xml);
-				assertNotNull(collection2);
-				assertTrue(!collection.equalsIgnoreCase( collection2));
-				assertEquals(1, XMLUtilities.getSimplesFromCollection(collection2).length);
-			} catch (MobyException e) {
-				fail();
-			}
+		try {
+			XMLUtilities.getWrappedCollection("outputString", invalid);
+			fail();
+		} catch (MobyException e) {
+		}
+
+		try {
+			XMLUtilities.getWrappedCollection("outputString", mim_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			XMLUtilities.getWrappedCollection("myCollection", mim_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			String collection = XMLUtilities.getWrappedCollection(
+					"outputString", sim_xml);
+			assertNotNull(collection);
+			assertEquals(2,
+					XMLUtilities.getSimplesFromCollection(collection).length);
+		} catch (MobyException e) {
+			fail();
+		}
+		try {
+			XMLUtilities.getWrappedCollection("Simple1", simples_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			String collection = XMLUtilities.getWrappedCollection(
+					"outputString", mixed_single_xml);
+			assertNotNull(collection);
+			assertEquals(2,
+					XMLUtilities.getSimplesFromCollection(collection).length);
+			String collection2 = XMLUtilities.getWrappedCollection(
+					"myCollection", mixed_single_xml);
+			assertNotNull(collection2);
+			assertTrue(!collection.equalsIgnoreCase(collection2));
+			assertEquals(1,
+					XMLUtilities.getSimplesFromCollection(collection2).length);
+		} catch (MobyException e) {
+			fail();
+		}
 	}
 
+	@Test
 	public void testGetSimplesFromCollection() {
-			try {
-				XMLUtilities.getSimplesFromCollection("outputString",invalid);
-				fail();
-			} catch (MobyException e) {
-			}
-			
-			try {
-				XMLUtilities.getSimplesFromCollection("outputString",mim_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				XMLUtilities.getSimplesFromCollection("myCollection",mim_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				assertEquals(2, XMLUtilities.getSimplesFromCollection("outputString", sim_xml).length);
-				String[] simples = XMLUtilities.getSimplesFromCollection("outputString", sim_xml);
-				assertNotNull(simples[0]);
-				assertNotNull(simples[1]);
-				assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
-			} catch (MobyException e) {
-				fail();
-			}
-			try {
-				XMLUtilities.getSimplesFromCollection("Simple1",simples_xml);
-				fail();
-			} catch (MobyException e) {
-			}
-			try {
-				assertEquals(2, XMLUtilities.getSimplesFromCollection("outputString", mixed_single_xml).length);
-				assertEquals(1, XMLUtilities.getSimplesFromCollection("myCollection", mixed_single_xml).length);
-				String[] simples = XMLUtilities.getSimplesFromCollection("outputString", mixed_single_xml);
-				String[] simples2 = XMLUtilities.getSimplesFromCollection("myCollection", mixed_single_xml);
-				assertNotNull(simples[0]);
-				assertNotNull(simples[1]);
-				assertNotNull(simples2[0]);
-				
-				assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
-				assertTrue(!simples[0].equalsIgnoreCase(simples2[0]));
-				assertTrue(!simples[1].equalsIgnoreCase(simples2[0]));
-				
-			} catch (MobyException e) {
-				fail();
-			}
+		try {
+			XMLUtilities.getSimplesFromCollection("outputString", invalid);
+			fail();
+		} catch (MobyException e) {
+		}
+
+		try {
+			XMLUtilities.getSimplesFromCollection("outputString", mim_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			XMLUtilities.getSimplesFromCollection("myCollection", mim_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			assertEquals(2, XMLUtilities.getSimplesFromCollection(
+					"outputString", sim_xml).length);
+			String[] simples = XMLUtilities.getSimplesFromCollection(
+					"outputString", sim_xml);
+			assertNotNull(simples[0]);
+			assertNotNull(simples[1]);
+			assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
+		} catch (MobyException e) {
+			fail();
+		}
+		try {
+			XMLUtilities.getSimplesFromCollection("Simple1", simples_xml);
+			fail();
+		} catch (MobyException e) {
+		}
+		try {
+			assertEquals(2, XMLUtilities.getSimplesFromCollection(
+					"outputString", mixed_single_xml).length);
+			assertEquals(1, XMLUtilities.getSimplesFromCollection(
+					"myCollection", mixed_single_xml).length);
+			String[] simples = XMLUtilities.getSimplesFromCollection(
+					"outputString", mixed_single_xml);
+			String[] simples2 = XMLUtilities.getSimplesFromCollection(
+					"myCollection", mixed_single_xml);
+			assertNotNull(simples[0]);
+			assertNotNull(simples[1]);
+			assertNotNull(simples2[0]);
+
+			assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
+			assertTrue(!simples[0].equalsIgnoreCase(simples2[0]));
+			assertTrue(!simples[1].equalsIgnoreCase(simples2[0]));
+
+		} catch (MobyException e) {
+			fail();
+		}
 	}
 
+	@Test
 	public void testGetAllSimplesByArticleName() {
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("",sim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName("",
+					sim_xml);
 			assertNotNull(simples);
 			assertEquals(0, simples.length);
 		} catch (MobyException e) {
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("outputString",sim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"outputString", sim_xml);
 			assertNotNull(simples);
 			assertEquals(simples.length, 2);
 			assertNotNull(simples[0]);
@@ -477,11 +520,13 @@ public class XMLUtilitiesTest extends TestCase {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("Simple1",simples_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"Simple1", simples_xml);
 			assertNotNull(simples);
 			assertEquals(simples.length, 1);
 			assertNotNull(simples[0]);
-			String[] simples2 = XMLUtilities.getAllSimplesByArticleName("Simple2",simples_xml);
+			String[] simples2 = XMLUtilities.getAllSimplesByArticleName(
+					"Simple2", simples_xml);
 			assertNotNull(simples2);
 			assertEquals(simples2.length, 1);
 			assertNotNull(simples2[0]);
@@ -489,15 +534,17 @@ public class XMLUtilitiesTest extends TestCase {
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("outputString",mixed_single_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"outputString", mixed_single_xml);
 			assertNotNull(simples);
 			assertEquals(3, simples.length);
 			assertNotNull(simples[0]);
 			assertNotNull(simples[1]);
 			assertNotNull(simples[2]);
-			String[] simples2 = XMLUtilities.getAllSimplesByArticleName("outputString2",mixed_single_xml);
+			String[] simples2 = XMLUtilities.getAllSimplesByArticleName(
+					"outputString2", mixed_single_xml);
 			assertNotNull(simples2);
 			assertEquals(1, simples2.length);
 			assertNotNull(simples2[0]);
@@ -510,49 +557,53 @@ public class XMLUtilitiesTest extends TestCase {
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("myCollection",mixed_single_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"myCollection", mixed_single_xml);
 			assertNotNull(simples);
 			assertEquals(1, simples.length);
 			assertNotNull(simples[0]);
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("sequence",mixed_single_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"sequence", mixed_single_xml);
 			assertNotNull(simples);
 			assertEquals(1, simples.length);
 			assertNotNull(simples[0]);
-		
+
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			XMLUtilities.getAllSimplesByArticleName("outputString",invalid);
+			XMLUtilities.getAllSimplesByArticleName("outputString", invalid);
 			fail();
 		} catch (MobyException e) {
 		}
 		try {
-			XMLUtilities.getAllSimplesByArticleName("sim1",invalid);
+			XMLUtilities.getAllSimplesByArticleName("sim1", invalid);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("outputString",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"outputString", mim_xml);
 			assertNotNull(simples);
 			assertEquals(5, simples.length);
 			assertNotNull(simples[0]);
 			assertNotNull(simples[1]);
-		
+
 			assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("myDNA",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName("myDNA",
+					mim_xml);
 			assertNotNull(simples);
 			assertEquals(1, simples.length);
 			assertNotNull(simples[0]);
@@ -560,7 +611,8 @@ public class XMLUtilitiesTest extends TestCase {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("mySimple",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"mySimple", mim_xml);
 			assertNotNull(simples);
 			assertEquals(1, simples.length);
 			assertNotNull(simples[0]);
@@ -568,14 +620,16 @@ public class XMLUtilitiesTest extends TestCase {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("my_simple",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"my_simple", mim_xml);
 			assertNotNull(simples);
 			assertEquals(0, simples.length);
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("myCollection",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"myCollection", mim_xml);
 			assertNotNull(simples);
 			assertEquals(1, simples.length);
 			assertNotNull(simples[0]);
@@ -583,7 +637,8 @@ public class XMLUtilitiesTest extends TestCase {
 			fail();
 		}
 		try {
-			String[] simples = XMLUtilities.getAllSimplesByArticleName("my_collection",mim_xml);
+			String[] simples = XMLUtilities.getAllSimplesByArticleName(
+					"my_collection", mim_xml);
 			assertNotNull(simples);
 			assertEquals(0, simples.length);
 		} catch (MobyException e) {
@@ -591,63 +646,75 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetWrappedSimplesFromCollection() {
 		try {
-			String[] simples = XMLUtilities.getWrappedSimplesFromCollection("outputString",sim_xml);
+			String[] simples = XMLUtilities.getWrappedSimplesFromCollection(
+					"outputString", sim_xml);
 			assertNotNull(simples);
 			assertEquals(2, simples.length);
 			assertNotNull(simples[0]);
 			assertNotNull(simples[1]);
-			assertEquals(1, XMLUtilities.getAllSimplesByArticleName("outputString", simples[0]).length);
-			assertEquals(1, XMLUtilities.getAllSimplesByArticleName("outputString", simples[1]).length);
+			assertEquals(1, XMLUtilities.getAllSimplesByArticleName(
+					"outputString", simples[0]).length);
+			assertEquals(1, XMLUtilities.getAllSimplesByArticleName(
+					"outputString", simples[1]).length);
 			assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			XMLUtilities.getWrappedSimplesFromCollection("mySimple",sim_xml);
+			XMLUtilities.getWrappedSimplesFromCollection("mySimple", sim_xml);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			XMLUtilities.getWrappedSimplesFromCollection("Simple1",simples_xml);
+			XMLUtilities
+					.getWrappedSimplesFromCollection("Simple1", simples_xml);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			String[] simples = XMLUtilities.getWrappedSimplesFromCollection("outputString",mixed_single_xml);
+			String[] simples = XMLUtilities.getWrappedSimplesFromCollection(
+					"outputString", mixed_single_xml);
 			assertNotNull(simples);
 			assertEquals(2, simples.length);
 			assertNotNull(simples[0]);
 			assertNotNull(simples[1]);
-			assertEquals(1, XMLUtilities.getAllSimplesByArticleName("outputString", simples[0]).length);
-			assertEquals(1, XMLUtilities.getAllSimplesByArticleName("outputString", simples[1]).length);
+			assertEquals(1, XMLUtilities.getAllSimplesByArticleName(
+					"outputString", simples[0]).length);
+			assertEquals(1, XMLUtilities.getAllSimplesByArticleName(
+					"outputString", simples[1]).length);
 			assertTrue(!simples[0].equalsIgnoreCase(simples[1]));
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			XMLUtilities.getWrappedSimplesFromCollection("outputString3",mixed_single_xml);
+			XMLUtilities.getWrappedSimplesFromCollection("outputString3",
+					mixed_single_xml);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			XMLUtilities.getWrappedSimplesFromCollection("outputString",invalid);
+			XMLUtilities.getWrappedSimplesFromCollection("outputString",
+					invalid);
 			fail();
 		} catch (MobyException e) {
 		}
-		
+
 		try {
-			XMLUtilities.getWrappedSimplesFromCollection("outputString",mim_xml);
+			XMLUtilities.getWrappedSimplesFromCollection("outputString",
+					mim_xml);
 			// mim not supported
 			fail();
 		} catch (MobyException e) {
 		}
 	}
 
+	@Test
 	public void testGetSingleInvokationsFromMultipleInvokations() {
 		try {
 			XMLUtilities.getSingleInvokationsFromMultipleInvokations(invalid);
@@ -655,54 +722,58 @@ public class XMLUtilitiesTest extends TestCase {
 		} catch (MobyException e) {
 		}
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(mim_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(mim_xml);
 			assertNotNull(invocations);
 			assertEquals(7, invocations.length);
 			for (int i = 0; i < invocations.length; i++) {
 				assertNotNull(invocations[i]);
-				for (int j = i+1; j < invocations.length; j++) {
+				for (int j = i + 1; j < invocations.length; j++) {
 					assertTrue(!invocations[i].equalsIgnoreCase(invocations[j]));
 				}
 			}
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(mixed_single_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(mixed_single_xml);
 			assertNotNull(invocations);
 			assertEquals(1, invocations.length);
 			for (int i = 0; i < invocations.length; i++) {
 				assertNotNull(invocations[i]);
-				for (int j = i+1; j < invocations.length; j++) {
+				for (int j = i + 1; j < invocations.length; j++) {
 					assertTrue(!invocations[i].equalsIgnoreCase(invocations[j]));
 				}
 			}
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(sim_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(sim_xml);
 			assertNotNull(invocations);
 			assertEquals(1, invocations.length);
 			for (int i = 0; i < invocations.length; i++) {
 				assertNotNull(invocations[i]);
-				for (int j = i+1; j < invocations.length; j++) {
+				for (int j = i + 1; j < invocations.length; j++) {
 					assertTrue(!invocations[i].equalsIgnoreCase(invocations[j]));
 				}
 			}
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(simples_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(simples_xml);
 			assertNotNull(invocations);
 			assertEquals(1, invocations.length);
 			for (int i = 0; i < invocations.length; i++) {
 				assertNotNull(invocations[i]);
-				for (int j = i+1; j < invocations.length; j++) {
+				for (int j = i + 1; j < invocations.length; j++) {
 					assertTrue(!invocations[i].equalsIgnoreCase(invocations[j]));
 				}
 			}
@@ -711,6 +782,7 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testGetDOMDocument() {
 		try {
 			Document d = XMLUtilities.getDOMDocument(mim_xml);
@@ -725,36 +797,52 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testRenameCollection() {
 	}
 
+	@Test
 	public void testRenameSimple() {
 	}
 
+	@Test
 	public void testCreateMobyDataElementWrapper() {
 	}
 
+	@Ignore("Temporarily disabled")
+	@Test
 	public void testCreateMultipleInvokations() {
 
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(mim_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(mim_xml);
 			assertNotNull(invocations);
 			String inv = XMLUtilities.createMultipleInvokations(invocations);
-			assertEquals(new XMLOutputter(Format.getPrettyFormat()).outputString(XMLUtilities.getDOMDocument(mim_xml)), new XMLOutputter(Format.getPrettyFormat()).outputString(XMLUtilities.getDOMDocument(inv)));
+			assertEquals(new XMLOutputter(Format.getPrettyFormat())
+					.outputString(XMLUtilities.getDOMDocument(mim_xml)),
+					new XMLOutputter(Format.getPrettyFormat())
+							.outputString(XMLUtilities.getDOMDocument(inv)));
 		} catch (MobyException e) {
 			fail();
 		}
 		try {
-			String[] invocations = XMLUtilities.getSingleInvokationsFromMultipleInvokations(mixed_single_xml);
+			String[] invocations = XMLUtilities
+					.getSingleInvokationsFromMultipleInvokations(mixed_single_xml);
 			assertNotNull(invocations);
 			String inv = XMLUtilities.createMultipleInvokations(invocations);
-			assertEquals(new XMLOutputter(Format.getPrettyFormat()).outputString(XMLUtilities.getDOMDocument(mixed_single_xml)), new XMLOutputter(Format.getPrettyFormat()).outputString(XMLUtilities.getDOMDocument(inv)));
+			assertEquals(
+					new XMLOutputter(Format.getPrettyFormat())
+							.outputString(XMLUtilities
+									.getDOMDocument(mixed_single_xml)),
+					new XMLOutputter(Format.getPrettyFormat())
+							.outputString(XMLUtilities.getDOMDocument(inv)));
 		} catch (MobyException e) {
 			fail();
 		}
-		
+
 	}
 
+	@Test
 	public void testIsWrapped() {
 		try {
 			boolean b = XMLUtilities.isWrapped(invalid);
@@ -772,6 +860,7 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testIsCollection() {
 		try {
 			boolean b = XMLUtilities.isCollection(invalid);
@@ -789,12 +878,16 @@ public class XMLUtilitiesTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testIsEmpty() {
-		boolean b = XMLUtilities.isEmpty("<MOBY><mobyContent><mobyData/></mobyContent></MOBY>");
+		boolean b = XMLUtilities
+				.isEmpty("<MOBY><mobyContent><mobyData/></mobyContent></MOBY>");
 		assertTrue(b);
-		b = XMLUtilities.isEmpty("<MOBY><mobyContent><mobyData>foo</mobyData></mobyContent></MOBY>");
+		b = XMLUtilities
+				.isEmpty("<MOBY><mobyContent><mobyData>foo</mobyData></mobyContent></MOBY>");
 		assertTrue(b);
-		b = XMLUtilities.isEmpty("<MOBY><mobyContent><mobyData><foo/></mobyData></mobyContent></MOBY>");
+		b = XMLUtilities
+				.isEmpty("<MOBY><mobyContent><mobyData><foo/></mobyData></mobyContent></MOBY>");
 		assertTrue(b);
 		b = XMLUtilities.isEmpty(invalid);
 		assertTrue(b);
@@ -808,16 +901,21 @@ public class XMLUtilitiesTest extends TestCase {
 		assertTrue(!b);
 	}
 
+	@Test
 	public void testMergeCollections() {
 
 	}
 
-	public void TestIsThereData() {
-		boolean b = XMLUtilities.isThereData("<MOBY><mobyContent><mobyData/></mobyContent></MOBY>");
+	@Test
+	public void testIsThereData() {
+		boolean b = XMLUtilities
+				.isThereData("<MOBY><mobyContent><mobyData/></mobyContent></MOBY>");
 		assertTrue(!b);
-		b = XMLUtilities.isThereData("<MOBY><mobyContent><mobyData>foo</mobyData></mobyContent></MOBY>");
+		b = XMLUtilities
+				.isThereData("<MOBY><mobyContent><mobyData>foo</mobyData></mobyContent></MOBY>");
 		assertTrue(!b);
-		b = XMLUtilities.isThereData("<MOBY><mobyContent><mobyData><foo/></mobyData></mobyContent></MOBY>");
+		b = XMLUtilities
+				.isThereData("<MOBY><mobyContent><mobyData><foo/></mobyData></mobyContent></MOBY>");
 		assertTrue(!b);
 		b = XMLUtilities.isThereData(invalid);
 		assertTrue(!b);
@@ -829,103 +927,91 @@ public class XMLUtilitiesTest extends TestCase {
 		assertTrue(b);
 		b = XMLUtilities.isThereData(simples_xml);
 		assertTrue(b);
-		
-		
+
 	}
 
-	private String sim_xml =  
-		  "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
-		+ "  <mobyContent>"
-		+ "    <moby:mobyData moby:queryID=\"a10\">"
-		+ "      <moby:Collection moby:articleName=\"outputString\">"
-		+ "      <moby:Simple moby:articleName=\"\">"
-		+ "        <String moby:id=\"ID\" namespace=\"NS\">aa</String>"
-		+ "      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"mySimple\">"
-		+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
-		+ "      </moby:Simple>"
-		+ "      </moby:Collection >"
-		+ "    </moby:mobyData>"
-		+ "  </mobyContent>"
-		+ "</moby:MOBY>";
-	
-	private String simples_xml =  
-		  "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
-		+ "  <mobyContent>"
-		+ "    <moby:mobyData moby:queryID=\"a10\">"
-		+ "      <moby:Simple moby:articleName=\"Simple1\">"
-		+ "        <Integer moby:id=\"ID\" namespace=\"NS\">1</Integer>"
-		+ "      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"Simple2\">"
-		+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
-		+ "      </moby:Simple>"
-		+ "    </moby:mobyData>"
-		+ "  </mobyContent>"
-		+ "</moby:MOBY>";
-	private String mixed_single_xml = 
-		  "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
-		+ "  <moby:mobyContent>"
-		+ "    <moby:mobyData moby:queryID=\"a10\">"
-		+ "      <moby:Collection moby:articleName=\"outputString\">"
-		+ "      <moby:Simple moby:articleName=\"\">"
-		+ "        <moby:String moby:id=\"\" moby:namespace=\"\">aa</moby:String>"
-		+ "      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"\">"
-		+ "        <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>"
-		+ "      </moby:Simple>"
-		+ "      </moby:Collection >"
-		+ "      <moby:Simple moby:articleName=\"outputString\">"
-		+ "        <moby:String moby:id=\"\" moby:namespace=\"\">b</moby:String>"
-		+ "      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"outputString2\">"
-		+ "        <moby:String moby:id=\"\" moby:namespace=\"\">c</moby:String>"
-		+ "      </moby:Simple>"
-		+ "		      <moby:Collection articleName=\"myCollection\">"
-		+ "		      <moby:Simple>"
-		+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-		+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
-		+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-		+ "			  </moby:DNASequence>		"
-		+ "		      </moby:Simple>"
-		+ "		      </moby:Collection>"
-		+ "		      <moby:Simple articleName=\"mySimple\">"
-		+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-		+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
-		+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-		+ "			  </moby:DNASequence>		"
-		+ "		      </moby:Simple>"
-		+ "		      <moby:Simple articleName=\"sequence\">"
-		+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
-		+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\">actgcgcgc</moby:String>"
-		+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-		+ "			  </moby:DNASequence>		" 
-		+ "		      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"outputString3\">"
-		+ "        <moby:String moby:id=\"\" moby:namespace=\"\">d</moby:String>"
-		+ "      </moby:Simple>" 
-		+ "    </moby:mobyData>" 
-		+ "  </moby:mobyContent>"
-		+ "</moby:MOBY>";
+	private String sim_xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
+			+ "  <mobyContent>"
+			+ "    <moby:mobyData moby:queryID=\"a10\">"
+			+ "      <moby:Collection moby:articleName=\"outputString\">"
+			+ "      <moby:Simple moby:articleName=\"\">"
+			+ "        <String moby:id=\"ID\" namespace=\"NS\">aa</String>"
+			+ "      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"mySimple\">"
+			+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
+			+ "      </moby:Simple>"
+			+ "      </moby:Collection >"
+			+ "    </moby:mobyData>" + "  </mobyContent>" + "</moby:MOBY>";
 
-	private String invalid =  
-		  "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
-		+ "    <moby:mobyData moby:queryID=\"a10\">"
-		+ "      <moby:Collection moby:articleName=\"outputString\">"
-		+ "      <moby:Simple moby:articleName=\"\">"
-		+ "        <String moby:id=\"ID\" namespace=\"NS\">aa</String>"
-		+ "      </moby:Simple>"
-		+ "      <moby:Simple moby:articleName=\"\">"
-		+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
-		+ "      </moby:Simple>"
-		+ "      </moby:Collection >"
-		+ "      <moby:Simple moby:articleName=\"sim1\">"
-		+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
-		+ "      </moby:Simple>"
-		+ "    </moby:mobyData>"
-		+ "</moby:MOBY>";
-	
-	private String mim_xml = 
-			  "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
+	private String simples_xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
+			+ "  <mobyContent>"
+			+ "    <moby:mobyData moby:queryID=\"a10\">"
+			+ "      <moby:Simple moby:articleName=\"Simple1\">"
+			+ "        <Integer moby:id=\"ID\" namespace=\"NS\">1</Integer>"
+			+ "      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"Simple2\">"
+			+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
+			+ "      </moby:Simple>"
+			+ "    </moby:mobyData>"
+			+ "  </mobyContent>" + "</moby:MOBY>";
+	private String mixed_single_xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
+			+ "  <moby:mobyContent>"
+			+ "    <moby:mobyData moby:queryID=\"a10\">"
+			+ "      <moby:Collection moby:articleName=\"outputString\">"
+			+ "      <moby:Simple moby:articleName=\"\">"
+			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">aa</moby:String>"
+			+ "      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"\">"
+			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">bb</moby:String>"
+			+ "      </moby:Simple>"
+			+ "      </moby:Collection >"
+			+ "      <moby:Simple moby:articleName=\"outputString\">"
+			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">b</moby:String>"
+			+ "      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"outputString2\">"
+			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">c</moby:String>"
+			+ "      </moby:Simple>"
+			+ "		      <moby:Collection articleName=\"myCollection\">"
+			+ "		      <moby:Simple>"
+			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
+			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
+			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
+			+ "			  </moby:DNASequence>		"
+			+ "		      </moby:Simple>"
+			+ "		      </moby:Collection>"
+			+ "		      <moby:Simple articleName=\"mySimple\">"
+			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
+			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
+			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
+			+ "			  </moby:DNASequence>		"
+			+ "		      </moby:Simple>"
+			+ "		      <moby:Simple articleName=\"sequence\">"
+			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
+			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\">actgcgcgc</moby:String>"
+			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
+			+ "			  </moby:DNASequence>		"
+			+ "		      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"outputString3\">"
+			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">d</moby:String>"
+			+ "      </moby:Simple>"
+			+ "    </moby:mobyData>"
+			+ "  </moby:mobyContent>" + "</moby:MOBY>";
+
+	private String invalid = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
+			+ "    <moby:mobyData moby:queryID=\"a10\">"
+			+ "      <moby:Collection moby:articleName=\"outputString\">"
+			+ "      <moby:Simple moby:articleName=\"\">"
+			+ "        <String moby:id=\"ID\" namespace=\"NS\">aa</String>"
+			+ "      </moby:Simple>"
+			+ "      <moby:Simple moby:articleName=\"\">"
+			+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
+			+ "      </moby:Simple>"
+			+ "      </moby:Collection >"
+			+ "      <moby:Simple moby:articleName=\"sim1\">"
+			+ "        <moby:String moby:id=\"ID2\" moby:namespace=\"NS2\">bb</moby:String>"
+			+ "      </moby:Simple>" + "    </moby:mobyData>" + "</moby:MOBY>";
+
+	private String mim_xml = "<moby:MOBY xmlns:moby=\"http://www.biomoby.org/moby\">"
 			+ "  <moby:mobyContent>"
 			+ "    <moby:mobyData moby:queryID=\"a10\">"
 			+ "      <moby:Collection moby:articleName=\"outputString\">"
@@ -973,11 +1059,14 @@ public class XMLUtilitiesTest extends TestCase {
 			+ "		        <moby:DNASequence moby:id=\"AJ012310\" moby:namespace=\"\">"
 			+ "			        <moby:String moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"SequenceString\"></moby:String>"
 			+ "			        <moby:Integer moby:id=\"AJ012310\" moby:namespace=\"\" articleName=\"Length\">5</moby:Integer>"
-			+ "			  </moby:DNASequence>		" + "		      </moby:Simple>"
-			+ "		    </moby:mobyData>" + "    <moby:mobyData moby:queryID=\"a13\">"
+			+ "			  </moby:DNASequence>		"
+			+ "		      </moby:Simple>"
+			+ "		    </moby:mobyData>"
+			+ "    <moby:mobyData moby:queryID=\"a13\">"
 			+ "      <moby:Simple moby:articleName=\"outputString\">"
 			+ "        <moby:String moby:id=\"\" moby:namespace=\"\">d</moby:String>"
-			+ "      </moby:Simple>" + "    </moby:mobyData>" + "  </moby:mobyContent>"
-			+ "</moby:MOBY>";
+			+ "      </moby:Simple>"
+			+ "    </moby:mobyData>"
+			+ "  </moby:mobyContent>" + "</moby:MOBY>";
 
 }
