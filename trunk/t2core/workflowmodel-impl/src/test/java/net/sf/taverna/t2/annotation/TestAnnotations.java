@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
+import net.sf.taverna.t2.annotation.annotationbeans.MimeType;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -27,8 +28,9 @@ public class TestAnnotations {
 		Edits edits = EditsRegistry.getEdits();
 
 		FreeTextDescription freeTextDescription = new FreeTextDescription();
-		freeTextDescription.setText("i am an annotation");
-
+		freeTextDescription.setText("i am the mime type for some object");
+		MimeType mimeType = new MimeType();
+		mimeType.setText("text/plain");
 		Person person1 = new PersonImpl("A person");
 		Person person2 = new PersonImpl("Another person");
 		List<Person> personList = new ArrayList<Person>();
@@ -42,41 +44,57 @@ public class TestAnnotations {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		AnnotationAssertion annotationAssertionImpl = new AnnotationAssertionImpl();
+		Edit<AnnotationAssertion> addAnnotationBean = edits
+				.getAddAnnotationBean(annotationAssertionImpl,
+						mimeType);
 
-		AnnotationAssertion<FreeTextDescription> annotationAssertion = new TextAnnotationAssertionImpl(
-				freeTextDescription, AnnotationRole.INITIAL_ASSERTION,
-				personList, annotationSource);
+		
+		
+		try {
+			addAnnotationBean.doEdit();
+		} catch (EditException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		// AnnotationAssertion<FreeTextDescription> annotationAssertion = new
+		// AnnotationAssertionImpl(
+		// freeTextDescription, AnnotationRole.INITIAL_ASSERTION,
+		// personList, annotationSource);
 
 		AnnotationChain annotationChain = new AnnotationChainImpl();
 		// not 100% convinced that the edits should be in the EditsImpl but it
 		// doesn't seem to fit in with AbstractAnnotatedThing either
 
-			Edit<AnnotationChain> addAnnotationAssertionEdit = edits.getAddAnnotationAssertionEdit(annotationChain,
-					annotationAssertion);
-			try {
-				addAnnotationAssertionEdit.doEdit();
-			} catch (EditException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-		assertTrue("There were no assertions", annotationChain.getAssertions().isEmpty() != true);
-		
-		addAnnotationAssertionEdit.undo();
-		
-		assertTrue("There were assertions", annotationChain.getAssertions().isEmpty() != false);
-		
-		
+		Edit<AnnotationChain> addAnnotationAssertionEdit = edits
+				.getAddAnnotationAssertionEdit(annotationChain,
+						annotationAssertionImpl);
 		try {
 			addAnnotationAssertionEdit.doEdit();
 		} catch (EditException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
-		assertTrue("There were no assertions", annotationChain.getAssertions().isEmpty() != true);
-		
-		
+
+		assertTrue("There were no assertions", annotationChain.getAssertions()
+				.isEmpty() != true);
+
+		addAnnotationAssertionEdit.undo();
+
+		assertTrue("There were assertions", annotationChain.getAssertions()
+				.isEmpty() != false);
+
+		try {
+			addAnnotationAssertionEdit.doEdit();
+		} catch (EditException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		assertTrue("There were no assertions", annotationChain.getAssertions()
+				.isEmpty() != true);
+
 		Dataflow dataflow = new DummyDataflow();
 
 		Edit<? extends Dataflow> addAnnotationEdit = dataflow
@@ -94,7 +112,7 @@ public class TestAnnotations {
 				// assume we do some sort of SPI lookup to figure out the
 				// classes!!
 				AnnotationBeanSPI detail = assertion.getDetail();
-				System.out.println(((FreeTextDescription) detail).getText());
+				System.out.println(((MimeType) detail).getText());
 			}
 		}
 
@@ -120,9 +138,14 @@ public class TestAnnotations {
 		for (AnnotationChain chain : annotations) {
 			for (AnnotationAssertion assertion : chain.getAssertions()) {
 				System.out.println("class: " + assertion.getClass().getName());
-				System.out.println("Detail: "
-						+ ((TextAnnotationAssertionImpl) assertion).getDetail()
-								.getText());
+				// Do we need some sort of SPI look up thing to do this because
+				// we don't know what type of AnnotationBean we will be getting
+				// System.out.println("Detail: "
+				// + ((AnnotationAssertionImpl) assertion).getDetail()
+				// .getText());
+				
+				
+				
 				System.out.println("Creation date: "
 						+ assertion.getCreationDate());
 
