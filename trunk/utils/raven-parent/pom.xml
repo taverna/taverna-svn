@@ -49,6 +49,48 @@
 			</roles>
 			<timezone>0</timezone>
 		</developer>
+		<developer>
+			<id>witherd5</id>
+			<name>David Withers</name>
+			<email>david.withers@manchester.ac.uk</email>
+			<url>http://www.cs.man.ac.uk/~witherd5/</url>
+			<organization>University of Manchester</organization>
+			<organizationUrl>
+				http://www.manchester.ac.uk/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>sowen</id>
+			<name>Stuart Owen</name>
+			<email>stuart.owen@manchester.ac.uk</email>
+			<url>http://www.cs.man.ac.uk/~sowen/</url>
+			<organization>University of Manchester</organization>
+			<organizationUrl>
+				http://www.manchester.ac.uk/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
+		<developer>
+			<id>stain</id>
+			<name>Stian Soiland</name>
+			<email>ssoiland@cs.man.ac.uk</email>
+			<url>http://www.cs.man.ac.uk/~ssoiland/</url>
+			<organization>University of Manchester</organization>
+			<organizationUrl>
+				http://www.manchester.ac.uk/
+			</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>0</timezone>
+		</developer>
 	</developers>
 
 	<repositories>
@@ -87,6 +129,11 @@
 				<version>1.2</version>
 			</dependency>
 			<dependency>
+				<groupId>commons-httpclient</groupId>
+				<artifactId>commons-httpclient</artifactId>
+				<version>3.0</version>
+			</dependency>
+			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.12</version>
@@ -101,6 +148,27 @@
 				<artifactId>raven</artifactId>
 				<version>1.7-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.raven</groupId>
+				<artifactId>raven-log4j</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.raven</groupId>
+				<artifactId>plugins-api</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.raven</groupId>
+				<artifactId>plugins-impl</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.raven</groupId>
+				<artifactId>launcher</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<modules>
@@ -108,5 +176,9 @@
 		<module>raven-log4j</module>
 		<module>raven-integration-testing</module>
 		<module>zaria</module>
+		<module>launcher</module>
+		<module>plugins-api</module>
+		<module>plugins-impl</module>
+		<module>plugins-gui</module>
 	</modules>
 </project>
