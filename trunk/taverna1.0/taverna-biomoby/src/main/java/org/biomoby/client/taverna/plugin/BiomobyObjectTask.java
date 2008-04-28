@@ -98,9 +98,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                     if (mNamespace != null)
                 	d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                     d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
+                    Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                    element.setNamespace(mobyNS);
+                    // make sure that the ns, id, and articlename are in our namespace
+                    for (String attr : new String[]{"articleName","namespace","id"}) {
+                	if (element.getAttribute(attr) != null)
+                	    	element.getAttribute(attr).setNamespace(mobyNS);
+                    }
+                    String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
                     outputMap.put("mobyData", 
                 	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
-                		    "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                 } else if (objectName.equals("Float")) {
                     if (value == null || value.trim().equals("")) {
                 	MobyDataComposite d = new MobyDataComposite(
@@ -110,7 +118,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                 	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     } else {
                 	MobyDataFloat d = new MobyDataFloat(value,mRegistry);
                 	d.setId(id);
@@ -118,7 +136,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                 	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     }
                 } else if (objectName.equals("Integer")) {
                     
@@ -131,7 +159,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                         d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                        outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                        Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                            if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     } catch (Exception e) {
                 	MobyDataComposite d = new MobyDataComposite(
                 		MobyDataType.getDataType("Integer", mRegistry));
@@ -140,7 +178,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                 	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                            if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     }
                 }else if (objectName.equals("Boolean")) {
                     if (value == null || value.trim().equals("")) {
@@ -150,7 +198,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                 	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     } else {
                         MobyDataBoolean d = new MobyDataBoolean(value,mRegistry);
                         d.setId(id);
@@ -158,7 +216,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                         d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                        outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                        Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     }
                 } else if (objectName.equals("DateTime")) {
                     if (value == null || value.trim().equals("")) {
@@ -168,7 +236,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                 	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     } else {
                 	MobyDataDateTime d = new MobyDataDateTime("", value,mRegistry);
                 	d.setId(id);
@@ -176,7 +254,17 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                         if (mNamespace != null)
                     		d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
                     	d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-                    	outputMap.put("mobyData", new DataThing(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" )));
+                    	Element element = XMLUtilities.getDOMDocument(d.toXML()).getRootElement();
+                        element.setNamespace(mobyNS);
+                        // make sure that the ns, id, and articlename are in our namespace
+                        for (String attr : new String[]{"articleName","namespace","id"}) {
+                    	if (element.getAttribute(attr) != null)
+                    	    	element.getAttribute(attr).setNamespace(mobyNS);
+                        }
+                        String s = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat().setOmitDeclaration(true)).outputString(element);
+                        outputMap.put("mobyData", 
+                    	    new DataThing(XMLUtilities.createMobyDataElementWrapper(
+                    		    "<Simple articleName=\""+article+"\">" + s +"</Simple>" )));
                     }
                 }
             } catch (Exception ex) {
@@ -221,7 +309,12 @@ public class BiomobyObjectTask implements ProcessorTaskWorker {
                 
                // Element mobyObjectElement = XMLUtilities.getDOMDocument(XMLUtilities.createMobyDataElementWrapper( "<Simple articleName=\""+article+"\">" + composite.toXML() +"</Simple>" )).detachRootElement();
                 Element mobyObjectElement = XMLUtilities.getDOMDocument(( composite.toXML() )).detachRootElement();
-                
+                mobyObjectElement.setNamespace(mobyNS);
+                // make sure that the ns, id, and articlename are in our namespace
+                for (String attr : new String[]{"articleName","namespace","id"}) {
+                    if (mobyObjectElement.getAttribute(attr) != null)
+                	mobyObjectElement.getAttribute(attr).setNamespace(mobyNS);
+                }
                 // using the inputs, iterate through and fill in data
                 for (int x = 0; x < inputPorts.length; x++) {
                     String portName = inputPorts[x].getName();
