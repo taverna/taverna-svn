@@ -24,12 +24,25 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.junit.Test;
 
-public class SerializerImplTest implements SerializationElementConstants{
+public class SerializerImplTest implements SerializationConstants{
 	
 	private static Logger logger = Logger.getLogger(SerializerImplTest.class);
 	
 	private SerializerImpl serializer=new SerializerImpl();
 	private EditsImpl edits = new EditsImpl();
+	
+	@Test
+	public void testDataflowSerialization() throws Exception {
+		Dataflow df = edits.createDataflow();
+		Element el = serializer.serializeDataflow(df);
+		
+		logger.info("workflow serialization xml = "+elementToString(el));
+		
+		assertEquals("root should be workflow","workflow",el.getName());
+		assertEquals("there should be 1 child 'dataflow'",1,el.getChildren("dataflow",T2_WORKFLOW_NAMESPACE).size());
+		Element dfElement = el.getChild("dataflow",T2_WORKFLOW_NAMESPACE);
+		assertEquals("the inner dataflow should have a role as 'top'","top",dfElement.getAttribute("role").getValue());
+	}
 	
 	@Test
 	public void testDatalinks() throws Exception {
@@ -44,7 +57,7 @@ public class SerializerImplTest implements SerializationElementConstants{
 		Element el = serializer.datalinksToXML(links);
 		
 		assertEquals("Root name should be datalinks","datalinks",el.getName());
-		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink",DATAFLOW_NAMESPACE).size());
+		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink",T2_WORKFLOW_NAMESPACE).size());
 		
 	}
 	
@@ -58,11 +71,11 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("dataflow input ports xml = "+elementToString(el));
 		
 		assertEquals("root name should be inputPorts","inputPorts",el.getName());
-		assertEquals("there should be 1 child called port",1,el.getChildren("port",DATAFLOW_NAMESPACE).size());
-		Element port=el.getChild("port",DATAFLOW_NAMESPACE);
-		assertEquals("name should be dataflow_in","dataflow_in",port.getChild("name",DATAFLOW_NAMESPACE).getText());
-		assertEquals("depth should be 1","1",port.getChild("depth",DATAFLOW_NAMESPACE).getText());
-		assertEquals("granular depth should be 0","0",port.getChild("granularDepth",DATAFLOW_NAMESPACE).getText());
+		assertEquals("there should be 1 child called port",1,el.getChildren("port",T2_WORKFLOW_NAMESPACE).size());
+		Element port=el.getChild("port",T2_WORKFLOW_NAMESPACE);
+		assertEquals("name should be dataflow_in","dataflow_in",port.getChild("name",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("depth should be 1","1",port.getChild("depth",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("granular depth should be 0","0",port.getChild("granularDepth",T2_WORKFLOW_NAMESPACE).getText());
 		
 	}
 	
@@ -75,9 +88,9 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("dataflow output ports xml = "+elementToString(el));
 		
 		assertEquals("root name should be outputPorts","outputPorts",el.getName());
-		assertEquals("there should be 1 child called port",1,el.getChildren("port",DATAFLOW_NAMESPACE).size());
-		Element port=el.getChild("port",DATAFLOW_NAMESPACE);
-		assertEquals("name should be dataflow_out","dataflow_out",port.getChild("name",DATAFLOW_NAMESPACE).getText());
+		assertEquals("there should be 1 child called port",1,el.getChildren("port",T2_WORKFLOW_NAMESPACE).size());
+		Element port=el.getChild("port",T2_WORKFLOW_NAMESPACE);
+		assertEquals("name should be dataflow_out","dataflow_out",port.getChild("name",T2_WORKFLOW_NAMESPACE).getText());
 	}
 	
 	@Test
@@ -94,16 +107,16 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("Serialized datalink xml = "+elementToString(el));
 		
 		assertEquals("root name should be datalink","datalink",el.getName());
-		assertEquals("there should be 1 child called source",1,el.getChildren("source",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be 1 child called sink",1,el.getChildren("sink",DATAFLOW_NAMESPACE).size());
-		Element sink=el.getChild("sink",DATAFLOW_NAMESPACE);
-		Element source=el.getChild("source",DATAFLOW_NAMESPACE);
+		assertEquals("there should be 1 child called source",1,el.getChildren("source",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be 1 child called sink",1,el.getChildren("sink",T2_WORKFLOW_NAMESPACE).size());
+		Element sink=el.getChild("sink",T2_WORKFLOW_NAMESPACE);
+		Element source=el.getChild("source",T2_WORKFLOW_NAMESPACE);
 		
-		assertEquals("source processor should be called 'top'","top",source.getChild("processor",DATAFLOW_NAMESPACE).getText());
-		assertEquals("sink processor should be called 'bottom'","bottom",sink.getChild("processor",DATAFLOW_NAMESPACE).getText());
+		assertEquals("source processor should be called 'top'","top",source.getChild("processor",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("sink processor should be called 'bottom'","bottom",sink.getChild("processor",T2_WORKFLOW_NAMESPACE).getText());
 		
-		assertEquals("source port should be called 'output'","output",source.getChild("port",DATAFLOW_NAMESPACE).getText());
-		assertEquals("sink port should be called 'input'","input",sink.getChild("port",DATAFLOW_NAMESPACE).getText());
+		assertEquals("source port should be called 'output'","output",source.getChild("port",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("sink port should be called 'input'","input",sink.getChild("port",T2_WORKFLOW_NAMESPACE).getText());
 	}
 	
 	@Test
@@ -118,24 +131,24 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("activity serialization xml = "+elementToString(el));
 		
 		assertEquals("root element should be activity","activity",el.getName());
-		Element classChild = el.getChild("class",DATAFLOW_NAMESPACE);
+		Element classChild = el.getChild("class",T2_WORKFLOW_NAMESPACE);
 		assertNotNull("there should be a child called class",classChild);
 		assertEquals("incorrect activity class name","net.sf.taverna.t2.workflowmodel.serialization.DummyActivity",classChild.getText());
-		assertEquals("there should be 1 inputMap child",1,el.getChildren("inputMap",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be 1 outputMap child",1,el.getChildren("outputMap",DATAFLOW_NAMESPACE).size());
+		assertEquals("there should be 1 inputMap child",1,el.getChildren("inputMap",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be 1 outputMap child",1,el.getChildren("outputMap",T2_WORKFLOW_NAMESPACE).size());
 		
-		Element inputMap=el.getChild("inputMap",DATAFLOW_NAMESPACE);
-		Element outputMap=el.getChild("outputMap",DATAFLOW_NAMESPACE);
+		Element inputMap=el.getChild("inputMap",T2_WORKFLOW_NAMESPACE);
+		Element outputMap=el.getChild("outputMap",T2_WORKFLOW_NAMESPACE);
 		
-		Element map=inputMap.getChild("map",DATAFLOW_NAMESPACE);
+		Element map=inputMap.getChild("map",T2_WORKFLOW_NAMESPACE);
 		assertEquals("map to should be 'in'","in",map.getAttribute("to").getValue());
 		assertEquals("map from should be 'in'","in",map.getAttribute("from").getValue());
 		
-		map=outputMap.getChild("map",DATAFLOW_NAMESPACE);
+		map=outputMap.getChild("map",T2_WORKFLOW_NAMESPACE);
 		assertEquals("map to should be 'out'","out",map.getAttribute("to").getValue());
 		assertEquals("map from should be 'out'","out",map.getAttribute("from").getValue());
 		
-		Element bean = el.getChild("configBean",DATAFLOW_NAMESPACE);
+		Element bean = el.getChild("configBean",T2_WORKFLOW_NAMESPACE);
 		assertNotNull("there should be a child called configBean",bean);
 		
 		Element intChild = bean.getChild("int");
@@ -156,36 +169,36 @@ public class SerializerImplTest implements SerializationElementConstants{
 		assertNotNull("Element should not be null",el);
 		
 		assertEquals("root element should be processor","processor",el.getName());
-		Element name=el.getChild("name",DATAFLOW_NAMESPACE);
+		Element name=el.getChild("name",T2_WORKFLOW_NAMESPACE);
 		assertNotNull("There should be a child called name",name);
 		assertEquals("name should be fred","fred",name.getText());
 		
-		assertEquals("there should be an annotations child (even if its empty)",1,el.getChildren("annotations",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be an activities child (even if its empty)",1,el.getChildren("activities",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be an dispatch statck child (even if its empty)",1,el.getChildren("dispatchStack",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be an iteration strategy stack child (even if its empty)",1,el.getChildren("iterationStrategyStack",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be an input ports child (even if its empty)",1,el.getChildren("inputPorts",DATAFLOW_NAMESPACE).size());
-		Element inputPorts = el.getChild("inputPorts",DATAFLOW_NAMESPACE);
-		assertEquals("there should be 1 port element",1,inputPorts.getChildren("port",DATAFLOW_NAMESPACE).size());
-		Element port = inputPorts.getChild("port",DATAFLOW_NAMESPACE);
-		assertEquals("name should be input","input",port.getChild("name",DATAFLOW_NAMESPACE).getText());
-		assertEquals("depth should be 0","0",port.getChild("depth",DATAFLOW_NAMESPACE).getText());
-		Element outputPorts = el.getChild("outputPorts",DATAFLOW_NAMESPACE);
-		assertEquals("there should be an output ports child (even if its empty)",1,el.getChildren("outputPorts",DATAFLOW_NAMESPACE).size());
-		port = outputPorts.getChild("port",DATAFLOW_NAMESPACE);
-		assertEquals("name should be output","output",port.getChild("name",DATAFLOW_NAMESPACE).getText());
-		assertEquals("depth should be 1","1",port.getChild("depth",DATAFLOW_NAMESPACE).getText());
-		assertEquals("granularDepth should be 0","0",port.getChild("granularDepth",DATAFLOW_NAMESPACE).getText());
+		assertEquals("there should be an annotations child (even if its empty)",1,el.getChildren("annotations",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be an activities child (even if its empty)",1,el.getChildren("activities",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be an dispatch statck child (even if its empty)",1,el.getChildren("dispatchStack",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be an iteration strategy stack child (even if its empty)",1,el.getChildren("iterationStrategyStack",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be an input ports child (even if its empty)",1,el.getChildren("inputPorts",T2_WORKFLOW_NAMESPACE).size());
+		Element inputPorts = el.getChild("inputPorts",T2_WORKFLOW_NAMESPACE);
+		assertEquals("there should be 1 port element",1,inputPorts.getChildren("port",T2_WORKFLOW_NAMESPACE).size());
+		Element port = inputPorts.getChild("port",T2_WORKFLOW_NAMESPACE);
+		assertEquals("name should be input","input",port.getChild("name",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("depth should be 0","0",port.getChild("depth",T2_WORKFLOW_NAMESPACE).getText());
+		Element outputPorts = el.getChild("outputPorts",T2_WORKFLOW_NAMESPACE);
+		assertEquals("there should be an output ports child (even if its empty)",1,el.getChildren("outputPorts",T2_WORKFLOW_NAMESPACE).size());
+		port = outputPorts.getChild("port",T2_WORKFLOW_NAMESPACE);
+		assertEquals("name should be output","output",port.getChild("name",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("depth should be 1","1",port.getChild("depth",T2_WORKFLOW_NAMESPACE).getText());
+		assertEquals("granularDepth should be 0","0",port.getChild("granularDepth",T2_WORKFLOW_NAMESPACE).getText());
 	}
 	
 	@Test
 	public void testDataflowNamespace() throws Exception {
 		Dataflow df = edits.createDataflow();
 		Element el = serializer.serializeDataflowToXML(df);
-		assertEquals("Incorrect namespace","http://taverna.sf.net/2008/xml/dataflow",el.getNamespace().getURI());
+		assertEquals("Incorrect namespace","http://taverna.sf.net/2008/xml/t2flow",el.getNamespace().getURI());
 		
-		Element child = el.getChild("inputPorts",DATAFLOW_NAMESPACE);
-		assertEquals("Children should also have the correct namespace","http://taverna.sf.net/2008/xml/dataflow",child.getNamespace().getURI());
+		Element child = el.getChild("inputPorts",T2_WORKFLOW_NAMESPACE);
+		assertEquals("Children should also have the correct namespace","http://taverna.sf.net/2008/xml/t2flow",child.getNamespace().getURI());
 	}
 	
 	@Test
@@ -197,12 +210,12 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("layer serialization xml = "+elementToString(el));
 		
 		assertEquals("element should have name dispatchLayer","dispatchLayer",el.getName());
-		Element classChild = el.getChild("class",DATAFLOW_NAMESPACE);
+		Element classChild = el.getChild("class",T2_WORKFLOW_NAMESPACE);
 		
 		assertNotNull("There should be a child called class",classChild);
 		assertEquals("Incorrect class name for Parellalize","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize",classChild.getText());
 		
-		Element bean = el.getChild("configBean",DATAFLOW_NAMESPACE);
+		Element bean = el.getChild("configBean",T2_WORKFLOW_NAMESPACE);
 		assertNotNull("there should be a child called configBean",bean);
 		assertEquals("the type should be xstream","xstream",bean.getAttribute("encoding").getValue());
 		assertEquals("there should be 1 child that describes the class",1,bean.getChildren().size());
@@ -212,7 +225,7 @@ public class SerializerImplTest implements SerializationElementConstants{
 	}
 	
 	@Test
-	public void testBeanAsElement() throws Exception {
+	public void testBeanAsElementSimple() throws Exception {
 		String helloWorld="hello world";
 		Element el = serializer.beanAsElement(helloWorld);
 		assertEquals("root should be configBean","configBean",el.getName());
@@ -220,6 +233,30 @@ public class SerializerImplTest implements SerializationElementConstants{
 		assertEquals("there should be 1 string",1,el.getChildren("string").size());
 		String innerXML=elementToString(el.getChild("string"));
 		assertEquals("Unexpected xml for the string","<string>hello world</string>",innerXML);
+	}
+	
+	@Test
+	public void testBeanAsElementComplex() throws Exception {
+		DummyBean bean = new DummyBean();
+		InnerBean bean2 = new InnerBean();
+		bean.setName("name");
+		bean.setId(5);
+		bean2.setStuff("stuff");
+		bean.setInnerBean(bean2);
+		Element el = serializer.beanAsElement(bean);
+		assertEquals("root should be configBean","configBean",el.getName());
+		assertEquals("the type should be xstream","xstream",el.getAttribute("encoding").getValue());
+		assertEquals("there should be 1 DummyBean child",1,el.getChildren("net.sf.taverna.t2.workflowmodel.serialization.DummyBean").size());
+		Element beanElement = el.getChild("net.sf.taverna.t2.workflowmodel.serialization.DummyBean");
+		assertNotNull("there should be a child id",beanElement.getChild("id"));
+		assertEquals("id child should have value 5","5",beanElement.getChild("id").getText());
+		assertNotNull("there should be a child name",beanElement.getChild("name"));
+		assertEquals("name child should have text name","name",beanElement.getChild("name").getText());
+		assertNotNull("there should be a child innerBean",beanElement.getChild("innerBean"));
+		Element innerBeanElement = beanElement.getChild("innerBean");
+		assertNotNull("innerBean should have a child stuff",innerBeanElement.getChild("stuff"));
+		assertEquals("stuff child should have text stuff","stuff",innerBeanElement.getChild("stuff").getText());
+		
 	}
 	
 	@Test
@@ -249,10 +286,10 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("stack serialization xml = "+elementToString(el));
 		
 		assertEquals("root name should be dispatchStack","dispatchStack",el.getName());
-		assertEquals("there should be 2 inner layer elements",2,el.getChildren("dispatchLayer",DATAFLOW_NAMESPACE).size());
+		assertEquals("there should be 2 inner layer elements",2,el.getChildren("dispatchLayer",T2_WORKFLOW_NAMESPACE).size());
 		
-		Element firstLayer = (Element)el.getChildren("dispatchLayer",DATAFLOW_NAMESPACE).get(0);
-		assertEquals("child for layer define the class for the Invoke layer","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke",firstLayer.getChild("class",DATAFLOW_NAMESPACE).getText());
+		Element firstLayer = (Element)el.getChildren("dispatchLayer",T2_WORKFLOW_NAMESPACE).get(0);
+		assertEquals("child for layer define the class for the Invoke layer","net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke",firstLayer.getChild("class",T2_WORKFLOW_NAMESPACE).getText());
 	}
 	
 	@Test
@@ -277,13 +314,13 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("Iteration strategy stack xml = "+elementToString(el));
 		
 		assertEquals("root name should be iterationStrategyStack","iterationStrategyStack",el.getName());
-		assertEquals("child name should be iteration","iteration",el.getChild("iteration",DATAFLOW_NAMESPACE).getName());
-		Element iteration=el.getChild("iteration",DATAFLOW_NAMESPACE);
-		assertEquals("there should be 1 child named strategy",1,iteration.getChildren("strategy",DATAFLOW_NAMESPACE).size());
-		Element strategy=iteration.getChild("strategy",DATAFLOW_NAMESPACE);
-		assertEquals("there should be 1 child named dot",1,strategy.getChildren("dot",DATAFLOW_NAMESPACE).size());
-		assertEquals("there should be no child named cross",0,strategy.getChildren("cross",DATAFLOW_NAMESPACE).size());
-		Element dot=strategy.getChild("dot",DATAFLOW_NAMESPACE);
+		assertEquals("child name should be iteration","iteration",el.getChild("iteration",T2_WORKFLOW_NAMESPACE).getName());
+		Element iteration=el.getChild("iteration",T2_WORKFLOW_NAMESPACE);
+		assertEquals("there should be 1 child named strategy",1,iteration.getChildren("strategy",T2_WORKFLOW_NAMESPACE).size());
+		Element strategy=iteration.getChild("strategy",T2_WORKFLOW_NAMESPACE);
+		assertEquals("there should be 1 child named dot",1,strategy.getChildren("dot",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("there should be no child named cross",0,strategy.getChildren("cross",T2_WORKFLOW_NAMESPACE).size());
+		Element dot=strategy.getChild("dot",T2_WORKFLOW_NAMESPACE);
 		dot.setNamespace(null);
 		for (Object child : dot.getChildren()) {
 			((Element)child).setNamespace(null);
@@ -308,8 +345,8 @@ public class SerializerImplTest implements SerializationElementConstants{
 		logger.info("condition serialized xml="+elementToString(el));
 		
 		assertEquals("root name should be conditions","conditions",el.getName());
-		assertEquals("there should be 1 child condition",1,el.getChildren("condition",DATAFLOW_NAMESPACE).size());
-		Element condition = el.getChild("condition",DATAFLOW_NAMESPACE);
+		assertEquals("there should be 1 child condition",1,el.getChildren("condition",T2_WORKFLOW_NAMESPACE).size());
+		Element condition = el.getChild("condition",T2_WORKFLOW_NAMESPACE);
 		condition.setNamespace(null); //remove the default namespace
 		assertEquals("incorrect condition xml","<condition control=\"control\" target=\"target\" />",elementToString(condition));
 		

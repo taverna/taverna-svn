@@ -4,8 +4,9 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
 
+
 public interface Serializer {
 	
-	Element serializeDataflowToXML(Dataflow df) throws SerializationException;
+	Element serializeDataflow(Dataflow dataflow) throws SerializationException;
 
 }

@@ -5,5 +5,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import org.jdom.Element;
 
 public interface Deserializer {
-	public Dataflow deserializeDataflowFromXML(Element element) throws DeserializationException;
+	
+	public Dataflow deserializeDataflow(Element element) throws DeserializationException;
+	
 }

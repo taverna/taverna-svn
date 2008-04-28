@@ -1,10 +1,12 @@
 package net.sf.taverna.t2.workflowmodel;
 
+import static net.sf.taverna.t2.annotation.HierarchyRole.CHILD;
+
 import java.util.List;
+
 import net.sf.taverna.t2.annotation.Annotated;
 import net.sf.taverna.t2.annotation.HierarchyTraversal;
 import net.sf.taverna.t2.invocation.InvocationContext;
-import static net.sf.taverna.t2.annotation.HierarchyRole.*;
 
 /**
  * Top level definition object for a dataflow workflow. Currently Taverna only
