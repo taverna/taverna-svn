@@ -27,21 +27,21 @@
  * Filename           $RCSfile: PluginRepositoryListener.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 7 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import net.sf.taverna.raven.RavenException;
+import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.DownloadStatus;
 import net.sf.taverna.raven.repository.RepositoryListener;
-import net.sf.taverna.update.plugin.PluginManager;
 
 import org.apache.log4j.Logger;
 

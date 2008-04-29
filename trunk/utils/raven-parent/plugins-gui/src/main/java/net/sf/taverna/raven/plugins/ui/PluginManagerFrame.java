@@ -27,11 +27,11 @@
  * Filename           $RCSfile: PluginManagerFrame.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 27 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -54,11 +54,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.sf.taverna.update.plugin.Plugin;
-import net.sf.taverna.update.plugin.PluginManager;
-import net.sf.taverna.update.plugin.event.PluginEvent;
-import net.sf.taverna.update.plugin.event.PluginManagerEvent;
-import net.sf.taverna.update.plugin.event.PluginManagerListener;
+import net.sf.taverna.raven.plugins.Plugin;
+import net.sf.taverna.raven.plugins.PluginManager;
+import net.sf.taverna.raven.plugins.event.PluginEvent;
+import net.sf.taverna.raven.plugins.event.PluginManagerEvent;
+import net.sf.taverna.raven.plugins.event.PluginManagerListener;
 
 /**
  * GUI component for the <code>PluginManager</code>.

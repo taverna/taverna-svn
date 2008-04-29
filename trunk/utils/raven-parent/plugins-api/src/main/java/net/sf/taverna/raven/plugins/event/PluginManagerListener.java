@@ -24,76 +24,52 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: PluginEvent.java,v $
+ * Filename           $RCSfile: PluginManagerListener.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
- * Created on 1 Dec 2006
+ * Created on 30 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.event;
+package net.sf.taverna.raven.plugins.event;
 
-import java.util.EventObject;
-
-import net.sf.taverna.update.plugin.Plugin;
+import java.util.EventListener;
 
 /**
- * An event to notify listeners that a <code>Plugin</code> has changed.
- *
+ * PluginManagerListener defines the interface for an object that listens to
+ * changes in a PluginManager.
+ * 
  * @author David Withers
  */
-public class PluginEvent extends EventObject {
-	private static final long serialVersionUID = 1L;
-
-	private Plugin plugin;
-	
-	private int action;
-	
-	public static final int NONE = 0;
-	
-	public static final int ENABLED = 1;
-	
-	public static final int DISABLED = 2;
-	
-	/**
-	 * Constructs an instance of PluginEvent.
-	 *
-	 * @param source the source of the event
-	 * @param plugin the <code>Plugin</code> that has changed
-	 */
-	public PluginEvent(Object source, Plugin plugin) {
-		this(source, plugin, NONE);
-	}
+public interface PluginManagerListener extends EventListener {
 
 	/**
-	 * Constructs an instance of PluginEvent.
+	 * Invoked when a plugin is added.
 	 *
-	 * @param source the source of the event
-	 * @param plugin the <code>Plugin</code> that has changed
-	 * @param action
+	 * @param event
 	 */
-	public PluginEvent(Object source, Plugin plugin, int action) {
-		super(source);
-		this.plugin = plugin;
-		this.action = action;
-	}
+	public void pluginAdded(PluginManagerEvent event);
 
 	/**
-	 * Returns the plugin.
+	 * Invoked when a plugin is removed.
 	 *
-	 * @return the plugin
+	 * @param event
 	 */
-	public Plugin getPlugin() {
-		return plugin;
-	}
+	public void pluginRemoved(PluginManagerEvent event);
 
 	/**
-	 * Returns the action.
+	 * Invoked when a plugin is changed.
 	 *
-	 * @return the action
+	 * @param event
 	 */
-	public int getAction() {
-		return action;
-	}
+	public void pluginChanged(PluginManagerEvent event);
+	
+	/**
+	 * Invoked when a plugin is found to be incompatible with the current running
+	 * version of Taverna.
+	 * 
+	 * @param event
+	 */
+	public void pluginIncompatible(PluginManagerEvent event);
 
 }

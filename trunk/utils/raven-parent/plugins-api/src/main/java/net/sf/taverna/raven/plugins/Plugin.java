@@ -27,20 +27,20 @@
  * Filename           $RCSfile: Plugin.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
  * Created on 28 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin;
+package net.sf.taverna.raven.plugins;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.taverna.raven.plugins.event.PluginEvent;
+import net.sf.taverna.raven.plugins.event.PluginListener;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.spi.Profile;
-import net.sf.taverna.update.plugin.event.PluginEvent;
-import net.sf.taverna.update.plugin.event.PluginListener;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;

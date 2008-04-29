@@ -24,58 +24,57 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: ProfileVersionListModel.java,v $
+ * Filename           $RCSfile: PluginManagerEvent.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
- * Created on 16 Jan 2007
+ * Created on 30 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.profile.ui;
+package net.sf.taverna.raven.plugins.event;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EventObject;
 
-import javax.swing.AbstractListModel;
+import net.sf.taverna.raven.plugins.Plugin;
 
-import net.sf.taverna.tools.RavenProperties;
-import net.sf.taverna.update.profile.ProfileVersion;
-import net.sf.taverna.update.profile.ProfileVersions;
+/**
+ * An event to notify listeners that the <code>PluginManager</code> has changed.
+ *
+ * @author David Withers
+ */
+public class PluginManagerEvent extends EventObject {
+	private static final long serialVersionUID = 1L;
 
-import org.apache.log4j.Logger;
-
-@SuppressWarnings("serial")
-public class ProfileVersionListModel extends AbstractListModel {
+	private Plugin plugin;
+	private int index;
 	
-	private static Logger logger = Logger
-			.getLogger(ProfileVersionListModel.class);
-	
-	private List<ProfileVersion> versions;
-	
-	
-	public ProfileVersionListModel() {		
-		try {
-			URL url = getProfileListLocation();
-			versions = ProfileVersions.getProfileVersions(url);			
-		}
-		catch(MalformedURLException e) {
-			logger.error("Error with profile list URL",e);
-			versions = new ArrayList<ProfileVersion>();
-		}
+	/**
+	 * Constructs an instance of PluginManagerEvent.
+	 *
+	 * @param source
+	 * @param plugin
+	 * @param pluginIndex - the index of the plugin in the managers list of plugins
+	 */
+	public PluginManagerEvent(Object source, Plugin plugin, int pluginIndex) {
+		super(source);
+		this.plugin = plugin;
+		this.index = pluginIndex;
 	}
 
-	public Object getElementAt(int index) {
-		return versions.get(index);
+	/**
+	 * Returns the plugin.
+	 *
+	 * @return the plugin
+	 */
+	public Plugin getPlugin() {
+		return plugin;
 	}
 
-	public int getSize() {
-		return versions.size();
-	}
-	
-	private URL getProfileListLocation() throws MalformedURLException{		
-		return new URL(RavenProperties.getInstance().getRavenProfileListLocation());
-	}
-
+	/**
+	 * 
+	 * @return the index of the plugin in the plugin managers internal list
+	 */
+	public int getPluginIndex() {
+		return index;
+	}	
 }

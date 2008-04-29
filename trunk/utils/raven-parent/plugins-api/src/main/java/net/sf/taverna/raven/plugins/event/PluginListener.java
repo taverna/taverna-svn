@@ -24,57 +24,30 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: PluginManagerEvent.java,v $
+ * Filename           $RCSfile: PluginListener.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
- * Created on 30 Nov 2006
+ * Created on 1 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.event;
+package net.sf.taverna.raven.plugins.event;
 
-import java.util.EventObject;
-
-import net.sf.taverna.update.plugin.Plugin;
+import java.util.EventListener;
 
 /**
- * An event to notify listeners that the <code>PluginManager</code> has changed.
- *
+ * PluginListener defines the interface for an object that listens to changes in
+ * a Plugin.
+ * 
  * @author David Withers
  */
-public class PluginManagerEvent extends EventObject {
-	private static final long serialVersionUID = 1L;
-
-	private Plugin plugin;
-	private int index;
-	
-	/**
-	 * Constructs an instance of PluginManagerEvent.
-	 *
-	 * @param source
-	 * @param plugin
-	 * @param pluginIndex - the index of the plugin in the managers list of plugins
-	 */
-	public PluginManagerEvent(Object source, Plugin plugin, int pluginIndex) {
-		super(source);
-		this.plugin = plugin;
-		this.index = pluginIndex;
-	}
+public interface PluginListener extends EventListener {
 
 	/**
-	 * Returns the plugin.
-	 *
-	 * @return the plugin
-	 */
-	public Plugin getPlugin() {
-		return plugin;
-	}
-
-	/**
+	 * Invoked when a plugin is changed.
 	 * 
-	 * @return the index of the plugin in the plugin managers internal list
+	 * @param event
 	 */
-	public int getPluginIndex() {
-		return index;
-	}	
+	public void pluginChanged(PluginEvent event);
+
 }

@@ -27,11 +27,11 @@
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 12 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
@@ -43,11 +43,11 @@ import java.util.Arrays;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.tools.RavenProperties;
-import net.sf.taverna.update.plugin.PluginManager;
-import net.sf.taverna.update.plugin.event.PluginManagerEvent;
-import net.sf.taverna.update.plugin.event.PluginManagerListener;
-import net.sf.taverna.update.profile.ProfileUpdateHandler;
+import net.sf.taverna.raven.launcher.bootstrap.RavenProperties;
+import net.sf.taverna.raven.plugins.PluginManager;
+import net.sf.taverna.raven.plugins.event.PluginManagerEvent;
+import net.sf.taverna.raven.plugins.event.PluginManagerListener;
+import net.sf.taverna.raven.profile.ProfileUpdateHandler;
 
 import org.apache.log4j.Logger;
 

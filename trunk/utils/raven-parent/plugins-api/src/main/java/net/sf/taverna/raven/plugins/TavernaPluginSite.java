@@ -27,11 +27,11 @@
  * Filename           $RCSfile: TavernaPluginSite.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:48 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
  * Created on 12 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin;
+package net.sf.taverna.raven.plugins;
 
 import java.io.IOException;
 import java.io.InputStream;

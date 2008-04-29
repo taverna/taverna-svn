@@ -27,11 +27,11 @@
  * Filename           $RCSfile: AddPluginSiteFrame.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 8 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;

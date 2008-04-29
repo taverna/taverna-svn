@@ -27,11 +27,11 @@
  * Filename           $RCSfile: PluginManager.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin;
+package net.sf.taverna.raven.plugins;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,18 +50,18 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import net.sf.taverna.raven.launcher.bootstrap.Bootstrap;
+import net.sf.taverna.raven.launcher.config.MyGridConfiguration;
 import net.sf.taverna.raven.log.Log;
+import net.sf.taverna.raven.plugins.event.PluginEvent;
+import net.sf.taverna.raven.plugins.event.PluginListener;
+import net.sf.taverna.raven.plugins.event.PluginManagerEvent;
+import net.sf.taverna.raven.plugins.event.PluginManagerListener;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
-import net.sf.taverna.tools.Bootstrap;
-import net.sf.taverna.update.plugin.event.PluginEvent;
-import net.sf.taverna.update.plugin.event.PluginListener;
-import net.sf.taverna.update.plugin.event.PluginManagerEvent;
-import net.sf.taverna.update.plugin.event.PluginManagerListener;
-import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;

@@ -27,11 +27,11 @@
  * Filename           $RCSfile: PluginSite.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:48 $
+ * Last modified on   $Date: 2008-04-29 16:16:09 $
  *               by   $Author: stain $
  * Created on 28 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin;
+package net.sf.taverna.raven.plugins;
 
 import java.net.MalformedURLException;
 import java.net.URL;

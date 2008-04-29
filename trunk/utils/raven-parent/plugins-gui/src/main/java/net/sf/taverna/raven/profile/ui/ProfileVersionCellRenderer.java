@@ -27,11 +27,11 @@
  * Filename           $RCSfile: ProfileVersionCellRenderer.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 16 Jan 2007
  *****************************************************************/
-package net.sf.taverna.update.profile.ui;
+package net.sf.taverna.raven.profile.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -48,10 +48,10 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.AbstractBorder;
 
+import net.sf.taverna.raven.profile.ProfileHandler;
+import net.sf.taverna.raven.profile.ProfileVersion;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
-import net.sf.taverna.update.profile.ProfileHandler;
-import net.sf.taverna.update.profile.ProfileVersion;
 
 public class ProfileVersionCellRenderer extends JPanel implements
 		ListCellRenderer {

@@ -27,11 +27,11 @@
  * Filename           $RCSfile: PluginSiteFrame.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 29 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -63,10 +63,10 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 
-import net.sf.taverna.update.plugin.Plugin;
-import net.sf.taverna.update.plugin.PluginManager;
-import net.sf.taverna.update.plugin.PluginSite;
-import net.sf.taverna.update.plugin.TavernaPluginSite;
+import net.sf.taverna.raven.plugins.Plugin;
+import net.sf.taverna.raven.plugins.PluginManager;
+import net.sf.taverna.raven.plugins.PluginSite;
+import net.sf.taverna.raven.plugins.TavernaPluginSite;
 
 
 /**

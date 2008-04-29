@@ -24,30 +24,76 @@
  ****************************************************************
  * Source code information
  * -----------------------
- * Filename           $RCSfile: PluginListener.java,v $
+ * Filename           $RCSfile: PluginEvent.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 1 Dec 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.event;
+package net.sf.taverna.raven.plugins.event;
 
-import java.util.EventListener;
+import java.util.EventObject;
+
+import net.sf.taverna.raven.plugins.Plugin;
 
 /**
- * PluginListener defines the interface for an object that listens to changes in
- * a Plugin.
- * 
+ * An event to notify listeners that a <code>Plugin</code> has changed.
+ *
  * @author David Withers
  */
-public interface PluginListener extends EventListener {
+public class PluginEvent extends EventObject {
+	private static final long serialVersionUID = 1L;
+
+	private Plugin plugin;
+	
+	private int action;
+	
+	public static final int NONE = 0;
+	
+	public static final int ENABLED = 1;
+	
+	public static final int DISABLED = 2;
+	
+	/**
+	 * Constructs an instance of PluginEvent.
+	 *
+	 * @param source the source of the event
+	 * @param plugin the <code>Plugin</code> that has changed
+	 */
+	public PluginEvent(Object source, Plugin plugin) {
+		this(source, plugin, NONE);
+	}
 
 	/**
-	 * Invoked when a plugin is changed.
-	 * 
-	 * @param event
+	 * Constructs an instance of PluginEvent.
+	 *
+	 * @param source the source of the event
+	 * @param plugin the <code>Plugin</code> that has changed
+	 * @param action
 	 */
-	public void pluginChanged(PluginEvent event);
+	public PluginEvent(Object source, Plugin plugin, int action) {
+		super(source);
+		this.plugin = plugin;
+		this.action = action;
+	}
+
+	/**
+	 * Returns the plugin.
+	 *
+	 * @return the plugin
+	 */
+	public Plugin getPlugin() {
+		return plugin;
+	}
+
+	/**
+	 * Returns the action.
+	 *
+	 * @return the action
+	 */
+	public int getAction() {
+		return action;
+	}
 
 }

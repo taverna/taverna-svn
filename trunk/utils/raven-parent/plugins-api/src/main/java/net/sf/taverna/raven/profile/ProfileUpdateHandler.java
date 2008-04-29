@@ -1,4 +1,4 @@
-package net.sf.taverna.update.profile;
+package net.sf.taverna.raven.profile;
 
 import java.io.File;
 import java.io.FileOutputStream;

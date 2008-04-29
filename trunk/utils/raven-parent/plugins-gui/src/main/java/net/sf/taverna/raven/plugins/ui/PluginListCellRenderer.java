@@ -27,11 +27,11 @@
  * Filename           $RCSfile: PluginListCellRenderer.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:46 $
+ * Last modified on   $Date: 2008-04-29 16:16:08 $
  *               by   $Author: stain $
  * Created on 28 Nov 2006
  *****************************************************************/
-package net.sf.taverna.update.plugin.ui;
+package net.sf.taverna.raven.plugins.ui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -47,8 +47,8 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.AbstractBorder;
 
-import net.sf.taverna.update.plugin.Plugin;
-import net.sf.taverna.update.plugin.PluginManager;
+import net.sf.taverna.raven.plugins.Plugin;
+import net.sf.taverna.raven.plugins.PluginManager;
 
 /**
  * 
