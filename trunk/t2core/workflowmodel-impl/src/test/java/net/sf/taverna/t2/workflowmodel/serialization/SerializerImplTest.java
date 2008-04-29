@@ -33,6 +33,7 @@ public class SerializerImplTest implements SerializationConstants{
 	
 	@Test
 	public void testDataflowSerialization() throws Exception {
+		//FIXME: Update to include name - a Dataflow has a LocalName
 		Dataflow df = edits.createDataflow();
 		Element el = serializer.serializeDataflow(df);
 		

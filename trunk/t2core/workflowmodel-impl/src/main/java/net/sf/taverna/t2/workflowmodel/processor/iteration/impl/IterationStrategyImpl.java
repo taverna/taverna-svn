@@ -154,7 +154,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 	protected void configureFromXML(Element strategyElement) {
 		inputs.clear();
 		terminal.clear();
-		if (strategyElement.getChildren().isEmpty() == false) {
+		if (!strategyElement.getChildren().isEmpty()) {
 			nodeForElement((Element) strategyElement.getChildren().get(0))
 					.setParent(terminal);
 		}
