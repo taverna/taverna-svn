@@ -13,13 +13,21 @@ import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
+import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ErrorBounce;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.ParallelizeConfig;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Retry;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 
 import org.jdom.Element;
@@ -30,6 +38,7 @@ import org.junit.Test;
 public class DeserializerImplTest{
 
 	private DeserializerImpl deserializer = new DeserializerImpl();
+	private Edits edits = new EditsImpl();
 
 	@Before
 	public void setUp() throws Exception {
@@ -50,6 +59,40 @@ public class DeserializerImplTest{
 		
 		assertEquals("input in is mapped to in","in",activity.getInputPortMapping().get("in"));
 		assertEquals("output out is mapped to out","out",activity.getOutputPortMapping().get("out"));
+	}
+	
+	@Test
+	public void testMerge() throws Exception {
+		Element el = loadXMLFragment("dataflow_with_merge.xml");
+		Dataflow df = deserializer.deserializeDataflowFromXML(el);
+		
+		assertEquals("There should be 2 processors",2,df.getProcessors().size());
+		Processor top=df.getProcessors().get(0);
+		Processor bottom=df.getProcessors().get(1);
+		
+		assertEquals("Top processor should be called top","top",top.getLocalName());
+		assertEquals("Bottom processor should be called top","bottom",bottom.getLocalName());
+		
+		assertEquals("Top should have 1 output port",1,top.getOutputPorts().size());
+		
+		assertEquals("There should be 1 outgoing link",1,top.getOutputPorts().get(0).getOutgoingLinks().size());
+		
+		Datalink link = top.getOutputPorts().get(0).getOutgoingLinks().iterator().next();
+		
+		assertTrue("Link sink should be Merge port",link.getSink() instanceof MergeInputPort);
+	}
+	
+	@Test
+	public void testDispatchStack() throws Exception {
+		Element el = loadXMLFragment("dispatchStack.xml");
+		Processor p = edits.createProcessor("p");
+		deserializer.deserializeDispatchStack(p, el);
+		assertEquals("there should be 5 layers",5,p.getDispatchStack().getLayers().size());
+		assertTrue("first layer should be parallelize, but was "+p.getDispatchStack().getLayers().get(0),p.getDispatchStack().getLayers().get(0) instanceof Parallelize);
+		assertTrue("2nd layer should be ErrorBounce, but was "+p.getDispatchStack().getLayers().get(1),p.getDispatchStack().getLayers().get(1) instanceof ErrorBounce);
+		assertTrue("3rd layer should be Failover, but was "+p.getDispatchStack().getLayers().get(2),p.getDispatchStack().getLayers().get(2) instanceof Failover);
+		assertTrue("4th layer should be Retry, but was "+p.getDispatchStack().getLayers().get(3),p.getDispatchStack().getLayers().get(3) instanceof Retry);
+		assertTrue("5th layer should be Invoke, but was "+p.getDispatchStack().getLayers().get(4),p.getDispatchStack().getLayers().get(4) instanceof Invoke);
 	}
 	
 	@Test
@@ -159,6 +202,15 @@ public class DeserializerImplTest{
 		
 		IterationStrategyStack stack=p.getIterationStrategy();
 		assertEquals("There should be 1 iteration strategy defined",1,stack.getStrategies().size());
+	}
+	
+	@Test
+	public void testDataflowDataLinks() throws Exception {
+		Element el = loadXMLFragment("dataflow_datalinks.xml");
+		Dataflow df = deserializer.deserializeDataflowFromXML(el);
+		
+		assertEquals("There should be 2 processors",2,df.getProcessors().size());
+		assertEquals("There should be 2 datalinks",2,df.getLinks().size());
 	}
 
 	protected Element loadXMLFragment(String resourceName) throws Exception {

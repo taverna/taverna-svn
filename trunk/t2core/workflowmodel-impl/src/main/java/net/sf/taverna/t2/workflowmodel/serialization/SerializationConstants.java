@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.serialization;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jdom.Namespace;
 
 public interface SerializationConstants {
@@ -49,6 +52,23 @@ public interface SerializationConstants {
 	
 	static final String DATALINK = "datalink";
 	static final String DATALINKS = "datalinks";
+	static final String DATALINK_TYPE="type";
+	
+	public enum DATALINK_TYPES {
+		PROCESSOR("processor"),
+		DATAFLOW("dataflow"),
+		MERGE("merge");
+		
+		String value;
+		DATALINK_TYPES(String value) {
+			this.value=value;
+		}
+		
+		public String toString() {
+			return value;
+		}
+	};
+	
 	static final String SINK = "sink";
 	static final String SOURCE = "source";
 	static final String PORT = "port";

@@ -155,12 +155,15 @@ public class IterationStrategyImpl implements IterationStrategy {
 		inputs.clear();
 		terminal.clear();
 		if (!strategyElement.getChildren().isEmpty()) {
-			nodeForElement((Element) strategyElement.getChildren().get(0))
-					.setParent(terminal);
+			AbstractIterationStrategyNode node = nodeForElement((Element) strategyElement.getChildren().get(0));
+			node.setParent(terminal);
+			if (node instanceof NamedInputPortNode) {
+				addInput((NamedInputPortNode)node);
+			}
 		}
 	}
 
-	private static AbstractIterationStrategyNode nodeForElement(Element e) {
+	private AbstractIterationStrategyNode nodeForElement(Element e) {
 		AbstractIterationStrategyNode node = null;
 		String eName = e.getName();
 		if (eName.equals("dot")) {

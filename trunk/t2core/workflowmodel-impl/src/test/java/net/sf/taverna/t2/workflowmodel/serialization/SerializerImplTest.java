@@ -8,8 +8,10 @@ import java.util.List;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Datalink;
+import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.impl.MergeImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Failover;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Invoke;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
@@ -57,9 +59,95 @@ public class SerializerImplTest implements SerializationConstants{
 		
 		Element el = serializer.datalinksToXML(links);
 		
+		logger.info("datalinks serialization xml = "+elementToString(el));
+		
 		assertEquals("Root name should be datalinks","datalinks",el.getName());
 		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink",T2_WORKFLOW_NAMESPACE).size());
 		
+	}
+	
+	@Test
+	public void testDatalinkMerge() throws Exception {
+		Dataflow df = edits.createDataflow();
+		Processor p = edits.createProcessor("top");
+		Processor p2 = edits.createProcessor("bottom");
+		edits.getAddProcessorEdit(df, p).doEdit();
+		edits.getAddProcessorEdit(df, p2).doEdit();
+		edits.getCreateProcessorInputPortEdit(p2, "input", 0).doEdit();
+		edits.getCreateProcessorOutputPortEdit(p, "output", 0, 0).doEdit();
+		Merge m =edits.createMerge(p2.getInputPorts().get(0));
+		edits.getAddMergeEdit(df, m).doEdit();
+
+		edits.getConnectMergedDatalinkEdit(m, p.getOutputPorts().get(0), p2.getInputPorts().get(0)).doEdit();
+		
+		Element el = serializer.datalinksToXML(df.getLinks());
+		
+		logger.info("datalinks serialization with merge: "+elementToString(el));
+		assertEquals("root element should be datalinks","datalinks",el.getName());
+		assertEquals("there should be 1 child datalink",1,el.getChildren("datalink",T2_WORKFLOW_NAMESPACE).size());
+		
+		String xml = elementToString(el);
+		String expected="<datalinks xmlns=\""+T2_WORKFLOW_NAMESPACE.getURI()+"\"><datalink><sink type=\"merge\"><processor>bottom</processor><port>input</port></sink><source type=\"processor\"><processor>top</processor><port>output</port></source></datalink></datalinks>";
+		assertEquals("Unexpected xml generated",expected,xml);
+	}
+	
+	@Test
+	public void testLinkedDataflowInputPort() throws Exception {
+		Dataflow df = edits.createDataflow();
+		edits.getCreateDataflowInputPortEdit(df, "dataflow_in", 0, 0).doEdit();
+		Processor p=edits.createProcessor("p");
+		edits.getCreateProcessorInputPortEdit(p, "p_in", 0).doEdit();
+		Datalink link=edits.createDatalink(df.getInputPorts().get(0).getInternalOutputPort(), p.getInputPorts().get(0));
+		edits.getConnectDatalinkEdit(link).doEdit();
+		List<Datalink> links = new ArrayList<Datalink>();
+		links.add(link);
+		
+		Element el = serializer.datalinksToXML(links);
+		logger.info("datalinks serialization xml = "+elementToString(el));
+		assertEquals("Root name should be datalinks","datalinks",el.getName());
+		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink",T2_WORKFLOW_NAMESPACE).size());
+		Element elLink=el.getChild("datalink",T2_WORKFLOW_NAMESPACE);
+		assertEquals("There should be 1 sink",1,elLink.getChildren("sink",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("There should be 1 source",1,elLink.getChildren("source",T2_WORKFLOW_NAMESPACE).size());
+		
+		Element elSink=elLink.getChild("sink",T2_WORKFLOW_NAMESPACE);
+		assertEquals("type should be processor","processor",elSink.getAttribute("type").getValue());
+		assertEquals("processor name should be p","p",elSink.getChildText("processor",T2_WORKFLOW_NAMESPACE));
+		assertEquals("port name should be p_in","p_in",elSink.getChildText("port",T2_WORKFLOW_NAMESPACE));
+		
+		Element elSource=elLink.getChild("source",T2_WORKFLOW_NAMESPACE);
+		assertEquals("type should be dataflow","dataflow",elSource.getAttribute("type").getValue());
+		assertEquals("port name should be dataflow_in","dataflow_in",elSource.getChildText("port",T2_WORKFLOW_NAMESPACE));
+		
+	}
+	
+	@Test
+	public void testLinkedDataflowOutputPort() throws Exception {
+		Dataflow df = edits.createDataflow();
+		edits.getCreateDataflowOutputPortEdit(df, "dataflow_out").doEdit();
+		Processor p=edits.createProcessor("p");
+		edits.getCreateProcessorOutputPortEdit(p, "p_out", 0,0).doEdit();
+		Datalink link=edits.createDatalink(p.getOutputPorts().get(0), df.getOutputPorts().get(0).getInternalInputPort());
+		edits.getConnectDatalinkEdit(link).doEdit();
+		List<Datalink> links = new ArrayList<Datalink>();
+		links.add(link);
+		
+		Element el = serializer.datalinksToXML(links);
+		logger.info("datalinks serialization xml = "+elementToString(el));
+		assertEquals("Root name should be datalinks","datalinks",el.getName());
+		assertEquals("there should be 1 child named datalink",1,el.getChildren("datalink",T2_WORKFLOW_NAMESPACE).size());
+		Element elLink=el.getChild("datalink",T2_WORKFLOW_NAMESPACE);
+		assertEquals("There should be 1 sink",1,elLink.getChildren("sink",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("There should be 1 source",1,elLink.getChildren("source",T2_WORKFLOW_NAMESPACE).size());
+		
+		Element elSink=elLink.getChild("sink",T2_WORKFLOW_NAMESPACE);
+		assertEquals("type should be dataflow","dataflow",elSink.getAttribute("type").getValue());
+		assertEquals("port name should be dataflow_out","dataflow_out",elSink.getChildText("port",T2_WORKFLOW_NAMESPACE));
+		
+		Element elSource=elLink.getChild("source",T2_WORKFLOW_NAMESPACE);
+		assertEquals("type should be processor","processor",elSource.getAttribute("type").getValue());
+		assertEquals("processor name should be p","p",elSource.getChildText("processor",T2_WORKFLOW_NAMESPACE));
+		assertEquals("port name should be p_in","p_out",elSource.getChildText("port",T2_WORKFLOW_NAMESPACE));
 	}
 	
 	@Test

@@ -11,10 +11,21 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
+import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
+import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
+import net.sf.taverna.t2.workflowmodel.Merge;
+import net.sf.taverna.t2.workflowmodel.MergeInputPort;
+import net.sf.taverna.t2.workflowmodel.MergeOutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
+import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
+import net.sf.taverna.t2.workflowmodel.impl.MergeInputPortImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -34,7 +45,22 @@ public class DeserializerImpl implements Deserializer, SerializationConstants {
 	public Dataflow deserializeDataflow(Element element)
 			throws DeserializationException,EditException {
 		Element topDataflow = element.getChild(DATAFLOW,T2_WORKFLOW_NAMESPACE);
-		return deserializeDataflowFromXML(topDataflow);
+		try {
+			return deserializeDataflowFromXML(topDataflow);
+		} catch (ActivityConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	protected DispatchLayer<?> deserializeDispatchLayer(Element element) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
@@ -149,7 +175,7 @@ public class DeserializerImpl implements Deserializer, SerializationConstants {
 		return repository.getLoader(artifact, null);
 	}
 
-	protected Processor deserializeProcessorFromXML(Element el) throws EditException {
+	protected Processor deserializeProcessorFromXML(Element el) throws EditException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		String name=el.getChildText(NAME,T2_WORKFLOW_NAMESPACE);
 		Processor result=edits.createProcessor(name);
 		
@@ -170,10 +196,18 @@ public class DeserializerImpl implements Deserializer, SerializationConstants {
 			edits.getCreateProcessorOutputPortEdit(result, portName, portDepth, granularDepth).doEdit();
 		}
 		
+		//activities
+		Element activities=el.getChild(ACTIVITIES,T2_WORKFLOW_NAMESPACE);
+		for (Element activity : (List<Element>)activities.getChildren(ACTIVITY,T2_WORKFLOW_NAMESPACE)) {
+			Activity<?> a = deserializeActivityFromXML(activity);
+			edits.getAddActivityEdit(result, a).doEdit();
+		}
+		
 		//TODO: annotations
 		
 		//Dispatch stack
 		Element dispatchStack = el.getChild(DISPATCH_STACK,T2_WORKFLOW_NAMESPACE);
+		deserializeDispatchStack(result,dispatchStack);
 		
 		
 		//Iteration strategy
@@ -185,7 +219,17 @@ public class DeserializerImpl implements Deserializer, SerializationConstants {
 		
 	}
 
-	public Dataflow deserializeDataflowFromXML(Element element) throws EditException, DeserializationException {
+	protected void deserializeDispatchStack(Processor processor,
+			Element dispatchStack) throws ClassNotFoundException, InstantiationException, IllegalAccessException, EditException {
+		int layers=0;
+		for (Element layer : (List<Element>)dispatchStack.getChildren(DISPATCH_LAYER,T2_WORKFLOW_NAMESPACE)) {
+			DispatchLayer<?> dispatchLayer = deserializeDispatchLayer(layer);
+			edits.getAddDispatchLayerEdit(processor.getDispatchStack(), dispatchLayer, layers++).doEdit();
+		}
+		
+	}
+
+	public Dataflow deserializeDataflowFromXML(Element element) throws EditException, DeserializationException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Dataflow df = edits.createDataflow();
 		
 		Element inputPorts = element.getChild(DATAFLOW_INPUT_PORTS,T2_WORKFLOW_NAMESPACE);
@@ -206,11 +250,144 @@ public class DeserializerImpl implements Deserializer, SerializationConstants {
 		//conditions
 		Element conditions = element.getChild(CONDITIONS,T2_WORKFLOW_NAMESPACE);
 		addConditions(df,conditions,createdProcessors);		
+		
 		//datalinks
+		Element datalinks = element.getChild(DATALINKS,T2_WORKFLOW_NAMESPACE);
+		addDatalinks(df,createdProcessors,datalinks);
 		
 		return df;
 	}
 	
+	protected void addDatalinks(Dataflow dataflow,
+			Map<String, Processor> createdProcessors, Element datalinks) throws DeserializationException, EditException {
+		for (Element datalink : (List<Element>)datalinks.getChildren(DATALINK,T2_WORKFLOW_NAMESPACE)){
+			Element sink=datalink.getChild(SINK,T2_WORKFLOW_NAMESPACE);
+			Element source=datalink.getChild(SOURCE,T2_WORKFLOW_NAMESPACE);
+			if (sink==null) throw new DeserializationException("No sink defined for datalink:"+elementToString(datalink));
+			if (source==null) throw new DeserializationException("No source defined for datalink:"+elementToString(datalink));
+			String sinkType = sink.getAttributeValue(DATALINK_TYPE);
+			
+			EventForwardingOutputPort sourcePort=determineLinkSourcePort(source,dataflow,createdProcessors);
+			EventHandlingInputPort sinkPort=determineLinkSinkPort(sink,dataflow,createdProcessors);
+			
+			if (sourcePort==null) throw new DeserializationException("Unable to determine source port for:"+elementToString(datalink));
+			if (sinkPort==null) throw new DeserializationException("Unable to determine sink port for:"+elementToString(datalink));
+			if (sinkType.equals(DATALINK_TYPES.MERGE.toString())) {
+				Merge merge;
+				if (sinkPort.getIncomingLink()==null) {
+					merge=edits.createMerge(sinkPort);
+					edits.getAddMergeEdit(dataflow, merge).doEdit();
+				}
+				else {
+					if (sinkPort.getIncomingLink().getSource() instanceof MergeOutputPort) {
+						merge=((MergeOutputPort)sinkPort.getIncomingLink().getSource()).getMerge();
+					}
+					else {
+						throw new DeserializationException("Merge port was execpted to be connected to "+sinkPort);
+					}
+				}
+				if (merge==null) throw new DeserializationException("Unable to find or create Merge for "+elementToString(datalink));
+				edits.getConnectMergedDatalinkEdit(merge, sourcePort, sinkPort).doEdit();
+			}
+			else {
+				Datalink link=edits.createDatalink(sourcePort, sinkPort);
+				edits.getConnectDatalinkEdit(link).doEdit();
+			}
+		}
+		
+	}
+	
+	private EventHandlingInputPort determineLinkSinkPort(Element sink,
+			Dataflow dataflow, Map<String, Processor> createdProcessors) throws DeserializationException, EditException {
+		EventHandlingInputPort result = null;
+		String sinkType = sink.getAttributeValue(DATALINK_TYPE);
+		String portName=sink.getChildText(PORT,T2_WORKFLOW_NAMESPACE);
+		if (sinkType.equals(DATALINK_TYPES.PROCESSOR.toString())) {
+			String processorName=sink.getChildText(PROCESSOR,T2_WORKFLOW_NAMESPACE);
+			result = findProcessorInputPort(createdProcessors,
+					portName, processorName);
+		}
+		else if (sinkType.equals(DATALINK_TYPES.DATAFLOW.toString())) {
+			for (DataflowOutputPort port : dataflow.getOutputPorts()) {
+				if (port.getName().equals(portName)) {
+					result=port.getInternalInputPort();
+					break;
+				}
+			}
+		}
+		else if (sinkType.equals(DATALINK_TYPES.MERGE.toString())) {
+			String processorName=sink.getChildText(PROCESSOR,T2_WORKFLOW_NAMESPACE);
+			String processorPort=sink.getChildText(PROCESSOR_PORT,T2_WORKFLOW_NAMESPACE);
+			EventHandlingInputPort processorInputPort = findProcessorInputPort(createdProcessors,
+					processorPort, processorName);
+			result=processorInputPort;
+		}
+		else {
+			throw new DeserializationException("Unable to recognise datalink sink type:"+sinkType);
+		}
+		return result;
+	}
+
+	private EventHandlingInputPort findProcessorInputPort(
+			Map<String, Processor> createdProcessors, String portName, String processorName)
+			throws DeserializationException {
+		EventHandlingInputPort result=null;
+		Processor p=createdProcessors.get(processorName);
+		if (p==null) throw new DeserializationException("Unable to find processor named:"+processorName);
+		for (ProcessorInputPort port : p.getInputPorts()) {
+			if (port.getName().equals(portName)) {
+				result=port;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private EventForwardingOutputPort determineLinkSourcePort(Element source,Dataflow dataflow,Map<String,Processor>createdProcessors) throws DeserializationException, EditException {
+		EventForwardingOutputPort result = null;
+		String sourceType = source.getAttributeValue(DATALINK_TYPE);
+		String portName=source.getChildText(PORT,T2_WORKFLOW_NAMESPACE);
+		if (sourceType.equals(DATALINK_TYPES.PROCESSOR.toString())) {
+			String processorName=source.getChildText(PROCESSOR,T2_WORKFLOW_NAMESPACE);
+			result = findProcessorOutputPort(createdProcessors,
+					portName, processorName);
+		}
+		else if (sourceType.equals(DATALINK_TYPES.DATAFLOW.toString())) {
+			for (DataflowInputPort port : dataflow.getInputPorts()) {
+				if (port.getName().equals(portName)) {
+					result=port.getInternalOutputPort();
+					break;
+				}
+			}
+		}
+		else if (sourceType.equals(DATALINK_TYPES.MERGE.toString())) {
+			throw new DeserializationException("The source type is marked as merge for:"+elementToString(source)+" but should never be");
+		}
+		else {
+			throw new DeserializationException("Unable to recognise datalink type:"+sourceType);
+		}
+		return result;
+	}
+
+	private EventForwardingOutputPort findProcessorOutputPort(
+			Map<String, Processor> createdProcessors, String portName,
+			String processorName) throws DeserializationException {
+		EventForwardingOutputPort result=null;
+		Processor p=createdProcessors.get(processorName);
+		if (p==null) throw new DeserializationException("Unable to find processor named:"+processorName);
+		for (ProcessorOutputPort port : p.getOutputPorts()) {
+			if (port.getName().equals(portName)) {
+				result=port;
+				break;
+			}
+		}
+		return result;
+	}
+
+	private String elementToString(Element element) {
+		return new XMLOutputter().outputString(element);
+	}
+
 	private void addConditions(Dataflow df, Element conditionsElement,
 			Map<String, Processor> createdProcessors) throws DeserializationException, EditException {
 		for (Element conditionElement : (List<Element>)conditionsElement.getChildren(CONDITION,T2_WORKFLOW_NAMESPACE)) {
