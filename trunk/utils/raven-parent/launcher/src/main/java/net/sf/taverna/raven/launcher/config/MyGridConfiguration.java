@@ -1,11 +1,11 @@
-package net.sf.taverna.utils;
+package net.sf.taverna.raven.launcher.config;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 
-import net.sf.taverna.tools.AbstractConfiguration;
-import net.sf.taverna.tools.Bootstrap;
+import net.sf.taverna.raven.launcher.bootstrap.AbstractConfiguration;
+import net.sf.taverna.raven.launcher.bootstrap.Bootstrap;
 
 import org.apache.log4j.Logger;
 

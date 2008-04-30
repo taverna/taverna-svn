@@ -1,4 +1,4 @@
-package net.sf.taverna.tools;
+package net.sf.taverna.raven.launcher.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,8 @@ import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import net.sf.taverna.raven.launcher.BootstrapLocation;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -167,7 +169,7 @@ public class Bootstrap {
 	 */
 	private static void determineStartup() {
 		try {
-			File startupDir = TavernaBootstrapLocation.getBootstrapDir();
+			File startupDir = BootstrapLocation.getBootstrapDir();
 			if (startupDir != null) {
 				String startup = startupDir.getAbsolutePath();
 				System.setProperty("taverna.startup", startup);

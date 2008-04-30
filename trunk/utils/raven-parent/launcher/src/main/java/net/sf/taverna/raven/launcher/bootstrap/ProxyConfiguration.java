@@ -1,4 +1,4 @@
-package net.sf.taverna.tools;
+package net.sf.taverna.raven.launcher.bootstrap;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;

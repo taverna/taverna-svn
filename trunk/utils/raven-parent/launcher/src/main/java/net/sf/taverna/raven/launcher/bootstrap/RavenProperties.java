@@ -27,11 +27,11 @@
  * Filename           $RCSfile: RavenProperties.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-27 21:16:47 $
+ * Last modified on   $Date: 2008-04-30 12:50:22 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
-package net.sf.taverna.tools;
+package net.sf.taverna.raven.launcher.bootstrap;
 
 
 /**

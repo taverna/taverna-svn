@@ -1,15 +1,15 @@
-package net.sf.taverna.utils;
+package net.sf.taverna.raven.launcher.config;
 
 import java.net.URL;
 import java.util.Properties;
 
+import net.sf.taverna.raven.launcher.bootstrap.AbstractConfiguration;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.raven.spi.Profile;
 import net.sf.taverna.raven.spi.ProfileFactory;
-import net.sf.taverna.tools.AbstractConfiguration;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

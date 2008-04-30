@@ -177,6 +177,7 @@
 		<module>raven-integration-testing</module>
 		<module>zaria</module>
 		<module>launcher</module>
+		<module>prelauncher</module>
 		<module>plugins-api</module>
 		<module>plugins-impl</module>
 		<module>plugins-gui</module>
