@@ -11,15 +11,18 @@
 	<groupId>uk.org.mygrid.taverna.raven</groupId>
 	<artifactId>helloworld</artifactId>
 	<name>Hello world example</name>
-	<description>Hello world example for Raven integration tests</description>
+	<description>
+		Hello world example for Raven integration tests
+	</description>
 	<dependencies>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

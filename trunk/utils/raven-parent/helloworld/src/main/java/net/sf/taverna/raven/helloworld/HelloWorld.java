@@ -12,7 +12,16 @@ public class HelloWorld {
 
 	public static void main(String[] args) throws IOException {
 		HelloWorld helloWorld = new HelloWorld();
-		helloWorld.run(System.out);
+		if (args.length == 0) {
+			helloWorld.run(System.out);
+		} else {
+			PrintStream outStream = new PrintStream(args[0]);
+			try {
+				helloWorld.run(outStream);
+			} finally {
+				outStream.close();
+			}
+		}
 	}
 
 	public void run(PrintStream out) throws IOException {
@@ -20,7 +29,7 @@ public class HelloWorld {
 		tmpFile.deleteOnExit();
 		FileUtils.writeStringToFile(tmpFile, TEST_DATA, "utf8");
 		String read = FileUtils.readFileToString(tmpFile, "utf8");
-		out.println(read);
+		out.print(read);
 	}
 
 }
