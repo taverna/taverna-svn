@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
  * Bootstrap class by including log4j in the profile with system="true", and
  * specifying BootstrapClassLoader as the system classloader).
  * 
- * @see net.sf.taverna.tools.Bootstrap
+ * @see net.sf.taverna.raven.launcher.bootstrap.Bootstrap
  * @author Stian Soiland
  */
 public class Log4jLog implements LogInterface {
