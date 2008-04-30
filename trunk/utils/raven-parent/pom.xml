@@ -169,6 +169,11 @@
 				<artifactId>launcher</artifactId>
 				<version>1.7-SNAPSHOT</version>
 			</dependency>
+			<dependency>
+				<groupId>uk.org.mygrid.taverna.raven</groupId>
+				<artifactId>prelauncher</artifactId>
+				<version>1.7-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<modules>
@@ -176,6 +181,7 @@
 		<module>raven-log4j</module>
 		<module>raven-integration-testing</module>
 		<module>zaria</module>
+		<module>helloworld</module>
 		<module>launcher</module>
 		<module>prelauncher</module>
 		<module>plugins-api</module>
