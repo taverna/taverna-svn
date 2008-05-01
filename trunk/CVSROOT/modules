@@ -25,4 +25,4 @@
 # can be useful for creating a module that consists of many directories
 # spread out over the entire source repository.
 
-t2 -a t2core t2activities t2integration-testing t2plugin
+t2 -a t2core t2activities t2integration-testing t2plugin t2workbench
