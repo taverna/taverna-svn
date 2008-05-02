@@ -20,7 +20,7 @@ import net.sf.taverna.raven.repository.Artifact;
  * </pre>
  * 
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 class VersionComparator implements Comparator<Artifact> {

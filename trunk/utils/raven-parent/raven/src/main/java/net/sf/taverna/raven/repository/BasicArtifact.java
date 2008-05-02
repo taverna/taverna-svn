@@ -5,7 +5,7 @@ package net.sf.taverna.raven.repository;
  * and version. Artifacts are considered as equal if all three strings match.
  * 
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  */
 public class BasicArtifact implements Artifact {
 

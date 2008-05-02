@@ -13,7 +13,7 @@ import net.sf.taverna.raven.repository.Artifact;
  * 
  * @see VersionComparator
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 public class LatestVersionFilter extends AbstractArtifactFilter {

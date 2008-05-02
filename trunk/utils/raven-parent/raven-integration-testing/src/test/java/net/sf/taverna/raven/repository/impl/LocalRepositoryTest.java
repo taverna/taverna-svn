@@ -27,7 +27,7 @@ import org.junit.Test;
 
 /**
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 public class LocalRepositoryTest {

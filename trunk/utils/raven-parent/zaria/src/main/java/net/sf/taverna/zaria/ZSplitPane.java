@@ -201,7 +201,7 @@ public class ZSplitPane extends ZPane {
 	 * Set the divider location on the first call to getDividerLocation() -
 	 * which should be after (or while) we have been displayed.
 	 * 
-	 * @author Stian Soiland
+	 * @author Stian Soiland-Reyes
 	 * 
 	 */
 	public class DividerLocationSplitPane extends JSplitPane {

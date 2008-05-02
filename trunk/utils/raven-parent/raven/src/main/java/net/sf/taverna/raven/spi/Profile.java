@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  * runtime and update in a very fine grained manner the issue of support can
  * become tangled, the potential variety of coexisting (and therefore possibly
  * interacting) software components may cause incompatibilities that are only
- * apparent at runtime. For this reason some organizations such as OMII-UK may
+ * apparent at runtime. For this reason some organisations such as OMII-UK may
  * with to provide a 'blessed' combination of component versions which have had
  * some level of integration testing within their host environment.
  * <p>
@@ -55,7 +55,7 @@ import org.xml.sax.SAXException;
  * which directly contain SPI implementations
  * 
  * @author Tom Oinn
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  */
 public class Profile extends AbstractArtifactFilter {
 	private static Log logger = Log.getLogger(Profile.class);

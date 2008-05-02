@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  * specifying BootstrapClassLoader as the system classloader).
  * 
  * @see net.sf.taverna.raven.launcher.bootstrap.Bootstrap
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  */
 public class Log4jLog implements LogInterface {
 	// Mapping between LogInterface.Priority and Log4Js Levels, such as "Debug"

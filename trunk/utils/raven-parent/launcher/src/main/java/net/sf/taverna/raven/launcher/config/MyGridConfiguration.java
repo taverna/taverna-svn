@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  * should be called by the main() methods to allow legacy classes to retrieve
  * myGrid configuration.
  * 
- * @author Stian Soiland
+ * @author Stian Soiland-Reyes
  * 
  */
 public class MyGridConfiguration extends AbstractConfiguration {
