@@ -4,24 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import net.sf.taverna.raven.launcher.Launchable;
+
 import org.apache.commons.io.FileUtils;
 
-public class HelloWorld {
+public class HelloWorld implements Launchable {
 
 	protected static final String TEST_DATA = "This is the test data.\n";
 
 	public static void main(String[] args) throws IOException {
 		HelloWorld helloWorld = new HelloWorld();
-		if (args.length == 0) {
-			helloWorld.run(System.out);
-		} else {
-			PrintStream outStream = new PrintStream(args[0]);
-			try {
-				helloWorld.run(outStream);
-			} finally {
-				outStream.close();
-			}
-		}
+		helloWorld.launch(args);
 	}
 
 	public void run(PrintStream out) throws IOException {
@@ -30,6 +23,20 @@ public class HelloWorld {
 		FileUtils.writeStringToFile(tmpFile, TEST_DATA, "utf8");
 		String read = FileUtils.readFileToString(tmpFile, "utf8");
 		out.print(read);
+	}
+
+	public int launch(String[] args) throws IOException {
+		if (args.length == 0) {
+			run(System.out);
+		} else {
+			PrintStream outStream = new PrintStream(args[0]);
+			try {
+				run(outStream);
+			} finally {
+				outStream.close();
+			}
+		}
+		return 0;
 	}
 
 }
