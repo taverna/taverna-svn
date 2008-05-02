@@ -26,7 +26,6 @@ import org.junit.Test;
 
 public class LoaderTest {
 
-	public static final String MAVEN_TOM_REPOSITORY = "http://www.ebi.ac.uk/~tmo/repository/";
 	public static final String MAVEN_MYGRID_REPOSITORY = "http://www.mygrid.org.uk/maven/repository/";
 	public static final String MAVEN_MYGRID_SNAPSHOT_REPOSITORY = "http://www.mygrid.org.uk/maven/snapshot-repository/";
 	public static final String MAVEN_MYGRID_PROXY_REPOSITORY = "http://www.mygrid.org.uk/maven/proxy/repository/";
