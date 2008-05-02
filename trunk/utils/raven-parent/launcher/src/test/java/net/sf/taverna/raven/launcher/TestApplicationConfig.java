@@ -3,30 +3,25 @@ package net.sf.taverna.raven.launcher;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
-import org.junit.After;
+import net.sf.taverna.raven.launcher.ApplicationConfig;
+
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestApplicationConfig {
+public class TestApplicationConfig extends AbstractPropThreadTest {
+
+	private static final String APP_CONFIG_NAME = ApplicationConfig.class.getCanonicalName();
 
 	private ApplicationConfig config;
 
-	private Properties oldSysProperties;
-
 	private URLClassLoader classLoader1;
-
-	private ClassLoader oldContextLoader;
 
 	private URLClassLoader classLoader3;
 
@@ -37,33 +32,20 @@ public class TestApplicationConfig {
 		assertEquals(ApplicationConfig.APP_TITLE, "raven.launcher.app.title");
 		System.getProperties().put("raven.launcher.app.name", "appname");
 		assertEquals("Title was not correct", "appname", config
-				.getApplicationTitle());
+				.getTitle());
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void getApplicationNameFails() throws Exception {
-		config.getApplicationName();
+	public void getNameFails() throws Exception {
+		config.getName();
 	}
 
 	@Test
-	public void getApplicationNameSysProps() {
+	public void getNameSysProps() {
 		assertEquals(ApplicationConfig.APP_NAME, "raven.launcher.app.name");
 		System.getProperties().put(ApplicationConfig.APP_NAME, "appname");
 		assertEquals("Name was not correct", "appname", config
-				.getApplicationName());
-	}
-
-	private List<URL> makeClassPath(String resourceName) {
-		URL resourceCP = getClass().getResource(resourceName);
-		ClassLoader appConfigClassLoader = ApplicationConfig.class
-				.getClassLoader();
-		assertTrue("Our classloader was not a URLClassLoader, can't run test",
-				appConfigClassLoader instanceof URLClassLoader);
-		URL[] origURLs = ((URLClassLoader) appConfigClassLoader).getURLs();
-		List<URL> urls = new ArrayList<URL>();
-		urls.add(resourceCP); // first
-		urls.addAll(Arrays.asList(origURLs));
-		return urls;
+				.getName());
 	}
 
 	@Before
@@ -105,166 +87,156 @@ public class TestApplicationConfig {
 				.getResource(confName));
 	}
 
-	@Before
-	public void saveContextClassLoader() {
-		oldContextLoader = Thread.currentThread().getContextClassLoader();
-	}
-
-	@After
-	public void restoreContextClassLoader() {
-		Thread.currentThread().setContextClassLoader(oldContextLoader);
-	}
-
 	@Test
-	public void getApplicationNameThreadCntxCL1() {
+	public void getNameThreadCntxCL1() {
 		Thread.currentThread().setContextClassLoader(classLoader1);
 		assertEquals("Name was not correct", "classpath1-app", config
-				.getApplicationName());
+				.getName());
 	}
 
 	@Test
-	public void getApplicationTitleThreadCntxCL1() {
+	public void getTitleThreadCntxCL1() {
 		Thread.currentThread().setContextClassLoader(classLoader1);
 		assertEquals("Title was not correct", "The application of classpath1",
-				config.getApplicationTitle());
+				config.getTitle());
 	}
 
 	@Test
-	public void getApplicationNameThreadCntxCL2() {
+	public void getNameThreadCntxCL2() {
 		Thread.currentThread().setContextClassLoader(classLoader2);
 		assertEquals("Name was not correct", "classpath2-app", config
-				.getApplicationName());
+				.getName());
 	}
 
 	@Test
-	public void getApplicationTitleThreadCntxCL2() {
+	public void getTitleThreadCntxCL2() {
 		Thread.currentThread().setContextClassLoader(classLoader1);
 		assertEquals("Title was not correct", "The application of classpath1",
-				config.getApplicationTitle());
+				config.getTitle());
 	}
 
 	@Test
-	public void getApplicationNameThreadCntxCL3() {
+	public void getNameThreadCntxCL3() {
 		Thread.currentThread().setContextClassLoader(classLoader3);
 		assertEquals("Name was not correct", "classpath3-app", config
-				.getApplicationName());
+				.getName());
 	}
 
 	@Test
-	public void getApplicationTitleThreadCntxCL3() {
+	public void getTitleThreadCntxCL3() {
 		Thread.currentThread().setContextClassLoader(classLoader3);
 		assertEquals("Title was not correct", "classpath3-app", config
-				.getApplicationTitle());
+				.getTitle());
 		// Should be inherited, not picked up from /raven-launcher.properties
 	}
 
 	@Test
-	public void getApplicationNameClassPathCL1() throws ClassNotFoundException,
+	public void getNameClassPathCL1() throws ClassNotFoundException,
 			SecurityException, NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader1
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader1, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationName", (Class[]) null);
+				"getName", (Class[]) null);
 		assertEquals("Name was not correct", "classpath1-app", getAppNameMethod
 				.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test
-	public void getApplicationTitleClassPathCL1()
+	public void getTitleClassPathCL1()
 			throws ClassNotFoundException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader1
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader1, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationTitle", (Class[]) null);
+				"getTitle", (Class[]) null);
 		assertEquals("Name was not correct", "The application of classpath1",
 				getAppNameMethod.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test
-	public void getApplicationNameClassPathCL2() throws ClassNotFoundException,
+	public void getNameClassPathCL2() throws ClassNotFoundException,
 			SecurityException, NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader2
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader2, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationName", (Class[]) null);
+				"getName", (Class[]) null);
 		assertEquals("Name was not correct", "classpath2-app", getAppNameMethod
 				.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test
-	public void getApplicationTitleClassPathCL2()
+	public void getTitleClassPathCL2()
 			throws ClassNotFoundException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader2
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader2, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationTitle", (Class[]) null);
+				"getTitle", (Class[]) null);
 		assertEquals("Name was not correct", "The application of classpath2",
 				getAppNameMethod.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test
-	public void getApplicationNameClassPathCL3() throws ClassNotFoundException,
+	public void getNameClassPathCL3() throws ClassNotFoundException,
 			SecurityException, NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader3
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader3, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationName", (Class[]) null);
+				"getName", (Class[]) null);
 		assertEquals("Name was not correct", "classpath3-app", getAppNameMethod
 				.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test
-	public void getApplicationTitleClassPathCL3()
+	public void getTitleClassPathCL3()
 			throws ClassNotFoundException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Class<?> appConfigClass = classLoader3
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader3, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationTitle", (Class[]) null);
+				"getTitle", (Class[]) null);
 		assertEquals("Name was not correct", "classpath3-app", getAppNameMethod
 				.invoke(appConfig, (Object[]) null));
 	}
@@ -276,28 +248,28 @@ public class TestApplicationConfig {
 	 * 
 	 */
 	@Test
-	public void getApplicationNameClassPathCL1ctxCL2()
+	public void getNameClassPathCL1ctxCL2()
 			throws ClassNotFoundException, SecurityException,
 			NoSuchMethodException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			InstantiationException {
 		Thread.currentThread().setContextClassLoader(classLoader2);
 		Class<?> appConfigClass = classLoader1
-				.loadClass("net.sf.taverna.raven.launcher.ApplicationConfig");
+				.loadClass(APP_CONFIG_NAME);
 		assertEquals(classLoader1, appConfigClass.getClassLoader());
 		Method getInstanceMethod = appConfigClass.getMethod("getInstance",
 				(Class[]) null);
 		Object appConfig = getInstanceMethod.invoke((Object) null,
 				(Object[]) null);
 		Method getAppNameMethod = appConfigClass.getMethod(
-				"getApplicationName", (Class[]) null);
+				"getName", (Class[]) null);
 		assertEquals("Name was not correct", "classpath2-app", getAppNameMethod
 				.invoke(appConfig, (Object[]) null));
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void getApplicationTitleFails() throws Exception {
-		config.getApplicationTitle();
+	public void getTitleFails() throws Exception {
+		config.getTitle();
 		System.out.println(System.getProperties());
 	}
 
@@ -307,30 +279,6 @@ public class TestApplicationConfig {
 		config = new ApplicationConfig();
 	}
 
-	@Before
-	public synchronized void removeSysProperties() {
-		oldSysProperties = new Properties();
-		oldSysProperties.putAll(System.getProperties());
-		clearRavenProps();
-	}
 
-	@After
-	public synchronized void restoreSysProperties() {
-		if (oldSysProperties != null) {
-			clearRavenProps();
-			System.getProperties().putAll(oldSysProperties);
-			oldSysProperties = null;
-		}
-	}
-
-	protected void clearRavenProps() {
-		Properties propsCopy = new Properties();
-		propsCopy.putAll(System.getProperties());
-		for (Object key : propsCopy.keySet()) {
-			if (((String) key).startsWith(ApplicationConfig.PREFIX)) {
-				System.getProperties().remove(key);
-			}
-		}
-	}
 
 }

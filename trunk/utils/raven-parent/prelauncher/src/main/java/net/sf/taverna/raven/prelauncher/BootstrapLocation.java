@@ -1,7 +1,9 @@
-package net.sf.taverna.raven.launcher;
+package net.sf.taverna.raven.prelauncher;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -28,8 +30,8 @@ public class BootstrapLocation {
 	 * @throws IOException
 	 *             if the canonical directory or jar file cannot be found
 	 */
-	public static File getBootstrapDir() throws IOException {
-		File file = getBootstrapFile();
+	public static File getBootstrapDir(Class theClass) throws IOException {
+		File file = getBootstrapFile(theClass);
 		if (file.isDirectory())
 			return file;
 		return file.getParentFile();
@@ -43,25 +45,22 @@ public class BootstrapLocation {
 	 * @throws IOException
 	 *             if the canonical directory or jar file cannot be found
 	 */
-	public static File getBootstrapFile() throws IOException {
+	public static File getBootstrapFile(Class theClass) throws IOException {
 		if (bootstrapFile != null) {
 			return bootstrapFile;
 		}
 		// Get a URL for where this class was loaded from
 		String classResourceName = "/"
-				+ BootstrapLocation.class.getName().replace('.', '/')
+				+ theClass.getName().replace('.', '/')
 				+ ".class";
-		URL resource = BootstrapLocation.class.getResource(classResourceName);
+		URL resource = theClass.getResource(classResourceName);
 		if (resource == null)
 			throw new IOException("Bootstrap file not found: "
-					+ BootstrapLocation.class.getName());
+					+ theClass.getName());
 		String resourcePath = null;
 		String embeddedClassName = null;
-		boolean isJar = false;
 		String protocol = resource.getProtocol();
-		if ((protocol != null) && (protocol.indexOf("jar") >= 0)) {
-			isJar = true;
-		}
+		boolean isJar = (protocol != null) && (protocol.equals("jar"));
 		if (isJar) {
 			resourcePath = URLDecoder.decode(resource.getFile(), "utf8");
 			embeddedClassName = "!" + classResourceName;
@@ -73,23 +72,27 @@ public class BootstrapLocation {
 		if (sep >= 0)
 			resourcePath = resourcePath.substring(0, sep);
 
+		URI fileURI;
+		try {
+			fileURI = new URI(resourcePath);
+		} catch (URISyntaxException e) {
+			throw new IOException("Invalid URI: " + resourcePath);
+		}
 		// Now that we have a URL, make sure that it is a "file" URL
 		// as we need to coerce the URL into a File object
-		if (resourcePath.indexOf("file:") == 0)
-			resourcePath = resourcePath.substring(5);
-		else
-			throw new IOException("Bootstrap file not found: "
-					+ BootstrapLocation.class.getName());
-
-		// Coerce the URL into a file and check that it exists. Note that
+		if (!fileURI.getScheme().equals("file")) {
+			throw new IOException("Bootstrap was not found in a file: "
+					+ fileURI.getScheme());
+		}
+		// Coerce the URL into a File and check that it exists. Note that
 		// the JVM <code>File(String)</code> constructor automatically
 		// flips all '/' characters to '\' on Windows and there are no
 		// valid escape characters so we would not have to worry about
 		// URL encoded slashes.
-		File file = new File(resourcePath);
+		File file = new File(fileURI);
 		if (!file.exists() || !file.canRead())
 			throw new IOException("Bootstrap file not found: "
-					+ BootstrapLocation.class.getName());
+					+ theClass.getName());
 		bootstrapFile = file.getCanonicalFile();
 
 		return bootstrapFile;

@@ -14,11 +14,25 @@
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>raven</artifactId>
+			<artifactId>launcher-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>prelauncher</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>raven</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
 			<artifactId>raven-log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>helloworld</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
