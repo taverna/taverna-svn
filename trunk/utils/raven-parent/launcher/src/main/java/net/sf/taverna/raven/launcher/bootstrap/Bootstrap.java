@@ -16,7 +16,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.raven.launcher.BootstrapLocation;
+import net.sf.taverna.raven.launcher.ApplicationConfig;
+import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -38,6 +39,8 @@ public class Bootstrap {
 	public static URL[] remoteRepositories;
 
 	private static String loaderVersion;
+	
+	private ApplicationConfig applicationConfig = ApplicationConfig.getInstance();
 
 	private static final String SPLASHSCREEN = "splashscreen-1.7.png";
 
@@ -169,7 +172,7 @@ public class Bootstrap {
 	 */
 	private static void determineStartup() {
 		try {
-			File startupDir = BootstrapLocation.getBootstrapDir();
+			File startupDir = BootstrapLocation.getBootstrapDir(Bootstrap.class);
 			if (startupDir != null) {
 				String startup = startupDir.getAbsolutePath();
 				System.setProperty("taverna.startup", startup);
