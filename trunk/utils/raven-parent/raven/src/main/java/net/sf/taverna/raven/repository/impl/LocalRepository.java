@@ -78,7 +78,7 @@ public class LocalRepository implements Repository {
 			if (System.getProperty("raven.eclipse") == null) {
 				repositoryCache.put(base, new LocalRepository(base));
 			} else {
-				repositoryCache.put(base, new EclipseRepository());
+				repositoryCache.put(base, new DummyRepository());
 			}
 		}
 		return repositoryCache.get(base);
@@ -97,7 +97,7 @@ public class LocalRepository implements Repository {
 						systemArtifacts);
 				repositoryCache.put(base, lr);
 			} else {
-				repositoryCache.put(base, new EclipseRepository());
+				repositoryCache.put(base, new DummyRepository());
 			}
 		}
 		return repositoryCache.get(base);
