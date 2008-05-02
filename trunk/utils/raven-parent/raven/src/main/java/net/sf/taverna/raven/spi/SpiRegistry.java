@@ -257,8 +257,10 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 								+ " using " + cl, e);
 						continue;
 					}
-					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader
-							|| System.getProperty("raven.eclipse") != null) {
+					// Why is this test needed? Disabled to avoid raven.eclipse dependency
+					
+//					if (impClass.getClassLoader() instanceof LocalArtifactClassLoader
+//							|| System.getProperty("raven.eclipse") != null) {
 						implementations.add(impClass);
 						// only mark as new if this class did not appear in the
 						// previous set of implementations, i.e.
@@ -267,7 +269,7 @@ public class SpiRegistry implements Iterable<Class>, ArtifactFilterListener {
 								|| !previousImplementations.contains(impClass)) {
 							addedNew = true;
 						}
-					}
+//					}
 				}
 				scanner.close();
 				try {
