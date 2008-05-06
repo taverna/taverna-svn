@@ -173,8 +173,7 @@ public class CredentialCreator {
 			MyProxyException {
 
 		GSSCredential gssCred = null;
-		gssCred = new GlobusGSSCredentialImpl(gc,
-				GSSCredential.INITIATE_AND_ACCEPT);
+		gssCred = new GlobusGSSCredentialImpl(gc,GSSCredential.INITIATE_AND_ACCEPT);
 
 		MyProxy myproxy = new MyProxy(myproxyServer, MYPROXY_PORT);
 
@@ -203,8 +202,7 @@ public class CredentialCreator {
 		File tavernaHome = new File(System.getProperty("taverna.home"));
 		File proxy = new File(tavernaHome, PROXY_FILE);
 		proxy.createNewFile(); // creating a file in .taverna directory
-		FileOutputStream out = new FileOutputStream(proxy); // writing proxy
-		// into proxyfile
+		FileOutputStream out = new FileOutputStream(proxy); // writing proxy into a file
 		gc.save(out);
 		if (System.getProperty("os.name").equals("Linux")) {
 			Runtime runtime = Runtime.getRuntime();
@@ -243,7 +241,7 @@ public class CredentialCreator {
 	public boolean deleteCredential() {
 
 		boolean fileDelete = false;
-		File cFile = new File(PROXY_FILE);
+		File cFile = new File(tavernaHome +"/"+PROXY_FILE);
 		if (cFile.exists())
 			fileDelete = (cFile).delete();
 		return fileDelete;
