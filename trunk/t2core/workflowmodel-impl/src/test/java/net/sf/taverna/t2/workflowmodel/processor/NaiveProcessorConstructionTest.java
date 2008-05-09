@@ -28,21 +28,4 @@ public class NaiveProcessorConstructionTest extends TestCase {
 		activity.configure(new EchoConfig("blah"));
 		Tools.buildFromActivity(activity);
 	}
-
-	public void testRoundTripSerializationFromFactory()
-			throws ActivityConfigurationException, EditException, JDOMException,
-			IOException, ArtifactNotFoundException, ArtifactStateException,
-			ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		AsynchEchoActivity activity = new AsynchEchoActivity();
-		activity.configure(new EchoConfig("blah"));
-		ProcessorImpl p = Tools.buildFromActivity(activity);
-
-		ProcessorImpl p2 = (ProcessorImpl)new EditsImpl().createProcessor("a_processor");
-		p2.configureFromElement(p.asXML());
-		XMLOutputter xo = new XMLOutputter();
-		assertTrue(xo.outputString(p.asXML()).equals(
-				xo.outputString(p2.asXML())));
-	}
-
 }

@@ -95,42 +95,6 @@ public abstract class DispatchStackImpl extends
 	 */
 	protected abstract String getProcessName();
 
-	/**
-	 * XML Serialization
-	 * 
-	 * @return
-	 * @throws JDOMException
-	 * @throws IOException
-	 */
-	public Element asXML() throws JDOMException, IOException {
-		Element stackElement = new Element("dispatch");
-		for (DispatchLayer<?> layer : dispatchLayers) {
-			stackElement.addContent(Tools.dispatchLayerAsXML(layer));
-		}
-		return stackElement;
-	}
-
-	/**
-	 * XML Deserialization
-	 * 
-	 * @param e
-	 * @throws ArtifactNotFoundException
-	 * @throws ArtifactStateException
-	 * @throws ClassNotFoundException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	@SuppressWarnings("unchecked")
-	public void configureFromElement(Element e)
-			throws ArtifactNotFoundException, ArtifactStateException,
-			ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		dispatchLayers.clear();
-		for (Element layerElement : (List<Element>) e.getChildren("layer")) {
-			DispatchLayer layer = Tools.buildDispatchLayer(layerElement);
-			dispatchLayers.add(layer);
-		}
-	}
 
 	private DispatchLayer<Object> topLayer = new AbstractDispatchLayer<Object>() {
 
