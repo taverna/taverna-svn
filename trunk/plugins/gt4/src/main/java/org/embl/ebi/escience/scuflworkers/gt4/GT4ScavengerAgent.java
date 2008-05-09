@@ -26,29 +26,31 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: GT4ScavengerAgent.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-01-05 14:54:32 $
+ * Last modified on   $Date: 2008-05-09 02:37:01 $
  *               by   $Author: tanwei $
  * Created on 01-Dec-2007
  *****************************************************************/
 package org.embl.ebi.escience.scuflworkers.gt4;
 
 //Comments: do not use CaGrid client API, use pure WS client instead
-/*
+
 import gov.nih.nci.cagrid.discovery.client.DiscoveryClient;
 import gov.nih.nci.cagrid.metadata.MetadataUtils;
 import gov.nih.nci.cagrid.metadata.ServiceMetadata;
 import gov.nih.nci.cagrid.metadata.ServiceMetadataServiceDescription;
+import gov.nih.nci.cagrid.metadata.common.PointOfContact;
+import gov.nih.nci.cagrid.metadata.common.UMLClass;
 import gov.nih.nci.cagrid.metadata.service.Operation;
 //import gov.nih.nci.cagrid.metadata.service.OperationInputParameterCollection;
 import gov.nih.nci.cagrid.metadata.service.ServiceContext;
 import gov.nih.nci.cagrid.metadata.service.ServiceServiceContextCollection;
-*/
+
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.apache.axis.message.addressing.EndpointReferenceType;
+import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.log4j.Logger;
 
 /**
@@ -69,8 +71,8 @@ public class GT4ScavengerAgent {
 		List<GT4Service> services=new ArrayList<GT4Service>();
 		
 		// Get the categories for this installation
-		boolean findAnIndex = loadServices(indexURL,services);
-		if (!findAnIndex) {
+		boolean findServices = loadServices(indexURL,services);
+		if (!findServices) {
 			
 			throw new Exception("Unable to locate a GT4 index at \n" + indexURL);
 		}
@@ -79,15 +81,86 @@ public class GT4ScavengerAgent {
 		
 	}
 	
-	/*//load services & operations by caGrid discovery service API
+	//load services & operations by caGrid discovery service API
 	private static boolean loadServices(String indexURL, List<GT4Service>services) throws Exception{
-		boolean foundSome = true;
-		//TODO load service metadata from index service
-		System.out.println("Start to generate DiscoveryClient");
-		  DiscoveryClient client = new DiscoveryClient(indexURL);
-	        EndpointReferenceType[] allServices = client.getAllServices(true);
+		boolean foundSome = false;
+		//TODO separate index URL and the semantic querying clause
+		//like: http://indexURL??SearchString==Scott
+		String indexAddress;
+		String semanticQueryingClause;
+		String queryingItem;
+		String queryingValue;
+		int n1 = indexURL.indexOf("??");
+		int n2 = indexURL.indexOf("==");
+		System.out.println("==================================================");
+		System.out.println("Start to generate Scavenger");		
+		EndpointReferenceType[] servicesList = null;
+		//cannot find ??--list all services
+		if(n1==-1){
+			System.out.println("Retrieving all services from the index: "+ indexURL);
+			System.out.println("==================================================");
+			DiscoveryClient client = new DiscoveryClient(indexURL);
+			servicesList = client.getAllServices(true);		
+		}
+		else {		
+			indexAddress = indexURL.substring(0, n1);
+			System.out.println("Service Index URL: "+indexAddress);
+			semanticQueryingClause = indexURL.substring(n1+2);
+			queryingItem = indexURL.substring(n1+2,n2);
+			queryingValue = indexURL.substring(n2+2);
+			System.out.println("Service Query: " + queryingItem + "  == "+ queryingValue);
+		    System.out.println("==================================================");
+			DiscoveryClient client = new DiscoveryClient(indexAddress);
+			//TODO load service metadata from index service			 
+			  //TOTO: semantic based service searching
+			  //query by Search String
+			 if(queryingItem.equals("SearchString")){
+				  servicesList = client.discoverServicesBySearchString(queryingValue);			  
+			  }
+			  //query by Research Center Name
+			  else if(queryingItem.equals("ResearchCenter")){
+				  servicesList = client.discoverServicesByResearchCenter(queryingValue);			  
+			  }
+			//query by Point of Contact
+			  else if(queryingItem.equals("PointOfContact")){
+				  PointOfContact poc = new PointOfContact();
+				  int n3 = queryingValue.indexOf(" ");
+				  String firstName = queryingValue.substring(0,n3);
+				  String lastName = queryingValue.substring(n3+1);
+			      poc.setFirstName(firstName);
+			      poc.setLastName(lastName);
+				  servicesList = client.discoverServicesByPointOfContact(poc);			  
+			  }
+			//query by Service Name
+			  else if(queryingItem.equals("Name")){
+				  servicesList = client.discoverServicesByName(queryingValue);		  
+			  }
+			//query by Operation Name
+			  else if(queryingItem.equals("OperationName")){
+				  servicesList = client.discoverServicesByOperationName(queryingValue);		  
+			  }
+			//query by Operation Input
+			  else if(queryingItem.equals("OperationInput")){
+				  UMLClass umlClass = new UMLClass();
+			        umlClass.setClassName(queryingValue);
+				  servicesList = client.discoverServicesByOperationInput(umlClass);		  
+			  }
+			//query by Operation Output
+			  else if(queryingItem.equals("OperationOutput")){
+				  UMLClass umlClass = new UMLClass();
+			        umlClass.setClassName(queryingValue);
+				  servicesList = client.discoverServicesByOperationOutput(umlClass);		  
+			  }
+			//query by Operation Class
+			  else if(queryingItem.equals("OperationClass")){
+				  UMLClass umlClass = new UMLClass();
+			        umlClass.setClassName(queryingValue);
+				  servicesList = client.discoverServicesByOperationClass(umlClass);		  
+			  }	  
+		}
 	        System.out.println("DiscoveryClient loaded and EPR to services returned.");
-	        for (EndpointReferenceType epr : allServices) {
+	        for (EndpointReferenceType epr : servicesList) {
+	        	foundSome = true;
 	        	//add a service node
 	        	String serviceAddress = epr.getAddress().toString();
 	            GT4Service s = new GT4Service(serviceAddress+"?wsdl",serviceAddress);
@@ -129,7 +202,7 @@ public class GT4ScavengerAgent {
 		return foundSome;
 	}	
 	
-	*/
+	/*
 	private static boolean loadServices(String indexURL, List<GT4Service>services) 
 	throws Exception{
 		ServiceMetaData serviceMetaData = new ServiceMetaData();
@@ -148,6 +221,7 @@ public class GT4ScavengerAgent {
         }
 		return true;
 	}
+	*/
 	
 	/*
 	//TODO: modify this function to access real index service
