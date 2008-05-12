@@ -2,17 +2,14 @@ package net.sf.taverna.t2.workflowmodel.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
-import net.sf.taverna.t2.annotation.AnnotationChain;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.Datalink;
-import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.FailureTransmitter;
 import net.sf.taverna.t2.workflowmodel.Merge;
 import net.sf.taverna.t2.workflowmodel.NamedWorkflowEntity;

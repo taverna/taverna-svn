@@ -33,7 +33,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
-import net.sf.taverna.t2.workflowmodel.serialization.SerializationConstants;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializationConstants;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;

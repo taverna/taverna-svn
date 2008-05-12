@@ -1,11 +1,8 @@
-package net.sf.taverna.t2.workflowmodel.serialization;
-
-import java.util.HashMap;
-import java.util.Map;
+package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import org.jdom.Namespace;
 
-public interface SerializationConstants {
+public interface XMLSerializationConstants {
 
 	static final String WORKFLOW_DOCUMENT_MIMETYPE="application/vnd.taverna.t2flow+xml";
 	

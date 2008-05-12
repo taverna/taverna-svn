@@ -26,7 +26,7 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
-import net.sf.taverna.t2.workflowmodel.serialization.SerializationConstants;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializationConstants;
 
 /**
  * A single layer of iteration strategy, consuming individual named inputs and
@@ -112,7 +112,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @return
 	 */
 	protected Element asXML() {
-		Element strategyElement = new Element("strategy",SerializationConstants.T2_WORKFLOW_NAMESPACE);
+		Element strategyElement = new Element("strategy",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		if (terminal.getChildCount() > 0) {
 			AbstractIterationStrategyNode node = (AbstractIterationStrategyNode) (terminal
 					.getChildAt(0));
@@ -124,14 +124,14 @@ public class IterationStrategyImpl implements IterationStrategy {
 	private static Element elementForNode(AbstractIterationStrategyNode node) {
 		Element nodeElement = null;
 		if (node instanceof DotProduct) {
-			nodeElement = new Element("dot",SerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("dot",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof CrossProduct) {
-			nodeElement = new Element("cross",SerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("cross",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof PrefixDotProduct) {
-			nodeElement = new Element("prefix",SerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("prefix",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof NamedInputPortNode) {
 			NamedInputPortNode nipn = (NamedInputPortNode) node;
-			nodeElement = new Element("port",SerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("port",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 			nodeElement.setAttribute("name", nipn.getPortName());
 			nodeElement.setAttribute("depth", nipn.getCardinality() + "");
 		} else {
