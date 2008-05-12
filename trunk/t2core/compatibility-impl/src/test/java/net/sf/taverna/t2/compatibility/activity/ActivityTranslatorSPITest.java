@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.compatibility.activity;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class ActivityTranslatorSPITest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testFindTranslators() {
-		ActivityTranslatorSPIRegistry reg = new ActivityTranslatorSPIRegistry();
+		ActivityTranslatorSPIRegistry reg = ActivityTranslatorSPIRegistry.getInstance();
 		List<ActivityTranslator> instances = reg.getInstances();
 		
 		assertEquals("There should be 4 instances - beanshell, soaplab, biomart and stringconstant",4,instances.size());
@@ -38,5 +38,13 @@ public class ActivityTranslatorSPITest {
 		}
 		
 		assertEquals("Not all expected instance types were found",0,expectedTypes.size());
+	}
+	
+	@Test
+	public void testGetInstance() {
+		ActivityTranslatorSPIRegistry reg = ActivityTranslatorSPIRegistry.getInstance();
+		ActivityTranslatorSPIRegistry reg2 = ActivityTranslatorSPIRegistry.getInstance();
+		assertNotNull(reg);
+		assertSame(reg,reg2);
 	}
 }
