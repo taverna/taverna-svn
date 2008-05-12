@@ -23,24 +23,20 @@ public class DataflowActivityTest {
 
 	private DataflowActivity activity;
 
-	private DataflowActivityConfigurationBean configurationBean;
-
 	@Before
 	public void setUp() throws Exception {
 		activity = new DataflowActivity();
-		configurationBean = new DataflowActivityConfigurationBean();
 		Edits edits = EditsRegistry.getEdits();
 		dataflow = edits.createDataflow();
 		edits.getCreateDataflowInputPortEdit(dataflow, "input", 0, 0).doEdit();
 		edits.getCreateDataflowOutputPortEdit(dataflow, "output").doEdit();
-		configurationBean.setDataflow(dataflow);
 	}
 
 	@Test
 	public void testConfigureDataflowActivityConfigurationBean()
 			throws Exception {
-		activity.configure(configurationBean);
-		assertEquals(configurationBean, activity.getConfiguration());
+		activity.configure(dataflow);
+		assertEquals(dataflow, activity.getConfiguration());
 		assertEquals(1, activity.getInputPorts().size());
 		assertEquals("input", activity.getInputPorts().iterator().next()
 				.getName());
@@ -51,13 +47,7 @@ public class DataflowActivityTest {
 
 	@Test
 	public void testGetConfiguration() {
-		assertNull(activity.getConfiguration());
-	}
-
-	@Ignore
-	@Test
-	public void testExecuteAsynch() {
-		fail("Not yet implemented");
+		assertNull("freshly created activity should not contain configuration",activity.getConfiguration());
 	}
 
 }

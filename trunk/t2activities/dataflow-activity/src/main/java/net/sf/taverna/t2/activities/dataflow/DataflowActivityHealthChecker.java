@@ -18,7 +18,7 @@ public class DataflowActivityHealthChecker implements HealthChecker<DataflowActi
 
 	@SuppressWarnings("unchecked")
 	public HealthReport checkHealth(DataflowActivity activity) {
-		Dataflow dataflow = activity.getConfiguration().getDataflow();
+		Dataflow dataflow = activity.getConfiguration();
 		Status status = Status.OK;
 		String message = "Everything seems fine";
 		List<HealthReport> subReports = new ArrayList<HealthReport>();

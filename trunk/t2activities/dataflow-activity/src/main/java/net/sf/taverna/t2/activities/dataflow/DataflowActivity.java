@@ -29,30 +29,27 @@ import org.apache.log4j.Logger;
  * @author David Withers
  */
 public class DataflowActivity extends
-		AbstractAsynchronousActivity<DataflowActivityConfigurationBean> {
+		AbstractAsynchronousActivity<Dataflow> {
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = Logger
 			.getLogger(DataflowActivity.class);
-
-	private DataflowActivityConfigurationBean configurationBean;
 
 	private Dataflow dataflow;
 
 	private Edits edits = EditsRegistry.getEdits();
 
 	@Override
-	public void configure(DataflowActivityConfigurationBean configurationBean)
+	public void configure(Dataflow dataflow)
 			throws ActivityConfigurationException {
-		this.configurationBean = configurationBean;
-		this.dataflow = configurationBean.getDataflow();
+		this.dataflow=dataflow;
 		buildInputPorts();
 		buildOutputPorts();
 	}
 
 	@Override
-	public DataflowActivityConfigurationBean getConfiguration() {
-		return configurationBean;
+	public Dataflow getConfiguration() {
+		return dataflow;
 	}
 
 	@Override

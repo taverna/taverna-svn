@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
-import net.sf.taverna.t2.activities.dataflow.DataflowActivityConfigurationBean;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
 import net.sf.taverna.t2.compatibility.WorkflowTranslationException;
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
@@ -24,7 +23,7 @@ import org.embl.ebi.escience.scufl.ScuflModel;
  * @author David Withers
  */
 public class DataflowActivityTranslator extends
-		AbstractActivityTranslator<DataflowActivityConfigurationBean> {
+		AbstractActivityTranslator<Dataflow> {
 
 	@Override
 	protected DataflowActivity createUnconfiguredActivity() {
@@ -32,16 +31,14 @@ public class DataflowActivityTranslator extends
 	}
 
 	@Override
-	protected DataflowActivityConfigurationBean createConfigType(
+	protected Dataflow createConfigType(
 			Processor processor) throws ActivityTranslationException {
-		DataflowActivityConfigurationBean bean = new DataflowActivityConfigurationBean();
+		Dataflow dataflow=null;
 		try {
-			Dataflow dataflow = WorkflowModelTranslator
+			dataflow = WorkflowModelTranslator
 					.doTranslation(getScuflModel(processor));
 			DataflowValidationReport report = dataflow.checkValidity();
-			if (report.isValid()) {
-				bean.setDataflow(dataflow);
-			} else {
+			if (!report.isValid()) {
 				throw new ActivityTranslationException(
 						"Error validating nested workflow");
 			}
@@ -49,7 +46,7 @@ public class DataflowActivityTranslator extends
 			throw new ActivityTranslationException(
 					"Error translating nested workflow", e);
 		}
-		return bean;
+		return dataflow;
 	}
 
 	private ScuflModel getScuflModel(Processor processor)

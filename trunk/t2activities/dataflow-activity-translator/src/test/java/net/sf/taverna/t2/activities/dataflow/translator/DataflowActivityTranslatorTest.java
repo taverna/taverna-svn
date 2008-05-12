@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.dataflow.DataflowActivity;
-import net.sf.taverna.t2.activities.dataflow.DataflowActivityConfigurationBean;
 import net.sf.taverna.t2.activities.testutils.DummyProcessor;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflworkers.workflow.WorkflowProcessor;
@@ -42,9 +42,9 @@ public class DataflowActivityTranslatorTest {
 
 	@Test
 	public void testCreateConfigTypeProcessor() throws Exception {
-		DataflowActivityConfigurationBean bean = translator
+		Dataflow df = translator
 				.createConfigType(processor);
-		assertNotNull(bean.getDataflow());
+		assertNotNull(df);
 	}
 
 	@Test
