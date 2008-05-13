@@ -2,6 +2,10 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
+import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.serialization.DummyActivity;
 
 import org.jdom.Element;
@@ -11,6 +15,7 @@ import org.junit.Test;
 
 public class ActivityXMLSerializerTest implements XMLSerializationConstants {
 	ActivityXMLSerializer serializer = ActivityXMLSerializer.getInstance();
+	Edits edits = new EditsImpl();
 	
 	@Test
 	public void testActivitySerialization() throws Exception
@@ -45,6 +50,24 @@ public class ActivityXMLSerializerTest implements XMLSerializationConstants {
 		Element intChild = bean.getChild("int");
 		assertNotNull("bean should have a child called int",intChild);
 		assertEquals("java child should describe an int with value 5","<int>5</int>",elementToString(intChild));
+	}
+	
+	@Test
+	public void testDataflowBasedActivity() throws Exception {
+		DummyDataflowActivity dummyDataflowActivity = new DummyDataflowActivity();
+		Dataflow df = edits.createDataflow();
+		((DataflowImpl)df).setLocalName("test");
+		dummyDataflowActivity.configure(df);
+		
+		Element el = serializer.activityToXML(dummyDataflowActivity);
+		
+		assertEquals("There should be 1 configBean child element",1,el.getChildren("configBean",T2_WORKFLOW_NAMESPACE).size());
+		
+		Element configBeanEl = el.getChild("configBean",T2_WORKFLOW_NAMESPACE);
+		assertEquals("The encoding type should be dataflow","dataflow",configBeanEl.getAttribute("encoding").getValue());
+		assertEquals("There should be 1 child called dataflow",1,configBeanEl.getChildren("dataflow",T2_WORKFLOW_NAMESPACE).size());
+		Element dataflowEl = configBeanEl.getChild("dataflow",T2_WORKFLOW_NAMESPACE);
+		assertNotNull("there should be the attribute ref",dataflowEl.getAttribute("ref"));
 	}
 	
 	private String elementToString(Element element) {

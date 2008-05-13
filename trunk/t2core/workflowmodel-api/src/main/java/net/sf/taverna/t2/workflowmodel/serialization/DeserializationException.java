@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.serialization;
 
-import net.sf.taverna.t2.workflowmodel.EditException;
 
 public class DeserializationException extends Exception {
 
@@ -8,7 +7,7 @@ public class DeserializationException extends Exception {
 		super(msg);
 	}
 
-	public DeserializationException(String msg, EditException cause) {
+	public DeserializationException(String msg, Exception cause) {
 		super(msg,cause);
 	}
 

@@ -3,6 +3,9 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.serialization.DummyActivity;
 
@@ -17,7 +20,7 @@ public class ActivityXMLDeserializerTest extends DeserializerTestsHelper {
 		@Test
 		public void testActivityDeserialization() throws Exception {
 			Element el = loadXMLFragment("activity.xml");
-			Activity<?> activity = deserializer.deserializeActivity(el);
+			Activity<?> activity = deserializer.deserializeActivity(el,new HashMap<String,Element>());
 			
 			assertNotNull("The activity should not be NULL",activity);
 			assertTrue("should be a DummyActivity",activity instanceof DummyActivity);

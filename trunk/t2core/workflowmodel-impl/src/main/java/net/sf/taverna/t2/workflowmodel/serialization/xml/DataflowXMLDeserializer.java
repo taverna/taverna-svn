@@ -7,6 +7,7 @@ import java.util.Map;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
@@ -24,8 +25,11 @@ public class DataflowXMLDeserializer extends AbstractXMLDeserializer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Dataflow deserializeDataflow(Element element) throws EditException, DeserializationException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public Dataflow deserializeDataflow(Element element,Map<String,Element> innerDataflowElements) throws EditException, DeserializationException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 		Dataflow df = edits.createDataflow();
+		
+		String name = element.getChildText(NAME,T2_WORKFLOW_NAMESPACE);
+		((DataflowImpl)df).setLocalName(name);
 		
 		Element inputPorts = element.getChild(DATAFLOW_INPUT_PORTS,T2_WORKFLOW_NAMESPACE);
 		Element outputPorts = element.getChild(DATAFLOW_OUTPUT_PORTS,T2_WORKFLOW_NAMESPACE);
@@ -37,7 +41,7 @@ public class DataflowXMLDeserializer extends AbstractXMLDeserializer {
 		//processors
 		Element processorsElement = element.getChild(PROCESSORS,T2_WORKFLOW_NAMESPACE);
 		for(Element procElement : (List<Element>)processorsElement.getChildren(PROCESSOR,T2_WORKFLOW_NAMESPACE)) {
-			Processor p = ProcessorXMLDeserializer.getInstance().deserializeProcessor(procElement);
+			Processor p = ProcessorXMLDeserializer.getInstance().deserializeProcessor(procElement,innerDataflowElements);
 			createdProcessors.put(p.getLocalName(),p);
 			edits.getAddProcessorEdit(df, p).doEdit();
 		}

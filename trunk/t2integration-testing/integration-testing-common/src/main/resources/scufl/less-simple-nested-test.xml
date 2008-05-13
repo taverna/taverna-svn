@@ -18,7 +18,7 @@ out.add(list);</s:scriptvalue>
   <s:processor name="Nested_Workflow">
     <s:workflow>
       <s:scufl version="0.2" log="0">
-        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:cf5abaf3-5c23-4abb-a6b0-94eebbb83d31" author="" title="less-simple-test" />
+        <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:cf5abaf3-5c23-4abb-a6b0-94eebbb83d31" author="" title="less-simple-test-inner-dataflow" />
         <s:processor name="no_input">
           <s:beanshell>
             <s:scriptvalue>String no_input_out = "xxx";</s:scriptvalue>

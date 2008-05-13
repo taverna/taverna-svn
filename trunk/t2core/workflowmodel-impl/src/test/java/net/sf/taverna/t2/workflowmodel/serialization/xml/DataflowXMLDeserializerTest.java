@@ -3,6 +3,9 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.HashMap;
+
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -21,7 +24,7 @@ public class DataflowXMLDeserializerTest extends DeserializerTestsHelper {
 	@Test
 	public void testMerge() throws Exception {
 		Element el = loadXMLFragment("dataflow_with_merge.xml");
-		Dataflow df = deserializer.deserializeDataflow(el);
+		Dataflow df = deserializer.deserializeDataflow(el,new HashMap<String, Element>());
 		
 		assertEquals("There should be 2 processors",2,df.getProcessors().size());
 		Processor top=df.getProcessors().get(0);
@@ -39,10 +42,17 @@ public class DataflowXMLDeserializerTest extends DeserializerTestsHelper {
 		assertTrue("Link sink should be Merge port",link.getSink() instanceof MergeInputPort);
 	}
 	
+	@Test 
+	public void testDataflowName() throws Exception {
+		Element element = loadXMLFragment("empty_dataflow_with_ports.xml");
+		Dataflow df = deserializer.deserializeDataflow(element,new HashMap<String, Element>());
+		assertEquals("dataflow should have the name george","george",df.getLocalName());
+	}
+	
 	@Test
 	public void testDataflowPorts() throws Exception {
 		Element element = loadXMLFragment("empty_dataflow_with_ports.xml");
-		Dataflow df = deserializer.deserializeDataflow(element);
+		Dataflow df = deserializer.deserializeDataflow(element,new HashMap<String, Element>());
 		
 		assertEquals("there should be 2 input ports",2,df.getInputPorts().size());
 		assertEquals("there should be 1 output port",1,df.getOutputPorts().size());
@@ -64,7 +74,7 @@ public class DataflowXMLDeserializerTest extends DeserializerTestsHelper {
 	@Test
 	public void testDataflowConditionLink() throws Exception {
 		Element element = loadXMLFragment("dataflow_with_condition.xml");
-		Dataflow df = deserializer.deserializeDataflow(element);
+		Dataflow df = deserializer.deserializeDataflow(element,new HashMap<String, Element>());
 		
 		assertEquals("There should be 2 processors",2,df.getProcessors().size());
 		Processor pA = df.getProcessors().get(0);
@@ -81,7 +91,7 @@ public class DataflowXMLDeserializerTest extends DeserializerTestsHelper {
 	@Test
 	public void testDataflowProcessor() throws Exception {
 		Element element = loadXMLFragment("dataflow_with_unlinked_processor.xml");
-		Dataflow df = deserializer.deserializeDataflow(element);
+		Dataflow df = deserializer.deserializeDataflow(element,new HashMap<String, Element>());
 		assertEquals("There should be 1 processor",1,df.getProcessors().size());
 		assertEquals("Processor name should be a_processor","a_processor",df.getProcessors().get(0).getLocalName());	
 	}
@@ -90,7 +100,7 @@ public class DataflowXMLDeserializerTest extends DeserializerTestsHelper {
 	@Test
 	public void testDataflowDataLinks() throws Exception {
 		Element el = loadXMLFragment("dataflow_datalinks.xml");
-		Dataflow df = deserializer.deserializeDataflow(el);
+		Dataflow df = deserializer.deserializeDataflow(el,new HashMap<String, Element>());
 		
 		assertEquals("There should be 2 processors",2,df.getProcessors().size());
 		assertEquals("There should be 2 datalinks",2,df.getLinks().size());

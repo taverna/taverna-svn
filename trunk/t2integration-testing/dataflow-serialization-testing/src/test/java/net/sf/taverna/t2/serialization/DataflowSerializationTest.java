@@ -16,21 +16,20 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
-import net.sf.taverna.t2.workflowmodel.serialization.Deserializer;
-import net.sf.taverna.t2.workflowmodel.serialization.DeserializerImpl;
-import net.sf.taverna.t2.workflowmodel.serialization.Serializer;
-import net.sf.taverna.t2.workflowmodel.serialization.SerializerImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
+import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializerImpl;
 
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
 public class DataflowSerializationTest extends InvocationTestHelper {
 	
-	private static Serializer serializer = new SerializerImpl();
-	private static Deserializer deserializer = new DeserializerImpl();
+	private static XMLSerializer serializer = new XMLSerializerImpl();
+	private static XMLDeserializer deserializer = new XMLDeserializerImpl();
 	
 	@Test
 	public void testSimpleSerialization() throws Exception {
@@ -109,10 +108,46 @@ public class DataflowSerializationTest extends InvocationTestHelper {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	@Ignore("Nested workflows are not yet handled")
+	public void testSimpleSerializeNestedRoundTripAndInvoke() throws Exception {
+		Dataflow dataflow_orig = translateScuflFile("simple-nested-test.xml");
+		Element el = serializer.serializeDataflow(dataflow_orig);
+		Dataflow dataflow = deserializer.deserializeDataflow(el);
+		
+		Element el2=serializer.serializeDataflow(dataflow);
+		XMLOutputter outputter = new XMLOutputter();
+		assertEquals("XML of for round trip serialized dataflow should match",outputter.outputString(el),outputter.outputString(el2));
+		
+		DataflowValidationReport report = validateDataflow(dataflow);
+		assertTrue("Unsatisfied processor found during validation",report.getUnsatisfiedEntities().size() == 0);
+		assertTrue("Failed processors found during validation",report.getFailedEntities().size() == 0);
+		assertTrue("Unresolved outputs found during validation",report.getUnresolvedOutputs().size() == 0);
+		assertTrue("Validation failed",report.isValid());
+
+		WorkflowInstanceFacade facade;
+		facade = new EditsImpl().createWorkflowInstanceFacade(dataflow,context,"");
+		CaptureResultsListener listener = new CaptureResultsListener(dataflow,dataFacade);
+		facade.addResultListener(listener);
+		
+		facade.fire();
+		
+		waitForCompletion(listener);
+		
+		assertNotNull("There should have been an output event handler named 'out'",listener.getResult("out"));
+		assertTrue("There result should be a list",listener.getResult("out") instanceof List);
+		List<String> result = (List<String>)listener.getResult("out");
+		assertEquals("one-x",result.get(0));
+		assertEquals("two-x",result.get(1));
+		assertEquals("three-x",result.get(2));
+		assertEquals("four-x",result.get(3));
+		assertEquals("five-x",result.get(4));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
 	public void testSerializeNestedRoundTripAndInvoke() throws Exception {
 		Dataflow dataflow = translateScuflFile("less-simple-nested-test.xml");
 		Element el = serializer.serializeDataflow(dataflow);
+		System.out.println(new org.jdom.output.XMLOutputter().outputString(el));
 		dataflow = deserializer.deserializeDataflow(el);
 		
 		DataflowValidationReport report = validateDataflow(dataflow);

@@ -2,6 +2,9 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.HashMap;
+
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
@@ -17,7 +20,7 @@ public class ProcessorXMLDeserializerTest extends DeserializerTestsHelper {
 	@Test
 	public void testProcessor() throws Exception {
 		Element el = loadXMLFragment("processor.xml");
-		Processor p = deserializer.deserializeProcessor(el);
+		Processor p = deserializer.deserializeProcessor(el,new HashMap<String, Element>());
 		
 		assertEquals("Local name should be george","george",p.getLocalName());
 		assertEquals("there should be 1 input port",1,p.getInputPorts().size());

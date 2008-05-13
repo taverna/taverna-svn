@@ -68,6 +68,8 @@ public class ModelTranslatorTest extends TranslatorTestHelper {
 	public void translateAndValidateTest() throws Exception {
 		DataflowImpl dataflow = (DataflowImpl) translateScuflFile("ModifiedBiomartAndEMBOSSAnalysis.xml");
 		
+		assertEquals("the name should have been transferred during the translation","BiomartAndEMBOSSAnalysis",dataflow.getLocalName());
+		
 		DataflowValidationReport report = dataflow.checkValidity();
 		for (TokenProcessingEntity unsatisfiedProcessor : report.getUnsatisfiedEntities()) {
 			System.out.println(unsatisfiedProcessor.getLocalName());

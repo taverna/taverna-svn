@@ -1,9 +1,12 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import java.util.List;
+import java.util.Map;
 
+import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
+import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
 import org.jdom.Element;
 
@@ -19,9 +22,9 @@ public class ActivityXMLDeserializer extends AbstractXMLDeserializer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Activity<?> deserializeActivity(Element element)
+	public Activity<?> deserializeActivity(Element element,Map<String,Element> innerDataflowElements)
 			throws ActivityConfigurationException, ClassNotFoundException,
-			InstantiationException, IllegalAccessException {
+			InstantiationException, IllegalAccessException, EditException, DeserializationException {
 		Element ravenElement = element.getChild(RAVEN, T2_WORKFLOW_NAMESPACE);
 		ClassLoader cl = XMLDeserializerImpl.class.getClassLoader();
 		if (ravenElement != null) {
@@ -41,7 +44,21 @@ public class ActivityXMLDeserializer extends AbstractXMLDeserializer {
 		Class<? extends Activity> c = (Class<? extends Activity>) cl
 				.loadClass(className);
 		Activity<Object> activity = c.newInstance();
+		
+		// Handle the configuration of the activity
+		Element configElement = element.getChild(CONFIG_BEAN,
+				T2_WORKFLOW_NAMESPACE);
+		Object configObject=null;
+		if (DATAFLOW_ENCODING.equals(configElement.getAttributeValue(BEAN_ENCODING))) {
+			String ref = configElement.getChild(DATAFLOW,T2_WORKFLOW_NAMESPACE).getAttributeValue(DATAFLOW_REFERENCE);
+			configObject = resolveDataflowReference(ref,innerDataflowElements);
+		}
+		else {
+			configObject = createBean(configElement, cl);
+		}
+		activity.configure(configObject);
 
+		//port mappings
 		Element ipElement = element.getChild(INPUT_MAP, T2_WORKFLOW_NAMESPACE);
 		for (Element mapElement : (List<Element>) (ipElement.getChildren(MAP,
 				T2_WORKFLOW_NAMESPACE))) {
@@ -60,11 +77,15 @@ public class ActivityXMLDeserializer extends AbstractXMLDeserializer {
 					processorOutputName);
 		}
 
-		// Handle the configuration of the activity
-		Element configElement = element.getChild(CONFIG_BEAN,
-				T2_WORKFLOW_NAMESPACE);
-		Object configObject = createBean(configElement, cl);
-		activity.configure(configObject);
+		
 		return activity;
 	}
+
+	private Object resolveDataflowReference(String ref,
+			Map<String, Element> innerDataflowElements) throws EditException, DeserializationException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Element dfElement = innerDataflowElements.get(ref);
+		return DataflowXMLDeserializer.getInstance().deserializeDataflow(dfElement, innerDataflowElements);
+	}
+
+	
 }

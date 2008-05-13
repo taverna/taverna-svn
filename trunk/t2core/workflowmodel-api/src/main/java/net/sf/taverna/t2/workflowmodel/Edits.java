@@ -352,4 +352,6 @@ public interface Edits {
 	 */
 	OutputPort buildActivityOutputPort(String portName, int portDepth,
 			int portGranularDepth);
+	
+	Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow, String newName);
 }

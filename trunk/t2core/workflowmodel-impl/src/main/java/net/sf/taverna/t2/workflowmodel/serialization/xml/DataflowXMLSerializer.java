@@ -27,6 +27,10 @@ public class DataflowXMLSerializer extends AbstractXMLSerializer {
 			throws SerializationException {
 		Element result = new Element(DATAFLOW, T2_WORKFLOW_NAMESPACE);
 		try {
+			
+			Element name=new Element(NAME,T2_WORKFLOW_NAMESPACE);
+			name.setText(df.getLocalName());
+			result.addContent(name);
 
 			// do dataflow inputs and outputs
 			result.addContent(dataflowInputPorts(df.getInputPorts()));

@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 import static org.junit.Assert.assertEquals;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edits;
+import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 
 import org.jdom.Element;
@@ -29,6 +30,15 @@ public class DataflowXMLSerializerTest implements XMLSerializationConstants {
 		assertEquals("depth should be 1","1",port.getChild("depth",T2_WORKFLOW_NAMESPACE).getText());
 		assertEquals("granular depth should be 0","0",port.getChild("granularDepth",T2_WORKFLOW_NAMESPACE).getText());
 		
+	}
+	
+	@Test
+	public void testDataflowName() throws Exception {
+		Dataflow df = edits.createDataflow();
+		((DataflowImpl)df).setLocalName("the-name");
+		Element el = serializer.serializeDataflow(df);
+		assertEquals("there should be 1 child called name",1,el.getChildren("name",T2_WORKFLOW_NAMESPACE).size());
+		assertEquals("the name should be the-name","the-name",el.getChildText("name",T2_WORKFLOW_NAMESPACE));
 	}
 	
 	@Test

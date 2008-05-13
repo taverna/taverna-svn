@@ -116,6 +116,8 @@ public class WorkflowModelTranslator {
 
 		try {
 
+			translator.edits.getUpdateDataflowNameEdit(dataflow, scuflModel.getDescription().getTitle()).doEdit();
+			
 			translator.replaceDefaultsWithStringConstants();
 
 			translator.createInputs(dataflow);

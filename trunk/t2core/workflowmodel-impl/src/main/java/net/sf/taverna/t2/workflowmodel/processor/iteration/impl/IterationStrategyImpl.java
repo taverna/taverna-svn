@@ -4,12 +4,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.swing.tree.TreeNode;
-
-import org.jdom.Element;
 
 import net.sf.taverna.t2.cloudone.datamanager.DataManager;
 import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
@@ -27,6 +26,8 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatch
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializationConstants;
+
+import org.jdom.Element;
 
 /**
  * A single layer of iteration strategy, consuming individual named inputs and
@@ -74,7 +75,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 			pushEvent(completion);
 		}
 
-		private void pushEvent(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
+		private void pushEvent(
+				IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 			// System.out.println("Tnode : "+e);
 			if (stack != null) {
 				IterationStrategyImpl below = stack
@@ -112,7 +114,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @return
 	 */
 	protected Element asXML() {
-		Element strategyElement = new Element("strategy",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
+		Element strategyElement = new Element("strategy",
+				XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		if (terminal.getChildCount() > 0) {
 			AbstractIterationStrategyNode node = (AbstractIterationStrategyNode) (terminal
 					.getChildAt(0));
@@ -124,14 +127,18 @@ public class IterationStrategyImpl implements IterationStrategy {
 	private static Element elementForNode(AbstractIterationStrategyNode node) {
 		Element nodeElement = null;
 		if (node instanceof DotProduct) {
-			nodeElement = new Element("dot",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("dot",
+					XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof CrossProduct) {
-			nodeElement = new Element("cross",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("cross",
+					XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof PrefixDotProduct) {
-			nodeElement = new Element("prefix",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("prefix",
+					XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 		} else if (node instanceof NamedInputPortNode) {
 			NamedInputPortNode nipn = (NamedInputPortNode) node;
-			nodeElement = new Element("port",XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
+			nodeElement = new Element("port",
+					XMLSerializationConstants.T2_WORKFLOW_NAMESPACE);
 			nodeElement.setAttribute("name", nipn.getPortName());
 			nodeElement.setAttribute("depth", nipn.getCardinality() + "");
 		} else {
@@ -155,10 +162,10 @@ public class IterationStrategyImpl implements IterationStrategy {
 		inputs.clear();
 		terminal.clear();
 		if (!strategyElement.getChildren().isEmpty()) {
-			AbstractIterationStrategyNode node = nodeForElement((Element) strategyElement.getChildren().get(0));
-			node.setParent(terminal);
-			if (node instanceof NamedInputPortNode) {
-				addInput((NamedInputPortNode)node);
+			for (Element childElement : (List<Element>) strategyElement
+					.getChildren()) {
+				AbstractIterationStrategyNode node = nodeForElement(childElement);
+				node.setParent(terminal);
 			}
 		}
 	}
@@ -176,6 +183,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			String portName = e.getAttributeValue("name");
 			int portDepth = Integer.parseInt(e.getAttributeValue("depth"));
 			node = new NamedInputPortNode(portName, portDepth);
+			addInput((NamedInputPortNode)node);
 		}
 		for (Object child : e.getChildren()) {
 			Element childElement = (Element) child;
@@ -192,7 +200,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * 
 	 * @param j
 	 */
-	@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 compilation errors caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
+	@SuppressWarnings("unchecked")
+	// suppressed to avoid jdk1.5 compilation errors caused by the declaration
+	// IterationInternalEvent<? extends IterationInternalEvent<?>> e
 	protected void receiveEvent(IterationInternalEvent e) {
 		// If we ever get this method called we know we're not the top layer in
 		// the dispatch stack and that we need to perform wrap / unwrap of data
@@ -222,7 +232,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 					receiveData(portName, owningProcess, indexArray,
 							childDataRef, e.getContext());
 				}
-				receiveCompletion(portName, owningProcess, new int[] {}, e.getContext());
+				receiveCompletion(portName, owningProcess, new int[] {}, e
+						.getContext());
 			}
 		}
 		// Event was a completion event, push it through unmodified to the
@@ -247,8 +258,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @throws WorkflowStructureException
 	 */
 	public void receiveData(String inputPortName, String owningProcess,
-			int[] indexArray, EntityIdentifier dataReference, InvocationContext context)
-			throws WorkflowStructureException {
+			int[] indexArray, EntityIdentifier dataReference,
+			InvocationContext context) throws WorkflowStructureException {
 		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
 		dataMap.put(inputPortName, dataReference);
 		Job newJob = new Job(owningProcess, indexArray, dataMap, context);
@@ -256,7 +267,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 	}
 
 	public void receiveCompletion(String inputPortName, String owningProcess,
-			int[] completionArray, InvocationContext context) throws WorkflowStructureException {
+			int[] completionArray, InvocationContext context)
+			throws WorkflowStructureException {
 		nodeForName(inputPortName).receiveCompletion(0,
 				new Completion(owningProcess, completionArray, context));
 	}
@@ -322,7 +334,8 @@ public class IterationStrategyImpl implements IterationStrategy {
 		}
 	}
 
-	public int getIterationDepth(Map<String, Integer> inputDepths) throws IterationTypeMismatchException {
+	public int getIterationDepth(Map<String, Integer> inputDepths)
+			throws IterationTypeMismatchException {
 		return getTerminal().getIterationDepth(inputDepths);
 	}
 

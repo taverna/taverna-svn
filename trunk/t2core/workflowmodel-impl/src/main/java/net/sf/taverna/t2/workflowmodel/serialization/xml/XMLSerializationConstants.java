@@ -81,7 +81,14 @@ public interface XMLSerializationConstants {
 	
 	static final String JDOMXML_ENCODING="jdomxml";
 	static final String XSTREAM_ENCODING="xstream";
+	static final String DATAFLOW_ENCODING="dataflow";
 	
 	static final String DATAFLOW_ROLE="role";
+	static final String DATAFLOW_REFERENCE="ref";
+	static final String DATAFLOW_ID="id";
+	
+	//Attribute values
+	static final String DATAFLOW_ROLE_TOP="top";
+	static final String DATAFLOW_ROLE_NESTED="nested";
 	
 }

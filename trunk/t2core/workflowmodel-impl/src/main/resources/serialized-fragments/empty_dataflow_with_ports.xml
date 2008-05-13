@@ -1,4 +1,5 @@
 <dataflow role="top" xmlns="http://taverna.sf.net/2008/xml/t2flow">
+	<name>george</name>
 	<inputPorts>
 		<port>
 			<name>input1</name>

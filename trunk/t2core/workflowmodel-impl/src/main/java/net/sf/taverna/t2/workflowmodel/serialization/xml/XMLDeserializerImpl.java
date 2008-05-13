@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
@@ -15,23 +18,37 @@ public class XMLDeserializerImpl implements XMLDeserializer, XMLSerializationCon
 
 	public Dataflow deserializeDataflow(Element element)
 			throws DeserializationException,EditException {
-		Element topDataflow = element.getChild(DATAFLOW,T2_WORKFLOW_NAMESPACE);
+		Element topDataflow = findTopDataflow(element);
+		if (topDataflow==null) throw new DeserializationException("No top level dataflow defined in the XML document");
+		Map<String,Element> innerDataflowElements = gatherInnerDataflows(element);
 		try {
-			return DataflowXMLDeserializer.getInstance().deserializeDataflow(topDataflow);
-		} catch (ActivityConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return DataflowXMLDeserializer.getInstance().deserializeDataflow(topDataflow,innerDataflowElements);
+		} catch (Exception e) {
+			throw new DeserializationException("An error occurred deserializing the dataflow:"+e.getMessage(),e);
 		}
-		return null;
 	}
 
+	private Element findTopDataflow(Element element) {
+		Element result = null;
+		for (Object elObj : element.getChildren(DATAFLOW,T2_WORKFLOW_NAMESPACE)) {
+			Element dataflowElement = (Element)elObj;
+			if (DATAFLOW_ROLE_TOP.equals(dataflowElement.getAttribute(DATAFLOW_ROLE).getValue())) {
+				result=dataflowElement;
+			}
+		}
+		return result;
+	}
+
+	private Map<String, Element> gatherInnerDataflows(Element element) throws DeserializationException {
+		Map<String,Element> result=new HashMap<String, Element>();
+		for (Object elObj : element.getChildren(DATAFLOW,T2_WORKFLOW_NAMESPACE)) {
+			Element dataflowElement = (Element)elObj;
+			if (DATAFLOW_ROLE_NESTED.equals(dataflowElement.getAttribute(DATAFLOW_ROLE).getValue())) {
+				String id = dataflowElement.getAttributeValue(DATAFLOW_ID);
+				if (result.containsKey(id)) throw new DeserializationException("Duplicate dataflow id:"+id);
+				result.put(id,dataflowElement);
+			}
+		}
+		return result;
+	}
 }

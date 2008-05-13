@@ -216,4 +216,9 @@ public class EditsImpl implements Edits {
 		return new AddCreatorEdit(annotationAssertion, person);
 	}
 
+	public Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow,
+			String newName) {
+		return new UpdateDataflowNameEdit(dataflow,newName);
+	}
+
 }

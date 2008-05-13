@@ -6,6 +6,7 @@ import java.io.StringReader;
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -44,22 +45,44 @@ public abstract class AbstractXMLSerializer implements XMLSerializationConstants
 
 	protected Element beanAsElement(Object obj) throws JDOMException,
 			IOException {
-		// FIXME: turn into separate handlers when adding the Dataflow case.
-		// Don't want loads of if/else's
 		Element bean = new Element(CONFIG_BEAN, T2_WORKFLOW_NAMESPACE);
 		if (obj instanceof Element) {
-			bean.setAttribute(BEAN_ENCODING, JDOMXML_ENCODING);
-			bean.addContent((Element) obj);
-		} else {
-			bean.setAttribute(BEAN_ENCODING, XSTREAM_ENCODING);
-			XStream xstream = new XStream(new DomDriver());
-			SAXBuilder builder = new SAXBuilder();
-			Element configElement = builder.build(
-					new StringReader(xstream.toXML(obj))).getRootElement();
-			configElement.getParent().removeContent(configElement);
-			bean.addContent(configElement);
+			populateBeanElementForElement((Element)obj, bean);
+		} 
+		else if (obj instanceof Dataflow) {
+			populateBeanElementForDataflow((Dataflow)obj, bean);
+		} 
+		else {
+			populateBeanElementFromXStream(obj, bean);
 		}
 		return bean;
+	}
+
+	private void populateBeanElementFromXStream(Object obj, Element bean)
+			throws JDOMException, IOException {
+		bean.setAttribute(BEAN_ENCODING, XSTREAM_ENCODING);
+		XStream xstream = new XStream(new DomDriver());
+		SAXBuilder builder = new SAXBuilder();
+		Element configElement = builder.build(
+				new StringReader(xstream.toXML(obj))).getRootElement();
+		configElement.getParent().removeContent(configElement);
+		bean.addContent(configElement);
+	}
+
+	private void populateBeanElementForDataflow(Dataflow dataflow, Element bean) {
+		
+		bean.setAttribute(BEAN_ENCODING,DATAFLOW_ENCODING);
+		Element dataflowElement = new Element(DATAFLOW,T2_WORKFLOW_NAMESPACE);
+		
+		//FIXME: localName is not guarunteed to be unique
+		dataflowElement.setAttribute(DATAFLOW_REFERENCE,dataflow.getLocalName());
+		
+		bean.addContent(dataflowElement);
+	}
+
+	private void populateBeanElementForElement(Element el, Element bean) {
+		bean.setAttribute(BEAN_ENCODING, JDOMXML_ENCODING);
+		bean.addContent(el);
 	}
 	
 	protected Element annotationsToXML(Annotated<?> annotated) {

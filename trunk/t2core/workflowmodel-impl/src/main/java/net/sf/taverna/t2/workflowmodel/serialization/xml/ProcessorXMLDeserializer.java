@@ -1,12 +1,14 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import java.util.List;
+import java.util.Map;
 
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyStackImpl;
+import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
 import org.jdom.Element;
 
@@ -22,9 +24,16 @@ public class ProcessorXMLDeserializer extends AbstractXMLDeserializer {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Processor deserializeProcessor(Element el) throws EditException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+	public Processor deserializeProcessor(Element el,Map<String,Element>innerDataflowElements) throws EditException, ActivityConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException, DeserializationException {
 		String name=el.getChildText(NAME,T2_WORKFLOW_NAMESPACE);
 		Processor result=edits.createProcessor(name);
+		
+		//activities
+		Element activities=el.getChild(ACTIVITIES,T2_WORKFLOW_NAMESPACE);
+		for (Element activity : (List<Element>)activities.getChildren(ACTIVITY,T2_WORKFLOW_NAMESPACE)) {
+			Activity<?> a = ActivityXMLDeserializer.getInstance().deserializeActivity(activity,innerDataflowElements);
+			edits.getAddActivityEdit(result, a).doEdit();
+		}
 		
 		//ports
 		Element inputPorts = el.getChild(PROCESSOR_INPUT_PORTS,T2_WORKFLOW_NAMESPACE);
@@ -41,13 +50,6 @@ public class ProcessorXMLDeserializer extends AbstractXMLDeserializer {
 			int portDepth = Integer.valueOf(outputPort.getChildText(DEPTH,T2_WORKFLOW_NAMESPACE));
 			int granularDepth = Integer.valueOf(outputPort.getChildText(GRANULAR_DEPTH,T2_WORKFLOW_NAMESPACE));
 			edits.getCreateProcessorOutputPortEdit(result, portName, portDepth, granularDepth).doEdit();
-		}
-		
-		//activities
-		Element activities=el.getChild(ACTIVITIES,T2_WORKFLOW_NAMESPACE);
-		for (Element activity : (List<Element>)activities.getChildren(ACTIVITY,T2_WORKFLOW_NAMESPACE)) {
-			Activity<?> a = ActivityXMLDeserializer.getInstance().deserializeActivity(activity);
-			edits.getAddActivityEdit(result, a).doEdit();
 		}
 		
 		//TODO: annotations

@@ -599,6 +599,14 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 			return true;
 		}
 	}
+	
+	/**
+	 * Sets the local name for the dataflow
+	 * @param localName
+	 */
+	public void setLocalName(String localName) {
+		name=localName;
+	}
 
 	public void fire(String owningProcess, InvocationContext context) {
 		String newOwningProcess = owningProcess + ":" + getLocalName();
