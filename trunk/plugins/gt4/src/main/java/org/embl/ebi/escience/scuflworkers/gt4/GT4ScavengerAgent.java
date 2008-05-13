@@ -26,9 +26,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: GT4ScavengerAgent.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-05-09 02:37:01 $
+ * Last modified on   $Date: 2008-05-13 01:36:49 $
  *               by   $Author: tanwei $
  * Created on 01-Dec-2007
  *****************************************************************/
@@ -64,14 +64,14 @@ public class GT4ScavengerAgent {
 	private static Logger logger = Logger.getLogger(GT4ScavengerAgent.class);
 		
 	/**
-	 * Returns a list of soaplab categories, containing a list of their services.
-	 * Throws MissingSoaplabException if an installation cannot be found.
+	 * Returns a list of GT4 services, containing a list of their operations.
+	 * Throws Exception if a service cannot be found.
 	 */	
-	public static List<GT4Service> load(String indexURL) throws Exception{
+	public static List<GT4Service> load(String indexURL, ServiceQuery sq) throws Exception{
 		List<GT4Service> services=new ArrayList<GT4Service>();
 		
 		// Get the categories for this installation
-		boolean findServices = loadServices(indexURL,services);
+		boolean findServices = loadServices(indexURL,sq,services);
 		if (!findServices) {
 			
 			throw new Exception("Unable to locate a GT4 index at \n" + indexURL);
@@ -82,47 +82,49 @@ public class GT4ScavengerAgent {
 	}
 	
 	//load services & operations by caGrid discovery service API
-	private static boolean loadServices(String indexURL, List<GT4Service>services) throws Exception{
+	private static boolean loadServices(String indexURL, ServiceQuery sq, List<GT4Service>services) throws Exception{
 		boolean foundSome = false;
 		//TODO separate index URL and the semantic querying clause
 		//like: http://indexURL??SearchString==Scott
 		String indexAddress;
+		//@SuppressWarnings("unused")
 		String semanticQueryingClause;
 		String queryingItem;
 		String queryingValue;
-		int n1 = indexURL.indexOf("??");
-		int n2 = indexURL.indexOf("==");
+		//int n1 = indexURL.indexOf("??");
+		//int n2 = indexURL.indexOf("==");
 		System.out.println("==================================================");
 		System.out.println("Start to generate Scavenger");		
 		EndpointReferenceType[] servicesList = null;
-		//cannot find ??--list all services
-		if(n1==-1){
+		//no semantic service query
+		if(sq==null){
+			semanticQueryingClause="";
 			System.out.println("Retrieving all services from the index: "+ indexURL);
 			System.out.println("==================================================");
 			DiscoveryClient client = new DiscoveryClient(indexURL);
 			servicesList = client.getAllServices(true);		
 		}
 		else {		
-			indexAddress = indexURL.substring(0, n1);
+			indexAddress = indexURL;
 			System.out.println("Service Index URL: "+indexAddress);
-			semanticQueryingClause = indexURL.substring(n1+2);
-			queryingItem = indexURL.substring(n1+2,n2);
-			queryingValue = indexURL.substring(n2+2);
+			//semanticQueryingClause = indexURL.substring(n1+2);
+			queryingItem = sq.queryCriteria;
+			queryingValue = sq.queryValue;
 			System.out.println("Service Query: " + queryingItem + "  == "+ queryingValue);
 		    System.out.println("==================================================");
 			DiscoveryClient client = new DiscoveryClient(indexAddress);
 			//TODO load service metadata from index service			 
 			  //TOTO: semantic based service searching
 			  //query by Search String
-			 if(queryingItem.equals("SearchString")){
+			 if(queryingItem.equals("Search String")){
 				  servicesList = client.discoverServicesBySearchString(queryingValue);			  
 			  }
 			  //query by Research Center Name
-			  else if(queryingItem.equals("ResearchCenter")){
+			  else if(queryingItem.equals("Research Center")){
 				  servicesList = client.discoverServicesByResearchCenter(queryingValue);			  
 			  }
 			//query by Point of Contact
-			  else if(queryingItem.equals("PointOfContact")){
+			  else if(queryingItem.equals("Point Of Contact")){
 				  PointOfContact poc = new PointOfContact();
 				  int n3 = queryingValue.indexOf(" ");
 				  String firstName = queryingValue.substring(0,n3);
@@ -132,31 +134,48 @@ public class GT4ScavengerAgent {
 				  servicesList = client.discoverServicesByPointOfContact(poc);			  
 			  }
 			//query by Service Name
-			  else if(queryingItem.equals("Name")){
+			  else if(queryingItem.equals("Service Name")){
 				  servicesList = client.discoverServicesByName(queryingValue);		  
 			  }
 			//query by Operation Name
-			  else if(queryingItem.equals("OperationName")){
+			  else if(queryingItem.equals("Operation Name")){
 				  servicesList = client.discoverServicesByOperationName(queryingValue);		  
 			  }
 			//query by Operation Input
-			  else if(queryingItem.equals("OperationInput")){
+			  else if(queryingItem.equals("Operation Input")){
 				  UMLClass umlClass = new UMLClass();
 			        umlClass.setClassName(queryingValue);
 				  servicesList = client.discoverServicesByOperationInput(umlClass);		  
 			  }
 			//query by Operation Output
-			  else if(queryingItem.equals("OperationOutput")){
+			  else if(queryingItem.equals("Operation Output")){
 				  UMLClass umlClass = new UMLClass();
 			        umlClass.setClassName(queryingValue);
 				  servicesList = client.discoverServicesByOperationOutput(umlClass);		  
 			  }
 			//query by Operation Class
-			  else if(queryingItem.equals("OperationClass")){
+			  else if(queryingItem.equals("Operation Class")){
 				  UMLClass umlClass = new UMLClass();
 			        umlClass.setClassName(queryingValue);
 				  servicesList = client.discoverServicesByOperationClass(umlClass);		  
-			  }	  
+			  }
+			 //discoverServicesByConceptCode("C43418")
+			  else if(queryingItem.equals("Concept Code")){
+				  servicesList = client.discoverServicesByConceptCode(queryingValue);		  
+			  }
+			 //discoverServicesByOperationConceptCode
+			 //discoverServicesByDataConceptCode
+			 //discoverServicesByPermissibleValue
+			 //getAllDataServices
+			 //discoverDataServicesByDomainModel("caCore")
+			  else if(queryingItem.equals("Domain Model for Data Services")){
+				  servicesList = client.discoverDataServicesByDomainModel(queryingValue);		  
+			  }
+			 //discoverDataServicesByModelConceptCode
+			 //discoverDataServicesByExposedClass
+			 //discoverDataServicesByPermissibleValue
+			 //discoverDataServicesByAssociationsWithClass
+			 //discoverByFilter
 		}
 	        System.out.println("DiscoveryClient loaded and EPR to services returned.");
 	        for (EndpointReferenceType epr : servicesList) {

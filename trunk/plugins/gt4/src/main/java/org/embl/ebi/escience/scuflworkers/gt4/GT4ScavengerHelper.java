@@ -13,9 +13,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
@@ -35,7 +38,88 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 	public String getScavengerDescription() {
 		return "Add new GT4 scavenger...";
 	}
+	 public ActionListener getListener(ScavengerTree theScavenger) {
+	        final ScavengerTree s = theScavenger;
+	        return new ActionListener() {
+	            public void actionPerformed(ActionEvent ae) {
 
+	                final JDialog dialog = new JDialog(s.getContainingFrame(),
+	                        "Add Your Custom Service Query", true);
+	                final GT4ScavengerDialog gtd = new GT4ScavengerDialog();
+	                dialog.getContentPane().add(gtd);
+	                JButton accept = new JButton("Okay");
+	                JButton cancel = new JButton("Cancel");
+	                gtd.add(accept);
+	                gtd.add(cancel);
+	                accept.addActionListener(new ActionListener() {
+	                    public void actionPerformed(ActionEvent ae2) {
+	                        if (dialog.isVisible()) {
+	                        	String indexURL = "";
+	                            String queryCriteria = "";
+	                            String queryValue = "";
+	                            ServiceQuery squery = null;
+	                            
+	                            if (gtd.getIndexServiceURL().equals(""))
+	                            	//default index URL
+	                                indexURL = "http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService";
+	                            else
+	                                indexURL = gtd.getIndexServiceURL();
+	                            
+	                            if (!gtd.getQueryCriteria().equals("None"))
+	                                squery = new ServiceQuery(gtd.getQueryCriteria(),gtd.getQueryValue());
+	                            
+	                            try {
+	                            	final String url = indexURL;
+	                            	final ServiceQuery sq = squery;
+	                            	Thread t = new Thread("Adding GT4 scavenger") {
+	            						public void run() {
+	            							s.scavengingStarting("Adding GT4 scavenger");
+	            							try {
+	            								GT4Scavenger gs = new GT4Scavenger(url, sq);
+	                                            s.addScavenger(gs);
+	            							} catch (ScavengerCreationException sce) {
+	            								JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),
+	            										"Exception!", JOptionPane.ERROR_MESSAGE);
+	            							}
+	            							s.scavengingDone();
+	            						}
+	                            	};
+	                            	t.start();
+	                            } catch (Exception e) {
+	                                JOptionPane
+	                                        .showMessageDialog(s.getContainingFrame(),
+	                                                "Unable to create scavenger!\n"
+	                                                        + e.getMessage(),
+	                                                "Exception!",
+	                                                JOptionPane.ERROR_MESSAGE);
+	                                logger.error("Exception thrown:", e);
+	                            } finally {
+	                                dialog.setVisible(false);
+	                                dialog.dispose();
+	                            }
+	                        }
+	                    }
+	                });
+	                cancel.addActionListener(new ActionListener() {
+	                    public void actionPerformed(ActionEvent ae2) {
+	                        if (dialog.isVisible()) {
+	                            dialog.setVisible(false);
+	                            dialog.dispose();
+	                        }
+	                    }
+	                });
+	                dialog.setResizable(false);
+	                dialog.getContentPane().add(gtd);
+	                dialog.setLocationRelativeTo(null);
+	                dialog.pack();
+	                dialog.setVisible(true);
+
+	            }
+	        };
+	    }
+
+	
+	/* The old, simple GUI 
 	public ActionListener getListener(ScavengerTree theScavenger) {
 		final ScavengerTree s = theScavenger;
 		return new ActionListener() {
@@ -69,83 +153,51 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 			}
 		};
 	}
+	*/
 
 	/**
 	 * returns the default Scavenger set
 	 */
-	public Set<Scavenger> getDefaults() {
-		int MAX_THREADS=5;
-		Set<Scavenger> result = new HashSet<Scavenger>();
-		List<GT4ScavengerThread> threads = new ArrayList<GT4ScavengerThread>();
-		String urlList = System.getProperty("taverna.defaultgt4");
-		if (urlList != null) {
-			String[] urls = urlList.split("\\s*,\\s*");
-			for (String url : urls) {
-				try {
-					if (threads.size()<MAX_THREADS) { //limit the number of concurrent threads, incase there are many defined in mygrid.properties
-						GT4ScavengerThread thread = new GT4ScavengerThread(url);
-						thread.start();
-						threads.add(thread);
+	   public synchronized Set<Scavenger> getDefaults() {
+			Set<Scavenger> result = new HashSet<Scavenger>();
+			String urlList = System.getProperty("taverna.defaultgt4");
+			if (urlList != null) {
+				String[] urls = urlList.split("\\s*,\\s*");
+				for (String url : urls) {
+					try {
+						result.add(new GT4Scavenger(url,null));
+					} catch (ScavengerCreationException e) {
+						logger.error("Error creating BiomobyScavenger for " + url, e);
 					}
-					else {
-						result.add(new GT4Scavenger(url));
-					}
-				} catch (ScavengerCreationException e) {
-					logger.error(
-							"Error creating default WSDLBasedScavenger for " + url + ": "+e.getMessage());
 				}
 			}
+			return result;
 		}
-		for (GT4ScavengerThread thread : threads) {
-			try {
-				thread.join();
-			} catch (InterruptedException e) {
-				logger.error("Interuption error joining scavenger thread:",e);
+		
+		public Set<Scavenger> getFromModel(ScuflModel model) {
+			Set<Scavenger> result = new HashSet<Scavenger>();
+			List<String> existingLocations = new ArrayList<String>();
+
+			Processor[] processors = model.getProcessorsOfType(GT4Processor.class);
+			for (Processor processor : processors) {
+				String loc = ((GT4Processor) processor).getWSDLLocation();
+				if (!existingLocations.contains(loc)) {
+					existingLocations.add(loc);
+					try {
+						result.add(new GT4Scavenger(loc,null));
+					} catch (ScavengerCreationException e) {
+						logger.warn("Error creating Biomoby Scavenger", e);
+					}
+				}
 			}
-			if (thread.getScavenger()!=null) result.add(thread.getScavenger());
-		}
-		return result;
-	}
-
-	public Set<Scavenger> getFromModel(ScuflModel model) {
-		Set<Scavenger> result = new HashSet<Scavenger>();
-		List<String> existingLocations = new ArrayList<String>();
-		
-		
-		return result;
-	}
-
-	/**
-	 * Returns the icon for this scavenger
-	 */
-	public ImageIcon getIcon() {
-		return new GT4ProcessorInfoBean().icon();
-	}
-	
-	class GT4ScavengerThread extends Thread
-	{
-
-		GT4Scavenger scavenger;
-		String location;
-		
-		GT4ScavengerThread(String location) {
-			super("GT4Scavenger thread");
-			this.location=location;
+			return result;
 		}
 		
-		@Override
-		public void run() {
-			try {
-				scavenger=new GT4Scavenger(location);
-			} catch (ScavengerCreationException e) {
-				logger.error("Error creating WSDLBasedScavenger",e);
-			}
+		/**
+		 * Returns the icon for this scavenger
+		 */
+		public ImageIcon getIcon() {
+			return new GT4ProcessorInfoBean().icon();
 		}
-		
-		public GT4Scavenger getScavenger() {
-			return scavenger;
-		}
-		
-	}
-
 }
+

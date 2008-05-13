@@ -35,9 +35,12 @@ public class GT4Scavenger extends Scavenger {
 	/**
 	 * Create a new GT4 scavenger, the base parameter should be the base URL
 	 */
-	public GT4Scavenger(String theURL) throws ScavengerCreationException {
+	public GT4Scavenger(String theURL,ServiceQuery sq) throws ScavengerCreationException {
 		// Making sure there is / at the end of theBase
-		super("GT4 Services@ " + theURL);
+		
+		//	super("GT4 Services@ " + theURL);
+		//a=(b>0)?4:25;
+		super((sq==null)? "GT4 Services@ "+  theURL: "GT4 Services@ "+  theURL + sq.queryCriteria +" == " + sq.queryValue);
 		// Of course we have to do this again since we are not allowed to do
 		// such stuff before super()
 		indexURL=theURL.trim();
@@ -47,7 +50,7 @@ public class GT4Scavenger extends Scavenger {
 		
 		// Get the categories for this installation
 		try {
-			List<GT4Service> services=GT4ScavengerAgent.load(indexURL);
+			List<GT4Service> services=GT4ScavengerAgent.load(indexURL,sq);
 			populateTree(services);
 			System.out.println("Scavenger generation complete.");
 			
