@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-29 16:16:09 $
+ * Last modified on   $Date: 2008-05-13 16:49:25 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -50,8 +50,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import net.sf.taverna.raven.launcher.bootstrap.Bootstrap;
-import net.sf.taverna.raven.launcher.config.MyGridConfiguration;
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
+import net.sf.taverna.raven.appconfig.bootstrap.Bootstrap;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.plugins.event.PluginEvent;
 import net.sf.taverna.raven.plugins.event.PluginListener;
@@ -79,9 +79,12 @@ import org.jdom.output.XMLOutputter;
 /**
  * 
  * @author David Withers
+ * @author Stian Soiland-Reyes
  */
 public class PluginManager implements PluginListener {
 
+	private ApplicationRuntime appRuntime = ApplicationRuntime.getInstance();
+	
 	private static Log logger = Log.getLogger(PluginListener.class);
 
 	private static PluginManager instance;
@@ -107,8 +110,8 @@ public class PluginManager implements PluginListener {
 	 * 
 	 */
 	private PluginManager() {
-		pluginsDir = MyGridConfiguration.getUserDir("plugins");
-		defaultPluginsDir = MyGridConfiguration.getStartupDir("plugins");
+		pluginsDir = appRuntime.getPluginsDir();
+		defaultPluginsDir = appRuntime.getDefaultPluginsDir();
 		if (pluginsDir != null) {
 			initializePluginSites();
 			initializePlugins();

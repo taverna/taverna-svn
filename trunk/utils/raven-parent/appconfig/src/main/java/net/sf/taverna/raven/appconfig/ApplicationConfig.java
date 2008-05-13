@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher;
+package net.sf.taverna.raven.appconfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +18,15 @@ import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 /**
  * Represent the application config as it has been specified in
  * {@value #PROPERTIES}. This configuration specifies which application is to
- * be launched by {@link Launcher}, what is it's name and title, etc.
+ * be launched by {@link net.sf.taverna.raven.launcher.Launcher}, what is it's
+ * name and title, etc.
  * <p>
- * An application built using {@link Launcher} would typically provide the
- * {@value #PROPERTIES} file on the classpath under a <code>conf</code>
- * directory, or in a <code>conf</code> directory in the application's
- * distribution directory (assuming that {@link ApplicationConfig} is loaded
- * from a JAR-file placed in the directory <code>lib</code> below the
- * distribution directory).
+ * An application built using {@link net.sf.taverna.raven.launcher.Launcher}
+ * would typically provide the {@value #PROPERTIES} file on the classpath under
+ * a <code>conf</code> directory, or in a <code>conf</code> directory in the
+ * application's distribution directory (assuming that {@link ApplicationConfig}
+ * is loaded from a JAR-file placed in the directory <code>lib</code> below
+ * the distribution directory).
  * 
  * @author Stian Soiland-Reyes
  * 
@@ -62,7 +63,8 @@ public class ApplicationConfig {
 	public String getMainClass() {
 		String name = (String) getProperties().get(APP_MAIN);
 		if (name == null) {
-			throw new IllegalStateException("Can't find application main method");
+			throw new IllegalStateException(
+					"Can't find application main method");
 		}
 		return name;
 	}

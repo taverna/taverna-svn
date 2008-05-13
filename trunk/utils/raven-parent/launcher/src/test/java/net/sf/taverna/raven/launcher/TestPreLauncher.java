@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
+import net.sf.taverna.raven.appconfig.AbstractPropThreadTest;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 
 import org.apache.commons.io.FileUtils;
@@ -33,6 +34,5 @@ public class TestPreLauncher extends AbstractPropThreadTest {
 		String out = FileUtils.readFileToString(outFile, "utf8");
 		assertEquals("Did not match expected output",
 				"This is the test data.\n", out);
-
 	}
 }

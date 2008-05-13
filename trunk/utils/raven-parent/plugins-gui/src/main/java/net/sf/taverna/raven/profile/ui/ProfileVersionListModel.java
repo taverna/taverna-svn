@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileVersionListModel.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-29 16:16:08 $
+ * Last modified on   $Date: 2008-05-13 16:49:24 $
  *               by   $Author: stain $
  * Created on 16 Jan 2007
  *****************************************************************/
@@ -40,7 +40,7 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import net.sf.taverna.raven.launcher.bootstrap.RavenProperties;
+import net.sf.taverna.raven.appconfig.bootstrap.RavenProperties;
 import net.sf.taverna.raven.profile.ProfileVersion;
 import net.sf.taverna.raven.profile.ProfileVersions;
 

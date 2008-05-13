@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher;
+package net.sf.taverna.raven.appconfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,15 +130,23 @@ public class ApplicationRuntime {
 		if (ravenRepository != null) {
 			return ravenRepository;
 		}
+		ravenRepository = makeRavenRepository();
+		ravenRepository.update();
+		return ravenRepository;
+	}
 
+	private Repository makeRavenRepository() {
+		Repository repository;
 		if (!appConfig.isUsingRaven()) {
-			ravenRepository = new DummyRepository();
-			return ravenRepository;
+			// FIXME: Avoid raven.eclipse hack
+			System.setProperty("raven.eclipse", "true");
+			repository = new DummyRepository();
+			return repository;
 		}
-		ravenRepository = LocalRepository
+		repository = LocalRepository
 				.getRepository(getLocalRepositoryDir(), getClassLoader(),
 						getSystemArtifacts());
-		return ravenRepository;
+		return repository;
 	}
 
 	public Set<Artifact> getSystemArtifacts() {
@@ -151,6 +159,8 @@ public class ApplicationRuntime {
 				"prelauncher", "1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"launcher", "1.7-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
+				"plugins-api", "1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
 		return artifacts;
 	}
@@ -165,6 +175,32 @@ public class ApplicationRuntime {
 
 	public synchronized void setApplicationHomeDir(File applicationHomeDir) {
 		this.applicationHomeDir = applicationHomeDir;
+	}
+
+	public File getPluginsDir() {
+		File pluginsDir = new File(getApplicationHomeDir(), "plugins");
+		pluginsDir.mkdirs();
+		if (!pluginsDir.isDirectory()) {
+			throw new IllegalStateException(
+					"Could not create plugins directory " + pluginsDir);
+		}
+		return pluginsDir;
+	}
+
+	public File getDefaultPluginsDir() {
+		File startupDir;
+		try {
+			startupDir = appConfig.getStartupDir();
+		} catch (IOException e) {
+			logger.warn("Could not find startup directory", e);
+			return null;
+		}
+		File pluginsDir = new File(startupDir, "plugins");
+		if (!pluginsDir.isDirectory()) {
+			logger.warn("Could not find plugins directory " + pluginsDir);
+			return null;
+		}
+		return pluginsDir;
 	}
 
 }

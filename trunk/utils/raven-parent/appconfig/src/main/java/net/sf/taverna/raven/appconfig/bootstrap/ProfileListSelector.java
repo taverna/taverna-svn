@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher.bootstrap;
+package net.sf.taverna.raven.appconfig.bootstrap;
 
 import java.io.File;
 import java.io.FileOutputStream;

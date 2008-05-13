@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher.bootstrap;
+package net.sf.taverna.raven.appconfig.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.raven.launcher.ApplicationConfig;
+import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 
 import org.w3c.dom.Document;

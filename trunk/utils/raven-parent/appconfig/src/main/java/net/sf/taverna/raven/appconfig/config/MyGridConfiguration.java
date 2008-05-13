@@ -1,11 +1,11 @@
-package net.sf.taverna.raven.launcher.config;
+package net.sf.taverna.raven.appconfig.config;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.Properties;
 
-import net.sf.taverna.raven.launcher.bootstrap.AbstractConfiguration;
-import net.sf.taverna.raven.launcher.bootstrap.Bootstrap;
+import net.sf.taverna.raven.appconfig.bootstrap.AbstractConfiguration;
+import net.sf.taverna.raven.appconfig.bootstrap.Bootstrap;
 
 import org.apache.log4j.Logger;
 
@@ -83,6 +83,7 @@ public class MyGridConfiguration extends AbstractConfiguration {
 	 * Tries to open a stream to the mygrid.properties on the classpath if it cannot be found by the super-class.
 	 * (This is primarily for use during testing).
 	 */
+	@Override
 	protected InputStream getInputStream() {
 		InputStream result = super.getInputStream();
 		if (result==null) { //resort to using mygrid.properties from the classpath

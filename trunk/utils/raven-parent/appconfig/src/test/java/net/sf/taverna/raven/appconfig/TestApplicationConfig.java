@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher;
+package net.sf.taverna.raven.appconfig;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,7 +10,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.List;
 
-import net.sf.taverna.raven.launcher.ApplicationConfig;
+import net.sf.taverna.raven.appconfig.ApplicationConfig;
 
 import org.junit.Before;
 import org.junit.Test;

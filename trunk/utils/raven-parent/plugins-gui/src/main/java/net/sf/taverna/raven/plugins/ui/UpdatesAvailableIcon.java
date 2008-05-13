@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: UpdatesAvailableIcon.java,v $
- * Revision           $Revision: 1.1 $
+ * Revision           $Revision: 1.2 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-29 16:16:08 $
+ * Last modified on   $Date: 2008-05-13 16:49:25 $
  *               by   $Author: stain $
  * Created on 12 Dec 2006
  *****************************************************************/
@@ -43,7 +43,7 @@ import java.util.Arrays;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.raven.launcher.bootstrap.RavenProperties;
+import net.sf.taverna.raven.appconfig.bootstrap.RavenProperties;
 import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.raven.plugins.event.PluginManagerEvent;
 import net.sf.taverna.raven.plugins.event.PluginManagerListener;

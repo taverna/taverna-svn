@@ -11,6 +11,16 @@
 	<groupId>uk.org.mygrid.taverna.raven</groupId>
 	<artifactId>raven-integration-testing</artifactId>
 	<name>Raven integration testing</name>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>

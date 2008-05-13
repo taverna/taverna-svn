@@ -1,4 +1,4 @@
-package net.sf.taverna.raven.launcher;
+package net.sf.taverna.raven.appconfig;
 
 import java.io.File;
 

@@ -1,6 +1,9 @@
 package net.sf.taverna.raven.launcher;
 
+import net.sf.taverna.raven.appconfig.ApplicationConfig;
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.launcher.Launchable;
+import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.SpiRegistry;
@@ -38,8 +41,11 @@ public class Launcher {
 	public Launchable findMainClass(String className) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		Repository localRepository = appRuntime.getRavenRepository();
-		localRepository.update();
-		// TODO: load plugin stuff
+		PluginManager.setRepository(localRepository);
+		// A getInstance() should be enough to initialise
+		// the plugins
+		PluginManager pluginMan = PluginManager.getInstance();
+		
 		
 		SpiRegistry launchableSpi = new SpiRegistry(localRepository,
 				Launchable.class.getCanonicalName(), appRuntime

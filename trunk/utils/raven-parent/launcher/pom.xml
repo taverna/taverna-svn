@@ -12,22 +12,24 @@
 	<artifactId>launcher</artifactId>
 	<name>Raven launcher</name>
 	<dependencies>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>launcher-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>prelauncher</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>raven</artifactId>
-		</dependency>
+		<!-- 
+			NOTE: Always update ApplicationRuntime.getSystemArtifacts() to include
+			these dependencies (and their dependencies) as system artifacts.
+		-->
 
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
-			<artifactId>raven-log4j</artifactId>
+			<artifactId>appconfig</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>appconfig</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>plugins-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
@@ -49,21 +51,4 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>
-								net.sf.taverna.raven.launcher.Launcher
-							</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

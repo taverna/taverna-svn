@@ -1,9 +1,9 @@
-package net.sf.taverna.raven.launcher.config;
+package net.sf.taverna.raven.appconfig.config;
 
 import java.net.URL;
 import java.util.Properties;
 
-import net.sf.taverna.raven.launcher.bootstrap.AbstractConfiguration;
+import net.sf.taverna.raven.appconfig.bootstrap.AbstractConfiguration;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.raven.log.Log4jLog;
 import net.sf.taverna.raven.repository.Artifact;
