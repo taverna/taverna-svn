@@ -2,3 +2,5 @@
 target
 target-eclipse
 bin
+.classpath
+.settings
