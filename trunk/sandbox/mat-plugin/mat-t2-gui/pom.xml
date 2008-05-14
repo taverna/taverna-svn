@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>net.sf.taverna.matlabactivity</groupId>
+		<artifactId>mat-plugin</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.matlabactivity</groupId>
+	<artifactId>mat-t2-gui</artifactId>
+	<name>MatActivity plugin for Taverna workbench</name>
+	<description>
+		GUI and plugin for building MatActivity in Taverna Workbench 2.x.
+		MATLAB® is a registered trademark of The MathWorks, Inc.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.matlabactivity</groupId>
+			<artifactId>mat-activity</artifactId>
+		</dependency>
+	</dependencies>
+</project>
