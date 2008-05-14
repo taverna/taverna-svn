@@ -42,6 +42,7 @@ public interface XMLSerializationConstants {
 	static final String RAVEN = "raven";
 	static final String DISPATCH_STACK = "dispatchStack";
 	static final String ITERATION_STRATEGY_STACK = "iterationStrategyStack";
+	static final String ITERATION_STRATEGY = "iteration";
 	static final String CONDITIONS = "conditions";
 	static final String CONDITION = "condition";
 	static final String ANNOTATIONS = "annotations";

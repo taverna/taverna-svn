@@ -60,9 +60,8 @@ public class ProcessorXMLDeserializer extends AbstractXMLDeserializer {
 		
 		
 		//Iteration strategy
-		Element iterationStrategy = el.getChild(ITERATION_STRATEGY_STACK,T2_WORKFLOW_NAMESPACE);
-		((IterationStrategyStackImpl)result.getIterationStrategy()).configureFromElement(iterationStrategy.getChild("iteration",T2_WORKFLOW_NAMESPACE));
-		
+		Element iterationStrategyStack = el.getChild(ITERATION_STRATEGY_STACK,T2_WORKFLOW_NAMESPACE);
+		IterationStrategyStackXMLDeserializer.getInstance().deserializeIterationStrategyStack(iterationStrategyStack, result.getIterationStrategy());
 		
 		return result;
 		
