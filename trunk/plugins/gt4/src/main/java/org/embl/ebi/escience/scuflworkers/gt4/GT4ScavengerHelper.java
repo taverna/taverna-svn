@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JLabel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 import org.embl.ebi.escience.scuflui.workbench.Scavenger;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerCreationException;
 import org.embl.ebi.escience.scuflui.workbench.ScavengerTree;
@@ -29,7 +31,6 @@ import org.embl.ebi.escience.scuflworkers.ScavengerHelper;
  * Helper for handling GT4 scavengers.
  * 
  * @author Wei Tan
- * @author Ravi Madduri
  */
 public class GT4ScavengerHelper implements ScavengerHelper {
 
@@ -47,10 +48,40 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 	                        "Add Your Custom Service Query", true);
 	                final GT4ScavengerDialog gtd = new GT4ScavengerDialog();
 	                dialog.getContentPane().add(gtd);
-	                JButton accept = new JButton("Okay");
+	                JButton accept = new JButton("Send Service Query");
 	                JButton cancel = new JButton("Cancel");
+	            
 	                gtd.add(accept);
+	                //gtd.add(new JLabel("Send Service Query to Index Service"));
 	                gtd.add(cancel);
+	                gtd.addQuery.addActionListener(new ActionListener(){
+	                	 public void actionPerformed(ActionEvent ae3) {
+	                		 if (dialog.isVisible()) {
+	                			 if(gtd.q_count<gtd.q_size){
+	                				 gtd.queryList[gtd.q_count].setVisible(true);
+	                				 gtd.queryValue[gtd.q_count].setVisible(true);
+	                				 gtd.validate();
+	                				 gtd.q_count++;
+	                				 System.out.println("Add a New Query-- now q_count == " + gtd.q_count);
+	                			 }
+	                		 }
+	                	 }
+	                	
+	                });
+	                gtd.removeQuery.addActionListener(new ActionListener(){
+	                	 public void actionPerformed(ActionEvent ae4) {
+	                		 if (dialog.isVisible()) {
+	                			 if(gtd.q_count>1){
+	                				 gtd.queryList[gtd.q_count-1].setVisible(false);
+	                				 gtd.queryValue[gtd.q_count-1].setVisible(false);
+	                				 gtd.validate();
+	                				 gtd.q_count--;
+	                				 System.out.println("Remove a New Query-- now q_count == " + gtd.q_count);
+	                			 }
+	                		 }
+	                	 }
+	                	
+	                });
 	                accept.addActionListener(new ActionListener() {
 	                    public void actionPerformed(ActionEvent ae2) {
 	                        if (dialog.isVisible()) {
@@ -65,17 +96,39 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 	                            else
 	                                indexURL = gtd.getIndexServiceURL();
 	                            
-	                            if (!gtd.getQueryCriteria().equals("None"))
-	                                squery = new ServiceQuery(gtd.getQueryCriteria(),gtd.getQueryValue());
+	                            //gather service queries
+	                            int [] flag = new int[gtd.q_count];
+	                            int count = 0;
+	                            for (int i=0;i<gtd.q_count;i++){
+	                            	if(!gtd.getQueryCriteria(i).equals("None")&&!gtd.getQueryValue(i).equals("")){
+	                            		count ++ ;
+	                            		flag[i]=1;
+	                            	}
+	        
+	                            }
+	                            ServiceQuery [] sq= null;
+	                            if(count>0){
+	                            	sq = new ServiceQuery[count];
+	 	                            int j = 0;
+	 	                            for (int i=0;i<gtd.q_count;i++){
+	 	                            	if(flag[i]==1){
+	 	                            		sq[j++] = new ServiceQuery(gtd.getQueryCriteria(i),gtd.getQueryValue(i));
+	 	                            		System.out.println("Adding Query: "+ sq[j-1].queryCriteria + "  = " + sq[j-1].queryValue);
+	 	                          		
+	 	                            	}	
+	                            }
+	                           
+	                            }
+	                            
 	                            
 	                            try {
 	                            	final String url = indexURL;
-	                            	final ServiceQuery sq = squery;
+	                            	final ServiceQuery[] f_sq = sq;
 	                            	Thread t = new Thread("Adding GT4 scavenger") {
 	            						public void run() {
 	            							s.scavengingStarting("Adding GT4 scavenger");
 	            							try {
-	            								GT4Scavenger gs = new GT4Scavenger(url, sq);
+	            								GT4Scavenger gs = new GT4Scavenger(url, f_sq);
 	                                            s.addScavenger(gs);
 	            							} catch (ScavengerCreationException sce) {
 	            								JOptionPane.showMessageDialog(s.getContainingFrame(), "Unable to create scavenger!\n" + sce.getMessage(),

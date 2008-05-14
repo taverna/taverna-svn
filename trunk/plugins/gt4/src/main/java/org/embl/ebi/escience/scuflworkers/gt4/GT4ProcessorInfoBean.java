@@ -27,9 +27,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: GT4ProcessorInfoBean.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-01-05 14:54:32 $
+ * Last modified on   $Date: 2008-05-14 07:14:48 $
  *               by   $Author: tanwei $
  * Created on 01-Dec-2007
  *****************************************************************/
@@ -39,9 +39,9 @@ import org.embl.ebi.escience.scuflworkers.ProcessorInfoBeanHelper;
 
 /**
  * Provides information about the WSDL Processor plugin, using
- * taverna.properties, identified by the tag 'abitrarywsdl'
+ * taverna.properties, identified by the tag 'abitrargt4'
  * 
- * @author Stuart Owen
+ * @author Wei Tan
  * 
  */
 

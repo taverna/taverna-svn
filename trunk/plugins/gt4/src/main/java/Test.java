@@ -9,7 +9,18 @@ public class Test {
 	 */
 	
 	public static void main(String[] args) {
-		GT4ScavengerHelper gt4 = new GT4ScavengerHelper();
+		String indexURL = "http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService";
+		ServiceQuery [] sq = new ServiceQuery[2];
+		sq[0] = new ServiceQuery("Research Center","Ohio State University");
+		sq[1] = new ServiceQuery("Service Name","DICOMDataService");
+		try {
+			GT4ScavengerAgent.load(indexURL, sq);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 
 	}
 
