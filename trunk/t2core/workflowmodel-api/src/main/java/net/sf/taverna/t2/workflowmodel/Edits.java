@@ -354,4 +354,6 @@ public interface Edits {
 			int portGranularDepth);
 	
 	Edit<Dataflow> getUpdateDataflowNameEdit(Dataflow dataflow, String newName);
+	
+	Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow, String newId);
 }

@@ -113,5 +113,13 @@ public interface Dataflow extends Annotated<Dataflow>, TokenProcessingEntity {
 	 * process after the message has been received by the listener
 	 */
 	public FailureTransmitter getFailureTransmitter();
+	
+	/**
+	 * An identifier that is unique to this dataflow and its current state.
+	 * The identifier will change whenever the dataflow is modified.
+	 * 
+	 * @return a String representing a unique internal identifier.
+	 */
+	public String getInternalIdentier();
 
 }

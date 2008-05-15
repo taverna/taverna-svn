@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.InvocationContext;
@@ -44,6 +45,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	private static int nameIndex = 0;
 	private List<DataflowInputPortImpl> inputs;
 	private List<DataflowOutputPortImpl> outputs;
+	protected String internalIdentifier;
 
 	/**
 	 * Protected constructor, assigns a default name. To build an instance of
@@ -56,6 +58,7 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		this.merges = new ArrayList<MergeImpl>();
 		this.inputs = new ArrayList<DataflowInputPortImpl>();
 		this.outputs = new ArrayList<DataflowOutputPortImpl>();
+		refreshInternalIdentifier();
 	}
 
 	/**
@@ -686,6 +689,18 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	public boolean doTypeCheck() throws IterationTypeMismatchException {
 		throw new UnsupportedOperationException(
 				"Not implemented for DataflowImpl yet");
+	}
+	
+	public void refreshInternalIdentifier() {
+		internalIdentifier=UUID.randomUUID().toString();
+	}
+
+	public String getInternalIdentier() {
+		return internalIdentifier;
+	}
+	
+	protected void setInternalIndentifier(String id) {
+		this.internalIdentifier=id;
 	}
 
 }

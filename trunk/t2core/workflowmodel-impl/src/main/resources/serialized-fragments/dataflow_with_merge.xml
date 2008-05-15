@@ -1,4 +1,4 @@
-<dataflow xmlns="http://taverna.sf.net/2008/xml/t2flow">
+<dataflow xmlns="http://taverna.sf.net/2008/xml/t2flow" id="123">
 	<inputPorts />
 	<outputPorts />
 	<processors>

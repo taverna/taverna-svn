@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
@@ -58,7 +58,7 @@ public class SerializerImplTest implements XMLSerializationConstants{
 		
 		assertEquals("first df should be role=top","top",elOuterDf.getAttribute("role").getValue());
 		assertEquals("inner df should be role=nested","nested",elInnerDf.getAttribute("role").getValue());
-		assertEquals("inner df should have attribute id=inner_dataflow","inner_dataflow",elInnerDf.getAttribute("id").getValue());	
+		assertNotNull("inner df should have attribute id=inner_dataflow",elInnerDf.getAttributeValue("id"));	
 	}
 	
 	@Test
@@ -93,10 +93,10 @@ public class SerializerImplTest implements XMLSerializationConstants{
 		
 		assertEquals("first df should be role=top","top",elOuterDf.getAttribute("role").getValue());
 		assertEquals("inner df should be role=nested","nested",elInnerDf.getAttribute("role").getValue());
-		assertEquals("inner df should have attribute id=inner_dataflow","inner_dataflow",elInnerDf.getAttribute("id").getValue());
+		assertNotNull("inner df should have attribute id=inner_dataflow",elInnerDf.getAttributeValue("id"));
 		
 		assertEquals("inner inner df should be role=nested","nested",elInnerInnerDf.getAttribute("role").getValue());
-		assertEquals("inner inner  df should have attribute id=inner_inner_dataflow","inner_inner_dataflow",elInnerInnerDf.getAttribute("id").getValue());
+		assertNotNull("inner inner df should have attribute id=inner_dataflow",elInnerInnerDf.getAttributeValue("id"));
 		
 	}
 }

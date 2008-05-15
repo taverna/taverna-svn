@@ -220,5 +220,10 @@ public class EditsImpl implements Edits {
 			String newName) {
 		return new UpdateDataflowNameEdit(dataflow,newName);
 	}
+	
+	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow,
+			String newId) {
+		return new UpdateDataflowInternalIdentifierEdit(dataflow,newId);
+	}
 
 }

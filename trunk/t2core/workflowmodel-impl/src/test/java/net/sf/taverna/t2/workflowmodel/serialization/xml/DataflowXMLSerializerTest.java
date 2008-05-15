@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.impl.DataflowImpl;
@@ -33,12 +34,14 @@ public class DataflowXMLSerializerTest implements XMLSerializationConstants {
 	}
 	
 	@Test
-	public void testDataflowName() throws Exception {
+	public void testDataflowNameandId() throws Exception {
 		Dataflow df = edits.createDataflow();
 		((DataflowImpl)df).setLocalName("the-name");
 		Element el = serializer.serializeDataflow(df);
 		assertEquals("there should be 1 child called name",1,el.getChildren("name",T2_WORKFLOW_NAMESPACE).size());
 		assertEquals("the name should be the-name","the-name",el.getChildText("name",T2_WORKFLOW_NAMESPACE));
+		assertNotNull("there should be an id attribute set",el.getAttributeValue("id"));
+		assertEquals("there should be an id attribute set that matches the dataflow",df.getInternalIdentier(),el.getAttributeValue("id"));
 	}
 	
 	@Test

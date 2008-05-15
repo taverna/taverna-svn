@@ -26,7 +26,6 @@ public class XMLSerializerImpl implements XMLSerializer, XMLSerializationConstan
 		for (Dataflow innerDataflow : innerDataflows) {
 			Element innerDataflowElement = DataflowXMLSerializer.getInstance().serializeDataflow(innerDataflow);
 			innerDataflowElement.setAttribute(DATAFLOW_ROLE,DATAFLOW_ROLE_NESTED);
-			innerDataflowElement.setAttribute(DATAFLOW_ID,innerDataflow.getLocalName());
 			result.addContent(innerDataflowElement);
 		}
 

@@ -84,4 +84,9 @@ public class DummyDataflow extends AbstractAnnotatedThing<Dataflow> implements D
 		throw new UnsupportedOperationException("Not implemented for this class");
 	}
 
+
+	public String getInternalIdentier() {
+		return "an id";
+	}
+
 }

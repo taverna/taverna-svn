@@ -1,8 +1,9 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 
@@ -22,5 +23,11 @@ public class EditsImplTests {
 		WorkflowInstanceFacade facade = edits.createWorkflowInstanceFacade(new DummyDataflow(), new TestInvocationContext(), "");
 		
 		assertTrue("Should be a WorkflowInstanceFacadeImpl",facade instanceof WorkflowInstanceFacadeImpl);
+	}
+	
+	@Test
+	public void createDataflow() {
+		Dataflow df = edits.createDataflow();
+		assertNotNull(df.getInternalIdentier());
 	}
 }
