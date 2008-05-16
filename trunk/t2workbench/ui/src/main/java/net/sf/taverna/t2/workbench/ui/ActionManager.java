@@ -14,6 +14,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import net.sf.taverna.t2.spi.SPIRegistry;
@@ -70,20 +71,25 @@ public class ActionManager {
 		});
 		boolean firstTool = true;
 		int currentPosition = 0;
-		for (WorkbenchAction action : toolBarActions) {
+		for (WorkbenchAction workbenchAction : toolBarActions) {
 			if (firstTool) {
 				firstTool = false;
 			} else {
-				if ((currentPosition / GROUP_SIZE) < (action.getToolBarPosition() / GROUP_SIZE)) {
+				if ((currentPosition / GROUP_SIZE) < (workbenchAction.getToolBarPosition() / GROUP_SIZE)) {
 					toolBar.addSeparator();
 				}
 			}
-			currentPosition = action.getToolBarPosition();
-			List<Action> actions = action.getActions();
+			currentPosition = workbenchAction.getToolBarPosition();
+			List<Action> actions = workbenchAction.getActions();
 			if (actions.size() == 1) {
 				toolBar.add(actions.get(0));
 			} else {
-				//TODO
+				ButtonGroup buttonGroup = new ButtonGroup();
+				for (Action action : actions) {
+					JToggleButton button = new JToggleButton(action);
+					buttonGroup.add(button);
+					toolBar.add(button);
+				}
 			}
 		}
 	}
