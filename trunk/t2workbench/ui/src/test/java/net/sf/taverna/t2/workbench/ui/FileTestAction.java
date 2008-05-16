@@ -9,9 +9,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.workbench.ui.ActionSPI;
+import net.sf.taverna.t2.workbench.ui.WorkbenchAction;
 
-public class FileTestAction implements ActionSPI {
+public class FileTestAction implements WorkbenchAction {
 
 	public List<Action> getActions() {
 		Action action = new AbstractAction("Test Workflow") {

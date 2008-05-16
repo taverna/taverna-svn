@@ -9,9 +9,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.workbench.ui.ActionSPI;
+import net.sf.taverna.t2.workbench.ui.WorkbenchAction;
 
-public class EditCutAction implements ActionSPI {
+public class EditCutAction implements WorkbenchAction {
 
 	public List<Action> getActions() {
 		Action action = new AbstractAction("Cut") {

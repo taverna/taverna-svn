@@ -9,7 +9,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-public class FileOpenAction implements ActionSPI {
+public class FileOpenAction implements WorkbenchAction {
 
 	public List<Action> getActions() {
 		Action action = new AbstractAction("Open Workflow") {

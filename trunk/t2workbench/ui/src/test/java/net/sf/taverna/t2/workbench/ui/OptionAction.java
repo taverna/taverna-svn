@@ -9,9 +9,9 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.workbench.ui.ActionSPI;
+import net.sf.taverna.t2.workbench.ui.WorkbenchAction;
 
-public class OptionAction implements ActionSPI {
+public class OptionAction implements WorkbenchAction {
 
 	public List<Action> getActions() {
 		List<Action> actions = new ArrayList<Action>();

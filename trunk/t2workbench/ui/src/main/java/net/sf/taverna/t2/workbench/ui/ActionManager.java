@@ -22,7 +22,7 @@ public class ActionManager {
 	
 	private static final int GROUP_SIZE = 10;
 
-	private SPIRegistry<ActionSPI> actionRegistry = new SPIRegistry<ActionSPI>(ActionSPI.class);
+	private SPIRegistry<WorkbenchAction> actionRegistry = new SPIRegistry<WorkbenchAction>(WorkbenchAction.class);
 
 	private JMenuBar menuBar;
 	
@@ -30,7 +30,7 @@ public class ActionManager {
 	
 	private Menu root = new Menu("root", "Root", 0);
 	
-	private List<ActionSPI> toolBarActions = new ArrayList<ActionSPI>();
+	private List<WorkbenchAction> toolBarActions = new ArrayList<WorkbenchAction>();
 	
 	/**
 	 * Constructs a new instance of ActionManager.
@@ -45,12 +45,12 @@ public class ActionManager {
 	}
 
 	private void update() {
-		for (ActionSPI actionSPI : actionRegistry.getInstances()) {
-			if (actionSPI.getMenuPosition() > 0) {
+		for (WorkbenchAction actionSPI : actionRegistry.getInstances()) {
+			if (actionSPI.getMenuPosition() >= 0) {
 				Menu menu = new Menu(actionSPI);
 				mergeMenus(root, getRootMenu(menu));
 			}
-			if (actionSPI.getToolBarPosition() > 0) {
+			if (actionSPI.getToolBarPosition() >= 0) {
 				toolBarActions.add(actionSPI);
 			}
 		}		
@@ -63,14 +63,14 @@ public class ActionManager {
 	}
 	
 	private void layoutToolBar() {
-		Collections.sort(toolBarActions, new Comparator<ActionSPI>() {
-			public int compare(ActionSPI a, ActionSPI b) {
+		Collections.sort(toolBarActions, new Comparator<WorkbenchAction>() {
+			public int compare(WorkbenchAction a, WorkbenchAction b) {
 				return a.getToolBarPosition() - b.getToolBarPosition();
 			}
 		});
 		boolean firstTool = true;
 		int currentPosition = 0;
-		for (ActionSPI action : toolBarActions) {
+		for (WorkbenchAction action : toolBarActions) {
 			if (firstTool) {
 				firstTool = false;
 			} else {
@@ -196,7 +196,7 @@ class Menu implements Comparable<Menu> {
 		this.position = position;
 	}
 
-	public Menu(ActionSPI action) {
+	public Menu(WorkbenchAction action) {
 		id = (String) action.getActions().get(0).getValue(Action.NAME);
 		position = action.getMenuPosition();
 		toggle = action.isToggleAction();
