@@ -17,7 +17,7 @@ public class EditUndoAction implements WorkbenchAction {
 		Action action = new AbstractAction("Undo") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Undo");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Undo");
 			}
 			
 		};
@@ -33,7 +33,7 @@ public class EditUndoAction implements WorkbenchAction {
 	}
 	
 	public int getToolBarPosition() {
-		return 0;
+		return -1;
 	}
 	
 	public boolean isToggleAction() {

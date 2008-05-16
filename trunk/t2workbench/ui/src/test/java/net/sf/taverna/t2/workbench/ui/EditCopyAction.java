@@ -17,7 +17,7 @@ public class EditCopyAction implements WorkbenchAction {
 		Action action = new AbstractAction("Copy") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Copy");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Copy");
 			}
 			
 		};

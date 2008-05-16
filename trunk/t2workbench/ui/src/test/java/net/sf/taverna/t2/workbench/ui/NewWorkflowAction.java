@@ -15,7 +15,7 @@ public class NewWorkflowAction implements WorkbenchAction {
 		Action action = new AbstractAction("Workflow") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "New Workflow Action");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "New Workflow Action");
 			}
 			
 		};
@@ -31,7 +31,7 @@ public class NewWorkflowAction implements WorkbenchAction {
 	}
 	
 	public int getToolBarPosition() {
-		return 0;
+		return -1;
 	}
 	
 	public boolean isToggleAction() {

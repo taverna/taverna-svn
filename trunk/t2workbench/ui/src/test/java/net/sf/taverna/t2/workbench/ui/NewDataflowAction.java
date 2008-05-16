@@ -17,7 +17,7 @@ public class NewDataflowAction implements WorkbenchAction {
 		Action action = new AbstractAction("Dataflow") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "New Dataflow Action");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "New Dataflow Action");
 			}
 			
 		};
@@ -33,7 +33,7 @@ public class NewDataflowAction implements WorkbenchAction {
 	}
 	
 	public int getToolBarPosition() {
-		return 0;
+		return -1;
 	}
 	
 	public boolean isToggleAction() {

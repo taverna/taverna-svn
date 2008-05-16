@@ -17,7 +17,7 @@ public class FileTestAction implements WorkbenchAction {
 		Action action = new AbstractAction("Test Workflow") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Test Workflow Action");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Test Workflow Action");
 			}
 			
 		};
@@ -33,7 +33,7 @@ public class FileTestAction implements WorkbenchAction {
 	}
 	
 	public int getToolBarPosition() {
-		return 0;
+		return -1;
 	}
 	
 	public boolean isToggleAction() {

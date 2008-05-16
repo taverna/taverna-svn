@@ -14,14 +14,12 @@ import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
-import net.sf.taverna.raven.launcher.Launchable;
-
 /**
  * The main workbench frame.
  * 
  * @author David Withers
  */
-public class Workbench extends JFrame implements Launchable {
+public class Workbench extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -114,12 +112,6 @@ public class Workbench extends JFrame implements Launchable {
 		System.setProperty("raven.eclipse", "true");
 		Workbench workbench = getInstance();
 		workbench.setVisible(true);
-	}
-
-	public int launch(String[] args) throws Exception {
-		Workbench workbench = getInstance();
-		workbench.setVisible(true);
-		return 0;
 	}
 
 }

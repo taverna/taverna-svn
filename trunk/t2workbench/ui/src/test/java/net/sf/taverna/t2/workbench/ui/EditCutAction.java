@@ -17,7 +17,7 @@ public class EditCutAction implements WorkbenchAction {
 		Action action = new AbstractAction("Cut") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Cut");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Cut");
 			}
 			
 		};

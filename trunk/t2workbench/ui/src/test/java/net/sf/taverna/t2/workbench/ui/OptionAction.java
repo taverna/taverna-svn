@@ -18,21 +18,21 @@ public class OptionAction implements WorkbenchAction {
 		actions.add(new AbstractAction("Option 1") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Option 1");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Option 1");
 			}
 			
 		});
 		actions.add(new AbstractAction("Option 2") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Option 2");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Option 2");
 			}
 			
 		});
 		actions.add(new AbstractAction("Option 3") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Option 3");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Option 3");
 			}
 			
 		});

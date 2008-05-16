@@ -15,7 +15,7 @@ public class FileOpenAction implements WorkbenchAction {
 		Action action = new AbstractAction("Open Workflow") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(null, "Open Workflow Action");
+				JOptionPane.showMessageDialog(Workbench.getInstance(), "Open Workflow Action");
 			}
 			
 		};
