@@ -15,7 +15,6 @@ import javax.swing.WindowConstants;
 import org.apache.log4j.Logger;
 
 import net.sf.taverna.raven.launcher.Launchable;
-import net.sf.taverna.utils.MyGridConfiguration;
 
 /**
  * The main workbench frame.
@@ -71,21 +70,21 @@ public class Workbench extends JFrame implements Launchable {
 	}
 	
 	private void setLookAndFeel() {
-		String landf = MyGridConfiguration
-				.getProperty("taverna.workbench.themeclass");
+//		String landf = MyGridConfiguration
+//				.getProperty("taverna.workbench.themeclass");
 		boolean set = false;
 
-		if (landf != null) {
-			try {
-				UIManager.setLookAndFeel(landf);
-				logger.info("Using " + landf + " Look and Feel");
-				set = true;
-			} catch (Exception ex) {
-				logger.error(
-						"Error using theme defined by taverna.workbench.themeclass as "
-								+ landf, ex);
-			}
-		}
+//		if (landf != null) {
+//			try {
+//				UIManager.setLookAndFeel(landf);
+//				logger.info("Using " + landf + " Look and Feel");
+//				set = true;
+//			} catch (Exception ex) {
+//				logger.error(
+//						"Error using theme defined by taverna.workbench.themeclass as "
+//								+ landf, ex);
+//			}
+//		}
 
 		if (!set) {
 			try {
