@@ -1,0 +1,1 @@
+java -Draven.profile=file:conf/current-profile.xml -jar lib/prelauncher-1.7-SNAPSHOT.jar
