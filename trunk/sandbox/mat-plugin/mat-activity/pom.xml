@@ -30,5 +30,21 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2</groupId>
+            <artifactId>data-api</artifactId>
+            <version>0.3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2</groupId>
+            <artifactId>data-impl</artifactId>
+            <version>0.3-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.taverna.t2</groupId>
+			<artifactId>activity-test-utils</artifactId>
+			<version>0.3-SNAPSHOT</version>
+			<scope>test</scope>
+        </dependency>
 	</dependencies>
 </project>
