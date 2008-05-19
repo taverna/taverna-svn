@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 
-public abstract class ActivityView<ConfigBean> extends ContextualView{
+public abstract class ActivityView<ConfigBean> extends ContextualView {
 
 	private ConfigBean configBean;
 	

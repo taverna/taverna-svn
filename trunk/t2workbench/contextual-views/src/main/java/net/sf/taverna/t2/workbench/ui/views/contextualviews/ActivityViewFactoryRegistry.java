@@ -19,8 +19,8 @@ public class ActivityViewFactoryRegistry extends
 		return instance;
 	}
 
-	public ActivityViewFactory getViewFactoryForBeanType(Activity activityClass) {
-		for (ActivityViewFactory factory : getInstances()) {
+	public ActivityViewFactory<?> getViewFactoryForBeanType(Activity<?> activityClass) {
+		for (ActivityViewFactory<?> factory : getInstances()) {
 			if (factory.canHandle(activityClass)) {
 				return factory;
 			}
