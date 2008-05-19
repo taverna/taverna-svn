@@ -16,6 +16,12 @@
 			<repository>
 				http://www.mygrid.org.uk/maven/snapshot-repository/
 			</repository>
+			<repository>
+				http://mirrors.sunsite.dk/maven2/
+			</repository>
+			<repository>
+				http://www.ibiblio.org/maven2/
+			</repository>
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench"
