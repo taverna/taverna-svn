@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://taverna.sf.net/schema/artifact-support"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://taverna.sf.net/schema/artifact-support"
+	elementFormDefault="qualified">
+	<xsd:attribute name="artifact" type="xsd:string" />
+	<xsd:attribute name="repository" type="xsd:string" />
+</xsd:schema>
