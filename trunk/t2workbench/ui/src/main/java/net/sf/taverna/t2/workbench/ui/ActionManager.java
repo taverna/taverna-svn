@@ -42,7 +42,7 @@ public class ActionManager {
 	public ActionManager(JMenuBar menuBar, JToolBar toolBar) {
 		this.menuBar = menuBar;
 		this.toolBar = toolBar;		
-		update();		
+		update();
 	}
 
 	private void update() {
@@ -82,7 +82,12 @@ public class ActionManager {
 			currentPosition = workbenchAction.getToolBarPosition();
 			List<Action> actions = workbenchAction.getActions();
 			if (actions.size() == 1) {
-				toolBar.add(actions.get(0));
+				Action action = actions.get(0);
+				if (workbenchAction.isToggleAction()) {
+					toolBar.add(action);
+				} else {
+					toolBar.add(new JToggleButton(action));
+				}
 			} else {
 				ButtonGroup buttonGroup = new ButtonGroup();
 				for (Action action : actions) {
