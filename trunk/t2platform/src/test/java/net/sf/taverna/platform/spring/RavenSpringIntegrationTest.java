@@ -2,7 +2,6 @@ package net.sf.taverna.platform.spring;
 
 import static org.junit.Assert.*;
 
-import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 import org.junit.Test;
