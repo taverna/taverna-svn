@@ -39,6 +39,7 @@ public class RavenSpringIntegrationTest {
 		}
 		System.out.println("Done SPI scan, " + spi.getClasses().size()
 				+ " implementation(s) found.");
+		assertEquals(spi.getClasses().size(), 1);
 	}
 
 }

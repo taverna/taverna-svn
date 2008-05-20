@@ -25,7 +25,7 @@
 	<bean id="ravenRepository"
 		class="net.sf.taverna.platform.spring.RepositoryFactoryBean">
 		<property name="base"
-			value="H:\Documents and Settings\All Users\Documents\repository" />
+			value="C:\Documents and Settings\All Users\Documents\repository" />
 		<property name="remoteRepositoryList">
 			<list>
 				<value>
