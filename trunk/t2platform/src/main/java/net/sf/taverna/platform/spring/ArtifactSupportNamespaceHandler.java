@@ -15,10 +15,12 @@ public class ArtifactSupportNamespaceHandler extends NamespaceHandlerSupport {
 
 	public void init() {
 		ArtifactDefinitionDecorator decorator = new ArtifactDefinitionDecorator();
-		super.registerBeanDefinitionDecoratorForAttribute(
+		registerBeanDefinitionDecoratorForAttribute(
 				ARTIFACT_XML_ATTRIBUTE_NAME, decorator);
-		super.registerBeanDefinitionDecoratorForAttribute(
+		registerBeanDefinitionDecoratorForAttribute(
 				REPOSITORY_XML_ATTRIBUTE_NAME, decorator);
+		registerBeanDefinitionParser("repository",
+				new RepositoryBeanDefinitionParser());
 	}
 
 }
