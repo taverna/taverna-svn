@@ -6,6 +6,6 @@ public abstract class ActivityViewFactory<ActivityType> {
 	
 	public abstract ActivityView<?> getViewType(ActivityType activity);
 
-	public abstract boolean canHandle(Activity<?> activityClass);
+	public abstract boolean canHandle(Activity<?> activity);
 
 }

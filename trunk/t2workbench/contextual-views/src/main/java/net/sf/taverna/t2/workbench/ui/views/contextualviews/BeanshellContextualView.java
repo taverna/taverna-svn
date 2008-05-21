@@ -138,7 +138,7 @@ public class BeanshellContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		return "Beanshell Configuration";
+		return "Beanshell configuration";
 	}
 	
 	private JPanel setInputPanel() {

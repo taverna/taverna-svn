@@ -4,10 +4,11 @@ import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestContextualViewFactory {
+	
 	
 	@Test
 	public void getFactoryInstanceAndViews() {
@@ -17,7 +18,6 @@ public class TestContextualViewFactory {
 	}
 	
 	@Test
-	@Ignore
 	public void getBeanshellFactoryAndConfigure() throws Exception {
 		BeanshellActivity beanshellActivity = new BeanshellActivity();
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();

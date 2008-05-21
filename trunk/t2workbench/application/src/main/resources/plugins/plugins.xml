@@ -8,7 +8,7 @@
 		<enabled>true</enabled>
 		<repositories>
 			<repository>
-				file:///Users/davidwithers/.m2/repository/
+				file:///Users/sowen/.m2/repository/
 			</repository>
 			<repository>
 				http://www.mygrid.org.uk/maven/repository/

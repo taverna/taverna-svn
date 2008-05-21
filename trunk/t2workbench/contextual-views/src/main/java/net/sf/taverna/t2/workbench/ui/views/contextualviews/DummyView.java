@@ -10,6 +10,11 @@ import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
+import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
@@ -23,7 +28,7 @@ public class DummyView {
 		
 		DummyView view = new DummyView();
 		
-		BeanshellActivity beanshellActivity = new BeanshellActivity();
+		Activity<?> a = new BeanshellActivity();
 		BeanshellActivityConfigurationBean bean = new BeanshellActivityConfigurationBean();
 		bean.setScript("hello this is a script");
 		
@@ -78,19 +83,35 @@ public class DummyView {
 		
 		
 		try {
-			beanshellActivity.configure(bean);
+			((BeanshellActivity)a).configure(bean);
 		} catch (ActivityConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(beanshellActivity);
+		a=new WSDLActivity();
+		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
+		b.setOperation("getReport");
+		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
+		((WSDLActivity)a).configure(b);
+		
+		a=new SoaplabActivity();
+		SoaplabActivityConfigurationBean sb = new SoaplabActivityConfigurationBean();
+		sb.setEndpoint("http://www.ebi.ac.uk/soaplab/services/edit.seqret");
+		((SoaplabActivity)a).configure(sb);
+		
+//		a=new StringConstantActivity();
+//		StringConstantConfigurationBean bb=new StringConstantConfigurationBean();
+//		bb.setValue("monkey");
+//		((StringConstantActivity)a).configure(bb);
+		
+		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
 
-		ActivityView viewType = viewFactoryForBeanType.getViewType(beanshellActivity);
+		ActivityView viewType = viewFactoryForBeanType.getViewType(a);
 		
 		System.out.println(viewType.getClass().getCanonicalName());
 		
-//		view.setSize(new Dimension(500, 400));
+		//view.setSize(new Dimension(500, 400));
 		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		((Component) viewType).setVisible(true);
 	}

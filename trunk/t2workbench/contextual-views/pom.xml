@@ -11,7 +11,21 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<description>Contextual views for the activities</description>
-
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<systemProperties>
+						<property>
+							<name>java.awt.headless</name>
+							<value>false</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -42,6 +56,33 @@
 			<groupId>uk.org.mygrid.resources</groupId>
 			<artifactId>jedit-syntax</artifactId>
 			<version>2.2.2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>soaplab-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>stringconstant-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>biomart-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
