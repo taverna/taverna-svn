@@ -10,6 +10,7 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import static net.sf.taverna.platform.spring.PropertyInterpolator.interpolate;
 
 import org.springframework.beans.factory.FactoryBean;
 
@@ -32,10 +33,10 @@ public class RepositoryFactoryBean implements FactoryBean {
 	private List<String> remoteRepositories = null;
 
 	public Object getObject() throws Exception {
-		File base = new File(baseLocation);
+		File base = new File(interpolate(baseLocation));
 		Set<Artifact> systemArtifacts = new HashSet<Artifact>();
 		for (String systemArtifactSpec : systemArtifactStrings) {
-			String[] s = systemArtifactSpec.split(":");
+			String[] s = interpolate(systemArtifactSpec).split(":");
 			Artifact a = new BasicArtifact(s[0], s[1], s[2]);
 			systemArtifacts.add(a);
 		}
@@ -43,7 +44,16 @@ public class RepositoryFactoryBean implements FactoryBean {
 				.getClassLoader(), systemArtifacts);
 
 		for (String repositoryLocationString : remoteRepositories) {
-			r.addRemoteRepository(new URL(repositoryLocationString));
+			try {
+				r.addRemoteRepository(new URL(
+						interpolate(repositoryLocationString)));
+			} catch (Exception ex) {
+				// Don't add repositories which cause an error on instantiation,
+				// this can be because the URL is invalid but can also occur if
+				// the interpolation attempts to use a property that isn't
+				// defined. This can be used intentionally to add repositories
+				// only if a property is set.
+			}
 		}
 		r.update();
 		System.out.println("Constructed raven repository at '" + base + "'");

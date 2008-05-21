@@ -31,7 +31,7 @@
 	<!-- the repository element rather than spring's generic factory    -->
 	<repository id="ravenRepository"
 		xmlns="http://taverna.sf.net/schema/artifact-support"
-		base="C:/Documents and Settings/All Users/Documents/repository">
+		base="${user.home}/t2platform/test-repository">
 		<repositories>
 			<rep url="http://www.mygrid.org.uk/maven/repository/" />
 			<rep url="http://moby.ucalgary.ca/moby_maven/" />

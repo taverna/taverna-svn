@@ -25,7 +25,7 @@
 	<bean id="ravenRepository"
 		class="net.sf.taverna.platform.spring.RepositoryFactoryBean">
 		<property name="base"
-			value="C:\Documents and Settings\All Users\Documents\repository" />
+			value="${user.home}/t2platform/test-repository" />
 		<property name="remoteRepositoryList">
 			<list>
 				<value>
