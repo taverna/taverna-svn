@@ -10,6 +10,7 @@ import net.sf.taverna.raven.repository.Repository;
 import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.core.DecoratingClassLoader;
 import org.springframework.util.ClassUtils;
 import static net.sf.taverna.platform.spring.RavenConstants.*;
 
@@ -29,7 +30,7 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Class resolveBeanClass(RootBeanDefinition rbd, String beanName,
-			boolean typeMatchOnly) throws CannotLoadBeanClassException {
+			Class[] typesToMatch) throws CannotLoadBeanClassException {
 
 		try {
 
@@ -37,10 +38,17 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 				return rbd.getBeanClass();
 			}
 
-			if (typeMatchOnly && getTempClassLoader() != null) {
+			if (typesToMatch != null && getTempClassLoader() != null) {
 				String className = rbd.getBeanClassName();
+				ClassLoader tempClassLoader = getTempClassLoader();
+				if (tempClassLoader instanceof DecoratingClassLoader) {
+					DecoratingClassLoader dcl = (DecoratingClassLoader) tempClassLoader;
+					for (int i = 0; i < typesToMatch.length; i++) {
+						dcl.excludeClass(typesToMatch[i].getName());
+					}
+				}
 				return (className != null ? ClassUtils.forName(className,
-						getTempClassLoader()) : null);
+						tempClassLoader) : null);
 			}
 
 			if (rbd.hasAttribute(REPOSITORY_BEAN_ATTRIBUTE_NAME)
