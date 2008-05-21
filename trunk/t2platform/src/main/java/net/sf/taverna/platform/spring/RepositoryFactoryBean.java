@@ -1,6 +1,7 @@
 package net.sf.taverna.platform.spring;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,8 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 import static net.sf.taverna.platform.spring.PropertyInterpolator.interpolate;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
@@ -27,6 +30,8 @@ import org.springframework.beans.factory.FactoryBean;
  * @author Tom Oinn
  */
 public class RepositoryFactoryBean implements FactoryBean {
+
+	private static Log log = LogFactory.getLog(RepositoryFactoryBean.class);
 
 	private List<String> systemArtifactStrings = null;
 	private String baseLocation = null;
@@ -47,16 +52,21 @@ public class RepositoryFactoryBean implements FactoryBean {
 			try {
 				r.addRemoteRepository(new URL(
 						interpolate(repositoryLocationString)));
-			} catch (Exception ex) {
+			} catch (RuntimeException ex) {
 				// Don't add repositories which cause an error on instantiation,
 				// this can be because the URL is invalid but can also occur if
 				// the interpolation attempts to use a property that isn't
 				// defined. This can be used intentionally to add repositories
 				// only if a property is set.
+				log
+						.warn("Missing property in interpolation, ignoring remote repository entry "
+								+ repositoryLocationString);
+			} catch (MalformedURLException mue) {
+				log.error("Malformed remote repository URL",mue);
 			}
 		}
 		r.update();
-		System.out.println("Constructed raven repository at '" + base + "'");
+		log.info("Constructed raven repository at '" + base + "'");
 		return r;
 	}
 

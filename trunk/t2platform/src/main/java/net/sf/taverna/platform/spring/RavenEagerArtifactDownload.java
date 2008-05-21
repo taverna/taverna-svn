@@ -9,6 +9,8 @@ import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -28,6 +30,9 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class RavenEagerArtifactDownload implements BeanFactoryPostProcessor {
 
+	private static Log log = LogFactory
+			.getLog(RavenEagerArtifactDownload.class);
+
 	/**
 	 * Will use this method to automatically load all artifacts used by beans in
 	 * the repository prior to instantiation, more efficient than doing so on
@@ -35,7 +40,7 @@ public class RavenEagerArtifactDownload implements BeanFactoryPostProcessor {
 	 */
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
 			throws BeansException {
-		System.out.println("Eager load of raven artifacts enabled, loading...");
+		log.debug("Eager load of raven artifacts enabled, loading...");
 		Map<String, Set<Artifact>> artifactsToLoad = new HashMap<String, Set<Artifact>>();
 		for (String beanName : factory.getBeanDefinitionNames()) {
 			BeanDefinition bd = factory.getBeanDefinition(beanName);
@@ -55,14 +60,14 @@ public class RavenEagerArtifactDownload implements BeanFactoryPostProcessor {
 		}
 		for (String repositoryBeanName : artifactsToLoad.keySet()) {
 			Repository r = (Repository) factory.getBean(repositoryBeanName);
-			System.out.println("Repository : " + repositoryBeanName);
+			log.debug("Repository : " + repositoryBeanName);
 			for (Artifact a : artifactsToLoad.get(repositoryBeanName)) {
 				r.addArtifact(a);
-				System.out.println("  " + a.toString());
+				log.debug("  " + a.toString());
 			}
 			r.update();
 		}
-		System.out.println("Raven artifacts loaded");
+		log.debug("Raven artifacts loaded");
 	}
 
 }

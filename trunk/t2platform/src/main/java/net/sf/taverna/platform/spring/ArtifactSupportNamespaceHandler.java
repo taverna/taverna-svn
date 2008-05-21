@@ -1,5 +1,7 @@
 package net.sf.taverna.platform.spring;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 import static net.sf.taverna.platform.spring.RavenConstants.*;
 
@@ -13,6 +15,9 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class ArtifactSupportNamespaceHandler extends NamespaceHandlerSupport {
 
+	private static Log log = LogFactory
+			.getLog(ArtifactSupportNamespaceHandler.class);
+
 	public void init() {
 		ArtifactDefinitionDecorator decorator = new ArtifactDefinitionDecorator();
 		registerBeanDefinitionDecoratorForAttribute(
@@ -21,6 +26,7 @@ public class ArtifactSupportNamespaceHandler extends NamespaceHandlerSupport {
 				REPOSITORY_XML_ATTRIBUTE_NAME, decorator);
 		registerBeanDefinitionParser("repository",
 				new RepositoryBeanDefinitionParser());
+		log.debug("Registered handlers for raven support namespace");
 	}
 
 }

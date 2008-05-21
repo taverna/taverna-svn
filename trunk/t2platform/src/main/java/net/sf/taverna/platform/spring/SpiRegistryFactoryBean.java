@@ -6,6 +6,8 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.spi.ArtifactFilter;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
@@ -21,6 +23,7 @@ public class SpiRegistryFactoryBean implements FactoryBean {
 	List<ArtifactFilter> filterList = null;
 	Repository repository = null;
 	String spiClassName = null;
+	private static Log log = LogFactory.getLog(SpiRegistryFactoryBean.class);
 
 	public Object getObject() throws Exception {
 		if (repository != null && spiClassName != null) {
@@ -32,8 +35,9 @@ public class SpiRegistryFactoryBean implements FactoryBean {
 			registry.updateRegistry();
 			return registry;
 		}
-		throw new RuntimeException(
-				"Must specify repository and spi class name for spi registry");
+		log
+				.error("Must specify repository and spi class name for spi registry");
+		throw new RuntimeException();
 	}
 
 	public void setFilterList(List<ArtifactFilter> filterList) {

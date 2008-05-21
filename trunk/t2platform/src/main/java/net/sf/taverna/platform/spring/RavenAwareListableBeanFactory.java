@@ -7,6 +7,8 @@ import net.sf.taverna.raven.repository.ArtifactStatus;
 import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.CannotLoadBeanClassException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -26,6 +28,9 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  * 
  */
 public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
+
+	private static Log log = LogFactory
+			.getLog(RavenAwareListableBeanFactory.class);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -58,8 +63,26 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 				String artifact = (String) rbd
 						.getAttribute(ARTIFACT_BEAN_ATTRIBUTE_NAME);
 				Repository repository = (Repository) getBean(repositoryBeanName);
+				if (repository == null) {
+					log.error("No repository bean with name '"
+							+ repositoryBeanName + "' in this context");
+					throw new CannotLoadBeanClassException(rbd
+							.getResourceDescription(), beanName, rbd
+							.getBeanClassName(), new ClassNotFoundException(
+							"No such repository"));
+				}
 				try {
 					String[] s = artifact.split(":");
+					if (s.length != 3) {
+						log.error("Artifact specifier '" + artifact
+								+ "' is badly formed for bean '" + beanName
+								+ "'");
+						throw new CannotLoadBeanClassException(rbd
+								.getResourceDescription(), beanName, rbd
+								.getBeanClassName(),
+								new ClassNotFoundException(
+										"Badly formed artifact specifier"));
+					}
 					Artifact a = new BasicArtifact(s[0], s[1], s[2]);
 					if (repository.getStatus(a) != ArtifactStatus.Ready) {
 						repository.addArtifact(a);
@@ -67,14 +90,18 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 					}
 					ClassLoader cl = repository.getLoader(a, this.getClass()
 							.getClassLoader());
+					log.debug("Loading class " + rbd.getBeanClassName()
+							+ " from artifact " + a);
 					return rbd.resolveBeanClass(cl);
 
 				} catch (ArtifactNotFoundException ex) {
+					log.error("No such artifact", ex);
 					throw new CannotLoadBeanClassException(rbd
 							.getResourceDescription(), beanName, rbd
 							.getBeanClassName(), new ClassNotFoundException(ex
 							.getMessage(), ex));
 				} catch (ArtifactStateException ex) {
+					log.error("Artifact in incorrect state", ex);
 					throw new CannotLoadBeanClassException(rbd
 							.getResourceDescription(), beanName, rbd
 							.getBeanClassName(), new ClassNotFoundException(ex

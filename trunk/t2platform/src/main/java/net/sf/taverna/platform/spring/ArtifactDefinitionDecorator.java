@@ -11,6 +11,8 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import static net.sf.taverna.platform.spring.RavenConstants.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Pulls artifact attributes out of beans and decorates the bean definitions
@@ -23,6 +25,8 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class ArtifactDefinitionDecorator implements BeanDefinitionDecorator {
 
+	private static Log log = LogFactory.getLog(ArtifactDefinitionDecorator.class);
+	
 	public BeanDefinitionHolder decorate(Node source,
 			BeanDefinitionHolder holder, ParserContext context) {
 		AbstractBeanDefinition definition = ((AbstractBeanDefinition) holder
@@ -30,10 +34,13 @@ public class ArtifactDefinitionDecorator implements BeanDefinitionDecorator {
 		Attr attribute = (Attr) source;
 		if (attribute.getLocalName().equals(ARTIFACT_XML_ATTRIBUTE_NAME)) {
 			String artifactSpecifier = attribute.getValue();
-			definition.setAttribute(ARTIFACT_BEAN_ATTRIBUTE_NAME, artifactSpecifier);
-		} else if (attribute.getLocalName().equals(REPOSITORY_XML_ATTRIBUTE_NAME)) {
+			definition.setAttribute(ARTIFACT_BEAN_ATTRIBUTE_NAME,
+					artifactSpecifier);
+		} else if (attribute.getLocalName().equals(
+				REPOSITORY_XML_ATTRIBUTE_NAME)) {
 			String repositoryBeanName = attribute.getValue();
-			definition.setAttribute(REPOSITORY_BEAN_ATTRIBUTE_NAME, repositoryBeanName);
+			definition.setAttribute(REPOSITORY_BEAN_ATTRIBUTE_NAME,
+					repositoryBeanName);
 			String[] dependsOn = definition.getDependsOn();
 			if (dependsOn == null) {
 				dependsOn = new String[] { repositoryBeanName };
@@ -45,6 +52,7 @@ public class ArtifactDefinitionDecorator implements BeanDefinitionDecorator {
 			}
 			definition.setDependsOn(dependsOn);
 		}
+		log.debug("Decorated bean '"+holder.getBeanName()+"'");
 		return holder;
 	}
 }

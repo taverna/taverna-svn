@@ -4,6 +4,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Static utility to insert string properties from a Properties object in place
  * of ${property.name} parts of the supplied string.
@@ -15,6 +18,7 @@ public final class PropertyInterpolator {
 
 	private static String regex = "\\$\\{([\\w\\.]+)\\}";
 	private static Pattern pattern;
+	private static Log log = LogFactory.getLog(PropertyInterpolator.class);
 
 	static {
 		pattern = Pattern.compile(regex);
@@ -58,6 +62,8 @@ public final class PropertyInterpolator {
 		while (matcher.find()) {
 			String propertyValue = props.getProperty(matcher.group(1));
 			if (propertyValue == null) {
+				log.warn("Attempt to interpolate an undefined property '"
+						+ matcher.group(1) + "'");
 				throw new RuntimeException("Can't locate property '"
 						+ matcher.group(1) + "'");
 			}
