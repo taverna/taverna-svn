@@ -1,9 +1,5 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
 
 
 public abstract class ActivityView<ConfigBean> extends ContextualView {
