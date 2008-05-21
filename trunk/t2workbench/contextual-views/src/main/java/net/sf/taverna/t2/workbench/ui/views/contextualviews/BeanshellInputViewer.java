@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -56,34 +57,37 @@ public class BeanshellInputViewer extends JPanel {
 		add(literalSelector, outerConstraint);
 
 		outerConstraint.gridx = 2;
-		depthSpinner = new JSpinner();
-		depthSpinner.setValue(bean.getDepth());
+		SpinnerNumberModel model = new SpinnerNumberModel(new Integer(bean.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		depthSpinner = new JSpinner(model);
+//		depthSpinner.setValue(bean.getDepth());
+
 		add(depthSpinner, outerConstraint);
-		
+
 		outerConstraint.gridx = 3;
 		refSchemeText = new JTextArea();
 		String refs = "";
-		for (Object refScheme: bean.getHandledReferenceSchemes()) {
-			refs = refs + refScheme.getClass().getSimpleName() +"\n";
+		for (Object refScheme : bean.getHandledReferenceSchemes()) {
+			refs = refs + refScheme.getClass().getSimpleName() + "\n";
 		}
 		refSchemeText.setText(refs);
 		refSchemeText.setEditable(false);
 		refSchemeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		add(refSchemeText, outerConstraint);
-		
+
 		outerConstraint.gridx = 4;
 		mimeTypeText = new JTextArea();
 		String mimes = "";
-		for (String mimeType:bean.getMimeTypes()) {
-			mimes = mimes + mimeType +"\n";
+		for (String mimeType : bean.getMimeTypes()) {
+			mimes = mimes + mimeType + "\n";
 		}
 		mimeTypeText.setText(mimes);
 		mimeTypeText.setEditable(false);
 		mimeTypeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		add(mimeTypeText, outerConstraint);
-		
+
 		outerConstraint.gridx = 5;
-		translatedType = new JLabel(bean.getTranslatedElementType().getSimpleName());
+		translatedType = new JLabel(bean.getTranslatedElementType()
+				.getSimpleName());
 		add(translatedType, outerConstraint);
 	}
 
@@ -109,6 +113,10 @@ public class BeanshellInputViewer extends JPanel {
 
 	public JSpinner getDepthSpinner() {
 		return depthSpinner;
+	}
+
+	public ActivityInputPortDefinitionBean getBean() {
+		return bean;
 	}
 
 }

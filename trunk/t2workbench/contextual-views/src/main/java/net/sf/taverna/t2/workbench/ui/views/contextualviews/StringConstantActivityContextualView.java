@@ -23,4 +23,10 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 		return html;
 	}
 
+	@Override
+	protected void setNewValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

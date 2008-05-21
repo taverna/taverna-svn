@@ -24,4 +24,10 @@ public class SoaplabActivityContextualView extends HTMLBasedActivityContextualVi
 		html+="<tr><td>Polling interval max</td><td>"+bean.getPollingIntervalMax()+"</td></tr>";
 		return html;
 	}
+
+	@Override
+	protected void setNewValues() {
+		// TODO Auto-generated method stub
+		
+	}
 }

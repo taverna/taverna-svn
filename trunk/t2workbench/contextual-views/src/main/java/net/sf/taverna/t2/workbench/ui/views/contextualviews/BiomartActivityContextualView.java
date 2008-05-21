@@ -23,5 +23,11 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 		return "Biomart activity";
 	}
 
+	@Override
+	protected void setNewValues() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

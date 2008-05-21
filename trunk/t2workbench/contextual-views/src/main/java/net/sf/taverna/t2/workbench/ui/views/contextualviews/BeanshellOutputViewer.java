@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
@@ -38,13 +39,15 @@ public class BeanshellOutputViewer extends JPanel{
 		add(nameField, outerConstraint);
 		
 		outerConstraint.gridx = 1;
-		depthSpinner = new JSpinner();
-		depthSpinner.setValue(bean.getDepth());
+		SpinnerNumberModel depthModel = new SpinnerNumberModel(new Integer(bean.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		depthSpinner = new JSpinner(depthModel);
+//		depthSpinner.setValue(bean.getDepth());
 		add(depthSpinner, outerConstraint);
 		
 		outerConstraint.gridx = 2;
-		granularDepthSpinner = new JSpinner();
-		granularDepthSpinner.setValue(bean.getGranularDepth());
+		SpinnerNumberModel granularModel = new SpinnerNumberModel(new Integer(bean.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		granularDepthSpinner = new JSpinner(granularModel);
+//		granularDepthSpinner.setValue(bean.getGranularDepth());
 		add(granularDepthSpinner, outerConstraint);
 		
 		outerConstraint.gridx = 3;
@@ -72,6 +75,10 @@ public class BeanshellOutputViewer extends JPanel{
 
 	public JTextArea getMimeTypeText() {
 		return mimeTypeText;
+	}
+
+	public ActivityOutputPortDefinitionBean getBean() {
+		return bean;
 	}
 
 }

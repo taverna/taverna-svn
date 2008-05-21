@@ -114,6 +114,7 @@ public class DummyView {
 		//view.setSize(new Dimension(500, 400));
 		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		((Component) viewType).setVisible(true);
+		
 	}
 	
 	
