@@ -1,13 +1,14 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public class SoaplabActivityContextualView extends HTMLBasedActivityContextualView<SoaplabActivityConfigurationBean> {
 
 	private static final long serialVersionUID = -6470801873448104509L;
 
-	public SoaplabActivityContextualView(SoaplabActivityConfigurationBean configBean) {
-		super(configBean);
+	public SoaplabActivityContextualView(Activity<?> activity) {
+		super(activity);
 	}
 
 	@Override

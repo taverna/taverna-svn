@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartServiceXMLHandler;
@@ -9,9 +10,8 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 
 	private static final long serialVersionUID = -33919649695058443L;
 
-	public BiomartActivityContextualView(
-			BiomartActivityConfigurationBean configBean) {
-		super(configBean);
+	public BiomartActivityContextualView(Activity<?> activity) {
+		super(activity);
 	}
 
 	@Override

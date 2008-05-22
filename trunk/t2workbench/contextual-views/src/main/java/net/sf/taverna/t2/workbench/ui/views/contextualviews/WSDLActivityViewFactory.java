@@ -12,7 +12,7 @@ public class WSDLActivityViewFactory extends ActivityViewFactory<WSDLActivity>{
 
 	@Override
 	public ActivityView<?> getViewType(WSDLActivity activity) {
-		return new WSDLActivityContextualView(activity.getConfiguration());
+		return new WSDLActivityContextualView(activity);
 	}
 
 }

@@ -4,16 +4,17 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public class StringConstantActivityContextualView extends HTMLBasedActivityContextualView<StringConstantConfigurationBean> {
 
 	private static final long serialVersionUID = -553974544001808511L;
 
-	public StringConstantActivityContextualView(
-			StringConstantConfigurationBean configBean) {
-		super(configBean);
+	public StringConstantActivityContextualView(Activity<?> activity) {
+		super(activity);
 	}
 
 	@Override
@@ -34,16 +35,23 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 		
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	protected Action getConfigureAction() {
+		
 		return new AbstractAction() {
 
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("XXXXXXX");
+			public void actionPerformed(ActionEvent e) {
+				String value = getConfigBean().getValue();
+				String newValue = JOptionPane.showInputDialog("New string value",value);
+				if (newValue!=null) {
+					getConfigBean().setValue(newValue);
+				}
 			}
+			
 		};
 	}
-	
-	
 
 }
+
+

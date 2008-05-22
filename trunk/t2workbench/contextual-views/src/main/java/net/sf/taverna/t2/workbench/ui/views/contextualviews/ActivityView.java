@@ -1,14 +1,18 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
 
 
 public abstract class ActivityView<ConfigBean> extends ContextualView {
 
-	private ConfigBean configBean;
+	private Activity<?> activity;
+	ConfigBean configBean;
 	
-	public ActivityView(ConfigBean configBean) {
+	public ActivityView(Activity<?> activity) {
 		super();
-		this.configBean = configBean;
+		this.activity = activity;
+		this.configBean=(ConfigBean)activity.getConfiguration();
 		initView();
 	}
 
@@ -16,7 +20,7 @@ public abstract class ActivityView<ConfigBean> extends ContextualView {
 		return this.configBean;
 	}
 
-	public void setConfigBean(ConfigBean configBean) {
-		this.configBean = configBean;
+	protected Activity<?> getActivity() {
+		return this.activity;
 	}
 }

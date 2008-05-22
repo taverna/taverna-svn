@@ -8,10 +8,12 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+
 public abstract class HTMLBasedActivityContextualView<ConfigBean> extends ActivityView<ConfigBean>
 {
-	public HTMLBasedActivityContextualView(ConfigBean configBean) {
-		super(configBean);
+	public HTMLBasedActivityContextualView(Activity<?> activity) {
+		super(activity);
 	}
 
 	@Override

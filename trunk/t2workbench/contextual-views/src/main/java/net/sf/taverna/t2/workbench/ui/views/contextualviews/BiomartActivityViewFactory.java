@@ -12,7 +12,7 @@ public class BiomartActivityViewFactory extends ActivityViewFactory<BiomartActiv
 
 	@Override
 	public ActivityView<?> getViewType(BiomartActivity activity) {
-		return new BiomartActivityContextualView(activity.getConfiguration());
+		return new BiomartActivityContextualView(activity);
 	}
 
 }
