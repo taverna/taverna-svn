@@ -1,8 +1,0 @@
-net.sf.taverna.t2.workbench.ui.NewWorkflowAction
-net.sf.taverna.t2.workbench.ui.NewDataflowAction
-net.sf.taverna.t2.workbench.ui.FileOpenAction
-net.sf.taverna.t2.workbench.ui.FileTestAction
-net.sf.taverna.t2.workbench.ui.EditCutAction
-net.sf.taverna.t2.workbench.ui.EditCopyAction
-net.sf.taverna.t2.workbench.ui.EditUndoAction
-net.sf.taverna.t2.workbench.ui.OptionAction
