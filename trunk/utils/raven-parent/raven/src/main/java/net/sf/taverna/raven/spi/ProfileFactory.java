@@ -21,15 +21,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
  *
- ****************************************************************
- * Source code information
- * -----------------------
- * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.4 $
- * Release status     $State: Exp $
- * Last modified on   $Date: 2008-05-22 11:26:51 $
- *               by   $Author: stain $
- * Created on 20 Oct 2006
  *****************************************************************/
 package net.sf.taverna.raven.spi;
 
