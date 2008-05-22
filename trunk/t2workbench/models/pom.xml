@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2.workbench</groupId>
 	<artifactId>models</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Workflow models</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2-workbench</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.1-SNAPSHOT</version>
 	</parent>
 	<description>Models over a workflow</description>
 	<modules>
