@@ -88,15 +88,15 @@ public class BeanshellInputViewer extends JPanel {
 		add(refSchemeText, outerConstraint);
 
 		outerConstraint.gridx = 4;
-		mimeTypeText = new JTextArea();
-		String mimes = "";
-		for (String mimeType : bean.getMimeTypes()) {
-			mimes = mimes + mimeType + "\n";
-		}
-		mimeTypeText.setText(mimes);
-		mimeTypeText.setEditable(false);
-		mimeTypeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-		add(mimeTypeText, outerConstraint);
+//		mimeTypeText = new JTextArea();
+//		String mimes = "";
+//		for (String mimeType : bean.getMimeTypes()) {
+//			mimes = mimes + mimeType + "\n";
+//		}	
+//		mimeTypeText.setText(mimes);
+//		mimeTypeText.setEditable(false);
+//		mimeTypeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+//		add(mimeTypeText, outerConstraint);
 
 		outerConstraint.gridx = 5;
 		translatedType = new JLabel(bean.getTranslatedElementType()

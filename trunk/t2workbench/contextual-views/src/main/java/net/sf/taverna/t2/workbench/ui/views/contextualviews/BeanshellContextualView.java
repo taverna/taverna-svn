@@ -237,10 +237,10 @@ public class BeanshellContextualView extends
 			inputConstraint.gridx = 3;
 			inputEditPanel.add(beanshellInputViewer.getRefSchemeText(),
 					inputConstraint);
+//			inputConstraint.gridx = 4;
+//			inputEditPanel.add(beanshellInputViewer.getMimeTypeText(),
+//					inputConstraint);
 			inputConstraint.gridx = 4;
-			inputEditPanel.add(beanshellInputViewer.getMimeTypeText(),
-					inputConstraint);
-			inputConstraint.gridx = 5;
 			inputEditPanel.add(beanshellInputViewer.getTranslatedType(),
 					inputConstraint);
 
@@ -293,7 +293,8 @@ public class BeanshellContextualView extends
 			outputConstraint.gridx = 3;
 			outputEditPanel.add(beanshellOutputViewer.getMimeTypeText(),
 					outputConstraint);
-
+			outputConstraint.gridx = 4;
+			outputEditPanel.add(beanshellOutputViewer.getMimeTypePanel(), outputConstraint);
 			gridy++;
 		}
 		JPanel filler2 = new JPanel();
