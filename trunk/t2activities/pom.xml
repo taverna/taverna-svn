@@ -152,6 +152,17 @@
 				http://www.mygrid.org.uk/maven/snapshot-repository
 			</url>
 		</repository>
+		<repository>
+                        <id>mobycentral</id>
+                        <name>MobyCentral Repository</name>
+                        <url>http://moby.ucalgary.ca/moby_maven/</url>
+                        <snapshots>
+                                <enabled>false</enabled>
+                        </snapshots>
+                        <releases>
+                                <enabled>true</enabled>
+                        </releases>
+                </repository>
 	</repositories>
 	<distributionManagement>
 		<!-- use the following if you're not using a snapshot version. -->
