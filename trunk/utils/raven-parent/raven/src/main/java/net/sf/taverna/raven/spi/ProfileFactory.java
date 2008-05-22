@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: ProfileFactory.java,v $
- * Revision           $Revision: 1.3 $
+ * Revision           $Revision: 1.4 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-24 15:35:51 $
+ * Last modified on   $Date: 2008-05-22 11:26:51 $
  *               by   $Author: stain $
  * Created on 20 Oct 2006
  *****************************************************************/
@@ -82,8 +82,9 @@ public class ProfileFactory {
 			return profile;
 		}
 		if (!isProfileDefined()) {
-			logger.warn("No profile defined, try specifying -Draven.profile");
-			return null;
+			logger.info("No profile defined, try specifying -Draven.profile");
+			profile = new Profile(false);
+			return profile;
 		}
 		String profileStr = System.getProperty("raven.profile");
 		try {
