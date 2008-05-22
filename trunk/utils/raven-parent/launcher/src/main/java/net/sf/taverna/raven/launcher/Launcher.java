@@ -42,10 +42,11 @@ public class Launcher {
 			IllegalAccessException, ClassNotFoundException {
 		Repository localRepository = appRuntime.getRavenRepository();
 		PluginManager.setRepository(localRepository);
+		
 		// A getInstance() should be enough to initialise
 		// the plugins
+		@SuppressWarnings("unused")
 		PluginManager pluginMan = PluginManager.getInstance();
-		
 		
 		SpiRegistry launchableSpi = new SpiRegistry(localRepository,
 				Launchable.class.getCanonicalName(), appRuntime
