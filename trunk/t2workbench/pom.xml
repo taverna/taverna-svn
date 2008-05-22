@@ -5,7 +5,7 @@
 	<artifactId>t2-workbench</artifactId>
 	<packaging>pom</packaging>
 	<name>Taverna 2 workbench</name>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 	<description>The encapsulating workbench for Taverna 2</description>
 	<licenses>
 		<license>
@@ -78,13 +78,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	<modules>
-		<module>application</module>
-		<module>configuration</module>
-		<module>models</module>
-		<module>ui</module>
-		<module>contextual-views</module>
-	</modules>
+
 	<repositories>
 		<repository>
 			<releases />
@@ -246,4 +240,14 @@
 			<url>${siteurl}</url>
 		</site>
 	</distributionManagement>
+	<modules>
+		<module>application</module>
+		<module>configuration</module>
+		<module>models</module>
+		<module>menu-api</module>
+		<module>menu-impl</module>
+		<module>ui-api</module>
+		<module>ui-impl</module>
+		<module>contextual-views</module>
+	</modules>
 </project>
