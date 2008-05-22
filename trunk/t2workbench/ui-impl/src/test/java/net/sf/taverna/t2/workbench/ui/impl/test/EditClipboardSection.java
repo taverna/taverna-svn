@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workbench.ui.impl.test;
 
 import java.net.URI;
 
-import net.sf.taverna.t2.ui.menu.AbstractMenu;
 import net.sf.taverna.t2.ui.menu.AbstractMenuSection;
 
 public class EditClipboardSection extends AbstractMenuSection {
