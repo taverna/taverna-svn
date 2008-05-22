@@ -14,4 +14,9 @@ public class BarDataBean extends AbstractDataBean {
 		return barProperty;
 	}
 	
+	@Override
+	public String toString() {
+		return "Bar data bean, name='"+name+"' barProperty='"+barProperty+"'";
+	}
+	
 }

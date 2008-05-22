@@ -16,6 +16,18 @@
 		module.
 	</description>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<modules>
 		<module>t2platform-testhelpers-h3-api</module>
 		<module>t2platform-testhelpers-h3-impl</module>

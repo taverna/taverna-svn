@@ -14,4 +14,9 @@ public class FooDataBean extends AbstractDataBean {
 		return fooProperty;
 	}
 	
+	@Override
+	public String toString() {
+		return "Foo data bean, name='"+name+"' fooProperty='"+fooProperty+"'";
+	}
+	
 }
