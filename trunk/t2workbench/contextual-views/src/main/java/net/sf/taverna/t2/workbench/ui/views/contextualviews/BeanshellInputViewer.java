@@ -20,17 +20,28 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
 public class BeanshellInputViewer extends JPanel {
 
 	private ActivityInputPortDefinitionBean bean;
+
 	private JTextField nameField;
+
 	private JSpinner depthSpinner;
+
 	private JTextArea refSchemeText;
+
 	private JTextArea mimeTypeText;
+
 	private JLabel translatedType;
+
 	private JComboBox literalSelector;
 
-	public BeanshellInputViewer(ActivityInputPortDefinitionBean bean) {
+	private boolean editable;
+
+	public BeanshellInputViewer(ActivityInputPortDefinitionBean bean,
+			boolean editable) {
 		this.bean = bean;
+		this.editable = editable;
 		setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		initView();
+		setEditMode();
 	}
 
 	private void initView() {
@@ -57,9 +68,11 @@ public class BeanshellInputViewer extends JPanel {
 		add(literalSelector, outerConstraint);
 
 		outerConstraint.gridx = 2;
-		SpinnerNumberModel model = new SpinnerNumberModel(new Integer(bean.getDepth()), new Integer(0), new Integer(100), new Integer(1));
+		SpinnerNumberModel model = new SpinnerNumberModel(new Integer(bean
+				.getDepth()), new Integer(0), new Integer(100), new Integer(1));
 		depthSpinner = new JSpinner(model);
-//		depthSpinner.setValue(bean.getDepth());
+		depthSpinner.setEnabled(false);
+		// depthSpinner.setValue(bean.getDepth());
 
 		add(depthSpinner, outerConstraint);
 
@@ -117,6 +130,22 @@ public class BeanshellInputViewer extends JPanel {
 
 	public ActivityInputPortDefinitionBean getBean() {
 		return bean;
+	}
+
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+		setEditMode();
+	}
+	
+	public void setEditMode() {
+		this.nameField.setEditable(editable);
+		this.literalSelector.setEnabled(editable);
+		this.depthSpinner.setEnabled(editable);
+
 	}
 
 }

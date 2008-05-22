@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -88,7 +92,7 @@ public class BeanshellContextualView extends
 		tabbedPane.addTab("Ports", setPortPanel());
 
 		tabbedPane.addTab("Dependencies", setDependencies());
-		
+
 		panel.add(tabbedPane, outerConstraint);
 
 		scriptText = new JEditTextArea(new TextAreaDefaults());
@@ -129,9 +133,9 @@ public class BeanshellContextualView extends
 		JLabel label3 = new JLabel("Version");
 		label3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		dependencies.add(label3, outerConstraint);
-		
+
 		int gridy = 1;
-		for (String dependency:getConfigBean().getDependencies()) {
+		for (String dependency : getConfigBean().getDependencies()) {
 			outerConstraint.gridy = gridy;
 			String[] split = dependency.split(":");
 			outerConstraint.gridx = 0;
@@ -219,7 +223,7 @@ public class BeanshellContextualView extends
 				.getInputPortDefinitions()) {
 			inputConstraint.gridy = gridy;
 			BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
-					inputBean);
+					inputBean, false);
 			inputViewList.add(beanshellInputViewer);
 			inputConstraint.gridx = 0;
 			inputEditPanel.add(beanshellInputViewer.getNameField(),
@@ -274,7 +278,7 @@ public class BeanshellContextualView extends
 				.getOutputPortDefinitions()) {
 			outputConstraint.gridy = gridy;
 			BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
-					outputBean);
+					outputBean, false);
 			outputViewList.add(beanshellOutputViewer);
 			outputConstraint.gridx = 0;
 			outputEditPanel.add(beanshellOutputViewer.getNameField(),
@@ -302,25 +306,84 @@ public class BeanshellContextualView extends
 
 	@Override
 	protected void setNewValues() {
-
+		boolean edit = false;
+		if (inputViewList.get(0).isEditable()) {
+			edit = true;
+		}
+		if (edit) {
 		for (BeanshellInputViewer view : inputViewList) {
-			view.getBean().setAllowsLiteralValues(
-					(Boolean) view.getLiteralSelector().getSelectedItem());
-			view.getBean()
-					.setDepth((Integer) view.getDepthSpinner().getValue());
-			view.getBean().setName(view.getName());
+				view.getBean().setAllowsLiteralValues(
+						(Boolean) view.getLiteralSelector().getSelectedItem());
+				view.getBean().setDepth(
+						(Integer) view.getDepthSpinner().getValue());
+				view.getBean().setName(view.getName());
 		}
-
-		for (BeanshellOutputViewer view : outputViewList) {
-			view.getBean()
-					.setDepth((Integer) view.getDepthSpinner().getValue());
-			view.getBean().setGranularDepth(
-					(Integer) view.getGranularDepthSpinner().getValue());
-			view.getBean().setName(view.getName());
+			for (BeanshellOutputViewer view : outputViewList) {
+				view.getBean().setDepth(
+						(Integer) view.getDepthSpinner().getValue());
+				view.getBean().setGranularDepth(
+						(Integer) view.getGranularDepthSpinner().getValue());
+				view.getBean().setName(view.getName());
+			}
+			getConfigBean().setScript(this.scriptText.getText());
 		}
-		getConfigBean().setScript(this.scriptText.getText());
 
 	}
-	
+
+	@Override
+	protected Action getConfigureAction() {
+
+		Action configureAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				for (BeanshellInputViewer view : inputViewList) {
+					view.setEditable(true);
+				}
+
+				for (BeanshellOutputViewer view : outputViewList) {
+					view.setEditable(true);
+				}
+			}
+
+		};
+		return configureAction;
+	}
+
+	private Action getOKAction() {
+
+		Action OKAction = new AbstractAction() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				boolean edit = false;
+				for (BeanshellInputViewer view : inputViewList) {
+					if (view.isEditable()) {
+						edit = true;
+						view.getBean().setAllowsLiteralValues(
+								(Boolean) view.getLiteralSelector()
+										.getSelectedItem());
+						view.getBean().setDepth(
+								(Integer) view.getDepthSpinner().getValue());
+						view.getBean().setName(view.getName());
+					}
+				}
+
+				for (BeanshellOutputViewer view : outputViewList) {
+					if (view.isEditable()) {
+						view.getBean().setDepth(
+								(Integer) view.getDepthSpinner().getValue());
+						view.getBean().setGranularDepth(
+								(Integer) view.getGranularDepthSpinner()
+										.getValue());
+						view.getBean().setName(view.getName());
+					}
+				}
+				if (edit) {
+					getConfigBean().setScript(scriptText.getText());
+				}
+			}
+
+		};
+		return OKAction;
+	}
 
 }

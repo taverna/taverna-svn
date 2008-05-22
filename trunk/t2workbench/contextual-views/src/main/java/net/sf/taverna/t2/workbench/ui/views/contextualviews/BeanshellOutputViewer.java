@@ -18,11 +18,14 @@ public class BeanshellOutputViewer extends JPanel{
 	private JSpinner depthSpinner;
 	private JSpinner granularDepthSpinner;
 	private JTextArea mimeTypeText;
+	private boolean editable;
 
-	public BeanshellOutputViewer(ActivityOutputPortDefinitionBean bean) {
+	public BeanshellOutputViewer(ActivityOutputPortDefinitionBean bean, boolean editable) {
 		this.bean = bean;
+		this.editable = editable;
 		setBorder(javax.swing.BorderFactory.createEtchedBorder());
 		initView();
+		setEditable(editable);
 	}
 
 	private void initView() {
@@ -79,6 +82,22 @@ public class BeanshellOutputViewer extends JPanel{
 
 	public ActivityOutputPortDefinitionBean getBean() {
 		return bean;
+	}
+	
+	public boolean isEditable() {
+		return editable;
+	}
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+		setEditMode();
+	}
+	
+	public void setEditMode() {
+		this.depthSpinner.setEnabled(editable);
+		this.granularDepthSpinner.setEnabled(editable);
+		this.nameField.setEditable(editable);
+
 	}
 
 }
