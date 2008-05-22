@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestContextualViewFactory {

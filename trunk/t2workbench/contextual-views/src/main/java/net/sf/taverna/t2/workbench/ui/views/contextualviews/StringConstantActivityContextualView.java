@@ -1,5 +1,10 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 
 public class StringConstantActivityContextualView extends HTMLBasedActivityContextualView<StringConstantConfigurationBean> {
@@ -28,5 +33,17 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	protected Action getConfigureAction() {
+		return new AbstractAction() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("XXXXXXX");
+			}
+		};
+	}
+	
+	
 
 }
