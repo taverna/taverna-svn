@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.sf.taverna.t2.workbench</groupId>
+	<artifactId>menu-api</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Menu generation API</name>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2-workbench</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<description>An SPI system for building UI menues</description>
+</project>
