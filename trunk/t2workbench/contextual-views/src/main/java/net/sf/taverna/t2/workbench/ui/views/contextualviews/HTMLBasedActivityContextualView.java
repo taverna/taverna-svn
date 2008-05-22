@@ -12,6 +12,8 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public abstract class HTMLBasedActivityContextualView<ConfigBean> extends ActivityView<ConfigBean>
 {
+	private JEditorPane editorPane;
+	
 	public HTMLBasedActivityContextualView(Activity<?> activity) {
 		super(activity);
 	}
@@ -66,9 +68,15 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends Activi
 	protected JPanel panelForHtml(String html) {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
-		JEditorPane editorPane = new JEditorPane("text/html",html);
+		editorPane = new JEditorPane("text/html",html);
 		editorPane.setEditable(false);
 		result.add(editorPane,BorderLayout.CENTER);
 		return result;
+	}
+	
+	protected void refreshView() {
+		String html = buildHtml();
+		String style = getStyle();
+		editorPane.setText(style+html);
 	}
 }

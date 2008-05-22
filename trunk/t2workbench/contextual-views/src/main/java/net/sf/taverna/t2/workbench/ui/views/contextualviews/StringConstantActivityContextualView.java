@@ -6,8 +6,10 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
+import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class StringConstantActivityContextualView extends HTMLBasedActivityContextualView<StringConstantConfigurationBean> {
 
@@ -46,6 +48,12 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 				String newValue = JOptionPane.showInputDialog("New string value",value);
 				if (newValue!=null) {
 					getConfigBean().setValue(newValue);
+					try {
+						((StringConstantActivity)getActivity()).configure(getConfigBean());
+					} catch (ActivityConfigurationException e1) {
+						//FIXME: handle configuration exception
+					}
+					refreshView();
 				}
 			}
 			
