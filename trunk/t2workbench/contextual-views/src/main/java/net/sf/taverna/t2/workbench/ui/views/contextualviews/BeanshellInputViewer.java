@@ -85,7 +85,7 @@ public class BeanshellInputViewer extends JPanel {
 		refSchemeText.setText(refs);
 		refSchemeText.setEditable(false);
 		refSchemeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-		add(refSchemeText, outerConstraint);
+//		add(refSchemeText, outerConstraint);
 
 		outerConstraint.gridx = 4;
 //		mimeTypeText = new JTextArea();
@@ -101,7 +101,7 @@ public class BeanshellInputViewer extends JPanel {
 		outerConstraint.gridx = 5;
 		translatedType = new JLabel(bean.getTranslatedElementType()
 				.getSimpleName());
-		add(translatedType, outerConstraint);
+//		add(translatedType, outerConstraint);
 	}
 
 	public JTextField getNameField() {

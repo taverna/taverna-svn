@@ -20,7 +20,9 @@ public class BeanshellActvityConfigurationAction extends ActivityConfigurationAc
 		BeanshellConfigView beanshellConfigView = new BeanshellConfigView((BeanshellActivity)getActivity());
 		final JFrame frame = new JFrame();
 		frame.add(beanshellConfigView);
+		frame.setSize(500, 500);
 		frame.setVisible(true);
+		
 		beanshellConfigView.setButtonClickedListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

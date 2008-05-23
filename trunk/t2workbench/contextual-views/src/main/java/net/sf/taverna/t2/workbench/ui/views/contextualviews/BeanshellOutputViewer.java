@@ -82,7 +82,7 @@ public class BeanshellOutputViewer extends JPanel{
 		
 		outerConstraint.gridx = 3;
 		
-		add(setMimeTypePanel(), outerConstraint);
+//		add(setMimeTypePanel(), outerConstraint);
 	}
 
 	public JTextField getNameField() {
@@ -115,8 +115,8 @@ public class BeanshellOutputViewer extends JPanel{
 	}
 	
 	public void setEditMode() {
-		this.addMimeTypeButton.setVisible(editable);
-		this.mimeDropList.setVisible(editable);
+//		this.addMimeTypeButton.setVisible(editable);
+//		this.mimeDropList.setVisible(editable);
 		this.depthSpinner.setEnabled(editable);
 		this.granularDepthSpinner.setEnabled(editable);
 		this.nameField.setEditable(editable);
