@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 import static org.junit.Assert.*;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
+import net.sf.taverna.t2.workbench.ui.actions.activity.StringConstantActivityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -21,11 +22,7 @@ public class TestStringConstantContextualView {
 	}
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testDisovery() throws Exception {
-		
-		
-		
-		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
+	public void testDisovery() throws Exception {ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
 		assertTrue("Factory should be StringConstantActivityViewFactory",factory instanceof StringConstantActivityViewFactory);
 		ActivityView<?> view = factory.getViewType(activity);
 		assertTrue("The view should be StringConstantActivityContextualView",view instanceof StringConstantActivityContextualView);
@@ -35,5 +32,7 @@ public class TestStringConstantContextualView {
 	public void testGetConfigureAction() throws Exception {
 		ContextualView view = new StringConstantActivityContextualView(activity);
 		assertNotNull("The action should not be null",view.getConfigureAction());
+		assertTrue("Should be a StringConstantActivityConfigurationAction",view.getConfigureAction() instanceof StringConstantActivityConfigurationAction);
 	}
+	
 }

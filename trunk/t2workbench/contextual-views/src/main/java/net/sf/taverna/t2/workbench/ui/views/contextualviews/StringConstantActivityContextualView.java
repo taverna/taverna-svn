@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
+import net.sf.taverna.t2.workbench.ui.actions.activity.StringConstantActivityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
@@ -41,21 +42,12 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 	@Override
 	protected Action getConfigureAction() {
 		
-		return new AbstractAction() {
+		return new StringConstantActivityConfigurationAction((StringConstantActivity)getActivity()) {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				String value = getConfigBean().getValue();
-				String newValue = JOptionPane.showInputDialog("New string value",value);
-				if (newValue!=null) {
-					getConfigBean().setValue(newValue);
-					
-					try {
-						((StringConstantActivity)getActivity()).configure(getConfigBean());
-					} catch (ActivityConfigurationException e1) {
-						//FIXME: handle configuration exception
-					}
-					refreshView();
-				}
+				super.actionPerformed(e);
+				refreshView();
 			}
 			
 		};

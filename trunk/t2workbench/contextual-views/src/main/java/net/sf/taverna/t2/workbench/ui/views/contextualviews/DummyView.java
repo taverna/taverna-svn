@@ -86,11 +86,11 @@ public class DummyView {
 			e.printStackTrace();
 		}
 		
-		a=new WSDLActivity();
-		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
-		b.setOperation("getReport");
-		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
-		((WSDLActivity)a).configure(b);
+//		a=new WSDLActivity();
+//		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
+//		b.setOperation("getReport");
+//		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
+//		((WSDLActivity)a).configure(b);
 //		
 //		a=new SoaplabActivity();
 //		SoaplabActivityConfigurationBean sb = new SoaplabActivityConfigurationBean();
