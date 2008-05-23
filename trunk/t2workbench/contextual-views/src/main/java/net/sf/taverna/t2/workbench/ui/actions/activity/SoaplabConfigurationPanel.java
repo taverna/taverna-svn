@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.actions.activity;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;

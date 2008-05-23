@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
+import net.sf.taverna.t2.workbench.ui.actions.activity.SoaplabActivityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
@@ -34,5 +35,6 @@ public class TestSoaplabActivityContextualView {
 	public void testConfigureAction() throws Exception {
 		ContextualView view = new SoaplabActivityContextualView(a);
 		assertNotNull("the action should not be null",view.getConfigureAction());
+		assertTrue("The action should be a SoaplabAcitivyConfigurationAction",view.getConfigureAction() instanceof SoaplabActivityConfigurationAction);
 	}
 }
