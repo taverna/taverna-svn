@@ -92,10 +92,10 @@ public class DummyView {
 //		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
 //		((WSDLActivity)a).configure(b);
 //		
-		a=new SoaplabActivity();
-		SoaplabActivityConfigurationBean sb = new SoaplabActivityConfigurationBean();
-		sb.setEndpoint("http://www.ebi.ac.uk/soaplab/services/edit.seqret");
-		((SoaplabActivity)a).configure(sb);
+//		a=new SoaplabActivity();
+//		SoaplabActivityConfigurationBean sb = new SoaplabActivityConfigurationBean();
+//		sb.setEndpoint("http://www.ebi.ac.uk/soaplab/services/edit.seqret");
+//		((SoaplabActivity)a).configure(sb);
 		
 //		a=new StringConstantActivity();
 //		StringConstantConfigurationBean bb=new StringConstantConfigurationBean();

@@ -68,6 +68,10 @@ public class BeanshellConfigView extends JPanel {
 	private ActionListener buttonClicked;
 
 	private int inputGridy;
+	
+	private int newPortNumber = 0;
+
+	private int outputGridy;
 
 	public BeanshellConfigView(BeanshellActivity activity) {
 		this.activity = activity;
@@ -274,11 +278,11 @@ public class BeanshellConfigView extends JPanel {
 	}
 
 	private JPanel setInputPanel() {
-		JPanel inputEditPanel = new JPanel(new GridBagLayout());
+		final JPanel inputEditPanel = new JPanel(new GridBagLayout());
 		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
 				.createEtchedBorder(), "Inputs"));
 
-		GridBagConstraints inputConstraint = new GridBagConstraints();
+		final GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		inputConstraint.gridx = 0;
 		inputConstraint.gridy = 0;
@@ -319,10 +323,21 @@ public class BeanshellConfigView extends JPanel {
 
 			inputGridy++;
 		}
-		JPanel filler = new JPanel();
-		inputConstraint.weighty = 0.1;
-		inputConstraint.gridy = inputGridy;
-		inputEditPanel.add(filler, inputConstraint);
+		JPanel outerInputPanel = new JPanel();
+		outerInputPanel.setLayout(new GridBagLayout());
+		GridBagConstraints outerPanelConstraint = new GridBagConstraints();
+		outerPanelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 0;
+		outerPanelConstraint.weighty = 0.1;
+		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.fill = GridBagConstraints.BOTH;
+		outerInputPanel.add(inputEditPanel, outerPanelConstraint);
+		
+//		JPanel filler = new JPanel();
+//		inputConstraint.weighty = 0.1;
+//		inputConstraint.gridy = inputGridy;
+//		inputEditPanel.add(filler, inputConstraint);
 		//TODO add input port button and correct spacing
 		JButton addInputPortButton = new JButton(new AbstractAction() {
 
@@ -336,23 +351,51 @@ public class BeanshellConfigView extends JPanel {
 				List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");
 				bean.setMimeTypes(mimeTypes);
-				bean.setName("newInputPort");
+				bean.setName("newInputPort" + newPortNumber);
+				newPortNumber++;
 				bean.setTranslatedElementType(String.class);
 				BeanshellInputViewer newPort = new BeanshellInputViewer(bean,
 						true);
+				inputConstraint.gridy = inputGridy;
+				BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
+						bean, true);
+				inputViewList.add(beanshellInputViewer);
+				inputConstraint.gridx = 0;
+				inputEditPanel.add(beanshellInputViewer.getNameField(),
+						inputConstraint);
+				inputConstraint.gridx = 1;
+				inputEditPanel.add(beanshellInputViewer.getDepthSpinner(),
+						inputConstraint);
+				inputEditPanel.revalidate();
+
+				inputGridy++;
 			}
 
 		});
+		addInputPortButton.setText("Add Port");
+		JPanel filler = new JPanel();
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.gridx = 1;
+		outerPanelConstraint.gridy = 0;
+		//TODO get this button in the right place
+		outerInputPanel.add(filler, outerPanelConstraint);
+		outerPanelConstraint.gridx = 1;
+		outerPanelConstraint.gridy = 1;
+//		outerPanelConstraint.weightx = 0.1;
+//		outerPanelConstraint.fill = GridBagConstraints.SOUTHEAST;
+		outerInputPanel.add(addInputPortButton, outerPanelConstraint);
 
-		return inputEditPanel;
+//		return inputEditPanel;
+		return outerInputPanel;
 	}
 
 	private JPanel setOutputPanel() {
-		JPanel outputEditPanel = new JPanel(new GridBagLayout());
+		final JPanel outputEditPanel = new JPanel(new GridBagLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
 				BorderFactory.createEtchedBorder(), "Outputs"));
 
-		GridBagConstraints outputConstraint = new GridBagConstraints();
+		final GridBagConstraints outputConstraint = new GridBagConstraints();
 		outputConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outputConstraint.gridx = 0;
 		outputConstraint.gridy = 0;
@@ -367,10 +410,14 @@ public class BeanshellConfigView extends JPanel {
 		// outputConstraint.gridx = 3;
 		// outputEditPanel.add(new JLabel("Mime Types"), outputConstraint);
 
-		int gridy = 1;
+		JPanel outerOutputPanel = new JPanel();
+		outerOutputPanel.setLayout(new GridBagLayout());
+		outerOutputPanel.add(outputEditPanel, outputConstraint);
+		
+		outputGridy = 1;
 		for (ActivityOutputPortDefinitionBean outputBean : configuration
 				.getOutputPortDefinitions()) {
-			outputConstraint.gridy = gridy;
+			outputConstraint.gridy = outputGridy;
 			BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
 					outputBean, true);
 			outputViewList.add(beanshellOutputViewer);
@@ -390,13 +437,49 @@ public class BeanshellConfigView extends JPanel {
 			// outputConstraint.gridx = 4;
 			// outputEditPanel.add(beanshellOutputViewer.getMimeTypePanel(),
 			// outputConstraint);
-			gridy++;
+			
+			outputGridy++;
 		}
+		
+		JButton addOutputButton = new JButton(new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
+				bean.setDepth(0);
+				bean.setGranularDepth(0);
+				List<String> mimeTypes = new ArrayList<String>();
+				mimeTypes.add("text/plain");
+				bean.setMimeTypes(mimeTypes);
+				bean.setName("newOutput" + newPortNumber);
+				BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(bean, true);  
+				outputEditPanel.add(beanshellOutputViewer.getNameField(),
+						outputConstraint);
+				outputConstraint.gridx = 1;
+				outputEditPanel.add(beanshellOutputViewer.getDepthSpinner(),
+						outputConstraint);
+				outputConstraint.gridx = 2;
+				outputEditPanel.add(
+						beanshellOutputViewer.getGranularDepthSpinner(),
+						outputConstraint);
+				outputViewList.add(beanshellOutputViewer);
+				outputEditPanel.revalidate();
+				
+				outputGridy++;
+			}
+			
+		});
+		addOutputButton.setText("Add Port");
 		//TODO add output port button and correct spacing
 		JPanel filler2 = new JPanel();
-		outputConstraint.weighty = 0.1;
-		outputConstraint.gridy = gridy;
+		outputConstraint.weighty = 0;
+		outputConstraint.weightx = 0.1;
+		outputConstraint.gridx = 1;
+		outputConstraint.gridy = 0;
+
 		outputEditPanel.add(filler2, outputConstraint);
+		outputConstraint.gridx = 1;
+		outputConstraint.gridy = 1;
+		outputEditPanel.add(addOutputButton, outputConstraint);
 		return outputEditPanel;
 	}
 
