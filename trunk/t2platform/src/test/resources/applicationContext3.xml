@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd">
+
+	<!-- DataSource Property -->
+	<bean id="exampleDataSource"
+		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
+		<property name="driverClassName">
+			<value>org.apache.derby.jdbc.EmbeddedDriver</value>
+		</property>
+		<property name="url">
+			<value>
+				jdbc:derby:${user.home}/t2platform/javadb;create=true
+			</value>
+		</property>
+	</bean>
+
+	<!-- Database Property -->
+	<bean id="exampleHibernateProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.DerbyDialect
+				</prop>
+				<prop key="hibernate.query.substitutions">
+					true 'T', false 'F'
+				</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.c3p0.minPoolSize">5</prop>
+				<prop key="hibernate.c3p0.maxPoolSize">20</prop>
+				<prop key="hibernate.c3p0.timeout">600</prop>
+				<prop key="hibernate.c3p0.max_statement">50</prop>
+				<prop key="hibernate.c3p0.testConnectionOnCheckout">
+					false
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Hibernate SessionFactory -->
+	<bean id="exampleSessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref local="exampleDataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<ref bean="exampleHibernateProperties" />
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>
+					net/sf/taverna/platformtest/api/AbstractDataBean.hbm.xml
+				</value>
+				<!-- Explicitly map the two implementations below, in real cases -->
+				<!-- we'd be using the SpiRegistry to discover them              -->
+				<value>
+					net/sf/taverna/platformtest/impl/FooDataBean.hbm.xml
+				</value>
+				<value>
+					net/sf/taverna/platformtest/impl/BarDataBean.hbm.xml
+				</value>
+			</list>
+		</property>
+
+
+	</bean>
+
+
+
+
+</beans>

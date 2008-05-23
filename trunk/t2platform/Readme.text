@@ -1,0 +1,9 @@
+This project requires two sets of resources currently not available as maven artifacts. The tests will not run until you have done the following :
+
+1) Test helper modules.
+
+These can be checked out from the t2platform-testhelpers modules in Taverna's CVS. Do a maven install on the top level pom file; these are sufficiently volatile that I don't want to go through the full deployment to a repository yet.
+
+2) Java Transaction API
+
+If you're not running in an enterprise JDK you will not have the JTA jar. Download it from http://java.sun.com/javaee/technologies/jta/, you need the 'Class Files 1.0.1B' link. This is a .zip file, either put it in your classpath or, if using Eclipse, add it to the build path as an external library.
