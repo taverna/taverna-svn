@@ -9,8 +9,8 @@ import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
-import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
+import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
@@ -86,11 +86,11 @@ public class DummyView {
 			e.printStackTrace();
 		}
 		
-//		a=new WSDLActivity();
-//		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
-//		b.setOperation("getReport");
-//		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
-//		((WSDLActivity)a).configure(b);
+		a=new WSDLActivity();
+		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
+		b.setOperation("getReport");
+		b.setWsdl("http://discover.nci.nih.gov/gominer/xfire/GMService?wsdl");
+		((WSDLActivity)a).configure(b);
 //		
 //		a=new SoaplabActivity();
 //		SoaplabActivityConfigurationBean sb = new SoaplabActivityConfigurationBean();

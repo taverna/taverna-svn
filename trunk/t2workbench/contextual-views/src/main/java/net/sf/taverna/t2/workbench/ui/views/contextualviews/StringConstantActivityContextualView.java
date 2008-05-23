@@ -48,6 +48,7 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 				String newValue = JOptionPane.showInputDialog("New string value",value);
 				if (newValue!=null) {
 					getConfigBean().setValue(newValue);
+					
 					try {
 						((StringConstantActivity)getActivity()).configure(getConfigBean());
 					} catch (ActivityConfigurationException e1) {
