@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -61,6 +62,8 @@ public class BeanshellConfigView extends JPanel {
 
 	private BeanshellActivityConfigurationBean configuration;
 
+	private ActionListener buttonClicked;
+
 	public BeanshellConfigView(BeanshellActivity activity) {
 		this.activity = activity;
 		configuration = activity.getConfiguration();
@@ -99,7 +102,8 @@ public class BeanshellConfigView extends JPanel {
 				}
 
 				configuration.setScript(scriptText.getText());
-
+				setVisible(false);
+				buttonClicked.actionPerformed(e);
 			}
 
 		});
@@ -249,18 +253,18 @@ public class BeanshellConfigView extends JPanel {
 		inputConstraint.fill = GridBagConstraints.BOTH;
 
 		inputEditPanel.add(new JLabel("Name"), inputConstraint);
+//		inputConstraint.gridx = 1;
+//		inputEditPanel.add(new JLabel("Allow Literal"), inputConstraint);
 		inputConstraint.gridx = 1;
-		inputEditPanel.add(new JLabel("Allow Literal"), inputConstraint);
-		inputConstraint.gridx = 2;
 		inputEditPanel.add(new JLabel("Depth"), inputConstraint);
-		inputConstraint.gridx = 3;
-		inputEditPanel.add(new JLabel("Handled Reference Schemes"),
-				inputConstraint);
-		inputConstraint.gridx = 4;
-		inputEditPanel.add(new JLabel("Mime Types"), inputConstraint);
-		inputConstraint.gridx = 5;
-		inputEditPanel.add(new JLabel("Translated Element Type"),
-				inputConstraint);
+//		inputConstraint.gridx = 3;
+//		inputEditPanel.add(new JLabel("Handled Reference Schemes"),
+//				inputConstraint);
+//		inputConstraint.gridx = 4;
+//		inputEditPanel.add(new JLabel("Mime Types"), inputConstraint);
+//		inputConstraint.gridx = 5;
+//		inputEditPanel.add(new JLabel("Translated Element Type"),
+//				inputConstraint);
 		int gridy = 1;
 		inputConstraint.gridx = 0;
 		for (ActivityInputPortDefinitionBean inputBean : configuration
@@ -272,21 +276,21 @@ public class BeanshellConfigView extends JPanel {
 			inputConstraint.gridx = 0;
 			inputEditPanel.add(beanshellInputViewer.getNameField(),
 					inputConstraint);
+//			inputConstraint.gridx = 1;
+//			inputEditPanel.add(beanshellInputViewer.getLiteralSelector(),
+//					inputConstraint);
 			inputConstraint.gridx = 1;
-			inputEditPanel.add(beanshellInputViewer.getLiteralSelector(),
-					inputConstraint);
-			inputConstraint.gridx = 2;
 			inputEditPanel.add(beanshellInputViewer.getDepthSpinner(),
 					inputConstraint);
-			inputConstraint.gridx = 3;
-			inputEditPanel.add(beanshellInputViewer.getRefSchemeText(),
-					inputConstraint);
+//			inputConstraint.gridx = 2;
+//			inputEditPanel.add(beanshellInputViewer.getRefSchemeText(),
+//					inputConstraint);
 			// inputConstraint.gridx = 4;
 			// inputEditPanel.add(beanshellInputViewer.getMimeTypeText(),
 			// inputConstraint);
-			inputConstraint.gridx = 4;
-			inputEditPanel.add(beanshellInputViewer.getTranslatedType(),
-					inputConstraint);
+//			inputConstraint.gridx = 5;
+//			inputEditPanel.add(beanshellInputViewer.getTranslatedType(),
+//					inputConstraint);
 
 			gridy++;
 		}
@@ -316,8 +320,8 @@ public class BeanshellConfigView extends JPanel {
 		outputEditPanel.add(new JLabel("Depth"), outputConstraint);
 		outputConstraint.gridx = 2;
 		outputEditPanel.add(new JLabel("GranularDepth"), outputConstraint);
-		outputConstraint.gridx = 3;
-		outputEditPanel.add(new JLabel("Mime Types"), outputConstraint);
+//		outputConstraint.gridx = 3;
+//		outputEditPanel.add(new JLabel("Mime Types"), outputConstraint);
 
 		int gridy = 1;
 		for (ActivityOutputPortDefinitionBean outputBean : configuration
@@ -336,12 +340,12 @@ public class BeanshellConfigView extends JPanel {
 			outputEditPanel.add(
 					beanshellOutputViewer.getGranularDepthSpinner(),
 					outputConstraint);
-			outputConstraint.gridx = 3;
-			outputEditPanel.add(beanshellOutputViewer.getMimeTypeText(),
-					outputConstraint);
-			outputConstraint.gridx = 4;
-			outputEditPanel.add(beanshellOutputViewer.getMimeTypePanel(),
-					outputConstraint);
+//			outputConstraint.gridx = 3;
+//			outputEditPanel.add(beanshellOutputViewer.getMimeTypeText(),
+//					outputConstraint);
+//			outputConstraint.gridx = 4;
+//			outputEditPanel.add(beanshellOutputViewer.getMimeTypePanel(),
+//					outputConstraint);
 			gridy++;
 		}
 		JPanel filler2 = new JPanel();
@@ -431,6 +435,10 @@ public class BeanshellConfigView extends JPanel {
 
 		};
 		return OKAction;
+	}
+	
+	public void setButtonClickedListener(ActionListener listener) {
+		buttonClicked = listener;
 	}
 
 }
