@@ -24,10 +24,4 @@ public class WSDLActivityContextualView extends HTMLBasedActivityContextualView<
 		return summary;
 	}
 
-	@Override
-	protected void setNewValues() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

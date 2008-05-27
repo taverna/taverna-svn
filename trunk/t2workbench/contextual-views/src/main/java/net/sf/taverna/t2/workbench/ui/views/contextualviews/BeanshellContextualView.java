@@ -42,12 +42,6 @@ public class BeanshellContextualView extends
 	}
 
 	@Override
-	protected void setNewValues() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	protected Action getConfigureAction() {
 		// TODO Auto-generated method stub
 		return new BeanshellActvityConfigurationAction(

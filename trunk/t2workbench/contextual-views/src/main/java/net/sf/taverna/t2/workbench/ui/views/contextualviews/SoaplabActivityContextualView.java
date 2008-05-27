@@ -45,9 +45,4 @@ public class SoaplabActivityContextualView extends HTMLBasedActivityContextualVi
 		};
 	}
 
-	@Override
-	protected void setNewValues() {
-		// TODO Auto-generated method stub
-		
-	}
 }
