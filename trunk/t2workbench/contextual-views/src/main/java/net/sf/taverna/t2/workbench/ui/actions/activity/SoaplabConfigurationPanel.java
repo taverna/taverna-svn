@@ -34,6 +34,11 @@ public class SoaplabConfigurationPanel extends JPanel {
 	private JTextField backoffField;
 	private JCheckBox allowPolling;
 	
+	public SoaplabConfigurationPanel(SoaplabActivityConfigurationBean bean) {
+		this.bean=bean;
+		initialise();
+	}
+	
 	public void setCancelClickedListener(ActionListener listener) {
 		cancelClicked=listener;
 	}
@@ -56,11 +61,6 @@ public class SoaplabConfigurationPanel extends JPanel {
 	
 	public double getBackoff() {
 		return Double.parseDouble(backoffField.getText());
-	}
-	
-	public SoaplabConfigurationPanel(SoaplabActivityConfigurationBean bean) {
-		this.bean=bean;
-		initialise();
 	}
 	
 	private void initialise() {

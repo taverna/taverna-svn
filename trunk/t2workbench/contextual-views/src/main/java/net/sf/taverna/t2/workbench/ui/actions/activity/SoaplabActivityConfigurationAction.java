@@ -3,7 +3,7 @@ package net.sf.taverna.t2.workbench.ui.actions.activity;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
@@ -23,8 +23,8 @@ public class SoaplabActivityConfigurationAction extends
 
 		final SoaplabConfigurationPanel panel = new SoaplabConfigurationPanel(
 				getActivity().getConfiguration());
-		final JDialog dialog = new JDialog();
-		dialog.add(panel);
+		final JFrame frame = new JFrame();
+		frame.getContentPane().add(panel);
 		panel.setOKClickedListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (panel.validateValues()) {
@@ -53,7 +53,7 @@ public class SoaplabActivityConfigurationAction extends
 								"Activity update error",
 								JOptionPane.ERROR_MESSAGE);
 					}
-					dialog.setVisible(false);
+					frame.setVisible(false);
 				}
 			}
 
@@ -62,13 +62,14 @@ public class SoaplabActivityConfigurationAction extends
 		panel.setCancelClickedListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(false);
+				frame.setVisible(false);
 			}
 
 		});
 
-		dialog.setModal(true);
-		dialog.setVisible(true);
+		frame.pack();
+		//frame.setModal(true);
+		frame.setVisible(true);
 	}
 
 }

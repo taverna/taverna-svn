@@ -15,5 +15,4 @@ public abstract class ActivityConfigurationAction<A extends Activity<?>> extends
 	protected A getActivity() {
 		return activity;
 	}
-
 }

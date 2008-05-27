@@ -37,4 +37,15 @@ public class TestSoaplabActivityContextualView {
 		assertNotNull("the action should not be null",view.getConfigureAction());
 		assertTrue("The action should be a SoaplabAcitivyConfigurationAction",view.getConfigureAction() instanceof SoaplabActivityConfigurationAction);
 	}
+	
+	private void run() throws Exception
+	{
+		setup();
+		ContextualView view = new SoaplabActivityContextualView(a);
+		view.setVisible(true);
+	}
+	
+	public static void main(String[] args) throws Exception {
+		new TestSoaplabActivityContextualView().run();
+	}
 }
