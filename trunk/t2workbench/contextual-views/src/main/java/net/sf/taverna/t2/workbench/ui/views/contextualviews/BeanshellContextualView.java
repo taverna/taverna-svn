@@ -7,6 +7,7 @@ import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean
 import net.sf.taverna.t2.workbench.ui.actions.activity.BeanshellActvityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
+import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
 
 /**
  * A simple non editable HTML table view over a {@link BeanshellActivity}.
@@ -31,6 +32,14 @@ public class BeanshellContextualView extends
 				.getInputPortDefinitions()) {
 			html = html + "<tr><td>" + bean.getName() + "</td><td>"
 					+ bean.getDepth() + "</td></tr>";
+		}
+		html = html
+				+ "<tr><th>Output Port Name</th><th>Depth</th><th>Granular Depth</th></tr>";
+		for (ActivityOutputPortDefinitionBean bean : getConfigBean()
+				.getOutputPortDefinitions()) {
+			html = html + "<tr></td>" + bean.getName() + "</td><td>"
+					+ bean.getDepth() + "</td><td>" + bean.getGranularDepth()
+					+ "</td></tr>";
 		}
 		return html;
 	}
