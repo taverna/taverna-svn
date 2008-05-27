@@ -2,8 +2,6 @@ package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
@@ -14,9 +12,18 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 
+/**
+ * A view representing {@link ActivityInputPortDefinitionBean}s of a
+ * {@link BeanshellActivity} and the various parts which can be edited,
+ * primarily the name and the depth.
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class BeanshellInputViewer extends JPanel {
 
 	private ActivityInputPortDefinitionBean bean;
@@ -35,6 +42,16 @@ public class BeanshellInputViewer extends JPanel {
 
 	private boolean editable;
 
+	/**
+	 * Calls {@link #initView()} to set the look and feel and sets the
+	 * components to be editable or not
+	 * 
+	 * @param bean
+	 *            the {@link ActivityInputPortDefinitionBean} which represents
+	 *            the view
+	 * @param editable
+	 *            whether the components should be enable for editing or not
+	 */
 	public BeanshellInputViewer(ActivityInputPortDefinitionBean bean,
 			boolean editable) {
 		this.bean = bean;
@@ -44,6 +61,11 @@ public class BeanshellInputViewer extends JPanel {
 		setEditMode();
 	}
 
+	/**
+	 * Uses {@link GridBagLayout} to layout the overall component. Adds the
+	 * individual editable elements to the view to allow parts of the
+	 * {@link ActivityInputPortDefinitionBean} to be changeD
+	 */
 	private void initView() {
 		setLayout(new GridBagLayout());
 		GridBagConstraints outerConstraint = new GridBagConstraints();
@@ -85,62 +107,118 @@ public class BeanshellInputViewer extends JPanel {
 		refSchemeText.setText(refs);
 		refSchemeText.setEditable(false);
 		refSchemeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-//		add(refSchemeText, outerConstraint);
+		// add(refSchemeText, outerConstraint);
 
 		outerConstraint.gridx = 4;
-//		mimeTypeText = new JTextArea();
-//		String mimes = "";
-//		for (String mimeType : bean.getMimeTypes()) {
-//			mimes = mimes + mimeType + "\n";
-//		}	
-//		mimeTypeText.setText(mimes);
-//		mimeTypeText.setEditable(false);
-//		mimeTypeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-//		add(mimeTypeText, outerConstraint);
+		// mimeTypeText = new JTextArea();
+		// String mimes = "";
+		// for (String mimeType : bean.getMimeTypes()) {
+		// mimes = mimes + mimeType + "\n";
+		// }
+		// mimeTypeText.setText(mimes);
+		// mimeTypeText.setEditable(false);
+		// mimeTypeText.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+		// add(mimeTypeText, outerConstraint);
 
 		outerConstraint.gridx = 5;
 		translatedType = new JLabel(bean.getTranslatedElementType()
 				.getSimpleName());
-//		add(translatedType, outerConstraint);
+		// add(translatedType, outerConstraint);
 	}
 
+	/**
+	 * Get the component which allows the
+	 * {@link ActivityInputPortDefinitionBean} name to be edited
+	 * 
+	 * @return
+	 */
 	public JTextField getNameField() {
 		return nameField;
 	}
 
+	/**
+	 * Get the component which allows {@link ReferenceScheme}s to be added to a
+	 * {@link ActivityInputPortDefinitionBean}
+	 * 
+	 * @return
+	 */
 	public JTextArea getRefSchemeText() {
 		return refSchemeText;
 	}
 
+	/**
+	 * Get the component which allows Mime Types to be added to a
+	 * {@link ActivityInputPortDefinitionBean}
+	 * 
+	 * @return
+	 */
 	public JTextArea getMimeTypeText() {
 		return mimeTypeText;
 	}
 
+	/**
+	 * Get the component which allows Translated Types to be added to a
+	 * {@link ActivityInputPortDefinitionBean}
+	 * 
+	 * @return
+	 */
 	public JLabel getTranslatedType() {
 		return translatedType;
 	}
 
+	/**
+	 * Set the
+	 * {@link ActivityInputPortDefinitionBean#setAllowsLiteralValues(boolean)}
+	 * to be true or false using this component
+	 * 
+	 * @return
+	 */
 	public JComboBox getLiteralSelector() {
 		return literalSelector;
 	}
 
+	/**
+	 * Change the depth of the {@link ActivityInputPortDefinitionBean}
+	 * 
+	 * @return
+	 */
 	public JSpinner getDepthSpinner() {
 		return depthSpinner;
 	}
 
+	/**
+	 * Get the actual {@link ActivityInputPortDefinitionBean} which is
+	 * represented by this view
+	 * 
+	 * @return
+	 */
 	public ActivityInputPortDefinitionBean getBean() {
 		return bean;
 	}
 
+	/**
+	 * Can the components on this view be edited?
+	 * 
+	 * @return
+	 */
 	public boolean isEditable() {
 		return editable;
 	}
 
+	/**
+	 * Set all the components to be editable or not
+	 * 
+	 * @param editable
+	 */
 	public void setEditable(boolean editable) {
 		this.editable = editable;
 		setEditMode();
 	}
-	
+
+	/**
+	 * Sets the {@link #nameField}, {@link #literalSelector} and
+	 * {@link #depthSpinner} to allow editing
+	 */
 	public void setEditMode() {
 		this.nameField.setEditable(editable);
 		this.literalSelector.setEnabled(editable);

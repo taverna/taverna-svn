@@ -11,9 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -21,8 +19,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
@@ -37,42 +35,59 @@ import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 
+/**
+ * Provides the configurable view for a {@link BeanshellActivity} through it's
+ * {@link BeanshellActivityConfigurationBean}. Has 3 main tabs - Script, Ports &
+ * Dependencies. The {@link #inputViewList} contains the
+ * {@link BeanshellInputViewer}s describing the input ports and
+ * {@link #outputViewList} has the {@link BeanshellOutputViewer}s
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class BeanshellConfigView extends JPanel {
-
+	/** The beanshell script */
 	private JEditTextArea scriptText;
-
-	private JTable inputTable;
-
-	private JTable outputTable;
-
-	private JButton addInputButton;
-
-	private JTextField addInputField;
-
-	private JButton addOutputButton;
-
-	private JTextField addOutputField;
-
-	private JPanel panel;
-
-	private Map<String, Object> propertyMap;
-
+	/** A List of views over the input ports */
 	private List<BeanshellInputViewer> inputViewList;
-
+	/** A List of views over the output ports */
 	private List<BeanshellOutputViewer> outputViewList;
-
+	/** The activity which this view describes */
 	private BeanshellActivity activity;
-
+	/** the configuration bean used to configure the activity */
 	private BeanshellActivityConfigurationBean configuration;
-
+	/**
+	 * Holds the state of the OK button in case a parent view wants to know
+	 * whether the configuration is finished
+	 */
 	private ActionListener buttonClicked;
-
+	/** Remembers where the next input should be placed in the view */
 	private int inputGridy;
-	
-	private int newPortNumber = 0;
-
+	/**
+	 * An incremental name of newInputPort + this number is used to name new
+	 * ports
+	 */
+	private int newInputPortNumber = 0;
+	/**
+	 * An incremental name of newOutputPort + this number is used to name new
+	 * ports
+	 */
+	private int newOutputPortNumber = 0;
+	/** Remembers where the next output should be placed in the view */
 	private int outputGridy;
+	/** Parent panel for the outputs */
+	private JPanel outerOutputPanel;
+	/** parent panel for the inputs */
+	private JPanel outerInputPanel;
 
+	/**
+	 * Stores the {@link BeanshellActivity}, gets its
+	 * {@link BeanshellActivityConfigurationBean}, sets the layout and calls
+	 * {@link #initialise()} to get the view going
+	 * 
+	 * @param activity
+	 *            the {@link BeanshellActivity} that the view is over
+	 */
 	public BeanshellConfigView(BeanshellActivity activity) {
 		this.activity = activity;
 		configuration = activity.getConfiguration();
@@ -80,72 +95,23 @@ public class BeanshellConfigView extends JPanel {
 		initialise();
 	}
 
+	/**
+	 * Adds a {@link JButton} which handles the reconfiguring of the
+	 * {@link BeanshellActivity} through the altered
+	 * {@link BeanshellActivityConfigurationBean}. Sets up the initial tabs -
+	 * Script (also sets the initial value), Ports & Dependencies and their
+	 * initial values through {@link #setDependencies()},
+	 * {@link #setPortPanel()}
+	 */
 	private void initialise() {
 		setSize(500, 500);
-		JButton OKButton = new JButton(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
-				for (BeanshellInputViewer inputView : inputViewList) {
-					ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
-					activityInputPortDefinitionBean
-							.setHandledReferenceSchemes(inputView.getBean()
-									.getHandledReferenceSchemes());
-					activityInputPortDefinitionBean.setMimeTypes(inputView
-							.getBean().getMimeTypes());
-					activityInputPortDefinitionBean
-							.setTranslatedElementType(inputView.getBean()
-									.getTranslatedElementType());
-					activityInputPortDefinitionBean
-							.setAllowsLiteralValues((Boolean) inputView
-									.getLiteralSelector().getSelectedItem());
-					activityInputPortDefinitionBean
-							.setDepth((Integer) inputView.getDepthSpinner()
-									.getValue());
-					activityInputPortDefinitionBean
-							.setName(inputView.getNameField().getText());
-					inputBeanList.add(activityInputPortDefinitionBean);
-				}
-
-				List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
-				for (BeanshellOutputViewer outputView : outputViewList) {
-					ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
-					activityOutputPortDefinitionBean
-							.setDepth((Integer) outputView.getDepthSpinner()
-									.getValue());
-					activityOutputPortDefinitionBean
-							.setGranularDepth((Integer) outputView
-									.getGranularDepthSpinner().getValue());
-					activityOutputPortDefinitionBean.setName(outputView.getNameField().getText());
-					activityOutputPortDefinitionBean.setMimeTypes(outputView
-							.getBean().getMimeTypes());
-					outputBeanList.add(activityOutputPortDefinitionBean);
-				}
-				BeanshellActivityConfigurationBean beanshellActivityConfigurationBean = new BeanshellActivityConfigurationBean();
-				beanshellActivityConfigurationBean.setScript(scriptText
-						.getText());
-				beanshellActivityConfigurationBean
-						.setInputPortDefinitions(inputBeanList);
-				beanshellActivityConfigurationBean
-						.setOutputPortDefinitions(outputBeanList);
-
-				try {
-					activity.configure(beanshellActivityConfigurationBean);
-				} catch (ActivityConfigurationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				setVisible(false);
-				buttonClicked.actionPerformed(e);
-			}
-
-		});
+		AbstractAction okAction = getOKAction();
+		JButton OKButton = new JButton(okAction);
 		OKButton.setText("OK");
 		OKButton
 				.setToolTipText("Click to set the beanshell with the new values");
 		inputViewList = new ArrayList<BeanshellInputViewer>();
 		outputViewList = new ArrayList<BeanshellOutputViewer>();
-		propertyMap = new HashMap<String, Object>();
 		setBorder(javax.swing.BorderFactory.createTitledBorder(null, null,
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
 				javax.swing.border.TitledBorder.DEFAULT_POSITION,
@@ -209,6 +175,14 @@ public class BeanshellConfigView extends JPanel {
 		add(buttonPanel, outerConstraint);
 	}
 
+	/**
+	 * Gets the Group, Artifacts and Version from the
+	 * {@link BeanshellActivityConfigurationBean#getDependencies()}. These are
+	 * in the format group:artifact:version so are parsed into the correct
+	 * display format.
+	 * 
+	 * @return a panel with a non-editable tabular view of the dependencies
+	 */
 	private JPanel setDependencies() {
 		JPanel dependencies = new JPanel(new GridBagLayout());
 		GridBagConstraints outerConstraint = new GridBagConstraints();
@@ -254,6 +228,11 @@ public class BeanshellConfigView extends JPanel {
 		return dependencies;
 	}
 
+	/**
+	 * Creates a {@link JTabbedPane} with the Output and Input ports
+	 * 
+	 * @return a {@link JTabbedPane} with the ports
+	 */
 	private JTabbedPane setPortPanel() {
 		JTabbedPane ports = new JTabbedPane();
 
@@ -267,16 +246,29 @@ public class BeanshellConfigView extends JPanel {
 		panelConstraint.weighty = 0.1;
 		panelConstraint.fill = GridBagConstraints.BOTH;
 
-		portEditPanel.add(new JScrollPane(setInputPanel()), panelConstraint);
+		JScrollPane inputScroller = new JScrollPane(setInputPanel());
+		portEditPanel.add(inputScroller, panelConstraint);
 
 		panelConstraint.gridy = 1;
-		ports.add("Inputs Ports", new JScrollPane(setInputPanel()));
-		portEditPanel.add(new JScrollPane(setOutputPanel()), panelConstraint);
-		ports.add("Output Ports", new JScrollPane(setOutputPanel()));
+		ports.add("Inputs Ports", inputScroller);
+		JScrollPane outputScroller = new JScrollPane(setOutputPanel());
+		portEditPanel.add(outputScroller, panelConstraint);
+		ports.add("Output Ports", outputScroller);
 
 		return ports;
 	}
 
+	/**
+	 * Loops through the {@link ActivityInputPortDefinitionBean} in the
+	 * {@link BeanshellActivityConfigurationBean} and creates a
+	 * {@link BeanshellInputViewer} for each one. Displays the name and a
+	 * {@link JSpinner} to change the depth for each one and a {@link JButton}
+	 * to remove it. Currently the individual components from a
+	 * {@link BeanshellInputViewer} are added rather than the
+	 * {@link BeanshellInputViewer} itself
+	 * 
+	 * @return panel containing the view over the input ports
+	 */
 	private JPanel setInputPanel() {
 		final JPanel inputEditPanel = new JPanel(new GridBagLayout());
 		inputEditPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory
@@ -290,55 +282,54 @@ public class BeanshellConfigView extends JPanel {
 		inputConstraint.fill = GridBagConstraints.BOTH;
 
 		inputEditPanel.add(new JLabel("Name"), inputConstraint);
-		// inputConstraint.gridx = 1;
-		// inputEditPanel.add(new JLabel("Allow Literal"), inputConstraint);
 		inputConstraint.gridx = 1;
 		inputEditPanel.add(new JLabel("Depth"), inputConstraint);
+
 		inputGridy = 1;
 		inputConstraint.gridx = 0;
 		for (ActivityInputPortDefinitionBean inputBean : configuration
 				.getInputPortDefinitions()) {
 			inputConstraint.gridy = inputGridy;
-			BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
+			final BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
 					inputBean, true);
 			inputViewList.add(beanshellInputViewer);
 			inputConstraint.gridx = 0;
-			inputEditPanel.add(beanshellInputViewer.getNameField(),
-					inputConstraint);
-			// inputConstraint.gridx = 1;
-			// inputEditPanel.add(beanshellInputViewer.getLiteralSelector(),
-			// inputConstraint);
+			final JTextField nameField = beanshellInputViewer.getNameField();
+			inputConstraint.weightx = 0.1;
+			inputEditPanel.add(nameField, inputConstraint);
+			inputConstraint.weightx = 0.0;
 			inputConstraint.gridx = 1;
-			inputEditPanel.add(beanshellInputViewer.getDepthSpinner(),
-					inputConstraint);
-			// inputConstraint.gridx = 2;
-			// inputEditPanel.add(beanshellInputViewer.getRefSchemeText(),
-			// inputConstraint);
-			// inputConstraint.gridx = 4;
-			// inputEditPanel.add(beanshellInputViewer.getMimeTypeText(),
-			// inputConstraint);
-			// inputConstraint.gridx = 5;
-			// inputEditPanel.add(beanshellInputViewer.getTranslatedType(),
-			// inputConstraint);
+			final JSpinner depthSpinner = beanshellInputViewer
+					.getDepthSpinner();
+			inputEditPanel.add(depthSpinner, inputConstraint);
+			inputConstraint.gridx = 2;
+			final JButton removeButton = new JButton("remove");
+			removeButton.addActionListener(new AbstractAction() {
 
+				public void actionPerformed(ActionEvent e) {
+					inputViewList.remove(beanshellInputViewer);
+					inputEditPanel.remove(nameField);
+					inputEditPanel.remove(depthSpinner);
+					inputEditPanel.remove(removeButton);
+					inputEditPanel.revalidate();
+					outerInputPanel.revalidate();
+				}
+
+			});
+			inputEditPanel.add(removeButton, inputConstraint);
 			inputGridy++;
 		}
-		JPanel outerInputPanel = new JPanel();
+		outerInputPanel = new JPanel();
 		outerInputPanel.setLayout(new GridBagLayout());
 		GridBagConstraints outerPanelConstraint = new GridBagConstraints();
-		outerPanelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
 		outerPanelConstraint.gridx = 0;
 		outerPanelConstraint.gridy = 0;
-		outerPanelConstraint.weighty = 0.1;
 		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.weighty = 0.1;
 		outerPanelConstraint.fill = GridBagConstraints.BOTH;
-		outerInputPanel.add(inputEditPanel, outerPanelConstraint);
-		
-//		JPanel filler = new JPanel();
-//		inputConstraint.weighty = 0.1;
-//		inputConstraint.gridy = inputGridy;
-//		inputEditPanel.add(filler, inputConstraint);
-		//TODO add input port button and correct spacing
+		outerInputPanel.add(new JScrollPane(inputEditPanel),
+				outerPanelConstraint);
+		outerPanelConstraint.weighty = 0;
 		JButton addInputPortButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -351,21 +342,38 @@ public class BeanshellConfigView extends JPanel {
 				List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");
 				bean.setMimeTypes(mimeTypes);
-				bean.setName("newInputPort" + newPortNumber);
-				newPortNumber++;
+				bean.setName("newInputPort" + newInputPortNumber);
+				newInputPortNumber++;
 				bean.setTranslatedElementType(String.class);
-				BeanshellInputViewer newPort = new BeanshellInputViewer(bean,
-						true);
 				inputConstraint.gridy = inputGridy;
-				BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
+				final BeanshellInputViewer beanshellInputViewer = new BeanshellInputViewer(
 						bean, true);
 				inputViewList.add(beanshellInputViewer);
+				inputConstraint.weightx = 0.1;
 				inputConstraint.gridx = 0;
-				inputEditPanel.add(beanshellInputViewer.getNameField(),
-						inputConstraint);
+				final JTextField nameField = beanshellInputViewer
+						.getNameField();
+				inputEditPanel.add(nameField, inputConstraint);
+				inputConstraint.weightx = 0;
 				inputConstraint.gridx = 1;
-				inputEditPanel.add(beanshellInputViewer.getDepthSpinner(),
-						inputConstraint);
+				final JSpinner depthSpinner = beanshellInputViewer
+						.getDepthSpinner();
+				inputEditPanel.add(depthSpinner, inputConstraint);
+				inputConstraint.gridx = 2;
+				final JButton removeButton = new JButton("remove");
+				removeButton.addActionListener(new AbstractAction() {
+
+					public void actionPerformed(ActionEvent e) {
+						inputViewList.remove(beanshellInputViewer);
+						inputEditPanel.remove(nameField);
+						inputEditPanel.remove(depthSpinner);
+						inputEditPanel.remove(removeButton);
+						inputEditPanel.revalidate();
+						outerInputPanel.revalidate();
+					}
+
+				});
+				inputEditPanel.add(removeButton, inputConstraint);
 				inputEditPanel.revalidate();
 
 				inputGridy++;
@@ -373,23 +381,45 @@ public class BeanshellConfigView extends JPanel {
 
 		});
 		addInputPortButton.setText("Add Port");
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridBagLayout());
+
 		JPanel filler = new JPanel();
-		outerPanelConstraint.weighty = 0;
 		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 0;
+
+		buttonPanel.add(filler, outerPanelConstraint);
+
+		outerPanelConstraint.weightx = 0;
+		outerPanelConstraint.weighty = 0;
 		outerPanelConstraint.gridx = 1;
 		outerPanelConstraint.gridy = 0;
-		//TODO get this button in the right place
-		outerInputPanel.add(filler, outerPanelConstraint);
-		outerPanelConstraint.gridx = 1;
-		outerPanelConstraint.gridy = 1;
-//		outerPanelConstraint.weightx = 0.1;
-//		outerPanelConstraint.fill = GridBagConstraints.SOUTHEAST;
-		outerInputPanel.add(addInputPortButton, outerPanelConstraint);
 
-//		return inputEditPanel;
+		buttonPanel.add(addInputPortButton, outerPanelConstraint);
+
+		outerPanelConstraint.weightx = 0;
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 1;
+		outerPanelConstraint.fill = GridBagConstraints.BOTH;
+		outerInputPanel.add(buttonPanel, outerPanelConstraint);
+
 		return outerInputPanel;
 	}
 
+	/**
+	 * Loops through the {@link ActivityInputPortDefinitionBean} in the
+	 * {@link BeanshellActivityConfigurationBean} and creates a
+	 * {@link BeanshellOutputViewer} for each one. Displays the name and a
+	 * {@link JSpinner} to change the depth and granular depth for each one and
+	 * a {@link JButton} to remove it. Currently the individual components from a
+	 * {@link BeanshellOutputViewer} are added rather than the
+	 * {@link BeanshellOutputViewer} itself
+	 * 
+	 * @return the panel containing the view of the output ports
+	 */
 	private JPanel setOutputPanel() {
 		final JPanel outputEditPanel = new JPanel(new GridBagLayout());
 		outputEditPanel.setBorder(BorderFactory.createTitledBorder(
@@ -400,91 +430,224 @@ public class BeanshellConfigView extends JPanel {
 		outputConstraint.gridx = 0;
 		outputConstraint.gridy = 0;
 		outputConstraint.weightx = 0.1;
+		outputConstraint.weighty = 0.1;
 		outputConstraint.fill = GridBagConstraints.BOTH;
-
+		outputConstraint.weighty = 0;
 		outputEditPanel.add(new JLabel("Name"), outputConstraint);
 		outputConstraint.gridx = 1;
 		outputEditPanel.add(new JLabel("Depth"), outputConstraint);
 		outputConstraint.gridx = 2;
 		outputEditPanel.add(new JLabel("GranularDepth"), outputConstraint);
-		// outputConstraint.gridx = 3;
-		// outputEditPanel.add(new JLabel("Mime Types"), outputConstraint);
 
-		JPanel outerOutputPanel = new JPanel();
-		outerOutputPanel.setLayout(new GridBagLayout());
-		outerOutputPanel.add(outputEditPanel, outputConstraint);
-		
 		outputGridy = 1;
+		outputConstraint.gridx = 0;
 		for (ActivityOutputPortDefinitionBean outputBean : configuration
 				.getOutputPortDefinitions()) {
 			outputConstraint.gridy = outputGridy;
-			BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
+			final BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
 					outputBean, true);
 			outputViewList.add(beanshellOutputViewer);
 			outputConstraint.gridx = 0;
-			outputEditPanel.add(beanshellOutputViewer.getNameField(),
-					outputConstraint);
+			outputConstraint.weightx = 0.1;
+			final JTextField nameField = beanshellOutputViewer.getNameField();
+			outputEditPanel.add(nameField, outputConstraint);
+			outputConstraint.weightx = 0;
 			outputConstraint.gridx = 1;
-			outputEditPanel.add(beanshellOutputViewer.getDepthSpinner(),
-					outputConstraint);
+			final JSpinner depthSpinner = beanshellOutputViewer
+					.getDepthSpinner();
+			outputEditPanel.add(depthSpinner, outputConstraint);
 			outputConstraint.gridx = 2;
-			outputEditPanel.add(
-					beanshellOutputViewer.getGranularDepthSpinner(),
-					outputConstraint);
-			// outputConstraint.gridx = 3;
-			// outputEditPanel.add(beanshellOutputViewer.getMimeTypeText(),
-			// outputConstraint);
-			// outputConstraint.gridx = 4;
-			// outputEditPanel.add(beanshellOutputViewer.getMimeTypePanel(),
-			// outputConstraint);
-			
+			final JSpinner granularDepthSpinner = beanshellOutputViewer
+					.getGranularDepthSpinner();
+			outputEditPanel.add(granularDepthSpinner, outputConstraint);
+			outputConstraint.gridx = 3;
+			final JButton removeButton = new JButton("remove");
+			removeButton.addActionListener(new AbstractAction() {
+
+				public void actionPerformed(ActionEvent e) {
+					outputViewList.remove(beanshellOutputViewer);
+					outputEditPanel.remove(nameField);
+					outputEditPanel.remove(depthSpinner);
+					outputEditPanel.remove(granularDepthSpinner);
+					outputEditPanel.remove(removeButton);
+					outputEditPanel.revalidate();
+					outerOutputPanel.revalidate();
+				}
+
+			});
+			outputEditPanel.add(removeButton, outputConstraint);
 			outputGridy++;
 		}
-		
-		JButton addOutputButton = new JButton(new AbstractAction() {
+		outerOutputPanel = new JPanel();
+		outerOutputPanel.setLayout(new GridBagLayout());
+		GridBagConstraints outerPanelConstraint = new GridBagConstraints();
+		// outerPanelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
+		outerPanelConstraint.fill = GridBagConstraints.BOTH;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 0;
+		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.weighty = 0.1;
+		outerOutputPanel.add(new JScrollPane(outputEditPanel),
+				outerPanelConstraint);
+		outerPanelConstraint.weighty = 0;
+		JButton addOutputPortButton = new JButton(new AbstractAction() {
 
 			public void actionPerformed(ActionEvent e) {
-				ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
-				bean.setDepth(0);
-				bean.setGranularDepth(0);
-				List<String> mimeTypes = new ArrayList<String>();
-				mimeTypes.add("text/plain");
-				bean.setMimeTypes(mimeTypes);
-				bean.setName("newOutput" + newPortNumber);
-				BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(bean, true);  
-				outputEditPanel.add(beanshellOutputViewer.getNameField(),
-						outputConstraint);
-				outputConstraint.gridx = 1;
-				outputEditPanel.add(beanshellOutputViewer.getDepthSpinner(),
-						outputConstraint);
-				outputConstraint.gridx = 2;
-				outputEditPanel.add(
-						beanshellOutputViewer.getGranularDepthSpinner(),
-						outputConstraint);
-				outputViewList.add(beanshellOutputViewer);
-				outputEditPanel.revalidate();
-				
-				outputGridy++;
-			}
-			
-		});
-		addOutputButton.setText("Add Port");
-		//TODO add output port button and correct spacing
-		JPanel filler2 = new JPanel();
-		outputConstraint.weighty = 0;
-		outputConstraint.weightx = 0.1;
-		outputConstraint.gridx = 1;
-		outputConstraint.gridy = 0;
+				try {
+					ActivityOutputPortDefinitionBean bean = new ActivityOutputPortDefinitionBean();
+					bean.setDepth(0);
+					bean.setGranularDepth(0);
+					List<String> mimeTypes = new ArrayList<String>();
+					mimeTypes.add("text/plain");
+					bean.setMimeTypes(mimeTypes);
+					bean.setName("newOutput" + newOutputPortNumber);
+					final BeanshellOutputViewer beanshellOutputViewer = new BeanshellOutputViewer(
+							bean, true);
+					outputViewList.add(beanshellOutputViewer);
+					outputConstraint.gridy = outputGridy;
+					outputConstraint.gridx = 0;
+					final JTextField nameField = beanshellOutputViewer
+							.getNameField();
+					outputConstraint.weightx = 0.1;
+					outputEditPanel.add(nameField, outputConstraint);
+					outputConstraint.gridx = 1;
+					outputConstraint.weightx = 0;
+					final JSpinner depthSpinner = beanshellOutputViewer
+							.getDepthSpinner();
+					outputEditPanel.add(depthSpinner, outputConstraint);
+					outputConstraint.gridx = 2;
+					final JSpinner granularDepthSpinner = beanshellOutputViewer
+							.getGranularDepthSpinner();
+					outputEditPanel.add(granularDepthSpinner, outputConstraint);
+					outputConstraint.gridx = 3;
+					final JButton removeButton = new JButton("remove");
+					removeButton.addActionListener(new AbstractAction() {
 
-		outputEditPanel.add(filler2, outputConstraint);
-		outputConstraint.gridx = 1;
-		outputConstraint.gridy = 1;
-		outputEditPanel.add(addOutputButton, outputConstraint);
-		return outputEditPanel;
+						public void actionPerformed(ActionEvent e) {
+							outputViewList.remove(beanshellOutputViewer);
+							outputEditPanel.remove(nameField);
+							outputEditPanel.remove(depthSpinner);
+							outputEditPanel.remove(granularDepthSpinner);
+							outputEditPanel.remove(removeButton);
+							outputEditPanel.revalidate();
+						}
+
+					});
+					outputEditPanel.add(removeButton, outputConstraint);
+					outputEditPanel.revalidate();
+					newOutputPortNumber++;
+
+					outputGridy++;
+				} catch (Exception e1) {
+					System.out.println(e1);
+				}
+			}
+
+		});
+		addOutputPortButton.setText("Add Port");
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new GridBagLayout());
+
+		JPanel filler = new JPanel();
+		outerPanelConstraint.weightx = 0.1;
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 0;
+
+		buttonPanel.add(filler, outerPanelConstraint);
+
+		outerPanelConstraint.weightx = 0;
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.gridx = 1;
+		outerPanelConstraint.gridy = 0;
+
+		buttonPanel.add(addOutputPortButton, outerPanelConstraint);
+
+		outerPanelConstraint.weightx = 0;
+		outerPanelConstraint.weighty = 0;
+		outerPanelConstraint.gridx = 0;
+		outerPanelConstraint.gridy = 1;
+		outerPanelConstraint.fill = GridBagConstraints.BOTH;
+		outerOutputPanel.add(buttonPanel, outerPanelConstraint);
+
+		return outerOutputPanel;
 	}
 
 	public void setButtonClickedListener(ActionListener listener) {
 		buttonClicked = listener;
+	}
+
+	/**
+	 * Calls
+	 * {@link BeanshellActivity#configure(BeanshellActivityConfigurationBean)}
+	 * using a {@link BeanshellActivityConfigurationBean} set with the new
+	 * values in the view. After setting the values it uses the
+	 * {@link #buttonClicked} {@link ActionListener} to tell any listeners that
+	 * the new values have been set (primarily used to tell any parent
+	 * components to remove the frames containing this panel)
+	 * 
+	 * @return the action which occurs when the OK button is clicked
+	 */
+	private AbstractAction getOKAction() {
+		return new AbstractAction() {
+
+			public void actionPerformed(ActionEvent e) {
+				List<ActivityInputPortDefinitionBean> inputBeanList = new ArrayList<ActivityInputPortDefinitionBean>();
+				for (BeanshellInputViewer inputView : inputViewList) {
+					ActivityInputPortDefinitionBean activityInputPortDefinitionBean = new ActivityInputPortDefinitionBean();
+					activityInputPortDefinitionBean
+							.setHandledReferenceSchemes(inputView.getBean()
+									.getHandledReferenceSchemes());
+					activityInputPortDefinitionBean.setMimeTypes(inputView
+							.getBean().getMimeTypes());
+					activityInputPortDefinitionBean
+							.setTranslatedElementType(inputView.getBean()
+									.getTranslatedElementType());
+					activityInputPortDefinitionBean
+							.setAllowsLiteralValues((Boolean) inputView
+									.getLiteralSelector().getSelectedItem());
+					activityInputPortDefinitionBean
+							.setDepth((Integer) inputView.getDepthSpinner()
+									.getValue());
+					activityInputPortDefinitionBean.setName(inputView
+							.getNameField().getText());
+					inputBeanList.add(activityInputPortDefinitionBean);
+				}
+
+				List<ActivityOutputPortDefinitionBean> outputBeanList = new ArrayList<ActivityOutputPortDefinitionBean>();
+				for (BeanshellOutputViewer outputView : outputViewList) {
+					ActivityOutputPortDefinitionBean activityOutputPortDefinitionBean = new ActivityOutputPortDefinitionBean();
+					activityOutputPortDefinitionBean
+							.setDepth((Integer) outputView.getDepthSpinner()
+									.getValue());
+					activityOutputPortDefinitionBean
+							.setGranularDepth((Integer) outputView
+									.getGranularDepthSpinner().getValue());
+					activityOutputPortDefinitionBean.setName(outputView
+							.getNameField().getText());
+					activityOutputPortDefinitionBean.setMimeTypes(outputView
+							.getBean().getMimeTypes());
+					outputBeanList.add(activityOutputPortDefinitionBean);
+				}
+				BeanshellActivityConfigurationBean beanshellActivityConfigurationBean = new BeanshellActivityConfigurationBean();
+				beanshellActivityConfigurationBean.setScript(scriptText
+						.getText());
+				beanshellActivityConfigurationBean
+						.setInputPortDefinitions(inputBeanList);
+				beanshellActivityConfigurationBean
+						.setOutputPortDefinitions(outputBeanList);
+
+				try {
+					activity.configure(beanshellActivityConfigurationBean);
+				} catch (ActivityConfigurationException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				setVisible(false);
+				buttonClicked.actionPerformed(e);
+			}
+
+		};
 	}
 
 }
