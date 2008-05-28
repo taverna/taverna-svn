@@ -1,5 +1,0 @@
-net.sf.taverna.t2.workbench.ui.views.contextualviews.BeanshellActivityViewFactory
-net.sf.taverna.t2.workbench.ui.views.contextualviews.WSDLActivityViewFactory
-net.sf.taverna.t2.workbench.ui.views.contextualviews.SoaplabActivityViewFactory
-net.sf.taverna.t2.workbench.ui.views.contextualviews.StringConstantActivityViewFactory
-net.sf.taverna.t2.workbench.ui.views.contextualviews.BiomartActivityViewFactory

@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;

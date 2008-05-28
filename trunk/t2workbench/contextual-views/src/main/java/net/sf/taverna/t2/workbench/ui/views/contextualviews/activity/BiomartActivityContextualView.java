@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.event.ActionEvent;
 
@@ -49,7 +49,7 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 
 	@SuppressWarnings("serial")
 	@Override
-	protected Action getConfigureAction() {
+	public Action getConfigureAction() {
 		return new BiomartActivityConfigurationAction((BiomartActivity)getActivity()) {
 
 			@Override

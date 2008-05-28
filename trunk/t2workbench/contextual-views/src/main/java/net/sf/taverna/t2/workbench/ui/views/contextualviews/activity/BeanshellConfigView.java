@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

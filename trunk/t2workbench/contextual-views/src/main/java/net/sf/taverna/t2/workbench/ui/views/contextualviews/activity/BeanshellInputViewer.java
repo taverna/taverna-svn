@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,6 +24,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPo
  * @author Ian Dunlop
  * 
  */
+@SuppressWarnings("serial")
 public class BeanshellInputViewer extends JPanel {
 
 	private ActivityInputPortDefinitionBean bean;

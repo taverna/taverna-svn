@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.event.ActionEvent;
 
@@ -31,7 +31,7 @@ public class StringConstantActivityContextualView extends HTMLBasedActivityConte
 
 	@SuppressWarnings("serial")
 	@Override
-	protected Action getConfigureAction() {
+	public Action getConfigureAction() {
 		
 		return new StringConstantActivityConfigurationAction((StringConstantActivity)getActivity()) {
 

@@ -1,5 +1,6 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 /**
@@ -36,12 +37,12 @@ public abstract class ActivityContextualView<ConfigBean> extends ContextualView 
 		initView();
 	}
 
+	protected Activity<?> getActivity() {
+		return this.activity;
+	}
+
 	@SuppressWarnings("unchecked")
 	protected ConfigBean getConfigBean() {
 		return (ConfigBean)activity.getConfiguration();
-	}
-
-	protected Activity<?> getActivity() {
-		return this.activity;
 	}
 }

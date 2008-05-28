@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.event.ActionEvent;
 
@@ -19,7 +19,7 @@ public class SoaplabActivityContextualView extends HTMLBasedActivityContextualVi
 
 	@Override
 	protected String getViewTitle() {
-		return Messages.getString("soaplab.activity.view.name"); //$NON-NLS-1$
+		return "Soaplab";
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class SoaplabActivityContextualView extends HTMLBasedActivityContextualVi
 
 	@SuppressWarnings("serial")
 	@Override
-	protected Action getConfigureAction() {
+	public Action getConfigureAction() {
 		return new SoaplabActivityConfigurationAction((SoaplabActivity)getActivity()) {
 
 			@Override

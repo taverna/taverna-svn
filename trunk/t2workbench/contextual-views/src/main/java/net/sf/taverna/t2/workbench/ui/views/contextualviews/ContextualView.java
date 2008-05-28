@@ -26,6 +26,28 @@ import javax.swing.JPanel;
  */
 public abstract class ContextualView extends JFrame {
 	
+	/**
+	 * When implemented, this method should define the main frame that is placed in this container, and provides a static view of the Dataflow element.
+	 * @return a JComponent that represents the dataflow element.
+	 */
+	protected abstract JComponent getMainFrame();
+	
+	/**
+	 * @return a String providing a title for the view
+	 */
+	protected abstract String getViewTitle();
+	
+	/**
+	 * Allows the item to be configured, but returning an action handler that will be invoked when selecting to configure. By default this is provided by a button.
+	 * <p>
+	 * If there is no ability to configure the given item, then this should return null.
+	 * </p>
+	 * @return an action that allows the element being viewed to be configured.
+	 */
+	public Action getConfigureAction() {
+		return null;
+	}
+	
 	protected void initView() {
 		setSize(800, 500);
 		setLayout(new BorderLayout());
@@ -55,27 +77,7 @@ public abstract class ContextualView extends JFrame {
 		return buttonPanel;
 	}
 
-	/**
-	 * When implemented, this method should define the main frame that is placed in this container, and provides a static view of the Dataflow element.
-	 * @return a JComponent that represents the dataflow element.
-	 */
-	protected abstract JComponent getMainFrame();
 	
-	/**
-	 * @return a String providing a title for the view
-	 */
-	protected abstract String getViewTitle();
-	
-	/**
-	 * Allows the item to be configured, but returning an action handler that will be invoked when selecting to configure. By default this is provided by a button.
-	 * <p>
-	 * If there is no ability to configure the given item, then this should return null.
-	 * </p>
-	 * @return an action that allows the element being viewed to be configured.
-	 */
-	protected Action getConfigureAction() {
-		return null;
-	}
 	
 
 }

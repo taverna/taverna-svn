@@ -1,10 +1,16 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
 import net.sf.taverna.t2.workbench.ui.actions.activity.SoaplabActivityConfigurationAction;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.SoaplabActivityContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.SoaplabActivityViewFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;

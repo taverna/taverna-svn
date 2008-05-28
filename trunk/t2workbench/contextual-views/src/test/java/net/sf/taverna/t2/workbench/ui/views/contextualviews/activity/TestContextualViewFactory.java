@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
@@ -8,14 +8,7 @@ import org.junit.Test;
 
 public class TestContextualViewFactory {
 	
-	
-	@Test
-	public void getFactoryInstanceAndViews() {
-		for (ActivityViewFactory factory:ActivityViewFactoryRegistry.getInstance().getInstances()) {
-			System.out.println(factory.getClass().getCanonicalName());
-		}
-	}
-	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getBeanshellFactoryAndConfigure() throws Exception {
 		BeanshellActivity beanshellActivity = new BeanshellActivity();

@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.BeanshellConfigView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView;
 
 public class BeanshellActvityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity>{
 

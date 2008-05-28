@@ -1,9 +1,14 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.WSDLActivityContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.WSDLActivityViewFactory;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;

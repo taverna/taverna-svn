@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -15,15 +15,12 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  * @see ActivityViewFactory
  *
  */
+@SuppressWarnings("unchecked")
 public class ActivityViewFactoryRegistry extends
 		SPIRegistry<ActivityViewFactory> {
 
 	private static ActivityViewFactoryRegistry instance;
 
-	protected ActivityViewFactoryRegistry() {
-		super(ActivityViewFactory.class);
-	}
-	
 	/**
 	 * @return a singleton instance of the registry
 	 */
@@ -32,6 +29,10 @@ public class ActivityViewFactoryRegistry extends
 			instance = new ActivityViewFactoryRegistry();
 		}
 		return instance;
+	}
+	
+	protected ActivityViewFactoryRegistry() {
+		super(ActivityViewFactory.class);
 	}
 
 	/**

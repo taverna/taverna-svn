@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import javax.swing.Action;
 
@@ -47,11 +47,11 @@ public class BeanshellContextualView extends
 	@Override
 	protected String getViewTitle() {
 		// TODO Auto-generated method stub
-		return "Beanshell Contextual View";
+		return "Beanshell contextual view";
 	}
 
 	@Override
-	protected Action getConfigureAction() {
+	public Action getConfigureAction() {
 		// TODO Auto-generated method stub
 		return new BeanshellActvityConfigurationAction(
 				(BeanshellActivity) getActivity());

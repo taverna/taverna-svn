@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -35,6 +35,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputP
  * @author Ian Dunlop
  * 
  */
+@SuppressWarnings("serial")
 public class BeanshellOutputViewer extends JPanel {
 	/** The bean which defines this view */
 	private ActivityOutputPortDefinitionBean bean;
@@ -200,6 +201,7 @@ public class BeanshellOutputViewer extends JPanel {
 		return mimeTypePanel;
 	}
 
+	@SuppressWarnings("serial")
 	private JPanel setMimeTypePanel() {
 
 		for (String mimeType : bean.getMimeTypes()) {
@@ -209,8 +211,7 @@ public class BeanshellOutputViewer extends JPanel {
 		final Map<String, Object> propertyMap = MimeTypeManager.getInstance()
 				.getPropertyMap();
 		Set<Entry<String, Object>> mimeTypes = propertyMap.entrySet();
-		DefaultListModel mimeModel = new DefaultListModel();
-		for (Entry entry : mimeTypes) {
+		for (Entry<String,Object> entry : mimeTypes) {
 			final JMenuItem item = new JMenuItem();
 			item.setText((String) entry.getValue());
 			item.addActionListener(new AbstractAction() {
