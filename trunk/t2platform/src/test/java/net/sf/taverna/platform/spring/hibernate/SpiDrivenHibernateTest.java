@@ -12,8 +12,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Basic tests to check I've got Hibernate and Derby up and running before
- * messing around with Raven's classloader 'fun'
+ * Uses a patched version of hibernate to pull in bean definitions from Raven
  * 
  * @author Tom Oinn
  * 
@@ -24,23 +23,12 @@ public class SpiDrivenHibernateTest {
 
 	@Test
 	/**
-	 * Currently doesn't work as Stian changed how Raven works without telling
-	 * anyone or changing the docs.
+	 * Works around the current raven issues by preloading a bean from the
+	 * implementation package - shouldn't be needed as raven should be scanning
+	 * for existing artifacts!
 	 */
 	public void testSpiBasedDerbyInit() {
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
 				"applicationContext4.xml");
-		Repository rep = (Repository) context.getBean("ravenRepository");
-		System.out.println(rep.getStatus(new BasicArtifact(
-				"net.sf.taverna.t2.testing", "t2platform-testhelpers-h3-api",
-				"0.1-SNAPSHOT")));
-		for (Artifact a : rep.getArtifacts()) {
-			System.out.println(a.toString());
-		}
-		SpiRegistry reg = (SpiRegistry) (context.getBean("spiBean"));
-		for (Class<?> theClass : reg) {
-			System.out.println(theClass.getCanonicalName());
-		}
-		context.getBean("exampleSessionFactory");
 	}
 }

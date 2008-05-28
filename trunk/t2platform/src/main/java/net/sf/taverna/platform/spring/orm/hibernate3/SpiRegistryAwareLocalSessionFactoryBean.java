@@ -7,6 +7,7 @@ import net.sf.taverna.raven.spi.SpiRegistry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.util.ReflectHelper;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 
 /**
@@ -51,6 +52,7 @@ public class SpiRegistryAwareLocalSessionFactoryBean extends
 				for (Class<?> theClass : spi.getClasses()) {
 					log.info("Added class '" + theClass.getCanonicalName()
 							+ "' from SPI to hibernate configuration");
+					ReflectHelper.registerClass(theClass);
 					conf.addClass(theClass);
 				}
 			}
