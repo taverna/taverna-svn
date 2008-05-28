@@ -183,13 +183,17 @@ public abstract class ZBasePane extends ZPane {
 					.get(name);
 			Element namedComponentElement = new Element("namedcomponent");
 			namedComponentsElement.addContent(namedComponentElement);
-			addChildText(namedComponentElement, "groupid", nrcs.artifact
-					.getGroupId());
-			addChildText(namedComponentElement, "artifact", nrcs.artifact
-					.getArtifactId());
-			if (!artifactExistsInProfile(nrcs.artifact)) {
-				addChildText(namedComponentElement, "version", nrcs.artifact
-						.getVersion());
+			if (nrcs.artifact == null) {
+				logger.warn("Unknown Raven component for serialising perspective " + name);
+			} else {
+				addChildText(namedComponentElement, "groupid", nrcs.artifact
+						.getGroupId());
+				addChildText(namedComponentElement, "artifact", nrcs.artifact
+						.getArtifactId());
+				if (!artifactExistsInProfile(nrcs.artifact)) {
+					addChildText(namedComponentElement, "version",
+							nrcs.artifact.getVersion());
+				}
 			}
 			addChildText(namedComponentElement, "classname", nrcs.className);
 			addChildText(namedComponentElement, "name", name);
