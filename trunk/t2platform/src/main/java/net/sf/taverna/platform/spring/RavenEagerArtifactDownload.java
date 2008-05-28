@@ -30,8 +30,7 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class RavenEagerArtifactDownload implements BeanFactoryPostProcessor {
 
-	private static Log log = LogFactory
-			.getLog(RavenEagerArtifactDownload.class);
+	private Log log = LogFactory.getLog(RavenEagerArtifactDownload.class);
 
 	/**
 	 * Will use this method to automatically load all artifacts used by beans in

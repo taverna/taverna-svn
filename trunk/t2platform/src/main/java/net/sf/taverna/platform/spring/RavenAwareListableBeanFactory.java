@@ -29,8 +29,7 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 
-	private static Log log = LogFactory
-			.getLog(RavenAwareListableBeanFactory.class);
+	private Log log = LogFactory.getLog(RavenAwareListableBeanFactory.class);
 
 	@SuppressWarnings("unchecked")
 	@Override

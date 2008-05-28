@@ -31,7 +31,7 @@ import org.springframework.beans.factory.FactoryBean;
  */
 public class RepositoryFactoryBean implements FactoryBean {
 
-	private static Log log = LogFactory.getLog(RepositoryFactoryBean.class);
+	private Log log = LogFactory.getLog(RepositoryFactoryBean.class);
 
 	private List<String> systemArtifactStrings = null;
 	private String baseLocation = null;

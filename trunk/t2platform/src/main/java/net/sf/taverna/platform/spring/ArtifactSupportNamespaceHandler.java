@@ -15,8 +15,7 @@ import static net.sf.taverna.platform.spring.RavenConstants.*;
  */
 public class ArtifactSupportNamespaceHandler extends NamespaceHandlerSupport {
 
-	private static Log log = LogFactory
-			.getLog(ArtifactSupportNamespaceHandler.class);
+	private Log log = LogFactory.getLog(ArtifactSupportNamespaceHandler.class);
 
 	public void init() {
 		ArtifactDefinitionDecorator decorator = new ArtifactDefinitionDecorator();

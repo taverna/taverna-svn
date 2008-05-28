@@ -8,6 +8,9 @@
 	http://taverna.sf.net/schema/artifact-support 
 	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd">
 
+	
+
+
 	<!-- DataSource Property -->
 	<bean id="exampleDataSource"
 		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
@@ -26,7 +29,7 @@
 		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
 		<property name="properties">
 			<props>
-				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.dialect">
 					org.hibernate.dialect.DerbyDialect
 				</prop>
@@ -47,7 +50,7 @@
 
 	<!-- Hibernate SessionFactory -->
 	<bean id="exampleSessionFactory"
-		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		class="net.sf.taverna.platform.spring.orm.hibernate3.SpiRegistryAwareLocalSessionFactoryBean">
 		<property name="dataSource">
 			<ref local="exampleDataSource" />
 		</property>
@@ -59,21 +62,57 @@
 				<value>
 					net/sf/taverna/platformtest/api/AbstractDataBean.hbm.xml
 				</value>
-				<!-- Explicitly map the two implementations below, in real cases -->
-				<!-- we'd be using the SpiRegistry to discover them              -->
-				<value>
-					net/sf/taverna/platformtest/impl/FooDataBean.hbm.xml
-				</value>
-				<value>
-					net/sf/taverna/platformtest/impl/BarDataBean.hbm.xml
-				</value>
 			</list>
 		</property>
-
-
+		<property name="spiRegistries">
+			<list>
+				<ref bean="spiBean" />
+			</list>
+		</property>
 	</bean>
 
+	<repository id="ravenRepository"
+		xmlns="http://taverna.sf.net/schema/artifact-support"
+		base="${user.home}/.m2/repository/">
+		<repositories />
+		<system>
 
+			<!-- Raven -->
+			<sys artifact="uk.org.mygrid.taverna.raven:raven:1.7.1.0" />
 
+			<!-- Spring modules -->
+			<sys artifact="org.springframework:spring-core:2.5" />
+			<sys artifact="org.springframework:spring-orm:2.5" />
+			<sys artifact="org.springframework:spring-tx:2.5" />
+			<sys artifact="org.springframework:spring-jdbc:2.5" />
+			<sys artifact="org.springframework:spring-beans:2.5" />
+			<sys artifact="org.springframework:spring-context:2.5" />
+			<sys artifact="org.springframework:spring-aop:2.5" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+
+			<!-- Logging -->
+			<sys artifact="commons-logging:commons-logging:1.1.1" />
+
+			<!-- Derby -->
+			<sys artifact="org.apache.derby:derby:10.4.1.3" />
+
+			<!-- Hibernate -->
+			<sys artifact="org.hibernate:hibernate:3.2.5.ga" />
+
+			<!-- Test helper API package -->
+			<sys
+				artifact="net.sf.taverna.t2.testing:t2platform-testhelpers-h3-api:0.1-SNAPSHOT" />
+
+		</system>
+	</repository>
+
+	<bean id="spiBean"
+		class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+		<property name="repository">
+			<ref bean="ravenRepository" />
+		</property>
+		<property name="spiClassName"
+			value="net.sf.taverna.platformtest.api.DataBeanSPI" />
+	</bean>
 
 </beans>

@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ArtifactDefinitionDecorator implements BeanDefinitionDecorator {
 
-	private static Log log = LogFactory.getLog(ArtifactDefinitionDecorator.class);
+	private Log log = LogFactory.getLog(ArtifactDefinitionDecorator.class);
 	
 	public BeanDefinitionHolder decorate(Node source,
 			BeanDefinitionHolder holder, ParserContext context) {

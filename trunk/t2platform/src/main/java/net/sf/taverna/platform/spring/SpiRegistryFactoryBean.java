@@ -23,7 +23,7 @@ public class SpiRegistryFactoryBean implements FactoryBean {
 	List<ArtifactFilter> filterList = null;
 	Repository repository = null;
 	String spiClassName = null;
-	private static Log log = LogFactory.getLog(SpiRegistryFactoryBean.class);
+	private Log log = LogFactory.getLog(SpiRegistryFactoryBean.class);
 
 	public Object getObject() throws Exception {
 		if (repository != null && spiClassName != null) {
