@@ -8,6 +8,7 @@ import java.util.Map;
 import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workbench.configuration.colour.DummyColour;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ConfigurationManagerTest {
@@ -18,6 +19,7 @@ public class ConfigurationManagerTest {
 		assertNotNull("Config Manager should not be null", instance);
 	}
 	
+	@Ignore("Hardcoded /Users/Ian")
 	@Test
 	public void populateConfigOfColourmanager() {
 		ColourManager manager=ColourManager.getInstance();
