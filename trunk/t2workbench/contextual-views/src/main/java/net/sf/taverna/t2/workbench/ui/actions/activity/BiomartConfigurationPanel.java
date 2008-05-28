@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.ui.actions.activity;
 
 import java.awt.FlowLayout;
-import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -11,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import net.sf.taverna.t2.activities.biomart.BiomartActivityConfigurationBean;
-import net.sf.taverna.utils.MyGridConfiguration;
 
 import org.biomart.martservice.MartQuery;
 import org.biomart.martservice.MartService;

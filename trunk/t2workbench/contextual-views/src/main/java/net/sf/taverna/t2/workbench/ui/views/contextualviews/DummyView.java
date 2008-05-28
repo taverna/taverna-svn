@@ -9,8 +9,6 @@ import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
-import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
@@ -104,7 +102,7 @@ public class DummyView {
 		
 		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
 
-		ActivityView viewType = viewFactoryForBeanType.getViewType(a);
+		ActivityContextualView viewType = viewFactoryForBeanType.getView(a);
 		
 		System.out.println(viewType.getClass().getCanonicalName());
 		

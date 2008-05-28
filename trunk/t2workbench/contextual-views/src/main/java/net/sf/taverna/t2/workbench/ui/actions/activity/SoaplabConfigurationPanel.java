@@ -17,9 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import net.sf.taverna.t2.activities.soaplab.SoaplabActivity;
 import net.sf.taverna.t2.activities.soaplab.SoaplabActivityConfigurationBean;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class SoaplabConfigurationPanel extends JPanel {
 	
