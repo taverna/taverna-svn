@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
 	<artifactId>t2-workbench</artifactId>
@@ -242,10 +244,13 @@
 	</distributionManagement>
 	<modules>
 		<module>application</module>
+		<module>common-icons</module>
 		<module>configuration</module>
 		<module>models</module>
 		<module>menu-api</module>
 		<module>menu-impl</module>
+		<module>perspective-core</module>
+		<module>perspective-hello</module>
 		<module>ui-api</module>
 		<module>ui-impl</module>
 		<module>contextual-views</module>
