@@ -12,7 +12,7 @@ public class BeanshellActivityViewFactory extends ActivityViewFactory<BeanshellA
 	}
 
 	@Override
-	public BeanshellContextualView getViewType(BeanshellActivity activity) {
+	public BeanshellContextualView getView(BeanshellActivity activity) {
 		BeanshellActivityConfigurationBean configuration = activity.getConfiguration();
 		BeanshellContextualView view = new BeanshellContextualView(activity);
 		return view;

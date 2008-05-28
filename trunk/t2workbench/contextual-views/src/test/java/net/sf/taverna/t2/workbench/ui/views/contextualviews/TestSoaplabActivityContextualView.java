@@ -27,7 +27,7 @@ public class TestSoaplabActivityContextualView {
 	public void testDisovery() throws Exception {
 		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
 		assertTrue("Factory should be SoaplabActivityViewFactory",factory instanceof SoaplabActivityViewFactory);
-		ActivityView<?> view = factory.getViewType(a);
+		ActivityContextualView<?> view = factory.getView(a);
 		assertTrue("The view should be SoaplabActivityContextualView",view instanceof SoaplabActivityContextualView);
 	}
 	

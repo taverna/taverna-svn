@@ -11,7 +11,7 @@ public class BiomartActivityViewFactory extends ActivityViewFactory<BiomartActiv
 	}
 
 	@Override
-	public ActivityView<?> getViewType(BiomartActivity activity) {
+	public ActivityContextualView<?> getView(BiomartActivity activity) {
 		return new BiomartActivityContextualView(activity);
 	}
 

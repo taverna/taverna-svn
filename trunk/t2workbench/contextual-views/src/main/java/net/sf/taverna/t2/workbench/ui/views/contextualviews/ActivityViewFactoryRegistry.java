@@ -3,6 +3,18 @@ package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+/**
+ * An SPI registry for discovering ActivityViewFactories for a given Activity Type
+ * <p>
+ * For ActivityViewFactory to be found, its full qualified name needs to be defined in the resource file: META-INF/services/net.sf.taverna.t2.workbench.ui.views.contextualviews.ActivityViewFactory
+ * </p>
+ * 
+ * @author Stuart Owen
+ * @author Ian Dunlop
+ * 
+ * @see ActivityViewFactory
+ *
+ */
 public class ActivityViewFactoryRegistry extends
 		SPIRegistry<ActivityViewFactory> {
 
@@ -12,6 +24,9 @@ public class ActivityViewFactoryRegistry extends
 		super(ActivityViewFactory.class);
 	}
 	
+	/**
+	 * @return a singleton instance of the registry
+	 */
 	public static synchronized ActivityViewFactoryRegistry getInstance() {
 		if (instance == null) {
 			instance = new ActivityViewFactoryRegistry();
@@ -19,14 +34,23 @@ public class ActivityViewFactoryRegistry extends
 		return instance;
 	}
 
-	public ActivityViewFactory<?> getViewFactoryForBeanType(Activity<?> activityClass) {
+	/**
+	 * Discovers and returns an ActivityViewFactory associated to the provided activity.
+	 * This is accomplished by returning the first discovered {@link ActivityViewFactory#canHandle(Activity)} that returns true for that Activity.
+	 * 
+	 * @param activity
+	 * @return
+	 * 
+	 * @see ActivityViewFactory#canHandle(Activity)
+	 */
+	public ActivityViewFactory<?> getViewFactoryForBeanType(Activity<?> activity) {
 		for (ActivityViewFactory<?> factory : getInstances()) {
-			if (factory.canHandle(activityClass)) {
+			if (factory.canHandle(activity)) {
 				return factory;
 			}
 		}
 		throw new IllegalArgumentException(
-				"Can't find factory for activity view class " + activityClass);
+				"Can't find factory for activity view class " + activity);
 	}
 
 }

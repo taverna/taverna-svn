@@ -9,10 +9,24 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * An abstract class defining the base container to hold a contextual view over Dataflow element.
+ * <p>
+ * The specific implementation of this class to support a given dataflow element needs to implement the 
+ * getMainFrame() and getViewTitle().
+ * </p>
+ * <p>
+ * If a view is associated with an action handler to configure this component, then the getConfigureAction handler must be over-ridden. If this returns null
+ * then the configure button is left disabled and it is not possible to configure the element.
+ * </p>
+ * 
+ * @author Stuart Owen
+ * @author Ian Dunlop
+ *
+ */
 public abstract class ContextualView extends JFrame {
 	
 	protected void initView() {
-		// TODO Auto-generated method stub
 		setSize(800, 500);
 		setLayout(new BorderLayout());
 		add(getMainFrame(), BorderLayout.CENTER);
@@ -22,9 +36,6 @@ public abstract class ContextualView extends JFrame {
 		buttonFrame.setLayout(new BorderLayout());
 		
 		buttonFrame.add(createButtonPanel(),BorderLayout.EAST);
-		
-		
-		
 	}
 
 	private JPanel createButtonPanel() {
@@ -44,10 +55,24 @@ public abstract class ContextualView extends JFrame {
 		return buttonPanel;
 	}
 
+	/**
+	 * When implemented, this method should define the main frame that is placed in this container, and provides a static view of the Dataflow element.
+	 * @return a JComponent that represents the dataflow element.
+	 */
 	protected abstract JComponent getMainFrame();
 	
+	/**
+	 * @return a String providing a title for the view
+	 */
 	protected abstract String getViewTitle();
 	
+	/**
+	 * Allows the item to be configured, but returning an action handler that will be invoked when selecting to configure. By default this is provided by a button.
+	 * <p>
+	 * If there is no ability to configure the given item, then this should return null.
+	 * </p>
+	 * @return an action that allows the element being viewed to be configured.
+	 */
 	protected Action getConfigureAction() {
 		return null;
 	}

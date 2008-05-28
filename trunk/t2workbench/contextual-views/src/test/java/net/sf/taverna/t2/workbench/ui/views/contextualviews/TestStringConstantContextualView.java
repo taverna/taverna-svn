@@ -24,7 +24,7 @@ public class TestStringConstantContextualView {
 	@Test
 	public void testDisovery() throws Exception {ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
 		assertTrue("Factory should be StringConstantActivityViewFactory",factory instanceof StringConstantActivityViewFactory);
-		ActivityView<?> view = factory.getViewType(activity);
+		ActivityContextualView<?> view = factory.getView(activity);
 		assertTrue("The view should be StringConstantActivityContextualView",view instanceof StringConstantActivityContextualView);
 	}
 	

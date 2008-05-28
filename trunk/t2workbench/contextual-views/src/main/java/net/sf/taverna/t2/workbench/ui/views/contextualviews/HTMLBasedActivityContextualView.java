@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public abstract class HTMLBasedActivityContextualView<ConfigBean> extends ActivityView<ConfigBean>
+public abstract class HTMLBasedActivityContextualView<ConfigBean> extends ActivityContextualView<ConfigBean>
 {
 	private JEditorPane editorPane;
 	

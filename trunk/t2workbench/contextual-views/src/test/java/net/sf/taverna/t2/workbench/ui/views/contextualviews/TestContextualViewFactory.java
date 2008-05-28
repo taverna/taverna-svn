@@ -24,7 +24,7 @@ public class TestContextualViewFactory {
 		
 		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(beanshellActivity);
 		assertTrue("Was not a  Beanshell view factory", viewFactoryForBeanType instanceof BeanshellActivityViewFactory);
-		ActivityView viewType = viewFactoryForBeanType.getViewType(beanshellActivity);
+		ActivityContextualView viewType = viewFactoryForBeanType.getView(beanshellActivity);
 		assertTrue("Was not a Beanshell view", viewType.getClass().getCanonicalName().equals(BeanshellContextualView.class.getName()));
 		
 	}

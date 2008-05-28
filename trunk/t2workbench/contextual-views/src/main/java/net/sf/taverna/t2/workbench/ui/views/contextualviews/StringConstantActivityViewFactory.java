@@ -11,7 +11,7 @@ public class StringConstantActivityViewFactory extends ActivityViewFactory<Strin
 	}
 
 	@Override
-	public ActivityView<?> getViewType(StringConstantActivity activity) {
+	public ActivityContextualView<?> getView(StringConstantActivity activity) {
 		return new StringConstantActivityContextualView(activity);
 	}
 

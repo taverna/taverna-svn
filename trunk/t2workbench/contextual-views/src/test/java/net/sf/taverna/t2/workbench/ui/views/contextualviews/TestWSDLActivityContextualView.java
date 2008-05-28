@@ -27,7 +27,7 @@ public class TestWSDLActivityContextualView {
 	public void testDisovery() throws Exception {
 		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
 		assertTrue("Factory should be WSDLActivityViewFactory",factory instanceof WSDLActivityViewFactory);
-		ActivityView<?> view = factory.getViewType(a);
+		ActivityContextualView<?> view = factory.getView(a);
 		assertTrue("The view should be WSDLActivityContextualView",view instanceof WSDLActivityContextualView);
 	}
 	

@@ -36,7 +36,7 @@ public class TestBiomartActivityContextualView {
 				.getViewFactoryForBeanType(activity);
 		assertTrue("Factory should be BiomartActivityViewFactory",
 				factory instanceof BiomartActivityViewFactory);
-		ActivityView<?> view = factory.getViewType(activity);
+		ActivityContextualView<?> view = factory.getView(activity);
 		assertTrue("The view should be BiomartActivityContextualView",
 				view instanceof BiomartActivityContextualView);
 	}

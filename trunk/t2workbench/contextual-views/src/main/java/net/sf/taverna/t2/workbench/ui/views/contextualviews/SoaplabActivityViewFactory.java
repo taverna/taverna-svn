@@ -11,7 +11,7 @@ public class SoaplabActivityViewFactory extends ActivityViewFactory<SoaplabActiv
 	}
 
 	@Override
-	public ActivityView<?> getViewType(SoaplabActivity activity) {
+	public ActivityContextualView<?> getView(SoaplabActivity activity) {
 		return new SoaplabActivityContextualView(activity);
 	}
 
