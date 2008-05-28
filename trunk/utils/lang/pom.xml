@@ -40,5 +40,6 @@
 	<modules>
 		<module>observer</module>
 		<module>partition</module>
+		<module>ui</module>
 	</modules>
 </project>
