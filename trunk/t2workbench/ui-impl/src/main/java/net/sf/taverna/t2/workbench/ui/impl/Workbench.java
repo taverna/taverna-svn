@@ -13,6 +13,7 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.ui.menu.impl.MenuManager;
@@ -23,6 +24,8 @@ import org.apache.log4j.Logger;
  * The main workbench frame.
  * 
  * @author David Withers
+ * @author Stian Soiland-Reyes
+ * 
  */
 public class Workbench extends JFrame {
 
@@ -30,13 +33,20 @@ public class Workbench extends JFrame {
 
 	private static Logger logger = Logger.getLogger(Workbench.class);
 
+	private ApplicationRuntime appRuntime = ApplicationRuntime.getInstance();
+
 	private static Workbench instance;
 
 	private MenuManager menuManager = MenuManager.getInstance();
 
-	private Workbench() {
-		setLayout(new BorderLayout());
+	private WorkbenchPerspectives perspectives;
 
+	private Workbench() {
+		// Initialisation done by getInstance()
+	}
+
+	private void makeGUI() {
+		setLayout(new BorderLayout());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -44,12 +54,8 @@ public class Workbench extends JFrame {
 			}
 		});
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
 		setLookAndFeel();
-
-		JMenuBar menuBar = menuManager.createMenuBar();
-		setJMenuBar(menuBar);
-
+		
 		JSplitPane toolBarPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		add(toolBarPanel, BorderLayout.NORTH);
 
@@ -57,11 +63,22 @@ public class Workbench extends JFrame {
 		toolBarPanel.add(toolBar);
 
 		setSize(new Dimension(500, 500));
+
+		WorkbenchZBasePane basePane = new WorkbenchZBasePane();
+		basePane.setRepository(appRuntime.getRavenRepository());
+		perspectives = new WorkbenchPerspectives(basePane, toolBar);
+		perspectives.initialisePerspectives();
+		add(basePane, BorderLayout.CENTER);
+		
+		// Need to do this last as it references perspectives
+		JMenuBar menuBar = menuManager.createMenuBar();
+		setJMenuBar(menuBar);
 	}
 
-	public static final Workbench getInstance() {
+	public static final synchronized Workbench getInstance() {
 		if (instance == null) {
 			instance = new Workbench();
+			instance.makeGUI();
 		}
 		return instance;
 	}
@@ -74,7 +91,7 @@ public class Workbench extends JFrame {
 		// String landf = MyGridConfiguration
 		// .getProperty("taverna.workbench.themeclass");
 		boolean set = false;
-
+		
 		// if (landf != null) {
 		// try {
 		// UIManager.setLookAndFeel(landf);
@@ -100,8 +117,10 @@ public class Workbench extends JFrame {
 						logger.info("Using "
 								+ UIManager.getSystemLookAndFeelClassName()
 								+ " Look and Feel");
+						set = true;
 					} else {
 						logger.info("Using default Look and Feel");
+						set = true;
 					}
 				} catch (Exception ex2) {
 					ex2.printStackTrace();
@@ -116,6 +135,10 @@ public class Workbench extends JFrame {
 		Log.setImplementation(new ConsoleLog());
 		Workbench workbench = getInstance();
 		workbench.setVisible(true);
+	}
+
+	public WorkbenchPerspectives getPerspectives() {
+		return perspectives;
 	}
 
 }
