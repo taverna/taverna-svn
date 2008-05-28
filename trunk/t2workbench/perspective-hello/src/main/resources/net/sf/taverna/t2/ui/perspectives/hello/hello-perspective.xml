@@ -1,0 +1,8 @@
+<basepane>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <component scroll="true" />
+    </znode>
+  </child>
+  <namedcomponents />
+</basepane>

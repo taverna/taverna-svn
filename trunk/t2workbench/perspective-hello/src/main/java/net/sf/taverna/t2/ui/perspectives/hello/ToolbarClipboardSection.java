@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.test;
+package net.sf.taverna.t2.ui.perspectives.hello;
 
 import java.net.URI;
 

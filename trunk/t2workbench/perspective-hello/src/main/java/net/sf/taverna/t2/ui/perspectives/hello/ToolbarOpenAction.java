@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.test;
+package net.sf.taverna.t2.ui.perspectives.hello;
 
 import java.awt.event.ActionEvent;
 
@@ -8,7 +8,6 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.ui.menu.DefaultToolBar;
-import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 
 public class ToolbarOpenAction extends AbstractMenuAction {
 	public ToolbarOpenAction() {
@@ -19,7 +18,7 @@ public class ToolbarOpenAction extends AbstractMenuAction {
 	public Action getAction() {
 		return new AbstractAction("Open") {
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(Workbench.getInstance(), "Open");
+				JOptionPane.showMessageDialog(null, "Open");
 			}
 		};
 	}

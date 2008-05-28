@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.test;
+package net.sf.taverna.t2.ui.perspectives.hello;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
@@ -8,7 +8,6 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
-import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 
 public class EditUndoAction extends AbstractMenuAction {
 
@@ -21,7 +20,7 @@ public class EditUndoAction extends AbstractMenuAction {
 	public Action getAction() {
 		return new AbstractAction("Undo") {
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(Workbench.getInstance(), "Undo");
+				JOptionPane.showMessageDialog(null, "Undo");
 			}
 		};
 	}

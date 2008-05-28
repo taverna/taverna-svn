@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.test;
+package net.sf.taverna.t2.ui.perspectives.hello;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
@@ -8,7 +8,6 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
-import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 
 public class EditCopyAction extends AbstractMenuAction {
 
@@ -22,7 +21,7 @@ public class EditCopyAction extends AbstractMenuAction {
 		return new AbstractAction("Copy") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(Workbench.getInstance(), "Copy");
+				JOptionPane.showMessageDialog(null, "Copy");
 			}
 		};
 	}

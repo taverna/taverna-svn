@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.test;
+package net.sf.taverna.t2.ui.perspectives.hello;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
@@ -8,12 +8,11 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
-import net.sf.taverna.t2.workbench.ui.impl.Workbench;
 
-public class ToolbarCutAction extends AbstractMenuAction {
+public class EditCutAction extends AbstractMenuAction {
 
-	public ToolbarCutAction() {
-		super(URI.create("http://taverna.sf.net/2008/t2workbench/test#clipboardToolbar"),
+	public EditCutAction() {
+		super(URI.create("http://taverna.sf.net/2008/t2workbench/test#clipboard"),
 				10);
 	}
 
@@ -21,7 +20,7 @@ public class ToolbarCutAction extends AbstractMenuAction {
 	public Action getAction() {
 		return new AbstractAction("Cut") {
 			public void actionPerformed(ActionEvent arg0) {
-				JOptionPane.showMessageDialog(Workbench.getInstance(), "Cut");
+				JOptionPane.showMessageDialog(null, "Cut");
 			}
 		};
 	}
