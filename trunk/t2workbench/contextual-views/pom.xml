@@ -37,7 +37,7 @@
 			<artifactId>spi-discovery-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
@@ -57,7 +57,7 @@
 			<artifactId>jedit-syntax</artifactId>
 			<version>2.2.2</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity</artifactId>
@@ -78,17 +78,22 @@
 			<artifactId>biomart-activity</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>configuration</artifactId>
 			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.help</groupId>
+			<artifactId>javahelp</artifactId>
+			<version>2.0.02</version>
 		</dependency>
 	</dependencies>
 </project>
