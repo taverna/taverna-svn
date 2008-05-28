@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
+import java.awt.event.ActionEvent;
+
 import javax.help.CSH;
 import javax.swing.Action;
 
@@ -23,7 +25,10 @@ public class BeanshellContextualView extends
 
 	public BeanshellContextualView(Activity<?> activity) {
 		super(activity);
-		CSH.setHelpIDString(this, "net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView");
+		CSH
+				.setHelpIDString(
+						this,
+						"net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView");
 	}
 
 	@Override
@@ -48,16 +53,13 @@ public class BeanshellContextualView extends
 
 	@Override
 	protected String getViewTitle() {
-		// TODO Auto-generated method stub
 		return "Beanshell contextual view";
 	}
 
 	@Override
 	public Action getConfigureAction() {
-		// TODO Auto-generated method stub
 		return new BeanshellActvityConfigurationAction(
-				(BeanshellActivity) getActivity());
-
+				(BeanshellActivity) getActivity(), this);
 	}
 
 }

@@ -10,10 +10,10 @@ import javax.swing.JPanel;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public abstract class HTMLBasedActivityContextualView<ConfigBean> extends ActivityContextualView<ConfigBean>
-{
+public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
+		ActivityContextualView<ConfigBean> {
 	private JEditorPane editorPane;
-	
+
 	public HTMLBasedActivityContextualView(Activity<?> activity) {
 		super(activity);
 	}
@@ -22,61 +22,64 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends Activi
 	protected JComponent getMainFrame() {
 		String html = buildHtml();
 		String style = getStyle();
-		return panelForHtml(style+html);
+		return panelForHtml(style + html);
 	}
 
 	private String buildHtml() {
-		String html=buildTableOpeningTag();
-		html+="<tr><td colspan=2>"+getViewTitle()+"</td></tr>";
-		html+=getRawTableRowsHtml()+"</table>";
+		String html = buildTableOpeningTag();
+		html += "<tr><td colspan=2>" + getViewTitle() + "</td></tr>";
+		html += getRawTableRowsHtml() + "</table>";
 		return html;
 	}
 
 	private String buildTableOpeningTag() {
-		String result="<table ";
-		Map<String,String> props=getTableProperties();
+		String result = "<table ";
+		Map<String, String> props = getTableProperties();
 		for (String key : props.keySet()) {
-			result+=key+"=\""+props.get(key)+"\" ";
+			result += key + "=\"" + props.get(key) + "\" ";
 		}
-		result+=">";
+		result += ">";
 		return result;
 	}
 
 	protected abstract String getRawTableRowsHtml();
-	
-	protected Map<String,String> getTableProperties() {
-		Map<String,String> result = new HashMap<String,String>();
+
+	protected Map<String, String> getTableProperties() {
+		Map<String, String> result = new HashMap<String, String>();
 		result.put("width", "100%");
 		result.put("bgcolor", getBackgroundColour());
 		result.put("border", "1");
 		result.put("align", "center");
 		return result;
 	}
-	
+
 	public String getBackgroundColour() {
 		return "gray";
 	}
 
 	protected String getStyle() {
 		String style = "<style type='text/css'>";
-		style+="table {align:center}";
+		style += "table {align:center}";
 		style += "</style>";
 		return style;
 	}
-	
 
 	protected JPanel panelForHtml(String html) {
 		JPanel result = new JPanel();
 		result.setLayout(new BorderLayout());
-		editorPane = new JEditorPane("text/html",html);
+		editorPane = new JEditorPane("text/html", html);
 		editorPane.setEditable(false);
-		result.add(editorPane,BorderLayout.CENTER);
+		result.add(editorPane, BorderLayout.CENTER);
 		return result;
 	}
-	
-	protected void refreshView() {
+
+	/**
+	 * Update the html view with the latest information in the configuration
+	 * bean
+	 */
+	public void refreshView() {
 		String html = buildHtml();
 		String style = getStyle();
-		editorPane.setText(style+html);
+		editorPane.setText(style + html);
 	}
 }

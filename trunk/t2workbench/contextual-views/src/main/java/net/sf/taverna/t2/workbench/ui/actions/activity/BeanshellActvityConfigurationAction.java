@@ -7,13 +7,16 @@ import javax.swing.JFrame;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView;
 
 public class BeanshellActvityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity>{
 
 	private static final long serialVersionUID = 8462133163666495672L;
+	private final BeanshellContextualView view;
 
-	public BeanshellActvityConfigurationAction(BeanshellActivity activity) {
+	public BeanshellActvityConfigurationAction(BeanshellActivity activity, BeanshellContextualView view) {
 		super(activity);
+		this.view = view;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -26,7 +29,8 @@ public class BeanshellActvityConfigurationAction extends ActivityConfigurationAc
 		beanshellConfigView.setButtonClickedListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				frame.setVisible(false);				
+				frame.setVisible(false);
+				view.refreshView();
 			}
 			
 		});
