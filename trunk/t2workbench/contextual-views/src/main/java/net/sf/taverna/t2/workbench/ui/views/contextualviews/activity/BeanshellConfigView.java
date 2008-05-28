@@ -13,6 +13,7 @@ import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -89,6 +90,7 @@ public class BeanshellConfigView extends JPanel {
 	 *            the {@link BeanshellActivity} that the view is over
 	 */
 	public BeanshellConfigView(BeanshellActivity activity) {
+		CSH.setHelpIDString(this, "net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView");
 		this.activity = activity;
 		configuration = activity.getConfiguration();
 		setLayout(new GridBagLayout());

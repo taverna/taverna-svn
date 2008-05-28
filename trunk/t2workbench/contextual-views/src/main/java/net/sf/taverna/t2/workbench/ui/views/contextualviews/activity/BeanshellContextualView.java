@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
 
+import javax.help.CSH;
 import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
@@ -22,6 +23,7 @@ public class BeanshellContextualView extends
 
 	public BeanshellContextualView(Activity<?> activity) {
 		super(activity);
+		CSH.setHelpIDString(this, "net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView");
 	}
 
 	@Override
