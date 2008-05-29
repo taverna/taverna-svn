@@ -25,40 +25,17 @@
 
 package net.sf.taverna.t2.activities.wsdl;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import javax.activation.DataHandler;
-import javax.wsdl.Definition;
-import javax.wsdl.PortType;
-import javax.wsdl.WSDLException;
-import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
-import javax.xml.soap.SOAPException;
 
-import net.sf.taverna.security.SecurityAgent;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
-import net.sf.taverna.wsdl.soap.SOAPResponseParser;
-import net.sf.taverna.wsdl.soap.SOAPResponseParserFactory;
 
 import org.apache.axis.EngineConfiguration;
-import org.apache.axis.attachments.AttachmentPart;
-import org.apache.axis.client.Service;
 import org.apache.axis.client.Call;
-import org.apache.axis.configuration.XMLStringProvider;
-import org.apache.axis.message.SOAPBodyElement;
-import org.apache.axis.message.SOAPEnvelope;
 import org.apache.log4j.Logger;
 
 
@@ -103,38 +80,39 @@ public class T2WSDLSOAPInvoker extends WSDLSOAPInvoker{
 		// Note that WSS4J's handler WSDoAllSender expects (which is invoked before our T2DoAllSender takes over) 
 		// the USERNAME_PROPERTY to be set to whatever non-empty value for almost all security operations (even for signing, 
 		// except for encryption), otherwise it raises an Exception.
-		call.setProperty(Call.USERNAME_PROPERTY, super.getParser().getWSDLLocation()); 
+		call.setProperty(Call.USERNAME_PROPERTY, getParser().getWSDLLocation()); 
 		
 		/* 
 		 * We also need to pass the security agent(s) (or some kind of a reference to the Peer groupof agents) 
 		 * that will do the actual work on setting WS-SEcurity headers on the SOAP request.
 		 * 
 		*/
+		
 		// Create and initialise a security agent 
-    	String ksPassword = "uber"; //Keystore master password
-    	String ksFileName = "/Users/alex/Documents/workspace/credential-manager/bin/net/sf/taverna/credentialmanager/keystore/t2keystore.ubr"; //Keystore file name
-    	SecurityAgent sa = new SecurityAgent(ksPassword, ksFileName);
-        try{
-        	sa.init();
-        }
-        catch(Exception ex){
-
-        	if ((ex instanceof IOException) || (ex instanceof NoSuchAlgorithmException) || (ex instanceof CertificateException)){
-            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-       			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
-            	//fix me: change exception
-            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-               			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
-        	}
-        	else {
-            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-               			"Reason: Bouncy Castle provider could not be loaded.");
-
-            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
-               			"Reason: Bouncy Castle provider could not be loaded.");
-        	}
-        }
-		call.setProperty("security_agent", sa);	
+//    	String ksPassword = "uber"; //Keystore master password
+//    	String ksFileName = "/Users/alex/Documents/workspace/credential-manager/bin/net/sf/taverna/credentialmanager/keystore/t2keystore.ubr"; //Keystore file name
+//    	SecurityAgent sa = new SecurityAgent(ksPassword, ksFileName);
+//        try{
+//        	sa.init();
+//        }
+//        catch(Exception ex){
+//
+//        	if ((ex instanceof IOException) || (ex instanceof NoSuchAlgorithmException) || (ex instanceof CertificateException)){
+//            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
+//       			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
+//            	//fix me: change exception
+//            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
+//               			"Possible reason: Keystore has been corrupted or the master password supplied was incorrect.");
+//        	}
+//        	else {
+//            	logger.error("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
+//               			"Reason: Bouncy Castle provider could not be loaded.");
+//
+//            	throw new ServiceException("T2WSDLSOAPInvoker: Security Agent could not be initiated - failed to load the Keystore. " +
+//               			"Reason: Bouncy Castle provider could not be loaded.");
+//        	}
+//        }
+//		call.setProperty("security_agent", sa);	
 		
 		return call;
 	}	
