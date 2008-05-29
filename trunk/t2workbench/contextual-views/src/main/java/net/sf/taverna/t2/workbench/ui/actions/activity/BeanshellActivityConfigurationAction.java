@@ -9,12 +9,12 @@ import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellConfigView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.BeanshellContextualView;
 
-public class BeanshellActvityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity>{
+public class BeanshellActivityConfigurationAction extends ActivityConfigurationAction<BeanshellActivity>{
 
 	private static final long serialVersionUID = 8462133163666495672L;
 	private final BeanshellContextualView view;
 
-	public BeanshellActvityConfigurationAction(BeanshellActivity activity, BeanshellContextualView view) {
+	public BeanshellActivityConfigurationAction(BeanshellActivity activity, BeanshellContextualView view) {
 		super(activity);
 		this.view = view;
 	}

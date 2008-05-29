@@ -7,7 +7,7 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.workbench.ui.actions.activity.BeanshellActvityConfigurationAction;
+import net.sf.taverna.t2.workbench.ui.actions.activity.BeanshellActivityConfigurationAction;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
@@ -58,7 +58,7 @@ public class BeanshellContextualView extends
 
 	@Override
 	public Action getConfigureAction() {
-		return new BeanshellActvityConfigurationAction(
+		return new BeanshellActivityConfigurationAction(
 				(BeanshellActivity) getActivity(), this);
 	}
 
