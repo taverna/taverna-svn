@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvoker.java,v $
- * Revision           $Revision: 1.5 $
+ * Revision           $Revision: 1.6 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-01 12:27:26 $
+ * Last modified on   $Date: 2008-05-29 10:22:21 $
  *               by   $Author: sowen70 $
  * Created on 07-Apr-2006
  *****************************************************************/
@@ -36,6 +36,7 @@ package net.sf.taverna.wsdl.soap;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,9 +44,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
-import javax.wsdl.Definition;
-import javax.wsdl.PortType;
-import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
 import javax.xml.rpc.ServiceException;
 import javax.xml.soap.SOAPException;
@@ -58,14 +56,8 @@ import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.message.SOAPBodyElement;
 import org.apache.axis.message.SOAPEnvelope;
+import org.apache.axis.transport.http.HTTPTransport;
 import org.apache.log4j.Logger;
-import org.apache.wsif.WSIFException;
-import org.apache.wsif.WSIFOperation;
-import org.apache.wsif.WSIFPort;
-import org.apache.wsif.WSIFService;
-import org.apache.wsif.WSIFServiceFactory;
-import org.apache.wsif.providers.soap.apacheaxis.WSIFOperation_ApacheAxis;
-import org.apache.wsif.providers.soap.apacheaxis.WSIFPort_ApacheAxis;
 
 /**
  * Invokes SOAP based webservices
@@ -88,6 +80,19 @@ public class WSDLSOAPInvoker {
 		this.operationName = operationName;
 		this.outputNames = outputNames;
 	}
+	
+	protected String getOperationName() {
+		return operationName;
+	}
+	
+	protected WSDLParser getParser() {
+		return parser;
+	}
+
+	protected List<String> getOutputNames() {
+		return outputNames;
+	}
+	
 
 	/**
 	 * Invokes the webservice with the supplied input Map, and returns a Map
@@ -111,13 +116,9 @@ public class WSDLSOAPInvoker {
 	 */
 	public Map<String, Object> invoke(Map inputMap, EngineConfiguration config)
 			throws Exception {
-
-		Call call = getCall();
 		
-		if (config != null) {
-			call.setClientHandlers(config.getGlobalRequest(), config
-					.getGlobalResponse());
-		}
+		Call call = getCall(config);
+		
 		call.setTimeout(getTimeout());
 
 		BodyBuilder builder = BodyBuilderFactory.instance().create(parser,
@@ -158,7 +159,7 @@ public class WSDLSOAPInvoker {
 			result = parser.parse(response);
 		}
 
-		result.put("attachmentList", extractAttachmentsDataThing(call));
+		result.put("attachmentList", extractAttachments(call));
 
 		return result;
 	}
@@ -186,11 +187,11 @@ public class WSDLSOAPInvoker {
 		return result;
 	}
 
-	private String getStyle() {
+	protected String getStyle() {
 		return parser.getStyle();
 	}
 
-	private String getUse() throws UnknownOperationException {
+	protected String getUse() throws UnknownOperationException {
 		return parser.getUse(operationName);
 	}
 
@@ -201,44 +202,46 @@ public class WSDLSOAPInvoker {
 	 * @return
 	 * @throws ServiceException
 	 * @throws UnknownOperationException
+	 * @throws MalformedURLException 
 	 * @throws WSDLException
 	 * @throws WSIFException
 	 */
-	private Call getCall() throws ServiceException, UnknownOperationException,
-			WSDLException, WSIFException {
-
+	protected Call getCall(EngineConfiguration config)  throws ServiceException, UnknownOperationException, MalformedURLException {
+		
+		org.apache.axis.client.Service service;
+		if (config==null) {
+			service = new org.apache.axis.client.Service();
+		}
+		else {
+			service = new org.apache.axis.client.Service(config);
+		}
+		
+		Call call = new Call(service);
+		
+		call.setTransport(new HTTPTransport());
+		call.setTargetEndpointAddress(parser.getOperationEndpointLocations(operationName).get(0));
+		//result.setPortName(parser.getPortType(operationName).getQName());
+		//result.setOperation(operationName);
+		
 		String use = parser.getUse(operationName);
-		Call result = (((WSIFPort_ApacheAxis) ((WSIFOperation_ApacheAxis) getWSIFOperation())
-				.getWSIFPort()).getCall());
-		result.setUseSOAPAction(true);
-		result.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR,
+		call.setUseSOAPAction(true);
+		call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR,
 				Boolean.FALSE);
-		result.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS,
+		call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS,
 				Boolean.FALSE);
-		result
+		call
 				.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
 		
 		if (parser.getSOAPActionURI(operationName)!=null) {
-			result.setSOAPActionURI(parser.getSOAPActionURI(operationName));
+			call.setSOAPActionURI(parser.getSOAPActionURI(operationName));
 		}
 		
 		if (use.equalsIgnoreCase("literal")) {
-			result.setEncodingStyle(null);
+			call.setEncodingStyle(null);
 		}
-
-		return result;
+		return call;
 	}
-
-	private WSIFOperation getWSIFOperation() throws WSIFException {
-		Definition def = parser.getDefinition();
-		Service s = (Service) def.getServices().values().toArray()[0];
-		WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-		PortType portType = parser.getPortType(operationName);
-		WSIFService service = factory.getService(def, s, portType);
-		WSIFPort port = service.getPort();
-		WSIFOperation op = port.createOperation(operationName);
-		return op;
-	}
+	
 
 	/**
 	 * Exctracts any attachments that result from invoking the service, and
@@ -249,7 +252,7 @@ public class WSDLSOAPInvoker {
 	 * @throws SOAPException
 	 * @throws IOException
 	 */
-	private List extractAttachmentsDataThing(Call axisCall)
+	protected List extractAttachments(Call axisCall)
 			throws SOAPException, IOException {
 		List attachmentList = new ArrayList();
 		if (axisCall.getResponseMessage() != null
@@ -281,4 +284,6 @@ public class WSDLSOAPInvoker {
 
 		return attachmentList;
 	}
+
+	
 }

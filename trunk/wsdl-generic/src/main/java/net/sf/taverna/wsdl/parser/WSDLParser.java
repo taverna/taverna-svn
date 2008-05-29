@@ -39,8 +39,8 @@ import org.apache.axis.wsdl.symbolTable.Parameters;
 import org.apache.axis.wsdl.symbolTable.SymbolTable;
 import org.apache.axis.wsdl.symbolTable.TypeEntry;
 import org.apache.log4j.Logger;
-import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
-import org.apache.wsif.util.WSIFPluggableProviders;
+//import org.apache.wsif.providers.soap.apacheaxis.WSIFDynamicProvider_ApacheAxis;
+//import org.apache.wsif.util.WSIFPluggableProviders;
 import org.xml.sax.SAXException;
 
 import com.ibm.wsdl.extensions.soap.SOAPBindingImpl;
@@ -103,9 +103,9 @@ public class WSDLParser {
 
 		this.wsdlLocation = wsdlLocation;						
 		
-		WSIFPluggableProviders.overrideDefaultProvider(
-				"http://schemas.xmlsoap.org/wsdl/soap/",
-				new WSIFDynamicProvider_ApacheAxis());
+//		WSIFPluggableProviders.overrideDefaultProvider(
+//				"http://schemas.xmlsoap.org/wsdl/soap/",
+//				new WSIFDynamicProvider_ApacheAxis());
 
 		if (!symbolTableMap.containsKey(wsdlLocation)) {
 			SymbolTable symbolTable = new SymbolTable(new NoopFactory()
