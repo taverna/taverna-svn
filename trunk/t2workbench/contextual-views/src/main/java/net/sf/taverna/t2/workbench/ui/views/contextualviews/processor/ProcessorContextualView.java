@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.iterationstrategy.IterationStrategyStackContextualView;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
@@ -71,21 +72,24 @@ public class ProcessorContextualView extends ContextualView{
 	}
 
 	private void setIterationStrategy() {
-		JPanel iterationStrategyPanel = new JPanel();
-		iterationStrategyPanel.setLayout(new GridBagLayout());
+//		JPanel iterationStrategyPanel = new JPanel();
+//		iterationStrategyPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.weightx = 0.1;
 		constraints.weighty = 0.1;
 		constraints.fill = GridBagConstraints.NONE;
-		iterationStrategyPanel.setSize(300, 100);
-		iterationStrategyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Iteration Strategy Here!",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-				javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new java.awt.Font("Lucida Grande", 1, 12)));
-		iterationStrategyPanel.add(new JTextArea("I am the iteration strategy"));
-		iterationStrategy.add(iterationStrategyPanel, constraints);
+//		iterationStrategyPanel.setSize(300, 100);
+//		iterationStrategyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Iteration Strategy Here!",
+//				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+//				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+//				new java.awt.Font("Lucida Grande", 1, 12)));
+		IterationStrategyStackContextualView iterationStrategyStackContextualView = new IterationStrategyStackContextualView(processor.getIterationStrategy());
+		JButton clickIterationStackButton = new JButton(new ClickIterationStackAction(iterationStrategyStackContextualView));
+		clickIterationStackButton.setText("Iteration Strategy Stack");
+//		iterationStrategyPanel.add(clickIterationStackButton, constraints);
+		iterationStrategy.add(clickIterationStackButton, constraints);
 	}
 
 	private void setDispatchStack() {
@@ -113,7 +117,7 @@ public class ProcessorContextualView extends ContextualView{
 		for (Activity activity: processor.getActivityList()) {
 			ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
 			ActivityContextualView view = viewFactoryForBeanType.getView(activity);
-			JButton clickActivityView = new JButton(new ClickActivityAction(view));
+			JButton clickActivityView = new JButton(new ClickIterationStackAction(view));
 			clickActivityView.setText("View " + activity.getClass().getSimpleName());
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.gridx = 0;
@@ -141,6 +145,19 @@ public class ProcessorContextualView extends ContextualView{
 		private final JFrame frame;
 
 		public ClickActivityAction(JFrame frame) {
+			this.frame = frame;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			frame.setVisible(true);
+		}
+		
+	}
+public class ClickIterationStackAction extends AbstractAction {
+		
+		private final JFrame frame;
+
+		public ClickIterationStackAction(JFrame frame) {
 			this.frame = frame;
 		}
 
