@@ -22,6 +22,7 @@ import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
+import org.apache.axis.configuration.XMLStringProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -116,7 +117,29 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 						outputNames.add(port.getName());
 					}
 					
-					WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(parser,configurationBean.getOperation(),outputNames);
+					WSDLSOAPInvoker invoker = new T2WSDLSOAPInvoker(parser,configurationBean.getOperation(),outputNames);
+					
+					/* 
+					 * To call secure services - uncomment the following block and comment out the line after it
+					// Create security configuration
+					 String wssUTProfile = 
+							"<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" "+
+							"xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\"> \n"+
+							"<globalConfiguration> \n" +
+							"<requestFlow>\n" +
+							"<handler type=\"java:net.sf.taverna.security.T2WSDoAllSender\"> \n"+
+							"<parameter name=\"action\" value=\"UsernameToken\"/> \n" +
+							"<parameter name=\"passwordType\" value=\"PasswordText\"/> \n"+
+							"</handler> \n"+
+							"</requestFlow> \n"+
+							"</globalConfiguration> \n"+
+							"<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.HTTPSender\"/> \n"+
+							"</deployment>\n";
+							
+					XMLStringProvider wssEngineConfiguration = new XMLStringProvider(wssUTProfile);
+														
+					Map<String,Object> invokerOutputMap = invoker.invoke(invokerInputMap, wssEngineConfiguration);
+					*/
 					Map<String,Object> invokerOutputMap = invoker.invoke(invokerInputMap);
 					
 					for (String outputName : invokerOutputMap.keySet()) {
