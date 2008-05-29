@@ -15,6 +15,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.dispatchstack.DispatchStackContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.iterationstrategy.IterationStrategyStackContextualView;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -93,21 +94,24 @@ public class ProcessorContextualView extends ContextualView{
 	}
 
 	private void setDispatchStack() {
-		JPanel dispatchStackPanel = new JPanel();
-		dispatchStackPanel.setLayout(new GridBagLayout());
+//		JPanel dispatchStackPanel = new JPanel();
+//		dispatchStackPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.weightx = 0.1;
 		constraints.weighty = 0.1;
 		constraints.fill = GridBagConstraints.NONE;
-		dispatchStackPanel.setSize(300, 100);
-		dispatchStackPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dispatch Stack Here!",
-				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
-				javax.swing.border.TitledBorder.DEFAULT_POSITION,
-				new java.awt.Font("Lucida Grande", 1, 12)));
-		dispatchStackPanel.add(new JTextArea("I am the dispatch stack"));
-		dispatchStack.add(dispatchStackPanel, constraints);
+		DispatchStackContextualView view = new DispatchStackContextualView(processor.getDispatchStack());
+		JButton clickDispatchStackButton = new JButton(new ClickDispatchStackAction(view));
+		clickDispatchStackButton.setText("Dispatch Stack");
+//		dispatchStackPanel.setSize(300, 100);
+//		dispatchStackPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Dispatch Stack Here!",
+//				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+//				javax.swing.border.TitledBorder.DEFAULT_POSITION,
+//				new java.awt.Font("Lucida Grande", 1, 12)));
+//		dispatchStackPanel.add(new JTextArea("I am the dispatch stack"));
+		dispatchStack.add(clickDispatchStackButton, constraints);
 		
 	}
 
@@ -117,7 +121,7 @@ public class ProcessorContextualView extends ContextualView{
 		for (Activity activity: processor.getActivityList()) {
 			ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(activity);
 			ActivityContextualView view = viewFactoryForBeanType.getView(activity);
-			JButton clickActivityView = new JButton(new ClickIterationStackAction(view));
+			JButton clickActivityView = new JButton(new ClickDispatchStackAction(view));
 			clickActivityView.setText("View " + activity.getClass().getSimpleName());
 			GridBagConstraints constraints = new GridBagConstraints();
 			constraints.gridx = 0;
@@ -166,5 +170,19 @@ public class ClickIterationStackAction extends AbstractAction {
 		}
 		
 	}
+
+public class ClickDispatchStackAction extends AbstractAction {
+	
+	private final JFrame frame;
+
+	public ClickDispatchStackAction(JFrame frame) {
+		this.frame = frame;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		frame.setVisible(true);
+	}
+	
+}
 
 }
