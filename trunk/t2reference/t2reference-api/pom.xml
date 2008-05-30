@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2reference</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>t2reference-api</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>API package for the T2 reference manager</name>
+	<description>
+		Core APIs and extension points for the T2 reference manager.
+		This includes the SPIs for external references, translators and
+		publishers.
+	</description>
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>net.sf.taverna.t2</groupId>
+		<artifactId>t2reference</artifactId>
+		<version>0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>t2reference-impl</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<name>Implementation package for the T2 reference manager</name>
+	<description>
+		Implementations of the core APIs, not including extension point
+		implementations. The extension point implementations that can be
+		considered as core functionality (files, URLs etc) are held in
+		the t2reference-core-extensions package. This package contains
+		implementations of the data access objects, translator
+		infrastructure etc.
+	</description>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

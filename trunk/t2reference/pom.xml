@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sf.taverna.t2</groupId>
+	<artifactId>t2reference</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	
+	<packaging>pom</packaging>
+	<name>T2 Reference Manager</name>
+	
+	<description>
+		The reference manager replaces the previous DataManager and
+		related framework for dealing with references to data held
+		externally to the enactor, collection management and error
+		tracking through error tokens.
+	</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<modules>
+		<module>t2reference-api</module>
+		<module>t2reference-impl</module>
+		<module>t2reference-integration-tests</module>
+		<module>t2reference-core-extensions</module>
+	</modules>
+
+	<repositories>
+		<repository>
+			<!-- myGrid release artifacts -->
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
+
+</project>
