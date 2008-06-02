@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.actions.activity.draggable;
+package net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;

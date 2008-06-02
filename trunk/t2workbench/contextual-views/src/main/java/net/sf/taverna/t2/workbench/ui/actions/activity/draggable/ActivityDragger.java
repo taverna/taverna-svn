@@ -3,31 +3,16 @@ package net.sf.taverna.t2.workbench.ui.actions.activity.draggable;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
-import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
-import net.sf.taverna.t2.workflowmodel.EditsRegistry;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantActivityDropTarget;
+import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantActivityMouseListener;
+import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantTextArea;
+import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantTransferHandler;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class ActivityDragger extends JFrame {
@@ -45,7 +30,8 @@ public class ActivityDragger extends JFrame {
 			e1.printStackTrace();
 		}
 		setLayout(new GridBagLayout());
-		final JTextField dragTextArea = new JTextField("hello there");
+		final StringConstantTextArea dragTextArea = new StringConstantTextArea(
+				"String Constant 1");
 		dragTextArea.setBorder(javax.swing.BorderFactory.createTitledBorder(
 				null, null,
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
@@ -63,82 +49,18 @@ public class ActivityDragger extends JFrame {
 		StringConstantTransferHandler handler1 = new StringConstantTransferHandler(
 				bean1, activity1);
 		dragTextArea.setTransferHandler(handler1);
-		dragTextArea.addMouseListener(new MouseListener() {
 
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("clicked1");
-				StringConstantTransferHandler transferHandler = (StringConstantTransferHandler)dragTextArea.getTransferHandler();
-				ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
-						.getInstance().getViewFactoryForBeanType(transferHandler.getActivity());
-				ActivityContextualView viewType = viewFactoryForBeanType
-						.getView(transferHandler.getActivity());
-				viewType.setVisible(true);
-			}
+		StringConstantActivityMouseListener draggableActivityMouseListener = new StringConstantActivityMouseListener(
+				dragTextArea);
 
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("entered1");
-			}
-
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("exited1");
-			}
-
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("pressed1");
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("released1");
-				
-			}
-
-		});
-		dragTextArea.setDropTarget(new DropTarget() {
-
-			@Override
-			public synchronized void drop(DropTargetDropEvent dtde) {
-				try {
-					List transferData = (List) dtde.getTransferable()
-							.getTransferData(dataFlavor);
-					StringConstantConfigurationBean bean = (StringConstantConfigurationBean) transferData
-							.get(0);
-					String value = bean.getValue();
-					System.out.println("value: " + value);
-					if (value != null) {
-						dragTextArea.setText(value);
-						StringConstantTransferHandler th = (StringConstantTransferHandler) dragTextArea
-								.getTransferHandler();
-						th.setBean(bean);
-					}
-					Activity activity = (Activity) transferData.get(1);
-					if (activity != null) {
-						StringConstantTransferHandler th = (StringConstantTransferHandler) dragTextArea
-								.getTransferHandler();
-						th.setActivity(activity);
-						activity.configure(bean);
-					}
-				} catch (UnsupportedFlavorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ActivityConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		});
-
+		dragTextArea.addMouseListener(draggableActivityMouseListener);
+		StringConstantActivityDropTarget stringConstantActivityDropTarget = new StringConstantActivityDropTarget(
+				dragTextArea);
+		dragTextArea.setDropTarget(stringConstantActivityDropTarget);
 		dragTextArea.setDragEnabled(true);
 
-		final JTextField dropTextArea = new JTextField("how are you doing");
+		final StringConstantTextArea dropTextArea = new StringConstantTextArea(
+				"String Constant 2");
 		dropTextArea.setBorder(javax.swing.BorderFactory.createTitledBorder(
 				null, null,
 				javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
@@ -156,79 +78,15 @@ public class ActivityDragger extends JFrame {
 		StringConstantTransferHandler handler2 = new StringConstantTransferHandler(
 				bean2, activity2);
 		dropTextArea.setTransferHandler(handler2);
-		dropTextArea.addMouseListener(new MouseListener() {
 
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("clicked2");
-				StringConstantTransferHandler transferHandler = (StringConstantTransferHandler)dropTextArea.getTransferHandler();
-				ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
-						.getInstance().getViewFactoryForBeanType(transferHandler.getActivity());
-				ActivityContextualView viewType = viewFactoryForBeanType
-						.getView(transferHandler.getActivity());
-				viewType.setVisible(true);		
-			}
+		StringConstantActivityMouseListener draggableActivityMouseListener2 = new StringConstantActivityMouseListener(
+				dropTextArea);
 
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("entered2");
-			}
-
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("exited2");
-			}
-
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("pressed2");
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				System.out.println("released2");
-						
-			}
-
-		});
+		dropTextArea.addMouseListener(draggableActivityMouseListener2);
 		dropTextArea.setDragEnabled(true);
-		dropTextArea.setDropTarget(new DropTarget() {
-
-			@Override
-			public synchronized void drop(DropTargetDropEvent dtde) {
-				try {
-					List transferData = (List) dtde.getTransferable()
-							.getTransferData(dataFlavor);
-					StringConstantConfigurationBean bean = (StringConstantConfigurationBean) transferData
-							.get(0);
-					String value = bean.getValue();
-					System.out.println("value: " + value);
-					if (value != null) {
-						dropTextArea.setText(value);
-						StringConstantTransferHandler th = (StringConstantTransferHandler) dropTextArea
-								.getTransferHandler();
-						th.setBean(bean);
-					}
-					Activity activity = (Activity) transferData.get(1);
-					if (activity != null) {
-						StringConstantTransferHandler th = (StringConstantTransferHandler) dropTextArea
-								.getTransferHandler();
-						th.setActivity(activity);
-						activity.configure(bean);
-					}
-				} catch (UnsupportedFlavorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ActivityConfigurationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		});
+		StringConstantActivityDropTarget stringConstantActivityDropTarget2 = new StringConstantActivityDropTarget(
+				dropTextArea);
+		dropTextArea.setDropTarget(stringConstantActivityDropTarget2);
 
 		GridBagConstraints outerConstraint = new GridBagConstraints();
 		outerConstraint.anchor = GridBagConstraints.FIRST_LINE_START;

@@ -9,12 +9,19 @@ import javax.swing.WindowConstants;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
+import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.processor.ProcessorContextualView;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.Processor;
+import net.sf.taverna.t2.workflowmodel.impl.ProcessorImpl;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -86,6 +93,9 @@ public class DummyView {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Dataflow dataflow = EditsRegistry.getEdits().createDataflow();
+		Processor processor = EditsRegistry.getEdits().createProcessor("processor1");
+		EditsRegistry.getEdits().getAddActivityEdit(processor, a).doEdit();
 		
 //		a=new WSDLActivity();
 //		WSDLActivityConfigurationBean b=new WSDLActivityConfigurationBean();
@@ -98,20 +108,25 @@ public class DummyView {
 //		sb.setEndpoint("http://www.ebi.ac.uk/soaplab/services/edit.seqret");
 //		((SoaplabActivity)a).configure(sb);
 		
-//		a=new StringConstantActivity();
-//		StringConstantConfigurationBean bb=new StringConstantConfigurationBean();
-//		bb.setValue("monkey");
-//		((StringConstantActivity)a).configure(bb);
+		StringConstantActivity s=new StringConstantActivity();
+		StringConstantConfigurationBean ss=new StringConstantConfigurationBean();
+		ss.setValue("monkey");
+		((StringConstantActivity)s).configure(ss);
+		EditsRegistry.getEdits().getAddActivityEdit(processor, s).doEdit();
 		
-		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
-
-		ActivityContextualView viewType = viewFactoryForBeanType.getView(a);
+		ProcessorContextualView procContextView = new ProcessorContextualView(processor);
 		
-		System.out.println(viewType.getClass().getCanonicalName());
+//		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
+//
+//		ActivityContextualView viewType = viewFactoryForBeanType.getView(a);
+		
+//		System.out.println(viewType.getClass().getCanonicalName());
 		
 		//view.setSize(new Dimension(500, 400));
-		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		((Component) viewType).setVisible(true);
+		procContextView.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		procContextView.setVisible(true);
+//		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//		((Component) viewType).setVisible(true);
 		
 	}
 	
