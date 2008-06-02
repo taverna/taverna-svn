@@ -59,7 +59,6 @@ public class StringConstantActivityDropTarget extends DropTarget {
 					.get(0);
 
 			String value = bean.getValue();
-			System.out.println("value: " + value);
 			if (value != null) {
 				setNewText(value);
 				StringConstantTransferHandler th = (StringConstantTransferHandler) component

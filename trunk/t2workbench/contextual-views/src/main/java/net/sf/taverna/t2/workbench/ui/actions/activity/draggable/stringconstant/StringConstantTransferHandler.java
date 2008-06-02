@@ -32,14 +32,12 @@ public class StringConstantTransferHandler extends TransferHandler {
 
 	@Override
 	public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
-		System.out.println("can import");
 		// FIXME should check that transferable is correct type
 		return true;
 	}
 
 	@Override
 	protected Transferable createTransferable(JComponent c) {
-		System.out.println("create transferable");
 		StringConstantTransferable transferable = new StringConstantTransferable();
 		transferable.setBean(bean);
 		transferable.setActivity(activity);
@@ -48,14 +46,12 @@ public class StringConstantTransferHandler extends TransferHandler {
 
 	@Override
 	public void exportAsDrag(JComponent comp, InputEvent e, int action) {
-		System.out.println("export as drag");
 		// TODO Auto-generated method stub
 		super.exportAsDrag(comp, e, action);
 	}
 
 	@Override
 	protected void exportDone(JComponent source, Transferable data, int action) {
-		System.out.println("export done");
 		// TODO Auto-generated method stub
 		super.exportDone(source, data, action);
 	}
@@ -63,28 +59,24 @@ public class StringConstantTransferHandler extends TransferHandler {
 	@Override
 	public void exportToClipboard(JComponent comp, Clipboard clip, int action)
 			throws IllegalStateException {
-		System.out.println("export to clipboard");
 		// TODO Auto-generated method stub
 		super.exportToClipboard(comp, clip, action);
 	}
 
 	@Override
 	public int getSourceActions(JComponent c) {
-		System.out.println("get source actions");
 		// TODO Auto-generated method stub
 		return COPY_OR_MOVE;
 	}
 
 	@Override
 	public Icon getVisualRepresentation(Transferable t) {
-		System.out.println("get visual rep");
 		// TODO Auto-generated method stub
 		return super.getVisualRepresentation(t);
 	}
 
 	@Override
 	public boolean importData(JComponent comp, Transferable t) {
-		System.out.println("import data");
 		try {
 			dataFlavor = new DataFlavor(
 					DataFlavor.javaJVMLocalObjectMimeType
@@ -112,7 +104,6 @@ public class StringConstantTransferHandler extends TransferHandler {
 	}
 
 	public void setBean(StringConstantConfigurationBean bean) {
-		System.out.println("set bean");
 		this.bean = bean;
 	}
 
@@ -121,7 +112,6 @@ public class StringConstantTransferHandler extends TransferHandler {
 	}
 
 	public void setActivity(Activity<?> activity) {
-		System.out.println("set activity " + ((StringConstantConfigurationBean)activity.getConfiguration()).getValue());
 		this.activity = activity;
 	}
 
