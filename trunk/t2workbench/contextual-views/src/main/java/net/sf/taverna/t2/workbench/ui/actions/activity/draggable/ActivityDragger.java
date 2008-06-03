@@ -17,9 +17,7 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
 import net.sf.taverna.t2.cloudone.refscheme.http.HttpReferenceScheme;
 import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell.BeanshellActivityDropTarget;
-import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell.BeanshellActivityMouseListener;
 import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell.BeanshellActivityTransferHandler;
-import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell.BeanshellActivityTransferable;
 import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell.BeanshellTextArea;
 import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantActivityDropTarget;
 import net.sf.taverna.t2.workbench.ui.actions.activity.draggable.stringconstant.StringConstantActivityMouseListener;
@@ -65,7 +63,7 @@ public class ActivityDragger extends JFrame {
 				bean1, activity1);
 		dragTextArea.setTransferHandler(handler1);
 
-		StringConstantActivityMouseListener draggableActivityMouseListener = new StringConstantActivityMouseListener(
+		ActivityMouseListener draggableActivityMouseListener = new ActivityMouseListener(
 				dragTextArea);
 
 		dragTextArea.addMouseListener(draggableActivityMouseListener);
@@ -94,7 +92,7 @@ public class ActivityDragger extends JFrame {
 				bean2, activity2);
 		dropTextArea.setTransferHandler(handler2);
 
-		StringConstantActivityMouseListener draggableActivityMouseListener2 = new StringConstantActivityMouseListener(
+		ActivityMouseListener draggableActivityMouseListener2 = new ActivityMouseListener(
 				dropTextArea);
 
 		dropTextArea.addMouseListener(draggableActivityMouseListener2);
@@ -137,7 +135,7 @@ public class ActivityDragger extends JFrame {
 		BeanshellActivityTransferHandler beanshelTransferHandler = new BeanshellActivityTransferHandler(beanshellBean1, (BeanshellActivity) beanshellActivity1);
 		beanTextArea1.setTransferHandler(beanshelTransferHandler);
 		
-		BeanshellActivityMouseListener beanshellMouseListener = new BeanshellActivityMouseListener(beanTextArea1);
+		ActivityMouseListener beanshellMouseListener = new ActivityMouseListener(beanTextArea1);
 		beanTextArea1.addMouseListener(beanshellMouseListener);
 		
 		BeanshellActivityDropTarget beanshellDropTarget = new BeanshellActivityDropTarget(beanTextArea1);
@@ -147,7 +145,7 @@ public class ActivityDragger extends JFrame {
 		BeanshellActivityTransferHandler beanshelTransferHandler2 = new BeanshellActivityTransferHandler(beanshellBean2, (BeanshellActivity) beanshellActivity2);
 		beanTextArea2.setTransferHandler(beanshelTransferHandler2);
 		
-		BeanshellActivityMouseListener beanshellMouseListener2 = new BeanshellActivityMouseListener(beanTextArea1);
+		ActivityMouseListener beanshellMouseListener2 = new ActivityMouseListener(beanTextArea1);
 		beanTextArea2.addMouseListener(beanshellMouseListener2);
 		
 		BeanshellActivityDropTarget beanshellDropTarget2 = new BeanshellActivityDropTarget(beanTextArea2);

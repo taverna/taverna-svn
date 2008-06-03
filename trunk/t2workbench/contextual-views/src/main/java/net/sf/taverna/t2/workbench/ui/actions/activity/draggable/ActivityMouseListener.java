@@ -1,39 +1,42 @@
-package net.sf.taverna.t2.workbench.ui.actions.activity.draggable.beanshell;
+package net.sf.taverna.t2.workbench.ui.actions.activity.draggable;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JComponent;
 
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class BeanshellActivityMouseListener implements MouseListener {
+/**
+ * When a component is clicked on pop up the appropriate {@link ContextualView}
+ * based on the {@link ActivityTransferHandler} which is inside the component
+ * 
+ * @author Ian Dunlop
+ * 
+ */
+public class ActivityMouseListener implements MouseListener {
 
 	private JComponent component;
 
-	/**
-	 * Associate a component with what should happen when it is clicked on. In
-	 * this case it pops up the StringConstantActivity view
-	 * 
-	 * @param component clicking on this triggers this action
-	 */
-	public BeanshellActivityMouseListener(JComponent component) {
+	public ActivityMouseListener(JComponent component) {
 		this.component = component;
-
 	}
 
 	/**
-	 * When the component is clicked on pop up the correct type of Activity view
-	 * using the {@link ActivityViewFactory}
+	 * Get the {@link ActivityTransferHandler} from the component and use the
+	 * {@link ActivityViewFactory} to show the appropriate
+	 * {@link ContextualView}
 	 */
 	public void mouseClicked(MouseEvent e) {
-		BeanshellActivityTransferHandler transferHandler = (BeanshellActivityTransferHandler) (component)
+		ActivityTransferHandler transferHandler = (ActivityTransferHandler) (component)
 				.getTransferHandler();
 		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
 				.getInstance().getViewFactoryForBeanType(
-						transferHandler.getActivity());
+						(Activity<?>) transferHandler.getActivity());
 		ActivityContextualView viewType = viewFactoryForBeanType
 				.getView(transferHandler.getActivity());
 		viewType.setVisible(true);
@@ -58,4 +61,5 @@ public class BeanshellActivityMouseListener implements MouseListener {
 		// TODO Auto-generated method stub
 
 	}
+
 }
