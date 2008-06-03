@@ -1,36 +1,3 @@
-/*
- * Copyright (C) 2003 The University of Manchester 
- *
- * Modifications to the initial code base are copyright of their
- * respective authors, or their employers as appropriate.  Authorship
- * of the modifications may be determined from the ChangeLog placed at
- * the end of this file.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
- * USA.
- *
- ****************************************************************
- * Source code information
- * -----------------------
- * Filename           $RCSfile: Plugin.java,v $
- * Revision           $Revision: 1.1 $
- * Release status     $State: Exp $
- * Last modified on   $Date: 2008-04-29 16:16:09 $
- *               by   $Author: stain $
- * Created on 28 Nov 2006
- *****************************************************************/
 package net.sf.taverna.raven.plugins;
 
 import java.util.ArrayList;
@@ -50,9 +17,9 @@ import org.jdom.Element;
  * @author David Withers
  */
 public class Plugin implements Comparable<Plugin> {
-	
+
 	private static Logger logger = Logger.getLogger(Plugin.class);
-	
+
 	private List<PluginListener> pluginListeners = new ArrayList<PluginListener>();
 
 	private String name;
@@ -65,7 +32,7 @@ public class Plugin implements Comparable<Plugin> {
 
 	private String provider;
 
-	private List<String> tavernaVersions = new ArrayList<String>();
+	private List<String> versions = new ArrayList<String>();
 
 	private boolean enabled;
 
@@ -174,8 +141,8 @@ public class Plugin implements Comparable<Plugin> {
 		}
 	}
 
-	public List<String> getTavernaVersions() {
-		return this.tavernaVersions;
+	public List<String> getVersions() {
+		return this.versions;
 	}
 
 	/**
@@ -251,16 +218,10 @@ public class Plugin implements Comparable<Plugin> {
 		plugin.version = pluginElement.getChildTextTrim("version");
 		plugin.provider = pluginElement.getChildTextTrim("provider");
 
-		if (pluginElement.getChild("taverna") == null) {
-			// if missing, then assume only compatible with 1.5.0 since this tag
-			// didn't exist in that version
-			plugin.tavernaVersions.add("1.5.0");
-		} else {
-			List<Element> tavernaElements = pluginElement.getChild("taverna")
-					.getChildren("version");
-			for (Element tavernaVersion : tavernaElements) {
-				plugin.tavernaVersions.add(tavernaVersion.getTextTrim());
-			}
+		List<Element> versionElements = pluginElement.getChild("application")
+				.getChildren("version");
+		for (Element applicationVersion : versionElements) {
+			plugin.versions.add(applicationVersion.getTextTrim());
 		}
 
 		plugin.enabled = Boolean.valueOf(pluginElement
@@ -269,12 +230,12 @@ public class Plugin implements Comparable<Plugin> {
 				"repositories").getChildren("repository");
 		for (Element repository : repositoryElements) {
 			String repo = repository.getTextTrim();
-			if (repo!=null) {
-				if (!repo.endsWith("/")) repo=repo+"/";
+			if (repo != null) {
+				if (!repo.endsWith("/"))
+					repo = repo + "/";
 				plugin.repositories.add(repo);
-			}
-			else {
-				logger.error("Null repository found for plugin:"+plugin.name);
+			} else {
+				logger.error("Null repository found for plugin:" + plugin.name);
 			}
 		}
 		List<Element> artifactElements = pluginElement.getChild("profile")
@@ -334,13 +295,13 @@ public class Plugin implements Comparable<Plugin> {
 		}
 		pluginElement.addContent(profileElement);
 
-		Element tavernaversions = new Element("taverna");
-		for (String v : this.tavernaVersions) {
-			Element tavernaVersion = new Element("version");
-			tavernaVersion.setText(v);
-			tavernaversions.addContent(tavernaVersion);
+		Element appliationVersions = new Element("application");
+		for (String v : this.versions) {
+			Element applicationVersion = new Element("version");
+			applicationVersion.setText(v);
+			appliationVersions.addContent(applicationVersion);
 		}
-		pluginElement.addContent(tavernaversions);
+		pluginElement.addContent(appliationVersions);
 
 		return pluginElement;
 	}

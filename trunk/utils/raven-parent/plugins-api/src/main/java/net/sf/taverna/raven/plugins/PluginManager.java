@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: PluginManager.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-05-13 16:49:25 $
+ * Last modified on   $Date: 2008-06-03 12:50:35 $
  *               by   $Author: stain $
  * Created on 23 Nov 2006
  *****************************************************************/
@@ -233,7 +233,7 @@ public class PluginManager implements PluginListener {
 	}
 
 	private boolean checkPluginCompatibility(Plugin plugin, String version) {
-		for (String v : plugin.getTavernaVersions()) {
+		for (String v : plugin.getVersions()) {
 			if (version.startsWith(v)) {
 				return true;
 			}
