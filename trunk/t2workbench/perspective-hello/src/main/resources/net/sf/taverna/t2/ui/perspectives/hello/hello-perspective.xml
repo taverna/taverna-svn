@@ -1,8 +1,20 @@
 <basepane>
-  <child>
-    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
-      <component scroll="true" />
-    </znode>
-  </child>
-  <namedcomponents />
+	<child>
+		<znode classname="net.sf.taverna.zaria.ZRavenComponent">
+			<component scroll="true">
+				<raven>
+					<group>net.sf.taverna.t2.workbench</group>
+					<artifact>perspective-hello</artifact>
+					<version>1.7-SNAPSHOT</version>
+				</raven>
+				<classname>
+					net.sf.taverna.t2.ui.perspectives.hello.HelloComponentFactory
+				</classname>
+				<interface>
+					net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
+				</interface>
+			</component>
+		</znode>
+	</child>
+	<namedcomponents />
 </basepane>
