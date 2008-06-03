@@ -1,6 +1,7 @@
 
 net.sf.taverna.t2.ui.perspectives.hello.FileTestAction
 net.sf.taverna.t2.ui.perspectives.hello.FileOpenAction
+net.sf.taverna.t2.ui.perspectives.hello.LoadDummyWorkflowAction
 net.sf.taverna.t2.ui.perspectives.hello.FileNewMenu
 net.sf.taverna.t2.ui.perspectives.hello.NewWorkflowAction
 net.sf.taverna.t2.ui.perspectives.hello.NewDataflowAction
