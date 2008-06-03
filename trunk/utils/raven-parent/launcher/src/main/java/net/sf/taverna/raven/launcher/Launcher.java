@@ -6,6 +6,7 @@ import net.sf.taverna.raven.plugins.PluginManager;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
+import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.SpiRegistry;
 
 /**
@@ -73,7 +74,6 @@ public class Launcher {
 				Launchable.class.getCanonicalName(), appRuntime
 						.getClassLoader());
 		for (Class<?> launchableClass : launchableSpi) {
-			System.out.println(launchableClass);
 			if (launchableClass.getCanonicalName().equals(className)) {
 				Launchable launchable = (Launchable) launchableClass
 						.newInstance();
@@ -93,7 +93,6 @@ public class Launcher {
 	 */
 	public int launchMain(String[] args) {
 		Launchable launchable;
-		System.out.println(appConfig.getName());
 		String mainClass = appConfig.getMainClass();
 		try {
 			launchable = findMainClass(mainClass);
