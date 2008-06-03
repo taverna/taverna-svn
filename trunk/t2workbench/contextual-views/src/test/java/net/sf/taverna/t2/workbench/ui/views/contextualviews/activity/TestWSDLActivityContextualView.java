@@ -12,6 +12,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.WSDLActivit
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestWSDLActivityContextualView {
@@ -28,6 +29,7 @@ public class TestWSDLActivityContextualView {
 	}
 	
 	@SuppressWarnings("unchecked")
+	@Ignore("Integration test")
 	@Test
 	public void testDisovery() throws Exception {
 		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);

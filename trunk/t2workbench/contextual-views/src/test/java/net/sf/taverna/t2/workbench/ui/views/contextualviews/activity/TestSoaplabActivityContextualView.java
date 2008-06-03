@@ -14,6 +14,7 @@ import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.SoaplabActi
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestSoaplabActivityContextualView {
@@ -30,6 +31,7 @@ public class TestSoaplabActivityContextualView {
 	
 	@SuppressWarnings("unchecked")
 	@Test
+	@Ignore("Integration test")
 	public void testDisovery() throws Exception {
 		ActivityViewFactory factory = ActivityViewFactoryRegistry.getInstance().getViewFactoryForBeanType(a);
 		assertTrue("Factory should be SoaplabActivityViewFactory",factory instanceof SoaplabActivityViewFactory);
@@ -38,6 +40,7 @@ public class TestSoaplabActivityContextualView {
 	}
 	
 	@Test
+	@Ignore("Integration test")
 	public void testConfigureAction() throws Exception {
 		ContextualView view = new SoaplabActivityContextualView(a);
 		assertNotNull("the action should not be null",view.getConfigureAction());
