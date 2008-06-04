@@ -23,6 +23,10 @@ public class StringConstantTransferHandler
 		super(activity, bean);
 	}
 
+	public StringConstantTransferHandler() {
+		super();
+	}
+
 	@Override
 	public DataFlavor getDataFlavor() {
 		try {

@@ -35,6 +35,10 @@ public abstract class ActivityTransferHandler<ActivityType, ConfigType> extends
 		this.bean = bean;
 	}
 
+	public ActivityTransferHandler() {
+		// TODO Auto-generated constructor stub
+	}
+
 	/**
 	 * Gets the {@link ActivityTransferable} which is transferred across during
 	 * an {@link Activity} drag and drop operation
@@ -108,9 +112,10 @@ public abstract class ActivityTransferHandler<ActivityType, ConfigType> extends
 	 */
 	@Override
 	public boolean importData(JComponent comp, Transferable t) {
-
+		System.out.println("importing");
 		try {
 			bean = (ConfigType) t.getTransferData(getDataFlavor());
+			System.out.println("import done");
 		} catch (UnsupportedFlavorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

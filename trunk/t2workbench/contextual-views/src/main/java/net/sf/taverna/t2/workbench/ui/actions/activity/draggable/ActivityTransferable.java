@@ -49,7 +49,7 @@ public abstract class ActivityTransferable<ActivityType, ConfigType> implements
 	 */
 	public List<Object> getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
-		// TODO Auto-generated method stub
+		System.out.println("get transfer data");
 		List<Object> dataList = new ArrayList<Object>();
 		dataList.add(bean);
 		dataList.add(activity);

@@ -63,13 +63,13 @@ public class ActivityDragger extends JFrame {
 				bean1, activity1);
 		dragTextArea.setTransferHandler(handler1);
 
-		ActivityMouseListener draggableActivityMouseListener = new ActivityMouseListener(
-				dragTextArea);
-
-		dragTextArea.addMouseListener(draggableActivityMouseListener);
-		StringConstantActivityDropTarget stringConstantActivityDropTarget = new StringConstantActivityDropTarget(
-				dragTextArea);
-		dragTextArea.setDropTarget(stringConstantActivityDropTarget);
+//		ActivityMouseListener draggableActivityMouseListener = new ActivityMouseListener(
+//				dragTextArea);
+//
+//		dragTextArea.addMouseListener(draggableActivityMouseListener);
+//		StringConstantActivityDropTarget stringConstantActivityDropTarget = new StringConstantActivityDropTarget(
+//				dragTextArea);
+//		dragTextArea.setDropTarget(stringConstantActivityDropTarget);
 		dragTextArea.setDragEnabled(true);
 
 		final StringConstantTextArea dropTextArea = new StringConstantTextArea(
@@ -92,10 +92,10 @@ public class ActivityDragger extends JFrame {
 				bean2, activity2);
 		dropTextArea.setTransferHandler(handler2);
 
-		ActivityMouseListener draggableActivityMouseListener2 = new ActivityMouseListener(
-				dropTextArea);
-
-		dropTextArea.addMouseListener(draggableActivityMouseListener2);
+//		ActivityMouseListener draggableActivityMouseListener2 = new ActivityMouseListener(
+//				dropTextArea);
+//
+//		dropTextArea.addMouseListener(draggableActivityMouseListener2);
 		dropTextArea.setDragEnabled(true);
 		StringConstantActivityDropTarget stringConstantActivityDropTarget2 = new StringConstantActivityDropTarget(
 				dropTextArea);
