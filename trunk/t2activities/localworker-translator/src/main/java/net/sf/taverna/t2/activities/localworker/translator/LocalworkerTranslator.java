@@ -132,8 +132,14 @@ public class LocalworkerTranslator extends
 		}
 		return result;
 	}
-
-	private String getScript(String workerClassName) throws ActivityTranslationException {
+/**
+ * Get the beanshell script for a T1 style localworker
+ * 
+ * @param workerClassName
+ * @return
+ * @throws ActivityTranslationException
+ */
+	public String getScript(String workerClassName) throws ActivityTranslationException {
 		String scriptName = localWorkerToScript.get(workerClassName);
 		if (scriptName == null) {
 			throw new ActivityTranslationException("Unable to find the script for:"+workerClassName); 
@@ -164,6 +170,10 @@ public class LocalworkerTranslator extends
 		} catch (InvocationTargetException e) {
 			throw new ActivityTranslationException("An error occurred invoking the method getWorkerClassName on the LocalService processor",e);
 		}
+	}
+
+	public static Map<String, String> getLocalWorkerToScript() {
+		return localWorkerToScript;
 	}
 
 }
