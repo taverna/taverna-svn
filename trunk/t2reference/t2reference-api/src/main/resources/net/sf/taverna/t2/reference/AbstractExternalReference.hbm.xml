@@ -7,6 +7,7 @@
 <hibernate-mapping>
 	<class name="net.sf.taverna.t2.reference.AbstractExternalReference"
 		abstract="true">
+		<!-- Let hibernate choose the primary key generation strategy -->
 		<id name="primaryKey" unsaved-value="0" column="bean_id">
 			<generator class="native" />
 		</id>
