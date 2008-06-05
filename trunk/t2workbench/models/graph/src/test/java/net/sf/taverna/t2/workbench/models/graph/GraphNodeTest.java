@@ -1,20 +1,20 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import net.sf.taverna.t2.graph.Graph;
-import net.sf.taverna.t2.graph.Node;
-import net.sf.taverna.t2.graph.Node.Shape;
+import net.sf.taverna.t2.workbench.models.graph.Graph;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class NodeTest {
+public class GraphNodeTest {
 
-	private Node node;
+	private GraphNode node;
 	
 	private Shape shape;
 		
@@ -33,7 +33,7 @@ public class NodeTest {
 		height = 1.5f;
 		graph = new Graph();
 		expanded = false;
-		node = new Node();
+		node = new GraphNode();
 		node.setShape(shape);
 		node.setWidth(width);
 		node.setHeight(height);
@@ -43,12 +43,12 @@ public class NodeTest {
 
 	@Test
 	public void testNode() {
-		assertNotNull(new Node());
+		assertNotNull(new GraphNode());
 	}
 
 	@Test
 	public void testAddSinkNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		node.addSinkNode(newNode);
 		assertEquals(1, node.getSinkNodes().size());
 		assertTrue(node.getSinkNodes().contains(newNode));
@@ -57,7 +57,7 @@ public class NodeTest {
 
 	@Test
 	public void testAddSourceNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		node.addSourceNode(newNode);
 		assertEquals(1, node.getSourceNodes().size());
 		assertTrue(node.getSourceNodes().contains(newNode));
@@ -103,7 +103,7 @@ public class NodeTest {
 
 	@Test
 	public void testRemoveSinkNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		assertFalse(node.removeSinkNode(newNode));
 		node.addSinkNode(newNode);
 		assertTrue(node.removeSinkNode(newNode));
@@ -112,7 +112,7 @@ public class NodeTest {
 
 	@Test
 	public void testRemoveSourceNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		assertFalse(node.removeSourceNode(newNode));
 		node.addSourceNode(newNode);
 		assertTrue(node.removeSourceNode(newNode));

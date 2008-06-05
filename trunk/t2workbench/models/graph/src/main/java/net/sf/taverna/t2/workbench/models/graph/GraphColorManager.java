@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import java.awt.Color;
 import java.util.HashMap;
@@ -6,7 +6,12 @@ import java.util.Map;
 
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
-public class ColorController {
+/**
+ * Manages the colour of elements in a graph.
+ * 
+ * @author David Withers
+ */
+public class GraphColorManager {
 
 	private static Map<String, Color> activityColours = new HashMap<String, Color>();
 	
@@ -35,6 +40,7 @@ public class ColorController {
 	 * @return the colour associated with the Activity
 	 */
 	public static Color getFillColor(Activity<?> activity) {
+		//TODO colours should be discovered
 		Color color = activityColours.get(activity.getClass().getName());
 		return color == null ? Color.WHITE : color;
 	}

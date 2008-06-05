@@ -1,8 +1,7 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  * A node of a graph that can optionally contain other graphs.
@@ -10,7 +9,7 @@ import java.util.List;
  * @author David Withers
  */
 
-public class Node extends Element {
+public class GraphNode extends GraphElement {
 
 	public enum Shape {BOX, RECORD, HOUSE, INVHOUSE, DOT, CIRCLE, TRIANGLE, INVTRIANGLE}
 	
@@ -20,9 +19,9 @@ public class Node extends Element {
 	
 	private float height;
 	
-	private List<Node> sourceNodes = new ArrayList<Node>();
+	private List<GraphNode> sourceNodes = new ArrayList<GraphNode>();
 	
-	private List<Node> sinkNodes = new ArrayList<Node>();
+	private List<GraphNode> sinkNodes = new ArrayList<GraphNode>();
 
 	private Graph graph;
 	
@@ -32,7 +31,7 @@ public class Node extends Element {
 	 * Constructs a new instance of Node.
 	 *
 	 */
-	public Node() {
+	public GraphNode() {
 	}
 
 	/**
@@ -40,7 +39,7 @@ public class Node extends Element {
 	 * 
 	 * @param sinkNode the sink node to add
 	 */
-	public void addSinkNode(Node sinkNode) {
+	public void addSinkNode(GraphNode sinkNode) {
 		sinkNode.setParent(this);
 		sinkNodes.add(sinkNode);
 	}
@@ -50,7 +49,7 @@ public class Node extends Element {
 	 * 
 	 * @param sourceNode the source node to add
 	 */
-	public void addSourceNode(Node sourceNode) {
+	public void addSourceNode(GraphNode sourceNode) {
 		sourceNode.setParent(this);
 		sourceNodes.add(sourceNode);
 	}
@@ -87,7 +86,7 @@ public class Node extends Element {
 	 *
 	 * @return the sinkNodes
 	 */
-	public List<Node> getSinkNodes() {
+	public List<GraphNode> getSinkNodes() {
 		return sinkNodes;
 	}
 	
@@ -96,7 +95,7 @@ public class Node extends Element {
 	 *
 	 * @return the sourceNodes
 	 */
-	public List<Node> getSourceNodes() {
+	public List<GraphNode> getSourceNodes() {
 		return sourceNodes;
 	}
 
@@ -124,7 +123,7 @@ public class Node extends Element {
 	 * @param sinkNode the node to remove
 	 * @return true if the node was removed, false otherwise
 	 */
-	public boolean removeSinkNode(Node sinkNode) {
+	public boolean removeSinkNode(GraphNode sinkNode) {
 		return sinkNodes.remove(sinkNode);
 	}
 	
@@ -134,7 +133,7 @@ public class Node extends Element {
 	 * @param sourceNode the node to remove
 	 * @return true if the node was removed, false otherwise
 	 */
-	public boolean removeSourceNode(Node sourceNode) {
+	public boolean removeSourceNode(GraphNode sourceNode) {
 		return sourceNodes.remove(sourceNode);
 	}
 

@@ -1,10 +1,15 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import java.awt.Color;
 
-import net.sf.taverna.t2.graph.Graph.LineStyle;
+import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
 
-public abstract class Element {
+/**
+ * An element of a graph.
+ * 
+ * @author David Withers
+ */
+public abstract class GraphElement {
 
 	private String id;
 	
@@ -16,14 +21,14 @@ public abstract class Element {
 	
 	private Color fillColor;
 	
-	private Element parent;
+	private GraphElement parent;
 
 	/**
 	 * Returns the parent.
 	 *
 	 * @return the parent
 	 */
-	public Element getParent() {
+	public GraphElement getParent() {
 		return parent;
 	}
 
@@ -32,11 +37,8 @@ public abstract class Element {
 	 *
 	 * @param parent the new parent
 	 */
-	protected void setParent(Element parent) {
+	protected void setParent(GraphElement parent) {
 		this.parent = parent;
-	}
-
-	public Element() {
 	}
 
 	/**
@@ -129,4 +131,7 @@ public abstract class Element {
 		this.lineStyle = lineStyle;
 	}
 
+	public String toString() {
+		return id + "[" + label + "]";
+	}
 }

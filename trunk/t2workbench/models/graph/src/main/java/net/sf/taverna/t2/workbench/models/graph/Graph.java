@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,15 +11,15 @@ import java.util.Set;
  * 
  * @author David Withers
  */
-public class Graph extends Element {
+public class Graph extends GraphElement {
 
 	public enum Alignment {HORIZONTAL, VERTICAL}
 	
 	public enum LineStyle {NONE, SOLID, DOTTED}
 	
-	private List<Node> nodes = new ArrayList<Node>();
+	private List<GraphNode> nodes = new ArrayList<GraphNode>();
 	
-	private Set<Edge> edges = new HashSet<Edge>();
+	private Set<GraphEdge> edges = new HashSet<GraphEdge>();
 	
 	private Set<Graph> subgraphs = new HashSet<Graph>();
 
@@ -37,7 +37,8 @@ public class Graph extends Element {
 	 * 
 	 * @param edge the edge to add
 	 */
-	public void addEdge(Edge edge) {
+	public void addEdge(GraphEdge edge) {
+		edge.setParent(this);
 		edges.add(edge);
 	}
 
@@ -46,7 +47,7 @@ public class Graph extends Element {
 	 * 
 	 * @param node the node to add
 	 */
-	public void addNode(Node node) {
+	public void addNode(GraphNode node) {
 		node.setParent(this);
 		nodes.add(node);
 	}
@@ -75,7 +76,7 @@ public class Graph extends Element {
 	 *
 	 * @return the edges contained in the graph
 	 */
-	public Set<Edge> getEdges() {
+	public Set<GraphEdge> getEdges() {
 		return Collections.unmodifiableSet(edges);
 	}
 
@@ -84,7 +85,7 @@ public class Graph extends Element {
 	 *
 	 * @return the nodes contained in the graph
 	 */
-	public List<Node> getNodes() {
+	public List<GraphNode> getNodes() {
 		return Collections.unmodifiableList(nodes);
 	}
 	
@@ -103,7 +104,7 @@ public class Graph extends Element {
 	 * @param edge the edge to remove
 	 * @return true if the edge is removed from the graph
 	 */
-	public boolean removeEdge(Edge edge) {
+	public boolean removeEdge(GraphEdge edge) {
 		return edges.remove(edge);
 	}
 
@@ -113,7 +114,7 @@ public class Graph extends Element {
 	 * @param node the node to remove
 	 * @return true if the node is removed from the graph
 	 */
-	public boolean removeNode(Node node) {
+	public boolean removeNode(GraphNode node) {
 		return nodes.remove(node);
 	}
 	

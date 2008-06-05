@@ -1,27 +1,17 @@
-package net.sf.taverna.t2.graph;
-
-import java.awt.Color;
-
-import net.sf.taverna.t2.graph.Graph.LineStyle;
+package net.sf.taverna.t2.workbench.models.graph;
 
 /**
  * An edge connecting two nodes in a graph.
  * 
  * @author David Withers
  */
-public class Edge {
+public class GraphEdge extends GraphElement {
 
 	public enum ArrowStyle {NONE, NORMAL, DOT, ODOT}
 	
-	private String label;
+	private GraphNode source;
 	
-	private Node source;
-	
-	private Node sink;
-	
-	private LineStyle lineStyle;
-	
-	private Color color;
+	private GraphNode sink;
 	
 	private ArrowStyle arrowHeadStyle = ArrowStyle.NORMAL;
 
@@ -31,7 +21,7 @@ public class Edge {
 	 * Constructs a new instance of Edge.
 	 *
 	 */
-	public Edge() {
+	public GraphEdge() {
 	}
 	
 	/**
@@ -40,27 +30,9 @@ public class Edge {
 	 * @param source
 	 * @param sink
 	 */
-	public Edge(Node source, Node sink) {
+	public GraphEdge(GraphNode source, GraphNode sink) {
 		this.source = source;
 		this.sink = sink;
-	}
-
-	/**
-	 * Returns the label.
-	 *
-	 * @return the label
-	 */
-	public String getLabel() {
-		return label;
-	}
-
-	/**
-	 * Sets the label.
-	 *
-	 * @param label the new label
-	 */
-	public void setLabel(String label) {
-		this.label = label;
 	}
 
 	/**
@@ -68,7 +40,7 @@ public class Edge {
 	 *
 	 * @return the source
 	 */
-	public Node getSource() {
+	public GraphNode getSource() {
 		return source;
 	}
 
@@ -77,7 +49,7 @@ public class Edge {
 	 *
 	 * @param source the new source
 	 */
-	public void setSource(Node source) {
+	public void setSource(GraphNode source) {
 		this.source = source;
 	}
 
@@ -86,7 +58,7 @@ public class Edge {
 	 *
 	 * @return the sink
 	 */
-	public Node getSink() {
+	public GraphNode getSink() {
 		return sink;
 	}
 
@@ -95,44 +67,8 @@ public class Edge {
 	 *
 	 * @param sink the new sink
 	 */
-	public void setSink(Node sink) {
+	public void setSink(GraphNode sink) {
 		this.sink = sink;
-	}
-
-	/**
-	 * Returns the lineStyle.
-	 *
-	 * @return the lineStyle
-	 */
-	public LineStyle getLineStyle() {
-		return lineStyle;
-	}
-
-	/**
-	 * Sets the lineStyle.
-	 *
-	 * @param lineStyle the new lineStyle
-	 */
-	public void setLineStyle(LineStyle lineStyle) {
-		this.lineStyle = lineStyle;
-	}
-
-	/**
-	 * Returns the color.
-	 *
-	 * @return the color
-	 */
-	public Color getColor() {
-		return color;
-	}
-
-	/**
-	 * Sets the color.
-	 *
-	 * @param color the new color
-	 */
-	public void setColor(Color color) {
-		this.color = color;
 	}
 
 	/**

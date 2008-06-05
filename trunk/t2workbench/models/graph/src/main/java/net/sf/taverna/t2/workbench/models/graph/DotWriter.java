@@ -1,23 +1,40 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import java.awt.Color;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import net.sf.taverna.t2.graph.Graph.Alignment;
-import net.sf.taverna.t2.graph.Node.Shape;
+import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 
+/**
+ * Writer for creating a graphical representation of a graph in the DOT language.
+ * 
+ * @author David Withers
+ *
+ */
 public class DotWriter {
 
 	private static final String EOL = System.getProperty("line.separator");
 
 	private Writer writer;
 
+	/**
+	 * Constructs a new instance of DotWriter.
+	 *
+	 * @param writer
+	 */
 	public DotWriter(Writer writer) {
 		this.writer = writer;
 	}
 
+	/**
+	 * Writes a graphical representation of a graph in the DOT language to a writer.
+	 * 
+	 * @param graph
+	 * @throws IOException
+	 */
 	public void writeGraph(Graph graph) throws IOException {
 		writeLine("digraph " + graph.getId() + " {");
 
@@ -56,7 +73,7 @@ public class DotWriter {
 		writeLine("  color=\"black\"");
 		writeLine(" ];");
 
-		for(Node node : graph.getNodes()) {
+		for(GraphNode node : graph.getNodes()) {
 			if (node.isExpanded()) {
 				writeSubGraph(node.getGraph(), " ");
 			} else {
@@ -68,7 +85,7 @@ public class DotWriter {
 			writeSubGraph(subGraph, " ");
 		}
 
-		for(Edge edge : graph.getEdges()) {
+		for(GraphEdge edge : graph.getEdges()) {
 			writeEdges(edge, " ");
 		}
 
@@ -76,7 +93,7 @@ public class DotWriter {
 	}
 
 	private void writeSubGraph(Graph graph, String indent) throws IOException {
-		writeLine(indent + "subgraph " + graph.getId() + " {");
+		writeLine(indent + "subgraph cluster_" + graph.getId() + " {");
 //		writeLine(indent + " rank=\"same\"");
 
 		StringBuilder style = new StringBuilder();
@@ -94,7 +111,7 @@ public class DotWriter {
 			writeLine(indent + " label=\"" + graph.getLabel() + "\"");				
 		}
 
-		for(Node node : graph.getNodes()) {
+		for(GraphNode node : graph.getNodes()) {
 			if (node.isExpanded()) {
 				writeSubGraph(node.getGraph(), indent + " ");
 			} else {
@@ -106,28 +123,28 @@ public class DotWriter {
 			writeSubGraph(subGraph, indent + " ");
 		}
 
-		for(Edge edge : graph.getEdges()) {
+		for(GraphEdge edge : graph.getEdges()) {
 			writeEdges(edge, indent + " ");
 		}
 
 		writeLine(indent + "}");
 	}
 
-	private void writeEdges(Edge edge, String indent) throws IOException {
-		Node source = edge.getSource();
-		Node sink = edge.getSink();
+	private void writeEdges(GraphEdge edge, String indent) throws IOException {
+		GraphNode source = edge.getSource();
+		GraphNode sink = edge.getSink();
 		String sourceId = "\"" + source.getId() + "\"";
 		String sinkId = "\"" + sink.getId() + "\"";
-		if (source.getParent() instanceof Node) {
-			Node parent = (Node) source.getParent();
+		if (source.getParent() instanceof GraphNode) {
+			GraphNode parent = (GraphNode) source.getParent();
 			if (parent.getShape().equals(Shape.RECORD)) {
 				sourceId = "\"" + parent.getId() + "\":" + sourceId;
 			} else {
 				sourceId = "\"" + parent.getId() + "\"";
 			}
 		}
-		if (sink.getParent() instanceof Node) {
-			Node parent = (Node) sink.getParent();
+		if (sink.getParent() instanceof GraphNode) {
+			GraphNode parent = (GraphNode) sink.getParent();
 			if (parent.getShape().equals(Shape.RECORD)) {
 				sinkId = "\"" + parent.getId() + "\":" + sinkId;
 			} else {
@@ -143,7 +160,7 @@ public class DotWriter {
 		writeLine(indent + "]");
 	}
 
-	private void writeNode(Node node, Alignment alignment, String indent) throws IOException {
+	private void writeNode(GraphNode node, Alignment alignment, String indent) throws IOException {
 		writeLine(indent + "\"" + node.getId() + "\" [");
 
 		StringBuilder style = new StringBuilder();
@@ -184,9 +201,9 @@ public class DotWriter {
 		writeLine(indent + "];");
 	}
 
-	private void addNodeLabels(List<Node> nodes, StringBuilder labelString) {
+	private void addNodeLabels(List<GraphNode> nodes, StringBuilder labelString) {
 		boolean firstNode = true;
-		for (Node node : nodes) {
+		for (GraphNode node : nodes) {
 			if (firstNode) {
 				firstNode = false;
 			} else {

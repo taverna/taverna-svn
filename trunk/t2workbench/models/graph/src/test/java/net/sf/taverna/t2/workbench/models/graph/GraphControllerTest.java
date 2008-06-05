@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import net.sf.taverna.t2.activities.testutils.TranslatorTestHelper;
 import net.sf.taverna.t2.compatibility.WorkflowModelTranslator;
-import net.sf.taverna.t2.graph.Graph;
-import net.sf.taverna.t2.graph.GraphController;
-import net.sf.taverna.t2.graph.GraphController.PortStyle;
+import net.sf.taverna.t2.workbench.models.graph.Graph;
+import net.sf.taverna.t2.workbench.models.graph.GraphController;
+import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.junit.Before;

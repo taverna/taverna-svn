@@ -1,30 +1,24 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import static org.junit.Assert.*;
 
 import java.awt.Color;
 
-import net.sf.taverna.t2.graph.Edge;
-import net.sf.taverna.t2.graph.Node;
-import net.sf.taverna.t2.graph.Edge.ArrowStyle;
-import net.sf.taverna.t2.graph.Graph.LineStyle;
+import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.models.graph.GraphEdge.ArrowStyle;
+import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class EdgeTest {
+public class GraphEdgeTest {
 
-	private Edge edge;
+	private GraphEdge edge;
 	
-	private String label;
+	private GraphNode source;
 	
-	private Node source;
-	
-	private Node sink;
-	
-	private LineStyle lineStyle;
-	
-	private Color color;
+	private GraphNode sink;
 	
 	private ArrowStyle arrowHeadStyle;
 
@@ -32,26 +26,20 @@ public class EdgeTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		source = new Node();
-		sink = new Node();
-		label = "edge-label";
-		lineStyle = LineStyle.NONE;
-		color = Color.BLUE;
+		source = new GraphNode();
+		sink = new GraphNode();
 		arrowHeadStyle = ArrowStyle.ODOT;
 		arrowTailStyle = ArrowStyle.NORMAL;
-		edge = new Edge();
+		edge = new GraphEdge();
 		edge.setArrowHeadStyle(arrowHeadStyle);
 		edge.setArrowTailStyle(arrowTailStyle);
-		edge.setColor(color);
-		edge.setLabel(label);
-		edge.setLineStyle(lineStyle);
 		edge.setSink(sink);
 		edge.setSource(source);
 	}
 
 	@Test
 	public void testEdge() {
-		edge = new Edge();
+		edge = new GraphEdge();
 		assertNull(edge.getSource());
 		assertNull(edge.getSink());
 		assertNull(edge.getLabel());
@@ -59,22 +47,9 @@ public class EdgeTest {
 
 	@Test
 	public void testEdgeNodeNode() {
-		edge = new Edge(source, sink);
+		edge = new GraphEdge(source, sink);
 		assertEquals(source, edge.getSource());
 		assertEquals(sink, edge.getSink());
-		assertNull(edge.getLabel());
-	}
-
-	@Test
-	public void testGetLabel() {
-		assertEquals(label, edge.getLabel());
-	}
-
-	@Test
-	public void testSetLabel() {
-		edge.setLabel("new-label");
-		assertEquals("new-label", edge.getLabel());
-		edge.setLabel(null);
 		assertNull(edge.getLabel());
 	}
 
@@ -85,7 +60,7 @@ public class EdgeTest {
 
 	@Test
 	public void testSetSource() {
-		Node node = new Node();
+		GraphNode node = new GraphNode();
 		edge.setSource(node);
 		assertEquals(node, edge.getSource());
 		edge.setSource(null);
@@ -99,37 +74,11 @@ public class EdgeTest {
 
 	@Test
 	public void testSetSink() {
-		Node node = new Node();
+		GraphNode node = new GraphNode();
 		edge.setSink(node);
 		assertEquals(node, edge.getSink());
 		edge.setSink(null);
 		assertNull(edge.getSink());
-	}
-
-	@Test
-	public void testGetLineStyle() {
-		assertEquals(lineStyle, edge.getLineStyle());
-	}
-
-	@Test
-	public void testSetLineStyle() {
-		edge.setLineStyle(LineStyle.DOTTED);
-		assertEquals(LineStyle.DOTTED, edge.getLineStyle());
-		edge.setLineStyle(null);
-		assertNull(edge.getLineStyle());
-	}
-
-	@Test
-	public void testGetColor() {
-		assertEquals(color, edge.getColor());
-	}
-
-	@Test
-	public void testSetColor() {
-		edge.setColor(Color.RED);
-		assertEquals(Color.RED, edge.getColor());
-		edge.setColor(null);
-		assertNull(edge.getColor());
 	}
 
 	@Test

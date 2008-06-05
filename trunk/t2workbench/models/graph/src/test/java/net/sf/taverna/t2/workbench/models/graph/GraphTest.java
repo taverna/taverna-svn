@@ -1,13 +1,13 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import net.sf.taverna.t2.graph.Edge;
-import net.sf.taverna.t2.graph.Graph;
-import net.sf.taverna.t2.graph.Node;
-import net.sf.taverna.t2.graph.Graph.Alignment;
+import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
+import net.sf.taverna.t2.workbench.models.graph.Graph;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class GraphTest {
 
 	@Test
 	public void testAddEdge() {
-		Edge newEdge = new Edge();
+		GraphEdge newEdge = new GraphEdge();
 		graph.addEdge(newEdge);
 		assertEquals(1, graph.getEdges().size());
 		assertTrue(graph.getEdges().contains(newEdge));
@@ -39,7 +39,7 @@ public class GraphTest {
 
 	@Test
 	public void testAddNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		graph.addNode(newNode);
 		assertEquals(1, graph.getNodes().size());
 		assertTrue(graph.getNodes().contains(newNode));
@@ -80,7 +80,7 @@ public class GraphTest {
 
 	@Test
 	public void testRemoveEdge() {
-		Edge newEdge = new Edge();
+		GraphEdge newEdge = new GraphEdge();
 		assertFalse(graph.removeEdge(newEdge));
 		graph.addEdge(newEdge);
 		assertTrue(graph.removeEdge(newEdge));
@@ -89,7 +89,7 @@ public class GraphTest {
 
 	@Test
 	public void testRemoveNode() {
-		Node newNode = new Node();
+		GraphNode newNode = new GraphNode();
 		assertFalse(graph.removeNode(newNode));
 		graph.addNode(newNode);
 		assertTrue(graph.removeNode(newNode));

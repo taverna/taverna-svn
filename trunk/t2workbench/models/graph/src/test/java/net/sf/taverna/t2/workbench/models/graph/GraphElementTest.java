@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.graph;
+package net.sf.taverna.t2.workbench.models.graph;
 
 
 import static org.junit.Assert.assertEquals;
@@ -6,16 +6,16 @@ import static org.junit.Assert.assertNull;
 
 import java.awt.Color;
 
-import net.sf.taverna.t2.graph.Element;
-import net.sf.taverna.t2.graph.Node;
-import net.sf.taverna.t2.graph.Graph.LineStyle;
+import net.sf.taverna.t2.workbench.models.graph.GraphElement;
+import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class ElementTest {
+public class GraphElementTest {
 	
-	private Element element;
+	private GraphElement element;
 
 	private String id;
 	
@@ -27,17 +27,17 @@ public class ElementTest {
 	
 	private Color fillColor;
 	
-	private Element parent;
+	private GraphElement parent;
 
 	@Before
 	public void setUp() throws Exception {
-		element = new Element() {};
+		element = new GraphElement() {};
 		id = "element-id";
 		label = "element-label";
 		lineStyle = LineStyle.NONE;
 		color = Color.BLUE;
 		fillColor = Color.GREEN;
-		parent = new Node();
+		parent = new GraphNode();
 		element.setId(id);
 		element.setLabel(label);
 		element.setLineStyle(lineStyle);
@@ -53,7 +53,7 @@ public class ElementTest {
 
 	@Test
 	public void testSetParent() {
-		Node newParent = new Node();
+		GraphNode newParent = new GraphNode();
 		element.setParent(newParent);
 		assertEquals(newParent, element.getParent());
 		element.setParent(null);
