@@ -20,7 +20,7 @@
 	</logger>
 
 	<logger name="org.hibernate">
-		<level value="WARN" />
+		<level value="ERROR" />
 	</logger>
 
 	<logger name="org.springframework">
