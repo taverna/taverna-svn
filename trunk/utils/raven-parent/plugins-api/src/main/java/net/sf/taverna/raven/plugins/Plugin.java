@@ -218,10 +218,12 @@ public class Plugin implements Comparable<Plugin> {
 		plugin.version = pluginElement.getChildTextTrim("version");
 		plugin.provider = pluginElement.getChildTextTrim("provider");
 
-		List<Element> versionElements = pluginElement.getChild("application")
-				.getChildren("version");
-		for (Element applicationVersion : versionElements) {
-			plugin.versions.add(applicationVersion.getTextTrim());
+		Element application = pluginElement.getChild("application");
+		if (application != null) {
+			List<Element> versionElements = application.getChildren("version");
+			for (Element applicationVersion : versionElements) {
+				plugin.versions.add(applicationVersion.getTextTrim());
+			}
 		}
 
 		plugin.enabled = Boolean.valueOf(pluginElement
