@@ -254,5 +254,6 @@
 		<module>ui-api</module>
 		<module>ui-impl</module>
 		<module>contextual-views</module>
+		<module>views</module>
 	</modules>
 </project>
