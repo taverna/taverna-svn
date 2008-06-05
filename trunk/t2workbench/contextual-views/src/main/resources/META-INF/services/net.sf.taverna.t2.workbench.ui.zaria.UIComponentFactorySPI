@@ -1,3 +1,4 @@
 net.sf.taverna.t2.workbench.ui.actions.activity.draggable.ActivityDraggerPaletteComponentFactory
 net.sf.taverna.t2.workbench.ui.views.contextualviews.DragActivitiesToHereComponentFactory
+net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewComponentFactory
 net.sf.taverna.t2.workbench.ui.actions.activity.draggable.DosNotWorks
