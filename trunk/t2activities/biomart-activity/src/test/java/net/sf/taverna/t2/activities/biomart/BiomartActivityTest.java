@@ -17,6 +17,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -27,6 +28,7 @@ import org.junit.Test;
  */
 public class BiomartActivityTest {
 	
+	@Ignore("Integration test that requires network access")
 	@Test
 	public void simpleQuery() throws Exception {
 		BiomartActivity activity = new BiomartActivity();
