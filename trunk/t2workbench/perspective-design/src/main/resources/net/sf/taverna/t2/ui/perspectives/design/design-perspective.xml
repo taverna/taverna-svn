@@ -1,20 +1,67 @@
 <basepane>
 	<child>
-		<znode classname="net.sf.taverna.zaria.ZRavenComponent">
-			<component scroll="true">
-				<raven>
-					<group>net.sf.taverna.t2.workbench</group>
-					<artifact>perspective-design</artifact>
-					<version>1.7-SNAPSHOT</version>
-				</raven>
-				<classname>
-					net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory
-				</classname>
-				<interface>
-					net.sf.taverna.t2.workbench.ui.zaria.UIComponentFactorySPI
-				</interface>
-			</component>
+		<znode classname="net.sf.taverna.zaria.ZSplitPane">
+			<split ratio="0.4493361285814116"
+				orientation="horizontal">
+				<right>
+					<znode
+						classname="net.sf.taverna.zaria.ZRavenComponent">
+						<namedcomponent scroll="true">
+							<name>graphview</name>
+						</namedcomponent>
+					</znode>
+				</right>
+				<left>
+					<znode
+						classname="net.sf.taverna.zaria.ZSplitPane">
+						<split ratio="0.4654178674351585"
+							orientation="vertical">
+							<right>
+								<znode
+									classname="net.sf.taverna.zaria.ZRavenComponent">
+									<namedcomponent scroll="true">
+										<name>contextualview</name>
+									</namedcomponent>
+								</znode>
+							</right>
+							<left>
+								<znode
+									classname="net.sf.taverna.zaria.ZRavenComponent">
+									<namedcomponent scroll="true">
+										<name>activitypalette</name>
+									</namedcomponent>
+								</znode>
+							</left>
+						</split>
+					</znode>
+				</left>
+			</split>
 		</znode>
 	</child>
-	<namedcomponents />
+	<namedcomponents>
+		<namedcomponent>
+			<groupid>net.sf.taverna.t2.workbench</groupid>
+			<artifact>contextual-views</artifact>
+			<classname>
+				net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewComponentFactory
+			</classname>
+			<name>contextualview</name>
+		</namedcomponent>
+		<namedcomponent>
+			<groupid>net.sf.taverna.t2.workbench</groupid>
+			<artifact>contextual-views</artifact>
+			<classname>
+				net.sf.taverna.t2.workbench.ui.actions.activity.draggable.ActivityDraggerPaletteComponentFactory
+			</classname>
+			<name>activitypalette</name>
+		</namedcomponent>
+		<namedcomponent>
+			<groupid>net.sf.taverna.t2.workbench.views</groupid>
+			<artifact>graph</artifact>
+			<classname>
+				net.sf.taverna.t2.workbench.views.graph.GraphViewComponentFactory
+			</classname>
+			<name>graphview</name>
+		</namedcomponent>
+	</namedcomponents>
 </basepane>
