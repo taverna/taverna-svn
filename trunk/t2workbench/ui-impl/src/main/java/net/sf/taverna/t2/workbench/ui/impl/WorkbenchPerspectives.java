@@ -48,7 +48,6 @@ import net.sf.taverna.zaria.ZBasePane;
 import org.apache.log4j.Logger;
 import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.lang.ui.ModelMap;
-import net.sf.taverna.t2.lang.ui.ModelMap.ModelChangedEvent;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelDestroyedEvent;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 

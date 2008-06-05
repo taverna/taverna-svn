@@ -23,6 +23,8 @@ public class WorkbenchZBasePane extends ZBasePane {
 				.getCanonicalName() });
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public JMenuItem getMenuItem(Class theClass) {
 		try {
 			UIComponentFactorySPI factory = (UIComponentFactorySPI) theClass
@@ -40,6 +42,7 @@ public class WorkbenchZBasePane extends ZBasePane {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public JComponent getComponent(Class theClass) {
 		UIComponentFactorySPI factory;
