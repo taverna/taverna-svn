@@ -9,7 +9,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
@@ -47,7 +46,6 @@ public class LoadDummyWorkflowAction extends AbstractMenuAction {
 
 			private void loadWorkflow() throws IOException, JDOMException,
 					DeserializationException, EditException {
-				BeanshellActivityConfigurationBean b = new BeanshellActivityConfigurationBean();
 				InputStream dummyWorkflowXMLstream = getClass()
 						.getResourceAsStream(DUMMY_WORKFLOW_T2FLOW);
 				XMLDeserializerImpl deserializer = new XMLDeserializerImpl();
