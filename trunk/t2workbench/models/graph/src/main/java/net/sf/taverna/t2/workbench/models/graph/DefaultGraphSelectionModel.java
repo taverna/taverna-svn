@@ -13,10 +13,6 @@ import net.sf.taverna.t2.workbench.models.graph.GraphSelectionMessage.Type;
  * 
  * @author David Withers
  */
-/**
- * @author David Withers
- *
- */
 public class DefaultGraphSelectionModel implements GraphSelectionModel {
 
 	private MultiCaster<GraphSelectionMessage> multiCaster;
