@@ -251,6 +251,7 @@
 		<module>menu-impl</module>
 		<module>perspective-core</module>
 		<module>perspective-hello</module>
+		<module>perspective-design</module>
 		<module>ui-api</module>
 		<module>ui-impl</module>
 		<module>contextual-views</module>
