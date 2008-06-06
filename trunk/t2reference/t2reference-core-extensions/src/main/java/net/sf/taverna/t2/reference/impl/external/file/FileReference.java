@@ -93,7 +93,7 @@ public class FileReference extends AbstractExternalReference implements
 	 */
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " " + file;
+		return "file{"+file.getAbsolutePath()+"}";
 	}
 
 	@Override
