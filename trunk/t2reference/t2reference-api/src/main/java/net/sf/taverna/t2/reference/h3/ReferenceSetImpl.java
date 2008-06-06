@@ -61,7 +61,14 @@ public class ReferenceSetImpl implements ReferenceSet {
 	 */
 	@Override
 	public String toString() {
-		return "ReferenceSet " + id;
+		StringBuffer sb = new StringBuffer();
+		sb.append(id + " [" + externalReferences.size() + "]\n");
+
+		for (ExternalReferenceSPI ref : externalReferences) {
+			sb.append("  "+ref.toString()+"\n");
+		}
+		return sb.toString();
+		
 	}
 
 	/**
