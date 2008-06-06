@@ -22,8 +22,9 @@ public interface ReferenceSetServiceCallback {
 	 * Called if the retrieval failed for some reason
 	 * 
 	 * @param cause
-	 *            an Exception explaining the retrieval failure
+	 *            a ReferenceSetServiceException explaining the retrieval
+	 *            failure
 	 */
-	public void referenceSetRetrievalFailed(Exception cause);
+	public void referenceSetRetrievalFailed(ReferenceSetServiceException cause);
 
 }

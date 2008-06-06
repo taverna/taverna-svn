@@ -25,8 +25,9 @@ public interface ReferenceSetAugmentorCallback {
 	 * Called when the augmentation has failed for some reason
 	 * 
 	 * @param cause
-	 *            an exception object describing the failure.
+	 *            a {@link ReferenceSetAugmentationException} object describing
+	 *            the failure.
 	 */
-	public void augmentationFailed(Exception cause);
+	public void augmentationFailed(ReferenceSetAugmentationException cause);
 
 }

@@ -27,7 +27,8 @@ public interface ReferenceSetService {
 	 * @return the registered {@link ReferenceSet}
 	 */
 	public ReferenceSet registerReferenceSet(
-			Set<ExternalReferenceSPI> references);
+			Set<ExternalReferenceSPI> references)
+			throws ReferenceSetServiceException;
 
 	/**
 	 * Get a previously registered {@link ReferenceSet} by {@link T2Reference}.
@@ -42,7 +43,8 @@ public interface ReferenceSetService {
 	 *            retrieve
 	 * @return the requested {@link ReferenceSet}
 	 */
-	public ReferenceSet getReferenceSet(T2Reference id);
+	public ReferenceSet getReferenceSet(T2Reference id)
+			throws ReferenceSetServiceException;
 
 	/**
 	 * Functionality the same as
@@ -56,9 +58,15 @@ public interface ReferenceSetService {
 	 * @param callback
 	 *            a {@link ReferenceSetServiceCallback} used to convey the
 	 *            results of the asynchronous call
+	 * @throws ReferenceSetServiceException
+	 *             if the reference set service is not correctly configured.
+	 *             Exceptions encountered when performing the asynchronous call
+	 *             are not returned here, for obvious reasons, and are instead
+	 *             messaged through the callback interface.
 	 */
 	public void getReferenceSetAsynch(T2Reference id,
-			ReferenceSetServiceCallback callback);
+			ReferenceSetServiceCallback callback)
+			throws ReferenceSetServiceException;
 
 	/**
 	 * Functionality the same as
@@ -92,7 +100,7 @@ public interface ReferenceSetService {
 	 */
 	public ReferenceSet getReferenceSetWithAugmentation(T2Reference id,
 			Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
-			ReferenceContext context);
+			ReferenceContext context) throws ReferenceSetServiceException;
 
 	/**
 	 * Functionality as
@@ -113,10 +121,16 @@ public interface ReferenceSetService {
 	 *            {@link ReferenceContext} parameter.
 	 * @param callback
 	 *            a {@link ReferenceSetServiceCallback} used to convey the
-	 *            results of the asynchronous call
+	 *            results of the asynchronous call *
+	 * @throws ReferenceSetServiceException
+	 *             if the reference set service is not correctly configured.
+	 *             Exceptions encountered when performing the asynchronous call
+	 *             are not returned here, for obvious reasons, and are instead
+	 *             messaged through the callback interface.
 	 */
 	public void getReferenceSetWithAugmentationAsynch(T2Reference id,
 			Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
-			ReferenceContext context, ReferenceSetServiceCallback callback);
+			ReferenceContext context, ReferenceSetServiceCallback callback)
+			throws ReferenceSetServiceException;
 
 }
