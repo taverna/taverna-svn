@@ -22,7 +22,7 @@
 			<artifactId>perspective-core</artifactId>
 			<version>1.7-SNAPSHOT</version>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>perspective-hello</artifactId>
 			<version>1.7-SNAPSHOT</version>
@@ -63,6 +63,10 @@
 			<artifactId>ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>edits-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

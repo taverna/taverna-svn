@@ -63,8 +63,8 @@ public abstract class EditManager implements Observable<EditManagerEvent> {
 
 	/**
 	 * <code>true</code> if {@link #redoDataflowEdit(Dataflow)} on the given
-	 * dataflow would redo the last undone edit. If there are no previous edits, return
-	 * <code>false</code>.
+	 * dataflow would redo the last undone edit. If there are no previous edits,
+	 * return <code>false</code>.
 	 * 
 	 * @param dataflow
 	 *            {@link Dataflow} which last affecting edit is to be undone
@@ -171,7 +171,8 @@ public abstract class EditManager implements Observable<EditManagerEvent> {
 
 		public AbstractDataflowEditEvent(Dataflow dataFlow, Edit<?> edit) {
 			if (dataFlow == null || edit == null) {
-				throw new NullPointerException("Dataflow and/or Edit can't be null");
+				throw new NullPointerException(
+						"Dataflow and/or Edit can't be null");
 			}
 			this.dataFlow = dataFlow;
 			this.edit = edit;
