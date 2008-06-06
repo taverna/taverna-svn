@@ -15,6 +15,12 @@ import org.jdom.input.SAXBuilder;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+/**
+ * An abstract base class that contains serialisation methods common across all dataflow elements.
+ * 
+ * @author Stuart Owen
+ *
+ */
 public abstract class AbstractXMLSerializer implements XMLSerializationConstants {
 
 	/**

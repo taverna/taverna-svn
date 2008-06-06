@@ -16,6 +16,12 @@ import org.jdom.output.XMLOutputter;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+/**
+ * An abstract base class that contains deserialisation methods common across all dataflow elements.
+ * 
+ * @author Stuart Owen
+ *
+ */
 public abstract class AbstractXMLDeserializer implements
 		XMLSerializationConstants {
 	

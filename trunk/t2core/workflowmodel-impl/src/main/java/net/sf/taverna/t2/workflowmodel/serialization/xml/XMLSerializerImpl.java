@@ -10,8 +10,18 @@ import net.sf.taverna.t2.workflowmodel.serialization.SerializationException;
 
 import org.jdom.Element;
 
+/**
+ * Implementation of the XML serialisation framework for serialising a dataflow instance into a jdom XML element.
+ * <br>
+ * 
+ * @author Stuart Owen
+ *
+ */
 public class XMLSerializerImpl implements XMLSerializer, XMLSerializationConstants {
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer#serializeDataflow(net.sf.taverna.t2.workflowmodel.Dataflow)
+	 */
 	public Element serializeDataflow(Dataflow dataflow)
 			throws SerializationException {
 		List<Dataflow> innerDataflows = new ArrayList<Dataflow>();

@@ -7,15 +7,22 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
 import org.jdom.Element;
 
+/**
+ * Implementation class that acts as the main entry point for deserialising a complete XML dataflow document into a dataflow instance.
+ * @author Stuart Owen
+ *
+ */
 public class XMLDeserializerImpl implements XMLDeserializer, XMLSerializationConstants {
 	
 	Edits edits = new EditsImpl();
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer#deserializeDataflow(org.jdom.Element)
+	 */
 	public Dataflow deserializeDataflow(Element element)
 			throws DeserializationException,EditException {
 		Element topDataflow = findTopDataflow(element);
