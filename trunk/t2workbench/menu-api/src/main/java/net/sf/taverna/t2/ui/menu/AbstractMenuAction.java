@@ -16,6 +16,12 @@ public abstract class AbstractMenuAction extends AbstractMenuItem {
 	}
 	
 	@Override
-	public abstract Action getAction();
+	public synchronized Action getAction() {
+		if (action == null) {
+			action = createAction();
+		}
+		return action;
+	}
 
+	protected abstract Action createAction();
 }
