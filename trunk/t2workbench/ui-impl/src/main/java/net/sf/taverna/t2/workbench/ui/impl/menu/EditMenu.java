@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.ui.perspectives.hello;
+package net.sf.taverna.t2.workbench.ui.impl.menu;
 
 import java.net.URI;
 
@@ -9,7 +9,7 @@ public class EditMenu extends AbstractMenu {
 
 	public EditMenu() {
 		super(DefaultMenuBar.DEFAULT_MENU_BAR, 20, URI
-				.create("http://taverna.sf.net/2008/t2workbench/test#edit"),
+				.create("http://taverna.sf.net/2008/t2workbench/menu#edit"),
 				"Edit");
 	}
 

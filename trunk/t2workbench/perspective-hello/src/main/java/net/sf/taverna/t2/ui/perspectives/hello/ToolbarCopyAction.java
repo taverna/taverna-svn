@@ -17,7 +17,7 @@ public class ToolbarCopyAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Copy") {
 
 			public void actionPerformed(ActionEvent arg0) {

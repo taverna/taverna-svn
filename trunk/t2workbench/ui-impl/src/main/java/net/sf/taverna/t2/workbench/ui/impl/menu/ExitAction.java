@@ -23,7 +23,7 @@ public class ExitAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Exit") {
 			public void actionPerformed(ActionEvent e) {
 				Workbench.getInstance().exit();

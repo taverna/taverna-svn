@@ -16,7 +16,7 @@ public class NewDataflowAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Dataflow") {
 
 			public void actionPerformed(ActionEvent arg0) {

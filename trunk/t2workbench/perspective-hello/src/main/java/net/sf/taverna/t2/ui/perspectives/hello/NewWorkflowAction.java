@@ -15,7 +15,7 @@ public class NewWorkflowAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Workflow") {
 			public void actionPerformed(ActionEvent arg0) {
 				JOptionPane.showMessageDialog(null,

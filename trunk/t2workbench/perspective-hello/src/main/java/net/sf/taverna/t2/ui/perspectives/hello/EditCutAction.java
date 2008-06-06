@@ -17,7 +17,7 @@ public class EditCutAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Cut") {
 			public void actionPerformed(ActionEvent arg0) {
 				JOptionPane.showMessageDialog(null, "Cut");

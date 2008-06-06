@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
@@ -34,7 +35,7 @@ public class LoadDummyWorkflowAction extends AbstractMenuAction {
 	}
 
 	@Override
-	public Action getAction() {
+	public Action createAction() {
 		return new AbstractAction("Load example workflow") {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -58,7 +59,7 @@ public class LoadDummyWorkflowAction extends AbstractMenuAction {
 				Document document = builder.build(dummyWorkflowXMLstream);
 				Dataflow dataFlow = deserializer.deserializeDataflow(document
 						.getRootElement());
-				ModelMap.getInstance().setModel("currentDataflow", dataFlow);
+				ModelMap.getInstance().setModel(ModelMapConstants.CURRENT_DATAFLOW, dataFlow);
 				logger.info("Loaded workflow: " + dataFlow.getLocalName() + " "
 						+ dataFlow.getInternalIdentier());
 				JOptionPane.showMessageDialog(null, "Loaded example workflow");
