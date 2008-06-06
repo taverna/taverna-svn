@@ -148,8 +148,9 @@ public class ProcessorContextualView extends ContextualView{
 		
 		private final JFrame frame;
 
-		public ClickActivityAction(JFrame frame) {
-			this.frame = frame;
+		public ClickActivityAction(JPanel panel) {
+			frame = new JFrame();
+			frame.add(panel);
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -161,8 +162,9 @@ public class ClickIterationStackAction extends AbstractAction {
 		
 		private final JFrame frame;
 
-		public ClickIterationStackAction(JFrame frame) {
-			this.frame = frame;
+		public ClickIterationStackAction(JPanel panel) {
+			frame = new JFrame();
+			frame.add(panel);
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -175,8 +177,9 @@ public class ClickDispatchStackAction extends AbstractAction {
 	
 	private final JFrame frame;
 
-	public ClickDispatchStackAction(JFrame frame) {
-		this.frame = frame;
+	public ClickDispatchStackAction(JPanel panel) {
+		frame = new JFrame();
+		frame.add(panel);
 	}
 
 	public void actionPerformed(ActionEvent e) {

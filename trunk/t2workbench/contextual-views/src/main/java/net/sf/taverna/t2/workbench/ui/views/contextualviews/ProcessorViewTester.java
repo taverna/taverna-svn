@@ -123,8 +123,10 @@ public class ProcessorViewTester {
 //		System.out.println(viewType.getClass().getCanonicalName());
 		
 		//view.setSize(new Dimension(500, 400));
-		procContextView.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		procContextView.setVisible(true);
+		JFrame frame = new JFrame();
+		frame.add(procContextView);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 //		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //		((Component) viewType).setVisible(true);
 		

@@ -122,8 +122,10 @@ public class DummyView {
 //		view.setSize(new Dimension(500, 400));
 //		procContextView.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //		procContextView.setVisible(true);
-		((JFrame) viewType).setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		((Component) viewType).setVisible(true);
+		JFrame frame = new JFrame();
+		frame.add(viewType);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 		
 	}
 	

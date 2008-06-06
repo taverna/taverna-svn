@@ -79,8 +79,9 @@ public class ClickIterationAction extends AbstractAction {
 		
 		private final JFrame frame;
 
-		public ClickIterationAction(JFrame frame) {
-			this.frame = frame;
+		public ClickIterationAction(JPanel panel) {
+			frame = new JFrame();
+			frame.add(panel);
 		}
 
 		public void actionPerformed(ActionEvent e) {

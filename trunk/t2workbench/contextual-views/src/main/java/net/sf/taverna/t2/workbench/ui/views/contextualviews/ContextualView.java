@@ -27,7 +27,7 @@ import javax.swing.JPanel;
  * @author Ian Dunlop
  * 
  */
-public abstract class ContextualView extends JFrame {
+public abstract class ContextualView extends JPanel {
 
 	/**
 	 * When implemented, this method should define the main frame that is placed
@@ -67,7 +67,7 @@ public abstract class ContextualView extends JFrame {
 		setSize(800, 500);
 		setLayout(new BorderLayout());
 		add(getMainFrame(), BorderLayout.CENTER);
-		setTitle(getViewTitle());
+		setName(getViewTitle());
 		JPanel buttonFrame = new JPanel();
 		add(buttonFrame, BorderLayout.SOUTH);
 		buttonFrame.setLayout(new BorderLayout());
