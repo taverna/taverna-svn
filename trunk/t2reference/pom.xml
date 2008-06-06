@@ -34,7 +34,6 @@
 	<modules>
 		<module>t2reference-api</module>
 		<module>t2reference-impl</module>
-		<module>t2reference-integration-tests</module>
 		<module>t2reference-core-extensions</module>
 	</modules>
 
