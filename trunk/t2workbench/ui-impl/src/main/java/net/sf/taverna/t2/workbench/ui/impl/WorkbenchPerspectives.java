@@ -40,6 +40,7 @@ import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.ui.perspectives.CustomPerspective;
 import net.sf.taverna.t2.ui.perspectives.CustomPerspectiveFactory;
 import net.sf.taverna.t2.ui.perspectives.PerspectiveRegistry;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.ui.zaria.PerspectiveSPI;
 import net.sf.taverna.t2.workbench.ui.zaria.WorkflowPerspective;
@@ -60,8 +61,6 @@ import org.jdom.output.XMLOutputter;
 
 @SuppressWarnings("serial")
 public class WorkbenchPerspectives {
-
-	public static final String CURRENT_PERSPECTIVE = "currentPerspective";
 
 	private static Logger logger = Logger
 			.getLogger(WorkbenchPerspectives.class);
@@ -180,7 +179,7 @@ public class WorkbenchPerspectives {
 	public void saveAll() throws FileNotFoundException, IOException {
 		// update current perspective
 		PerspectiveSPI current = (PerspectiveSPI) modelMap
-				.getModel(CURRENT_PERSPECTIVE);
+				.getModel(ModelMapConstants.CURRENT_PERSPECTIVE);
 		if (current != null) {
 			current.update(basePane.getElement());
 		}
@@ -206,7 +205,7 @@ public class WorkbenchPerspectives {
 	 */
 	public void setWorkflowPerspective() {
 		PerspectiveSPI currentPerspective = (PerspectiveSPI) modelMap
-				.getModel(CURRENT_PERSPECTIVE);
+				.getModel(ModelMapConstants.CURRENT_PERSPECTIVE);
 		if (!(currentPerspective instanceof WorkflowPerspective)) {
 
 			PerspectiveSPI foundPerspective = null;
@@ -226,7 +225,7 @@ public class WorkbenchPerspectives {
 				logger.warn("No WorkflowPerspective found");
 				return;
 			}
-			modelMap.setModel(CURRENT_PERSPECTIVE, foundPerspective);
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, foundPerspective);
 		}
 	}
 
@@ -237,7 +236,7 @@ public class WorkbenchPerspectives {
 					"Sorry, unable to change perspectives whilst in edit mode",
 					"Cannot change perspective",
 					JOptionPane.INFORMATION_MESSAGE);
-			modelMap.setModel(CURRENT_PERSPECTIVE, currentPerspective);
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, currentPerspective);
 			return;
 		}
 
@@ -303,7 +302,7 @@ public class WorkbenchPerspectives {
 		toolbarButton.setToolTipText(perspective.getText() + " perspective");
 		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				modelMap.setModel(CURRENT_PERSPECTIVE, perspective);
+				modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, perspective);
 			}
 		};
 		action.putValue(Action.NAME, perspective.getText());
@@ -463,7 +462,7 @@ public class WorkbenchPerspectives {
 		if (!set) // no visible perspectives were found
 		{
 			logger.info("No visible perspectives.");
-			modelMap.setModel(CURRENT_PERSPECTIVE, new BlankPerspective());
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, new BlankPerspective());
 		}
 	}
 
@@ -563,7 +562,7 @@ public class WorkbenchPerspectives {
 			perspectives.get(perspective).setVisible(perspective.isVisible());
 			putValue(NAME, perspective.isVisible() ? "Hide" : "Show");
 			PerspectiveSPI current = (PerspectiveSPI) modelMap
-					.getModel(CURRENT_PERSPECTIVE);
+					.getModel(ModelMapConstants.CURRENT_PERSPECTIVE);
 			if (!perspective.isVisible()) {
 				// change to the first available if the current is being
 				// hidden
@@ -574,7 +573,7 @@ public class WorkbenchPerspectives {
 				// if no perspectives are currently visible, then change to
 				// the one just made visible
 				if (current == null || current instanceof BlankPerspective) {
-					modelMap.setModel(CURRENT_PERSPECTIVE, perspective);
+					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, perspective);
 				}
 			}
 		}
@@ -636,9 +635,9 @@ public class WorkbenchPerspectives {
 					"Delete perspective?", JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.YES_OPTION) {
 				PerspectiveSPI p = (PerspectiveSPI) ModelMap.getInstance()
-						.getModel(CURRENT_PERSPECTIVE);
+						.getModel(ModelMapConstants.CURRENT_PERSPECTIVE);
 				if (p != null) {
-					modelMap.setModel(CURRENT_PERSPECTIVE, null);
+					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, null);
 					basePane.setEditable(false); // cancel edit mode
 					// so perspective can be changed after deletion
 					try {
@@ -659,7 +658,7 @@ public class WorkbenchPerspectives {
 	}
 
 	/**
-	 * Change perspective when CURRENT_PERSPECTIVE has been modified.
+	 * Change perspective when ModelMapConstants.CURRENT_PERSPECTIVE has been modified.
 	 * 
 	 * @author Stian Soiland-Reyes
 	 * @author Stuart Owen
@@ -667,7 +666,7 @@ public class WorkbenchPerspectives {
 	public class CurrentPerspectiveObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
-			if (!message.modelName.equals(CURRENT_PERSPECTIVE)) {
+			if (!message.modelName.equals(ModelMapConstants.CURRENT_PERSPECTIVE)) {
 				return;
 			}
 			if (message.oldModel instanceof PerspectiveSPI) {

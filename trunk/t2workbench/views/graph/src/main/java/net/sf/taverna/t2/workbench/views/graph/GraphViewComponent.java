@@ -17,6 +17,7 @@ import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
@@ -40,6 +41,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 
 	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(GraphViewComponent.class);
 
 	private GraphController graphController = new GraphController();
@@ -121,7 +123,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 
 	public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message)
 			throws Exception {
-		if (message.modelName.equals("currentDataflow")) {
+		if (message.modelName.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
 			if (message.newModel instanceof Dataflow) {
 				setDataflow((Dataflow) message.newModel);
 			}
