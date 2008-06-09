@@ -4,21 +4,52 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
+import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
-public interface FileManager {
+public abstract class FileManager {
 
-	public Dataflow openDataflow(URL dataflowURL) throws OpenException ;
+	private static FileManager instance;
 
-	public List<Dataflow> getOpenDataflows();
+	/**
+	 * Get the {@link FileManager} implementation singleton as discovered
+	 * through an {@link SPIRegistry}.
+	 * 
+	 * @throws IllegalStateException
+	 *             If no implementation was found.
+	 * @return Discovered {@link FileManager} implementation singleton.
+	 */
+	public static synchronized FileManager getInstance()
+			throws IllegalStateException {
+		if (instance == null) {
+			SPIRegistry<FileManager> registry = new SPIRegistry<FileManager>(
+					FileManager.class);
+			try {
+				instance = registry.getInstances().get(0);
+			} catch (IndexOutOfBoundsException ex) {
+				throw new IllegalStateException(
+						"Could not find implementation of " + FileManager.class);
+			}
+		}
+		return instance;
+	}
 
-	public void closeCurrentDataflow(boolean ignoreUnsaved) throws UnsavedException;
-	
-	public void closeDataflow(Dataflow dataflow, boolean ignoreUnsaved) throws UnsavedException;
+	public abstract Dataflow openDataflow(URL dataflowURL) throws OpenException;
 
-	public void saveCurrentDataflow(File dataflowFile) throws SaveException;
+	public abstract List<Dataflow> getOpenDataflows();
 
-	public void saveDataflow(Dataflow dataflow, File dataflowFile) throws SaveException;
+	public abstract void closeCurrentDataflow(boolean ignoreUnsaved)
+			throws UnsavedException;
 
-	
+	public abstract void closeDataflow(Dataflow dataflow, boolean ignoreUnsaved)
+			throws UnsavedException;
+
+	public abstract void saveCurrentDataflow(File dataflowFile)
+			throws SaveException;
+
+	public abstract void saveDataflow(Dataflow dataflow, File dataflowFile)
+			throws SaveException;
+
+	public abstract boolean isDataflowChanged(Dataflow dataflow);
+
 }
