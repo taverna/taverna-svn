@@ -248,6 +248,8 @@
 		<module>configuration</module>
 		<module>edits-api</module>
 		<module>edits-impl</module>
+		<module>file-api</module>
+		<module>file-impl</module>
 		<module>models</module>
 		<module>menu-api</module>
 		<module>menu-impl</module>
