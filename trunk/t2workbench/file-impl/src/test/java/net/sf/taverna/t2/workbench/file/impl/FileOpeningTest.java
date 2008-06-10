@@ -176,7 +176,7 @@ public class FileOpeningTest {
 		assertFalse("Dataflow should no longer be marked as changed",
 				fileManager.isDataflowChanged(dataflow));
 	}
-
+	
 	@Ignore("Undo support for ischanged not yet implemented")
 	@Test
 	public void isChangedWithUndo() throws Exception {
@@ -213,7 +213,12 @@ public class FileOpeningTest {
 		editManager.redoDataflowEdit(dataflow);
 		assertTrue("Dataflow should have changed after redo after save",
 				fileManager.isDataflowChanged(dataflow));
-
+	}
+	
+	@Test
+	public void blah() throws Exception {
+		Dataflow dataflow = openDataflow();
+		
 	}
 
 }

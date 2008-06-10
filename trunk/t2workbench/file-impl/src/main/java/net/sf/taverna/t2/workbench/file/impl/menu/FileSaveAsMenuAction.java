@@ -6,6 +6,7 @@ import javax.swing.Action;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
 import net.sf.taverna.t2.workbench.file.impl.actions.FileSaveAction;
+import net.sf.taverna.t2.workbench.file.impl.actions.FileSaveAsAction;
 
 public class FileSaveAsMenuAction extends AbstractMenuAction {
 
@@ -15,7 +16,7 @@ public class FileSaveAsMenuAction extends AbstractMenuAction {
 
 	@Override
 	protected Action createAction() {
-		return new FileSaveAction(false);
+		return new FileSaveAsAction();
 	}
 
 	

@@ -24,20 +24,18 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
-import org.apache.log4j.Logger;
-
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
-import net.sf.taverna.t2.ui.menu.AbstractMenu;
-import net.sf.taverna.t2.ui.menu.AbstractToolBar;
 import net.sf.taverna.t2.ui.menu.DefaultMenuBar;
 import net.sf.taverna.t2.ui.menu.DefaultToolBar;
 import net.sf.taverna.t2.ui.menu.MenuComponent;
+import net.sf.taverna.t2.ui.menu.MenuManager;
 import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
-import net.sf.taverna.t2.ui.menu.impl.MenuManager.MenuManagerEvent;
+
+import org.apache.log4j.Logger;
 
 /**
  * Create {@link JMenuBar}s and {@link JToolBar}s based on SPI instances of
@@ -80,26 +78,12 @@ import net.sf.taverna.t2.ui.menu.impl.MenuManager.MenuManagerEvent;
  * @author Stian Soiland-Reyes
  * 
  */
-public class MenuManager implements Observable<MenuManagerEvent> {
+public class MenuManagerImpl extends MenuManager {
 
-	private static MenuManager instance;
-
-	private static Logger logger = Logger.getLogger(MenuManager.class);
-
-	/**
-	 * Get {@link MenuManager} singleton.
-	 * 
-	 * @return {@link MenuManager} singleton
-	 */
-	public static synchronized MenuManager getInstance() {
-		if (instance == null) {
-			instance = new MenuManager();
-		}
-		return instance;
-	}
+	private static Logger logger = Logger.getLogger(MenuManagerImpl.class);
 
 	private final Object updateLock = new Object();
-	
+
 	private WeakHashMap<Component, URI> componentToUri;
 
 	private MenuElementComparator menuElementComparator = new MenuElementComparator();
@@ -124,62 +108,37 @@ public class MenuManager implements Observable<MenuManagerEvent> {
 	// Note: Not reset by #resetCollections()
 	private Map<URI, List<WeakReference<Component>>> uriToPublishedComponents = new HashMap<URI, List<WeakReference<Component>>>();
 
-	/**
-	 * Protected constructor, use singleton method {@link #getInstance()}
-	 * instead.
-	 * 
-	 */
-	protected MenuManager() {
+	public MenuManagerImpl() {
 		menuRegistry.addObserver(new MenuRegistryObserver());
 		multiCaster = new MultiCaster<MenuManagerEvent>(this);
 		update();
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#addObserver(net.sf.taverna.t2.lang.observer.Observer)
 	 */
 	public void addObserver(Observer<MenuManagerEvent> observer) {
 		multiCaster.addObserver(observer);
 	}
 
-	/**
-	 * Create the {@link JMenuBar} containing menu elements defining
-	 * {@link DefaultMenuBar#DEFAULT_MENU_BAR} as their
-	 * {@link MenuComponent#getParentId() parent}.
-	 * <p>
-	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateMenuBar(JMenuBar, URI) update the menubar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return A {@link JMenuBar} populated with the items belonging to the
-	 *         default menu bar
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createMenuBar()
 	 */
+	@Override
 	public JMenuBar createMenuBar() {
 		return createMenuBar(DefaultMenuBar.DEFAULT_MENU_BAR);
 	}
 
-	/**
-	 * Create the {@link JMenuBar} containing menu elements defining the given
-	 * <code>id</code> as their {@link MenuComponent#getParentId() parent}.
-	 * <p>
-	 * Note that the parent itself also needs to exist as a registered SPI
-	 * instance og {@link MenuComponent#getType()} equal to
-	 * {@link MenuType#menu}, for instance by subclassing {@link AbstractMenu}.
-	 * </p>
-	 * <p>
-	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateMenuBar(JMenuBar, URI) update the menubar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param id
-	 *            The {@link URI} identifying the menu bar
-	 * @return A {@link JMenuBar} populated with the items belonging to the
-	 *         given parent id.
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createMenuBar(java.net.URI)
 	 */
+	@Override
 	public JMenuBar createMenuBar(URI id) {
 		JMenuBar menuBar = new JMenuBar();
 		populateMenuBar(menuBar, id);
@@ -187,45 +146,22 @@ public class MenuManager implements Observable<MenuManagerEvent> {
 		return menuBar;
 	}
 
-	/**
-	 * Create the {@link JToolBar} containing elements defining
-	 * {@link DefaultToolBar#DEFAULT_TOOL_BAR} as their
-	 * {@link MenuComponent#getParentId() parent}.
-	 * <p>
-	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateToolBar(JToolBar, URI) update the toolbar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return A {@link JToolBar} populated with the items belonging to the
-	 *         default tool bar
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createToolBar()
 	 */
+	@Override
 	public JToolBar createToolBar() {
 		return createToolBar(DefaultToolBar.DEFAULT_TOOL_BAR);
 	}
 
-	/**
-	 * Create the {@link JToolBar} containing menu elements defining the given
-	 * <code>id</code> as their {@link MenuComponent#getParentId() parent}.
-	 * <p>
-	 * Note that the parent itself also needs to exist as a registered SPI
-	 * instance og {@link MenuComponent#getType()} equal to
-	 * {@link MenuType#toolBar}, for instance by subclassing
-	 * {@link AbstractToolBar}.
-	 * </p>
-	 * <p>
-	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateToolBar(JToolBar, URI) update the toolbar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param id
-	 *            The {@link URI} identifying the tool bar
-	 * @return A {@link JToolBar} populated with the items belonging to the
-	 *         given parent id.
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createToolBar(java.net.URI)
 	 */
+	@Override
 	public JToolBar createToolBar(URI id) {
 		JToolBar toolbar = new JToolBar();
 		populateToolBar(toolbar, id);
@@ -233,49 +169,12 @@ public class MenuManager implements Observable<MenuManagerEvent> {
 		return toolbar;
 	}
 
-	/**
-	 * Get a menu item identified by the given URI.
-	 * <p>
-	 * Return the UI {@link Component} last created for a {@link MenuComponent},
-	 * through {@link #createMenuBar()}, {@link #createMenuBar(URI)},
-	 * {@link #createToolBar()} or {@link #createToolBar(URI)}.
-	 * </p>
-	 * <p>
-	 * For instance, if {@link #createMenuBar()} created a menu bar containing a
-	 * "File" menu with {@link MenuComponent#getId()} ==
-	 * <code>http://example.com/menu#file</code>, calling:
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * <pre>
-	 * Component fileMenu = getComponentByURI(URI
-	 * 		.create(&quot;http://example.com/menu#file&quot;));
-	 * </pre>
-	 * 
-	 * <p>
-	 * would return the {@link JMenu} last created for "File". Note that "last
-	 * created" could mean both the last call to {@link #createMenuBar()} and
-	 * last call to {@link #update()} - which could have happened because the
-	 * SPI registry was updated. To be notified when
-	 * {@link #getComponentByURI(URI)} might return a new Component because the
-	 * menues have been reconstructed,
-	 * {@link #addObserver(Observer) add an observer} to the MenuManager.
-	 * </p>
-	 * <p>
-	 * If the URI is unknown, has not yet been rendered as a {@link Component},
-	 * or the Component is no longer in use outside the menu manager's
-	 * {@link WeakReference weak references}, <code>null</code> is returned
-	 * instead.
-	 * </p>
-	 * 
-	 * @see #getURIByComponent(Component)
-	 * @param id
-	 *            {@link URI} of menu item as returned by
-	 *            {@link MenuComponent#getId()}
-	 * @return {@link Component} as previously generated by
-	 *         {@link #createMenuBar()}/{@link #createToolBar()}, or
-	 *         <code>null</code> if the URI is unknown, or if the
-	 *         {@link Component} no longer exists.
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getComponentByURI(java.net.URI)
 	 */
+	@Override
 	public synchronized Component getComponentByURI(URI id) {
 		WeakReference<Component> componentRef = uriToComponent.get(id);
 		if (componentRef == null) {
@@ -285,89 +184,40 @@ public class MenuManager implements Observable<MenuManagerEvent> {
 		return componentRef.get();
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getObservers()
 	 */
 	public List<Observer<MenuManagerEvent>> getObservers() {
 		return multiCaster.getObservers();
 	}
 
-	/**
-	 * Get the URI of the {@link MenuComponent} this menu/toolbar
-	 * {@link Component} was created from.
-	 * <p>
-	 * If the component was created by the MenuManager, through
-	 * {@link #createMenuBar()}, {@link #createMenuBar(URI)},
-	 * {@link #createToolBar()} or {@link #createToolBar(URI)}, the URI
-	 * identifying the defining {@link MenuComponent} is returned. This will be
-	 * the same URI as returned by {@link MenuComponent#getId()}.
-	 * </p>
-	 * <p>
-	 * Note that if {@link #update()} has been invoked, the {@link MenuManager}
-	 * might have rebuilt the menu structure and replaced the components since
-	 * the given <code>component</code> was created. The newest
-	 * {@link Component} for the given URI can be retrieved using
-	 * {@link #getComponentByURI(URI)}.
-	 * </p>
-	 * <p>
-	 * If the component is unknown, <code>null</code> is returned instead.
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @see #getComponentByURI(URI)
-	 * @param component
-	 *            {@link Component} that was previously created by the
-	 *            {@link MenuManager}
-	 * @return {@link URI} identifying the menu component, as returned by
-	 *         {@link MenuComponent#getId()}, or <code>null</code> if the
-	 *         component is unknown.
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getURIByComponent(java.awt.Component)
 	 */
+	@Override
 	public synchronized URI getURIByComponent(Component component) {
 		return componentToUri.get(component);
 	}
 
-	/**
-	 * {@inheritDoc}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#removeObserver(net.sf.taverna.t2.lang.observer.Observer)
 	 */
 	public void removeObserver(Observer<MenuManagerEvent> observer) {
 		multiCaster.removeObserver(observer);
 	}
 
-	/**
-	 * Update and rebuild the menu structure.
-	 * <p>
-	 * Rebuild menu structure as defined by the {@link MenuComponent}s
-	 * retrieved from the MenuComponent {@link SPIRegistry}.
-	 * </p>
-	 * <p>
-	 * Rebuilds previously published menubars and toolbars created with
-	 * {@link #createMenuBar()}, {@link #createMenuBar(URI)},
-	 * {@link #createToolBar()} and {@link #createToolBar(URI)}. Note that the
-	 * rebuild will do a removeAll() on the menubar/toolbar, so all components
-	 * will be reconstructed. You can use {@link #getComponentByURI(URI)} to
-	 * look up individual components within the menu and toolbars.
-	 * </p>
-	 * <p>
-	 * Note that the menu manager is observing the {@link SPIRegistry}, so if a
-	 * plugin gets installed and the SPI registry is updated, this update method
-	 * will be called by the SPI registry observer {@link MenuRegistryObserver}.
-	 * </p>
-	 * <p>
-	 * If there are several concurrent calls to {@link #update()}, the calls
-	 * from the other thread will return immediately, while the first thread to
-	 * get the synchronization lock on the menu manager will do the actual
-	 * update. If you want to ensure that {@link #update()} does not return
-	 * before the update has been performed fully, synchronize on the menu
-	 * manager:
-	 * </p>
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * <pre>
-	 * MenuManager menuManager = MenuManager.getInstance();
-	 * synchronized (menuManager) {
-	 * 	menuManager.update();
-	 * }
-	 * doSomethingAfterUpdateFinished();
-	 * </pre>
+	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#update()
 	 */
+	@Override
 	public void update() {
 		synchronized (updateLock) {
 			if (updating) {
@@ -658,15 +508,6 @@ public class MenuManager implements Observable<MenuManagerEvent> {
 				}
 			}
 		}
-	}
-
-	public static abstract class MenuManagerEvent {
-	}
-
-	/**
-	 * Event sent to observers registered by {@link MenuManager#addObserver(Observer)} when the menus have been updated, i.e. when {@link MenuManager#update()} has been called.
-	 */
-	public static class UpdatedMenuManagerEvent extends MenuManagerEvent {
 	}
 
 	/**

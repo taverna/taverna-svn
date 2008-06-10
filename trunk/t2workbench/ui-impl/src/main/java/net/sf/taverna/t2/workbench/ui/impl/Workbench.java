@@ -16,7 +16,7 @@ import javax.swing.WindowConstants;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.Log;
-import net.sf.taverna.t2.ui.menu.impl.MenuManager;
+import net.sf.taverna.t2.ui.menu.MenuManager;
 
 import org.apache.log4j.Logger;
 

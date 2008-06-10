@@ -22,7 +22,7 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
-public class FileSaveAction extends AbstractAction {
+public class FileSaveAsAction extends AbstractAction {
 
 	private final class ModelMapObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
@@ -35,16 +35,16 @@ public class FileSaveAction extends AbstractAction {
 	}
 
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
-	private static final String SAVE_DATAFLOW = "Save dataflow";
+	private static final String SAVE_DATAFLOW_AS = "Save dataflow as…";
 
-	private static Logger logger = Logger.getLogger(FileSaveAction.class);
+	private static Logger logger = Logger.getLogger(FileSaveAsAction.class);
 
 	private FileManager fileManager = FileManager.getInstance();
 
 	private ModelMap modelMap = ModelMap.getInstance();
 
-	public FileSaveAction() {
-		super(SAVE_DATAFLOW, WorkbenchIcons.saveIcon);
+	public FileSaveAsAction() {
+		super(SAVE_DATAFLOW_AS, WorkbenchIcons.saveIcon);
 		modelMap.addObserver(new ModelMapObserver());
 		updateEnabledStatus((Dataflow) modelMap
 				.getModel(ModelMapConstants.CURRENT_DATAFLOW));
@@ -61,15 +61,13 @@ public class FileSaveAction extends AbstractAction {
 			return;
 		}
 		
-		
-
 		JFileChooser fileChooser = new JFileChooser();
 
 		Preferences prefs = Preferences
 				.userNodeForPackage(getClass());
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
-		fileChooser.setDialogTitle(SAVE_DATAFLOW);
+		fileChooser.setDialogTitle(SAVE_DATAFLOW_AS);
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setFileFilter(new ExtensionFileFilter(EXTENSIONS));
 		fileChooser.setCurrentDirectory(new File(curDir));
@@ -88,6 +86,7 @@ public class FileSaveAction extends AbstractAction {
 								+ ex.getMessage(), "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
+			logger.info("Saved current dataflow to " + file);
 		}
 	}
 
@@ -95,9 +94,7 @@ public class FileSaveAction extends AbstractAction {
 		if (dataflow == null) {
 			setEnabled(false);
 		} else {
-			setEnabled(fileManager.isDataflowChanged(dataflow));
-			// TODO: Also update setEnabled by listening to the FileManager /
-			// EditManager
+			setEnabled(true);
 		}
 	}
 

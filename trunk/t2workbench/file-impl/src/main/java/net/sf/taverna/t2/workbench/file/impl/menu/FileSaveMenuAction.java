@@ -15,7 +15,7 @@ public class FileSaveMenuAction extends AbstractMenuAction {
 
 	@Override
 	protected Action createAction() {
-		return new FileSaveAction(true);
+		return new FileSaveAction();
 	}
 
 	

@@ -18,9 +18,8 @@ import javax.swing.MenuElement;
  * <p>
  * This is an {@link net.sf.taverna.t2.spi.SPIRegistry SPI}, and
  * implementations should list their fully qualified classnames in
- * META-INF/services/net.sf.taverna.t2.ui.menu.MenuComponent.txt to be
- * discovered by the
- * {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
+ * META-INF/services/net.sf.taverna.t2.ui.menu.MenuComponent to be
+ * discovered by the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
  * </p>
  * 
  * @author Stian Soiland-Reyes
@@ -83,8 +82,7 @@ public interface MenuComponent {
 	 * {@link MenuType#custom} and {@link MenuType#action} don't need an
 	 * identifier as they can't have children, and may return <code>null</code>
 	 * instead. However, a valid identifier might be used to look up the
-	 * MenuItem in the
-	 * {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
+	 * MenuItem in the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
 	 * </p>
 	 * <p>
 	 * <strong>Note:</strong>To avoid conflicts with other plugins, use a
@@ -223,6 +221,15 @@ public interface MenuComponent {
 
 		private Set<MenuType> parentTypes = defineParentTypes();
 
+		/**
+		 * True if the menu type is a parent type such as {@link #optionGroup},
+		 * {@link #section}, {@link #menu} or {@link #toolBar}. If the type of
+		 * a menu component is a a parent type it can (should) have children,
+		 * ie. the children has a {@link MenuComponent#getParentId()} that
+		 * equals the parent's {@link MenuComponent#getId()}.
+		 * 
+		 * @return True if the menu type is a parent type.
+		 */
 		public boolean isParentType() {
 			return parentTypes.contains(this);
 		}
