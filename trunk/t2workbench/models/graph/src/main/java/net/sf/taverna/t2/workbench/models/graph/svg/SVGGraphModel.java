@@ -1,6 +1,4 @@
-package net.sf.taverna.t2.workbench.views.graph;
-
-import net.sf.taverna.t2.workbench.models.graph.GraphElement;
+package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -15,16 +13,11 @@ import org.w3c.dom.events.UIEvent;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
-/**
- * SVG representation of a graph node.
- * 
- * @author David Withers
- */
-public class SVGNode extends SVGElement {
+import net.sf.taverna.t2.workbench.models.graph.Graph;
 
-	private SVGGraph graph;
+public class SVGGraphModel extends Graph implements SVGShape {
 
-	private GraphElement graphElement;
+	private SVGGraphComponent graphComponent;
 
 	private SVGOMGElement g;
 
@@ -48,41 +41,39 @@ public class SVGNode extends SVGElement {
 
 	private String selectedStyle;
 
-	private boolean nested;
-
-	private boolean selected;
+	public SVGGraphModel() {
+	}
+	
+	/**
+	 * Returns the graphComponent.
+	 *
+	 * @return the graphComponent
+	 */
+	public SVGGraphComponent getGraphComponent() {
+		return graphComponent;
+	}
 
 	/**
-	 * Constructs a new instance of SVGNode.
-	 * 
-	 * @param g
-	 *            the g element
-	 * @param polygon
-	 *            the polygon element
-	 * @param text
-	 *            the test element
-	 * @param nested
-	 *            true if this node contains a nested node
-	 * @param graph TODO
+	 * Sets the graphComponent.
+	 *
+	 * @param graphComponent the new graphComponent
 	 */
-	public SVGNode(SVGGraph graph, GraphElement graphElement, SVGOMGElement g, final SVGOMPolygonElement polygon,
-			SVGOMTextElement text, boolean nested) {
-		this.graph = graph;
-		this.graphElement = graphElement;
-		this.g = g;
-		this.polygon = polygon;
-		this.text = text;
-		this.nested = nested;
-		if (nested) {
-			iterationPosition = polygon.getPoints().getItem(2);
-		} else {
-			iterationPosition = polygon.getPoints().getItem(0);
-		}
-		errorsPosition = polygon.getPoints().getItem(3);
-		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
-		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraph.ERROR_COLOUR + ";");
-		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraph.SELECTED_COLOUR + ";");
+	public void setGraphComponent(SVGGraphComponent graphComponent) {
+		this.graphComponent = graphComponent;
+	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#getG()
+	 */
+	public SVGOMGElement getG() {
+		return g;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setG(org.apache.batik.dom.svg.SVGOMGElement)
+	 */
+	public void setG(SVGOMGElement g) {
+		this.g = g;
 		EventTarget t = (EventTarget) g;
 //		t.addEventListener(SVGConstants.SVG_MOUSEOVER_EVENT_TYPE, new EventListener() {
 //		public void handleEvent(Event evt) {
@@ -102,9 +93,8 @@ public class SVGNode extends SVGElement {
 				if (evt instanceof UIEvent) {
 					UIEvent uiEvent = (UIEvent) evt;
 					if (uiEvent.getDetail() == 1) {
-						selected = !selected;
-						SVGNode.this.graph.graphController.setSelected(SVGNode.this.graphElement, selected);
-						System.out.println(SVGNode.this.graphElement + "selected");
+						System.out.println(SVGGraphModel.this + "selected");
+						getSelectionModel().addSelection(getDataflowObject());
 					} else if (uiEvent.getDetail() == 2) {
 						polygon.setAttribute(
 								SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
@@ -113,28 +103,77 @@ public class SVGNode extends SVGElement {
 			}
 		}, false);
 
-
 	}
 
 	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.views.graph.SVGElement#setSelected(boolean)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#getPolygon()
 	 */
-	public void setSelected(boolean selected) {
-		if (selected) {
-			polygon.setAttribute(
-					SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
-		} else {
-			polygon.setAttribute(
-					SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);			
+	public SVGOMPolygonElement getPolygon() {
+		return polygon;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setPolygon(org.apache.batik.dom.svg.SVGOMPolygonElement)
+	 */
+	public void setPolygon(SVGOMPolygonElement polygon) {
+		this.polygon = polygon;
+		errorsPosition = polygon.getPoints().getItem(3);
+		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
+//		if (isExpanded()) {
+			iterationPosition = polygon.getPoints().getItem(2);
+//		} else {
+//			iterationPosition = polygon.getPoints().getItem(0);
+//		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#getText()
+	 */
+	public SVGOMTextElement getText() {
+		return text;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setText(org.apache.batik.dom.svg.SVGOMTextElement)
+	 */
+	public void setText(SVGOMTextElement text) {
+		this.text = text;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.GraphElement#setSelected(boolean)
+	 */
+	public void setSelected(final boolean selected) {
+		super.setSelected(selected);
+		System.out.println("setSelected:"+selected);
+		if (this.graphComponent.updateManager != null) {
+			System.out.println("this.graphComponent.updateManager != null");
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							if (selected) {
+								polygon.setAttribute(
+										SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+							} else {
+								polygon.setAttribute(
+										SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);			
+							}
+						}
+					});
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setIteration(int)
+	 */
 	public void setIteration(final int iteration) {
-		if (this.graph.updateManager != null) {
+		if (this.graphComponent.updateManager != null) {
 			if (iterationText == null) {
 				addIterationText();
 			}
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (iteration > 0) {
@@ -148,12 +187,15 @@ public class SVGNode extends SVGElement {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setErrors(int)
+	 */
 	public void setErrors(final int errors) {
-		if (this.graph.updateManager != null) {
+		if (this.graphComponent.updateManager != null) {
 			if (errorsText == null) {
 				addErrorsText();
 			}
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (errors > 0) {
@@ -171,12 +213,15 @@ public class SVGNode extends SVGElement {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setCompleted(float)
+	 */
 	public void setCompleted(final float complete) {
-		if (this.graph.updateManager != null) {
+		if (this.graphComponent.updateManager != null) {
 			if (completedBox == null) {
 				addCompletedBox();
 			}
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							completedBox.setAttribute(
@@ -199,12 +244,12 @@ public class SVGNode extends SVGElement {
 	}
 
 	private void addIterationText() {
-		if (this.graph.updateManager != null) {
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphComponent.updateManager != null) {
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
-							Element text = SVGNode.this.graph.svgDocument.createElementNS(
-									SVGGraph.svgNS, SVGConstants.SVG_TEXT_TAG);
+							Element text = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
+									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
 							text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
 									String
 									.valueOf(iterationPosition
@@ -224,7 +269,7 @@ public class SVGNode extends SVGElement {
 									"sans-serif");
 							synchronized (g) {
 								if (iterationText == null) {
-									iterationText = SVGNode.this.graph.svgDocument
+									iterationText = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createTextNode("");
 									text.appendChild(iterationText);
 									g.appendChild(text);
@@ -236,12 +281,12 @@ public class SVGNode extends SVGElement {
 	}
 
 	private void addErrorsText() {
-		if (this.graph.updateManager != null) {
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphComponent.updateManager != null) {
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
-							Element text = SVGNode.this.graph.svgDocument.createElementNS(
-									SVGGraph.svgNS, SVGConstants.SVG_TEXT_TAG);
+							Element text = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
+									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
 							text
 							.setAttribute(
 									SVGConstants.SVG_X_ATTRIBUTE,
@@ -265,7 +310,7 @@ public class SVGNode extends SVGElement {
 									SVGConstants.SVG_FILL_ATTRIBUTE, "red");
 							synchronized (g) {
 								if (errorsText == null) {
-									errorsText = SVGNode.this.graph.svgDocument
+									errorsText = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createTextNode("");
 									text.appendChild(errorsText);
 									g.appendChild(text);
@@ -277,15 +322,15 @@ public class SVGNode extends SVGElement {
 	}
 
 	private void addCompletedBox() {
-		if (this.graph.updateManager != null) {
-			this.graph.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphComponent.updateManager != null) {
+			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							synchronized (g) {
 								if (completedBox == null) {
-									completedBox = (SVGOMPolygonElement) SVGNode.this.graph.svgDocument
+									completedBox = (SVGOMPolygonElement) SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createElementNS(
-											SVGGraph.svgNS,
+											SVGGraphComponent.svgNS,
 											SVGConstants.SVG_POLYGON_TAG);
 									completedBox
 									.setAttribute(
@@ -294,7 +339,7 @@ public class SVGNode extends SVGElement {
 									completedBox
 									.setAttribute(
 											SVGConstants.SVG_FILL_ATTRIBUTE,
-											SVGGraph.COMPLETED_COLOUR);
+											SVGGraphComponent.COMPLETED_COLOUR);
 									completedBox
 									.setAttribute(
 											SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
@@ -326,17 +371,17 @@ public class SVGNode extends SVGElement {
 		StringBuffer sb = new StringBuffer();
 		SVGPointList points = polygon.getPoints();
 		float x1, x2, y1, y2;
-		if (nested) {
+//		if (isExpanded()) {
 			x1 = points.getItem(2).getX() - 0.4f;
 			x2 = points.getItem(0).getX() + 0.4f;
 			y1 = points.getItem(2).getY() + 0.4f;
 			y2 = points.getItem(0).getY() - 0.4f;
-		} else {
-			x1 = points.getItem(0).getX() - 0.4f;
-			x2 = points.getItem(1).getX() + 0.4f;
-			y1 = points.getItem(0).getY() + 0.4f;
-			y2 = points.getItem(2).getY() - 0.4f;
-		}
+//		} else {
+//			x1 = points.getItem(0).getX() - 0.4f;
+//			x2 = points.getItem(1).getX() + 0.4f;
+//			y1 = points.getItem(0).getY() + 0.4f;
+//			y2 = points.getItem(2).getY() - 0.4f;
+//		}
 		x1 = x2 + ((x1 - x2) * complete);
 		sb.append(x1 + "," + y1 + " ");
 		sb.append(x2 + "," + y1 + " ");
@@ -346,4 +391,5 @@ public class SVGNode extends SVGElement {
 
 		return sb.toString();
 	}
+	
 }

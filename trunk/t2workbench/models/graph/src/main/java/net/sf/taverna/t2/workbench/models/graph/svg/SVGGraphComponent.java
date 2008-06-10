@@ -1,7 +1,6 @@
-package net.sf.taverna.t2.workbench.views.graph;
+package net.sf.taverna.t2.workbench.models.graph.svg;
 
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -15,15 +14,13 @@ import java.util.TimerTask;
 
 import javax.swing.JComponent;
 
-import net.sf.taverna.t2.lang.observer.Observable;
-import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.io.StreamDevourer;
 import net.sf.taverna.t2.workbench.models.graph.DotWriter;
 import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphElement;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
-import net.sf.taverna.t2.workbench.models.graph.GraphSelectionMessage;
 
 import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.GenericText;
@@ -40,20 +37,13 @@ import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.shared.StreamDevourer;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
 
-/**
- * An SVG graph view of a Dataflow.
- * 
- * @author David Withers
- */
-@SuppressWarnings("serial")
-public class SVGGraph extends JComponent implements Observer<GraphSelectionMessage> {
+public class SVGGraphComponent extends JComponent {
 
-	private static Logger logger = Logger.getLogger(SVGGraph.class);
+	private static Logger logger = Logger.getLogger(SVGGraphComponent.class);
 
 	static final String COMPLETED_COLOUR = "grey";
 
@@ -69,22 +59,18 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 
 	private static Timer timer = new Timer(true);
 	
-	GraphController graphController;
+	private Map<String, SVGShape> processorMap = new HashMap<String, SVGShape>();
 
-	SVGDocument svgDocument;
+	private Map<String, List<SVGGraphEdge>> datalinkMap = new HashMap<String, List<SVGGraphEdge>>();
 
 	private JSVGCanvas svgCanvas;
 
 	UpdateManager updateManager;
 	
+	GraphController graphController;
+
 	private Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
 	
-	private Map<GraphElement, SVGElement> elementToProcessorMap = new HashMap<GraphElement, SVGElement>();
-
-	private Map<String, SVGNode> processorMap = new HashMap<String, SVGNode>();
-
-	private Map<String, List<SVGEdge>> datalinkMap = new HashMap<String, List<SVGEdge>>();
-
 	private static SAXSVGDocumentFactory docFactory = null;
 
 	static {
@@ -93,30 +79,46 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 		docFactory = new SAXSVGDocumentFactory(parser);
 	}
 
-	/**
-	 * Constructs a new instance of SVGDiagram.
-	 * 
-	 */
-	public SVGGraph(GraphController graphController) {
-		this.graphController = graphController;
-		setBackground(Color.white);
-		setOpaque(false);
-		setLayout(new GridLayout());
+	public SVGGraphComponent() {
+		setLayout(new BorderLayout());
 		svgCanvas = new JSVGCanvas();
 		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
 		svgCanvas.setOpaque(false);
-		add(svgCanvas);
+		add(svgCanvas, BorderLayout.CENTER);
 
 		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
 			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
 				updateManager = svgCanvas.getUpdateManager();
 			}
 		});
+	}
+	
+	public void setGraphController(GraphController graphController) {
+		this.graphController = graphController;
+		redraw();
+	}
+	
+	public void setSVGDocument(SVGDocument svgDocument) {
+		updateManager = null;
+		processorMap.clear();
+		datalinkMap.clear();
+
+		svgCanvas.setSVGDocument(svgDocument);
 		
-		
+		mapNodes(svgDocument.getChildNodes());
 	}
 
-	public void setGraph(Graph graph) {
+	/**
+	 * Returns the svgCanvas.
+	 *
+	 * @return the svgCanvas
+	 */
+	public JSVGCanvas getSvgCanvas() {
+		return svgCanvas;
+	}
+	
+	public void redraw() {
+		Graph graph = graphController.generateGraph();
 		graphElementMap.clear();
 		mapGraphElements(graph);
 		try {
@@ -143,13 +145,13 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 		}
 		for (GraphEdge edge : graph.getEdges()) {
 			graphElementMap.put(edge.getId(), edge);
-			System.out.println("Mapping edge:" + edge.getId());
+//			System.out.println("Mapping edge:" + edge.getId());
 		}		
 	}
 	
 	/**
-	 * Traverses nodes in the SVG DOM and creates SVGProcessors and
-	 * SVGDatalinks.
+	 * Traverses nodes in the SVG DOM and creates SVGNode and
+	 * SVGEdges.
 	 * 
 	 * @param nodes
 	 *            SVG diagram nodes
@@ -201,12 +203,14 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 							}
 						}
 						GraphElement graphElement = graphElementMap.get(title);
-//						System.out.println("looking for node: "+title);
-//						System.out.println("  found : "+graphElement);
-						SVGNode svgProcessor = new SVGNode(this, graphElement, gElement,
-								polygon, text, nested);
-						processorMap.put(title, svgProcessor);
-						elementToProcessorMap.put(graphElement, svgProcessor);
+						if (graphElement instanceof SVGShape) {
+							SVGShape svgBox = (SVGShape) graphElement;
+							svgBox.setG(gElement);
+							svgBox.setPolygon(polygon);
+							svgBox.setText(text);
+							processorMap.put(title, svgBox);
+						}
+//						elementToProcessorMap.put(graphElement, svgProcessor);
 					}
 				} else if ("edge".equals(gElementClass)) {
 					String title = null;
@@ -231,12 +235,14 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 					}
 					if (title != null && path != null && polygon != null) {
 						GraphElement graphElement = graphElementMap.get(title);
-						System.out.println("looking for edge : "+title);
-						System.out.println("  found : "+graphElement);
-
-						SVGEdge datalink = new SVGEdge(this, graphElement, path, polygon);
-						elementToProcessorMap.put(graphElement, datalink);
-						mapDatalink(title, datalink);
+//						System.out.println("looking for edge : "+title);
+//						System.out.println("  found : "+graphElement);
+						if (graphElement instanceof SVGGraphEdge) {
+							SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
+							svgGraphEdge.setPolygon(polygon);
+							svgGraphEdge.setPath(path);
+							mapDatalink(title, svgGraphEdge);
+						}
 					}
 				}
 			} else {
@@ -245,14 +251,14 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 		}
 	}
 
-	private void mapDatalink(String title, SVGEdge datalink) {
+	private void mapDatalink(String title, SVGGraphEdge datalink) {
 		String sinkProcessor = title.substring(title.indexOf("->") + 2);
 		int index = sinkProcessor.indexOf("WORKFLOWINTERNALSOURCE_");
 		if (index > 0) {
 			sinkProcessor = sinkProcessor.substring(0, index);
 		}
 		if (!datalinkMap.containsKey(sinkProcessor)) {
-			datalinkMap.put(sinkProcessor, new ArrayList<SVGEdge>());
+			datalinkMap.put(sinkProcessor, new ArrayList<SVGGraphEdge>());
 		}
 		datalinkMap.get(sinkProcessor).add(datalink);
 	}
@@ -262,11 +268,47 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 	 * 
 	 */
 	public void reset() {
-		for (SVGNode node : processorMap.values()) {
+		for (SVGShape node : processorMap.values()) {
 			node.setCompleted(0f);
 			node.setIteration(0);
 			node.setErrors(0);
 		}
+	}
+
+	public static SVGDocument getSVG(String dotText) throws IOException {
+		// FIXME: Should use MyGridConfiguration.getProperty(), 
+		// but that would not include the system property
+		// specified at command line on Windows (runme.bat) 
+		// and OS X (Taverna.app)
+		String dotLocation = System.getProperty("taverna.dotlocation");
+		if (dotLocation == null) {
+			dotLocation = "dot";
+		}
+		logger.debug("Invoking dot...");
+		Process dotProcess = Runtime.getRuntime().exec(
+				new String[] { dotLocation, "-Tsvg" });
+		StreamDevourer devourer = new StreamDevourer(dotProcess
+				.getInputStream());
+		devourer.start();
+		// Must create an error devourer otherwise stderr fills up and the
+		// process stalls!
+		StreamDevourer errorDevourer = new StreamDevourer(dotProcess
+				.getErrorStream());
+		errorDevourer.start();
+		PrintWriter out = new PrintWriter(dotProcess.getOutputStream(), true);
+		out.print(dotText);
+		out.flush();
+		out.close();
+		
+
+		String svgText = devourer.blockOnOutput();
+		// Avoid TAV-424, replace buggy SVG outputted by "modern" GraphViz versions.
+		// http://www.graphviz.org/bugs/b1075.html
+		// Contributed by Marko Ullgren
+		svgText = svgText.replaceAll("font-weight:regular","font-weight:normal");
+		// Fake URI, just used for internal references like #fish
+		return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", 
+			new StringReader(svgText));
 	}
 
 	/**
@@ -340,76 +382,16 @@ public class SVGGraph extends JComponent implements Observer<GraphSelectionMessa
 
 	public void fireDatalink(final String datalinkId) {
 		if (datalinkMap.containsKey(datalinkId)) {
-			for (SVGEdge datalink : datalinkMap.get(datalinkId)) {
+			for (SVGGraphEdge datalink : datalinkMap.get(datalinkId)) {
 				datalink.setColour(OUTPUT_COLOUR);
 			}
 			timer.schedule(new TimerTask() {
 				public void run() {
-					for (SVGEdge datalink : datalinkMap.get(datalinkId)) {
+					for (SVGGraphEdge datalink : datalinkMap.get(datalinkId)) {
 						datalink.resetStyle();
 					}
 				}
 			}, OUTPUT_FLASH_PERIOD);
-		}
-	}
-
-	public void setSVGDocument(SVGDocument svgDocument) {
-		updateManager = null;
-		processorMap.clear();
-		datalinkMap.clear();
-		
-		mapNodes(svgDocument.getChildNodes());
-		svgCanvas.setSVGDocument(svgDocument);
-	}
-	
-	public JSVGCanvas getSvgCanvas() {
-		return svgCanvas;
-	}
-
-	public static SVGDocument getSVG(String dotText) throws IOException {
-		// FIXME: Should use MyGridConfiguration.getProperty(), 
-		// but that would not include the system property
-		// specified at command line on Windows (runme.bat) 
-		// and OS X (Taverna.app)
-		String dotLocation = System.getProperty("taverna.dotlocation");
-		if (dotLocation == null) {
-			dotLocation = "dot";
-		}
-		logger.debug("Invoking dot...");
-		Process dotProcess = Runtime.getRuntime().exec(
-				new String[] { dotLocation, "-Tsvg" });
-		StreamDevourer devourer = new StreamDevourer(dotProcess
-				.getInputStream());
-		devourer.start();
-		// Must create an error devourer otherwise stderr fills up and the
-		// process stalls!
-		StreamDevourer errorDevourer = new StreamDevourer(dotProcess
-				.getErrorStream());
-		errorDevourer.start();
-		PrintWriter out = new PrintWriter(dotProcess.getOutputStream(), true);
-		out.print(dotText);
-		out.flush();
-		out.close();
-		
-
-		String svgText = devourer.blockOnOutput();
-		// Avoid TAV-424, replace buggy SVG outputted by "modern" GraphViz versions.
-		// http://www.graphviz.org/bugs/b1075.html
-		// Contributed by Marko Ullgren
-		svgText = svgText.replaceAll("font-weight:regular","font-weight:normal");
-		// Fake URI, just used for internal references like #fish
-		return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", 
-			new StringReader(svgText));
-	}
-
-	public void notify(Observable<GraphSelectionMessage> sender,
-			GraphSelectionMessage message) throws Exception {
-		GraphElement element = message.getElement();
-		SVGElement svgElement = elementToProcessorMap.get(element);
-		if (svgElement != null) {
-			svgElement.setSelected(message.getType().equals(GraphSelectionMessage.Type.ADDED));
-		} else {
-			System.out.println(element + " not found");
 		}
 	}
 

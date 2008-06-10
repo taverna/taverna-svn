@@ -2,13 +2,19 @@ package net.sf.taverna.t2.workbench.views.graph;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
@@ -18,8 +24,9 @@ import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
-import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
+import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent;
+import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphModelFactory;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -44,21 +51,71 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(GraphViewComponent.class);
 
-	private GraphController graphController = new GraphController();
-
-	private SVGGraph svgDiagram = new SVGGraph(graphController);;
+	private SVGGraphComponent svgGraphComponent = new SVGGraphComponent();
+	
+	private GraphController graphController;
+	
+	private Map<Dataflow, GraphController> graphControllerMap = new HashMap<Dataflow, GraphController>();
 
 	public GraphViewComponent() {
 		super(new BorderLayout());
 		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
-		add(svgDiagram, BorderLayout.CENTER);
-		graphController.getSelectionModel().addObserver(svgDiagram);
+		
+		JToolBar toolBar = new JToolBar();
+		Action resetDiagramAction = svgGraphComponent.getSvgCanvas().new ResetTransformAction();
+		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+		toolBar.add(resetDiagramAction);
+		Action zoomInAction = svgGraphComponent.getSvgCanvas().new ZoomAction(1.2);
+		zoomInAction.putValue(Action.NAME, "Zoom In");
+		toolBar.add(zoomInAction);
+		Action zoomOutAction = svgGraphComponent.getSvgCanvas().new ZoomAction(1/1.2);
+		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+		toolBar.add(zoomOutAction);
+
+		toolBar.add(new AbstractAction("No Ports") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.NONE);
+				svgGraphComponent.redraw();
+				graphController.resetSelection();
+			}
+			
+		});
+		
+		toolBar.add(new AbstractAction("All Ports") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.ALL);
+				svgGraphComponent.redraw();
+				graphController.resetSelection();
+			}
+			
+		});
+		
+		toolBar.add(new AbstractAction("Blobs") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.BLOB);
+				svgGraphComponent.redraw();
+				graphController.resetSelection();
+			}
+			
+		});
+		
+		add(toolBar, BorderLayout.NORTH);
+		
+		add(svgGraphComponent, BorderLayout.CENTER);
+		
 		ModelMap.getInstance().addObserver(this);
 	}
 	
 	public void setDataflow(Dataflow dataflow) {
-		Graph graph = graphController.generateGraph(dataflow);
-		svgDiagram.setGraph(graph);
+		if (!graphControllerMap.containsKey(dataflow)) {
+			GraphController graphController = new GraphController(dataflow, new SVGGraphModelFactory());
+			graphControllerMap.put(dataflow, graphController);
+		}
+		graphController = graphControllerMap.get(dataflow);
+		svgGraphComponent.setGraphController(graphController);
 	}
 	
 	public static void main(String[] args) throws Exception {

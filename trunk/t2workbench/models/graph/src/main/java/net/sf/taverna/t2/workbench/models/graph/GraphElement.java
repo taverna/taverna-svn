@@ -3,6 +3,7 @@ package net.sf.taverna.t2.workbench.models.graph;
 import java.awt.Color;
 
 import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
 
 /**
  * An element of a graph.
@@ -22,6 +23,48 @@ public abstract class GraphElement {
 	private Color fillColor;
 	
 	private GraphElement parent;
+	
+	private boolean selected;
+	
+	private Object dataflowObject;
+	
+	private DataflowSelectionModel selectionModel;
+
+	/**
+	 * Returns the dataflowObject.
+	 *
+	 * @return the dataflowObject
+	 */
+	public Object getDataflowObject() {
+		return dataflowObject;
+	}
+
+	/**
+	 * Sets the dataflowObject.
+	 *
+	 * @param dataflowObject the new dataflowObject
+	 */
+	public void setDataflowObject(Object dataflowObject) {
+		this.dataflowObject = dataflowObject;
+	}
+
+	/**
+	 * Returns the selectionModel.
+	 *
+	 * @return the selectionModel
+	 */
+	public DataflowSelectionModel getSelectionModel() {
+		return selectionModel;
+	}
+
+	/**
+	 * Sets the selectionModel.
+	 *
+	 * @param selectionModel the new selectionModel
+	 */
+	public void setSelectionModel(DataflowSelectionModel selectionModel) {
+		this.selectionModel = selectionModel;
+	}
 
 	/**
 	 * Returns the parent.
@@ -133,5 +176,23 @@ public abstract class GraphElement {
 
 	public String toString() {
 		return id + "[" + label + "]";
+	}
+
+	/**
+	 * Returns the selected.
+	 *
+	 * @return the selected
+	 */
+	public boolean isSelected() {
+		return selected;
+	}
+
+	/**
+	 * Sets the selected.
+	 *
+	 * @param selected the new selected
+	 */
+	public void setSelected(boolean selected) {
+		this.selected = selected;
 	}
 }

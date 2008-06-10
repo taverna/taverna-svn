@@ -58,22 +58,6 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-svg-dom</artifactId>
-			<version>1.6-1</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-swing</artifactId>
-			<version>1.6-1</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-util</artifactId>
-			<version>1.6-1</version>
-		</dependency>
-		
 		<!-- required for loading a scufl model until loading a dataflow is done -->
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>

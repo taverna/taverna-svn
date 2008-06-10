@@ -94,7 +94,7 @@ public class DotWriter {
 
 	private void writeSubGraph(Graph graph, String indent) throws IOException {
 		writeLine(indent + "subgraph cluster_" + graph.getId() + " {");
-//		writeLine(indent + " rank=\"same\"");
+		writeLine(indent + " rank=\"same\"");
 
 		StringBuilder style = new StringBuilder();
 		if (graph.getFillColor() != null) {

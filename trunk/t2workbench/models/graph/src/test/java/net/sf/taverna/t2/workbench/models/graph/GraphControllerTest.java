@@ -26,14 +26,28 @@ public class GraphControllerTest extends TranslatorTestHelper {
 		System.setProperty("raven.eclipse", "true");
 		setUpRavenRepository();
 		dataflow = WorkflowModelTranslator.doTranslation(loadScufl("nested_iteration.xml"));
-		graphController = new GraphController();
+		graphController = new GraphController(dataflow, new GraphModelFactory() {
+
+			public GraphEdge createGraphEdge() {
+				return new GraphEdge();
+			}
+
+			public Graph createGraphModel() {
+				return new Graph();
+			}
+
+			public GraphNode createGraphNode() {
+				return new GraphNode();
+			}
+			
+		});
 		graphController.setPortStyle(PortStyle.NONE);
 	}
 
 	@Test
 	@Ignore
 	public void testGenerateGraph() throws IOException, InterruptedException {
-		Graph graph = graphController.generateGraph(dataflow);
+		Graph graph = graphController.generateGraph();
 		assertEquals(5, graph.getNodes().size());
 		assertEquals(9, graph.getEdges().size());
 		assertEquals(1, graph.getSubgraphs().size());		

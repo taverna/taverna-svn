@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge.ArrowStyle;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
+import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -23,12 +28,14 @@ import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 import net.sf.taverna.t2.workflowmodel.ProcessorOutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+import org.apache.log4j.Logger;
+
 /**
  * 
  * 
  * @author David Withers
  */
-public class GraphController {
+public class GraphController implements Observer<DataflowSelectionMessage> {
 
 	public enum PortStyle {
 		ALL {
@@ -62,6 +69,8 @@ public class GraphController {
 
 	}
 	
+	private static Logger logger = Logger.getLogger(GraphController.class);
+
 	private Map<Object, GraphElement> processors = new HashMap<Object, GraphElement>();
 
 	private Map<GraphElement, Object> elements = new HashMap<GraphElement, Object>();
@@ -70,10 +79,18 @@ public class GraphController {
 
 	private Map<Port, Port> nestedDataflowPorts = new HashMap<Port, Port>();
 	
-	private GraphSelectionModel selectionModel = new DefaultGraphSelectionModel();
-
+	private Map<Graph, GraphNode> inputControls = new HashMap<Graph, GraphNode>();
+	
+	private Map<Graph, GraphNode> outputControls = new HashMap<Graph, GraphNode>();
+	
+	private Dataflow dataflow;
+	
+	private GraphModelFactory graphModelFactory;
+	
+	private DataflowSelectionModel dataflowSelectionModel;
+	
 	//graph settings	
-	private PortStyle portStyle = PortStyle.ALL;
+	private PortStyle portStyle = PortStyle.NONE;
 	
 	private Alignment alignment = Alignment.VERTICAL;
 	
@@ -81,41 +98,28 @@ public class GraphController {
 
 	private boolean showMerges = true;
 
-	public Graph generateGraph(Dataflow dataflow) {
-		return generateGraph(dataflow, "", "dataflow_graph", 0);
+	public GraphController(Dataflow dataflow, GraphModelFactory graphModelFactory) {
+		this.dataflow = dataflow;
+		this.graphModelFactory = graphModelFactory;
+		dataflowSelectionModel = DataflowSelectionManager.getInstance().getDataflowSelectionModel(dataflow);
+		dataflowSelectionModel.addObserver(this);
 	}
 	
-	public void setSelected(Object dataflowElement, boolean selected) {
-		GraphElement element = processors.get(dataflowElement);
-		if (element != null) {
-			if (!selectionModel.getSelection().contains(element)) {
-				selectionModel.clearSelection();
-			}
-			if (element instanceof GraphNode) {
-				GraphNode node = (GraphNode) element;
-				if (node.isExpanded()) {
-					selectionModel.addSelection(node.getGraph());
-				} else {
-					selectionModel.addSelection(node);
-				}
-			} else {
-				selectionModel.addSelection(element);
-			}
-		}
+	public Graph generateGraph() {
+		return generateGraph(dataflow, "", "dataflow_graph", 0);
 	}
 	
 	public void setSelected(GraphElement graphElement, boolean selected) {
 		Object dataflowElement = elements.get(graphElement);
-		//TODO inform dataflow selection manager when it's writen
 		if (dataflowElement != null) {
-			setSelected(dataflowElement, selected);
+			dataflowSelectionModel.addSelection(dataflowElement);
 		} else {
-			System.out.println("NULL for " + graphElement.getId());
+			logger.debug("Selection failed : no dataflow element found for graph element " + graphElement.getId());
 		}
 	}
 	
 	public Graph generateGraph(Dataflow dataflow, String prefix, String name, int depth) {
-		Graph graph = new Graph();
+		Graph graph = graphModelFactory.createGraphModel();
 		graph.setId(prefix + name);
 		graph.setAlignment(getAlignment());
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -156,13 +160,13 @@ public class GraphController {
 		//dataflow outputs
 		List<? extends DataflowOutputPort> outputPorts = dataflow.getOutputPorts();
 		if (outputPorts.size() > 0) {
-			graph.addSubgraph(generateOutputsGraph(outputPorts, prefix));
+			graph.addSubgraph(generateOutputsGraph(outputPorts, prefix, graph));
 		}
 
 		//dataflow inputs
 		List<? extends DataflowInputPort> inputPorts = dataflow.getInputPorts();
 		if (inputPorts.size() > 0) {
-			graph.addSubgraph(generateInputsGraph(inputPorts, prefix));
+			graph.addSubgraph(generateInputsGraph(inputPorts, prefix, graph));
 		}
 
 		//datalinks
@@ -196,10 +200,22 @@ public class GraphController {
 		if (element instanceof GraphNode) {
 			GraphNode source = (GraphNode) element;
 			if (source != null && sink != null) {
-				edge = new GraphEdge(source, sink);
+				edge = graphModelFactory.createGraphEdge();
+				if (source.isExpanded()) {
+					edge.setSource(outputControls.get(source.getGraph()));
+				} else {
+					edge.setSource(source);
+				}
+				if (sink.isExpanded()) {
+					edge.setSink(inputControls.get(sink.getGraph()));
+				} else {
+					edge.setSink(sink);
+				}
 				edge.setLineStyle(LineStyle.SOLID);
 				edge.setColor(Color.decode("#c0c0c0"));
 				edge.setArrowHeadStyle(ArrowStyle.ODOT);
+				edge.setDataflowObject(condition);
+				edge.setSelectionModel(dataflowSelectionModel);
 			}
 		}
 		return edge;
@@ -218,7 +234,9 @@ public class GraphController {
 		GraphNode sourceNode = ports.get(sourcePort);
 		GraphNode sinkNode = ports.get(sinkPort);
 		if (sourceNode != null && sinkNode != null) {
-			edge = new GraphEdge(sourceNode, sinkNode);
+			edge = graphModelFactory.createGraphEdge();
+			edge.setSource(sourceNode);
+			edge.setSink(sinkNode);
 			processors.put(datalink, edge);
 			elements.put(edge, datalink);
 
@@ -232,13 +250,14 @@ public class GraphController {
 			}
 			edge.setId(sourceId + "->" + sinkId);
 			edge.setLineStyle(LineStyle.SOLID);
+			edge.setDataflowObject(datalink);
+			edge.setSelectionModel(dataflowSelectionModel);
 		}
 		return edge;
 	}
 
-	private Graph generateInputsGraph(
-			List<? extends DataflowInputPort> inputPorts, String prefix) {
-		Graph inputs = new Graph();
+	private Graph generateInputsGraph(List<? extends DataflowInputPort> inputPorts, String prefix, Graph graph) {
+		Graph inputs = graphModelFactory.createGraphModel();
 		inputs.setId(prefix + "sources");
 		inputs.setLineStyle(LineStyle.DOTTED);
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -247,7 +266,7 @@ public class GraphController {
 			inputs.setLabel("Workflow Inputs");
 		}
 
-		GraphNode triangle = new GraphNode();
+		GraphNode triangle = graphModelFactory.createGraphNode();
 		triangle.setId(prefix + "WORKFLOWINTERNALSOURCECONTROL");
 		triangle.setLabel("");
 		triangle.setShape(Shape.TRIANGLE);
@@ -255,9 +274,10 @@ public class GraphController {
 		triangle.setHeight(0.2f);
 		triangle.setFillColor(Color.decode("#ff4040"));
 		inputs.addNode(triangle);
+		inputControls.put(graph, triangle);
 
 		for (DataflowInputPort inputPort : inputPorts) {
-			GraphNode inputNode = new GraphNode();
+			GraphNode inputNode = graphModelFactory.createGraphNode();
 			inputNode.setId(prefix + "WORKFLOWINTERNALSOURCE_"+ inputPort.getName());
 			if (getPortStyle().equals(PortStyle.BLOB)) {
 				inputNode.setLabel("");
@@ -268,15 +288,16 @@ public class GraphController {
 			}
 			inputNode.setShape(getPortStyle().inputShape());
 			inputNode.setFillColor(Color.decode("#87ceeb"));
+			inputNode.setDataflowObject(inputPort);
+			inputNode.setSelectionModel(dataflowSelectionModel);
 			ports.put(inputPort.getInternalOutputPort(), inputNode);
 			inputs.addNode(inputNode);
 		}
 		return inputs;
 	}
 
-	private Graph generateOutputsGraph(
-			List<? extends DataflowOutputPort> outputPorts, String prefix) {
-		Graph outputs = new Graph();
+	private Graph generateOutputsGraph(List<? extends DataflowOutputPort> outputPorts, String prefix, Graph graph) {
+		Graph outputs = graphModelFactory.createGraphModel();
 		outputs.setId(prefix + "sinks");
 		outputs.setLineStyle(LineStyle.DOTTED);
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -285,7 +306,7 @@ public class GraphController {
 			outputs.setLabel("Workflow Outputs");
 		}
 
-		GraphNode triangle = new GraphNode();
+		GraphNode triangle = graphModelFactory.createGraphNode();
 		triangle.setId(prefix + "WORKFLOWINTERNALSINKCONTROL");
 		triangle.setLabel("");
 		triangle.setShape(Shape.INVTRIANGLE);
@@ -293,9 +314,10 @@ public class GraphController {
 		triangle.setHeight(0.2f);
 		triangle.setFillColor(Color.decode("#66cd00"));
 		outputs.addNode(triangle);
+		outputControls.put(graph, triangle);
 
 		for (DataflowOutputPort outputPort : outputPorts) {
-			GraphNode outputNode = new GraphNode();
+			GraphNode outputNode = graphModelFactory.createGraphNode();
 			outputNode.setId(prefix + "WORKFLOWINTERNALSINK_"+ outputPort.getName());
 			if (getPortStyle().equals(PortStyle.BLOB)) {
 				outputNode.setLabel("");
@@ -306,6 +328,8 @@ public class GraphController {
 			}
 			outputNode.setShape(getPortStyle().outputShape());
 			outputNode.setFillColor(Color.decode("#bcd2ee"));
+			outputNode.setDataflowObject(outputNode);
+			outputNode.setSelectionModel(dataflowSelectionModel);
 			ports.put(outputPort.getInternalInputPort(), outputNode);
 			outputs.addNode(outputNode);
 		}
@@ -313,19 +337,21 @@ public class GraphController {
 	}
 
 	private GraphNode generateMergeNode(Merge merge, String prefix) {
-		GraphNode node = new GraphNode();
+		GraphNode node = graphModelFactory.createGraphNode();
 		node.setId(prefix + merge.getLocalName());
 		node.setLabel("");
 		node.setShape(getPortStyle().mergeShape());
 		node.setWidth(0.2f);
 		node.setHeight(0.2f);
 		node.setFillColor(Color.decode("#4f94cd"));
+		node.setDataflowObject(merge);
+		node.setSelectionModel(dataflowSelectionModel);
 
 		processors.put(merge, node);
 		elements.put(node, merge);
 
 		for (MergeInputPort inputPort : merge.getInputPorts()) {
-			GraphNode portNode = new GraphNode();
+			GraphNode portNode = graphModelFactory.createGraphNode();
 			portNode.setId("i" + inputPort.getName());
 			portNode.setLabel(inputPort.getName());
 			ports.put(inputPort, portNode);
@@ -333,7 +359,7 @@ public class GraphController {
 		}
 
 		OutputPort outputPort = merge.getOutputPort();
-		GraphNode portNode = new GraphNode();
+		GraphNode portNode = graphModelFactory.createGraphNode();
 		portNode.setId("o" + outputPort.getName());
 		portNode.setLabel(outputPort.getName());
 		ports.put(outputPort, portNode);
@@ -345,7 +371,7 @@ public class GraphController {
 		//Blatantly ignoring any other activities for now
 		Activity<?> firstActivity = processor.getActivityList().get(0);
 
-		GraphNode node = new GraphNode();
+		GraphNode node = graphModelFactory.createGraphNode();
 		node.setId(prefix + processor.getLocalName());
 		if (getPortStyle().equals(PortStyle.BLOB)) {
 			node.setLabel("");
@@ -356,6 +382,8 @@ public class GraphController {
 		}
 		node.setShape(getPortStyle().processorShape());
 		node.setFillColor(GraphColorManager.getFillColor(firstActivity));
+		node.setDataflowObject(processor);
+		node.setSelectionModel(dataflowSelectionModel);
 
 		processors.put(processor, node);
 		elements.put(node, processor);
@@ -365,6 +393,8 @@ public class GraphController {
 			if (firstActivity.getConfiguration() instanceof Dataflow) {
 				Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
 				Graph subGraph = generateGraph(subDataflow, node.getId(), processor.getLocalName(), depth + 1);
+				subGraph.setDataflowObject(processor);
+				subGraph.setSelectionModel(dataflowSelectionModel);
 				elements.put(subGraph, processor);
 				node.setGraph(subGraph);
 				node.setExpanded(true);
@@ -395,7 +425,7 @@ public class GraphController {
 		}
 
 		for (ProcessorInputPort inputPort : processor.getInputPorts()) {
-			GraphNode portNode = new GraphNode();
+			GraphNode portNode = graphModelFactory.createGraphNode();
 			portNode.setId("i" + inputPort.getName());
 			portNode.setLabel(inputPort.getName());
 			ports.put(inputPort, portNode);
@@ -403,7 +433,7 @@ public class GraphController {
 		}
 
 		for (ProcessorOutputPort outputPort : processor.getOutputPorts()) {
-			GraphNode portNode = new GraphNode();
+			GraphNode portNode = graphModelFactory.createGraphNode();
 			portNode.setId("o" + outputPort.getName());
 			portNode.setLabel(outputPort.getName());
 			ports.put(outputPort, portNode);
@@ -448,22 +478,32 @@ public class GraphController {
 		this.portStyle = portStyle;
 	}
 
-	/**
-	 * Returns the selectionModel.
-	 *
-	 * @return the selectionModel
-	 */
-	public GraphSelectionModel getSelectionModel() {
-		return selectionModel;
+	public void resetSelection() {
+		for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
+			GraphElement graphElement = processors.get(dataflowElement);
+			if (graphElement != null) {
+				graphElement.setSelected(true);
+			}		
+		}
+	}
+
+	public void notify(Observable<DataflowSelectionMessage> sender,
+			DataflowSelectionMessage message) throws Exception {
+		System.out.println("notify:"+message.getElement());
+		GraphElement graphElement = processors.get(message.getElement());
+		if (graphElement != null) {
+			System.out.println("set selected:"+graphElement);
+			graphElement.setSelected(message.getType().equals(DataflowSelectionMessage.Type.ADDED));
+		}		
 	}
 
 	/**
-	 * Sets the selectionModel.
+	 * Returns the dataflowSelectionModel.
 	 *
-	 * @param selectionModel the new selectionModel
+	 * @return the dataflowSelectionModel
 	 */
-	public void setSelectionModel(GraphSelectionModel selectionModel) {
-		this.selectionModel = selectionModel;
+	public DataflowSelectionModel getDataflowSelectionModel() {
+		return dataflowSelectionModel;
 	}
 
 }
