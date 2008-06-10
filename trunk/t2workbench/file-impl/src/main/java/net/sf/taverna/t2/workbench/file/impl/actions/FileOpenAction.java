@@ -11,13 +11,12 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.OpenException;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.actions.OpenWorkflowFromFileAction;
-import org.embl.ebi.escience.scuflui.shared.ExtensionFileFilter;
 
 public class FileOpenAction extends AbstractAction {
 
@@ -36,7 +35,7 @@ public class FileOpenAction extends AbstractAction {
 		JFileChooser fileChooser = new JFileChooser();
 
 		Preferences prefs = Preferences
-				.userNodeForPackage(OpenWorkflowFromFileAction.class);
+				.userNodeForPackage(getClass());
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
 		fileChooser.setDialogTitle(OPEN_DATAFLOW);
