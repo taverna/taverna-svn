@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
+import javax.help.CSH;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
@@ -242,8 +243,14 @@ public class MenuManagerImpl extends MenuManager {
 					+ " within toolBar element");
 			return;
 		}
+		List<Component> subComponents = makeComponents(menuId, false, false);
+		if (subComponents.isEmpty()) {
+			logger.warn("No sub components found for menu " + menuId);
+			return;
+		}
+
 		JMenu menu = new JMenu(menuComponent.getAction());
-		for (Component menuItem : makeComponents(menuId, false, false)) {
+		for (Component menuItem : subComponents) {
 			if (menuItem == null) {
 				menu.addSeparator();
 			} else {
@@ -266,16 +273,22 @@ public class MenuManagerImpl extends MenuManager {
 		components.add(null);
 	}
 
-	private void addOptionGroup(List<Component> components, URI childId,
+	private void addOptionGroup(List<Component> components, URI optionGroupId,
 			boolean isToolbar) {
-		ButtonGroup buttonGroup = new ButtonGroup();
-		List<Component> buttons = makeComponents(childId, isToolbar, true);
+		List<Component> buttons = makeComponents(optionGroupId, isToolbar, true);
 		addNullSeparator(components);
+		if (buttons.isEmpty()) {
+			logger.warn("No sub components found for option group "
+					+ optionGroupId);
+			return;
+		}
+		ButtonGroup buttonGroup = new ButtonGroup();
+
 		for (Component button : buttons) {
 			if (button instanceof AbstractButton) {
 				buttonGroup.add((AbstractButton) button);
 			} else {
-				logger.warn("Component of button group " + childId
+				logger.warn("Component of button group " + optionGroupId
 						+ " is not an AbstractButton: " + button);
 			}
 			if (button == null) {
@@ -288,11 +301,15 @@ public class MenuManagerImpl extends MenuManager {
 		addNullSeparator(components);
 	}
 
-	private void addSection(List<Component> components, URI childId,
+	private void addSection(List<Component> components, URI sectionId,
 			boolean isToolbar, boolean isOptionGroup) {
-		List<Component> childComponents = makeComponents(childId, isToolbar,
+		List<Component> childComponents = makeComponents(sectionId, isToolbar,
 				isOptionGroup);
 		addNullSeparator(components);
+		if (childComponents.isEmpty()) {
+			logger.warn("No sub components found for section " + sectionId);
+			return;
+		}
 		for (Component childComponent : childComponents) {
 			if (childComponent == null) {
 				logger.warn("Separator found within section");
@@ -409,6 +426,14 @@ public class MenuManagerImpl extends MenuManager {
 		return components;
 	}
 
+	protected void setHelpStringForComponent(Component component,
+			URI componentId) {
+		if (componentId != null) {
+			String helpId = componentId.toASCIIString();
+			CSH.setHelpIDString(component, helpId);
+		}
+	}
+
 	private void stripTrailingNullSeparator(List<Component> components) {
 		if (!components.isEmpty()) {
 			int lastIndex = components.size() - 1;
@@ -478,8 +503,9 @@ public class MenuManagerImpl extends MenuManager {
 				uriToPublishedComponents.put(id, publishedComponents);
 			}
 			publishedComponents.add(new WeakReference<Component>(component));
-
 		}
+
+		setHelpStringForComponent(component, id);
 	}
 
 	protected synchronized void resetCollections() {
