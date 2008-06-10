@@ -9,7 +9,7 @@ public class FileOpenSection extends AbstractMenuSection {
 	public FileOpenSection() {
 		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#file"),
 				20,
-				URI.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpen"));
+				URI.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpenSection"));
 	}
 
 }

@@ -10,7 +10,7 @@ import net.sf.taverna.t2.workbench.file.impl.actions.FileSaveAction;
 public class FileSaveMenuAction extends AbstractMenuAction {
 
 	public FileSaveMenuAction() {
-		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpen"), 50);
+		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpenSection"), 50);
 	}
 
 	@Override
