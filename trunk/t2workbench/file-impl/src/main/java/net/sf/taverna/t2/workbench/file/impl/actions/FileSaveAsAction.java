@@ -81,6 +81,7 @@ public class FileSaveAsAction extends AbstractAction {
 			try {
 				fileManager.saveCurrentDataflow(file);
 			} catch (SaveException ex) {
+				logger.warn("Could not save dataflow to " + file, ex);
 				JOptionPane.showMessageDialog(parentComponent,
 						"Could not save dataflow to " + file + ": \n\n"
 								+ ex.getMessage(), "Warning",

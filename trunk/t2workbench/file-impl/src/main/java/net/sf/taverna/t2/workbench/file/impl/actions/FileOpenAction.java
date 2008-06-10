@@ -60,6 +60,7 @@ public class FileOpenAction extends AbstractAction {
 			try {
 				fileManager.openDataflow(url);
 			} catch (OpenException ex) {
+				logger.warn("Could not open dataflow from " + url, ex);
 				JOptionPane.showMessageDialog(parentComponent,
 						"Could not open dataflow from " + url + ": \n\n"
 								+ ex.getMessage(), "Warning",
