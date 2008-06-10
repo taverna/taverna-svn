@@ -38,6 +38,12 @@
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>edits-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+            <scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>0.3-SNAPSHOT</version>
