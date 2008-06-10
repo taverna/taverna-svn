@@ -59,7 +59,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 
 	public GraphViewComponent() {
 		super(new BorderLayout());
-		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
 		
 		JToolBar toolBar = new JToolBar();
 		Action resetDiagramAction = svgGraphComponent.getSvgCanvas().new ResetTransformAction();

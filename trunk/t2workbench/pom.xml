@@ -245,7 +245,8 @@
 	<modules>
 		<module>application</module>
 		<module>common-icons</module>
-		<module>configuration</module>
+		<module>configuration-api</module>
+		<module>configuration-impl</module>
 		<module>edits-api</module>
 		<module>edits-impl</module>
 		<module>file-api</module>

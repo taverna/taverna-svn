@@ -21,6 +21,7 @@ import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphElement;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.ui.impl.configuration.WorkbenchConfiguration;
 
 import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.GenericText;
@@ -280,7 +281,7 @@ public class SVGGraphComponent extends JComponent {
 		// but that would not include the system property
 		// specified at command line on Windows (runme.bat) 
 		// and OS X (Taverna.app)
-		String dotLocation = System.getProperty("taverna.dotlocation");
+		String dotLocation = (String)WorkbenchConfiguration.getInstance().getPropertyMap().get("taverna.dotlocation");
 		if (dotLocation == null) {
 			dotLocation = "dot";
 		}
