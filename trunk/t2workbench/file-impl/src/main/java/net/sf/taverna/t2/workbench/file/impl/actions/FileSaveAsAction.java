@@ -35,7 +35,7 @@ public class FileSaveAsAction extends AbstractAction {
 	}
 
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
-	private static final String SAVE_DATAFLOW_AS = "Save dataflow as…";
+	private static final String SAVE_DATAFLOW_AS = "Save dataflow as...";
 
 	private static Logger logger = Logger.getLogger(FileSaveAsAction.class);
 

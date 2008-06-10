@@ -22,7 +22,7 @@ public class FileOpenAction extends AbstractAction {
 
 	// TODO: Support .xml as well
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
-	private static final String OPEN_DATAFLOW = "Open dataflow";
+	private static final String OPEN_DATAFLOW = "Open dataflow...";
 	private static Logger logger = Logger.getLogger(FileOpenAction.class);
 
 	private FileManager fileManager = FileManager.getInstance();
