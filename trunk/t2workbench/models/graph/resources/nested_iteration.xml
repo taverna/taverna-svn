@@ -103,5 +103,18 @@ out = in1 + in2;</s:scriptvalue>
       </s:statechange>
     </s:action>
   </s:coordination>
+  <s:coordination name="merge_BLOCKON_generate_list">
+    <s:condition>
+      <s:state>Completed</s:state>
+      <s:target>generate_list</s:target>
+    </s:condition>
+    <s:action>
+      <s:target>merge</s:target>
+      <s:statechange>
+        <s:from>Scheduled</s:from>
+        <s:to>Running</s:to>
+      </s:statechange>
+    </s:action>
+  </s:coordination>
 </s:scufl>
 

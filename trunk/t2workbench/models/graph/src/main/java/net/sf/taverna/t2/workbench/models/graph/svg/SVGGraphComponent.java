@@ -27,6 +27,7 @@ import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.GenericText;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -104,9 +105,8 @@ public class SVGGraphComponent extends JComponent {
 		processorMap.clear();
 		datalinkMap.clear();
 
-		svgCanvas.setSVGDocument(svgDocument);
-		
 		mapNodes(svgDocument.getChildNodes());
+		svgCanvas.setSVGDocument(svgDocument);
 	}
 
 	/**
@@ -146,13 +146,12 @@ public class SVGGraphComponent extends JComponent {
 		}
 		for (GraphEdge edge : graph.getEdges()) {
 			graphElementMap.put(edge.getId(), edge);
-//			System.out.println("Mapping edge:" + edge.getId());
 		}		
 	}
 	
 	/**
-	 * Traverses nodes in the SVG DOM and creates SVGNode and
-	 * SVGEdges.
+	 * Traverses nodes in the SVG DOM and maps to SVGGraphNode and
+	 * SVGGraphEdges.
 	 * 
 	 * @param nodes
 	 *            SVG diagram nodes
@@ -170,6 +169,7 @@ public class SVGGraphComponent extends JComponent {
 						|| "cluster".equals(gElementClass)) {
 					String title = null;
 					SVGOMPolygonElement polygon = null;
+					SVGOMEllipseElement ellipse = null;
 					SVGOMTextElement text = null;
 					Node child = node.getFirstChild();
 					while (child != null) {
@@ -183,14 +183,16 @@ public class SVGGraphComponent extends JComponent {
 							}
 						} else if (child instanceof SVGOMPolygonElement) {
 							polygon = (SVGOMPolygonElement) child;
+						} else if (child instanceof SVGOMEllipseElement) {
+							ellipse = (SVGOMEllipseElement) child;
 						} else if (child instanceof SVGOMTextElement) {
 							text = (SVGOMTextElement) child;
 						}
 						child = child.getNextSibling();
 					}
-					if (title != null && polygon != null && text != null) {
+					if (title != null && (polygon != null || ellipse != null)/* && text != null*/) {
 						boolean nested = "cluster".equals(gElementClass);
-						if (nested) {
+						if (nested && text != null) {
 							// if this is a nested workflow remove 'cluster_'
 							// from the title
 							Object textElementChild = text.getFirstChild();
@@ -205,18 +207,23 @@ public class SVGGraphComponent extends JComponent {
 						}
 						GraphElement graphElement = graphElementMap.get(title);
 						if (graphElement instanceof SVGShape) {
-							SVGShape svgBox = (SVGShape) graphElement;
-							svgBox.setG(gElement);
-							svgBox.setPolygon(polygon);
-							svgBox.setText(text);
-							processorMap.put(title, svgBox);
+							SVGShape svgShape = (SVGShape) graphElement;
+							svgShape.setGraphComponent(this);
+							svgShape.setG(gElement);
+							if (polygon != null) {
+								svgShape.setPolygon(polygon);
+							} else {
+								svgShape.setEllipse(ellipse);
+							}
+							svgShape.setText(text);
+							processorMap.put(title, svgShape);
 						}
-//						elementToProcessorMap.put(graphElement, svgProcessor);
 					}
 				} else if ("edge".equals(gElementClass)) {
 					String title = null;
 					SVGOMPathElement path = null;
 					SVGOMPolygonElement polygon = null;
+					SVGOMEllipseElement ellipse = null;
 					Node child = node.getFirstChild();
 					while (child != null) {
 						if (child instanceof SVGOMTitleElement) {
@@ -229,18 +236,23 @@ public class SVGGraphComponent extends JComponent {
 							}
 						} else if (child instanceof SVGOMPolygonElement) {
 							polygon = (SVGOMPolygonElement) child;
+						} else if (child instanceof SVGOMEllipseElement) {
+							ellipse = (SVGOMEllipseElement) child;
 						} else if (child instanceof SVGOMPathElement) {
 							path = (SVGOMPathElement) child;
 						}
 						child = child.getNextSibling();
 					}
-					if (title != null && path != null && polygon != null) {
+					if (title != null && path != null && (polygon != null || ellipse != null)) {
 						GraphElement graphElement = graphElementMap.get(title);
-//						System.out.println("looking for edge : "+title);
-//						System.out.println("  found : "+graphElement);
 						if (graphElement instanceof SVGGraphEdge) {
 							SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
-							svgGraphEdge.setPolygon(polygon);
+							svgGraphEdge.setGraphComponent(this);
+							if (polygon != null) {
+								svgGraphEdge.setPolygon(polygon);
+							} else {
+								svgGraphEdge.setEllipse(ellipse);
+							}
 							svgGraphEdge.setPath(path);
 							mapDatalink(title, svgGraphEdge);
 						}

@@ -71,9 +71,9 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	
 	private static Logger logger = Logger.getLogger(GraphController.class);
 
-	private Map<Object, GraphElement> processors = new HashMap<Object, GraphElement>();
+	private Map<Object, GraphElement> dataflowToGraph = new HashMap<Object, GraphElement>();
 
-	private Map<GraphElement, Object> elements = new HashMap<GraphElement, Object>();
+	private Map<GraphElement, Object> graphToDataflow = new HashMap<GraphElement, Object>();
 
 	private Map<Port, GraphNode> ports = new HashMap<Port, GraphNode>();
 
@@ -110,7 +110,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	}
 	
 	public void setSelected(GraphElement graphElement, boolean selected) {
-		Object dataflowElement = elements.get(graphElement);
+		Object dataflowElement = graphToDataflow.get(graphElement);
 		if (dataflowElement != null) {
 			dataflowSelectionModel.addSelection(dataflowElement);
 		} else {
@@ -179,7 +179,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 
 		//conditions
 		for (Processor processor : dataflow.getProcessors()) {
-			GraphElement element = processors.get(processor);
+			GraphElement element = dataflowToGraph.get(processor);
 			if (element instanceof GraphNode) {
 				GraphNode sink = (GraphNode) element;
 				for (Condition condition : processor.getPreconditionList()) {
@@ -196,7 +196,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 
 	private GraphEdge generateControlEdge(Condition condition, GraphNode sink) {
 		GraphEdge edge = null;
-		GraphElement element = processors.get(condition.getControl());
+		GraphElement element = dataflowToGraph.get(condition.getControl());
 		if (element instanceof GraphNode) {
 			GraphNode source = (GraphNode) element;
 			if (source != null && sink != null) {
@@ -211,11 +211,22 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 				} else {
 					edge.setSink(sink);
 				}
+				String sourceId = edge.getSource().getId();
+				String sinkId = edge.getSink().getId();
+//				if (source.getParent() instanceof GraphNode) {
+//					sourceId = source.getParent().getId();
+//				}
+//				if (sink.getParent() instanceof GraphNode) {
+//					sinkId = sink.getParent().getId();
+//				}
+				edge.setId(sourceId + "->" + sinkId);
 				edge.setLineStyle(LineStyle.SOLID);
 				edge.setColor(Color.decode("#c0c0c0"));
 				edge.setArrowHeadStyle(ArrowStyle.ODOT);
 				edge.setDataflowObject(condition);
 				edge.setSelectionModel(dataflowSelectionModel);
+				dataflowToGraph.put(condition, edge);
+				graphToDataflow.put(edge, condition);
 			}
 		}
 		return edge;
@@ -237,8 +248,6 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			edge = graphModelFactory.createGraphEdge();
 			edge.setSource(sourceNode);
 			edge.setSink(sinkNode);
-			processors.put(datalink, edge);
-			elements.put(edge, datalink);
 
 			String sourceId = sourceNode.getId();
 			String sinkId = sinkNode.getId();
@@ -252,6 +261,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			edge.setLineStyle(LineStyle.SOLID);
 			edge.setDataflowObject(datalink);
 			edge.setSelectionModel(dataflowSelectionModel);
+			dataflowToGraph.put(datalink, edge);
+			graphToDataflow.put(edge, datalink);
 		}
 		return edge;
 	}
@@ -291,6 +302,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			inputNode.setDataflowObject(inputPort);
 			inputNode.setSelectionModel(dataflowSelectionModel);
 			ports.put(inputPort.getInternalOutputPort(), inputNode);
+			dataflowToGraph.put(inputPort, inputNode);
+			graphToDataflow.put(inputNode, inputPort);
 			inputs.addNode(inputNode);
 		}
 		return inputs;
@@ -328,9 +341,11 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			}
 			outputNode.setShape(getPortStyle().outputShape());
 			outputNode.setFillColor(Color.decode("#bcd2ee"));
-			outputNode.setDataflowObject(outputNode);
+			outputNode.setDataflowObject(outputPort);
 			outputNode.setSelectionModel(dataflowSelectionModel);
 			ports.put(outputPort.getInternalInputPort(), outputNode);
+			dataflowToGraph.put(outputPort, outputNode);
+			graphToDataflow.put(outputNode, outputPort);
 			outputs.addNode(outputNode);
 		}
 		return outputs;
@@ -347,8 +362,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 		node.setDataflowObject(merge);
 		node.setSelectionModel(dataflowSelectionModel);
 
-		processors.put(merge, node);
-		elements.put(node, merge);
+		dataflowToGraph.put(merge, node);
+		graphToDataflow.put(node, merge);
 
 		for (MergeInputPort inputPort : merge.getInputPorts()) {
 			GraphNode portNode = graphModelFactory.createGraphNode();
@@ -385,8 +400,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 		node.setDataflowObject(processor);
 		node.setSelectionModel(dataflowSelectionModel);
 
-		processors.put(processor, node);
-		elements.put(node, processor);
+		dataflowToGraph.put(processor, node);
+		graphToDataflow.put(node, processor);
 
 		if (expandNestedDatflows) {
 
@@ -395,7 +410,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 				Graph subGraph = generateGraph(subDataflow, node.getId(), processor.getLocalName(), depth + 1);
 				subGraph.setDataflowObject(processor);
 				subGraph.setSelectionModel(dataflowSelectionModel);
-				elements.put(subGraph, processor);
+//				dataflowToGraph.put(processor, subGraph);
+				graphToDataflow.put(subGraph, processor);
 				node.setGraph(subGraph);
 				node.setExpanded(true);
 
@@ -480,7 +496,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 
 	public void resetSelection() {
 		for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
-			GraphElement graphElement = processors.get(dataflowElement);
+			GraphElement graphElement = dataflowToGraph.get(dataflowElement);
 			if (graphElement != null) {
 				graphElement.setSelected(true);
 			}		
@@ -489,10 +505,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 
 	public void notify(Observable<DataflowSelectionMessage> sender,
 			DataflowSelectionMessage message) throws Exception {
-		System.out.println("notify:"+message.getElement());
-		GraphElement graphElement = processors.get(message.getElement());
+		GraphElement graphElement = dataflowToGraph.get(message.getElement());
 		if (graphElement != null) {
-			System.out.println("set selected:"+graphElement);
 			graphElement.setSelected(message.getType().equals(DataflowSelectionMessage.Type.ADDED));
 		}		
 	}

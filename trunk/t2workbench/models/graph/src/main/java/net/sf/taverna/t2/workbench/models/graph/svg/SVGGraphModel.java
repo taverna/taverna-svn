@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
@@ -23,6 +24,8 @@ public class SVGGraphModel extends Graph implements SVGShape {
 
 	private SVGOMPolygonElement polygon;
 
+	private SVGOMEllipseElement ellipse;
+
 	private SVGOMTextElement text;
 
 	private SVGOMPolygonElement completedBox;
@@ -44,19 +47,15 @@ public class SVGGraphModel extends Graph implements SVGShape {
 	public SVGGraphModel() {
 	}
 	
-	/**
-	 * Returns the graphComponent.
-	 *
-	 * @return the graphComponent
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getGraphComponent()
 	 */
 	public SVGGraphComponent getGraphComponent() {
 		return graphComponent;
 	}
 
-	/**
-	 * Sets the graphComponent.
-	 *
-	 * @param graphComponent the new graphComponent
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setGraphComponent(net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent)
 	 */
 	public void setGraphComponent(SVGGraphComponent graphComponent) {
 		this.graphComponent = graphComponent;
@@ -93,7 +92,6 @@ public class SVGGraphModel extends Graph implements SVGShape {
 				if (evt instanceof UIEvent) {
 					UIEvent uiEvent = (UIEvent) evt;
 					if (uiEvent.getDetail() == 1) {
-						System.out.println(SVGGraphModel.this + "selected");
 						getSelectionModel().addSelection(getDataflowObject());
 					} else if (uiEvent.getDetail() == 2) {
 						polygon.setAttribute(
@@ -121,11 +119,24 @@ public class SVGGraphModel extends Graph implements SVGShape {
 		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
-//		if (isExpanded()) {
-			iterationPosition = polygon.getPoints().getItem(2);
-//		} else {
-//			iterationPosition = polygon.getPoints().getItem(0);
-//		}
+		iterationPosition = polygon.getPoints().getItem(2);
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getEllipse()
+	 */
+	public SVGOMEllipseElement getEllipse() {
+		return ellipse;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setEllipse(org.apache.batik.dom.svg.SVGOMEllipseElement)
+	 */
+	public void setEllipse(SVGOMEllipseElement ellipse) {
+		this.ellipse = ellipse;
+		originalStyle = ellipse.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 	}
 
 	/* (non-Javadoc)
@@ -147,9 +158,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		System.out.println("setSelected:"+selected);
 		if (this.graphComponent.updateManager != null) {
-			System.out.println("this.graphComponent.updateManager != null");
 			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {

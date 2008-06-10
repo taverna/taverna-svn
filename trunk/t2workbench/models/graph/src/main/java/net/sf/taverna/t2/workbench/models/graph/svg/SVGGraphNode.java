@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
 
+import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
@@ -20,6 +21,10 @@ import org.w3c.dom.svg.SVGPointList;
  * 
  * @author David Withers
  */
+/**
+ * @author David Withers
+ *
+ */
 public class SVGGraphNode extends GraphNode implements SVGShape {
 
 	private SVGGraphComponent graphComponent;
@@ -27,6 +32,8 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 	private SVGOMGElement g;
 
 	private SVGOMPolygonElement polygon;
+
+	private SVGOMEllipseElement ellipse;
 
 	private SVGOMTextElement text;
 
@@ -48,20 +55,16 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 
 	public SVGGraphNode() {
 	}
-	
-	/**
-	 * Returns the graphComponent.
-	 *
-	 * @return the graphComponent
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getGraphComponent()
 	 */
 	public SVGGraphComponent getGraphComponent() {
 		return graphComponent;
 	}
 
-	/**
-	 * Sets the graphComponent.
-	 *
-	 * @param graphComponent the new graphComponent
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setGraphComponent(net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent)
 	 */
 	public void setGraphComponent(SVGGraphComponent graphComponent) {
 		this.graphComponent = graphComponent;
@@ -79,34 +82,35 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 	 */
 	public void setG(SVGOMGElement g) {
 		this.g = g;
-		EventTarget t = (EventTarget) g;
-//		t.addEventListener(SVGConstants.SVG_MOUSEOVER_EVENT_TYPE, new EventListener() {
-//		public void handleEvent(Event evt) {
-////		JOptionPane.showMessageDialog(SVGDiagram.this, ((Text) SVGProcessor.this.text.getFirstChild()).getData());
-//		setSelected(true);
-//		}
-//		}, false);
+		if (getDataflowObject() != null) {
+			EventTarget t = (EventTarget) g;
+//			t.addEventListener(SVGConstants.SVG_MOUSEOVER_EVENT_TYPE, new EventListener() {
+//			public void handleEvent(Event evt) {
+////			JOptionPane.showMessageDialog(SVGDiagram.this, ((Text) SVGProcessor.this.text.getFirstChild()).getData());
+//			setSelected(true);
+//			}
+//			}, false);
 
-//		t.addEventListener(SVGConstants.SVG_MOUSEOUT_EVENT_TYPE, new EventListener() {
-//		public void handleEvent(Event evt) {
-//		setSelected(!selected);
-//		}
-//		}, false);
+//			t.addEventListener(SVGConstants.SVG_MOUSEOUT_EVENT_TYPE, new EventListener() {
+//			public void handleEvent(Event evt) {
+//			setSelected(!selected);
+//			}
+//			}, false);
 
-		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
-			public void handleEvent(Event evt) {
-				if (evt instanceof UIEvent) {
-					UIEvent uiEvent = (UIEvent) evt;
-					if (uiEvent.getDetail() == 1) {
-						System.out.println(SVGGraphNode.this + "selected");
-						getSelectionModel().addSelection(getDataflowObject());
-					} else if (uiEvent.getDetail() == 2) {
-						polygon.setAttribute(
-								SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+			t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+				public void handleEvent(Event evt) {
+					if (evt instanceof UIEvent) {
+						UIEvent uiEvent = (UIEvent) evt;
+						if (uiEvent.getDetail() == 1) {
+							getSelectionModel().addSelection(getDataflowObject());
+						} else if (uiEvent.getDetail() == 2) {
+							polygon.setAttribute(
+									SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+						}
 					}
 				}
-			}
-		}, false);
+			}, false);
+		}
 
 	}
 
@@ -126,11 +130,28 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
-		if (isExpanded()) {
-			iterationPosition = polygon.getPoints().getItem(2);
-		} else {
-			iterationPosition = polygon.getPoints().getItem(0);
-		}
+//		if (isExpanded()) {
+//		iterationPosition = polygon.getPoints().getItem(2);
+//		} else {
+		iterationPosition = polygon.getPoints().getItem(0);
+//		}
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getEllipse()
+	 */
+	public SVGOMEllipseElement getEllipse() {
+		return ellipse;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setEllipse(org.apache.batik.dom.svg.SVGOMEllipseElement)
+	 */
+	public void setEllipse(SVGOMEllipseElement ellipse) {
+		this.ellipse = ellipse;
+		originalStyle = ellipse.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 	}
 
 	/* (non-Javadoc)
@@ -152,18 +173,26 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		System.out.println("setSelected:"+selected);
 		if (this.graphComponent.updateManager != null) {
-			System.out.println("this.graphComponent.updateManager != null");
 			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (selected) {
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+								if (polygon != null) {
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+								} else {
+									ellipse.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedStyle);
+								}
 							} else {
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);			
+								if (polygon != null) {
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
+								} else {
+									ellipse.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);	
+								}
 							}
 						}
 					});
@@ -236,12 +265,12 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 								completedBox
 								.setAttribute(
 										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
-										"0");
+								"0");
 							} else {
 								completedBox
 								.setAttribute(
 										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
-										"1");
+								"1");
 							}
 						}
 					});
@@ -265,13 +294,13 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 											.getY() + 5.5));
 							text.setAttribute(
 									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
-									"end");
+							"end");
 							text.setAttribute(
 									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
-									"5.5");
+							"5.5");
 							text.setAttribute(
 									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
-									"sans-serif");
+							"sans-serif");
 							synchronized (g) {
 								if (iterationText == null) {
 									iterationText = SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument()
@@ -304,13 +333,13 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 											.getY() - 1.0));
 							text.setAttribute(
 									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
-									"end");
+							"end");
 							text.setAttribute(
 									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
-									"5.5");
+							"5.5");
 							text.setAttribute(
 									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
-									"sans-serif");
+							"sans-serif");
 							text.setAttribute(
 									SVGConstants.SVG_FILL_ATTRIBUTE, "red");
 							synchronized (g) {
@@ -348,9 +377,9 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 									completedBox
 									.setAttribute(
 											SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
-											"0.8");
+									"0.8");
 //									completedBox
-//.setAttribute(
+//									.setAttribute(
 //									SVGConstants.SVG_STROKE_ATTRIBUTE,
 //									"black");
 //									completedBox
@@ -376,17 +405,17 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		StringBuffer sb = new StringBuffer();
 		SVGPointList points = polygon.getPoints();
 		float x1, x2, y1, y2;
-		if (isExpanded()) {
-			x1 = points.getItem(2).getX() - 0.4f;
-			x2 = points.getItem(0).getX() + 0.4f;
-			y1 = points.getItem(2).getY() + 0.4f;
-			y2 = points.getItem(0).getY() - 0.4f;
-		} else {
-			x1 = points.getItem(0).getX() - 0.4f;
-			x2 = points.getItem(1).getX() + 0.4f;
-			y1 = points.getItem(0).getY() + 0.4f;
-			y2 = points.getItem(2).getY() - 0.4f;
-		}
+//		if (isExpanded()) {
+//		x1 = points.getItem(2).getX() - 0.4f;
+//		x2 = points.getItem(0).getX() + 0.4f;
+//		y1 = points.getItem(2).getY() + 0.4f;
+//		y2 = points.getItem(0).getY() - 0.4f;
+//		} else {
+		x1 = points.getItem(0).getX() - 0.4f;
+		x2 = points.getItem(1).getX() + 0.4f;
+		y1 = points.getItem(0).getY() + 0.4f;
+		y2 = points.getItem(2).getY() - 0.4f;
+//		}
 		x1 = x2 + ((x1 - x2) * complete);
 		sb.append(x1 + "," + y1 + " ");
 		sb.append(x2 + "," + y1 + " ");

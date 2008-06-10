@@ -164,6 +164,17 @@ public class GraphNode extends GraphElement {
 		this.height = height;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.GraphElement#setSelected(boolean)
+	 */
+	@Override
+	public void setSelected(boolean selected) {
+		super.setSelected(selected);
+		if (isExpanded()) {
+			getGraph().setSelected(selected);
+		}
+	}
+
 	/**
 	 * Sets the shape of the node.
 	 *

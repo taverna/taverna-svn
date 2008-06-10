@@ -2,6 +2,7 @@ package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 
+import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.util.SVGConstants;
@@ -23,13 +24,19 @@ public class SVGGraphEdge extends GraphEdge {
 
 	private SVGOMPolygonElement polygon;
 
+	private SVGOMEllipseElement ellipse;
+
 	private String originalPathStyle;
 
 	private String originalPolygonStyle;
 
+	private String originalEllipseStyle;
+
 	private String selectedPathStyle;
 
 	private String selectedPolygonStyle;
+
+	private String selectedEllipseStyle;
 
 	public SVGGraphEdge() {
 	}
@@ -118,6 +125,34 @@ public class SVGGraphEdge extends GraphEdge {
 	}
 
 	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getEllipse()
+	 */
+	public SVGOMEllipseElement getEllipse() {
+		return ellipse;
+	}
+
+	/* (non-Javadoc)
+	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setEllipse(org.apache.batik.dom.svg.SVGOMEllipseElement)
+	 */
+	public void setEllipse(SVGOMEllipseElement ellipse) {
+		this.ellipse = ellipse;
+		originalEllipseStyle = ellipse.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+		selectedEllipseStyle = originalEllipseStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
+
+		EventTarget t = (EventTarget) ellipse;
+		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+			public void handleEvent(Event evt) {
+				if (evt instanceof UIEvent) {
+					UIEvent uiEvent = (UIEvent) evt;
+					if (uiEvent.getDetail() == 1) {
+						getSelectionModel().addSelection(getDataflowObject());
+					} 
+				}
+			}
+		}, false);
+	}
+
+	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.models.graph.GraphElement#setSelected(boolean)
 	 */
 	public void setSelected(final boolean selected) {
@@ -129,13 +164,23 @@ public class SVGGraphEdge extends GraphEdge {
 							if (selected) {
 								path.setAttribute(
 										SVGConstants.SVG_STYLE_ATTRIBUTE, selectedPathStyle);
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, selectedPolygonStyle);
+								if (polygon != null) {
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedPolygonStyle);
+								} else {
+									ellipse.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, selectedEllipseStyle);
+								}
 							} else {
 								path.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, originalPathStyle);			
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, originalPolygonStyle);			
+										SVGConstants.SVG_STYLE_ATTRIBUTE, originalPathStyle);
+								if (polygon != null) {
+									polygon.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, originalPolygonStyle);
+								} else {
+									ellipse.setAttribute(
+											SVGConstants.SVG_STYLE_ATTRIBUTE, originalEllipseStyle);
+								}
 							}
 						}
 					});
