@@ -118,7 +118,8 @@ public class SVGGraphModel extends Graph implements SVGShape {
 		errorsPosition = polygon.getPoints().getItem(3);
 		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
-		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
+				"stroke-width:2");
 		iterationPosition = polygon.getPoints().getItem(2);
 	}
 

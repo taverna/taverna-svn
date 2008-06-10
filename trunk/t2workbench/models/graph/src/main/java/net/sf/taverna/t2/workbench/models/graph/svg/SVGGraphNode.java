@@ -12,6 +12,7 @@ import org.w3c.dom.Text;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
+import org.w3c.dom.events.MouseEvent;
 import org.w3c.dom.events.UIEvent;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
@@ -97,15 +98,14 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 //			}
 //			}, false);
 
-			t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
 				public void handleEvent(Event evt) {
-					if (evt instanceof UIEvent) {
-						UIEvent uiEvent = (UIEvent) evt;
-						if (uiEvent.getDetail() == 1) {
+					if (evt instanceof MouseEvent) {
+						MouseEvent uiEvent = (MouseEvent) evt;
+						if (uiEvent.getButton() == 0) {
 							getSelectionModel().addSelection(getDataflowObject());
-						} else if (uiEvent.getDetail() == 2) {
-							polygon.setAttribute(
-									SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+						} else if (uiEvent.getButton() == 2 ) {
+							getSelectionModel().removeSelection(getDataflowObject());
 						}
 					}
 				}
@@ -129,7 +129,9 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		errorsPosition = polygon.getPoints().getItem(3);
 		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
-		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
+				"stroke-width:2");
+		
 //		if (isExpanded()) {
 //		iterationPosition = polygon.getPoints().getItem(2);
 //		} else {
