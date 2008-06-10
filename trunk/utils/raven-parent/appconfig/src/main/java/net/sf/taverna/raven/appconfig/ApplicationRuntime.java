@@ -160,7 +160,12 @@ public class ApplicationRuntime {
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"launcher", "1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
+				"launcher-api", "1.7-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"plugins-api", "1.7-SNAPSHOT"));
+		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
+				"appconfig", "1.7-SNAPSHOT"));
+		
 		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
 		return artifacts;
 	}
