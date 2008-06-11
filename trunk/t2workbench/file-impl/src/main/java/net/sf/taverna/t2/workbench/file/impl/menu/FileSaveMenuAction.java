@@ -1,22 +1,19 @@
 package net.sf.taverna.t2.workbench.file.impl.menu;
 
-import java.net.URI;
-
 import javax.swing.Action;
 
 import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
-import net.sf.taverna.t2.workbench.file.impl.actions.FileSaveAction;
+import net.sf.taverna.t2.workbench.file.impl.actions.SaveWorkflowAction;
 
 public class FileSaveMenuAction extends AbstractMenuAction {
 
 	public FileSaveMenuAction() {
-		super(URI.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpenSection"), 50);
+		super(FileSaveMenuSection.FILE_SAVE_SECTION_URI, 10);
 	}
 
 	@Override
 	protected Action createAction() {
-		return new FileSaveAction();
+		return new SaveWorkflowAction();
 	}
 
-	
 }

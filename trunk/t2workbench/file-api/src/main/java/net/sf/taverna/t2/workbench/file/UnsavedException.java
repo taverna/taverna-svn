@@ -1,22 +1,20 @@
 package net.sf.taverna.t2.workbench.file;
 
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+
 
 public class UnsavedException extends FileException {
 
-	public UnsavedException() {
-		super();
+	private final Dataflow dataflow;
+
+	public UnsavedException(Dataflow dataflow) {
+		super("Dataflow was not saved: " + dataflow);
+		this.dataflow = dataflow;
 	}
 
-	public UnsavedException(String message, Throwable cause) {
-		super(message, cause);
+	public Dataflow getDataflow() {
+		return dataflow;
 	}
 
-	public UnsavedException(String message) {
-		super(message);
-	}
-
-	public UnsavedException(Throwable cause) {
-		super(cause);
-	}
 
 }

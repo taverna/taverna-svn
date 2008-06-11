@@ -22,52 +22,52 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.log4j.Logger;
 
-public class FileSaveAsAction extends AbstractAction {
+public class SaveWorkflowAsAction extends AbstractAction {
 
 	private final class ModelMapObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
-			if (message.modelName.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
-				Dataflow dataflow = (Dataflow) message.newModel;
+			if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+				Dataflow dataflow = (Dataflow) message.getNewModel();
 				updateEnabledStatus(dataflow);
 			}
 		}
 	}
 
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
-	private static final String SAVE_DATAFLOW_AS = "Save dataflow as...";
+	private static final String SAVE_WORKFLOW_AS = "Save workflow as...";
 
-	private static Logger logger = Logger.getLogger(FileSaveAsAction.class);
+	private static Logger logger = Logger.getLogger(SaveWorkflowAsAction.class);
 
 	private FileManager fileManager = FileManager.getInstance();
 
 	private ModelMap modelMap = ModelMap.getInstance();
 
-	public FileSaveAsAction() {
-		super(SAVE_DATAFLOW_AS, WorkbenchIcons.saveIcon);
+	public SaveWorkflowAsAction() {
+		super(SAVE_WORKFLOW_AS, WorkbenchIcons.saveIcon);
 		modelMap.addObserver(new ModelMapObserver());
 		updateEnabledStatus((Dataflow) modelMap
 				.getModel(ModelMapConstants.CURRENT_DATAFLOW));
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		// TODO: Find parent component
 		Component parentComponent = null;
-
-		if (modelMap.getModel(ModelMapConstants.CURRENT_DATAFLOW) == null) {
+		if (e.getSource() instanceof Component) {
+			parentComponent = (Component) e.getSource();
+		}
+		if (fileManager.getCurrentDataflow() == null) {
 			JOptionPane.showMessageDialog(parentComponent,
-					"No dataflow open yet", "No dataflow to save",
+					"No workflow open yet", "No workflow to save",
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		JFileChooser fileChooser = new JFileChooser();
 
-		Preferences prefs = Preferences
-				.userNodeForPackage(getClass());
+		Preferences prefs = Preferences.userNodeForPackage(getClass());
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
-		fileChooser.setDialogTitle(SAVE_DATAFLOW_AS);
+		fileChooser.setDialogTitle(SAVE_WORKFLOW_AS);
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setFileFilter(new ExtensionFileFilter(EXTENSIONS));
 		fileChooser.setCurrentDirectory(new File(curDir));
@@ -79,15 +79,15 @@ public class FileSaveAsAction extends AbstractAction {
 			final File file = fileChooser.getSelectedFile();
 			// TODO: Open in separate thread to avoid hanging UI
 			try {
-				fileManager.saveCurrentDataflow(file);
+				fileManager.saveCurrentDataflow(file, true);
 			} catch (SaveException ex) {
-				logger.warn("Could not save dataflow to " + file, ex);
+				logger.warn("Could not save workflow to " + file, ex);
 				JOptionPane.showMessageDialog(parentComponent,
-						"Could not save dataflow to " + file + ": \n\n"
+						"Could not save workflow to " + file + ": \n\n"
 								+ ex.getMessage(), "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
-			logger.info("Saved current dataflow to " + file);
+			logger.info("Saved current workflow to " + file);
 		}
 	}
 

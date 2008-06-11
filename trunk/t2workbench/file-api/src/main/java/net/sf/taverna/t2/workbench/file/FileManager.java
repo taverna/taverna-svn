@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.file;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
@@ -34,22 +35,45 @@ public abstract class FileManager {
 		return instance;
 	}
 
-	public abstract Dataflow openDataflow(URL dataflowURL) throws OpenException;
+	public abstract boolean canSaveCurrentWithoutFilename();
+
+	public abstract boolean canSaveWithoutFilename(Dataflow dataflow);
+
+	public abstract void closeCurrentDataflow(boolean failOnUnsaved)
+			throws UnsavedException;
+
+	public abstract void closeDataflow(Dataflow dataflow, boolean failOnUnsaved)
+			throws UnsavedException;
+
+	public abstract Dataflow getCurrentDataflow();
 
 	public abstract List<Dataflow> getOpenDataflows();
 
-	public abstract void closeCurrentDataflow(boolean ignoreUnsaved)
-			throws UnsavedException;
-
-	public abstract void closeDataflow(Dataflow dataflow, boolean ignoreUnsaved)
-			throws UnsavedException;
-
-	public abstract void saveCurrentDataflow(File dataflowFile)
-			throws SaveException;
-
-	public abstract void saveDataflow(Dataflow dataflow, File dataflowFile)
-			throws SaveException;
-
 	public abstract boolean isDataflowChanged(Dataflow dataflow);
+
+	public abstract Dataflow newDataflow();
+
+	public abstract void openDataflow(Dataflow dataflow);
+
+	public abstract Dataflow openDataflow(InputStream workflowXMLstream)
+			throws OpenException;
+
+	public abstract Dataflow openDataflow(URL dataflowURL) throws OpenException;
+
+	public abstract void saveCurrentDataflow(boolean failOnOverwrite)
+			throws SaveException;
+
+	public abstract void saveCurrentDataflow(File dataflowFile,
+			boolean failOnOverwrite) throws SaveException;
+
+	public abstract void saveDataflow(Dataflow dataflow, boolean failOnOverwrite)
+			throws SaveException;
+
+	public abstract void saveDataflow(Dataflow dataflow, File dataflowFile,
+			boolean failOnOverwrite) throws SaveException;
+
+	public abstract void setCurrentDataflow(Dataflow dataflow);
+
+	public abstract void setDataflowChanged(Dataflow dataflow, boolean isChanged);
 
 }

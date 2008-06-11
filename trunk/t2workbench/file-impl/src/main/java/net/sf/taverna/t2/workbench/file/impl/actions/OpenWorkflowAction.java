@@ -18,32 +18,34 @@ import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
 import org.apache.log4j.Logger;
 
-public class FileOpenAction extends AbstractAction {
+public class OpenWorkflowAction extends AbstractAction {
 
 	// TODO: Support .xml as well
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
-	private static final String OPEN_DATAFLOW = "Open dataflow...";
-	private static Logger logger = Logger.getLogger(FileOpenAction.class);
+	private static final String OPEN_WORKFLOW = "Open workflow...";
+	private static Logger logger = Logger.getLogger(OpenWorkflowAction.class);
 
 	private FileManager fileManager = FileManager.getInstance();
 
-	public FileOpenAction() {
-		super(OPEN_DATAFLOW, WorkbenchIcons.openIcon);
+	public OpenWorkflowAction() {
+		super(OPEN_WORKFLOW, WorkbenchIcons.openIcon);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		JFileChooser fileChooser = new JFileChooser();
+		Component parentComponent = null;
+		if (e.getSource() instanceof Component) {
+			parentComponent = (Component) e.getSource();
+		}
 
-		Preferences prefs = Preferences
-				.userNodeForPackage(getClass());
+		JFileChooser fileChooser = new JFileChooser();
+		Preferences prefs = Preferences.userNodeForPackage(getClass());
 		String curDir = prefs
 				.get("currentDir", System.getProperty("user.home"));
-		fileChooser.setDialogTitle(OPEN_DATAFLOW);
+		fileChooser.setDialogTitle(OPEN_WORKFLOW);
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setFileFilter(new ExtensionFileFilter(EXTENSIONS));
 		fileChooser.setCurrentDirectory(new File(curDir));
-		// TODO: Find parent component
-		Component parentComponent = null;
+
 		int returnVal = fileChooser.showOpenDialog(parentComponent);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fileChooser.getCurrentDirectory()
@@ -60,9 +62,9 @@ public class FileOpenAction extends AbstractAction {
 			try {
 				fileManager.openDataflow(url);
 			} catch (OpenException ex) {
-				logger.warn("Could not open dataflow from " + url, ex);
+				logger.warn("Could not open workflow from " + url, ex);
 				JOptionPane.showMessageDialog(parentComponent,
-						"Could not open dataflow from " + url + ": \n\n"
+						"Could not open workflow from " + url + ": \n\n"
 								+ ex.getMessage(), "Warning",
 						JOptionPane.WARNING_MESSAGE);
 			}
