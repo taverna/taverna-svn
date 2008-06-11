@@ -31,7 +31,7 @@ import javax.swing.tree.TreePath;
  *            Any child partition will have a getPartitionValue return type
  *            cast-able to this type.
  */
-class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
+public class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 
 	// A comparator operating over the value type of the child partitions and
 	// used to order them as created or to re-order on a change of this property
