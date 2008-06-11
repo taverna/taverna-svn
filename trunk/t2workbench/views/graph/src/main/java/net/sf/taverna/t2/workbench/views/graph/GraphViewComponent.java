@@ -179,9 +179,9 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 
 	public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message)
 			throws Exception {
-		if (message.modelName.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
-			if (message.newModel instanceof Dataflow) {
-				setDataflow((Dataflow) message.newModel);
+		if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+			if (message.getNewModel() instanceof Dataflow) {
+				setDataflow((Dataflow) message.getNewModel());
 			}
 		}
 	}

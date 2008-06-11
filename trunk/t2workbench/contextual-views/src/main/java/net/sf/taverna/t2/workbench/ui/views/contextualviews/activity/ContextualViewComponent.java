@@ -68,8 +68,8 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI,
 	public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message)
 			throws Exception {
 
-		if (message.modelName.equalsIgnoreCase("activity")) {
-			Object newModel = message.newModel;
+		if (message.getModelName().equalsIgnoreCase("activity")) {
+			Object newModel = message.getNewModel();
 			ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
 					.getInstance().getViewFactoryForBeanType(
 							(Activity<?>) newModel);

@@ -666,20 +666,20 @@ public class WorkbenchPerspectives {
 	public class CurrentPerspectiveObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
-			if (!message.modelName.equals(ModelMapConstants.CURRENT_PERSPECTIVE)) {
+			if (!message.getModelName().equals(ModelMapConstants.CURRENT_PERSPECTIVE)) {
 				return;
 			}
-			if (message.oldModel instanceof PerspectiveSPI) {
-				((PerspectiveSPI) message.oldModel).update(basePane
+			if (message.getOldModel() instanceof PerspectiveSPI) {
+				((PerspectiveSPI) message.getOldModel()).update(basePane
 						.getElement());
 			}
-			if (message.newModel instanceof PerspectiveSPI) {
-				PerspectiveSPI newPerspective = (PerspectiveSPI) message.newModel;
+			if (message.getNewModel() instanceof PerspectiveSPI) {
+				PerspectiveSPI newPerspective = (PerspectiveSPI) message.getNewModel();
 				switchPerspective(newPerspective);
 			}
 			if (message instanceof ModelDestroyedEvent
-					&& message.oldModel instanceof CustomPerspective) {
-				CustomPerspective customPerspective = (CustomPerspective) message.oldModel;
+					&& message.getOldModel() instanceof CustomPerspective) {
+				CustomPerspective customPerspective = (CustomPerspective) message.getOldModel();
 				removeCustomPerspective(customPerspective);
 			}
 

@@ -124,7 +124,7 @@ public abstract class AbstractUndoMenuAction extends AbstractMenuAction {
 		protected class ModelMapObserver implements Observer<ModelMapEvent> {
 			public void notify(Observable<ModelMapEvent> sender,
 					ModelMapEvent message) throws Exception {
-				if (message.modelName
+				if (message.getModelName()
 						.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
 					updateStatus();
 				}
