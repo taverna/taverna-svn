@@ -32,5 +32,15 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<version>0.3-SNAPSHOT</version>
+			<artifactId>partition</artifactId>
+		</dependency>
 	</dependencies>
 </project>
