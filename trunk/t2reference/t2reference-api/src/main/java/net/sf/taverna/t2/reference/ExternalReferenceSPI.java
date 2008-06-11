@@ -58,9 +58,9 @@ public interface ExternalReferenceSPI {
 	 * any facilities within the supplied context.
 	 * 
 	 * @param context
-	 *            the ReferenceContext object used to obtain e.g.
-	 *            security agents or other facilities required when
-	 *            de-referencing this reference.
+	 *            the ReferenceContext object used to obtain e.g. security
+	 *            agents or other facilities required when de-referencing this
+	 *            reference.
 	 * @return an InputStream providing access to the referenced data
 	 */
 	public InputStream openStream(ReferenceContext context);
@@ -74,11 +74,11 @@ public interface ExternalReferenceSPI {
 	 * this property is highly complex and potentially expensive in itself to
 	 * evaluate there's no requirement for it to be absolutely correct, it's
 	 * just used as a guide that, for example, it is easier to get bytes from a
-	 * file on the local disk than to get them from a resouce held on a grid on
+	 * file on the local disk than to get them from a resource held on a grid on
 	 * the other side of the planet.
 	 * 
-	 * @return a float representing some notion of resolution cost, lower
-	 *         values represent cheaper de-reference paths.
+	 * @return a float representing some notion of resolution cost, lower values
+	 *         represent cheaper de-reference paths.
 	 */
 	public float getResolutionCost();
 

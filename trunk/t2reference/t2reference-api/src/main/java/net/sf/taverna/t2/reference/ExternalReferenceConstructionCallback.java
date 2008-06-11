@@ -7,7 +7,7 @@ package net.sf.taverna.t2.reference;
  * 
  * @author Tom Oinn
  */
-public interface ExternalReferenceConstructionCallback {
+public interface ExternalReferenceConstructionCallback<TargetType extends ExternalReferenceSPI> {
 
 	/**
 	 * Called when the new ExternalReferenceSPI implementation has been
@@ -16,7 +16,7 @@ public interface ExternalReferenceConstructionCallback {
 	 * @param newReference
 	 *            the new ExternalReferenceSPI
 	 */
-	public void ExternalReferenceCreated(ExternalReferenceSPI newReference);
+	public void ExternalReferenceCreated(TargetType newReference);
 
 	/**
 	 * Called when the reference construction process failed.

@@ -147,7 +147,7 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 	 * {@inheritDoc}
 	 */
 	public ReferenceSet getReferenceSetWithAugmentation(T2Reference id,
-			Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
+			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceSetServiceException {
 		checkDao();
 		checkAugmentor();
@@ -167,7 +167,7 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 	 * {@inheritDoc}
 	 */
 	public void getReferenceSetWithAugmentationAsynch(final T2Reference id,
-			final Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
+			final Set<Class<ExternalReferenceSPI>> ensureTypes,
 			final ReferenceContext context,
 			final ReferenceSetServiceCallback callback)
 			throws ReferenceSetServiceException {

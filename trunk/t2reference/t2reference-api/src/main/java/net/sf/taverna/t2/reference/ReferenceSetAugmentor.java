@@ -41,7 +41,7 @@ public interface ReferenceSetAugmentor {
 	 *             Any other exception types are wrapped in this and re-thrown.
 	 */
 	public ReferenceSet augmentReferenceSet(ReferenceSet references,
-			Set<Class<? extends ExternalReferenceSPI>> targetReferenceTypes,
+			Set<Class<ExternalReferenceSPI>> targetReferenceTypes,
 			ReferenceContext context) throws ReferenceSetAugmentationException;
 
 	/**
@@ -63,7 +63,7 @@ public interface ReferenceSetAugmentor {
 	 *             the augmentation for some reason.
 	 */
 	public void augmentReferenceSetAsynch(ReferenceSet references,
-			Set<Class<? extends ExternalReferenceSPI>> targetReferenceTypes,
+			Set<Class<ExternalReferenceSPI>> targetReferenceTypes,
 			ReferenceContext context, ReferenceSetAugmentorCallback callback)
 			throws ReferenceSetAugmentationException;
 

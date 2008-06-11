@@ -15,15 +15,14 @@ package net.sf.taverna.t2.reference;
  * 
  * @author Tom Oinn
  */
-public interface ExternalReferenceTranslatorSPI {
+public interface ExternalReferenceTranslatorSPI<SourceType extends ExternalReferenceSPI, TargetType extends ExternalReferenceSPI> {
 
 	/**
-	 * Given an existing ReferenceSet, build the appropriate target
+	 * Given an existing ExternalReferenceSPI, build the appropriate target
 	 * ExternalReferenceSPI implementation and return it.
 	 * 
-	 * @param existingReferences
-	 *            the references to be used as sources for the translation. In
-	 *            general the implementation will use one of these references.
+	 * @param sourceReference
+	 *            the reference to be used as source for the translation.
 	 * @param context
 	 *            a reference resolution context, needed potentially to access
 	 *            the existing external references or to construct the new one,
@@ -31,8 +30,8 @@ public interface ExternalReferenceTranslatorSPI {
 	 *            giving access to a remote data staging system
 	 * @return the newly constructed ExternalReferenceSPI instance.
 	 */
-	public ExternalReferenceSPI createReference(
-			ReferenceSet existingReferences, ReferenceContext context);
+	public TargetType createReference(SourceType sourceReference,
+			ReferenceContext context);
 
 	/**
 	 * As with {@link #createReference(ReferenceSet, ReferenceContext)} but
@@ -42,8 +41,48 @@ public interface ExternalReferenceTranslatorSPI {
 	 *            a callback object used to notify the caller of reference
 	 *            contruction or failure thereof.
 	 */
-	public void createReferenceAsynch(ReferenceSet existingReferences,
+	public void createReferenceAsynch(SourceType sourceReference,
 			ReferenceContext context,
-			ExternalReferenceConstructionCallback callback);
+			ExternalReferenceConstructionCallback<TargetType> callback);
+
+	/**
+	 * Return the type of external reference that this translator consumes.
+	 * 
+	 * @return ExternalReferenceSPI class corresponding to the reference type
+	 *         used as a source by this translator.
+	 */
+	public Class<SourceType> getSourceReferenceType();
+
+	/**
+	 * Return the type of external reference this translator constructs.
+	 * 
+	 * @return ExternalReferenceSPI class corresponding to the reference type
+	 *         emitted by this translator.
+	 */
+	public Class<TargetType> getTargetReferenceType();
+
+	/**
+	 * Because the reference translator may rely on facilities provided to it
+	 * through the context this method is available to check whether these
+	 * facilities are sufficient.
+	 * 
+	 * @param context
+	 *            the reference context that will be used to construct new
+	 *            references during the translation process
+	 * @return whether the context contains necessary resources for the
+	 *         reference construction process
+	 */
+	public boolean isEnabled(ReferenceContext context);
+
+	/**
+	 * Return an approximate complexity cost of the translation. In general we
+	 * can't make any guarantees about this because the complexity of the
+	 * translation depends on more than just the types involved - it can depend
+	 * on local configuration, network location relative to the data stores
+	 * referenced and in some cases on the data themselves. For now though we
+	 * assign an approximation, the default value is 1.0f and lower values
+	 * represent less costly operations.
+	 */
+	public float getTranslationCost();
 
 }

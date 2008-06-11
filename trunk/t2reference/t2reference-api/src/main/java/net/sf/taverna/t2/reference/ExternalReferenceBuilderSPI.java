@@ -16,7 +16,7 @@ import java.io.InputStream;
  * 
  * @author Tom Oinn
  */
-public interface ExternalReferenceBuilderSPI {
+public interface ExternalReferenceBuilderSPI<TargetType extends ExternalReferenceSPI> {
 
 	/**
 	 * Given a stream of bytes, build the appropriate target
@@ -33,7 +33,7 @@ public interface ExternalReferenceBuilderSPI {
 	 *            to a remote data staging system
 	 * @return the newly constructed ExternalReferenceSPI instance.
 	 */
-	public ExternalReferenceSPI createReference(InputStream byteStream,
+	public TargetType createReference(InputStream byteStream,
 			ReferenceContext context);
 
 	/**
@@ -46,7 +46,7 @@ public interface ExternalReferenceBuilderSPI {
 	 */
 	public void createReferenceAsynch(InputStream byteStream,
 			ReferenceContext context,
-			ExternalReferenceConstructionCallback callback);
+			ExternalReferenceConstructionCallback<TargetType> callback);
 
 	/**
 	 * Expose the type of the ExternalReferenceSPI that this builder can
@@ -55,7 +55,7 @@ public interface ExternalReferenceBuilderSPI {
 	 * @return the class of ExternalReferenceSPI returned by the create
 	 *         reference methods.
 	 */
-	public Class<? extends ExternalReferenceSPI> getReferenceType();
+	public Class<TargetType> getReferenceType();
 
 	/**
 	 * Because the reference builder may rely on facilities provided to it
@@ -69,5 +69,16 @@ public interface ExternalReferenceBuilderSPI {
 	 *         reference construction process
 	 */
 	public boolean isEnabled(ReferenceContext context);
+
+	/**
+	 * Return an approximate complexity cost of the reference construction. In
+	 * general we can't make any guarantees about this because the complexity of
+	 * the construction depends on more than just the type involved - it can
+	 * depend on local configuration, network location relative to the data
+	 * stores referenced and in some cases on the data themselves. For now
+	 * though we assign an approximation, the default value is 1.0f and lower
+	 * values represent less costly operations.
+	 */
+	public float getConstructionCost();
 
 }

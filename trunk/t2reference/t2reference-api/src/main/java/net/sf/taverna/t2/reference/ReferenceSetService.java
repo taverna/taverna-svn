@@ -99,7 +99,7 @@ public interface ReferenceSetService {
 	 * @return the requested {@link ReferenceSet}
 	 */
 	public ReferenceSet getReferenceSetWithAugmentation(T2Reference id,
-			Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
+			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceSetServiceException;
 
 	/**
@@ -129,7 +129,7 @@ public interface ReferenceSetService {
 	 *             messaged through the callback interface.
 	 */
 	public void getReferenceSetWithAugmentationAsynch(T2Reference id,
-			Set<Class<? extends ExternalReferenceSPI>> ensureTypes,
+			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context, ReferenceSetServiceCallback callback)
 			throws ReferenceSetServiceException;
 
