@@ -26,6 +26,7 @@ public class StreamDevourer extends Thread {
 	/**
 	 * Returns the current value of the internal ByteArrayOutputStream
 	 */
+	@Override
 	public String toString() {
 		return output.toString();
 	}
@@ -59,6 +60,7 @@ public class StreamDevourer extends Thread {
 	 * BufferedReader this is only really appropriate for streams of textual
 	 * data
 	 */
+	@Override
 	public void run() {
 		try {
 			String line = null;
