@@ -34,13 +34,17 @@ public interface ReferenceSetAugmentor {
 	 *            a reference resolution context, potentially required for
 	 *            access to the existing references or for creation of the
 	 *            augmentations
-	 * @return augmented reference set object
+	 * @return a set of new ExternalReferenceSPI instances such that the union
+	 *         of this set with the pre-existing reference set satisfies the
+	 *         target reference constraint. It is the responsibility of the
+	 *         caller to re-integrate these references into the original
+	 *         ReferenceSet if so desired.
 	 * @throws ReferenceSetAugmentationException
 	 *             if a problem occurs either in configuration of the
 	 *             ReferenceSetAugmentor or in the augmentation process itself.
 	 *             Any other exception types are wrapped in this and re-thrown.
 	 */
-	public ReferenceSet augmentReferenceSet(ReferenceSet references,
+	public Set<ExternalReferenceSPI> augmentReferenceSet(ReferenceSet references,
 			Set<Class<ExternalReferenceSPI>> targetReferenceTypes,
 			ReferenceContext context) throws ReferenceSetAugmentationException;
 

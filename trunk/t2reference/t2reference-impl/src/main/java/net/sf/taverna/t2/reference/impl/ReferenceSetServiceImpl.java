@@ -154,9 +154,20 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 		// Obtain the reference set
 		ReferenceSet rs = getReferenceSet(id);
 		try {
-			referenceSetAugmentor.augmentReferenceSet(rs, ensureTypes, context);
-			// Write back changes to the store if we got here
-			referenceSetDao.update(rs);
+			Set<ExternalReferenceSPI> newReferences = referenceSetAugmentor
+					.augmentReferenceSet(rs, ensureTypes, context);
+			if (newReferences.isEmpty() == false) {
+				// Write back changes to the store if we got here, this can
+				// potentially throw an unsupported operation exception in which
+				// case we have to fail the augmentation.
+				try {
+					rs.getExternalReferences().addAll(newReferences);
+				} catch (RuntimeException re) {
+					throw new ReferenceSetAugmentationException(
+							"Can't add new references back into existing reference set instance");
+				}
+				referenceSetDao.update(rs);
+			}
 			return rs;
 		} catch (ReferenceSetAugmentationException rsae) {
 			throw new ReferenceSetServiceException(rsae);

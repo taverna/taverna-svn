@@ -143,7 +143,9 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final ReferenceSet augmentReferenceSet(ReferenceSet references,
+	@SuppressWarnings("unchecked")
+	public final Set<ExternalReferenceSPI> augmentReferenceSet(
+			ReferenceSet references,
 			Set<Class<ExternalReferenceSPI>> targetReferenceTypes,
 			ReferenceContext context) throws ReferenceSetAugmentationException {
 		// Synchronize on the reference set itself
@@ -156,7 +158,7 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 			// likely to happen)
 			for (ExternalReferenceSPI er : references.getExternalReferences()) {
 				if (targetReferenceTypes.contains(er.getClass())) {
-					return references;
+					return new HashSet<ExternalReferenceSPI>();
 				}
 			}
 
@@ -179,6 +181,24 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 					}
 				}
 			}
+			// Now add candidate paths to represent a no-translator 'direct from
+			// byte stream source' path for each target type compatible
+			// reference builder
+			for (ExternalReferenceBuilderSPI builder : builders) {
+				if (targetReferenceTypes.contains(builder.getReferenceType())) {
+					// The builder can construct one of the target types, add
+					// paths for all possible pairs of 'de-reference existing
+					// refence' and the builder
+					for (ExternalReferenceSPI er : references
+							.getExternalReferences()) {
+						TranslationPath newPath = new TranslationPath();
+						newPath.initialBuilder = builder;
+						newPath.sourceReference = er;
+						candidatePaths.add(newPath);
+					}
+				}
+			}
+
 			// Got a list of candidate paths sorted by estimated overall path
 			// cost
 			Collections.sort(candidatePaths);
@@ -187,12 +207,18 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 				throw new ReferenceSetAugmentationException(
 						"No candidate translation paths were found");
 			} else {
-				candidatePaths.get(0).doTranslation(references);
+				for (TranslationPath path : candidatePaths) {
+					try {
+						return path.doTranslation(references, context);
+					} catch (Exception ex) {
+						// Use next path...
+					}
+				}
+				throw new ReferenceSetAugmentationException(
+						"All paths threw exceptions, can't perform augmentation");
 			}
 
 		}
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -239,10 +265,47 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		ExternalReferenceBuilderSPI<?> initialBuilder = null;
 		ExternalReferenceSPI sourceReference = null;
 
-		public void doTranslation(ReferenceSet rs) {
-			// TODO - run the translation and reference builder plugins here,
-			// writing external reference implementations back to the reference
-			// set
+		@SuppressWarnings("unchecked")
+		public Set<ExternalReferenceSPI> doTranslation(ReferenceSet rs,
+				ReferenceContext context) {
+			Set<ExternalReferenceSPI> results = new HashSet<ExternalReferenceSPI>();
+			// Firstly check whether we have an initial reference and builder
+			// defined
+			ExternalReferenceSPI currentReference = null;
+			if (initialBuilder != null && sourceReference != null) {
+				ExternalReferenceSPI builtReference = initialBuilder
+						.createReference(sourceReference.openStream(context),
+								context);
+				results.add(builtReference);
+				currentReference = builtReference;
+			}
+			if (translators.isEmpty() == false && currentReference == null) {
+				// If there are translators in the path (there may not be if
+				// this is a pure 'dereference and build' type path) and the
+				// currentReference hasn't been set then search the existing
+				// references for an appropriate starting point for the
+				// translation.
+				for (ExternalReferenceSPI er : rs.getExternalReferences()) {
+					if (er.getClass().equals(
+							translators.get(0).getSourceReferenceType())) {
+						currentReference = er;
+						break;
+					}
+				}
+			}
+			if (currentReference == null) {
+				throw new RuntimeException(
+						"Can't locate a starting reference for the"
+								+ " translation path");
+			} else {
+				for (ExternalReferenceTranslatorSPI translator : translators) {
+					ExternalReferenceSPI translatedReference = translator
+							.createReference(currentReference, context);
+					results.add(translatedReference);
+					currentReference = translatedReference;
+				}
+			}
+			return results;
 		}
 
 		/**
@@ -277,16 +340,42 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		 * @param rs
 		 * @return
 		 */
+		@SuppressWarnings("unchecked")
 		public List<TranslationPath> getDereferenceBasedPaths(ReferenceSet rs) {
 			List<TranslationPath> results = new ArrayList<TranslationPath>();
 			for (ExternalReferenceBuilderSPI erb : builders) {
+				// Check for each reference builder to see if it can build the
+				// source type for this path
 				if (erb.getReferenceType().equals(this.getSourceType())) {
+					// The builder can construct the type used by the start of
+					// this translation path, so we can in general create a path
+					// from a fooreference to the target by de-referencing the
+					// fooreference and building the start type from it.
 					for (ExternalReferenceSPI er : rs.getExternalReferences()) {
-						TranslationPath newPath = new TranslationPath();
-						newPath.translators = this.translators;
-						newPath.initialBuilder = erb;
-						newPath.sourceReference = er;
-						results.add(newPath);
+						// For each external reference in the existing reference
+						// set, check whether that type is already going to be
+						// created in the translation path - if so then there's
+						// not much point in emiting the modified path, as you'd
+						// have something like bytes->a->b->a->result which
+						// wouldn't make any sense
+						boolean overlapsExistingType = false;
+						for (ExternalReferenceTranslatorSPI translationStep : this) {
+							if (translationStep.getSourceReferenceType()
+									.equals(er.getClass())) {
+								overlapsExistingType = true;
+								break;
+							}
+						}
+						if (!overlapsExistingType) {
+							// The type wasn't found anywhere within the
+							// translation path, so we're not generating
+							// obviously stupid candidate paths.
+							TranslationPath newPath = new TranslationPath();
+							newPath.translators = this.translators;
+							newPath.initialBuilder = erb;
+							newPath.sourceReference = er;
+							results.add(newPath);
+						}
 					}
 				}
 			}
@@ -318,12 +407,24 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		}
 
 		public Class<? extends ExternalReferenceSPI> getSourceType() {
-			return translators.get(0).getSourceReferenceType();
+			if (translators.isEmpty() == false) {
+				return translators.get(0).getSourceReferenceType();
+			} else if (this.sourceReference != null) {
+				return this.sourceReference.getClass();
+			} else {
+				return null;
+			}
 		}
 
 		public Class<? extends ExternalReferenceSPI> getTargetType() {
-			return translators.get(translators.size() - 1)
-					.getTargetReferenceType();
+			if (translators.isEmpty() == false) {
+				return translators.get(translators.size() - 1)
+						.getTargetReferenceType();
+			} else if (this.initialBuilder != null) {
+				return this.initialBuilder.getReferenceType();
+			} else {
+				return null;
+			}
 		}
 
 	}

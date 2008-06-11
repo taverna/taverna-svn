@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.reference;
 
+import java.util.Set;
+
 /**
  * Callback interface used when augmenting a ReferenceSet in an asynchronous
  * fashion through
@@ -14,12 +16,13 @@ public interface ReferenceSetAugmentorCallback {
 	/**
 	 * Called when the augmentation has succeeded
 	 * 
-	 * @param result
-	 *            the augmented reference set, which will now contain the
-	 *            required ExternalReferenceSPI implementation amongst its
-	 *            external references.
+	 * @param newReferences
+	 *            a set of ExternalReferenceSPI instances created during the
+	 *            augmentation process. It is the responsibility of the caller
+	 *            to re-integrate these back into the ReferenceSet used in the
+	 *            translation
 	 */
-	public void augmentationCompleted(ReferenceSet result);
+	public void augmentationCompleted(Set<ExternalReferenceSPI> newReferences);
 
 	/**
 	 * Called when the augmentation has failed for some reason
