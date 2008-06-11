@@ -151,6 +151,7 @@ public class ApplicationRuntime {
 
 	public Set<Artifact> getSystemArtifacts() {
 		Set<Artifact> artifacts = new HashSet<Artifact>();
+		// Raven, Launcher and plugin system
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven", "raven",
 				"1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
@@ -166,6 +167,11 @@ public class ApplicationRuntime {
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"appconfig", "1.7-SNAPSHOT"));
 		
+		// External dependencies
+		artifacts.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));	
+		artifacts.add(new BasicArtifact("commons-httpclient", "commons-httpclient", "3.1"));	
+		artifacts.add(new BasicArtifact("commons-logging", "commons-logging", "1.0.4"));	
+		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
 		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
 		return artifacts;
 	}
