@@ -31,6 +31,11 @@
             <artifactId>log4j</artifactId>
             <version>1.2.13</version>
         </dependency>
+        <dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>activity-test-utils</artifactId>
