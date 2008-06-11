@@ -32,7 +32,7 @@ public class GraphControllerTest extends TranslatorTestHelper {
 				return new GraphEdge();
 			}
 
-			public Graph createGraphModel() {
+			public Graph createGraph() {
 				return new Graph();
 			}
 

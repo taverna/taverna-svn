@@ -24,6 +24,9 @@ import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
+import net.sf.taverna.t2.workbench.edits.EditManager;
+import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
+import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphModelFactory;
@@ -44,7 +47,7 @@ import org.embl.ebi.escience.scufl.parser.XScuflFormatException;
 import org.embl.ebi.escience.scufl.parser.XScuflParser;
 import org.embl.ebi.escience.utils.TavernaSPIRegistry;
 
-public class GraphViewComponent extends JPanel implements UIComponentSPI, Observer<ModelMap.ModelMapEvent> {
+public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
 	private static final long serialVersionUID = 1L;
 
@@ -56,6 +59,8 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 	private GraphController graphController;
 	
 	private Map<Dataflow, GraphController> graphControllerMap = new HashMap<Dataflow, GraphController>();
+	
+	private Dataflow dataflow;
 
 	public GraphViewComponent() {
 		super(new BorderLayout());
@@ -105,10 +110,34 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 		
 		add(svgGraphComponent, BorderLayout.CENTER);
 		
-		ModelMap.getInstance().addObserver(this);
+		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
+			public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message) {
+				if (message.modelName.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+					if (message.newModel instanceof Dataflow) {
+						setDataflow((Dataflow) message.newModel);
+					}
+				}
+			}
+		});
+		
+		EditManager.getInstance().addObserver(new Observer<EditManagerEvent>() {
+			public void notify(Observable<EditManagerEvent> sender,
+					EditManagerEvent message) throws Exception {
+				if (message instanceof AbstractDataflowEditEvent) {
+					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
+					if (dataflowEditEvent.getDataFlow() == dataflow ) {
+						svgGraphComponent.redraw();
+					}
+					
+				}
+			}
+		});
+		
+		setTransferHandler(new GraphViewTransferHandler(this));
 	}
 	
 	public void setDataflow(Dataflow dataflow) {
+		this.dataflow = dataflow;
 		if (!graphControllerMap.containsKey(dataflow)) {
 			GraphController graphController = new GraphController(dataflow, new SVGGraphModelFactory());
 			graphControllerMap.put(dataflow, graphController);
@@ -117,6 +146,15 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 		svgGraphComponent.setGraphController(graphController);
 	}
 	
+	/**
+	 * Returns the dataflow.
+	 *
+	 * @return the dataflow
+	 */
+	public Dataflow getDataflow() {
+		return dataflow;
+	}
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("raven.eclipse", "true");
 		System.setProperty("taverna.dotlocation", "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot");
@@ -175,15 +213,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI, Observ
 	public void onDispose() {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message)
-			throws Exception {
-		if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
-			if (message.getNewModel() instanceof Dataflow) {
-				setDataflow((Dataflow) message.getNewModel());
-			}
-		}
 	}
 
 }

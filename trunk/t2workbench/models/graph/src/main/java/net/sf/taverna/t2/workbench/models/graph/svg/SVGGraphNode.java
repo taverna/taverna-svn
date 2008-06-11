@@ -13,7 +13,6 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.events.MouseEvent;
-import org.w3c.dom.events.UIEvent;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
@@ -101,12 +100,10 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
 				public void handleEvent(Event evt) {
 					if (evt instanceof MouseEvent) {
-						MouseEvent uiEvent = (MouseEvent) evt;
-						if (uiEvent.getButton() == 0) {
-							getSelectionModel().addSelection(getDataflowObject());
-						} else if (uiEvent.getButton() == 2 ) {
-							getSelectionModel().removeSelection(getDataflowObject());
-						}
+						MouseEvent mouseEvent = (MouseEvent) evt;
+						getEventManager().mouseClicked(SVGGraphNode.this, mouseEvent.getButton(),
+								mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
+								mouseEvent.getScreenX(), mouseEvent.getScreenY());
 					}
 				}
 			}, false);
@@ -153,7 +150,8 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		this.ellipse = ellipse;
 		originalStyle = ellipse.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
-		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
+		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
+				"stroke-width:2");
 	}
 
 	/* (non-Javadoc)

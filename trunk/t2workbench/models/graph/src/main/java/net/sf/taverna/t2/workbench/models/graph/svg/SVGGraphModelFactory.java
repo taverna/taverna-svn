@@ -11,8 +11,8 @@ public class SVGGraphModelFactory implements GraphModelFactory {
 		return new SVGGraphEdge();
 	}
 
-	public Graph createGraphModel() {
-		return new SVGGraphModel();
+	public Graph createGraph() {
+		return new SVGGraph();
 	}
 
 	public GraphNode createGraphNode() {

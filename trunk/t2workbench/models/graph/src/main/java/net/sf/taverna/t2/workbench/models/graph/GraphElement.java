@@ -28,7 +28,25 @@ public abstract class GraphElement {
 	
 	private Object dataflowObject;
 	
-	private DataflowSelectionModel selectionModel;
+	private GraphEventManager eventManager;
+
+	/**
+	 * Returns the eventManager.
+	 *
+	 * @return the eventManager
+	 */
+	public GraphEventManager getEventManager() {
+		return eventManager;
+	}
+
+	/**
+	 * Sets the eventManager.
+	 *
+	 * @param eventManager the new eventManager
+	 */
+	public void setEventManager(GraphEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
 
 	/**
 	 * Returns the dataflowObject.
@@ -46,24 +64,6 @@ public abstract class GraphElement {
 	 */
 	public void setDataflowObject(Object dataflowObject) {
 		this.dataflowObject = dataflowObject;
-	}
-
-	/**
-	 * Returns the selectionModel.
-	 *
-	 * @return the selectionModel
-	 */
-	public DataflowSelectionModel getSelectionModel() {
-		return selectionModel;
-	}
-
-	/**
-	 * Sets the selectionModel.
-	 *
-	 * @param selectionModel the new selectionModel
-	 */
-	public void setSelectionModel(DataflowSelectionModel selectionModel) {
-		this.selectionModel = selectionModel;
 	}
 
 	/**

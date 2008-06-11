@@ -1,13 +1,13 @@
 package net.sf.taverna.t2.workbench.models.graph;
 
 /**
- * Factory for creating graph model elements.
+ * Factory for creating graph elements.
  * 
  * @author David Withers
  */
 public interface GraphModelFactory {
 
-	public Graph createGraphModel();
+	public Graph createGraph();
 	
 	public GraphNode createGraphNode();
 	

@@ -9,7 +9,7 @@ import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.events.UIEvent;
+import org.w3c.dom.events.MouseEvent;
 
 /**
  * SVG representation of a graph edge.
@@ -78,17 +78,18 @@ public class SVGGraphEdge extends GraphEdge {
 		originalPathStyle = path.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		selectedPathStyle = originalPathStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
-		EventTarget t = (EventTarget) path;
-		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+		EventTarget t = (EventTarget) path;		
+		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
 			public void handleEvent(Event evt) {
-				if (evt instanceof UIEvent) {
-					UIEvent uiEvent = (UIEvent) evt;
-					if (uiEvent.getDetail() == 1) {
-						getSelectionModel().addSelection(getDataflowObject());
-					} 
+				if (evt instanceof MouseEvent) {
+					MouseEvent mouseEvent = (MouseEvent) evt;
+					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
+							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
+							mouseEvent.getScreenX(), mouseEvent.getScreenY());
 				}
 			}
 		}, false);
+
 	}
 
 	/**
@@ -112,13 +113,13 @@ public class SVGGraphEdge extends GraphEdge {
 		selectedPolygonStyle = selectedPolygonStyle.replaceFirst("fill:[^;]*;", "fill:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
 		EventTarget t = (EventTarget) polygon;
-		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
 			public void handleEvent(Event evt) {
-				if (evt instanceof UIEvent) {
-					UIEvent uiEvent = (UIEvent) evt;
-					if (uiEvent.getDetail() == 1) {
-						getSelectionModel().addSelection(getDataflowObject());
-					} 
+				if (evt instanceof MouseEvent) {
+					MouseEvent mouseEvent = (MouseEvent) evt;
+					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
+							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
+							mouseEvent.getScreenX(), mouseEvent.getScreenY());
 				}
 			}
 		}, false);
@@ -140,13 +141,13 @@ public class SVGGraphEdge extends GraphEdge {
 		selectedEllipseStyle = originalEllipseStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
 		EventTarget t = (EventTarget) ellipse;
-		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
+		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
 			public void handleEvent(Event evt) {
-				if (evt instanceof UIEvent) {
-					UIEvent uiEvent = (UIEvent) evt;
-					if (uiEvent.getDetail() == 1) {
-						getSelectionModel().addSelection(getDataflowObject());
-					} 
+				if (evt instanceof MouseEvent) {
+					MouseEvent mouseEvent = (MouseEvent) evt;
+					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
+							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
+							mouseEvent.getScreenX(), mouseEvent.getScreenY());
 				}
 			}
 		}, false);

@@ -45,6 +45,8 @@ import org.w3c.dom.svg.SVGDocument;
 
 public class SVGGraphComponent extends JComponent {
 
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(SVGGraphComponent.class);
 
 	static final String COMPLETED_COLOUR = "grey";
@@ -165,103 +167,128 @@ public class SVGGraphComponent extends JComponent {
 						.getAttribute(SVGConstants.SVG_CLASS_ATTRIBUTE);
 				if ("graph".equals(gElementClass)) {
 					mapNodes(node.getChildNodes());
-				} else if ("node".equals(gElementClass)
-						|| "cluster".equals(gElementClass)) {
-					String title = null;
-					SVGOMPolygonElement polygon = null;
-					SVGOMEllipseElement ellipse = null;
-					SVGOMTextElement text = null;
-					Node child = node.getFirstChild();
-					while (child != null) {
-						if (child instanceof SVGOMTitleElement) {
-							SVGOMTitleElement titleElement = (SVGOMTitleElement) child;
-							Object titleElementChild = titleElement
-									.getFirstChild();
-							if (titleElementChild instanceof GenericText) {
-								GenericText textElement = (GenericText) titleElementChild;
-								title = textElement.getData();
-							}
-						} else if (child instanceof SVGOMPolygonElement) {
-							polygon = (SVGOMPolygonElement) child;
-						} else if (child instanceof SVGOMEllipseElement) {
-							ellipse = (SVGOMEllipseElement) child;
-						} else if (child instanceof SVGOMTextElement) {
-							text = (SVGOMTextElement) child;
-						}
-						child = child.getNextSibling();
-					}
-					if (title != null && (polygon != null || ellipse != null)/* && text != null*/) {
-						boolean nested = "cluster".equals(gElementClass);
-						if (nested && text != null) {
-							// if this is a nested workflow remove 'cluster_'
-							// from the title
-							Object textElementChild = text.getFirstChild();
-							if (textElementChild instanceof GenericText) {
-								GenericText textElement = (GenericText) textElementChild;
-								String textData = textElement.getData();
-								if (title.startsWith("cluster_")
-										&& title.endsWith(textData)) {
-									title = title.substring(8);//, title.lastIndexOf(textData));
-								}
-							}
-						}
-						GraphElement graphElement = graphElementMap.get(title);
-						if (graphElement instanceof SVGShape) {
-							SVGShape svgShape = (SVGShape) graphElement;
-							svgShape.setGraphComponent(this);
-							svgShape.setG(gElement);
-							if (polygon != null) {
-								svgShape.setPolygon(polygon);
-							} else {
-								svgShape.setEllipse(ellipse);
-							}
-							svgShape.setText(text);
-							processorMap.put(title, svgShape);
-						}
-					}
+				} else if ("cluster".equals(gElementClass)) {
+					mapCluster(node, gElement);
+				} else if ("node".equals(gElementClass)) {
+					mapNode(node, gElement);
 				} else if ("edge".equals(gElementClass)) {
-					String title = null;
-					SVGOMPathElement path = null;
-					SVGOMPolygonElement polygon = null;
-					SVGOMEllipseElement ellipse = null;
-					Node child = node.getFirstChild();
-					while (child != null) {
-						if (child instanceof SVGOMTitleElement) {
-							SVGOMTitleElement titleElement = (SVGOMTitleElement) child;
-							Object titleElementChild = titleElement
-									.getFirstChild();
-							if (titleElementChild instanceof GenericText) {
-								GenericText text = (GenericText) titleElementChild;
-								title = text.getData();
-							}
-						} else if (child instanceof SVGOMPolygonElement) {
-							polygon = (SVGOMPolygonElement) child;
-						} else if (child instanceof SVGOMEllipseElement) {
-							ellipse = (SVGOMEllipseElement) child;
-						} else if (child instanceof SVGOMPathElement) {
-							path = (SVGOMPathElement) child;
-						}
-						child = child.getNextSibling();
-					}
-					if (title != null && path != null && (polygon != null || ellipse != null)) {
-						GraphElement graphElement = graphElementMap.get(title);
-						if (graphElement instanceof SVGGraphEdge) {
-							SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
-							svgGraphEdge.setGraphComponent(this);
-							if (polygon != null) {
-								svgGraphEdge.setPolygon(polygon);
-							} else {
-								svgGraphEdge.setEllipse(ellipse);
-							}
-							svgGraphEdge.setPath(path);
-							mapDatalink(title, svgGraphEdge);
-						}
-					}
+					mapEdge(node);
 				}
 			} else {
 				mapNodes(node.getChildNodes());
 			}
 		}
+	}
+
+	private void mapCluster(Node node, SVGOMGElement gElement) {
+		String title = null;
+		SVGOMPolygonElement polygon = null;
+		SVGOMTextElement text = null;
+		Node child = node.getFirstChild();
+		while (child != null) {
+			if (child instanceof SVGOMTitleElement) {
+				title = getTitle((SVGOMTitleElement) child);
+			} else if (child instanceof SVGOMPolygonElement) {
+				polygon = (SVGOMPolygonElement) child;
+			} else if (child instanceof SVGOMTextElement) {
+				text = (SVGOMTextElement) child;
+			}
+			child = child.getNextSibling();
+		}
+		if (title != null && polygon != null) {
+			if (title.startsWith("cluster_")) {
+				title = title.substring(8);
+			}
+			GraphElement graphElement = graphElementMap.get(title);
+			if (graphElement instanceof SVGGraph) {
+				SVGGraph svgGraph = (SVGGraph) graphElement;
+				svgGraph.setGraphComponent(this);
+				svgGraph.setG(gElement);
+				svgGraph.setPolygon(polygon);
+				svgGraph.setText(text);
+				processorMap.put(title, svgGraph);
+			}
+		}
+	}
+
+	private void mapNode(Node node, SVGOMGElement gElement) {
+		String title = null;
+		SVGOMPolygonElement polygon = null;
+		SVGOMEllipseElement ellipse = null;
+		SVGOMTextElement text = null;
+		Node child = node.getFirstChild();
+		while (child != null) {
+			if (child instanceof SVGOMTitleElement) {
+				title = getTitle((SVGOMTitleElement) child);
+			} else if (child instanceof SVGOMPolygonElement) {
+				polygon = (SVGOMPolygonElement) child;
+			} else if (child instanceof SVGOMEllipseElement) {
+				ellipse = (SVGOMEllipseElement) child;
+			} else if (child instanceof SVGOMTextElement) {
+				text = (SVGOMTextElement) child;
+			}
+			child = child.getNextSibling();
+		}
+		if (title != null && (polygon != null || ellipse != null)) {
+			GraphElement graphElement = graphElementMap.get(title);
+			if (graphElement instanceof SVGGraphNode) {
+				SVGGraphNode svgGraphNode = (SVGGraphNode) graphElement;
+				svgGraphNode.setGraphComponent(this);
+				svgGraphNode.setG(gElement);
+				if (polygon != null) {
+					svgGraphNode.setPolygon(polygon);
+				} else {
+					svgGraphNode.setEllipse(ellipse);
+				}
+				svgGraphNode.setText(text);
+				processorMap.put(title, svgGraphNode);
+			}
+		}
+	}
+
+	private void mapEdge(Node node) {
+		String title = null;
+		SVGOMPathElement path = null;
+		SVGOMPolygonElement polygon = null;
+		SVGOMEllipseElement ellipse = null;
+		Node child = node.getFirstChild();
+		while (child != null) {
+			if (child instanceof SVGOMTitleElement) {
+				title = getTitle((SVGOMTitleElement) child);
+			} else if (child instanceof SVGOMPolygonElement) {
+				polygon = (SVGOMPolygonElement) child;
+			} else if (child instanceof SVGOMEllipseElement) {
+				ellipse = (SVGOMEllipseElement) child;
+			} else if (child instanceof SVGOMPathElement) {
+				path = (SVGOMPathElement) child;
+			}
+			child = child.getNextSibling();
+		}
+		if (title != null && path != null && (polygon != null || ellipse != null)) {
+			GraphElement graphElement = graphElementMap.get(title);
+			if (graphElement instanceof SVGGraphEdge) {
+				SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
+				svgGraphEdge.setGraphComponent(this);
+				if (polygon != null) {
+					svgGraphEdge.setPolygon(polygon);
+				} else {
+					svgGraphEdge.setEllipse(ellipse);
+				}
+				svgGraphEdge.setPath(path);
+				mapDatalink(title, svgGraphEdge);
+			}
+		}
+	}
+
+	private String getTitle(SVGOMTitleElement titleElement) {
+		String title = null;
+		Object titleElementChild = titleElement
+				.getFirstChild();
+		if (titleElementChild instanceof GenericText) {
+			GenericText textElement = (GenericText) titleElementChild;
+			title = textElement.getData();
+		}
+		return title;
 	}
 
 	private void mapDatalink(String title, SVGGraphEdge datalink) {

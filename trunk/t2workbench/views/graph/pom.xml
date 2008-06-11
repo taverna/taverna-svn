@@ -26,6 +26,11 @@
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>ui-api</artifactId>
 			<version>0.1-SNAPSHOT</version>

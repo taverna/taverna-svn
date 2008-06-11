@@ -89,6 +89,8 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	
 	private DataflowSelectionModel dataflowSelectionModel;
 	
+	private GraphEventManager graphEventManager;
+	
 	//graph settings	
 	private PortStyle portStyle = PortStyle.NONE;
 	
@@ -103,6 +105,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 		this.graphModelFactory = graphModelFactory;
 		dataflowSelectionModel = DataflowSelectionManager.getInstance().getDataflowSelectionModel(dataflow);
 		dataflowSelectionModel.addObserver(this);
+		graphEventManager = new GraphEventManager(dataflowSelectionModel);
 	}
 	
 	public Graph generateGraph() {
@@ -119,7 +122,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	}
 	
 	public Graph generateGraph(Dataflow dataflow, String prefix, String name, int depth) {
-		Graph graph = graphModelFactory.createGraphModel();
+		Graph graph = graphModelFactory.createGraph();
 		graph.setId(prefix + name);
 		graph.setAlignment(getAlignment());
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -224,7 +227,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 				edge.setColor(Color.decode("#c0c0c0"));
 				edge.setArrowHeadStyle(ArrowStyle.ODOT);
 				edge.setDataflowObject(condition);
-				edge.setSelectionModel(dataflowSelectionModel);
+				edge.setEventManager(graphEventManager);
 				dataflowToGraph.put(condition, edge);
 				graphToDataflow.put(edge, condition);
 			}
@@ -260,7 +263,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			edge.setId(sourceId + "->" + sinkId);
 			edge.setLineStyle(LineStyle.SOLID);
 			edge.setDataflowObject(datalink);
-			edge.setSelectionModel(dataflowSelectionModel);
+			edge.setEventManager(graphEventManager);
 			dataflowToGraph.put(datalink, edge);
 			graphToDataflow.put(edge, datalink);
 		}
@@ -268,7 +271,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	}
 
 	private Graph generateInputsGraph(List<? extends DataflowInputPort> inputPorts, String prefix, Graph graph) {
-		Graph inputs = graphModelFactory.createGraphModel();
+		Graph inputs = graphModelFactory.createGraph();
 		inputs.setId(prefix + "sources");
 		inputs.setLineStyle(LineStyle.DOTTED);
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -300,7 +303,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			inputNode.setShape(getPortStyle().inputShape());
 			inputNode.setFillColor(Color.decode("#87ceeb"));
 			inputNode.setDataflowObject(inputPort);
-			inputNode.setSelectionModel(dataflowSelectionModel);
+			inputNode.setEventManager(graphEventManager);
 			ports.put(inputPort.getInternalOutputPort(), inputNode);
 			dataflowToGraph.put(inputPort, inputNode);
 			graphToDataflow.put(inputNode, inputPort);
@@ -310,7 +313,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 	}
 
 	private Graph generateOutputsGraph(List<? extends DataflowOutputPort> outputPorts, String prefix, Graph graph) {
-		Graph outputs = graphModelFactory.createGraphModel();
+		Graph outputs = graphModelFactory.createGraph();
 		outputs.setId(prefix + "sinks");
 		outputs.setLineStyle(LineStyle.DOTTED);
 		if (getPortStyle().equals(PortStyle.BLOB)) {
@@ -342,7 +345,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 			outputNode.setShape(getPortStyle().outputShape());
 			outputNode.setFillColor(Color.decode("#bcd2ee"));
 			outputNode.setDataflowObject(outputPort);
-			outputNode.setSelectionModel(dataflowSelectionModel);
+			outputNode.setEventManager(graphEventManager);
 			ports.put(outputPort.getInternalInputPort(), outputNode);
 			dataflowToGraph.put(outputPort, outputNode);
 			graphToDataflow.put(outputNode, outputPort);
@@ -360,7 +363,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 		node.setHeight(0.2f);
 		node.setFillColor(Color.decode("#4f94cd"));
 		node.setDataflowObject(merge);
-		node.setSelectionModel(dataflowSelectionModel);
+		node.setEventManager(graphEventManager);
 
 		dataflowToGraph.put(merge, node);
 		graphToDataflow.put(node, merge);
@@ -398,7 +401,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 		node.setShape(getPortStyle().processorShape());
 		node.setFillColor(GraphColorManager.getFillColor(firstActivity));
 		node.setDataflowObject(processor);
-		node.setSelectionModel(dataflowSelectionModel);
+		node.setEventManager(graphEventManager);
 
 		dataflowToGraph.put(processor, node);
 		graphToDataflow.put(node, processor);
@@ -409,7 +412,7 @@ public class GraphController implements Observer<DataflowSelectionMessage> {
 				Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
 				Graph subGraph = generateGraph(subDataflow, node.getId(), processor.getLocalName(), depth + 1);
 				subGraph.setDataflowObject(processor);
-				subGraph.setSelectionModel(dataflowSelectionModel);
+				subGraph.setEventManager(graphEventManager);
 //				dataflowToGraph.put(processor, subGraph);
 				graphToDataflow.put(subGraph, processor);
 				node.setGraph(subGraph);
