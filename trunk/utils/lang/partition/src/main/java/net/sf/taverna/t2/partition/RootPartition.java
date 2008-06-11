@@ -34,6 +34,8 @@ public class RootPartition<ItemType> extends
 
 	private final SetModelChangeListener<ItemType> setChangeListener = new SetModelChangeListener<ItemType>() {
 
+		private List<Query<?>> queryList = new ArrayList<Query<?>>();
+		
 		public void itemsWereAdded(Set<ItemType> newItems) {
 			for (ItemType item : newItems) {
 				addOrUpdateItem(item);
@@ -51,6 +53,14 @@ public class RootPartition<ItemType> extends
 					// safely ignore this.
 				}
 			}
+		}
+
+		public void addQuery(Query<?> query) {
+			queryList.add(query);
+		}
+
+		public List<Query<?>> getQueries() {
+			return queryList;
 		}
 
 	};
