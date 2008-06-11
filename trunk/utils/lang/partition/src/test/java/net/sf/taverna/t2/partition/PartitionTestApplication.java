@@ -2,6 +2,7 @@ package net.sf.taverna.t2.partition;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -61,11 +63,13 @@ public class PartitionTestApplication {
 			public TableTreeNodeColumn[] getColumns() {
 				return new TableTreeNodeColumn[] {
 						new TableTreeNodeColumnImpl("int", new Color(150, 150,
-								210), 60),
+								210), 60,reg),
 						new TableTreeNodeColumnImpl("float", new Color(150,
-								210, 150), 60),
+								210, 150), 60,reg),
 						new TableTreeNodeColumnImpl("name", new Color(210, 150,
-								150), 60) };
+								150), 60,reg) ,
+						new TableTreeNodeColumnImpl("Fish", new Color(210, 150,
+						150), 60,reg) };
 			}
 		};
 
@@ -73,23 +77,25 @@ public class PartitionTestApplication {
 
 		partitionTree.setCellRenderer(ttnr);
 
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(),BoxLayout.Y_AXIS));
+		frame.getContentPane().add(new JScrollPane(partitionTree));
 		frame.getContentPane().add(new JScrollPane(partitionTree));
 		frame.setSize(400, 200);
 		frame.setVisible(true);
 		boolean showFrames = false;
-		while (true) {
+		//while (true) {
 			ttnr.setDrawBorders(showFrames);
 			showFrames = !showFrames;
 			for (ExampleItem item : exampleItems) {
 				Thread.sleep(200);
 				partition.addOrUpdateItem(item);
 			}
-			Thread.sleep(1000);
-			for (ExampleItem item : exampleItems) {
-				Thread.sleep(400);
-				partition.removeItem(item);
-			}
-		}
+//			Thread.sleep(1000);
+//			for (ExampleItem item : exampleItems) {
+//				Thread.sleep(400);
+//				partition.removeItem(item);
+//			}
+		//}
 	}
 
 	static ExampleItem[] exampleItems = new ExampleItem[] {
@@ -104,12 +110,14 @@ public class PartitionTestApplication {
 		private String propertyName;
 		private Color colour;
 		private int columnWidth;
+		private PropertyExtractorRegistry reg;
 
 		public TableTreeNodeColumnImpl(String propertyName, Color colour,
-				int width) {
+				int width,PropertyExtractorRegistry reg) {
 			this.propertyName = propertyName;
 			this.colour = colour;
 			this.columnWidth = width;
+			this.reg=reg;
 		}
 
 		public Component getCellRenderer(Object value) {
@@ -142,11 +150,17 @@ public class PartitionTestApplication {
 	static List<PartitionAlgorithmSPI<?>> getAlgorithms() {
 		List<PartitionAlgorithmSPI<?>> paList = new ArrayList<PartitionAlgorithmSPI<?>>();
 		LiteralValuePartitionAlgorithm lvpa = new LiteralValuePartitionAlgorithm();
-		lvpa.setPropertyName("name");
-		paList.add(lvpa);
+		lvpa.setPropertyName("float");
+		
 		LiteralValuePartitionAlgorithm lvpa2 = new LiteralValuePartitionAlgorithm();
 		lvpa2.setPropertyName("int");
+		LiteralValuePartitionAlgorithm lvpa3 = new LiteralValuePartitionAlgorithm();
+		lvpa3.setPropertyName("name");
+		
 		paList.add(lvpa2);
+		paList.add(lvpa);
+		paList.add(lvpa3);
+		
 		return paList;
 	}
 
@@ -187,7 +201,9 @@ public class PartitionTestApplication {
 				properties.put("name", item.getName());
 				properties.put("int", item.getIntValue());
 				properties.put("float", item.getFloatValue());
+				properties.put("Fish", "Soup");
 			}
+			
 			return properties;
 		}
 	}
