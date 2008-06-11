@@ -134,14 +134,26 @@ public class ModelMap implements Observable<ModelMapEvent> {
 	}
 
 	public static abstract class ModelMapEvent {
-		public final String modelName;
-		public final Object newModel;
-		public final Object oldModel;
+		private final String modelName;
+		private final Object newModel;
+		private final Object oldModel;
 
 		ModelMapEvent(String modelName, Object oldModel, Object newModel) {
 			this.modelName = modelName;
 			this.oldModel = oldModel;
 			this.newModel = newModel;
+		}
+
+		public String getModelName() {
+			return modelName;
+		}
+
+		public Object getNewModel() {
+			return newModel;
+		}
+
+		public Object getOldModel() {
+			return oldModel;
 		}
 	}
 
