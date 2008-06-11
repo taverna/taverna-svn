@@ -260,6 +260,9 @@
 		<module>ui-api</module>
 		<module>ui-impl</module>
 		<module>contextual-views</module>
+		<module>activity-palette-api</module>
+		<module>activity-palette-impl</module>
+		<module>activity-palette-ui</module>
 		<module>views</module>
 	</modules>
 </project>
