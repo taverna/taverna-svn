@@ -147,8 +147,8 @@ public class PartitionTestApplication {
 
 	}
 
-	static List<PartitionAlgorithmSPI<?>> getAlgorithms() {
-		List<PartitionAlgorithmSPI<?>> paList = new ArrayList<PartitionAlgorithmSPI<?>>();
+	static List<PartitionAlgorithm<?>> getAlgorithms() {
+		List<PartitionAlgorithm<?>> paList = new ArrayList<PartitionAlgorithm<?>>();
 		LiteralValuePartitionAlgorithm lvpa = new LiteralValuePartitionAlgorithm();
 		lvpa.setPropertyName("float");
 		

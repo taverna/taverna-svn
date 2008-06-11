@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.sf.taverna.t2.partition.PartitionAlgorithmSPI;
+import net.sf.taverna.t2.partition.PartitionAlgorithm;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -25,7 +25,7 @@ public class PartitionAlgorithmListEditor extends JPanel {
 
 	// List of partition algorithm instances acting as the model for this
 	// component
-	private List<PartitionAlgorithmSPI<?>> paList;
+	private List<PartitionAlgorithm<?>> paList;
 
 	private int cornerSep = 8;
 	private int labelHorizontalPad = 10;
@@ -33,7 +33,7 @@ public class PartitionAlgorithmListEditor extends JPanel {
 	private int labelTopPad = 4;
 	private float selectedStrokeWidth = 3f;
 	
-	public List<PartitionAlgorithmSPI<?>> getPartitionAlgorithmList() {
+	public List<PartitionAlgorithm<?>> getPartitionAlgorithmList() {
 		return null;
 	}
 
@@ -48,16 +48,16 @@ public class PartitionAlgorithmListEditor extends JPanel {
 	}
 
 	public PartitionAlgorithmListEditor(
-			List<PartitionAlgorithmSPI<?>> currentState) {
+			List<PartitionAlgorithm<?>> currentState) {
 		super();
 		this.paList = currentState;
 	}
 
-	protected JLabel getLabelForPA(PartitionAlgorithmSPI<?> pa) {
+	protected JLabel getLabelForPA(PartitionAlgorithm<?> pa) {
 		return new JLabel("Test...");
 	}
 
-	protected Color getBorderColorForPA(PartitionAlgorithmSPI<?> pa) {
+	protected Color getBorderColorForPA(PartitionAlgorithm<?> pa) {
 		return Color.black;
 	}
 

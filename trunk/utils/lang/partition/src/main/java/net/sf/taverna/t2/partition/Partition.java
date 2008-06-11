@@ -58,7 +58,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	// further partitions, the algorithm at index 0 is the one used for this
 	// partition, all others are passed in to the constructors for
 	// sub-partitions
-	protected List<PartitionAlgorithmSPI<?>> partitionAlgorithms;
+	protected List<PartitionAlgorithm<?>> partitionAlgorithms;
 
 	// An initially empty list of sub-partitions created by the head element of
 	// the partition algorithm list
@@ -94,7 +94,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	 *            purposes
 	 */
 	protected Partition(Partition<ItemType, ?, PartitionValueType> parent,
-			List<PartitionAlgorithmSPI<?>> pa, RootPartition<ItemType> root,
+			List<PartitionAlgorithm<?>> pa, RootPartition<ItemType> root,
 			PartitionValueType pv) {
 		this.root = root;
 		this.members = new ArrayList<ItemType>();
@@ -207,7 +207,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	 * subsequent downstream sub-partitions of it. If this is empty then the
 	 * partition is a leaf partition.
 	 */
-	public final List<PartitionAlgorithmSPI<?>> getPartitionAlgorithms() {
+	public final List<PartitionAlgorithm<?>> getPartitionAlgorithms() {
 		return Collections.unmodifiableList(partitionAlgorithms);
 	}
 
@@ -255,8 +255,8 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 			// TODO - when the tree model covers items on the leaf nodes we'll
 			// want to message it here as well.
 		} else {
-			PartitionAlgorithmSPI<ChildPartitionValueType> pa;
-			pa = (PartitionAlgorithmSPI<ChildPartitionValueType>) partitionAlgorithms
+			PartitionAlgorithm<ChildPartitionValueType> pa;
+			pa = (PartitionAlgorithm<ChildPartitionValueType>) partitionAlgorithms
 					.get(0);
 			ChildPartitionValueType pvalue = pa.allocate(item, root
 					.getPropertyExtractorRegistry());
@@ -269,7 +269,7 @@ class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 				}
 			}
 			// If not we have to create a new sub-partition
-			List<PartitionAlgorithmSPI<?>> tail = new ArrayList<PartitionAlgorithmSPI<?>>();
+			List<PartitionAlgorithm<?>> tail = new ArrayList<PartitionAlgorithm<?>>();
 			for (int i = 1; i < partitionAlgorithms.size(); i++) {
 				tail.add(partitionAlgorithms.get(i));
 			}

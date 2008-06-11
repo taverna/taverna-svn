@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workbench.configuration;
 
 import java.util.Map;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class DummyUIFactory1 implements ConfigurationUIFactory {

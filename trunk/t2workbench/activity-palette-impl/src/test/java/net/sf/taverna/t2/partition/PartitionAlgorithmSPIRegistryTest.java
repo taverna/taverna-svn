@@ -7,32 +7,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PartitionAlgorithmSPIRegistryTest {
-	private static PartitionAlgorithmSPIRegistry registry;
+	private static PartitionAlgorithmSetSPIRegistry registry;
 	
 	@BeforeClass
 	public static void setUp() {
-		registry = PartitionAlgorithmSPIRegistry.getInstance();
+		registry = PartitionAlgorithmSetSPIRegistry.getInstance();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetInstance() {
-		List<PartitionAlgorithmSPI> list = registry.getInstances();
-		assertTrue("There should be more than one PartitionAlgorithm Found",list.size()>0);
+		List<PartitionAlgorithmSetSPI> list = registry.getInstances();
+		assertTrue("There should be at least 1 item in the list",list.size()>0);
 		boolean found = false;
-		for (PartitionAlgorithmSPI item : list) {
-			if (item instanceof DummyPartitionAlgorithm) {
+		for (PartitionAlgorithmSetSPI item : list) {
+			if (item instanceof DummyPartitionAlgorithmSet) {
 				found=true;
 				break;
 			}
 		}
-		assertTrue("There should have been a DummyPartitionAlgorithm",found);
-	}
-
-	@Test
-	public void testGetByType() {
-		List<PartitionAlgorithmSPI<?>> list = registry.getByType(DummyPartitionAlgorithm.class);
-		assertEquals("There should only be 1 DummyPartitionAlgorithm",1,list.size());
-		assertTrue("There PartitionAlgorithm should be a DummyPartitionAlgorithm",list.get(0) instanceof DummyPartitionAlgorithm);
+		assertTrue("There should have been a DummyPartitionAlgorithmSet",found);
 	}
 }

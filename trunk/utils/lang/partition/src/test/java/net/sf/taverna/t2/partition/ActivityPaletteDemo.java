@@ -169,8 +169,8 @@ public class ActivityPaletteDemo {
 		};
 	}
 
-	private List<PartitionAlgorithmSPI<?>> getAlgorithms() {
-		List<PartitionAlgorithmSPI<?>> list = new ArrayList<PartitionAlgorithmSPI<?>>();
+	private List<PartitionAlgorithm<?>> getAlgorithms() {
+		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
 		LiteralValuePartitionAlgorithm alg = new LiteralValuePartitionAlgorithm();
 		alg.setPropertyName("type");
 
@@ -182,8 +182,8 @@ public class ActivityPaletteDemo {
 		return list;
 	}
 	
-	private List<PartitionAlgorithmSPI<?>> getAlgorithms2() {
-		List<PartitionAlgorithmSPI<?>> list = new ArrayList<PartitionAlgorithmSPI<?>>();
+	private List<PartitionAlgorithm<?>> getAlgorithms2() {
+		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
 		LiteralValuePartitionAlgorithm alg = new LiteralValuePartitionAlgorithm();
 		alg.setPropertyName("category");
 

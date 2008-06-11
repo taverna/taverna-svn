@@ -62,7 +62,7 @@ public class RootPartition<ItemType> extends
 	 * 
 	 * @param pa
 	 */
-	public RootPartition(List<PartitionAlgorithmSPI<?>> pa,
+	public RootPartition(List<PartitionAlgorithm<?>> pa,
 			PropertyExtractorRegistry per) {
 		super(null, pa, null, null);
 		this.root = this;
@@ -94,7 +94,7 @@ public class RootPartition<ItemType> extends
 	 *            basis for the partition structure.
 	 */
 	public synchronized void setPartitionAlgorithmList(
-			List<PartitionAlgorithmSPI<?>> pa) {
+			List<PartitionAlgorithm<?>> pa) {
 		if (pa.equals(this.partitionAlgorithms)) {
 			// At the least this checks for reference equality, although I'm not
 			// sure it does much more than that. TODO - replace this with a
@@ -135,7 +135,7 @@ public class RootPartition<ItemType> extends
 			// until either we hit the end (no reclassification) or the item
 			// classifies differently in which case we remove and re-add it.
 			for (int i = 1; i < partitions.size(); i++) {
-				PartitionAlgorithmSPI<?> pa = getPartitionAlgorithms().get(
+				PartitionAlgorithm<?> pa = getPartitionAlgorithms().get(
 						i - 1);
 				Object existingValue = partitions.get(i).getPartitionValue();
 				Object reclassifiedValue = pa.allocate(item,

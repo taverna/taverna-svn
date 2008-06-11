@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import net.sf.taverna.t2.partition.PartitionAlgorithmSPI;
+import net.sf.taverna.t2.partition.PartitionAlgorithm;
 import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 
 public class UITest extends JFrame {
@@ -17,7 +17,7 @@ public class UITest extends JFrame {
 	public UITest() {
 		super();
 		getContentPane().setLayout(new BorderLayout());
-		List<PartitionAlgorithmSPI<?>> paList = new ArrayList<PartitionAlgorithmSPI<?>>();
+		List<PartitionAlgorithm<?>> paList = new ArrayList<PartitionAlgorithm<?>>();
 		paList.add(new LiteralValuePartitionAlgorithm());
 		paList.add(new LiteralValuePartitionAlgorithm());
 		paList.add(new LiteralValuePartitionAlgorithm());
