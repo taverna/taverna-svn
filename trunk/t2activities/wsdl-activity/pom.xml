@@ -34,6 +34,11 @@
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>partition</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.4</version>
@@ -44,6 +49,11 @@
 			<artifactId>activity-test-utils</artifactId>
 			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
