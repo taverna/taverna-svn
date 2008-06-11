@@ -14,6 +14,7 @@ public class PartitionAlgorithmSPIRegistryTest {
 		registry = PartitionAlgorithmSPIRegistry.getInstance();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetInstance() {
 		List<PartitionAlgorithmSPI> list = registry.getInstances();
@@ -27,7 +28,7 @@ public class PartitionAlgorithmSPIRegistryTest {
 		}
 		assertTrue("There should have been a DummyPartitionAlgorithm",found);
 	}
-	
+
 	@Test
 	public void testGetByType() {
 		List<PartitionAlgorithmSPI<?>> list = registry.getByType(DummyPartitionAlgorithm.class);
