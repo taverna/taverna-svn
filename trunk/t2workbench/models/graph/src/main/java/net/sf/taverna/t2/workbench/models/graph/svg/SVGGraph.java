@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import net.sf.taverna.t2.workbench.models.graph.Graph;
+
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -10,13 +12,16 @@ import org.w3c.dom.Text;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.events.UIEvent;
+import org.w3c.dom.events.MouseEvent;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
-import net.sf.taverna.t2.workbench.models.graph.Graph;
-
-public class SVGGraphModel extends Graph implements SVGShape {
+/**
+ * SVG representation of a graph.
+ * 
+ * @author David Withers
+ */
+public class SVGGraph extends Graph implements SVGShape {
 
 	private SVGGraphComponent graphComponent;
 
@@ -44,7 +49,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 
 	private String selectedStyle;
 
-	public SVGGraphModel() {
+	public SVGGraph() {
 	}
 	
 	/* (non-Javadoc)
@@ -87,20 +92,27 @@ public class SVGGraphModel extends Graph implements SVGShape {
 //		}
 //		}, false);
 
-		t.addEventListener(SVGConstants.SVG_DOMACTIVATE_EVENT_TYPE, new EventListener() {
-			public void handleEvent(Event evt) {
-				if (evt instanceof UIEvent) {
-					UIEvent uiEvent = (UIEvent) evt;
-					if (uiEvent.getDetail() == 1) {
-						getSelectionModel().addSelection(getDataflowObject());
-					} else if (uiEvent.getDetail() == 2) {
-						polygon.setAttribute(
-								SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+		if (getEventManager() != null) {
+			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
+				public void handleEvent(Event evt) {
+					if (evt instanceof MouseEvent) {
+						MouseEvent mouseEvent = (MouseEvent) evt;
+						getEventManager().mouseClicked(SVGGraph.this, mouseEvent.getButton(),
+								mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
+								mouseEvent.getScreenX(), mouseEvent.getScreenY());
 					}
 				}
-			}
-		}, false);
-
+			}, false);
+//		} else {
+//			t.addEventListener(SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE, new EventListener() {
+//				public void handleEvent(Event evt) {
+//					if (evt instanceof MouseEvent) {
+//						MouseEvent mouseEvent = (MouseEvent) evt;
+//						System.out.println(mouseEvent.getClientX()+","+mouseEvent.getClientY());
+//					}
+//				}
+//			}, false);			
+		}
 	}
 
 	/* (non-Javadoc)
@@ -258,7 +270,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
-							Element text = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
+							Element text = SVGGraph.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
 									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
 							text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
 									String
@@ -279,7 +291,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 									"sans-serif");
 							synchronized (g) {
 								if (iterationText == null) {
-									iterationText = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
+									iterationText = SVGGraph.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createTextNode("");
 									text.appendChild(iterationText);
 									g.appendChild(text);
@@ -295,7 +307,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
-							Element text = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
+							Element text = SVGGraph.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
 									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
 							text
 							.setAttribute(
@@ -320,7 +332,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 									SVGConstants.SVG_FILL_ATTRIBUTE, "red");
 							synchronized (g) {
 								if (errorsText == null) {
-									errorsText = SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
+									errorsText = SVGGraph.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createTextNode("");
 									text.appendChild(errorsText);
 									g.appendChild(text);
@@ -338,7 +350,7 @@ public class SVGGraphModel extends Graph implements SVGShape {
 						public void run() {
 							synchronized (g) {
 								if (completedBox == null) {
-									completedBox = (SVGOMPolygonElement) SVGGraphModel.this.graphComponent.getSvgCanvas().getSVGDocument()
+									completedBox = (SVGOMPolygonElement) SVGGraph.this.graphComponent.getSvgCanvas().getSVGDocument()
 									.createElementNS(
 											SVGGraphComponent.svgNS,
 											SVGConstants.SVG_POLYGON_TAG);
