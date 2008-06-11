@@ -112,9 +112,9 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		
 		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
 			public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message) {
-				if (message.modelName.equals(ModelMapConstants.CURRENT_DATAFLOW)) {
-					if (message.newModel instanceof Dataflow) {
-						setDataflow((Dataflow) message.newModel);
+				if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+					if (message.getNewModel() instanceof Dataflow) {
+						setDataflow((Dataflow) message.getNewModel());
 					}
 				}
 			}
