@@ -15,16 +15,16 @@ public abstract class ActivityPartitionAlgorithmSet implements PartitionAlgorith
 	/**
 	 * A Set of the PartitionAlgorithms populated when at class instantiation
 	 */
-	protected Set<PartitionAlgorithm<?>> partitonAlgorithms = new HashSet<PartitionAlgorithm<?>>();
+	protected Set<PartitionAlgorithm<?>> partitionAlgorithms = new HashSet<PartitionAlgorithm<?>>();
 
 	public ActivityPartitionAlgorithmSet() {
-		partitonAlgorithms.add(new LiteralValuePartitionAlgorithm("type"));
+		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("type"));
 	}
 
 
 
 	public Set<PartitionAlgorithm<?>> getPartitonAlgorithms() {
-		return partitonAlgorithms;
+		return partitionAlgorithms;
 	}
 }
 
