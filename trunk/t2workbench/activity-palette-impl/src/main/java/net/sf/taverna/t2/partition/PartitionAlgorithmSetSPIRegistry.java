@@ -1,8 +1,5 @@
 package net.sf.taverna.t2.partition;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.taverna.t2.spi.SPIRegistry;
 
 /**
