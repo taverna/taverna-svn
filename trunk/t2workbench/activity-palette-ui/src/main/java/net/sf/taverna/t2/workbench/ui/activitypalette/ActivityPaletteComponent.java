@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -12,22 +14,20 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.partition.ActivityItem;
-import net.sf.taverna.t2.partition.LocalWorkerActivityItem;
-import net.sf.taverna.t2.partition.LocalWorkerQuery;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
+import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPI;
+import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPIRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorSPIRegistry;
 import net.sf.taverna.t2.partition.Query;
+import net.sf.taverna.t2.partition.QueryFactoryRegistry;
 import net.sf.taverna.t2.partition.RootPartition;
 import net.sf.taverna.t2.partition.SetModelChangeListener;
-import net.sf.taverna.t2.partition.SoaplabActivityItem;
-import net.sf.taverna.t2.partition.SoaplabQuery;
-import net.sf.taverna.t2.partition.WSDLActivityItem;
-import net.sf.taverna.t2.partition.WSDLQuery;
 import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 
@@ -65,7 +65,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		menuBar.add(algorithmMenu);
 		add(menuBar, BorderLayout.PAGE_START);
 		menuBar.setVisible(true);
-		add(activityTree, BorderLayout.LINE_START);
+		add(new JScrollPane(activityTree), BorderLayout.LINE_START);
 		JPanel fillerPanel = new JPanel();
 		add(fillerPanel, BorderLayout.LINE_END);
 	}
@@ -98,23 +98,15 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * @param partition
 	 */
 	private void initQueries(RootPartition partition) {
-		WSDLQuery q = new WSDLQuery();
-		q
-				.addSetModelChangeListener((SetModelChangeListener<WSDLActivityItem>) partition
-						.getSetModelChangeListener());
-		partition.getSetModelChangeListener().addQuery(q);
-
-		SoaplabQuery q2 = new SoaplabQuery();
-		q2
-				.addSetModelChangeListener((SetModelChangeListener<SoaplabActivityItem>) partition
-						.getSetModelChangeListener());
-		partition.getSetModelChangeListener().addQuery(q2);
-
-		LocalWorkerQuery q3 = new LocalWorkerQuery();
-		q3
-				.addSetModelChangeListener((SetModelChangeListener<LocalWorkerActivityItem>) partition
-						.getSetModelChangeListener());
-		partition.getSetModelChangeListener().addQuery(q3);
+		
+		List<Query<?>> queries = QueryFactoryRegistry.getInstance().getQueries();
+		
+		
+		for (Query query:queries) {
+			query.addSetModelChangeListener((SetModelChangeListener) partition
+					.getSetModelChangeListener());
+			partition.getSetModelChangeListener().addQuery(query);
+		}
 	}
 
 	/**
@@ -195,33 +187,22 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	private List<PartitionAlgorithm<?>> getAlgorithms() {
 		// TODO use the SPI instead of hard coding when there are algorithms
 		// ready
-		// List<PartitionAlgorithmSetSPI> instances =
-		// PartitionAlgorithmSetSPIRegistry
-		// .getInstance().getInstances();
-		// Set<PartitionAlgorithm<?>> partitionAlgorithmSet = new
-		// HashSet<PartitionAlgorithm<?>>();
-		// for (PartitionAlgorithmSetSPI instance : instances) {
-		// Set<PartitionAlgorithm<?>> partitonAlgorithms = instance
-		// .getPartitionAlgorithms();
-		// partitionAlgorithmSet.addAll(partitonAlgorithms);
-		// }
-		// List<PartitionAlgorithm<?>> partitionAlgorithmList = new
-		// ArrayList<PartitionAlgorithm<?>>();
-		// for (PartitionAlgorithm<?> algorithm : partitionAlgorithmSet) {
-		// partitionAlgorithmList.add(algorithm);
-		// }
-		// return partitionAlgorithmList;
-
-		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
-		LiteralValuePartitionAlgorithm alg = new LiteralValuePartitionAlgorithm();
-		alg.setPropertyName("type");
-
-		LiteralValuePartitionAlgorithm alg2 = new LiteralValuePartitionAlgorithm();
-		alg2.setPropertyName("category");
-
-		list.add(alg);
-		list.add(alg2);
-		return list;
+		 List<PartitionAlgorithmSetSPI> instances =
+		 PartitionAlgorithmSetSPIRegistry
+		 .getInstance().getInstances();
+		 Set<PartitionAlgorithm<?>> partitionAlgorithmSet = new
+		 HashSet<PartitionAlgorithm<?>>();
+		 for (PartitionAlgorithmSetSPI instance : instances) {
+		 Set<PartitionAlgorithm<?>> partitonAlgorithms = instance
+		 .getPartitionAlgorithms();
+		 partitionAlgorithmSet.addAll(partitonAlgorithms);
+		 }
+		 List<PartitionAlgorithm<?>> partitionAlgorithmList = new
+		 ArrayList<PartitionAlgorithm<?>>();
+		 for (PartitionAlgorithm<?> algorithm : partitionAlgorithmSet) {
+		 partitionAlgorithmList.add(algorithm);
+		 }
+		 return partitionAlgorithmList;
 	}
 
 }
