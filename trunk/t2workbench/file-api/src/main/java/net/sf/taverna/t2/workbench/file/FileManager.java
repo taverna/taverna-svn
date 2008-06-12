@@ -5,10 +5,48 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workbench.file.FileManager.FileManagerEvent;
 
-public abstract class FileManager {
+public abstract class FileManager implements Observable<FileManagerEvent> {
+
+	public static abstract class FileManagerEvent {
+	}
+
+	public static abstract class AbstractDataflowEvent extends FileManagerEvent {
+		private final Dataflow dataflow;
+
+		public AbstractDataflowEvent(Dataflow dataflow) {
+			this.dataflow = dataflow;
+		}
+
+		public Dataflow getDataflow() {
+			return dataflow;
+		}
+	}
+
+	public static class OpenedDataflowEvent extends AbstractDataflowEvent {
+
+		public OpenedDataflowEvent(Dataflow dataflow) {
+			super(dataflow);
+		}
+	}
+
+	public static class ClosedDataflowEvent extends AbstractDataflowEvent {
+
+		public ClosedDataflowEvent(Dataflow dataflow) {
+			super(dataflow);
+		}
+	}
+
+	public static class SavedDataflowEvent extends AbstractDataflowEvent {
+
+		public SavedDataflowEvent(Dataflow dataflow) {
+			super(dataflow);
+		}
+	}
 
 	private static FileManager instance;
 

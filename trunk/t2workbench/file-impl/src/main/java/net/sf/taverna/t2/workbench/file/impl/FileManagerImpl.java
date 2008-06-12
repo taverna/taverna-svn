@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.lang.ui.ModelMap;
@@ -45,16 +46,6 @@ public class FileManagerImpl extends FileManager {
 
 	static Logger logger = Logger.getLogger(FileManagerImpl.class);
 
-	private EditManager editManager = EditManager.getInstance();
-	private EditManagerObserver editManagerObserver = new EditManagerObserver();
-	private ModelMapObserver modelMapObserver = new ModelMapObserver();
-	private ModelMap modelMap = ModelMap.getInstance();
-
-	/**
-	 * Ordered list of open dataflows
-	 */
-	private LinkedHashMap<Dataflow, OpenDataflowInfo> openDataflowInfos = new LinkedHashMap<Dataflow, OpenDataflowInfo>();
-
 	/**
 	 * The last blank dataflow created using #newDataflow() until it has been //
 	 * changed - when this variable will be set to null again. Used to //
@@ -62,25 +53,37 @@ public class FileManagerImpl extends FileManager {
 	 */
 	private Dataflow blankDataflow = null;
 
+	private EditManager editManager = EditManager.getInstance();
+	private EditManagerObserver editManagerObserver = new EditManagerObserver();
+	private ModelMap modelMap = ModelMap.getInstance();
+	private ModelMapObserver modelMapObserver = new ModelMapObserver();
+
+	/**
+	 * Ordered list of open dataflows
+	 */
+	private LinkedHashMap<Dataflow, OpenDataflowInfo> openDataflowInfos = new LinkedHashMap<Dataflow, OpenDataflowInfo>();
+
+	protected MultiCaster<FileManagerEvent> observers = new MultiCaster<FileManagerEvent>(
+			this);
+
 	public FileManagerImpl() {
 		editManager.addObserver(editManagerObserver);
-
 		modelMap.addObserver(modelMapObserver);
 	}
 
-	public boolean isDataflowOpen(Dataflow dataflow) {
-		return openDataflowInfos.containsKey(dataflow);
+	public void addObserver(Observer<FileManagerEvent> observer) {
+		observers.addObserver(observer);
+	}
+
+	@Override
+	public boolean canSaveCurrentWithoutFilename() {
+		return canSaveWithoutFilename(getCurrentDataflow());
 	}
 
 	@Override
 	public boolean canSaveWithoutFilename(Dataflow dataflow) {
 		OpenDataflowInfo dataflowInfo = getOpenDataflowInfo(dataflow);
 		return dataflowInfo.getFile() != null;
-	}
-
-	@Override
-	public boolean canSaveCurrentWithoutFilename() {
-		return canSaveWithoutFilename(getCurrentDataflow());
 	}
 
 	@Override
@@ -119,6 +122,16 @@ public class FileManagerImpl extends FileManager {
 			blankDataflow = null;
 		}
 		openDataflowInfos.remove(dataflow);
+		observers.notify(new ClosedDataflowEvent(dataflow));
+	}
+
+	@Override
+	public Dataflow getCurrentDataflow() {
+		return (Dataflow) modelMap.getModel(ModelMapConstants.CURRENT_DATAFLOW);
+	}
+
+	public List<Observer<FileManagerEvent>> getObservers() {
+		return observers.getObservers();
 	}
 
 	@Override
@@ -131,41 +144,31 @@ public class FileManagerImpl extends FileManager {
 		return getOpenDataflowInfo(dataflow).isChanged();
 	}
 
+	public boolean isDataflowOpen(Dataflow dataflow) {
+		return openDataflowInfos.containsKey(dataflow);
+	}
+
 	@Override
 	public Dataflow newDataflow() {
 		Dataflow dataflow = editManager.getEdits().createDataflow();
 		blankDataflow = null;
-		openDataflow(dataflow);
+		openDataflowInternal(dataflow);
 		blankDataflow = dataflow;
+		observers.notify(new OpenedDataflowEvent(dataflow));
 		return dataflow;
 	}
 
 	@Override
 	public void openDataflow(Dataflow dataflow) {
-		if (isDataflowOpen(dataflow)) {
-			throw new IllegalArgumentException("Dataflow is already open: "
-					+ dataflow);
-		}
-		openDataflowInfos.put(dataflow, new OpenDataflowInfo());
-
-		setCurrentDataflow(dataflow);
-		if (openDataflowInfos.size() == 2 && blankDataflow != null) {
-			// Behave like a word processor and close the blank workflow
-			// when another one has been opened
-			try {
-				closeDataflow(blankDataflow, true);
-			} catch (UnsavedException e) {
-				logger.error("Blank dataflow was modified "
-						+ "and could not be closed");
-			}
-		}
+		openDataflowInternal(dataflow);
+		observers.notify(new OpenedDataflowEvent(dataflow));
 	}
 
 	@Override
 	public Dataflow openDataflow(InputStream workflowXMLstream)
 			throws OpenException {
-		Dataflow dataflow = loadDataflowFromStream(workflowXMLstream);
-		openDataflow(dataflow);
+		Dataflow dataflow = openDataflowInternal(workflowXMLstream);
+		observers.notify(new OpenedDataflowEvent(dataflow));
 		return dataflow;
 	}
 
@@ -180,7 +183,7 @@ public class FileManagerImpl extends FileManager {
 		logger.debug("Loading dataflow from " + dataflowURL);
 		Dataflow dataflow;
 		try {
-			dataflow = openDataflow(inputStream);
+			dataflow = openDataflowInternal(inputStream);
 		} finally {
 			try {
 				inputStream.close();
@@ -191,7 +194,12 @@ public class FileManagerImpl extends FileManager {
 		logger.info("Loaded workflow: " + dataflow.getLocalName() + " "
 				+ dataflow.getInternalIdentier() + " from " + dataflowURL);
 		getOpenDataflowInfo(dataflow).setOpenedFrom(dataflowURL);
+		observers.notify(new OpenedDataflowEvent(dataflow));
 		return dataflow;
+	}
+
+	public void removeObserver(Observer<FileManagerEvent> observer) {
+		observers.removeObserver(observer);
 	}
 
 	@Override
@@ -266,16 +274,20 @@ public class FileManagerImpl extends FileManager {
 	}
 
 	@Override
+	public void setCurrentDataflow(Dataflow dataflow) {
+		if (!isDataflowOpen(dataflow)) {
+			throw new IllegalArgumentException("Dataflow is not open: "
+					+ dataflow);
+		}
+		modelMap.setModel(ModelMapConstants.CURRENT_DATAFLOW, dataflow);
+	}
+
+	@Override
 	public void setDataflowChanged(Dataflow dataflow, boolean isChanged) {
 		getOpenDataflowInfo(dataflow).setChanged(isChanged);
 		if (blankDataflow == dataflow) {
 			blankDataflow = null;
 		}
-	}
-
-	@Override
-	public Dataflow getCurrentDataflow() {
-		return (Dataflow) modelMap.getModel(ModelMapConstants.CURRENT_DATAFLOW);
 	}
 
 	protected synchronized OpenDataflowInfo getOpenDataflowInfo(
@@ -314,13 +326,30 @@ public class FileManagerImpl extends FileManager {
 		return dataflow;
 	}
 
-	@Override
-	public void setCurrentDataflow(Dataflow dataflow) {
-		if (!isDataflowOpen(dataflow)) {
-			throw new IllegalArgumentException("Dataflow is not open: "
+	protected void openDataflowInternal(Dataflow dataflow) {
+		if (isDataflowOpen(dataflow)) {
+			throw new IllegalArgumentException("Dataflow is already open: "
 					+ dataflow);
 		}
-		modelMap.setModel(ModelMapConstants.CURRENT_DATAFLOW, dataflow);
+		openDataflowInfos.put(dataflow, new OpenDataflowInfo());
+		setCurrentDataflow(dataflow);
+		if (openDataflowInfos.size() == 2 && blankDataflow != null) {
+			// Behave like a word processor and close the blank workflow
+			// when another one has been opened
+			try {
+				closeDataflow(blankDataflow, true);
+			} catch (UnsavedException e) {
+				logger.error("Blank dataflow was modified "
+						+ "and could not be closed");
+			}
+		}
+	}
+
+	protected Dataflow openDataflowInternal(InputStream workflowXMLstream)
+			throws OpenException {
+		Dataflow dataflow = loadDataflowFromStream(workflowXMLstream);
+		openDataflowInternal(dataflow);
+		return dataflow;
 	}
 
 	protected boolean wouldOverwriteDataflow(Dataflow dataflow,
@@ -350,19 +379,6 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
-	private final class ModelMapObserver implements Observer<ModelMapEvent> {
-		public void notify(Observable<ModelMapEvent> sender,
-				ModelMapEvent message) throws Exception {
-			if (message.getModelName().equals(ModelMapConstants.CURRENT_PERSPECTIVE)) {
-				Dataflow newModel = (Dataflow) message.getNewModel();
-				if (!isDataflowOpen(newModel)) {
-					openDataflow(newModel);
-				}
-			}
-
-		}
-	}
-
 	private final class EditManagerObserver implements
 			Observer<EditManagerEvent> {
 
@@ -378,6 +394,20 @@ public class FileManagerImpl extends FileManager {
 				 */
 				setDataflowChanged(dataflow, true);
 			}
+		}
+	}
+
+	private final class ModelMapObserver implements Observer<ModelMapEvent> {
+		public void notify(Observable<ModelMapEvent> sender,
+				ModelMapEvent message) throws Exception {
+			if (message.getModelName().equals(
+					ModelMapConstants.CURRENT_PERSPECTIVE)) {
+				Dataflow newModel = (Dataflow) message.getNewModel();
+				if (!isDataflowOpen(newModel)) {
+					openDataflowInternal(newModel);
+				}
+			}
+
 		}
 	}
 
