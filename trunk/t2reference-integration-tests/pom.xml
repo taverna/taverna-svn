@@ -17,6 +17,20 @@
 		environment an application would use so tests here are fully
 		representative of the external use of the reference manager.
 	</description>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Force Java5 compliance so we can use generics, annotations etc -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+		
 	<dependencies>
 
 		<dependency>
