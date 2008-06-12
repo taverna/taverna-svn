@@ -16,6 +16,7 @@ public class WSDLPropertyExtractor implements PropertyExtractorSPI {
 			map.put("use", item.getUse());
 			map.put("style", item.getStyle());
 			map.put("operation", item.getOperation());
+			map.put("url",item.getUrl());
 		}
 		return map;
 	}

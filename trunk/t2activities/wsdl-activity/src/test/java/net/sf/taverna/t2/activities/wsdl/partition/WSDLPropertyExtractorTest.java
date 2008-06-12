@@ -1,12 +1,16 @@
 package net.sf.taverna.t2.activities.wsdl.partition;
 
-import java.util.List;
+import static org.junit.Assert.*;
 
+import java.util.List;
+import java.util.Map;
+
+import net.sf.taverna.t2.activities.wsdl.query.WSDLActivityItem;
+import net.sf.taverna.t2.partition.ActivityItem;
 import net.sf.taverna.t2.partition.PropertyExtractorSPI;
 import net.sf.taverna.t2.partition.PropertyExtractorSPIRegistry;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class WSDLPropertyExtractorTest {
 
@@ -22,5 +26,30 @@ public class WSDLPropertyExtractorTest {
 			}
 		}
 		assertTrue("A WSDLPropertyExtractor should have been found",found);
+	}
+	
+	@Test
+	public void testExtractProperties() {
+		WSDLActivityItem item = new WSDLActivityItem();
+		item.setUse("USE");
+		item.setStyle("STYLE");
+		item.setOperation("OPERATION");
+		item.setUrl("URL");
+		Map<String,Object> props = new WSDLPropertyExtractor().extractProperties(item);
+		assertEquals("missing or incorrect property","USE",props.get("use"));
+		assertEquals("missing or incorrect property","STYLE",props.get("style"));
+		assertEquals("missing or incorrect property","OPERATION",props.get("operation"));
+		assertEquals("missing or incorrect property","URL",props.get("url"));
+		assertEquals("missing or incorrect property","SOAP",props.get("type"));
+	}
+	
+	@Test
+	public void testExtractPropertiesNotWSDL() {
+		ActivityItem item = new ActivityItem() {
+			
+		};
+		Map<String,Object> props = new WSDLPropertyExtractor().extractProperties(item);
+		assertNotNull("A map should have been returned, even though its empty",props);
+		assertEquals("There should be no properties",0,props.size());
 	}
 }
