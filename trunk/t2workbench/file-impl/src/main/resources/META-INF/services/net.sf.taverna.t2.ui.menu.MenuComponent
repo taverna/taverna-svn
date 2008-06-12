@@ -5,3 +5,5 @@ net.sf.taverna.t2.workbench.file.impl.menu.FileOpenMenuSection
 net.sf.taverna.t2.workbench.file.impl.menu.FileSaveAsMenuAction
 net.sf.taverna.t2.workbench.file.impl.menu.FileSaveMenuAction
 net.sf.taverna.t2.workbench.file.impl.menu.FileSaveMenuSection
+
+net.sf.taverna.t2.workbench.file.impl.menu.WorkflowsMenu
