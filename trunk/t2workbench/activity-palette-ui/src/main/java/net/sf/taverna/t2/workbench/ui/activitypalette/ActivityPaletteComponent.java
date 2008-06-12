@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
+import javax.help.*;
 
 import net.sf.taverna.t2.partition.ActivityItem;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
@@ -58,10 +59,12 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * {@link JMenuBar} to allow the user to filter the activities
 	 */
 	public ActivityPaletteComponent() {
+		CSH.setHelpIDString(this, "net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent");
 		setLayout(new BorderLayout());
 		initialise();
 		createAlgorithmMenu();
 		JMenuBar menuBar = new JMenuBar();
+		CSH.setHelpIDString(menuBar, "net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent-menuBar");
 		menuBar.add(algorithmMenu);
 		add(menuBar, BorderLayout.PAGE_START);
 		menuBar.setVisible(true);
