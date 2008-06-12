@@ -114,6 +114,9 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 
 	@SuppressWarnings("unchecked")
 	protected synchronized final void update() {
+		if (builders == null || translators == null) {
+			return;
+		}
 		knownReferenceTypes.clear();
 		solvers.clear();
 		adjacencySets.clear();
@@ -264,6 +267,40 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		List<ExternalReferenceTranslatorSPI<?, ?>> translators = new ArrayList<ExternalReferenceTranslatorSPI<?, ?>>();
 		ExternalReferenceBuilderSPI<?> initialBuilder = null;
 		ExternalReferenceSPI sourceReference = null;
+
+		/**
+		 * Return a human readable representation of this translation path, used
+		 * by the logging methods to print trace information.
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public String toString() {
+			StringBuffer sb = new StringBuffer();
+			sb.append(getPathCost()+" ");
+			if (sourceReference != null && initialBuilder != null) {
+				sb.append(sourceReference.toString() + "->bytes("
+						+ sourceReference.getResolutionCost() + ")->");
+				String builderClassName = initialBuilder.getClass()
+						.getSimpleName();
+				String builtType = initialBuilder.getReferenceType()
+						.getSimpleName();
+				sb.append("builder:" + builderClassName + "("
+						+ initialBuilder.getConstructionCost() + "):<"
+						+ builtType + ">");
+			} else if (translators.isEmpty() == false) {
+				sb.append("<"
+						+ translators.get(0).getSourceReferenceType()
+								.getSimpleName() + ">");
+			}
+			for (ExternalReferenceTranslatorSPI translator : translators) {
+				sb.append("-" + translator.getClass().getSimpleName() + "("
+						+ translator.getTranslationCost() + ")" + "-");
+				sb.append("<"
+						+ translator.getTargetReferenceType().getSimpleName()
+						+ ">");
+			}
+			return sb.toString();
+		}
 
 		@SuppressWarnings("unchecked")
 		public Set<ExternalReferenceSPI> doTranslation(ReferenceSet rs,
