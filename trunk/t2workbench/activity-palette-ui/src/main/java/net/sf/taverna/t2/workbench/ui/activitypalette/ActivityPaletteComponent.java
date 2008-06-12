@@ -87,6 +87,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		RootPartition<?> partition = getPartition(propertyExtractorRegistry);
 		initQueries(partition);
 		activityTree = new ActivityTree(partition);
+		
+		
 	}
 
 	/**

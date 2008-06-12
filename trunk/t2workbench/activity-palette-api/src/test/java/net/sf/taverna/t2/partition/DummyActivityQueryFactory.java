@@ -20,7 +20,7 @@ public class DummyActivityQueryFactory extends ActivityQueryFactory {
 	}
 
 	@Override
-	protected Query<?> createQuery(String property) {
+	protected ActivityQuery createQuery(String property) {
 		// TODO Auto-generated method stub
 		return null;
 	}

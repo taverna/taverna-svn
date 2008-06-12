@@ -67,6 +67,9 @@ public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 				Map<String,Object> map = new HashMap<String, Object>();
 				List<String> wsdlList = new ArrayList<String>();
 				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/KEGG.wsdl");
+				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/bind.wsdl");
+				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/whatizit.wsdl");
+				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/GUIDGenerator.wsdl");
 				map.put("taverna.defaultwsdl", wsdlList);
 				return map;
 			}
