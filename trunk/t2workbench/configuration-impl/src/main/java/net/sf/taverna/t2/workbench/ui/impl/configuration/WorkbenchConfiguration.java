@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.ui.impl.configuration;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +44,10 @@ public class WorkbenchConfiguration implements Configurable {
 	Map<String,Object> workbenchProperties = new HashMap<String, Object>();
 
 	private void initialiseDefaults() {
+		//FIXME: move keys to a constants file
 		String dotLocation = System.getProperty("taverna.dotlocation")!=null ? System.getProperty("taverna.dotlocation") : "/Applications/Taverna-1.7.1.app/Contents/MacOS/dot"; 
 		defaultWorkbenchProperties.put("taverna.dotlocation", dotLocation);
+		defaultWorkbenchProperties.put("taverna.defaultwsdl", Collections.singletonList("http://www.mygrid.org.uk/taverna-tests/testwsdls/KEGG.wsdl"));
 	}
 
 	public String getCategory() {
