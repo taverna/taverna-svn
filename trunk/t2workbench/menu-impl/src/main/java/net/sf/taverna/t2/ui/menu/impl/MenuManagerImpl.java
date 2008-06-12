@@ -24,6 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -371,16 +373,20 @@ public class MenuManagerImpl extends MenuManager {
 							+ id);
 					continue;
 				}
+
 				Component actionComponent;
 				if (isOptionGroup) {
 					if (isToolbar) {
 						actionComponent = new JToggleButton(action);
+						toolbarizeButton((AbstractButton) actionComponent);
 					} else {
 						actionComponent = new JRadioButtonMenuItem(action);
 					}
 				} else {
 					if (isToolbar) {
 						actionComponent = new JButton(action);
+						toolbarizeButton((AbstractButton) actionComponent);
+
 					} else {
 						actionComponent = new JMenuItem(action);
 					}
@@ -424,6 +430,24 @@ public class MenuManagerImpl extends MenuManager {
 		}
 		stripTrailingNullSeparator(components);
 		return components;
+	}
+
+	protected void toolbarizeButton(AbstractButton actionButton) {
+		Action action = actionButton.getAction();
+		if (action.getValue(Action.SHORT_DESCRIPTION) == null) {
+			action.putValue(Action.SHORT_DESCRIPTION, action
+					.getValue(Action.NAME));
+		}
+		actionButton.setBorder(new EmptyBorder(0, 2, 0, 2));
+		// actionButton.setHorizontalTextPosition(JButton.CENTER);
+		// actionButton.setVerticalTextPosition(JButton.BOTTOM);
+		if (action.getValue(Action.SMALL_ICON) != null) {
+			// Don't show the text
+			actionButton.putClientProperty("hideActionText", Boolean.TRUE);
+			// Since hideActionText seems to be broken in Java 5
+			// and/or OS X
+			actionButton.setText(null);
+		}
 	}
 
 	protected void setHelpStringForComponent(Component component,
@@ -482,6 +506,8 @@ public class MenuManagerImpl extends MenuManager {
 			if (component == null) {
 				toolbar.addSeparator();
 			} else {
+				JButton toolbarButton = (JButton) component;
+				toolbarButton.putClientProperty("hideActionText", true);
 				toolbar.add(component);
 			}
 		}

@@ -2,12 +2,19 @@ package net.sf.taverna.t2.workbench.ui.impl;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.UIManager;
@@ -41,12 +48,14 @@ public class Workbench extends JFrame {
 
 	private WorkbenchPerspectives perspectives;
 
+	private JToolBar perspectiveToolBar;
+
 	private Workbench() {
 		// Initialisation done by getInstance()
 	}
 
 	private void makeGUI() {
-		setLayout(new BorderLayout());
+		setLayout(new GridBagLayout());
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -55,24 +64,61 @@ public class Workbench extends JFrame {
 		});
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setLookAndFeel();
+		setSize(new Dimension(700, 500));
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0.1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.LINE_START;
+		JPanel toolbarPanel = makeToolbarPanel();
 		
-		JSplitPane toolBarPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		add(toolBarPanel, BorderLayout.NORTH);
+		add(toolbarPanel, gbc);
 
-		JToolBar toolBar = menuManager.createToolBar();
-		toolBarPanel.add(toolBar);
+		WorkbenchZBasePane basePane = makeBasePane();
 
-		setSize(new Dimension(500, 500));
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.BOTH;
+		gbc.gridy = 1;
+		gbc.weightx = 0.1;
+		gbc.weighty = 0.1;
+		add(basePane, gbc);
 
-		WorkbenchZBasePane basePane = new WorkbenchZBasePane();
-		basePane.setRepository(appRuntime.getRavenRepository());
-		perspectives = new WorkbenchPerspectives(basePane, toolBar);
-		perspectives.initialisePerspectives();
-		add(basePane, BorderLayout.CENTER);
-		
 		// Need to do this last as it references perspectives
 		JMenuBar menuBar = menuManager.createMenuBar();
 		setJMenuBar(menuBar);
+	}
+
+	protected WorkbenchZBasePane makeBasePane() {
+		WorkbenchZBasePane basePane = new WorkbenchZBasePane();
+		basePane.setRepository(appRuntime.getRavenRepository());
+		perspectives = new WorkbenchPerspectives(basePane, perspectiveToolBar);
+		perspectives.initialisePerspectives();
+		return basePane;
+	}
+
+	protected JPanel makeToolbarPanel() {
+		JPanel toolbarPanel = new JPanel(new GridBagLayout());
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.gridwidth = 2;
+		gbc.anchor = GridBagConstraints.LINE_START;
+
+		JToolBar generatedToolbar = menuManager.createToolBar();
+		generatedToolbar.setFloatable(false);
+		toolbarPanel.add(generatedToolbar, gbc);
+
+		perspectiveToolBar = new JToolBar("Perspectives");
+		perspectiveToolBar.setFloatable(false);
+		gbc.gridy = 1;
+		gbc.weightx = 0.1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		toolbarPanel.add(perspectiveToolBar, gbc);
+		
+		return toolbarPanel;
 	}
 
 	public static final synchronized Workbench getInstance() {
@@ -91,7 +137,7 @@ public class Workbench extends JFrame {
 		// String landf = MyGridConfiguration
 		// .getProperty("taverna.workbench.themeclass");
 		boolean set = false;
-		
+
 		// if (landf != null) {
 		// try {
 		// UIManager.setLookAndFeel(landf);
