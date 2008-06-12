@@ -54,5 +54,10 @@
 			<version>0.3-SNAPSHOT</version>
 			<artifactId>partition</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>wsdl-activity</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
