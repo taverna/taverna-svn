@@ -19,17 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 
-import net.sf.taverna.t2.partition.ActivityItem;
-import net.sf.taverna.t2.partition.LocalWorkerActivityItem;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
 import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPI;
 import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPIRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorRegistry;
-import net.sf.taverna.t2.partition.SoaplabActivityItem;
-import net.sf.taverna.t2.partition.WSDLActivityItem;
-
 import net.sf.taverna.t2.partition.RootPartition;
-import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 
 public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
@@ -99,29 +93,30 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	}
 
 	private PropertyExtractorRegistry getPropertyExtractorRegistry() {
+		
 		return new PropertyExtractorRegistry() {
 
 			public Map<String, Object> getAllPropertiesFor(Object target) {
 				Map<String, Object> result = new HashMap<String, Object>();
-				if (target instanceof ActivityItem) {
-					ActivityItem ai = (ActivityItem) target;
-					result.put("type", ai.getType());
-					result.put("name", ai.getName());
-				}
-				if (target instanceof WSDLActivityItem) {
-					WSDLActivityItem ai = (WSDLActivityItem) target;
-					result.put("operation", ai.getOperation());
-				}
-				if (target instanceof SoaplabActivityItem) {
-					SoaplabActivityItem ai = (SoaplabActivityItem) target;
-					result.put("category", ai.getCategory());
-					result.put("operation", ai.getOperation());
-				}
-				if (target instanceof LocalWorkerActivityItem) {
-					LocalWorkerActivityItem ai = (LocalWorkerActivityItem) target;
-					result.put("category", ai.getCategory());
-				}
-
+//				if (target instanceof ActivityItem) {
+//					ActivityItem ai = (ActivityItem) target;
+//					result.put("type", ai.getType());
+//					result.put("name", ai.getName());
+//				}
+//				if (target instanceof WSDLActivityItem) {
+//					WSDLActivityItem ai = (WSDLActivityItem) target;
+//					result.put("operation", ai.getOperation());
+//				}
+//				if (target instanceof SoaplabActivityItem) {
+//					SoaplabActivityItem ai = (SoaplabActivityItem) target;
+//					result.put("category", ai.getCategory());
+//					result.put("operation", ai.getOperation());
+//				}
+//				if (target instanceof LocalWorkerActivityItem) {
+//					LocalWorkerActivityItem ai = (LocalWorkerActivityItem) target;
+//					result.put("category", ai.getCategory());
+//				}
+//
 				return result;
 			}
 

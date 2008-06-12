@@ -19,7 +19,7 @@ public class ActivityPartitionAlgorithmSetTest {
 			
 		};
 		
-		assertTrue("Should contain an algorithm for type",set.getPartitonAlgorithms().contains(new LiteralValuePartitionAlgorithm("type")));
+		assertTrue("Should contain an algorithm for type",set.getPartitionAlgorithms().contains(new LiteralValuePartitionAlgorithm("type")));
 	}
 
 }

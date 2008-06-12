@@ -23,7 +23,7 @@ public abstract class ActivityPartitionAlgorithmSet implements PartitionAlgorith
 
 
 
-	public Set<PartitionAlgorithm<?>> getPartitonAlgorithms() {
+	public Set<PartitionAlgorithm<?>> getPartitionAlgorithms() {
 		return partitionAlgorithms;
 	}
 }

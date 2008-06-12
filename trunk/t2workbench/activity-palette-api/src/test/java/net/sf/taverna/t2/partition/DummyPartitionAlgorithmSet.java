@@ -7,7 +7,7 @@ import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 
 public class DummyPartitionAlgorithmSet implements PartitionAlgorithmSetSPI {
 
-	public Set<PartitionAlgorithm<?>> getPartitonAlgorithms() {
+	public Set<PartitionAlgorithm<?>> getPartitionAlgorithms() {
 		Set<PartitionAlgorithm<?>> result = new HashSet<PartitionAlgorithm<?>>();
 
 		LiteralValuePartitionAlgorithm p = new LiteralValuePartitionAlgorithm(
