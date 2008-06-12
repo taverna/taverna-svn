@@ -36,7 +36,7 @@ public class SoaplabPartitionAlgorithmSetSPITest {
 	@Test
 	public void getPartitonAlgorithms() {
 		PartitionAlgorithmSetSPI p = new SoaplabPartitionAlgorithmSetSPI();
-		Set<PartitionAlgorithm<?>> set = p.getPartitonAlgorithms();
+		Set<PartitionAlgorithm<?>> set = p.getPartitionAlgorithms();
 		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
 		assertTrue("should contain an algorithm for 'category'",set.contains(new LiteralValuePartitionAlgorithm("category")));
 		assertTrue("should contain an algorithm for 'operation'",set.contains(new LiteralValuePartitionAlgorithm("operation")));

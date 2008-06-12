@@ -1,7 +1,8 @@
 package net.sf.taverna.t2.activities.wsdl.partition;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class WSDLPartitionAlgorithmSetSPITest {
 	@Test
 	public void getPartitonAlgorithms() {
 		PartitionAlgorithmSetSPI p = new WSDLPartitionAlgorithmSetSPI();
-		Set<PartitionAlgorithm<?>> set = p.getPartitonAlgorithms();
+		Set<PartitionAlgorithm<?>> set = p.getPartitionAlgorithms();
 		assertTrue("should contain an algorithm for 'operation'",set.contains(new LiteralValuePartitionAlgorithm("operation")));
 		assertTrue("should contain an algorithm for 'style'",set.contains(new LiteralValuePartitionAlgorithm("style")));
 		assertTrue("should contain an algorithm for 'use'",set.contains(new LiteralValuePartitionAlgorithm("use")));
