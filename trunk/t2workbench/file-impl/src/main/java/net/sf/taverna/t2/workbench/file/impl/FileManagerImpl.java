@@ -411,4 +411,24 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
+	@Override
+	public File getCurrentDataflowFile() {
+		return getDataflowFile(getCurrentDataflow());
+	}
+
+	@Override
+	public URL getCurrentDataflowURL() {
+		return getDataflowURL(getCurrentDataflow());
+	}
+
+	@Override
+	public File getDataflowFile(Dataflow dataflow) {
+		return getOpenDataflowInfo(dataflow).getFile();
+	}
+
+	@Override
+	public URL getDataflowURL(Dataflow dataflow) {
+		return getOpenDataflowInfo(dataflow).getURL();
+	}
+
 }

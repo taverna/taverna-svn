@@ -114,4 +114,12 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 
 	public abstract void setDataflowChanged(Dataflow dataflow, boolean isChanged);
 
+	public abstract File getCurrentDataflowFile();
+
+	public abstract File getDataflowFile(Dataflow dataflow);
+
+	public abstract URL getCurrentDataflowURL();
+
+	public abstract URL getDataflowURL(Dataflow dataflow);
+
 }

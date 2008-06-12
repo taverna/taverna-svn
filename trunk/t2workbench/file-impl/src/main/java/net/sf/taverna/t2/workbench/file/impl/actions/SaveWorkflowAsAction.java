@@ -87,21 +87,23 @@ public class SaveWorkflowAsAction extends AbstractAction {
 				try {
 					try {
 						fileManager.saveCurrentDataflow(file, true);
+						logger.info("Saved current workflow to " + file);
 					} catch (OverwriteException ex) {
 						logger.warn("File already exists: " + file, ex);
-						String msg = "Do you want to overwrite existing file "
+						String msg = "Are you sure you want to overwrite existing file "
 								+ file + "?";
 						int ret = JOptionPane.showConfirmDialog(
 								parentComponent, msg, "File already exists",
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (ret == JOptionPane.YES_OPTION) {
 							fileManager.saveCurrentDataflow(file, false);
+							logger.info("Saved current workflow "
+									+ "by overwriting " + file);
 						} else if (ret == JOptionPane.NO_OPTION) {
 							tryAgain = true;
 							continue;
 						} else {
 							logger.info("Aborted overwrite of " + file);
-							return;
 						}
 					}
 				} catch (SaveException ex) {
@@ -111,10 +113,8 @@ public class SaveWorkflowAsAction extends AbstractAction {
 									+ ex.getMessage(), "Warning",
 							JOptionPane.WARNING_MESSAGE);
 				}
-				logger.info("Saved current workflow to " + file);
 			}
 		}
-
 	}
 
 	protected void updateEnabledStatus(Dataflow dataflow) {
