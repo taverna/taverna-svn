@@ -4,6 +4,7 @@ import java.util.Set;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * An implementation of ReferenceSet with the additional methods and metadata
@@ -65,10 +66,10 @@ public class ReferenceSetImpl implements ReferenceSet {
 		sb.append(id + " [" + externalReferences.size() + "]\n");
 
 		for (ExternalReferenceSPI ref : externalReferences) {
-			sb.append("  "+ref.toString()+"\n");
+			sb.append("  " + ref.toString() + "\n");
 		}
 		return sb.toString();
-		
+
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class ReferenceSetImpl implements ReferenceSet {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ReferenceSetT2ReferenceImpl getId() {
+	public T2Reference getId() {
 		return this.id;
 	}
 
@@ -101,8 +102,17 @@ public class ReferenceSetImpl implements ReferenceSet {
 	 *            an instance of ReferenceSetT2ReferenceImpl created from the
 	 *            database
 	 */
-	public void setId(ReferenceSetT2ReferenceImpl newId) {
+	public void setTypedId(ReferenceSetT2ReferenceImpl newId) {
 		this.id = newId;
+	}
+
+	/**
+	 * Used because technically you can't accept and return implementation types
+	 * in the methods on a bean which implements an interface, but Hibernate
+	 * needs to construct concrete input and output types!
+	 */
+	public ReferenceSetT2ReferenceImpl getTypedId() {
+		return this.id;
 	}
 
 }

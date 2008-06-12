@@ -214,7 +214,7 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 		try {
 			ReferenceSetT2ReferenceImpl id = (ReferenceSetT2ReferenceImpl) t2ReferenceGenerator
 					.nextReferenceSetReference();
-			rsi.setId(id);
+			rsi.setTypedId(id);
 		} catch (ClassCastException cce) {
 			throw new ReferenceSetServiceException(
 					"ID supplied by generator must be an instance of "

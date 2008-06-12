@@ -10,7 +10,7 @@
 		<!--  parts of the T2Reference implementation type, used as  -->
 		<!--  the foreign key in the one to many relationship with   -->
 		<!--  extensions of AbstractExternalReference                -->
-		<composite-id name="id"
+		<composite-id name="typedId"
 			class="net.sf.taverna.t2.reference.h3.ReferenceSetT2ReferenceImpl">
 			<key-property name="namespacePart" />
 			<key-property name="localPart" />
