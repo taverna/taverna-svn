@@ -12,7 +12,9 @@
 		<artifactId>t2-workbench</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<description>API for doing file (ie. workflow) open/save in the workbench.</description>
+	<description>
+		API for doing file (ie. workflow) open/save in the workbench.
+	</description>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -29,7 +31,7 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>edits-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
@@ -37,6 +39,16 @@
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>menu-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.lang</groupId>
+			<artifactId>ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>ui-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
