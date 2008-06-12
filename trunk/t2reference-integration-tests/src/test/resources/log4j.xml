@@ -25,15 +25,14 @@
 		<level value="WARN" />
 	</logger>
 
+	<logger name="net.sf.taverna.platform.spring" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
 	<root>
 		<level value="ERROR" />
 		<appender-ref ref="CONSOLE" />
 	</root>
-
-	<logger name="net.sf.taverna.platform.spring" additivity="false">
-		<level value="ERROR" />
-		<appender-ref ref="CONSOLE" />
-	</logger>
-
 
 </log4j:configuration>
