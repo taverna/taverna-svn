@@ -1,76 +1,152 @@
 package net.sf.taverna.t2.workbench.ui.activitypalette;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.tree.TreeModel;
 
+import net.sf.taverna.t2.partition.ActivityItem;
+import net.sf.taverna.t2.partition.LocalWorkerActivityItem;
+import net.sf.taverna.t2.partition.LocalWorkerQuery;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
-import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPI;
-import net.sf.taverna.t2.partition.PartitionAlgorithmSetSPIRegistry;
 import net.sf.taverna.t2.partition.PropertyExtractorRegistry;
+import net.sf.taverna.t2.partition.PropertyExtractorSPIRegistry;
+import net.sf.taverna.t2.partition.Query;
 import net.sf.taverna.t2.partition.RootPartition;
+import net.sf.taverna.t2.partition.SetModelChangeListener;
+import net.sf.taverna.t2.partition.SoaplabActivityItem;
+import net.sf.taverna.t2.partition.SoaplabQuery;
+import net.sf.taverna.t2.partition.WSDLActivityItem;
+import net.sf.taverna.t2.partition.WSDLQuery;
+import net.sf.taverna.t2.partition.algorithms.LiteralValuePartitionAlgorithm;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 
+/**
+ * Contains the {@link ActivityTree} which shows the available activities
+ * partitioned by their properties using a {@link PartitionAlgorithm}. Contains
+ * a {@link JMenu} which allows the user to filter the activities by their
+ * properties
+ * 
+ * @author Ian Dunlop
+ * 
+ */
 public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
+	/** All the available activities filtered by the selected properties */
+	private JTree activityTree;
+	/** The different properties for each type of activity */
+	private PropertyExtractorRegistry propertyExtractorRegistry;
+	/**
+	 * Allows the user to filter the activities by selecting a property. This
+	 * then reconfigures the tree model with a different set of
+	 * {@link PartitionAlgorithm}s
+	 */
+	private JMenu algorithmMenu;
 
+	/**
+	 * Sets the layout as {@link BorderLayout}. Then calls
+	 * {@link #initialise()} to create the {@link ActivityTree}. Adds a
+	 * {@link JMenuBar} to allow the user to filter the activities
+	 */
 	public ActivityPaletteComponent() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints panelConstraint = new GridBagConstraints();
-		panelConstraint.anchor = GridBagConstraints.FIRST_LINE_START;
-		panelConstraint.gridx = 0;
-		panelConstraint.gridy = 0;
-		panelConstraint.weightx = 0;
-		panelConstraint.weighty = 0;
-		panelConstraint.fill = GridBagConstraints.BOTH;
-		add(initialise(), panelConstraint);
+		setLayout(new BorderLayout());
+		initialise();
+		createAlgorithmMenu();
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(algorithmMenu);
+		add(menuBar, BorderLayout.PAGE_START);
+		menuBar.setVisible(true);
+		add(activityTree, BorderLayout.LINE_START);
 		JPanel fillerPanel = new JPanel();
-		panelConstraint.gridx = 1;
-		panelConstraint.gridy = 0;
-		panelConstraint.weightx = 0.1;
-		panelConstraint.weighty = 0.1;
-		add(fillerPanel, panelConstraint);
+		add(fillerPanel, BorderLayout.LINE_END);
 	}
 
-	private Component initialise() {
+	/**
+	 * Creates the {@link ActivityTree} which displays all the activities. Gets
+	 * an instance of {@link PropertyExtractorSPIRegistry} which contains all
+	 * the properties which the activities can be filtered on. Creates the
+	 * {@link RootPartition}, basically a {@link TreeModel} which the
+	 * {@link ActivityTree} needs. Then adds the initial queries (probably one
+	 * for each activity)
+	 */
+	private void initialise() {
 
-		PropertyExtractorRegistry propertyExtractorRegistry = getPropertyExtractorRegistry();
-
+		propertyExtractorRegistry = PropertyExtractorSPIRegistry.getInstance();
 		RootPartition<?> partition = getPartition(propertyExtractorRegistry);
-		
-		// TODO need to get the activities from something and their partitions
-		JTree activityTree = new ActivityTree(partition);
-		
-		return activityTree;
+		initQueries(partition);
+		activityTree = new ActivityTree(partition);
 	}
-	
-	private JMenu getAlgorithmMenu() {
-		JPopupMenu algorithmPopup = new JPopupMenu();
-		for (PartitionAlgorithm<?> algorithm:getAlgorithms()) {
-			JMenuItem item = new JMenuItem();
+
+	/**
+	 * Create all the {@link Query}s for the activities and add them to the
+	 * {@link SetModelChangeListener} which the original {@link RootPartition}
+	 * has. This allows the {@link ActivityTree} to know about the queries and
+	 * re-run them whenever the user selects a different filter. ie. when the
+	 * {@link ActivityTree} is given a new model (remember that the model is a
+	 * {@link RootPartition}. The actual queries do not change but the
+	 * partition does
+	 * 
+	 * @param partition
+	 */
+	private void initQueries(RootPartition partition) {
+		WSDLQuery q = new WSDLQuery();
+		q
+				.addSetModelChangeListener((SetModelChangeListener<WSDLActivityItem>) partition
+						.getSetModelChangeListener());
+		partition.getSetModelChangeListener().addQuery(q);
+
+		SoaplabQuery q2 = new SoaplabQuery();
+		q2
+				.addSetModelChangeListener((SetModelChangeListener<SoaplabActivityItem>) partition
+						.getSetModelChangeListener());
+		partition.getSetModelChangeListener().addQuery(q2);
+
+		LocalWorkerQuery q3 = new LocalWorkerQuery();
+		q3
+				.addSetModelChangeListener((SetModelChangeListener<LocalWorkerActivityItem>) partition
+						.getSetModelChangeListener());
+		partition.getSetModelChangeListener().addQuery(q3);
+	}
+
+	/**
+	 * Add a menu item for each type of {@link PartitionAlgorithm}. When one is
+	 * selected the {@link ActivityTree} is given a new model based on the
+	 * selected {@link PartitionAlgorithm} which means it reruns the
+	 * {@link Query}s
+	 */
+	private void createAlgorithmMenu() {
+		algorithmMenu = new JMenu("Query by...");
+		algorithmMenu
+				.setToolTipText("Open this menu and select a property to query the activities");
+		algorithmMenu.setMnemonic(KeyEvent.VK_Q);
+		for (final PartitionAlgorithm<?> algorithm : getAlgorithms()) {
+			// TODO might be more than just a LiteraValuePartitionAlgorithm -
+			// needs to be more robust
+			JMenuItem item = new JMenuItem(
+					((LiteralValuePartitionAlgorithm) algorithm)
+							.getPropertyName());
 			item.addActionListener(new AbstractAction() {
 
 				public void actionPerformed(ActionEvent e) {
-					
+					List<PartitionAlgorithm<?>> algList = new ArrayList<PartitionAlgorithm<?>>(
+							0);
+					algList.add(algorithm);
+					activityTree.setModel(new RootPartition<ActivityItem>(
+							algList, propertyExtractorRegistry));
 				}
-				
+
 			});
+			algorithmMenu.add(item);
 		}
-		return null;
 	}
 
 	public ImageIcon getIcon() {
@@ -92,61 +168,60 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 
 	}
 
-	private PropertyExtractorRegistry getPropertyExtractorRegistry() {
-		
-		return new PropertyExtractorRegistry() {
-
-			public Map<String, Object> getAllPropertiesFor(Object target) {
-				Map<String, Object> result = new HashMap<String, Object>();
-//				if (target instanceof ActivityItem) {
-//					ActivityItem ai = (ActivityItem) target;
-//					result.put("type", ai.getType());
-//					result.put("name", ai.getName());
-//				}
-//				if (target instanceof WSDLActivityItem) {
-//					WSDLActivityItem ai = (WSDLActivityItem) target;
-//					result.put("operation", ai.getOperation());
-//				}
-//				if (target instanceof SoaplabActivityItem) {
-//					SoaplabActivityItem ai = (SoaplabActivityItem) target;
-//					result.put("category", ai.getCategory());
-//					result.put("operation", ai.getOperation());
-//				}
-//				if (target instanceof LocalWorkerActivityItem) {
-//					LocalWorkerActivityItem ai = (LocalWorkerActivityItem) target;
-//					result.put("category", ai.getCategory());
-//				}
-//
-				return result;
-			}
-
-		};
-	}
-
-	private <ActivityItem> RootPartition<?> getPartition(PropertyExtractorRegistry reg) {
+	/**
+	 * The {@link RootPartition} represents the {@link TreeModel} in the
+	 * {@link ActivityTree}. It has a list of all the ways that activities can
+	 * be filtered (all the {@link PartitionAlgorithm}s) and also has a
+	 * {@link PropertyExtractorRegistry} which knows all the different
+	 * properties for each type of activity
+	 * 
+	 * @param <ActivityItem>
+	 * @param reg
+	 * @return {@link RootPartition} which is the {@link TreeModel} for the
+	 *         {@link ActivityTree}
+	 */
+	private <ActivityItem> RootPartition<?> getPartition(
+			PropertyExtractorRegistry reg) {
 		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
 	}
 
 	/**
-	 * Loop thorugh all the available {@link PartitionAlgorithm}s and create a
-	 * master set
+	 * Loop through all the available {@link PartitionAlgorithm}s and create a
+	 * master set. This is all the possible ways that the activities can be
+	 * filtered
 	 * 
 	 * @return A union of all the {@link PartitionAlgorithm} sets
 	 */
 	private List<PartitionAlgorithm<?>> getAlgorithms() {
-		List<PartitionAlgorithmSetSPI> instances = PartitionAlgorithmSetSPIRegistry
-				.getInstance().getInstances();
-		Set<PartitionAlgorithm<?>> partitionAlgorithmSet = new HashSet<PartitionAlgorithm<?>>();
-		for (PartitionAlgorithmSetSPI instance : instances) {
-			Set<PartitionAlgorithm<?>> partitonAlgorithms = instance
-					.getPartitionAlgorithms();
-			partitionAlgorithmSet.addAll(partitonAlgorithms);
-		}
-		List<PartitionAlgorithm<?>> partitionAlgorithmList = new ArrayList<PartitionAlgorithm<?>>();
-		for (PartitionAlgorithm<?> algorithm:partitionAlgorithmSet) {
-			partitionAlgorithmList.add(algorithm);
-		}
-		return partitionAlgorithmList;
+		// TODO use the SPI instead of hard coding when there are algorithms
+		// ready
+		// List<PartitionAlgorithmSetSPI> instances =
+		// PartitionAlgorithmSetSPIRegistry
+		// .getInstance().getInstances();
+		// Set<PartitionAlgorithm<?>> partitionAlgorithmSet = new
+		// HashSet<PartitionAlgorithm<?>>();
+		// for (PartitionAlgorithmSetSPI instance : instances) {
+		// Set<PartitionAlgorithm<?>> partitonAlgorithms = instance
+		// .getPartitionAlgorithms();
+		// partitionAlgorithmSet.addAll(partitonAlgorithms);
+		// }
+		// List<PartitionAlgorithm<?>> partitionAlgorithmList = new
+		// ArrayList<PartitionAlgorithm<?>>();
+		// for (PartitionAlgorithm<?> algorithm : partitionAlgorithmSet) {
+		// partitionAlgorithmList.add(algorithm);
+		// }
+		// return partitionAlgorithmList;
+
+		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
+		LiteralValuePartitionAlgorithm alg = new LiteralValuePartitionAlgorithm();
+		alg.setPropertyName("type");
+
+		LiteralValuePartitionAlgorithm alg2 = new LiteralValuePartitionAlgorithm();
+		alg2.setPropertyName("category");
+
+		list.add(alg);
+		list.add(alg2);
+		return list;
 	}
 
 }
