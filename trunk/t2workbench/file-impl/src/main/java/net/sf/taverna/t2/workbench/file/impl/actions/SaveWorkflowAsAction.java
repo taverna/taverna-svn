@@ -16,9 +16,9 @@ import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.file.FileManager;
-import net.sf.taverna.t2.workbench.file.OverwriteException;
-import net.sf.taverna.t2.workbench.file.SaveException;
-import net.sf.taverna.t2.workbench.file.UnsavedException;
+import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
+import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
+import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 

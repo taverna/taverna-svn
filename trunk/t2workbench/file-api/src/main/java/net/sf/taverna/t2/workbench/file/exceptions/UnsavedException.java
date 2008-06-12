@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.file;
+package net.sf.taverna.t2.workbench.file.exceptions;
 
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
