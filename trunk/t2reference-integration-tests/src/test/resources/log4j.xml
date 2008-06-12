@@ -2,7 +2,8 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <!-- Default Log4J configuration for integration test module -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="true" reset="true">
 
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
@@ -11,13 +12,11 @@
 		</layout>
 	</appender>
 
-	<logger name="net.sf.taverna.platform.spring.orm">
+	<!-- 
+		<logger name="net.sf.taverna.platform.spring.orm">
 		<level value="TRACE" />
-	</logger>
-
-	<logger name="net.sf.taverna.platform.spring">
-		<level value="INFO" />
-	</logger>
+		</logger>
+	-->
 
 	<logger name="org.hibernate">
 		<level value="ERROR" />
@@ -31,5 +30,11 @@
 		<level value="ERROR" />
 		<appender-ref ref="CONSOLE" />
 	</root>
+
+	<logger name="net.sf.taverna.platform.spring" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
 
 </log4j:configuration>

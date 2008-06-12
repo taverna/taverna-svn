@@ -8,6 +8,12 @@ import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Test initialization and use of the reference set dao and service
+ * 
+ * @author Tom Oinn
+ * 
+ */
 public class ReferenceSetDaoTest {
 
 	@Test

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- SPI driven test context for the reference set augmentor -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<repository id="ravenRepository"
+		xmlns="http://taverna.sf.net/schema/artifact-support"
+		base="${user.home}/.m2/repository/">
+		<repositories />
+		<system>
+			<!-- Raven -->
+			<sys artifact="uk.org.mygrid.taverna.raven:raven:1.7.1.0" />
+			<!-- Spring modules -->
+			<sys artifact="org.springframework:spring-core:2.5" />
+			<sys artifact="org.springframework:spring-orm:2.5" />
+			<sys artifact="org.springframework:spring-tx:2.5" />
+			<sys artifact="org.springframework:spring-jdbc:2.5" />
+			<sys artifact="org.springframework:spring-beans:2.5" />
+			<sys artifact="org.springframework:spring-context:2.5" />
+			<sys artifact="org.springframework:spring-aop:2.5" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+			<!-- T2 platform -->
+			<sys artifact="net.sf.taverna.t2:platform:0.1-SNAPSHOT" />
+			<!-- Logging -->
+			<sys artifact="commons-logging:commons-logging:1.1.1" />
+			<sys artifact="log4j:log4j:1.2.15" />
+			<!-- T2 reference APIs -->
+			<sys
+				artifact="net.sf.taverna.t2:t2reference-api:0.1-SNAPSHOT" />
+		</system>
+	</repository>
+
+</beans>
