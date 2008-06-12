@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>net.sf.taverna.t2.testing</groupId>
+	<artifactId>t2reference-testhelpers</artifactId>
+	<version>0.1-SNAPSHOT</version>
+
+	<name>
+		Dummy implementations of various SPIs in the t2reference modules
+	</name>
+
+	<description>
+		In order to properly test the raven-aware functionality within
+		the t2reference modules we need a module that is entire external
+		to t2reference and to the test cases. If the test
+		implementations are included in either the api, core
+		implementation or test modules they will be loaded by the root
+		classloader of the test runner - by putting them in an
+		independent artifact we allow them to be loaded through raven's
+		various SPI discovery mechanisms as they would be in a 'real'
+		environment.
+	</description>
+
+	<dependencies>
+		<!-- Only depend on the t2reference API package here -->
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<!-- Force Java5 compliance so we can use generics, annotations etc -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<!-- myGrid release artifacts -->
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+	</repositories>
+
+</project>
