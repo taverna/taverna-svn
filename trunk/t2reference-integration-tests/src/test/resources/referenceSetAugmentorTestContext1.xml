@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- SPI driven test context for the reference set augmentor -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://taverna.sf.net/schema/artifact-support 
+	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<repository id="ravenRepository"
+		xmlns="http://taverna.sf.net/schema/artifact-support"
+		base="${user.home}/.m2/repository/">
+		<repositories />
+		<system>
+			<!-- Raven -->
+			<sys artifact="uk.org.mygrid.taverna.raven:raven:1.7.1.0" />
+			<!-- Spring modules -->
+			<sys artifact="org.springframework:spring-core:2.5" />
+			<sys artifact="org.springframework:spring-orm:2.5" />
+			<sys artifact="org.springframework:spring-tx:2.5" />
+			<sys artifact="org.springframework:spring-jdbc:2.5" />
+			<sys artifact="org.springframework:spring-beans:2.5" />
+			<sys artifact="org.springframework:spring-context:2.5" />
+			<sys artifact="org.springframework:spring-aop:2.5" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+			<!-- T2 platform -->
+			<sys artifact="net.sf.taverna.t2:platform:0.1-SNAPSHOT" />
+			<!-- Logging -->
+			<sys artifact="commons-logging:commons-logging:1.1.1" />
+			<sys artifact="log4j:log4j:1.2.15" />
+			<!-- T2 reference APIs -->
+			<sys
+				artifact="net.sf.taverna.t2:t2reference-api:0.1-SNAPSHOT" />
+		</system>
+	</repository>
+
+	<bean id="testBeanId"
+		class="net.sf.taverna.t2.reference.h3.ReferenceSetT2ReferenceImpl">
+		<property name="localPart" value="testLocal" />
+		<property name="namespacePart" value="testNS" />
+	</bean>
+
+	<bean id="referenceSet"
+		class="net.sf.taverna.t2.reference.h3.ReferenceSetImpl">
+
+		<property name="typedId">
+			<ref bean="testBeanId" />
+		</property>
+
+		<property name="externalReferences">
+			<set>
+				<bean
+					raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
+					raven:repository="ravenRepository"
+					class="net.sf.taverna.t2referencetest.BlueReference">
+					<property name="contents" value="foo" />
+				</bean>
+			</set>
+		</property>
+
+	</bean>
+
+	<bean id="blueBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2referencetest.BlueReference">
+		<property name="contents" value="foo" />
+	</bean>
+
+	<!-- Reference translator instance registry -->
+	<bean id="translatorRegistry"
+		class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<bean
+				class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+				<property name="repository">
+					<ref bean="ravenRepository" />
+				</property>
+				<property name="spiClassName"
+					value="net.sf.taverna.t2.reference.ExternalReferenceTranslatorSPI" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Reference builder instance registry -->
+	<bean id="builderRegistry"
+		class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+		<property name="spiRegistry">
+			<bean
+				class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+				<property name="repository">
+					<ref bean="ravenRepository" />
+				</property>
+				<property name="spiClassName"
+					value="net.sf.taverna.t2.reference.ExternalReferenceBuilderSPI" />
+			</bean>
+		</property>
+	</bean>
+
+	<!-- Reference set augmentor -->
+	<bean id="referenceSetAugmentor"
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetAugmentorImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+		raven:repository="ravenRepository">
+
+		<property name="builderRegistry">
+			<ref bean="builderRegistry" />
+		</property>
+		<property name="translatorRegistry">
+			<ref bean="translatorRegistry" />
+		</property>
+	</bean>
+
+</beans>
