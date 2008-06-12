@@ -12,5 +12,5 @@ public interface PartitionAlgorithmSetSPI {
 	/**
 	 * @return a Set of PartitionAlgorithms
 	 */
-	public Set<PartitionAlgorithm<?>> getPartitonAlgorithms();
+	public Set<PartitionAlgorithm<?>> getPartitionAlgorithms();
 }
