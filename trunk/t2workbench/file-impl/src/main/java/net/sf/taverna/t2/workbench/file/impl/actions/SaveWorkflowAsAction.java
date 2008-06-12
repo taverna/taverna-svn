@@ -16,7 +16,9 @@ import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.OverwriteException;
 import net.sf.taverna.t2.workbench.file.SaveException;
+import net.sf.taverna.t2.workbench.file.UnsavedException;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -27,7 +29,8 @@ public class SaveWorkflowAsAction extends AbstractAction {
 	private final class ModelMapObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
-			if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+			if (message.getModelName().equals(
+					ModelMapConstants.CURRENT_DATAFLOW)) {
 				Dataflow dataflow = (Dataflow) message.getNewModel();
 				updateEnabledStatus(dataflow);
 			}
@@ -72,23 +75,46 @@ public class SaveWorkflowAsAction extends AbstractAction {
 		fileChooser.setFileFilter(new ExtensionFileFilter(EXTENSIONS));
 		fileChooser.setCurrentDirectory(new File(curDir));
 
-		int returnVal = fileChooser.showSaveDialog(parentComponent);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			prefs.put("currentDir", fileChooser.getCurrentDirectory()
-					.toString());
-			final File file = fileChooser.getSelectedFile();
-			// TODO: Open in separate thread to avoid hanging UI
-			try {
-				fileManager.saveCurrentDataflow(file, true);
-			} catch (SaveException ex) {
-				logger.warn("Could not save workflow to " + file, ex);
-				JOptionPane.showMessageDialog(parentComponent,
-						"Could not save workflow to " + file + ": \n\n"
-								+ ex.getMessage(), "Warning",
-						JOptionPane.WARNING_MESSAGE);
+		boolean tryAgain = true;
+		while (tryAgain) {
+			tryAgain = false;
+			int returnVal = fileChooser.showSaveDialog(parentComponent);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				prefs.put("currentDir", fileChooser.getCurrentDirectory()
+						.toString());
+				final File file = fileChooser.getSelectedFile();
+				// TODO: Open in separate thread to avoid hanging UI
+				try {
+					try {
+						fileManager.saveCurrentDataflow(file, true);
+					} catch (OverwriteException ex) {
+						logger.warn("File already exists: " + file, ex);
+						String msg = "Do you want to overwrite existing file "
+								+ file + "?";
+						int ret = JOptionPane.showConfirmDialog(
+								parentComponent, msg, "File already exists",
+								JOptionPane.YES_NO_CANCEL_OPTION);
+						if (ret == JOptionPane.YES_OPTION) {
+							fileManager.saveCurrentDataflow(file, false);
+						} else if (ret == JOptionPane.NO_OPTION) {
+							tryAgain = true;
+							continue;
+						} else {
+							logger.info("Aborted overwrite of " + file);
+							return;
+						}
+					}
+				} catch (SaveException ex) {
+					logger.warn("Could not save workflow to " + file, ex);
+					JOptionPane.showMessageDialog(parentComponent,
+							"Could not save workflow to " + file + ": \n\n"
+									+ ex.getMessage(), "Warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				logger.info("Saved current workflow to " + file);
 			}
-			logger.info("Saved current workflow to " + file);
 		}
+
 	}
 
 	protected void updateEnabledStatus(Dataflow dataflow) {
