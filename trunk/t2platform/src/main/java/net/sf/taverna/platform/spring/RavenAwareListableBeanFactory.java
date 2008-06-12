@@ -70,7 +70,7 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 							.getBeanClassName(), new ClassNotFoundException(
 							"No such repository"));
 				}
-				try {
+				synchronized (repository) {
 					String[] s = artifact.split(":");
 					if (s.length != 3) {
 						log.error("Artifact specifier '" + artifact
@@ -83,28 +83,56 @@ public class RavenAwareListableBeanFactory extends DefaultListableBeanFactory {
 										"Badly formed artifact specifier"));
 					}
 					Artifact a = new BasicArtifact(s[0], s[1], s[2]);
+					log.debug("Artifact " + a + " for bean name " + beanName);
+
 					if (repository.getStatus(a) != ArtifactStatus.Ready) {
+						log.debug("  has state " + repository.getStatus(a));
 						repository.addArtifact(a);
 						repository.update();
 					}
-					ClassLoader cl = repository.getLoader(a, this.getClass()
-							.getClassLoader());
-					log.debug("Loading class " + rbd.getBeanClassName()
-							+ " from artifact " + a);
-					return rbd.resolveBeanClass(cl);
+					log.debug("  has state (2) " + repository.getStatus(a));
+					try {
+						// ClassLoader cl = repository.getLoader(a,
+						// this.getClass()
+						// .getClassLoader());
+						ClassLoader cl;
+						try {
+						cl = repository.getLoader(a, null);
+						}
+						catch (ArtifactStateException ex) {
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							cl = repository.getLoader(a, null);
+						}
+						log.debug("Loading class " + rbd.getBeanClassName()
+								+ " from artifact " + a);
 
-				} catch (ArtifactNotFoundException ex) {
-					log.error("No such artifact", ex);
-					throw new CannotLoadBeanClassException(rbd
-							.getResourceDescription(), beanName, rbd
-							.getBeanClassName(), new ClassNotFoundException(ex
-							.getMessage(), ex));
-				} catch (ArtifactStateException ex) {
-					log.error("Artifact in incorrect state", ex);
-					throw new CannotLoadBeanClassException(rbd
-							.getResourceDescription(), beanName, rbd
-							.getBeanClassName(), new ClassNotFoundException(ex
-							.getMessage(), ex));
+						return rbd.resolveBeanClass(cl);
+
+					} catch (ArtifactNotFoundException ex) {
+						log
+								.error("No such artifact '" + a.toString()
+										+ "'", ex);
+						throw new CannotLoadBeanClassException(rbd
+								.getResourceDescription(), beanName, rbd
+								.getBeanClassName(),
+								new ClassNotFoundException(ex.getMessage(), ex));
+					} catch (ArtifactStateException ex) {
+						log.error("Artifact in incorrect state '"
+								+ a.toString() + "' is in state "
+								+ ex.getState()
+								+ " with reported state in repository "
+								+ repository.getStatus(a) + " for bean "
+								+ beanName, ex);
+						throw new CannotLoadBeanClassException(rbd
+								.getResourceDescription(), beanName, rbd
+								.getBeanClassName(),
+								new ClassNotFoundException(ex.getMessage(), ex));
+					}
 				}
 			} else {
 				return rbd.resolveBeanClass(getBeanClassLoader());

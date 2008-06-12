@@ -15,12 +15,14 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class RavenAwareClassPathXmlApplicationContext extends
 		ClassPathXmlApplicationContext {
 
+	private static DefaultListableBeanFactory factory = new RavenAwareListableBeanFactory();
+
 	public RavenAwareClassPathXmlApplicationContext(String param) {
 		super(param);
 	}
 
 	@Override
 	protected DefaultListableBeanFactory createBeanFactory() {
-		return new RavenAwareListableBeanFactory();
+		return factory;
 	}
 }
