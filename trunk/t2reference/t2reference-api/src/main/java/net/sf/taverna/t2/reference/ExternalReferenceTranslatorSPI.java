@@ -43,7 +43,7 @@ public interface ExternalReferenceTranslatorSPI<SourceType extends ExternalRefer
 	 */
 	public void createReferenceAsynch(SourceType sourceReference,
 			ReferenceContext context,
-			ExternalReferenceConstructionCallback<TargetType> callback);
+			ExternalReferenceConstructionCallback callback);
 
 	/**
 	 * Return the type of external reference that this translator consumes.

@@ -46,7 +46,7 @@ public interface ExternalReferenceBuilderSPI<TargetType extends ExternalReferenc
 	 */
 	public void createReferenceAsynch(InputStream byteStream,
 			ReferenceContext context,
-			ExternalReferenceConstructionCallback<TargetType> callback);
+			ExternalReferenceConstructionCallback callback);
 
 	/**
 	 * Expose the type of the ExternalReferenceSPI that this builder can

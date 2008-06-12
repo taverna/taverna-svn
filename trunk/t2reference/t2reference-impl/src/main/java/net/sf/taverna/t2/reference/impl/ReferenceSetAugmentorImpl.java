@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.raven.spi.InstanceRegistryListener;
 import net.sf.taverna.t2.reference.ExternalReferenceBuilderSPI;
@@ -32,6 +35,8 @@ import net.sf.taverna.t2.reference.ReferenceSetAugmentorCallback;
  */
 public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 
+	private final Log log = LogFactory.getLog(ReferenceSetAugmentorImpl.class);
+
 	// An instance registry of ExternalReferenceBuilderSPI instances used to
 	// construct ExternalReferenceSPI instances from byte streams
 	private InstanceRegistry<ExternalReferenceBuilderSPI<?>> builders;
@@ -40,6 +45,8 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 	// construct ExternalReferenceSPI instances from existing
 	// ExternalReferenceSPI instances.
 	private InstanceRegistry<ExternalReferenceTranslatorSPI<?, ?>> translators;
+
+	private boolean cacheValid = false;
 
 	// A private listener used to trigger re-compilation of the shortest paths
 	// from each node to each other node in the known types set
@@ -50,7 +57,7 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		 */
 		@SuppressWarnings("unchecked")
 		public void instanceRegistryUpdated(InstanceRegistry theRegistry) {
-			update();
+			cacheValid = false;
 		}
 	};
 
@@ -68,7 +75,7 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 	 * interfaces.
 	 */
 	public ReferenceSetAugmentorImpl() {
-		//
+		super();
 	}
 
 	/**
@@ -84,8 +91,18 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		if (this.builders == null) {
 			this.builders = theRegistry;
 			theRegistry.addRegistryListener(registryListener);
-			update();
+			List<ExternalReferenceBuilderSPI<?>> erb = theRegistry
+					.getInstances();
+			log.debug("* Builder registry injected :");
+			int counter = 0;
+			for (ExternalReferenceBuilderSPI<?> builder : erb) {
+				log.debug("*   " + (++counter) + ") "
+						+ builder.getClass().getSimpleName() + ", builds "
+						+ builder.getReferenceType().getSimpleName());
+			}
+			cacheValid = false;
 		} else {
+			log.error("Builder registry already injected, invalid operation");
 			throw new IllegalStateException(
 					"Can't inject the external reference builder registry "
 							+ "multiple times.");
@@ -105,8 +122,23 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		if (this.translators == null) {
 			this.translators = theRegistry;
 			theRegistry.addRegistryListener(registryListener);
-			update();
+			List<ExternalReferenceTranslatorSPI<?, ?>> ert = theRegistry
+					.getInstances();
+			log.debug("* Translator registry injected :");
+			int counter = 0;
+			for (ExternalReferenceTranslatorSPI<?, ?> translator : ert) {
+				log.debug("*   " + (++counter) + ") "
+						+ translator.getClass().getSimpleName()
+						+ ", translates "
+						+ translator.getSourceReferenceType().getSimpleName()
+						+ " to "
+						+ translator.getTargetReferenceType().getSimpleName());
+			}
+			theRegistry.getInstances();
+			cacheValid = false;
 		} else {
+			log
+					.error("Translator registry already injected, invalid operation");
 			throw new IllegalStateException(
 					"Can't inject the translator registry multiple times.");
 		}
@@ -114,9 +146,10 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 
 	@SuppressWarnings("unchecked")
 	protected synchronized final void update() {
-		if (builders == null || translators == null) {
+		if (builders == null || translators == null || cacheValid) {
 			return;
 		}
+		log.debug("# Refreshing shortest path cache");
 		knownReferenceTypes.clear();
 		solvers.clear();
 		adjacencySets.clear();
@@ -126,21 +159,35 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		for (ExternalReferenceTranslatorSPI ert : translators) {
 			knownReferenceTypes.add(ert.getSourceReferenceType());
 			knownReferenceTypes.add(ert.getTargetReferenceType());
-			Set<ExternalReferenceTranslatorSPI> adjacentTo = adjacencySets
-					.get(ert.getTargetReferenceType());
-			if (adjacentTo == null) {
-				adjacentTo = new HashSet<ExternalReferenceTranslatorSPI>();
-				adjacencySets.put(ert.getTargetReferenceType(), adjacentTo);
-			}
-			// TODO - does not check for duplicate edges in the resultant graph,
-			// should do!
-			// This isn't so critical as the duplicate paths will be ignored
-			// later on in the algorithm but it's not ideal
-			adjacentTo.add(ert);
+			getNeighbours(ert.getTargetReferenceType()).add(ert);
 		}
 		for (Class<ExternalReferenceSPI> type : knownReferenceTypes) {
-			solvers.put(type, new ShortestPathSolver(type));
+			try {
+				solvers.put(type, new ShortestPathSolver(type));
+			} catch (Throwable t) {
+				t.printStackTrace();
+				if (t instanceof RuntimeException) {
+					throw (RuntimeException) t;
+				}
+			}
 		}
+		log.debug("# Path cache refresh done");
+		cacheValid = true;
+	}
+
+	@SuppressWarnings("unchecked")
+	Set<ExternalReferenceTranslatorSPI> getNeighbours(
+			Class<ExternalReferenceSPI> node) {
+		Set<ExternalReferenceTranslatorSPI> adjacentTo = adjacencySets
+				.get(node);
+		if (adjacentTo != null) {
+			return adjacentTo;
+		} else {
+			HashSet<ExternalReferenceTranslatorSPI> neighbours = new HashSet<ExternalReferenceTranslatorSPI>();
+			adjacencySets.put(node, neighbours);
+			return neighbours;
+		}
+
 	}
 
 	/**
@@ -151,9 +198,15 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 			ReferenceSet references,
 			Set<Class<ExternalReferenceSPI>> targetReferenceTypes,
 			ReferenceContext context) throws ReferenceSetAugmentationException {
+
+		synchronized (this) {
+			if (!cacheValid) {
+				update();
+			}
+		}
+
 		// Synchronize on the reference set itself
 		synchronized (references) {
-
 			// First check whether we actually need to modify the reference set
 			// at
 			// all - it's perfectly valid to call the augmentor when nothing
@@ -169,6 +222,10 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 			List<TranslationPath> candidatePaths = new ArrayList<TranslationPath>();
 			for (Class<ExternalReferenceSPI> target : targetReferenceTypes) {
 				ShortestPathSolver solver = solvers.get(target);
+				if (solver == null) {
+					solver = new ShortestPathSolver(target);
+					solvers.put(target, solver);
+				}
 				if (solver != null) {
 					for (TranslationPath path : solver.getTranslationPaths()) {
 						for (ExternalReferenceSPI er : references
@@ -191,7 +248,7 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 				if (targetReferenceTypes.contains(builder.getReferenceType())) {
 					// The builder can construct one of the target types, add
 					// paths for all possible pairs of 'de-reference existing
-					// refence' and the builder
+					// reference' and the builder
 					for (ExternalReferenceSPI er : references
 							.getExternalReferences()) {
 						TranslationPath newPath = new TranslationPath();
@@ -205,18 +262,36 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 			// Got a list of candidate paths sorted by estimated overall path
 			// cost
 			Collections.sort(candidatePaths);
-
+			log
+					.debug("Found "
+							+ candidatePaths.size()
+							+ " contextual translation path(s) including builder based :");
+			int counter = 0;
+			for (TranslationPath path : candidatePaths) {
+				log.debug("  " + (++counter) + ") " + path.toString());
+			}
+			
 			if (candidatePaths.isEmpty()) {
+				log.warn("No candidate paths found for augmentation");
 				throw new ReferenceSetAugmentationException(
 						"No candidate translation paths were found");
 			} else {
+				log.debug("Performing augmentation :");
+				counter = 0;
 				for (TranslationPath path : candidatePaths) {
 					try {
-						return path.doTranslation(references, context);
+						counter++;
+						Set<ExternalReferenceSPI> newReferences = path
+								.doTranslation(references, context);
+						log.debug("  Success ("+counter+"), created "+printRefSet(newReferences));
+						return newReferences;
 					} catch (Exception ex) {
+						log.debug("  Failed ("+counter+")");
+						log.trace(ex);
 						// Use next path...
 					}
 				}
+				log.warn("  No paths succeeded, augmentation failed");
 				throw new ReferenceSetAugmentationException(
 						"All paths threw exceptions, can't perform augmentation");
 			}
@@ -224,6 +299,21 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		}
 	}
 
+	private String printRefSet(Set<ExternalReferenceSPI> set) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		int counter = 0;
+		for (ExternalReferenceSPI ref : set) {
+			sb.append(ref.toString());
+			counter++;
+			if (counter < set.size()) {
+				sb.append(",");
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -276,7 +366,7 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		@Override
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
-			sb.append(getPathCost()+" ");
+			sb.append(getPathCost() + " ");
 			if (sourceReference != null && initialBuilder != null) {
 				sb.append(sourceReference.toString() + "->bytes("
 						+ sourceReference.getResolutionCost() + ")->");
@@ -497,6 +587,8 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 		}
 
 		public ShortestPathSolver(Class<ExternalReferenceSPI> targetType) {
+			log.debug("# Constructing shortest paths to '"
+					+ targetType.getSimpleName() + "'");
 			predecessors = new HashMap<Class<ExternalReferenceSPI>, Class<ExternalReferenceSPI>>();
 			translators = new HashMap<Class<ExternalReferenceSPI>, ExternalReferenceTranslatorSPI<?, ?>>();
 			shortestDistances = new HashMap<Class<ExternalReferenceSPI>, Float>();
@@ -517,17 +609,32 @@ public class ReferenceSetAugmentorImpl implements ReferenceSetAugmentor {
 						// Recurse, should terminate at the target type
 						node = predecessors.get(node);
 					}
+					translationPaths.add(p);
 				}
 			}
 			Collections.sort(translationPaths);
+			if (translationPaths.isEmpty()) {
+				log
+						.debug("#   no paths discovered, type not reachable through translation");
+			} else {
+				log.debug("#   found " + translationPaths.size()
+						+ " distinct path(s) :");
+				int counter = 0;
+				for (TranslationPath path : translationPaths) {
+					log.debug("#     " + (++counter) + ") " + path.toString());
+				}
+			}
 		}
 
 		@SuppressWarnings("unchecked")
 		private void relaxNeighbours(Class<ExternalReferenceSPI> u) {
+			log.trace("#     relaxing node " + u.getSimpleName());
 			Set<Class<ExternalReferenceSPI>> alreadySeen = new HashSet<Class<ExternalReferenceSPI>>();
-			for (ExternalReferenceTranslatorSPI ert : adjacencySets.get(u)) {
+			for (ExternalReferenceTranslatorSPI ert : getNeighbours(u)) {
 				// all the translators that translate *to* u
 				Class<ExternalReferenceSPI> v = ert.getSourceReferenceType();
+				log.trace("#     translator found from from '" + v + "' : "
+						+ ert.getClass().getSimpleName());
 				if (alreadySeen.contains(v) == false && isSettled(v) == false) {
 					// Avoid duplicate edges, always take the first one where
 					// such duplicates exist
