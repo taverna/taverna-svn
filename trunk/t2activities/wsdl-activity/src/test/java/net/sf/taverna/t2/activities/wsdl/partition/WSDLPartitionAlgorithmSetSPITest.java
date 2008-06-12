@@ -41,5 +41,6 @@ public class WSDLPartitionAlgorithmSetSPITest {
 		assertTrue("should contain an algorithm for 'style'",set.contains(new LiteralValuePartitionAlgorithm("style")));
 		assertTrue("should contain an algorithm for 'use'",set.contains(new LiteralValuePartitionAlgorithm("use")));
 		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
+		assertTrue("should contain an algorithm for 'url'",set.contains(new LiteralValuePartitionAlgorithm("url")));
 	}
 }

@@ -46,7 +46,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>configuration-impl</artifactId>
+			<artifactId>configuration-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

@@ -83,7 +83,7 @@ public class ActivityPaletteDemo {
 					 partition = getPartition(reg);
 				}
 				toggle=!toggle;
-				q.addSetModelChangeListener((SetModelChangeListener<WSDLActivityItem>)partition.getSetModelChangeListener());
+				q.addSetModelChangeListener((SetModelChangeListener)partition.getSetModelChangeListener());
 				q2.addSetModelChangeListener((SetModelChangeListener<SoaplabActivityItem>)partition.getSetModelChangeListener());
 				q3.addSetModelChangeListener((SetModelChangeListener<LocalWorkerActivityItem>)partition.getSetModelChangeListener());
 				tree.setModel(partition);

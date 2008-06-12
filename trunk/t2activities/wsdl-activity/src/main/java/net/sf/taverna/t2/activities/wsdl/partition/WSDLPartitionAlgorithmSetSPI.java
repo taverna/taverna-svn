@@ -9,5 +9,6 @@ public class WSDLPartitionAlgorithmSetSPI extends ActivityPartitionAlgorithmSet 
 		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("operation"));
 		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("use"));
 		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("style"));
+		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("url"));
 	}
 }

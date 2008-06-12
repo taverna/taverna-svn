@@ -16,6 +16,7 @@ import net.sf.taverna.t2.activities.testutils.LocationConstants;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class WSDLActivityTest implements LocationConstants {
@@ -60,6 +61,7 @@ public class WSDLActivityTest implements LocationConstants {
 	}
 
 	@Test
+	@Ignore("Service is broken")
 	public void testExecuteAsynchMapOfStringEntityIdentifierAsynchronousActivityCallback()
 			throws Exception {
 		Map<String, Object> inputMap = new HashMap<String, Object>();
