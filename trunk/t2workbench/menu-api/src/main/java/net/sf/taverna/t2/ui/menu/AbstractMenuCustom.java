@@ -14,7 +14,14 @@ public abstract class AbstractMenuCustom extends AbstractMenuItem {
 		this.positionHint = positionHint;
 	}
 
+	protected abstract Component createCustomComponent();
+
 	@Override
-	public abstract Component getCustomComponent();
+	public final synchronized Component getCustomComponent() {
+		if (customComponent == null) {
+			customComponent = createCustomComponent();
+		}
+		return customComponent;
+	}
 
 }

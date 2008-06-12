@@ -15,7 +15,7 @@ public class EditPerspectivesMenu extends AbstractMenuCustom {
 	}
 
 	@Override
-	public Component getCustomComponent() {
+	protected Component createCustomComponent() {
 		WorkbenchPerspectives perspectives = Workbench.getInstance().getPerspectives();
 		return perspectives.getEditPerspectivesMenu();
 	}

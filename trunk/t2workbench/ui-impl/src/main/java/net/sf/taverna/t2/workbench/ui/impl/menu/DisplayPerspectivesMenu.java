@@ -15,8 +15,9 @@ public class DisplayPerspectivesMenu extends AbstractMenuCustom {
 			URI.create("http://taverna.sf.net/2008/t2workbench/menu#displayPerspectives"));
 	}
 	
+
 	@Override
-	public Component getCustomComponent() {
+	protected Component createCustomComponent() {
 		WorkbenchPerspectives perspectives = Workbench.getInstance().getPerspectives();
 		return perspectives.getDisplayPerspectivesMenu();
 	}
