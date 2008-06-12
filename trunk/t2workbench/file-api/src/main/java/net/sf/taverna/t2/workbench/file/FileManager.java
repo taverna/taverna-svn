@@ -6,10 +6,68 @@ import java.net.URL;
 import java.util.List;
 
 import net.sf.taverna.t2.lang.observer.Observable;
+import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workbench.ModelMapConstants;
+import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.FileManager.FileManagerEvent;
 
+/**
+ * Manager of open files (ie. Dataflows) in the workbench.
+ * <p>
+ * A {@link Dataflow} can be opened for the workbench using
+ * {@link #openDataflow(URL)}, {@link #openDataflow(InputStream)} or
+ * {@link #openDataflow(Dataflow)}. {@link Observer}s of the FileManager gets
+ * notified with an {@link OpenedDataflowEvent}. The opened workflow is also
+ * {@link #setCurrentDataflow(Dataflow) made the current dataflow}, available
+ * through {@link #getCurrentDataflow()} or by observing the {@link ModelMap}
+ * for the model name {@link ModelMapConstants#CURRENT_DATAFLOW}.
+ * </p>
+ * <p>
+ * A dataflow can be saved using {@link #saveDataflow(Dataflow, File, boolean)},
+ * the current dataflow can be saved using
+ * {@link #saveCurrentDataflow(File, boolean)}. Observers will be presented a
+ * {@link SavedDataflowEvent}.
+ * </p>
+ * <p>
+ * If the dataflow have been opened from a local {@link File} or saved to a
+ * file, then {@link #saveCurrentDataflow(boolean)} and
+ * {@link #saveDataflow(Dataflow, boolean)} will save to that file again. You
+ * can check if this is the case using {@link #canSaveCurrentWithoutFilename()}
+ * and {@link #canSaveWithoutFilename(Dataflow)}. You can get the last
+ * saved/opened File or URL for a worklow using
+ * {@link #getCurrentDataflowFile()}, {@link #getDataflowFile(Dataflow)},
+ * {@link #getCurrentDataflowURL()} or {@link #getDataflowURL(Dataflow)}.
+ * </p>
+ * <p>
+ * If the save methods are used with failOnOverwrite=true, an
+ * {@link OverwriteException} will be thrown if the destination file already
+ * exists and was not last written by a previous save on that dataflow. (This is
+ * checked using timestamps on the file).
+ * </p>
+ * <p>
+ * A dataflow can be closed using {@link #closeCurrentDataflow(boolean)} or
+ * {@link #closeDataflow(Dataflow, boolean)}. A closed dataflow is no longer
+ * monitored for changes and can no longer be used with the other operations,
+ * except {@link #openDataflow(Dataflow)}.
+ * </p>
+ * <p>
+ * If a dataflow has been changed using the {@link EditManager},
+ * {@link #isDataflowChanged(Dataflow)} will return true until the next save. If
+ * the close methods are used with failOnUnsaved=true, an
+ * {@link UnsavedException} will be thrown if the dataflow has been changed.
+ * </p>
+ * 
+ * <p>
+ * {@link #getDataflowFile(Dataflow)}
+ * </p>
+ * 
+ * 
+ * @author Stian Soiland-Reyes
+ * 
+ */
 public abstract class FileManager implements Observable<FileManagerEvent> {
 
 	public static abstract class FileManagerEvent {
