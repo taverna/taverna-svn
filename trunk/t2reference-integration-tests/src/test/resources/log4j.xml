@@ -11,11 +11,18 @@
 		</layout>
 	</appender>
 
-	<!-- 
-		<logger name="net.sf.taverna.platform.spring.orm">
-		<level value="TRACE" />
-		</logger>
-	-->
+	<appender name="PLAIN_CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="Augmentor  |  %m%n" />
+		</layout>
+	</appender>
+	
+
+	<logger name="net.sf.taverna.t2.reference.impl.ReferenceSetAugmentorImpl" additivity="false">
+		<level value="DEBUG"/>
+		<appender-ref ref="PLAIN_CONSOLE"/>
+	</logger>
 
 	<logger name="org.hibernate">
 		<level value="ERROR" />

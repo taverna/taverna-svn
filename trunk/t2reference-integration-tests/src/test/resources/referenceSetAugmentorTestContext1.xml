@@ -53,12 +53,7 @@
 
 		<property name="externalReferences">
 			<set>
-				<bean
-					raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
-					raven:repository="ravenRepository"
-					class="net.sf.taverna.t2referencetest.BlueReference">
-					<property name="contents" value="foo" />
-				</bean>
+				<ref bean="blueBean" />
 			</set>
 		</property>
 
@@ -69,6 +64,27 @@
 		raven:repository="ravenRepository"
 		class="net.sf.taverna.t2referencetest.BlueReference">
 		<property name="contents" value="foo" />
+	</bean>
+
+	<bean id="redBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2referencetest.RedReference">
+		<property name="contents" value="" />
+	</bean>
+
+	<bean id="greenBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2referencetest.GreenReference">
+		<property name="contents" value="" />
+	</bean>
+
+	<bean id="yellowBean"
+		raven:artifact="net.sf.taverna.t2.testing:t2reference-testhelpers:0.1-SNAPSHOT"
+		raven:repository="ravenRepository"
+		class="net.sf.taverna.t2referencetest.YellowReference">
+		<property name="contents" value="" />
 	</bean>
 
 	<!-- Reference translator instance registry -->
