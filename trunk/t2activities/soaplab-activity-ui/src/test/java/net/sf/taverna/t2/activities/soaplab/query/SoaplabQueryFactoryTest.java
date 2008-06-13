@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.activities.wsdl.query;
+package net.sf.taverna.t2.activities.soaplab.query;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,7 +10,7 @@ import net.sf.taverna.t2.partition.QueryFactoryRegistry;
 
 import org.junit.Test;
 
-public class WSDLQueryFactoryTest {
+public class SoaplabQueryFactoryTest {
 
 	@Test
 	public void testSPI() {
@@ -18,7 +18,7 @@ public class WSDLQueryFactoryTest {
 		assertTrue("There should be more than one instance found",instances.size()>0);
 		boolean found = false;
 		for (QueryFactory spi : instances) {
-			if (spi instanceof WSDLQueryFactory) {
+			if (spi instanceof SoaplabQueryFactory) {
 				found=true;
 				break;
 			}
@@ -28,7 +28,7 @@ public class WSDLQueryFactoryTest {
 	
 	@Test
 	public void testKey() {
-		WSDLQueryFactory f = new WSDLQueryFactory();
-		assertEquals("taverna.defaultwsdl",f.getPropertyKey());
+		SoaplabQueryFactory f = new SoaplabQueryFactory();
+		assertEquals("taverna.defaultsoaplab",f.getPropertyKey());
 	}
 }

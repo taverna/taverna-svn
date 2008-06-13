@@ -8,6 +8,7 @@
   <description>A collection of Taverna 2 Activities. These are the core activities required to cover the functionality of Taverna 1.</description>
   <packaging>pom</packaging>
   <modules>
+  
   	<module>archetypes</module>
   	<module>activity-test-utils</module>
   	<module>apiconsumer-activity</module>
@@ -25,6 +26,7 @@
   	<module>rshell-activity-translator</module>
   	<module>soaplab-activity</module>
   	<module>soaplab-activity-translator</module>
+  	<module>soaplab-activity-ui</module>
   	<module>stringconstant-activity</module>
   	<module>stringconstant-activity-translator</module>
   	<module>wsdl-activity</module>

@@ -30,15 +30,16 @@ public class SoaplabPartitionAlgorithmSetSPITest {
 				c++;
 			}
 		}
-		assertEquals("There should be 1, and only 1, SoaplabPartitionAlgorithmSetSPI discovered",1,c);
+		assertEquals("There should be 1 SoaplabPartitionAlgorithmSetSPI discovered",1,c);
 	}
 	
 	@Test
 	public void getPartitonAlgorithms() {
 		PartitionAlgorithmSetSPI p = new SoaplabPartitionAlgorithmSetSPI();
 		Set<PartitionAlgorithm<?>> set = p.getPartitionAlgorithms();
-		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
-		assertTrue("should contain an algorithm for 'category'",set.contains(new LiteralValuePartitionAlgorithm("category")));
 		assertTrue("should contain an algorithm for 'operation'",set.contains(new LiteralValuePartitionAlgorithm("operation")));
+		assertTrue("should contain an algorithm for 'category'",set.contains(new LiteralValuePartitionAlgorithm("category")));
+		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
+		assertTrue("should contain an algorithm for 'url'",set.contains(new LiteralValuePartitionAlgorithm("url")));
 	}
 }
