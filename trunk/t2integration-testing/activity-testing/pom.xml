@@ -34,6 +34,12 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>soaplab-activity-ui</artifactId>
+			<version>${depT2core}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity-translator</artifactId>
 			<version>${depT2core}</version>
 			<scope>test</scope>
