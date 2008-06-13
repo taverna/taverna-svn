@@ -56,7 +56,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>wsdl-activity</artifactId>
+			<artifactId>wsdl-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>

@@ -9,45 +9,26 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>wsdl-activity</artifactId>
-	<name>Taverna 2 WSDL Activity.</name>
+	<artifactId>wsdl-activity-ui</artifactId>
+	<name>Taverna 2 WSDL Activity UI.</name>
 	<version>0.3-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>workflowmodel-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-impl</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>uk.org.mygrid.taverna.scufl</groupId>
-			<artifactId>scufl-model</artifactId>
-			<version>1.7.1.0</version>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>activity-palette-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna</groupId>
 			<artifactId>wsdl-generic</artifactId>
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>partition</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
+		
+		<!--  testing dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.4</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>activity-test-utils</artifactId>
-			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

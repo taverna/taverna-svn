@@ -29,6 +29,8 @@
   	<module>stringconstant-activity-translator</module>
   	<module>wsdl-activity</module>
   	<module>wsdl-activity-translator</module>
+  	<module>wsdl-activity-ui</module>
+  	
   	<module>all-activities</module>
   	<module>all-activity-translators</module>
   </modules>
