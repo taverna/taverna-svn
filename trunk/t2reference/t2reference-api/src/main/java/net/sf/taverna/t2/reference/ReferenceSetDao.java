@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.reference;
 
-import net.sf.taverna.t2.reference.h3.ReferenceSetImpl;
-
 /**
  * Data Access Object interface for {@link ReferenceSet}. Used by the
  * {@link ReferenceSetService} to store and retrieve implementations of
@@ -48,5 +46,5 @@ public interface ReferenceSetDao {
 	 *             something goes wrong fetching the data or connecting to the
 	 *             database
 	 */
-	public ReferenceSetImpl get(T2Reference ref) throws DaoException;
+	public ReferenceSet get(T2Reference ref) throws DaoException;
 }

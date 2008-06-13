@@ -15,8 +15,6 @@ import net.sf.taverna.t2.reference.ReferenceSetServiceCallback;
 import net.sf.taverna.t2.reference.ReferenceSetServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceGenerator;
-import net.sf.taverna.t2.reference.h3.ReferenceSetImpl;
-import net.sf.taverna.t2.reference.h3.ReferenceSetT2ReferenceImpl;
 
 /**
  * Implementation of ReferenceSetService, inject with an appropriate

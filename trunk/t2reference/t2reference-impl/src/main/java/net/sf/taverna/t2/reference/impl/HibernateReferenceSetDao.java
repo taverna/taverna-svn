@@ -4,8 +4,6 @@ import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetDao;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.reference.h3.ReferenceSetImpl;
-import net.sf.taverna.t2.reference.h3.ReferenceSetT2ReferenceImpl;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

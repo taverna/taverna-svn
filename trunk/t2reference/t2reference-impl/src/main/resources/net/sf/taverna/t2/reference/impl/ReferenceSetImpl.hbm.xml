@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+                "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Hibernate mapping for ReferenceSetImpl -->
+<hibernate-mapping>
+	<class name="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
+		abstract="true">
+		<!--  Composite key constructed from the namespace and local -->
+		<!--  parts of the T2Reference implementation type, used as  -->
+		<!--  the foreign key in the one to many relationship with   -->
+		<!--  extensions of AbstractExternalReference                -->
+		<composite-id name="typedId"
+			class="net.sf.taverna.t2.reference.impl.ReferenceSetT2ReferenceImpl">
+			<key-property name="namespacePart" />
+			<key-property name="localPart" />
+		</composite-id>
+		<set name="externalReferences" cascade="all" lazy="false">
+			<key>
+				<column name="namespacePart" />
+				<column name="localPart" />
+			</key>
+			<one-to-many
+				class="net.sf.taverna.t2.reference.AbstractExternalReference" />
+		</set>
+	</class>
+</hibernate-mapping>

@@ -1,10 +1,11 @@
-package net.sf.taverna.t2.reference.h3;
+package net.sf.taverna.t2.reference.impl;
 
 import java.util.Set;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.h3.HibernateMappedEntity;
 
 /**
  * An implementation of ReferenceSet with the additional methods and metadata
@@ -18,7 +19,7 @@ import net.sf.taverna.t2.reference.T2Reference;
  * @author Tom Oinn
  * 
  */
-public class ReferenceSetImpl implements ReferenceSet {
+public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 
 	private Set<ExternalReferenceSPI> externalReferences;
 	private ReferenceSetT2ReferenceImpl id;

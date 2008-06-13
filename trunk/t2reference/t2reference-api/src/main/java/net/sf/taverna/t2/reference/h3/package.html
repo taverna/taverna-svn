@@ -1,14 +1,8 @@
 <body>
-Implementations of entities which are persisted by Hibernate3. This is
-part of the API package because it should be available on the context
-classloader, but client code should not use anything in this package
-directly. It's an open question whether this package should be part of
-the API module or whether it should be in a module by itself - as there
-is only one implementation of the reference management system and as
-this package doesn't actually bring in any hibernate dependencies I'm
-leaving it here to try to limit the module proliferation we're currently
-suffering.
-<p>To re-iterate : do <em>not</em> use any of the classes in this
-package in your client code. They are only ever used directly by the
-data access implementation objects.
+Contains the marker interfaces used by the implementation package to
+ensure that all appropriate classes are mapped in hibernate
+<em>before</em>
+implementations of classes that depend upon them, and to ensure that
+'static' classes such as the implementations of reference set etc are
+mapped correctly.
 </body>

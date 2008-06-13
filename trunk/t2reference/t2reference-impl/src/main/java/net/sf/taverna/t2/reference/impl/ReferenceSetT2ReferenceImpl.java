@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.reference.h3;
+package net.sf.taverna.t2.reference.impl;
 
 import java.io.Serializable;
 import java.net.URI;

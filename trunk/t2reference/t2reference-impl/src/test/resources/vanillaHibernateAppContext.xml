@@ -60,7 +60,7 @@
 					net/sf/taverna/t2/reference/AbstractExternalReference.hbm.xml
 				</value>
 				<value>
-					net/sf/taverna/t2/reference/h3/ReferenceSetImpl.hbm.xml
+					net/sf/taverna/t2/reference/impl/ReferenceSetImpl.hbm.xml
 				</value>
 			</list>
 		</property>
