@@ -62,8 +62,15 @@ public interface ExternalReferenceSPI {
 	 *            agents or other facilities required when de-referencing this
 	 *            reference.
 	 * @return an InputStream providing access to the referenced data
+	 * @throws DereferenceException
+	 *             if the reference cannot be de-referenced. This may be because
+	 *             of problems with the context such as security failures, or it
+	 *             may be because the reference is inherently not possible to
+	 *             de-reference (as in the case of a non-serializable API
+	 *             consumer reference).
 	 */
-	public InputStream openStream(ReferenceContext context);
+	public InputStream openStream(ReferenceContext context)
+			throws DereferenceException;
 
 	/**
 	 * Resolution cost is an informal guide to how costly the process of
