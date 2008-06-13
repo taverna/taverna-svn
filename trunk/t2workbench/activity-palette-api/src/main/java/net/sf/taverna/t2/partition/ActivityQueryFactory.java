@@ -26,11 +26,17 @@ import net.sf.taverna.t2.workbench.configuration.Configurable;
 public abstract class ActivityQueryFactory implements QueryFactory {
 	
 	public List<Query<?>> getQueries() {
-		List<String> properties = (List<String>)config.getPropertyMap().get(getPropertyKey());
 		List<Query<?>> result = new ArrayList<Query<?>>();
-		if (properties!=null) {
-			for (String property : properties) {
-				result.add(createQuery(property));
+		if (getPropertyKey()==null) { //no property required
+			result.add(createQuery(null));
+		}
+		else {
+			List<String> properties = (List<String>)config.getPropertyMap().get(getPropertyKey());
+			
+			if (properties!=null) {
+				for (String property : properties) {
+					result.add(createQuery(property));
+				}
 			}
 		}
 		return result;
@@ -40,6 +46,8 @@ public abstract class ActivityQueryFactory implements QueryFactory {
 
 	/**
 	 * The implementation of this method will return the key for the property values held in the configuration object passed to setConfigurable.
+	 * <br>
+	 * If the implementation doesnot require a property to do a query, then this method should return null
 	 * @return
 	 * @see Configurable 
 	 */

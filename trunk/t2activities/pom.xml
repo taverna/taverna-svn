@@ -29,6 +29,7 @@
   	<module>soaplab-activity-ui</module>
   	<module>stringconstant-activity</module>
   	<module>stringconstant-activity-translator</module>
+  	<module>stringconstant-activity-ui</module>
   	<module>wsdl-activity</module>
   	<module>wsdl-activity-translator</module>
   	<module>wsdl-activity-ui</module>

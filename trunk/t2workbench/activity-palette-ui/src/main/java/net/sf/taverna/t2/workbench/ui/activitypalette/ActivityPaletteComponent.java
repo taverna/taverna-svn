@@ -107,7 +107,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		List<Query<?>> queries = QueryFactoryRegistry.getInstance().getQueries();
 		
 		
-		for (Query query:queries) {
+		for (Query<?> query:queries) {
 			query.addSetModelChangeListener((SetModelChangeListener) partition
 					.getSetModelChangeListener());
 			partition.getSetModelChangeListener().addQuery(query);
