@@ -25,6 +25,7 @@ public class SpiRegistryAwareLocalSessionFactoryBean extends
 	private Log log = LogFactory
 			.getLog(SpiRegistryAwareLocalSessionFactoryBean.class);
 	private List<SpiRegistry> spiRegistries = null;
+	private List<SpiRegistry> preloadRegistries = null;
 
 	/**
 	 * Set the list of SPI registries from which to pull class definitions for
@@ -38,6 +39,18 @@ public class SpiRegistryAwareLocalSessionFactoryBean extends
 	}
 
 	/**
+	 * Set the list of preload registries - classes from these registries are
+	 * not mapped to hibernate but are registered with the customized classname ->
+	 * classloader linkage. This is therefore used for any classes which mapped
+	 * classes will depend upon but which don't have a mapping themselves such
+	 * as component classes
+	 */
+	public void setPreloadRegistries(List<SpiRegistry> spis) {
+		log.debug("Set preload list");
+		this.preloadRegistries = spis;
+	}
+
+	/**
 	 * Use any defined spiRegistries, adding any classes they contain to the
 	 * configuration before returning it. Initially delegates to the superclass,
 	 * so explicitly defined mappings will be mapped before those from the
@@ -47,6 +60,15 @@ public class SpiRegistryAwareLocalSessionFactoryBean extends
 	protected Configuration newConfiguration() {
 		Configuration conf = super.newConfiguration();
 		log.trace("Starting SPI registry based configuration");
+		if (preloadRegistries != null) {
+			for (SpiRegistry spi : preloadRegistries) {
+				for (Class<?> theClass : spi.getClasses()) {
+					log.info("Preloading class '" + theClass.getCanonicalName()
+							+ "' from SPI to hibernate classloader mapping");
+					ReflectHelper.registerClass(theClass);
+				}
+			}
+		}
 		if (spiRegistries != null) {
 			for (SpiRegistry spi : spiRegistries) {
 				for (Class<?> theClass : spi.getClasses()) {
