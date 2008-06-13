@@ -65,9 +65,6 @@
 				<value>
 					net/sf/taverna/t2/reference/AbstractExternalReference.hbm.xml
 				</value>
-				<value>
-					net/sf/taverna/t2/reference/h3/ReferenceSetImpl.hbm.xml
-				</value>
 			</list>
 		</property>
 		<!-- SPI enabled session, uses the linked SPI registry or registries     -->
@@ -75,7 +72,38 @@
 		<!-- to ensure that raven is used to fetch these back when required      -->
 		<property name="spiRegistries">
 			<list>
-				<ref bean="spiBean" />
+				<!-- SPI used by the raven-aware hibernate session factory bean -->
+				<!-- This *must* go before the external reference SPI bean or   -->
+				<!-- those beans won't find the mapping for their superclasses  -->
+				<bean
+					class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+					<property name="repository">
+						<ref bean="ravenRepository" />
+					</property>
+					<property name="spiClassName"
+						value="net.sf.taverna.t2.reference.h3.HibernateMappedEntity" />
+				</bean>
+				<!-- SPI used by the raven-aware hibernate session factory bean -->
+				<bean
+					class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+					<property name="repository">
+						<ref bean="ravenRepository" />
+					</property>
+					<property name="spiClassName"
+						value="net.sf.taverna.t2.reference.ExternalReferenceSPI" />
+				</bean>
+			</list>
+		</property>
+		<property name="preloadRegistries">
+			<list>
+				<bean
+					class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+					<property name="repository">
+						<ref bean="ravenRepository" />
+					</property>
+					<property name="spiClassName"
+						value="net.sf.taverna.t2.reference.h3.HibernateComponentClass" />
+				</bean>
 			</list>
 		</property>
 	</bean>
@@ -171,14 +199,6 @@
 
 
 
-	<!-- SPI used by the raven-aware hibernate session factory bean -->
-	<bean id="spiBean"
-		class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
-		<property name="repository">
-			<ref bean="ravenRepository" />
-		</property>
-		<property name="spiClassName"
-			value="net.sf.taverna.t2.reference.ExternalReferenceSPI" />
-	</bean>
+
 
 </beans>
