@@ -60,6 +60,11 @@
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>soaplab-activity-ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
 			<version>2.0.02</version>

@@ -70,7 +70,10 @@ public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/bind.wsdl");
 				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/whatizit.wsdl");
 				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/GUIDGenerator.wsdl");
+				List<String> soaplabList = new ArrayList<String>();
+				soaplabList.add("http://www.ebi.ac.uk/soaplab/services/");
 				map.put("taverna.defaultwsdl", wsdlList);
+				map.put("taverna.defaultsoaplab", soaplabList);
 				return map;
 			}
 
