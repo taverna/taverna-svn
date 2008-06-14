@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import com.apple.audio.hardware.ADevicePropertyListener;
+//import com.apple.audio.hardware.ADevicePropertyListener;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
