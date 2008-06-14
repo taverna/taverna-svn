@@ -63,4 +63,15 @@ public class SimpleT2ReferenceGenerator implements T2ReferenceGenerator {
 		return r;
 	}
 
+	public T2Reference nextErrorDocumentReference(int depth) {
+		T2ReferenceImpl r = new T2ReferenceImpl();
+		r.setNamespacePart(getNamespace());
+		r.setLocalPart(getNextLocalPart());
+		r.setReferenceType(T2ReferenceType.ErrorDocument);
+		r.setDepth(depth);
+		// This is an error document, it contains errors by definition
+		r.setContainsErrors(true);
+		return r;
+	}
+
 }

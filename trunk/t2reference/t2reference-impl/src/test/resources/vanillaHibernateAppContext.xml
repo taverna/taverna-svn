@@ -65,6 +65,9 @@
 				<value>
 					net/sf/taverna/t2/reference/impl/T2ReferenceListImpl.hbm.xml
 				</value>
+				<value>
+					net/sf/taverna/t2/reference/impl/ErrorDocumentImpl.hbm.xml
+				</value>
 			</list>
 		</property>
 	</bean>
@@ -76,7 +79,7 @@
 			<ref local="sessionFactoryBean" />
 		</property>
 	</bean>
-	
+
 	<!-- Test list data access object -->
 	<bean id="testListDao"
 		class="net.sf.taverna.t2.reference.impl.HibernateListDao">
@@ -84,5 +87,5 @@
 			<ref local="sessionFactoryBean" />
 		</property>
 	</bean>
-	
+
 </beans>

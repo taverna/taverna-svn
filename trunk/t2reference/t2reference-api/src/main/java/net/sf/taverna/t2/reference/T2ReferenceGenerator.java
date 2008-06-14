@@ -43,4 +43,14 @@ public interface T2ReferenceGenerator {
 	 */
 	public T2Reference nextListReference(boolean containsErrors, int listDepth);
 
+	/**
+	 * Create a new and otherwise unused T2Reference to an ErrorDocument
+	 * 
+	 * @param depth
+	 *            the depth of the error document to which this identifier will
+	 *            refer
+	 * @return a new T2Reference for an ErrorDocument
+	 */
+	public T2Reference nextErrorDocumentReference(int depth);
+
 }

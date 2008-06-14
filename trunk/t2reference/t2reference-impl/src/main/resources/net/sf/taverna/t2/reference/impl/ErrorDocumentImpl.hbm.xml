@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+                "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Hibernate mapping for ErrorDocumentImpl -->
+<hibernate-mapping>
+	<class name="net.sf.taverna.t2.reference.impl.ErrorDocumentImpl"
+		abstract="false">
+		<!--  Composite key constructed from the namespace and local -->
+		<!--  parts of the T2Reference implementation type           -->
+		<composite-id name="typedId"
+			class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl">
+			<key-property name="namespacePart" />
+			<key-property name="localPart" />
+			<key-property name="containsErrors"/>
+			<key-property name="depth"/>
+			<key-property name="referenceType"/>
+		</composite-id>
+		<property name="message"/>
+		<property name="exceptionMessage"/>
+		<list name="stackTraceList" cascade="all" lazy="false">
+			<key>
+				<column name="namespacePart" />
+				<column name="localPart" />
+				<column name="containsErrors"/>
+				<column name="depth"/>
+				<column name="referenceType"/>
+			</key>
+			<list-index column="index" base="0" />
+			<composite-element
+				class="net.sf.taverna.t2.reference.impl.StackTraceElementBeanImpl">
+				<property name="fileName" />
+				<property name="className" />
+				<property name="methodName" />
+				<property name="lineNumber" />
+			</composite-element>
+		</list>
+	</class>
+</hibernate-mapping>

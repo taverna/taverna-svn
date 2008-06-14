@@ -1,9 +1,9 @@
 package net.sf.taverna.t2.reference;
 
 /**
- * RuntimeException subclass thrown by the service layer interfaces. All
- * underlying exceptions are either handled by the service layer or wrapped in
- * this exception (or a subclass) and rethrown.
+ * RuntimeException subclass thrown by the reference set service layer
+ * interfaces. All underlying exceptions are either handled by the service layer
+ * or wrapped in this exception (or a subclass) and rethrown.
  * 
  * @author Tom Oinn
  * 

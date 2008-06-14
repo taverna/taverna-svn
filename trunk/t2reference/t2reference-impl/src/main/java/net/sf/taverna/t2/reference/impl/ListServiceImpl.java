@@ -45,9 +45,8 @@ public class ListServiceImpl implements ListService {
 	 */
 	private void checkDao() throws ListServiceException {
 		if (listDao == null) {
-			throw new ListServiceException(
-					"ListDao not initialized, reference set "
-							+ "service operations are not available");
+			throw new ListServiceException("ListDao not initialized, list "
+					+ "service operations are not available");
 		}
 	}
 
@@ -150,7 +149,7 @@ public class ListServiceImpl implements ListService {
 		}
 		try {
 			T2ReferenceImpl newReference = (T2ReferenceImpl) t2ReferenceGenerator
-			.nextListReference(containsErrors, depth);
+					.nextListReference(containsErrors, depth);
 			newList.setTypedId(newReference);
 			listDao.store(newList);
 			return newList;
