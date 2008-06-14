@@ -84,12 +84,13 @@
 			<artifactId>workflowmodel-impl</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>configuration</artifactId>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>configuration-impl</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
