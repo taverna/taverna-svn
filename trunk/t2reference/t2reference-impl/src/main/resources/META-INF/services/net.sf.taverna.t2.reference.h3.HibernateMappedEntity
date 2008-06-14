@@ -1,1 +1,2 @@
 net.sf.taverna.t2.reference.impl.ReferenceSetImpl
+net.sf.taverna.t2.reference.impl.T2ReferenceListImpl

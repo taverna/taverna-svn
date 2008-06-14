@@ -16,7 +16,10 @@ import java.io.InputStream;
  * Implementors of this interface are strongly advised to use the
  * AbstractExternalReference superclass - this provides the necessary primary
  * key information used by hibernate-based implementations of the reference
- * manager.
+ * manager. Technically we don't require it as it's possible that other backend
+ * stores may exist, but the core store used by T2 is based on hibernate so it's
+ * a very good idea to follow this! Basically if you don't your code won't work
+ * in the current system.
  * <p>
  * This interface is an SPI - while implementations are never constructed based
  * on the SPI registry it is used to discover all implementing classes and
@@ -26,6 +29,18 @@ import java.io.InputStream;
  * the implementation artifact. For examples please refer to the
  * t2reference-core-extensions module, this contains implementations of this
  * interface for common basic reference types.
+ * <p>
+ * Note - if your implementation class has a complex hibernate mapping that uses
+ * components which are themselves mapped into the database (perfectly legal to
+ * do) then you must mark those components as instances of HibernateMappedEntity
+ * so their corresponding mapping and class definitions are loaded by the
+ * Hibernate backed reference set dao. If your implementation class uses inline
+ * compound keys or other component types where you reference another class but
+ * the other class is not mapped itself in hibernate you must instead make the
+ * component class an instance of HibernateComponentClass - a marker interface -
+ * for the same reason. Both of these are SPIs themselves, and require the
+ * appropriate entries to be added to their service metadata files in your
+ * extension jar.
  * 
  * @author Tom Oinn
  */

@@ -210,7 +210,7 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 				.setExternalReferences(new HashSet<ExternalReferenceSPI>(
 						references));
 		try {
-			ReferenceSetT2ReferenceImpl id = (ReferenceSetT2ReferenceImpl) t2ReferenceGenerator
+			T2ReferenceImpl id = (T2ReferenceImpl) t2ReferenceGenerator
 					.nextReferenceSetReference();
 			rsi.setTypedId(id);
 		} catch (ClassCastException cce) {

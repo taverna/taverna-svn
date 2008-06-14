@@ -4,6 +4,7 @@ import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetDao;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -33,6 +34,17 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 	 *             something else goes wrong connecting to the database
 	 */
 	public void store(ReferenceSet rs) throws DaoException {
+		if (rs.getId() == null) {
+			throw new DaoException(
+					"Supplied reference set has a null ID, allocate "
+							+ "an ID before calling the store method in the dao.");
+		} else if (rs.getId().getReferenceType().equals(
+				T2ReferenceType.ReferenceSet) == false) {
+			throw new DaoException(
+					"Strangely the reference set ID doesn't have type "
+							+ "T2ReferenceType.ReferenceSet, something has probably "
+							+ "gone badly wrong somewhere earlier!");
+		}
 		if (rs instanceof ReferenceSetImpl) {
 			try {
 				getHibernateTemplate().save(rs);
@@ -54,6 +66,17 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 	 * @throws DaoException
 	 */
 	public void update(ReferenceSet rs) throws DaoException {
+		if (rs.getId() == null) {
+			throw new DaoException(
+					"Supplied reference set has a null ID, allocate "
+							+ "an ID before calling the store method in the dao.");
+		} else if (rs.getId().getReferenceType().equals(
+				T2ReferenceType.ReferenceSet) == false) {
+			throw new DaoException(
+					"Strangely the reference set ID doesn't have type "
+							+ "T2ReferenceType.ReferenceSet, something has probably "
+							+ "gone badly wrong somewhere earlier!");
+		}
 		if (rs instanceof ReferenceSetImpl) {
 			try {
 				getHibernateTemplate().update(rs);
@@ -78,17 +101,23 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 	 *             database
 	 */
 	public ReferenceSetImpl get(T2Reference ref) throws DaoException {
-		if (ref instanceof ReferenceSetT2ReferenceImpl) {
+		if (ref == null) {
+			throw new DaoException(
+					"Supplied reference is null, can't retrieve.");
+		} else if (ref.getReferenceType().equals(T2ReferenceType.ReferenceSet) == false) {
+			throw new DaoException(
+					"This dao can only retrieve reference of type T2Reference.ReferenceSet");
+		}
+		if (ref instanceof T2ReferenceImpl) {
 			try {
 				return (ReferenceSetImpl) getHibernateTemplate().get(
-						ReferenceSetImpl.class,
-						(ReferenceSetT2ReferenceImpl) ref);
+						ReferenceSetImpl.class, (T2ReferenceImpl) ref);
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}
 		} else {
 			throw new DaoException(
-					"Reference must be an instance of ReferenceSetT2ReferenceImpl");
+					"Reference must be an instance of T2ReferenceImpl");
 		}
 	}
 }

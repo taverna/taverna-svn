@@ -22,7 +22,7 @@ import net.sf.taverna.t2.reference.h3.HibernateMappedEntity;
 public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 
 	private Set<ExternalReferenceSPI> externalReferences;
-	private ReferenceSetT2ReferenceImpl id;
+	private T2ReferenceImpl id;
 
 	/**
 	 * Construct a new ReferenceSetImpl with the given set of external
@@ -37,7 +37,7 @@ public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 	 *            a compound primary key component
 	 */
 	public ReferenceSetImpl(Set<ExternalReferenceSPI> references,
-			ReferenceSetT2ReferenceImpl id) {
+			T2ReferenceImpl id) {
 		this.id = id;
 		this.externalReferences = references;
 	}
@@ -46,7 +46,7 @@ public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 	 * Default constructor, used by Hibernate when reconstructing this bean from
 	 * the database. If you call this directly from your code you must then call
 	 * both {@link #setExternalReferences(Set)} and
-	 * {@link #setId(ReferenceSetT2ReferenceImpl)} before any use of the
+	 * {@link #setId(T2ReferenceImpl)} before any use of the
 	 * reference set. If you're not writing the reference manager implementation
 	 * you shouldn't be using this class anyway.
 	 */
@@ -103,7 +103,7 @@ public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 	 *            an instance of ReferenceSetT2ReferenceImpl created from the
 	 *            database
 	 */
-	public void setTypedId(ReferenceSetT2ReferenceImpl newId) {
+	public void setTypedId(T2ReferenceImpl newId) {
 		this.id = newId;
 	}
 
@@ -112,7 +112,7 @@ public class ReferenceSetImpl implements ReferenceSet, HibernateMappedEntity {
 	 * in the methods on a bean which implements an interface, but Hibernate
 	 * needs to construct concrete input and output types!
 	 */
-	public ReferenceSetT2ReferenceImpl getTypedId() {
+	public T2ReferenceImpl getTypedId() {
 		return this.id;
 	}
 

@@ -17,7 +17,7 @@ public class SimpleT2ReferenceGenerator implements T2ReferenceGenerator {
 	}
 
 	public synchronized T2Reference nextReferenceSetReference() {
-		ReferenceSetT2ReferenceImpl r = new ReferenceSetT2ReferenceImpl();
+		T2ReferenceImpl r = new T2ReferenceImpl();
 		r.setNamespacePart(namespace);
 		String localPart = "test"+(counter++);
 		r.setLocalPart(localPart);

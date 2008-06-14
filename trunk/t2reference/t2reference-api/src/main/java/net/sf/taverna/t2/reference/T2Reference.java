@@ -15,6 +15,14 @@ import java.net.URI;
 public interface T2Reference {
 
 	/**
+	 * To determine the entity that this reference points to we use an
+	 * enumeration of possible entity types
+	 * 
+	 * @return the type of entity to which this reference refers.
+	 */
+	public T2ReferenceType getReferenceType();
+
+	/**
 	 * All entities identified by a T2Reference have a conceptual depth. In the
 	 * case of lists the depth is the (uniform) depth of any item in the list
 	 * plus one, in the case of reference sets the depth is 0. Error documents

@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.h3.HibernateComponentClass;
 
 /**
  * An implementation of T2Reference specific to the ReferenceSetImpl. This is
@@ -17,44 +19,57 @@ import net.sf.taverna.t2.reference.T2Reference;
  * @author Tom Oinn
  * 
  */
-public class ReferenceSetT2ReferenceImpl implements T2Reference, Serializable {
+public class T2ReferenceImpl implements T2Reference, Serializable,
+		HibernateComponentClass {
 
 	private static final long serialVersionUID = 8363330461158750319L;
 	private URI cachedUri = null;
 	private String localPart;
 	private String namespacePart;
+	private boolean containsErrors = false;
+	private T2ReferenceType referenceType = T2ReferenceType.ReferenceSet;
+	private int depth = 0;
 
 	/**
-	 * Reference sets by definition do not contain errors, so this method always
-	 * returns false
-	 * 
-	 * @return false
+	 * Return whether the identified entity either is or contains errors
 	 */
 	public boolean containsErrors() {
-		return false;
+		return this.containsErrors;
 	}
 
 	/**
-	 * Reference sets by definition have a depth of 0
-	 * 
-	 * @return 0
+	 * Property accessor for Hibernate, complies with java bean spec
+	 */
+	public boolean getContainsErrors() {
+		return this.containsErrors;
+	}
+
+	/**
+	 * Get the depth of the entity referred to by this reference
 	 */
 	public int getDepth() {
-		return 0;
+		return this.depth;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get the local part of the URI for this reference
 	 */
 	public String getLocalPart() {
 		return this.localPart;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get the namespace part of the URI for this reference
 	 */
 	public String getNamespacePart() {
 		return namespacePart;
+	}
+
+	/**
+	 * Get the type of the entity to which this reference refers
+	 */
+	public T2ReferenceType getReferenceType() {
+		return this.referenceType;
 	}
 
 	/**
@@ -78,6 +93,36 @@ public class ReferenceSetT2ReferenceImpl implements T2Reference, Serializable {
 	}
 
 	/**
+	 * This method is only ever called from within Hibernate when
+	 * re-constructing the identifier component to set the depth of the
+	 * identifier.
+	 */
+	public synchronized void setDepth(int depth) {
+		this.depth = depth;
+		cachedUri = null;
+	}
+
+	/**
+	 * This method is only ever called from within Hibernate when
+	 * re-constructing the identifier component to set the error property of the
+	 * identifier.
+	 */
+	public synchronized void setContainsErrors(boolean containsErrors) {
+		this.containsErrors = containsErrors;
+		cachedUri = null;
+	}
+
+	/**
+	 * This method is only ever called from within Hibernate when
+	 * re-constructing the identifier component to set the reference type
+	 * property of the identifier.
+	 */
+	public synchronized void setReferenceType(T2ReferenceType type) {
+		this.referenceType = type;
+		cachedUri = null;
+	}
+
+	/**
 	 * By default when printing an identifier we use {@link #toUri()}.{@link java.net.URI#toASCIIString() toASCIIString()}
 	 */
 	@Override
@@ -87,14 +132,15 @@ public class ReferenceSetT2ReferenceImpl implements T2Reference, Serializable {
 
 	/**
 	 * Returns the identifier expressed as a {@link java.net.URI URI},
-	 * constructed from
+	 * constructed based on the reference type. For references to ReferenceSet
+	 * this is
 	 * <code>new URI("t2:ref//" + namespacePart + "?" + localPart)</code>
 	 * leading to URIs of the form <code>t2:ref//namespace?local</code>
 	 */
 	public synchronized URI toUri() {
 		if (cachedUri != null) {
 			return cachedUri;
-		} else {
+		} else if (referenceType.equals(T2ReferenceType.ReferenceSet)) {
 			try {
 				URI result = new URI("t2:ref//" + namespacePart + "?"
 						+ localPart);
@@ -105,6 +151,19 @@ public class ReferenceSetT2ReferenceImpl implements T2Reference, Serializable {
 				e.printStackTrace();
 				return null;
 			}
+		} else if (referenceType.equals(T2ReferenceType.IdentifiedList)) {
+			try {
+				URI result = new URI("t2:list//" + namespacePart + "?"
+						+ localPart + "/" + containsErrors + "/" + depth);
+				cachedUri = result;
+				return result;
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		} else {
+			return null;
 		}
 	}
 
@@ -116,8 +175,8 @@ public class ReferenceSetT2ReferenceImpl implements T2Reference, Serializable {
 		if (other == this) {
 			return true;
 		}
-		if (other instanceof ReferenceSetT2ReferenceImpl) {
-			ReferenceSetT2ReferenceImpl otherRef = (ReferenceSetT2ReferenceImpl) other;
+		if (other instanceof T2ReferenceImpl) {
+			T2ReferenceImpl otherRef = (T2ReferenceImpl) other;
 			return (toUri().equals(otherRef.toUri()));
 		} else {
 			return false;
