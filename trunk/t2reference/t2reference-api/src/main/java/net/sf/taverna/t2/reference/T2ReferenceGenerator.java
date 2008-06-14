@@ -26,4 +26,21 @@ public interface T2ReferenceGenerator {
 	 */
 	public T2Reference nextReferenceSetReference();
 
+	/**
+	 * Create a new and otherwise unused T2Reference to an IdentifiedList
+	 * 
+	 * @param containsErrors
+	 *            whether the list this reference is generated for contains
+	 *            t2references with their containsErrors property set to true.
+	 *            Returns true if <em>any</em> reference in the list is or
+	 *            contains an error.
+	 * @param listDepth
+	 *            depth of the list to which this identifier will be applied
+	 * @return a new T2Reference for an IdentifiedList. Namespace, type and
+	 *         local parts will be initialized but depth and error content will
+	 *         still be at their default values of '0' and 'false' respectively,
+	 *         these will need to be re-set before the reference is viable.
+	 */
+	public T2Reference nextListReference(boolean containsErrors, int listDepth);
+
 }
