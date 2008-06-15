@@ -18,17 +18,7 @@ import java.util.Set;
  * @author Tom Oinn
  * 
  */
-public interface ReferenceSet {
-
-	/**
-	 * ReferenceSet instances are identified by a unique T2Reference. This
-	 * T2Reference is used to refer to the reference set within the workflow and
-	 * other platforms.
-	 * 
-	 * @return the unique ID of this reference set in the form of a T2Reference
-	 *         instance
-	 */
-	public T2Reference getId();
+public interface ReferenceSet extends Identified {
 
 	/**
 	 * The reference set contains a set of ExternalReferenceSPI instances, all

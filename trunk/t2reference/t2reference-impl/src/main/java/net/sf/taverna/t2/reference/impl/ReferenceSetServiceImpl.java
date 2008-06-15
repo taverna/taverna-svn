@@ -24,88 +24,9 @@ import net.sf.taverna.t2.reference.T2ReferenceGenerator;
  * @author Tom Oinn
  * 
  */
-public class ReferenceSetServiceImpl implements ReferenceSetService {
-
-	private ReferenceSetDao referenceSetDao = null;
-	private T2ReferenceGenerator t2ReferenceGenerator = null;
-	private ReferenceSetAugmentor referenceSetAugmentor = null;
-
-	/**
-	 * Inject the reference set data access object.
-	 */
-	public void setReferenceSetDao(ReferenceSetDao dao) {
-		this.referenceSetDao = dao;
-	}
-
-	/**
-	 * Inject the T2Reference generator used to allocate new IDs when
-	 * registering sets of ExternalReferenceSPI
-	 */
-	public void setT2ReferenceGenerator(T2ReferenceGenerator t2rg) {
-		this.t2ReferenceGenerator = t2rg;
-	}
-
-	/**
-	 * Inject the ReferenceSetAugmentor used to translate or construct new
-	 * ExternalReferenceSPI instances within a ReferenceSet
-	 */
-	public void setReferenceSetAugmentor(ReferenceSetAugmentor rse) {
-		this.referenceSetAugmentor = rse;
-	}
-
-	/**
-	 * Check that the reference set dao is configured
-	 * 
-	 * @throws ReferenceSetServiceException
-	 *             if the dao is still null
-	 */
-	private void checkDao() throws ReferenceSetServiceException {
-		if (referenceSetDao == null) {
-			throw new ReferenceSetServiceException(
-					"ReferenceSetDao not initialized, reference set "
-							+ "service operations are not available");
-		}
-	}
-
-	/**
-	 * Check that the t2reference generator is configured
-	 * 
-	 * @throws ReferenceSetServiceException
-	 *             if the generator is still null
-	 */
-	private void checkGenerator() throws ReferenceSetServiceException {
-		if (t2ReferenceGenerator == null) {
-			throw new ReferenceSetServiceException(
-					"T2ReferenceGenerator not initialized, reference "
-							+ "set service operations not available");
-		}
-	}
-
-	/**
-	 * Check that the reference set augmentor is configured
-	 * 
-	 * @throws ReferenceSetServiceException
-	 *             if the reference set augmentor is still null
-	 */
-	private void checkAugmentor() throws ReferenceSetServiceException {
-		if (referenceSetAugmentor == null) {
-			throw new ReferenceSetServiceException(
-					"ReferenceSetAugmentor not initialized, reference "
-							+ "set service operations not available");
-		}
-	}
-
-	/**
-	 * Schedule a runnable for execution - current naive implementation uses a
-	 * new thread and executes immediately, but this is where any thread pool
-	 * logic would go if we wanted to add that.
-	 * 
-	 * @param r
-	 */
-	private void executeRunnable(Runnable r) {
-		new Thread(r).start();
-	}
-
+public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
+		implements ReferenceSetService {
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -118,29 +39,7 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 			throw new ReferenceSetServiceException(de);
 		}
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void getReferenceSetAsynch(final T2Reference id,
-			final ReferenceSetServiceCallback callback)
-			throws ReferenceSetServiceException {
-		checkDao();
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					ReferenceSet rs = referenceSetDao.get(id);
-					callback.referenceSetRetrieved(rs);
-				} catch (DaoException de) {
-					callback
-							.referenceSetRetrievalFailed(new ReferenceSetServiceException(
-									de));
-				}
-			}
-		};
-		executeRunnable(r);
-	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -170,31 +69,6 @@ public class ReferenceSetServiceImpl implements ReferenceSetService {
 		} catch (ReferenceSetAugmentationException rsae) {
 			throw new ReferenceSetServiceException(rsae);
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void getReferenceSetWithAugmentationAsynch(final T2Reference id,
-			final Set<Class<ExternalReferenceSPI>> ensureTypes,
-			final ReferenceContext context,
-			final ReferenceSetServiceCallback callback)
-			throws ReferenceSetServiceException {
-		checkDao();
-		checkAugmentor();
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					callback
-							.referenceSetRetrieved(getReferenceSetWithAugmentation(
-									id, ensureTypes, context));
-
-				} catch (ReferenceSetServiceException rsse) {
-					callback.referenceSetRetrievalFailed(rsse);
-				}
-			}
-		};
-		executeRunnable(r);
 	}
 
 	/**
