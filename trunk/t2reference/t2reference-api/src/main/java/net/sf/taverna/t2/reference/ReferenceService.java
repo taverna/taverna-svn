@@ -87,6 +87,12 @@ public interface ReferenceService {
 	 * is itself registered as an IdentifiedList of T2Reference and its
 	 * reference returned.</li>
 	 * </ol>
+	 * The exception to this is if the useConvertorSPI parameter is set to true -
+	 * in this case any objects which do not match the above allowed list will
+	 * be run through any available ValueToReferenceConvertorSPI instances in
+	 * turn until one succeeds or all fail, which may result in the creation of
+	 * ExternalReferenceSPI instances. As these can be registered such objects
+	 * will not cause an exception to be thrown.
 	 * 
 	 * @param o
 	 *            the object to register with the reference system, must comply
@@ -101,14 +107,21 @@ public interface ReferenceService {
 	 *            serious problems downstream so be careful! We can't catch all
 	 *            potential problems in this method (although some errors will
 	 *            be trapped).
+	 * @param useConverterSPI
+	 *            whether to attempt to use the ValueToReferenceConvertorSPI
+	 *            registry (if defined and available) to map arbitrary objects
+	 *            to ExternalReferenceSPI instances on the fly. The registry of
+	 *            converters is generally injected into the implementation of
+	 *            this service.
 	 * @return a T2Reference to the registered object
 	 * @throws ReferenceServiceException
 	 *             if the object type (or, for collections, the recursive type
 	 *             of its contents) is not in the allowed list or if a problem
-	 *             occurs during registration.
+	 *             occurs during registration. Also thrown if attempting to use
+	 *             the converter SPI without an attached registry.
 	 */
-	public T2Reference register(Object o, int targetDepth)
-			throws ReferenceServiceException;
+	public T2Reference register(Object o, int targetDepth,
+			boolean useConverterSPI) throws ReferenceServiceException;
 
 	/**
 	 * Returns the {@link ErrorDocumentService} this ReferenceService uses, use
