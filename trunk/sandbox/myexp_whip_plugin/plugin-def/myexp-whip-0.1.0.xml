@@ -1,0 +1,18 @@
+<plugin>
+	<name>myExperiment and WHIP Plugin</name>
+	<description><!-- add a description here --></description>
+	<identifier>org.myexp_whip_plugin</identifier>
+	<version>0.1.1</version>
+	<provider>myexperiment.org</provider>
+	<repositories>
+		<repository>
+			<!-- add the url to the repository you have deployed your plugin to here, e.g. http://www.example.com/maven/repository -->
+		</repository>
+	</repositories>
+	<profile>
+		<artifact groupId="org.myexp_whip_plugin" artifactId="myexp-whip-plugin" version="0.1.0" />
+	</profile>
+	<taverna>
+		<version>1.7.1</version>
+	</taverna>
+</plugin>
