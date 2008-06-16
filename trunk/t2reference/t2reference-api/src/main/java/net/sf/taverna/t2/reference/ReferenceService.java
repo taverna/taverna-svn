@@ -113,6 +113,10 @@ public interface ReferenceService {
 	 *            to ExternalReferenceSPI instances on the fly. The registry of
 	 *            converters is generally injected into the implementation of
 	 *            this service.
+	 * @param context
+	 *            ReferenceContext to use if required by component services,
+	 *            this is most likely to be used by the object to reference
+	 *            converters if engaged.
 	 * @return a T2Reference to the registered object
 	 * @throws ReferenceServiceException
 	 *             if the object type (or, for collections, the recursive type
@@ -121,7 +125,8 @@ public interface ReferenceService {
 	 *             the converter SPI without an attached registry.
 	 */
 	public T2Reference register(Object o, int targetDepth,
-			boolean useConverterSPI) throws ReferenceServiceException;
+			boolean useConverterSPI, ReferenceContext context)
+			throws ReferenceServiceException;
 
 	/**
 	 * Returns the {@link ErrorDocumentService} this ReferenceService uses, use

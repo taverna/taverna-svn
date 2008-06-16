@@ -7,6 +7,7 @@ import net.sf.taverna.t2.reference.ContextualizedT2Reference;
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.Identified;
+import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceSet;
@@ -70,6 +71,10 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 *            to ExternalReferenceSPI instances on the fly. The registry of
 	 *            converters is generally injected into the implementation of
 	 *            this service.
+	 * @param context
+	 *            ReferenceContext to use if required by component services,
+	 *            this is most likely to be used by the object to reference
+	 *            converters if engaged.
 	 * @return a T2Reference to the registered object
 	 * @throws ReferenceServiceException
 	 *             if the object type (or, for collections, the recursive type
@@ -77,7 +82,8 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 *             occurs during registration. Also thrown if attempting to use
 	 *             the converter SPI without an attached registry.
 	 */
-	public T2Reference register(Object o, int targetDepth, boolean useConverterSPI)
+	public T2Reference register(Object o, int targetDepth,
+			boolean useConverterSPI, ReferenceContext context)
 			throws ReferenceServiceException {
 		checkServices();
 		if (useConverterSPI) {
