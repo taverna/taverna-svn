@@ -30,6 +30,10 @@ public class CloseWorkflowAction extends AbstractAction {
 
 	public boolean closeWorkflow(ActionEvent event, Dataflow dataflow) {
 		Component parentComponent = null;
+		if (dataflow == null) {
+			logger.warn("Attempted to close a null dataflow");
+			return false;
+		}
 		if (event.getSource() instanceof Component) {
 			parentComponent = (Component) event.getSource();
 		}
