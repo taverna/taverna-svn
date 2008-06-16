@@ -46,8 +46,8 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 	//give an initial value to classNameArray
 	//the data is retrieved at 8:30 am, June 16th, 2008
 	public static String []classNameArray = {
-		//"A2Conjugate", 
-		//"A2Experiment", "A2LP4Parameters", "A2Plate", "A2Sample", 
+		"A2Conjugate", 
+		"A2Experiment", "A2LP4Parameters", "A2Plate", "A2Sample", 
 		"A2Spot42", "A2SpotData", "A2SpotSetup", "A2SpotsStatistics", 
 		"A2StandardCurve", "A2Well", "AbsoluteCodingSchemeVersionReference", "AbsoluteCodingSchemeVersionReferenceList", 
 		"AbsoluteNeutrophilCount", "AbstractAdverseEventTerm", "AbstractArrayData", "AbstractBioMaterial", 
@@ -700,7 +700,7 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 		            					     if(projs !=null){
 		    					            	for (int i = 0; i<projs.length;i++){
 		    					            		Project project = projs[i];
-		    					            		System.out.println("\n"+ project.getShortName());
+		    					            		//System.out.println("\n"+ project.getShortName());
 		    					            		if(!project.getShortName().equals("BRIDG")&&!project.getShortName().equals("C3PR")){
 		    					            			try {
 		    					            				packs = cadsr.findPackagesInProject(project);
@@ -711,7 +711,7 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 		    						            		if(packs !=null){
 		    						            			for(int j= 0;j<packs.length;j++){
 		    						            				UMLPackageMetadata pack = packs[j];
-		    						            				System.out.println("\t-" + pack.getName());
+		    						            				//System.out.println("\t-" + pack.getName());
 		    						            				try {
 		    						            					 classes = cadsr.findClassesInPackage(project, pack.getName());
 		    						            				}
@@ -721,7 +721,7 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 		    						            				if(classes !=null){
 		    						            					for (int k=0;k<classes.length;k++){
 		    						            						UMLClassMetadata clazz = classes [k];
-		    						            						System.out.println("\t\t-"+clazz.getName());
+		    						            						//System.out.println("\t\t-"+clazz.getName());
 		    						            						if(!classNameList.contains(clazz.getName()))
 		    						            							//classNameList is updated here!
 		    						            							classNameList.add((String)clazz.getName());
@@ -747,13 +747,14 @@ public class GT4ScavengerHelper implements ScavengerHelper {
 		                					        }
 		                					        
 		                					        GT4ScavengerHelper.classNameArray  = classNameArray;
-		                					        System.out.println("caDSR data is updated, now there are " + classNameArray.length + "UMLClasses.");
+		                					        //System.out.println("caDSR data is updated, now there are " + classNameArray.length + "UMLClasses.");
 		                					        JOptionPane.showMessageDialog(s.getContainingFrame(), "caDSR data has been  updated. \n Now there are " + classNameArray.length + " UMLClasses in the list.", null, JOptionPane.INFORMATION_MESSAGE);
 		                					        
 		            					        }
 		            					        else{
 		            					        	//the current value of the GT4ScavengerHelper.classNameArray is not updated
-		            					        	System.out.println("Empty class name list retrived, so classNameArray is not updated!");
+		            					        	//System.out.println("Empty class name list retrived, so classNameArray is not updated!");
+		            					        	JOptionPane.showMessageDialog(s.getContainingFrame(),"Empty class name list retrived, so classNameArray is not updated!", null, JOptionPane.INFORMATION_MESSAGE);
 		            					        }
 			                        	
 			                        }
