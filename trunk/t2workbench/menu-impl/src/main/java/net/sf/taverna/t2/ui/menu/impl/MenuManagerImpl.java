@@ -31,6 +31,8 @@ import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
+import net.sf.taverna.t2.ui.menu.AbstractMenuAction;
+import net.sf.taverna.t2.ui.menu.AbstractMenuOptionGroup;
 import net.sf.taverna.t2.ui.menu.DefaultMenuBar;
 import net.sf.taverna.t2.ui.menu.DefaultToolBar;
 import net.sf.taverna.t2.ui.menu.MenuComponent;
@@ -51,18 +53,39 @@ public class MenuManagerImpl extends MenuManager {
 
 	private static Logger logger = Logger.getLogger(MenuManagerImpl.class);
 
-	private final Object updateLock = new Object();
-
+	/**
+	 * Cache used by {@link #getURIByComponent(Component)}
+	 */
 	private WeakHashMap<Component, URI> componentToUri;
 
+	/**
+	 * {@link MenuElementComparator} used for sorting menu components from the
+	 * SPI registry.
+	 */
 	private MenuElementComparator menuElementComparator = new MenuElementComparator();
 
+	/**
+	 * Map of {@link URI} to it's discovered children. Populated by
+	 * {@link #findChildren()}.
+	 */
 	private HashMap<URI, List<MenuComponent>> menuElementTree;
 
+	/**
+	 * SPI registry of found {@link MenuComponent} implementations.
+	 */
 	private SPIRegistry<MenuComponent> menuRegistry = new SPIRegistry<MenuComponent>(
 			MenuComponent.class);
 
+	/**
+	 * Multicaster to distribute messages to {@link Observer}s of this menu
+	 * manager.
+	 */
 	private MultiCaster<MenuManagerEvent> multiCaster;
+
+	/**
+	 * Lock for {@link #update()}
+	 */
+	private final Object updateLock = new Object();
 
 	/**
 	 * True if {@link #doUpdate()} is running, subsequents call to
@@ -70,13 +93,24 @@ public class MenuManagerImpl extends MenuManager {
 	 */
 	private boolean updating;
 
+	/**
+	 * Cache used by {@link #getComponentByURI(URI)}
+	 */
 	private Map<URI, WeakReference<Component>> uriToComponent;
 
+	/**
+	 * Map from {@link URI} to defining {@link MenuComponent}. Children are in
+	 * {@link #menuElementTree}.
+	 */
 	private Map<URI, MenuComponent> uriToMenuElement;
 
 	// Note: Not reset by #resetCollections()
 	private Map<URI, List<WeakReference<Component>>> uriToPublishedComponents = new HashMap<URI, List<WeakReference<Component>>>();
 
+	/**
+	 * Construct the MenuManagerImpl. Observes the SPI registry and does an
+	 * initial {@link #update()}.
+	 */
 	public MenuManagerImpl() {
 		menuRegistry.addObserver(new MenuRegistryObserver());
 		multiCaster = new MultiCaster<MenuManagerEvent>(this);
@@ -183,6 +217,17 @@ public class MenuManagerImpl extends MenuManager {
 		}
 	}
 
+	/**
+	 * Add a {@link JMenu} to the list of components as described by the menu
+	 * component. If there are no children, the menu is not added.
+	 * 
+	 * @param components
+	 *            List of components where to add the created {@link JMenu}
+	 * @param menuComponent
+	 *            The {@link MenuComponent} definition for this menu
+	 * @param isToolbar
+	 *            True if the list of components is to be added to a toolbar
+	 */
 	private void addMenu(List<Component> components,
 			MenuComponent menuComponent, boolean isToolbar) {
 		URI menuId = menuComponent.getId();
@@ -209,6 +254,14 @@ public class MenuManagerImpl extends MenuManager {
 		components.add(menu);
 	}
 
+	/**
+	 * Add <code>null</code> to the list of components, meaning that a
+	 * separator is to be created. Subsequent separators are ignored, and if
+	 * there are no components on the list already no separator will be added.
+	 * 
+	 * @param components
+	 *            List of components
+	 */
 	private void addNullSeparator(List<Component> components) {
 		if (components.isEmpty()) {
 			// Don't start with a separator
@@ -221,6 +274,17 @@ public class MenuManagerImpl extends MenuManager {
 		components.add(null);
 	}
 
+	/**
+	 * Add an {@link AbstractMenuOptionGroup option group} to the list of
+	 * components
+	 * 
+	 * @param components
+	 *            List of components where to add the created {@link JMenu}
+	 * @param optionGroupId
+	 *            The {@link URI} identifying the option group
+	 * @param isToolbar
+	 *            True if the option group is to be added to a toolbar
+	 */
 	private void addOptionGroup(List<Component> components, URI optionGroupId,
 			boolean isToolbar) {
 		List<Component> buttons = makeComponents(optionGroupId, isToolbar, true);
@@ -249,6 +313,18 @@ public class MenuManagerImpl extends MenuManager {
 		addNullSeparator(components);
 	}
 
+	/**
+	 * Add a section to a list of components.
+	 * 
+	 * @param components
+	 *            List of components
+	 * @param sectionId
+	 *            The {@link URI} identifying the section
+	 * @param isToolbar
+	 *            True if the list of components are to be added to a toolbar
+	 * @param isOptionGroup
+	 *            True if the section is part of an option group
+	 */
 	private void addSection(List<Component> components, URI sectionId,
 			boolean isToolbar, boolean isOptionGroup) {
 		List<Component> childComponents = makeComponents(sectionId, isToolbar,
@@ -269,6 +345,28 @@ public class MenuManagerImpl extends MenuManager {
 		addNullSeparator(components);
 	}
 
+	/**
+	 * Remove the last <code>null</code> separator from the list of components
+	 * if it's present.
+	 * 
+	 * @param components
+	 *            List of components
+	 */
+	private void stripTrailingNullSeparator(List<Component> components) {
+		if (!components.isEmpty()) {
+			int lastIndex = components.size() - 1;
+			if (components.get(lastIndex) == null) {
+				components.remove(lastIndex);
+			}
+		}
+	}
+
+	/**
+	 * Perform the actual update, called by {@link #update()}. Reset all the
+	 * collections, refresh from SPI, modify any previously published components
+	 * and notify any observers.
+	 * 
+	 */
 	protected synchronized void doUpdate() {
 		resetCollections();
 		findChildren();
@@ -276,6 +374,11 @@ public class MenuManagerImpl extends MenuManager {
 		multiCaster.notify(new UpdatedMenuManagerEvent());
 	}
 
+	/**
+	 * Find all children for all known menu components. Populates
+	 * {@link #uriToMenuElement}.
+	 * 
+	 */
 	protected void findChildren() {
 		for (MenuComponent menuElement : menuRegistry.getInstances()) {
 			uriToMenuElement.put(menuElement.getId(), menuElement);
@@ -297,6 +400,15 @@ public class MenuManagerImpl extends MenuManager {
 		}
 	}
 
+	/**
+	 * Get the children which have the given URI specified as their parent, or
+	 * an empty list if no children exist.
+	 * 
+	 * @param id
+	 *            The {@link URI} of the parent
+	 * @return The {@link List} of {@link MenuComponent} which have the given
+	 *         parent
+	 */
 	protected List<MenuComponent> getChildren(URI id) {
 		List<MenuComponent> children = menuElementTree.get(id);
 		if (children == null) {
@@ -306,6 +418,20 @@ public class MenuManagerImpl extends MenuManager {
 		return children;
 	}
 
+	/**
+	 * Make the list of Swing {@link Component}s that are the children of the
+	 * given {@link URI}.
+	 * 
+	 * @param id
+	 *            The {@link URI} of the parent which children are to be made
+	 * @param isToolbar
+	 *            True if the list of components will be added to a toolbar
+	 * @param isOptionGroup
+	 *            True if the list of components will be added to an option
+	 *            group
+	 * @return A {@link List} of {@link Component}s that can be added to a
+	 *         {@link JMenuBar}, {@link JMenu} or {@link JToolBar}.
+	 */
 	protected List<Component> makeComponents(URI id, boolean isToolbar,
 			boolean isOptionGroup) {
 		List<Component> components = new ArrayList<Component>();
@@ -378,41 +504,18 @@ public class MenuManagerImpl extends MenuManager {
 		return components;
 	}
 
-	protected void toolbarizeButton(AbstractButton actionButton) {
-		Action action = actionButton.getAction();
-		if (action.getValue(Action.SHORT_DESCRIPTION) == null) {
-			action.putValue(Action.SHORT_DESCRIPTION, action
-					.getValue(Action.NAME));
-		}
-		actionButton.setBorder(new EmptyBorder(0, 2, 0, 2));
-		// actionButton.setHorizontalTextPosition(JButton.CENTER);
-		// actionButton.setVerticalTextPosition(JButton.BOTTOM);
-		if (action.getValue(Action.SMALL_ICON) != null) {
-			// Don't show the text
-			actionButton.putClientProperty("hideActionText", Boolean.TRUE);
-			// Since hideActionText seems to be broken in Java 5
-			// and/or OS X
-			actionButton.setText(null);
-		}
-	}
-
-	protected void setHelpStringForComponent(Component component,
-			URI componentId) {
-		if (componentId != null) {
-			String helpId = componentId.toASCIIString();
-			CSH.setHelpIDString(component, helpId);
-		}
-	}
-
-	private void stripTrailingNullSeparator(List<Component> components) {
-		if (!components.isEmpty()) {
-			int lastIndex = components.size() - 1;
-			if (components.get(lastIndex) == null) {
-				components.remove(lastIndex);
-			}
-		}
-	}
-
+	/**
+	 * Fill the specified menu bar with the menu elements that have the given
+	 * URI as their parent.
+	 * <p>
+	 * Existing elements on the menu bar will be removed.
+	 * </p>
+	 * 
+	 * @param menuBar
+	 *            The {@link JMenuBar} to update
+	 * @param id
+	 *            The {@link URI} of the menu bar
+	 */
 	protected void populateMenuBar(JMenuBar menuBar, URI id) {
 		menuBar.removeAll();
 		MenuComponent menuDef = uriToMenuElement.get(id);
@@ -432,6 +535,18 @@ public class MenuManagerImpl extends MenuManager {
 		}
 	}
 
+	/**
+	 * Fill the specified tool bar with the elements that have the given URI as
+	 * their parent.
+	 * <p>
+	 * Existing elements on the tool bar will be removed.
+	 * </p>
+	 * 
+	 * @param toolbar
+	 *            The {@link JToolBar} to update
+	 * @param id
+	 *            The {@link URI} of the tool bar
+	 */
 	protected void populateToolBar(JToolBar toolbar, URI id) {
 		toolbar.removeAll();
 		MenuComponent toolbarDef = uriToMenuElement.get(id);
@@ -459,10 +574,32 @@ public class MenuManagerImpl extends MenuManager {
 		}
 	}
 
+	/**
+	 * Register a component that has been created. Such a component can be
+	 * resolved through {@link #getComponentByURI(URI)}.
+	 * 
+	 * @param id
+	 *            The {@link URI} that defined the component
+	 * @param component
+	 *            The {@link Component} that was created.
+	 */
 	protected synchronized void registerComponent(URI id, Component component) {
 		registerComponent(id, component, false);
 	}
 
+	/**
+	 * Register a component that has been created. Such a component can be
+	 * resolved through {@link #getComponentByURI(URI)}.
+	 * 
+	 * @param id
+	 *            The {@link URI} that defined the component
+	 * @param component
+	 *            The {@link Component} that was created.
+	 * @param published
+	 *            <code>true</code> if the component has been published
+	 *            through {@link #createMenuBar()} or similar, and is to be
+	 *            automatically updated by later calls to {@link #update()}.
+	 */
 	protected synchronized void registerComponent(URI id, Component component,
 			boolean published) {
 		uriToComponent.put(id, new WeakReference<Component>(component));
@@ -480,6 +617,10 @@ public class MenuManagerImpl extends MenuManager {
 		setHelpStringForComponent(component, id);
 	}
 
+	/**
+	 * Reset all collections
+	 * 
+	 */
 	protected synchronized void resetCollections() {
 		menuElementTree = new HashMap<URI, List<MenuComponent>>();
 		componentToUri = new WeakHashMap<Component, URI>();
@@ -487,6 +628,56 @@ public class MenuManagerImpl extends MenuManager {
 		uriToComponent = new HashMap<URI, WeakReference<Component>>();
 	}
 
+	/**
+	 * Set javax.help string to identify the component for later references to
+	 * the help document. Note that the component (ie. the
+	 * {@link AbstractMenuAction} must have an ID for an registration to take
+	 * place.
+	 * 
+	 * @param component
+	 *            The {@link Component} to set help string for
+	 * @param componentId
+	 *            The {@link URI} to be used as identifier
+	 */
+	protected void setHelpStringForComponent(Component component,
+			URI componentId) {
+		if (componentId != null) {
+			String helpId = componentId.toASCIIString();
+			CSH.setHelpIDString(component, helpId);
+		}
+	}
+
+	/**
+	 * Make an {@link AbstractButton} be configured in a "toolbar-like" way, for
+	 * instance showing only the icon.
+	 * 
+	 * @param actionButton
+	 *            Button to toolbarise
+	 */
+	protected void toolbarizeButton(AbstractButton actionButton) {
+		Action action = actionButton.getAction();
+		if (action.getValue(Action.SHORT_DESCRIPTION) == null) {
+			action.putValue(Action.SHORT_DESCRIPTION, action
+					.getValue(Action.NAME));
+		}
+		actionButton.setBorder(new EmptyBorder(0, 2, 0, 2));
+		// actionButton.setHorizontalTextPosition(JButton.CENTER);
+		// actionButton.setVerticalTextPosition(JButton.BOTTOM);
+		if (action.getValue(Action.SMALL_ICON) != null) {
+			// Don't show the text
+			actionButton.putClientProperty("hideActionText", Boolean.TRUE);
+			// Since hideActionText seems to be broken in Java 5
+			// and/or OS X
+			actionButton.setText(null);
+		}
+	}
+
+	/**
+	 * Update all components that have been published using
+	 * {@link #createMenuBar()} and similar. Content of such componenents will
+	 * be removed and replaced by fresh components.
+	 * 
+	 */
 	protected void updatePublishedComponents() {
 		for (Entry<URI, List<WeakReference<Component>>> entry : uriToPublishedComponents
 				.entrySet()) {
