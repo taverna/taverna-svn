@@ -18,8 +18,8 @@ import javax.swing.MenuElement;
  * <p>
  * This is an {@link net.sf.taverna.t2.spi.SPIRegistry SPI}, and
  * implementations should list their fully qualified classnames in
- * META-INF/services/net.sf.taverna.t2.ui.menu.MenuComponent to be
- * discovered by the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
+ * META-INF/services/net.sf.taverna.t2.ui.menu.MenuComponent to be discovered by
+ * the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
  * </p>
  * 
  * @author Stian Soiland-Reyes
@@ -234,6 +234,12 @@ public interface MenuComponent {
 			return parentTypes.contains(this);
 		}
 
+		/**
+		 * Create the set of {@link MenuType}s that {@link #isParentType()}
+		 * would return <code>true</code> for.
+		 * 
+		 * @return A {@link Set} of {@link MenuType}s.
+		 */
 		private Set<MenuType> defineParentTypes() {
 			HashSet<MenuType> types = new HashSet<MenuType>();
 			types.add(optionGroup);
