@@ -13,7 +13,7 @@ public class FileOpenMenuAction extends AbstractMenuAction {
 			.create("http://taverna.sf.net/2008/t2workbench/menu#fileOpen");
 
 	public FileOpenMenuAction() {
-		super(FileOpenMenuSection.FILE_OPEN_SECTION_URI, FILE_OPEN_URI, 20);
+		super(FileOpenMenuSection.FILE_OPEN_SECTION_URI, 20, FILE_OPEN_URI);
 	}
 
 	@Override

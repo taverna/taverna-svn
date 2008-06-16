@@ -13,7 +13,7 @@ public class FileCloseMenuAction extends AbstractMenuAction {
 			.create("http://taverna.sf.net/2008/t2workbench/menu#fileClose");
 
 	public FileCloseMenuAction() {
-		super(FileOpenMenuSection.FILE_URI, FILE_CLOSE_URI, 30);
+		super(FileOpenMenuSection.FILE_URI, 30, FILE_CLOSE_URI);
 	}
 
 	@Override

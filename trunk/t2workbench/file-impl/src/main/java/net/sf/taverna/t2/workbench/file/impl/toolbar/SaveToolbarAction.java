@@ -13,7 +13,7 @@ public class SaveToolbarAction extends AbstractMenuAction {
 			.create("http://taverna.sf.net/2008/t2workbench/menu#fileToolbarSave");
 
 	public SaveToolbarAction() {
-		super(FileToolbarMenuSection.FILE_TOOLBAR_SECTION, FILE_SAVE_URI, 30);
+		super(FileToolbarMenuSection.FILE_TOOLBAR_SECTION, 30, FILE_SAVE_URI);
 	}
 
 	@Override
