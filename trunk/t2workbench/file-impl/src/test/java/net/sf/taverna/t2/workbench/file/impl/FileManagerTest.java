@@ -54,7 +54,7 @@ public class FileManagerTest {
 		assertTrue("Did not insert empty dataflow after close", fileManager
 				.getOpenDataflows().get(0).getProcessors().isEmpty());
 	}
-	
+
 	@Test
 	public void openRemovesEmptyDataflow() throws Exception {
 		Dataflow newDataflow = fileManager.newDataflow();
@@ -151,6 +151,13 @@ public class FileManagerTest {
 		modelmap.addObserver(modelMapObserver);
 	}
 
+	/**
+	 * Always uses a <strong>new</strong> file manager instead of the instance
+	 * one from {@link FileManager#getInstance()}.
+	 * 
+	 * @see #getFileManagerInstance()
+	 * 
+	 */
 	@Before
 	public void makeFileManager() {
 		fileManager = new FileManagerImpl();
@@ -293,7 +300,8 @@ public class FileManagerTest {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
 			messages.add(message);
-			if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
+			if (message.getModelName().equals(
+					ModelMapConstants.CURRENT_DATAFLOW)) {
 				assertTrue("Dataflow was not listed as open when set current",
 						fileManager.getOpenDataflows().contains(
 								message.getNewModel()));

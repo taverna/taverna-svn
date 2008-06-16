@@ -101,6 +101,9 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public void closeDataflow(Dataflow dataflow, boolean failOnUnsaved)
 			throws UnsavedException {
+		if (dataflow == null) {
+			throw new NullPointerException("Dataflow can't be null");
+		}
 		if (failOnUnsaved && getOpenDataflowInfo(dataflow).isChanged()) {
 			throw new UnsavedException(dataflow);
 		}
@@ -226,6 +229,9 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public void saveDataflow(Dataflow dataflow, boolean failOnOverwrite)
 			throws SaveException {
+		if (dataflow == null) {
+			throw new NullPointerException("Dataflow can't be null");
+		}
 		OpenDataflowInfo lastSave = getOpenDataflowInfo(dataflow);
 		if (lastSave.getFile() == null) {
 			throw new SaveException("Can't save without filename " + dataflow);
@@ -295,6 +301,9 @@ public class FileManagerImpl extends FileManager {
 
 	protected synchronized OpenDataflowInfo getOpenDataflowInfo(
 			Dataflow dataflow) {
+		if (dataflow == null) {
+			throw new NullPointerException("Dataflow can't be null");
+		}
 		OpenDataflowInfo info = openDataflowInfos.get(dataflow);
 		if (info != null) {
 			return info;
@@ -330,6 +339,10 @@ public class FileManagerImpl extends FileManager {
 	}
 
 	protected void openDataflowInternal(Dataflow dataflow) {
+		if (dataflow == null) {
+			throw new NullPointerException("Dataflow can't be null");
+		}
+
 		if (isDataflowOpen(dataflow)) {
 			throw new IllegalArgumentException("Dataflow is already open: "
 					+ dataflow);
