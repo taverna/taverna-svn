@@ -56,6 +56,7 @@ public class DatabaseSetupTest {
 		
 	}
 
+	@SuppressWarnings("serial")
 	@Test
 	public void testDatabaseReadWriteWithoutPlugins() {
 		ApplicationContext context = new ClassPathXmlApplicationContext(
