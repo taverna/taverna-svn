@@ -6,6 +6,7 @@ import net.sf.taverna.raven.spi.InstanceRegistry;
 import net.sf.taverna.t2.reference.ErrorDocumentService;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ListService;
+import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceServiceResolutionCallback;
@@ -120,6 +121,7 @@ public abstract class AbstractReferenceServiceImpl extends AbstractServiceImpl
 	 */
 	public void resolveIdentifierAsynch(final T2Reference id,
 			final Set<Class<ExternalReferenceSPI>> ensureTypes,
+			final ReferenceContext context,
 			final ReferenceServiceResolutionCallback callback)
 			throws ReferenceServiceException {
 		checkServices();
@@ -127,7 +129,7 @@ public abstract class AbstractReferenceServiceImpl extends AbstractServiceImpl
 			public void run() {
 				try {
 					callback.identifierResolved(resolveIdentifier(id,
-							ensureTypes));
+							ensureTypes, context));
 				} catch (ReferenceServiceException rse) {
 					callback.resolutionFailed(rse);
 				}

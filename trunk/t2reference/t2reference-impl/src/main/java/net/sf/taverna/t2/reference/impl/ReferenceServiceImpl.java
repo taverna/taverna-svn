@@ -1,17 +1,26 @@
 package net.sf.taverna.t2.reference.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.taverna.t2.reference.ContextualizedT2Reference;
 import net.sf.taverna.t2.reference.ErrorDocument;
+import net.sf.taverna.t2.reference.ErrorDocumentServiceException;
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.Identified;
+import net.sf.taverna.t2.reference.IdentifiedList;
+import net.sf.taverna.t2.reference.ListServiceException;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.ReferenceSetServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.ValueToReferenceConversionException;
+import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 
 /**
  * Implementation of ReferenceService, inject with ReferenceSetService,
@@ -89,8 +98,116 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 		if (useConverterSPI) {
 			checkConverterRegistry();
 		}
-		throw new ReferenceServiceException(new UnsupportedOperationException(
-				"Not implemented yet!"));
+		return getNameForObject(o, targetDepth, useConverterSPI, context);
+	}
+
+	private T2Reference getNameForObject(Object o, int currentDepth,
+			boolean useConverterSPI, ReferenceContext context)
+			throws ReferenceServiceException {
+		// First check whether this is an Identified, and if so whether it
+		// already has an ID. If this is the case then return it, we assume that
+		// anything which has an identifier already allocated must have been
+		// registered (this is implicit in the contract for the various
+		// sub-services
+		if (o instanceof Identified) {
+			Identified i = (Identified) o;
+			if (i.getId() != null) {
+				return i.getId();
+			}
+		}
+		// Next check lists.
+		else if (o instanceof List) {
+			List<?> l = (List<?>) o;
+			// If the list is empty then register a new empty list of the
+			// appropriate depth and return it
+			if (l.isEmpty()) {
+				try {
+					IdentifiedList<T2Reference> newList = listService
+							.registerEmptyList(currentDepth);
+					return newList.getId();
+				} catch (ListServiceException lse) {
+					throw new ReferenceServiceException(lse);
+				}
+			}
+			// Otherwise construct a new list of T2Reference and register it,
+			// calling the getNameForObject method on all children of the list
+			// to construct the list of references
+			else {
+				List<T2Reference> references = new ArrayList<T2Reference>();
+				for (Object item : l) {
+					// Recursively call this method with a depth one lower than
+					// the current depth
+					references.add(getNameForObject(item, currentDepth - 1,
+							useConverterSPI, context));
+				}
+				try {
+					IdentifiedList<T2Reference> newList = listService
+							.registerList(references);
+					return newList.getId();
+				} catch (ListServiceException lse) {
+					throw new ReferenceServiceException(lse);
+				}
+			}
+		} else {
+			// Neither a list nor an already identified object, first thing is
+			// to engage the converters if enabled. Only engage if we don't
+			// already have a Throwable or an ExternalReferenceSPI instance
+			if (useConverterSPI && (o instanceof Throwable == false)
+					&& (o instanceof ExternalReferenceSPI == false)) {
+				for (ValueToReferenceConverterSPI converter : converterRegistry) {
+					if (converter.canConvert(o, context)) {
+						try {
+							ExternalReferenceSPI ers = converter.convert(o,
+									context);
+							o = ers;
+							break;
+						} catch (ValueToReferenceConversionException vtrce) {
+							// Fail, but that doesn't matter at the moment as
+							// there may be more converters to try. TODO - log
+							// this!
+						}
+					}
+				}
+			}
+			// If the object is neither a Throwable nor an ExternalReferenceSPI
+			// instance at this point we should fail the registration process,
+			// this means either that the conversion process wasn't enabled or
+			// that it failed to map the object type correctly.
+			if ((o instanceof Throwable == false)
+					&& (o instanceof ExternalReferenceSPI == false)) {
+				throw new ReferenceServiceException(
+						"Failed to register POJO, found a type '"
+								+ o.getClass().getCanonicalName()
+								+ "' which cannot be registered with the reference manager");
+			}
+			// Have either a Throwable or an ExternalReferenceSPI
+			else {
+				if (o instanceof Throwable) {
+					// Wrap in an ErrorDocument and return the ID
+					try {
+						ErrorDocument doc = errorDocumentService.registerError(
+								(Throwable) o, currentDepth);
+						return doc.getId();
+					} catch (ErrorDocumentServiceException edse) {
+						throw new ReferenceServiceException(edse);
+					}
+				} else if (o instanceof ExternalReferenceSPI) {
+					try {
+						Set<ExternalReferenceSPI> references = new HashSet<ExternalReferenceSPI>();
+						references.add((ExternalReferenceSPI) o);
+						ReferenceSet rs = referenceSetService
+								.registerReferenceSet(references);
+						return rs.getId();
+					} catch (ReferenceSetServiceException rsse) {
+						throw new ReferenceServiceException(rsse);
+					}
+				}
+			}
+		}
+		throw new ReferenceServiceException(
+				"Should never see this, reference registration"
+						+ " logic has fallen off the end of the"
+						+ " world, check the code!");
 	}
 
 	/**
@@ -106,14 +223,17 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 *            any resolved ReferenceSet instances to ensure that each one
 	 *            has at least one of the specified types. If augmentation is
 	 *            not required this can be set to null.
+	 * @param context
+	 *            the ReferenceContext to use to resolve this and any
+	 *            recursively resolved identifiers
 	 * @return fully resolved Identified subclass - this is either a (recursive)
 	 *         IdentifiedList of Identified, a ReferenceSet or an ErrorDocument
 	 * @throws ReferenceServiceException
 	 *             if any problems occur during resolution
 	 */
 	public Identified resolveIdentifier(T2Reference id,
-			Set<Class<ExternalReferenceSPI>> ensureTypes)
-			throws ReferenceServiceException {
+			Set<Class<ExternalReferenceSPI>> ensureTypes,
+			ReferenceContext context) throws ReferenceServiceException {
 		checkServices();
 		throw new ReferenceServiceException(new UnsupportedOperationException(
 				"Not implemented yet!"));

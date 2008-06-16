@@ -41,14 +41,17 @@ public interface ReferenceService {
 	 *            any resolved ReferenceSet instances to ensure that each one
 	 *            has at least one of the specified types. If augmentation is
 	 *            not required this can be set to null.
+	 * @param context
+	 *            the ReferenceContext to use to resolve this and any
+	 *            recursively resolved identifiers
 	 * @return fully resolved Identified subclass - this is either a (recursive)
 	 *         IdentifiedList of Identified, a ReferenceSet or an ErrorDocument
 	 * @throws ReferenceServiceException
 	 *             if any problems occur during resolution
 	 */
 	public Identified resolveIdentifier(T2Reference id,
-			Set<Class<ExternalReferenceSPI>> ensureTypes)
-			throws ReferenceServiceException;
+			Set<Class<ExternalReferenceSPI>> ensureTypes,
+			ReferenceContext context) throws ReferenceServiceException;
 
 	/**
 	 * As resolveIdentifier but using a callback object and returning
@@ -61,6 +64,7 @@ public interface ReferenceService {
 	 */
 	public void resolveIdentifierAsynch(T2Reference id,
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
+			ReferenceContext context,
 			ReferenceServiceResolutionCallback callback)
 			throws ReferenceServiceException;
 
