@@ -63,8 +63,16 @@ public class ActivityTree extends JTree {
 					.addSetModelChangeListener((SetModelChangeListener) ((RootPartition) this.treeModel)
 							.getSetModelChangeListener());
 		}
-		for (Query<?> query : queryList) {
-			query.doQuery();
+		for (final Query<?> query : queryList) {
+			new Thread("Activity query") {
+
+				@Override
+				public void run() {
+					query.doQuery();
+				}
+				
+			}.start();
+
 		}
 	}
 
@@ -84,8 +92,7 @@ public class ActivityTree extends JTree {
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								TreePath path = ev.getTreePath();
-								setExpandedState(path, true);
-								fireTreeExpanded(path);
+								setExpandedState(path, false);
 							}
 						});
 					}
@@ -96,12 +103,10 @@ public class ActivityTree extends JTree {
 		if (model != null) {
 			model.addTreeModelListener(treeModelListener);
 		}
-		TreeModel oldValue = treeModel;
+		TreeModel oldTreeModel = treeModel;
 		treeModel = model;
-		if (queryList != null) {
-			doQueries();
-		}
-		firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
+		
+		firePropertyChange(TREE_MODEL_PROPERTY, oldTreeModel, model);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
@@ -17,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
-import javax.help.*;
 
 import net.sf.taverna.t2.partition.ActivityItem;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
@@ -68,9 +68,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		menuBar.add(algorithmMenu);
 		add(menuBar, BorderLayout.PAGE_START);
 		menuBar.setVisible(true);
-		add(new JScrollPane(activityTree), BorderLayout.LINE_START);
-		JPanel fillerPanel = new JPanel();
-		add(fillerPanel, BorderLayout.LINE_END);
+		add(new JScrollPane(activityTree), BorderLayout.CENTER);
 	}
 
 	/**
@@ -126,23 +124,23 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 				.setToolTipText("Open this menu and select a property to query the activities");
 		algorithmMenu.setMnemonic(KeyEvent.VK_Q);
 		for (final PartitionAlgorithm<?> algorithm : getAlgorithms()) {
-			// TODO might be more than just a LiteraValuePartitionAlgorithm -
-			// needs to be more robust
-			JMenuItem item = new JMenuItem(
-					((LiteralValuePartitionAlgorithm) algorithm)
-							.getPropertyName());
-			item.addActionListener(new AbstractAction() {
-
-				public void actionPerformed(ActionEvent e) {
-					List<PartitionAlgorithm<?>> algList = new ArrayList<PartitionAlgorithm<?>>(
-							0);
-					algList.add(algorithm);
-					activityTree.setModel(new RootPartition<ActivityItem>(
-							algList, propertyExtractorRegistry));
-				}
-
-			});
-			algorithmMenu.add(item);
+			
+			if (algorithm instanceof LiteralValuePartitionAlgorithm) {
+				JMenuItem item = new JMenuItem(
+						((LiteralValuePartitionAlgorithm) algorithm)
+								.getPropertyName());
+				item.addActionListener(new AbstractAction() {
+					public void actionPerformed(ActionEvent e) {
+						List<PartitionAlgorithm<?>> algList = new ArrayList<PartitionAlgorithm<?>>(
+								0);
+						algList.add(algorithm);
+						RootPartition<ActivityItem> root = (RootPartition<ActivityItem>)activityTree.getModel();
+						root.setPartitionAlgorithmList(algList);
+						
+					}
+				});
+				algorithmMenu.add(item);
+			}
 		}
 	}
 
@@ -179,7 +177,13 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private <ActivityItem> RootPartition<?> getPartition(
 			PropertyExtractorRegistry reg) {
-		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
+		return new RootPartition<ActivityItem>(getDefaultAlgorithms(), reg);
+	}
+
+	private List<PartitionAlgorithm<?>> getDefaultAlgorithms() {
+		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
+		list.add(new LiteralValuePartitionAlgorithm("type"));
+		return list;
 	}
 
 	/**

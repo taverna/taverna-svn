@@ -10,6 +10,7 @@ public class ActivityPaletteTester {
 		ActivityPaletteComponent palette = new ActivityPaletteComponent();
 		frame.add(palette);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		frame.setSize(300, 600);
 		frame.setVisible(true);
 	}
 
