@@ -5,6 +5,13 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * A simple bean that can be used to set logging options - not really worth
+ * bothering with at the moment, use the log4j.xml instead.
+ * 
+ * @author Tom Oinn
+ * 
+ */
 public class LoggingConfigurer {
 
 	@SuppressWarnings("unchecked")

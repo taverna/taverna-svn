@@ -7,6 +7,12 @@ import net.sf.taverna.raven.spi.SpiRegistry;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Tests the spring / raven integration part of the T2Platform module
+ * 
+ * @author Tom Oinn
+ * 
+ */
 public class RavenSpringIntegrationTest {
 
 	@Test

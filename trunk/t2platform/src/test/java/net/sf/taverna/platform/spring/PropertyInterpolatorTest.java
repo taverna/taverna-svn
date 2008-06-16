@@ -6,6 +6,12 @@ import java.util.Properties;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+/**
+ * Test case for the property interpolator, mostly because java regex is evil
+ * 
+ * @author Tom Oinn
+ * 
+ */
 public class PropertyInterpolatorTest {
 
 	static Properties exampleProperties() {
