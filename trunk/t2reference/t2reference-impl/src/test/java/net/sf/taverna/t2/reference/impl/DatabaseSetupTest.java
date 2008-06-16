@@ -13,47 +13,52 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+/**
+ * Tests initialization of the Derby database and Hibernate ORM system
+ * 
+ * @author Tom Oinn
+ */
 public class DatabaseSetupTest {
 
 	@Test
 	public void testListStorage() {
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				"vanillaHibernateAppContext.xml");
-		HibernateListDao o = (HibernateListDao)context.getBean("testListDao");
+		HibernateListDao o = (HibernateListDao) context.getBean("testListDao");
 		T2ReferenceImpl listReference = new T2ReferenceImpl();
 		listReference.setContainsErrors(false);
 		listReference.setDepth(1);
 		listReference.setLocalPart("list1");
 		listReference.setNamespacePart("testNamespace");
 		listReference.setReferenceType(T2ReferenceType.IdentifiedList);
-		
+
 		T2ReferenceListImpl l = new T2ReferenceListImpl();
-		
+
 		T2ReferenceImpl itemId1 = new T2ReferenceImpl();
 		itemId1.setNamespacePart("testNamespace");
 		itemId1.setLocalPart("item1");
 		T2ReferenceImpl itemId2 = new T2ReferenceImpl();
 		itemId2.setNamespacePart("testNamespace");
 		itemId2.setLocalPart("item2");
-		
+
 		l.add(itemId1);
 		l.add(itemId2);
-		
+
 		l.setTypedId(listReference);
-		
+
 		System.out.println(l);
-		
+
 		o.store(l);
-		
+
 		T2ReferenceImpl listReference2 = new T2ReferenceImpl();
 		listReference2.setContainsErrors(false);
 		listReference2.setDepth(1);
 		listReference2.setLocalPart("list1");
 		listReference2.setNamespacePart("testNamespace");
 		listReference2.setReferenceType(T2ReferenceType.IdentifiedList);
-		
+
 		System.out.println(o.get(listReference2));
-		
+
 	}
 
 	@SuppressWarnings("serial")
