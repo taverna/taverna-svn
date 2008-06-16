@@ -24,7 +24,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import net.sf.taverna.t2.lang.observer.MultiCaster;
@@ -117,29 +116,23 @@ public class MenuManagerImpl extends MenuManager {
 		update();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#addObserver(net.sf.taverna.t2.lang.observer.Observer)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void addObserver(Observer<MenuManagerEvent> observer) {
 		multiCaster.addObserver(observer);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createMenuBar()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public JMenuBar createMenuBar() {
 		return createMenuBar(DefaultMenuBar.DEFAULT_MENU_BAR);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createMenuBar(java.net.URI)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public JMenuBar createMenuBar(URI id) {
@@ -149,20 +142,16 @@ public class MenuManagerImpl extends MenuManager {
 		return menuBar;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createToolBar()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public JToolBar createToolBar() {
 		return createToolBar(DefaultToolBar.DEFAULT_TOOL_BAR);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#createToolBar(java.net.URI)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public JToolBar createToolBar(URI id) {
@@ -172,10 +161,8 @@ public class MenuManagerImpl extends MenuManager {
 		return toolbar;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getComponentByURI(java.net.URI)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public synchronized Component getComponentByURI(URI id) {
@@ -187,38 +174,30 @@ public class MenuManagerImpl extends MenuManager {
 		return componentRef.get();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getObservers()
+	/**
+	 * {@inheritDoc}
 	 */
 	public List<Observer<MenuManagerEvent>> getObservers() {
 		return multiCaster.getObservers();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#getURIByComponent(java.awt.Component)
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public synchronized URI getURIByComponent(Component component) {
 		return componentToUri.get(component);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#removeObserver(net.sf.taverna.t2.lang.observer.Observer)
+	/**
+	 * {@inheritDoc}
 	 */
 	public void removeObserver(Observer<MenuManagerEvent> observer) {
 		multiCaster.removeObserver(observer);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.taverna.t2.ui.menu.impl.MenuManager#update()
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void update() {

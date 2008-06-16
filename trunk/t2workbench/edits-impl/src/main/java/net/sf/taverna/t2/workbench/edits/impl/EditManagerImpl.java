@@ -34,12 +34,18 @@ public class EditManagerImpl extends EditManager {
 		multiCaster.addObserver(observer);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean canRedoDataflowEdit(Dataflow dataflow) {
 		DataflowEdits edits = getEditsForDataflow(dataflow);
 		return edits.canRedo();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean canUndoDataflowEdit(Dataflow dataflow) {
 		DataflowEdits edits = getEditsForDataflow(dataflow);
@@ -121,6 +127,14 @@ public class EditManagerImpl extends EditManager {
 		multiCaster.notify(new DataFlowUndoEvent(dataflow, edit));
 	}
 
+	/**
+	 * Get the set of edits for a given dataflow, creating if neccessary.
+	 * 
+	 * @param dataflow
+	 *            Dataflow the edits relate to
+	 * @return A {@link DataflowEdits} instance to keep edits for the given
+	 *         dataflow
+	 */
 	protected synchronized DataflowEdits getEditsForDataflow(Dataflow dataflow) {
 		DataflowEdits edits = editsForDataflow.get(dataflow);
 		if (edits == null) {
@@ -137,11 +151,11 @@ public class EditManagerImpl extends EditManager {
 	 * 
 	 */
 	public class DataflowEdits {
-		/*
+		/**
 		 * List of edits that have been performed and can be undone.
 		 */
 		private List<Edit<?>> edits = new ArrayList<Edit<?>>();
-		/*
+		/**
 		 * List of edits that have been undone and can be redone
 		 */
 		private List<Edit<?>> undoes = new ArrayList<Edit<?>>();
@@ -255,6 +269,17 @@ public class EditManagerImpl extends EditManager {
 			return undoes.get(lastUndo);
 		}
 
+		/**
+		 * Add an edit or redo. Common functionallity called by
+		 * {@link #addEdit(Edit)} and {@link #addRedo(Edit)}.
+		 * 
+		 * @see #addEdit(Edit)
+		 * @see #addRedo(Edit)
+		 * @param edit
+		 *            The {@link Edit} to add
+		 * @param isRedo
+		 *            True if this is a redo
+		 */
 		protected void addEditOrRedo(Edit<?> edit, boolean isRedo) {
 			edits.add(edit);
 			if (undoes.isEmpty()) {
