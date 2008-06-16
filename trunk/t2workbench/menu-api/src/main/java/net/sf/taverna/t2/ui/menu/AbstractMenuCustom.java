@@ -7,8 +7,6 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
-
 /**
  * A {@link MenuComponent} of the type
  * {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#custom}.
@@ -30,7 +28,7 @@ import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
  * </p>
  * <p>
  * This component can have as an parent any menu component that
- * {@link MenuType#isParentType() is a parent type}. Note that although you can
+ * {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() is a parent type}. Note that although you can
  * specify an {@link URI} to identify the custom component (to be used with
  * {@link MenuManager#getComponentByURI(URI)} a custom component can't have
  * children. Such children would have to be created manually and added to the
@@ -55,7 +53,7 @@ public abstract class AbstractMenuCustom extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param positionHint
 	 *            The position hint to determine the position of this action
@@ -74,7 +72,7 @@ public abstract class AbstractMenuCustom extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param positionHint
 	 *            The position hint to determine the position of this action

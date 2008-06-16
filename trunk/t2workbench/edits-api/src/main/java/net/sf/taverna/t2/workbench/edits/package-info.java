@@ -1,5 +1,5 @@
 /**
- * A {@link EditManager} that can manage
+ * A {@link net.sf.taverna.t2.workbench.edits.EditManager} that can manage
  * {@link net.sf.taverna.t2.workflowmodel.Edit}s performed from the UI.
  * <p>
  * To perform an edit that is to be undoable, use
@@ -17,7 +17,7 @@
  * </p>
  * <p>
  * The {@link net.sf.taverna.t2.workbench.edits.impl} implementation of the
- * EditManager is discovered by {@link EditManager#getInstance()}. The
+ * EditManager is discovered by {@link net.sf.taverna.t2.workbench.edits.EditManager#getInstance()}. The
  * implementation also includes {@link net.sf.taverna.t2.ui.menu.MenuComponent}s
  * for Undo and Redo.
  * </p>

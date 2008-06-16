@@ -11,7 +11,9 @@ import javax.swing.JToolBar;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
 import net.sf.taverna.t2.spi.SPIRegistry;
+import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
 import net.sf.taverna.t2.ui.menu.MenuManager.MenuManagerEvent;
+
 /**
  * Create {@link JMenuBar}s and {@link JToolBar}s based on SPI instances of
  * {@link MenuComponent}.
@@ -46,7 +48,7 @@ import net.sf.taverna.t2.ui.menu.MenuManager.MenuManagerEvent;
  * called.
  * </p>
  * <p>
- * See the package level documentation for {@link net.sf.taverna.t2.ui.menu}
+ * See the package level documentation for
  * more information about how to specify menu elements.
  * </p>
  * 
@@ -56,7 +58,7 @@ import net.sf.taverna.t2.ui.menu.MenuManager.MenuManagerEvent;
 public abstract class MenuManager implements Observable<MenuManagerEvent> {
 
 	private static MenuManager instance;
-	
+
 	/**
 	 * Get the {@link MenuManager} implementation singleton as discovered
 	 * through an {@link SPIRegistry}.
@@ -79,16 +81,15 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 		}
 		return instance;
 	}
-	
+
 	/**
 	 * Create the {@link JMenuBar} containing menu elements defining
 	 * {@link DefaultMenuBar#DEFAULT_MENU_BAR} as their
 	 * {@link MenuComponent#getParentId() parent}.
 	 * <p>
 	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateMenuBar(JMenuBar, URI) update the menubar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
+	 * update the menubar if {@link #update()} is called (manually or
+	 * automatically when the SPI is updated).
 	 * </p>
 	 * 
 	 * @return A {@link JMenuBar} populated with the items belonging to the
@@ -106,9 +107,8 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * </p>
 	 * <p>
 	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateMenuBar(JMenuBar, URI) update the menubar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
+	 * update the menubar if {@link #update()} is called (manually or
+	 * automatically when the SPI is updated).
 	 * </p>
 	 * 
 	 * @param id
@@ -124,9 +124,8 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * {@link MenuComponent#getParentId() parent}.
 	 * <p>
 	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateToolBar(JToolBar, URI) update the toolbar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
+	 * update the toolbar if {@link #update()} is called (manually or
+	 * automatically when the SPI is updated).
 	 * </p>
 	 * 
 	 * @return A {@link JToolBar} populated with the items belonging to the
@@ -145,9 +144,8 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * </p>
 	 * <p>
 	 * A {@link WeakReference weak reference} is kept in the menu manager to
-	 * {@link #populateToolBar(JToolBar, URI) update the toolbar} if
-	 * {@link #update()} is called (manually or automatically when the SPI is
-	 * updated).
+	 * update the toolbar if {@link #update()} is called (manually or
+	 * automatically when the SPI is updated).
 	 * </p>
 	 * 
 	 * @param id
@@ -264,18 +262,29 @@ public abstract class MenuManager implements Observable<MenuManagerEvent> {
 	 * <pre>
 	 * MenuManager menuManager = MenuManager.getInstance();
 	 * synchronized (menuManager) {
-	 * 	  menuManager.update();
+	 * 	menuManager.update();
 	 * }
 	 * doSomethingAfterUpdateFinished();
 	 * </pre>
 	 */
 	public abstract void update();
-	
+
+	/**
+	 * Abstract class for events sent to {@link Observer observers} of the menu
+	 * manager.
+	 * 
+	 * @see UpdatedMenuManagerEvent
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
 	public static abstract class MenuManagerEvent {
 	}
 
 	/**
-	 * Event sent to observers registered by {@link MenuManager#addObserver(Observer)} when the menus have been updated, i.e. when {@link MenuManager#update()} has been called.
+	 * Event sent to observers registered by
+	 * {@link net.sf.taverna.t2.ui.menu.MenuManager#addObserver(Observer)} when
+	 * the menus have been updated, i.e. when {@link MenuManager#update()} has
+	 * been called.
 	 */
 	public static class UpdatedMenuManagerEvent extends MenuManagerEvent {
 	}

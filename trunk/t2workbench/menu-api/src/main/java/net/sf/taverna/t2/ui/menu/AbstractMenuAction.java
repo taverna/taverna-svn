@@ -44,7 +44,7 @@ public abstract class AbstractMenuAction extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param positionHint
 	 *            The position hint to determine the position of this action
@@ -63,7 +63,7 @@ public abstract class AbstractMenuAction extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param positionHint
 	 *            The position hint to determine the position of this action

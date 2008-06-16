@@ -217,7 +217,7 @@ public class EditManagerImpl extends EditManager {
 		/**
 		 * True if there are undone events that can be redone.
 		 * 
-		 * @return
+		 * @return <code>true</code> if there are undone events
 		 */
 		public boolean canRedo() {
 			return !undoes.isEmpty();
@@ -227,7 +227,7 @@ public class EditManagerImpl extends EditManager {
 		 * True if there are edits that can be undone and later added with
 		 * {@link #addUndo(Edit)}.
 		 * 
-		 * @return
+		 * @return <code>true</code> if there are edits that can be undone
 		 */
 		public boolean canUndo() {
 			return !edits.isEmpty();

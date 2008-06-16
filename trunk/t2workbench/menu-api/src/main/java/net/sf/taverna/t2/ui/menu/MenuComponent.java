@@ -19,7 +19,7 @@ import javax.swing.MenuElement;
  * This is an {@link net.sf.taverna.t2.spi.SPIRegistry SPI}, and
  * implementations should list their fully qualified classnames in
  * META-INF/services/net.sf.taverna.t2.ui.menu.MenuComponent to be discovered by
- * the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
+ * the {@link MenuManager}.
  * </p>
  * 
  * @author Stian Soiland-Reyes
@@ -54,7 +54,8 @@ public interface MenuComponent {
 	public Action getAction();
 
 	/**
-	 * Get a custom {@link Component} to be inserted into the parent menu.
+	 * Get a custom {@link Component} to be inserted into the parent
+	 * menu/toolbar.
 	 * <p>
 	 * Used instead of creating menu elements from the {@link #getAction()} if
 	 * the {@link #getType()} is {@link MenuType#custom}. This can be used to
@@ -65,7 +66,7 @@ public interface MenuComponent {
 	 * types except {@link MenuType#custom}.
 	 * </p>
 	 * 
-	 * @return A
+	 * @return A {@link Component} to be inserted into the parent menu/toolbar.
 	 */
 	public Component getCustomComponent();
 
@@ -82,7 +83,7 @@ public interface MenuComponent {
 	 * {@link MenuType#custom} and {@link MenuType#action} don't need an
 	 * identifier as they can't have children, and may return <code>null</code>
 	 * instead. However, a valid identifier might be used to look up the
-	 * MenuItem in the {@link net.sf.taverna.t2.ui.menu.impl.ActionManager}.
+	 * MenuItem with {@link MenuManager#getComponentByURI(URI)}
 	 * </p>
 	 * <p>
 	 * <strong>Note:</strong>To avoid conflicts with other plugins, use a
@@ -95,7 +96,7 @@ public interface MenuComponent {
 	 * menu.
 	 * </p>
 	 * 
-	 * @return
+	 * @return The {@link URI} to identify this menu item.
 	 */
 	public URI getId();
 
@@ -157,6 +158,17 @@ public interface MenuComponent {
 	 */
 	public MenuType getType();
 
+	/**
+	 * The type of menu item, such as {@link #action}, {@link #menu} or
+	 * {@link #toolBar}.
+	 * <p>
+	 * Some types are {@link #isParentType() parent types} - that means URIs to
+	 * menu components of that type can be used as a
+	 * {@link MenuComponent#getParentId() parent id}.
+	 * 
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
 	public static enum MenuType {
 		/**
 		 * A normal {@link Action} as part of a {@link #menu}, {@link #toolBar},
@@ -170,8 +182,8 @@ public interface MenuComponent {
 		action,
 		/**
 		 * Provide a customised {@link MenuElement} from
-		 * {@link MenuComponent#getCustomMenuElement()} that is to be used
-		 * instead of creating an element from {@link MenuComponent#getAction()}.
+		 * {@link MenuComponent#getCustomComponent()} that is to be used instead
+		 * of creating an element from {@link MenuComponent#getAction()}.
 		 */
 		custom,
 		/**

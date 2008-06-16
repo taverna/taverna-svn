@@ -54,6 +54,13 @@ import javax.swing.Icon;
  */
 public abstract class AbstractMenuItem implements MenuComponent {
 
+	/**
+	 * An {@link Action} that does not perform any action, but only contains a
+	 * name and icon. Used by {@link AbstractMenu} and others.
+	 * 
+	 * @author Stian Soiland-Reyes
+	 * 
+	 */
 	public static class DummyAction extends AbstractAction {
 		public DummyAction(String name) {
 			super(name);

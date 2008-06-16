@@ -5,9 +5,11 @@ import java.net.URI;
 /**
  * The default tool bar that will be shown by the main application window. Use
  * {@link #DEFAULT_TOOL_BAR} as the {@link #getParentId()} for items that should
- * appear in this toolbar.
+ * appear in this toolbar. This toolbar can be created using
+ * {@link MenuManager#createToolBar()}
  * <p>
- * Separate toolbars can be created by subclassing {@link AbstractToolBar}.
+ * Separate toolbars can be made by subclassing {@link AbstractToolBar} and
+ * created by using {@link MenuManager#createToolBar(URI)}.
  * 
  * @author Stian Soiland-Reyes
  * 
@@ -22,6 +24,10 @@ public class DefaultToolBar extends AbstractToolBar {
 	public static final URI DEFAULT_TOOL_BAR = URI
 			.create("http://taverna.sf.net/2008/t2workbench/menu#defaultToolBar");
 
+	/**
+	 * Construct the default toolbar.
+	 * 
+	 */
 	public DefaultToolBar() {
 		super(DEFAULT_TOOL_BAR);
 	}

@@ -5,8 +5,6 @@ import java.net.URI;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
-import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
-
 /**
  * A {@link MenuComponent} of the type
  * {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#toggle}.
@@ -46,7 +44,7 @@ public abstract class AbstractMenuToggle extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param positionHint
 	 *            The position hint to determine the position of this toggle
@@ -65,7 +63,7 @@ public abstract class AbstractMenuToggle extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu component. The component
-	 *            should be a {@link MenuType#isParentType() parent type} and
+	 *            should be a {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#isParentType() parent type} and
 	 *            must have been registered separately as an SPI.
 	 * @param id
 	 *            The {@link URI} to identify this toggle action. Although no

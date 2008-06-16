@@ -5,7 +5,8 @@ import java.net.URI;
 import javax.swing.Action;
 
 /**
- * A {@link MenuComponent} of the type {@link MenuType#menu}.
+ * A {@link MenuComponent} of the type
+ * {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#menu}.
  * <p>
  * Subclass to create an SPI implementation for the {@link MenuManager} of a
  * menu. The definition of "menu" includes both the menu bar and sub menus. A
@@ -19,7 +20,7 @@ import javax.swing.Action;
  * <p>
  * Menu components are linked together using URIs, avoiding the need for compile
  * time dependencies between SPI implementations. To add components to a menu,
- * use the {@link URI} identifying this section as their parent id.
+ * use the {@link URI} identifying this menu as their parent id.
  * </p>
  * <p>
  * <strong>Note:</strong>To avoid conflicts with other plugins, use a unique
@@ -65,7 +66,7 @@ public abstract class AbstractMenu extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu. The parent should be of
-	 *            type {@link MenuType#menu}.
+	 *            type {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#menu}.
 	 * @param positionHint
 	 *            The position hint to determine the position of this submenu
 	 *            among its siblings in the parent menu. For extensibility, use
@@ -85,7 +86,7 @@ public abstract class AbstractMenu extends AbstractMenuItem {
 	 * 
 	 * @param parentId
 	 *            The {@link URI} of the parent menu. The parent should be of
-	 *            type {@link MenuType#menu}.
+	 *            type {@link net.sf.taverna.t2.ui.menu.MenuComponent.MenuType#menu}.
 	 * @param positionHint
 	 *            The position hint to determine the position of this submenu
 	 *            among its siblings in the parent menu. For extensibility, use

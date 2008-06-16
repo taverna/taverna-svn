@@ -40,42 +40,9 @@ import net.sf.taverna.t2.ui.menu.MenuComponent.MenuType;
 import org.apache.log4j.Logger;
 
 /**
- * Create {@link JMenuBar}s and {@link JToolBar}s based on SPI instances of
- * {@link MenuComponent}.
- * <p>
- * Elements of menus are discovered automatically using an {@link SPIRegistry}.
- * The elements specify their internal relationship through
- * {@link MenuComponent#getParentId()} and
- * {@link MenuComponent#getPositionHint()}. {@link MenuComponent#getType()}
- * specifies how the component is to be rendered or grouped.
- * </p>
- * <p>
- * The menu manager is {@link Observable}, you can
- * {@link #addObserver(Observer) add an observer} to be notified when the menus
- * have changed, i.e. when {@link #update()} has been called, for instance when
- * the {@link SPIRegistry} (which the menu manager observes) has been updated
- * due to a plugin installation.
- * </p>
- * <p>
- * {@link #createMenuBar()} creates the default menu bar, ie. the menu bar
- * containing all the items with {@link DefaultMenuBar#DEFAULT_MENU_BAR} as
- * their parent. Alternate menu bars can be created using
- * {@link #createMenuBar(URI)}.
- * </p>
- * <p>
- * Similary {@link #createToolBar()} creates the default tool bar, containing
- * the items that has {@link DefaultToolBar#DEFAULT_TOOL_BAR} as their parent.
- * Alternate toolbars can be created using {@link #createToolBar(URI)}.
- * </p>
- * <p>
- * The menu manager keeps weak references to the created (published) menu bars
- * and tool bars, and will attempt to update them when {@link #update()} is
- * called.
- * </p>
- * <p>
- * See the package level documentation for {@link net.sf.taverna.t2.ui.menu}
- * more information about how to specify menu elements.
- * </p>
+ * Implementation of {@link MenuManager}.
+ * 
+ * {@inheritDoc}
  * 
  * @author Stian Soiland-Reyes
  * 
