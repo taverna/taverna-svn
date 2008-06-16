@@ -119,7 +119,7 @@ public class RootPartition<ItemType> extends
 		this.partitionAlgorithms = pa;
 		this.children.clear();
 		this.itemToLeafPartition.clear();
-		treeStructureChanged(new TreeModelEvent(null, getTreePath()));
+		treeStructureChanged(new TreeModelEvent(this, getTreePath()));
 		for (ItemType item : itemsToAdd) {
 			addOrUpdateItem(item);
 		}
