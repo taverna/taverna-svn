@@ -11,6 +11,8 @@ package net.sf.taverna.t2.reference;
  */
 public class ExternalReferenceConstructionException extends RuntimeException {
 
+	private static final long serialVersionUID = 8334725795238353354L;
+
 	public ExternalReferenceConstructionException() {
 		super();
 	}

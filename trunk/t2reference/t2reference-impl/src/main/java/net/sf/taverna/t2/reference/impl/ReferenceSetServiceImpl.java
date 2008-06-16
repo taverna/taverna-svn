@@ -8,13 +8,9 @@ import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetAugmentationException;
-import net.sf.taverna.t2.reference.ReferenceSetAugmentor;
-import net.sf.taverna.t2.reference.ReferenceSetDao;
 import net.sf.taverna.t2.reference.ReferenceSetService;
-import net.sf.taverna.t2.reference.ReferenceSetServiceCallback;
 import net.sf.taverna.t2.reference.ReferenceSetServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.reference.T2ReferenceGenerator;
 
 /**
  * Implementation of ReferenceSetService, inject with an appropriate
