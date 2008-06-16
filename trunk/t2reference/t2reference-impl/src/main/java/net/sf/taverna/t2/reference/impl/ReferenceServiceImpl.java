@@ -19,6 +19,7 @@ import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetServiceException;
 import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.reference.ValueToReferenceConversionException;
 import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 
@@ -235,8 +236,53 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceServiceException {
 		checkServices();
-		throw new ReferenceServiceException(new UnsupportedOperationException(
-				"Not implemented yet!"));
+
+		if (id.getReferenceType().equals(T2ReferenceType.ReferenceSet)) {
+			try {
+				ReferenceSet rs;
+				if (ensureTypes == null) {
+					rs = referenceSetService.getReferenceSet(id);
+				} else {
+					rs = referenceSetService.getReferenceSetWithAugmentation(
+							id, ensureTypes, context);
+				}
+				return rs;
+			} catch (ReferenceSetServiceException rsse) {
+				throw new ReferenceServiceException(rsse);
+			}
+		} else if (id.getReferenceType().equals(T2ReferenceType.ErrorDocument)) {
+			try {
+				ErrorDocument ed = errorDocumentService.getError(id);
+				return ed;
+			} catch (ErrorDocumentServiceException edse) {
+				throw new ReferenceServiceException(edse);
+			}
+		} else if (id.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+			try {
+				T2ReferenceImpl typedId;
+				if (id instanceof T2ReferenceImpl) {
+					typedId = (T2ReferenceImpl) id;
+				} else {
+					throw new ReferenceSetServiceException(
+							"Supplied or nested T2Reference not an instance of T2ReferenceImpl");
+				}
+				IdentifiedList<T2Reference> idList = listService
+						.getList(typedId);
+				// Construct a new list, and populate with the result of
+				// resolving each ID in turn
+				IdentifiedArrayList<Identified> newList = new IdentifiedArrayList<Identified>();
+				for (T2Reference item : idList) {
+					newList.add(resolveIdentifier(item, ensureTypes, context));
+				}
+				newList.setTypedId(typedId);
+				return newList;
+			} catch (ListServiceException lse) {
+				throw new ReferenceServiceException(lse);
+			}
+		} else {
+			throw new ReferenceServiceException("Unsupported ID type : "
+					+ id.getReferenceType());
+		}
 	}
 
 	/**
