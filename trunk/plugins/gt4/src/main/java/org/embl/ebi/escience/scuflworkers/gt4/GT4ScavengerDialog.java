@@ -14,6 +14,24 @@ import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import org.embl.ebi.escience.scuflui.shared.ShadedLabel;
 
+import gov.nih.nci.cagrid.discovery.client.DiscoveryClient;
+import gov.nih.nci.cagrid.metadata.MetadataUtils;
+import gov.nih.nci.cagrid.metadata.ServiceMetadata;
+import gov.nih.nci.cagrid.metadata.ServiceMetadataServiceDescription;
+import gov.nih.nci.cagrid.metadata.common.PointOfContact;
+import gov.nih.nci.cagrid.metadata.common.UMLClass;
+import gov.nih.nci.cagrid.metadata.exceptions.QueryInvalidException;
+import gov.nih.nci.cagrid.metadata.exceptions.RemoteResourcePropertyRetrievalException;
+import gov.nih.nci.cagrid.metadata.exceptions.ResourcePropertyRetrievalException;
+import gov.nih.nci.cagrid.metadata.service.Operation;
+//import gov.nih.nci.cagrid.metadata.service.OperationInputParameterCollection;
+import gov.nih.nci.cagrid.metadata.service.ServiceContext;
+import gov.nih.nci.cagrid.metadata.service.ServiceServiceContextCollection;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+
 /**
  * a dialog for helping create scavengers for GT4 registries that are not the default registry.
  *
@@ -22,12 +40,19 @@ public class GT4ScavengerDialog extends JPanel {
 
 	private static final long serialVersionUID = -57047613557546678L;
 	final int q_size=3;//max query item size
-	private JTextField indexServiceURL= new JTextField("http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService");
+	//TODO: add more well-know index service URLs
+	private String[] URLs = { "http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService",
+			"http://cagrid01.bmi.ohio-state.edu:8080/wsrf/services/DefaultIndexService",
+			"Input Your Own Index Service URL Here..."};
+	//private JTextField indexServiceURL= new JTextField("http://cagrid-index.nci.nih.gov:8080/wsrf/services/DefaultIndexService");
 	//private JTextField queryCriteria = new JTextField("");
-	public JTextField[] queryValue = new JTextField[q_size];
+	public JComboBox indexServiceURLs = new JComboBox(URLs);
+	public JComboBox[] queryValue = new JComboBox[q_size];
+	//public JTextField[] queryValue = new JTextField[q_size];
 	private String[] queryStrings = { "None", "Search String", "Point Of Contact", "Service Name", "Operation Name", "Operation Input",
 			"Operation Output","Operation Class", "Research Center","Concept Code",
 			"Domain Model for Data Services"};
+	private String[] queryValues = {};
 
 	//Create the combo box, select item at index 0.
 	public JComboBox[]  queryList = new JComboBox[q_size];
@@ -44,15 +69,17 @@ public class GT4ScavengerDialog extends JPanel {
      */
     public GT4ScavengerDialog() {
         super();
-        GridLayout layout = new GridLayout(q_size+4, 2);
+        GridLayout layout = new GridLayout(q_size+5, 2);
         setLayout(layout);
         for(int i=0;i<q_size;i++){
-        	queryValue[i]=new JTextField("");
+        	queryValue[i]=new JComboBox(queryValues);
+        	queryValue[i].setEditable(true);
         	queryList[i] = new JComboBox(queryStrings);     	
         }
         add(new ShadedLabel("Location (URL) of the index service: ", ShadedLabel.TAVERNA_BLUE, true));
-        indexServiceURL.setToolTipText("caGrid Services will be retrieved from the index service whose URL you specify here!");
-        add(indexServiceURL);
+        indexServiceURLs.setEditable(true);
+        indexServiceURLs.setToolTipText("caGrid Services will be retrieved from the index service whose URL you specify here!");
+        add(indexServiceURLs);
         
         add(addQuery);
         add(removeQuery);
@@ -65,7 +92,7 @@ public class GT4ScavengerDialog extends JPanel {
             add(queryValue[i]);  	
         }
         for(int i=1;i<q_size;i++){
-        	//queryValue[i].setToolTipText("Service Query will use the query value you specify here!");
+        	
             queryList[i].setVisible(false);
             queryValue[i].setVisible(false);  	
         }
@@ -83,7 +110,7 @@ public class GT4ScavengerDialog extends JPanel {
      * @return the string representation of the IndexServiceURL
      */
     public String getIndexServiceURL() {
-        return indexServiceURL.getText();
+        return (String) indexServiceURLs.getSelectedItem();
     }
 
     /**
@@ -99,7 +126,7 @@ public class GT4ScavengerDialog extends JPanel {
      * @return the string representation of the QueryValue
      */
     public String getQueryValue(int i) {
-        return queryValue[i].getText();
+        return (String) queryValue[i].getSelectedItem();
     }
    
 }

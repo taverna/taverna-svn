@@ -150,6 +150,8 @@ public class GT4Processor extends Processor implements Serializable,
 		try {
 			List inputs = parser.getOperationInputParameters(operationName);
 			List outputs = parser.getOperationOutputParameters(operationName);
+			//TODO: set description by invoking index service
+			//setDescription("test the GT4 metadata");
 			setDescription(parser.getOperationDocumentation(operationName));
 
 			// TODO handle more than 1 service block
