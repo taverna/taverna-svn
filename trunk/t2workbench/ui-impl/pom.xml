@@ -23,12 +23,6 @@
 			<version>1.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>perspective-hello</artifactId>
-			<version>1.7-SNAPSHOT</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>spi-discovery-api</artifactId>
 			<version>0.3-SNAPSHOT</version>

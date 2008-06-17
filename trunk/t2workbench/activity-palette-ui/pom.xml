@@ -54,7 +54,7 @@
 			<version>0.3-SNAPSHOT</version>
 			<artifactId>partition</artifactId>
 		</dependency>
-		<!--
+		
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>wsdl-activity-ui</artifactId>
@@ -70,7 +70,7 @@
 			<artifactId>stringconstant-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		-->
+		
 		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>

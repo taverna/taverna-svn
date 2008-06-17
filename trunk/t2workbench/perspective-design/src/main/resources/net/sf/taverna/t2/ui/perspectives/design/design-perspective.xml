@@ -49,9 +49,9 @@
 		</namedcomponent>
 		<namedcomponent>
 			<groupid>net.sf.taverna.t2.workbench</groupid>
-			<artifact>contextual-views</artifact>
+			<artifact>activity-palette-ui</artifact>
 			<classname>
-				net.sf.taverna.t2.workbench.ui.actions.activity.draggable.ActivityDraggerPaletteComponentFactory
+				net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponentFactory
 			</classname>
 			<name>activitypalette</name>
 		</namedcomponent>
