@@ -5,6 +5,15 @@
  */
 package org.embl.ebi.escience.scuflworkers.gt4;
 
+import gov.nih.nci.cagrid.metadata.MetadataUtils;
+import gov.nih.nci.cagrid.metadata.ServiceMetadata;
+import gov.nih.nci.cagrid.metadata.ServiceMetadataServiceDescription;
+import gov.nih.nci.cagrid.metadata.service.Operation;
+import gov.nih.nci.cagrid.metadata.service.ServiceContext;
+import gov.nih.nci.cagrid.metadata.service.ServiceServiceContextCollection;
+import org.apache.axis.message.addressing.*; 
+import org.apache.axis.types.URI.MalformedURIException;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,6 +36,8 @@ import net.sf.taverna.wsdl.parser.TypeDescriptor;
 import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 
+import org.apache.axis.message.addressing.AttributedURI;
+import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.log4j.Logger;
 import org.apache.wsif.WSIFException;
 import org.apache.wsif.WSIFOperation;
@@ -75,6 +86,8 @@ public class GT4Processor extends Processor implements Serializable,
 	Class[] inTypes, outTypes;
 
 	WSDLParser parser = null;
+	
+	
 	
 	WSIFService service; 
 
@@ -151,8 +164,10 @@ public class GT4Processor extends Processor implements Serializable,
 			List inputs = parser.getOperationInputParameters(operationName);
 			List outputs = parser.getOperationOutputParameters(operationName);
 			//TODO: set description by invoking index service
-			//setDescription("test the GT4 metadata");
-			setDescription(parser.getOperationDocumentation(operationName));
+			//will it be too slow? if each operation invokes the service once
+			//maybe better if retrieve once as a array
+			setDescription(getOperationDescription());
+			//setDescription(parser.getOperationDocumentation(operationName));
 
 			// TODO handle more than 1 service block
 			if (def.getServices().size() > 1)
@@ -367,6 +382,39 @@ public class GT4Processor extends Processor implements Serializable,
 	@Override
 	public String toString() {
 		return super.toString() + " " + getWSDLLocation() + " " + operationName;
+	}
+	public String getOperationDescription(){
+		try{
+		 EndpointReferenceType s1 = new EndpointReferenceType();
+ 		 s1.setAddress(new AttributedURI(wsdlLocation));
+ 		
+         	ServiceMetadata serviceMetadata = MetadataUtils.getServiceMetadata(s1);
+         	ServiceMetadataServiceDescription serviceDes = serviceMetadata.getServiceDescription();
+         	ServiceServiceContextCollection srvContxCol = serviceDes.getService().getServiceContextCollection();
+         	ServiceContext [] srvContxs  =srvContxCol.getServiceContext();
+         	for (ServiceContext srvcontx:srvContxs)
+         	{
+         		Operation [] ops = srvcontx.getOperationCollection().getOperation();
+         		
+         		
+         		for (Operation op :ops){
+         			
+         			String operationName = op.getName();
+         			if(operationName.equals(this.operationName)){
+         				String operationDes = op.getDescription();
+         				System.out.println(operationName+"  --  "+operationDes);	
+         				return operationDes;
+         			}            			
+         		}
+         	}
+         }
+         	
+         catch (Exception e)
+         {
+         	e.printStackTrace();           	
+         }
+         return "--No Description Found.";
+		
 	}
 
 }
