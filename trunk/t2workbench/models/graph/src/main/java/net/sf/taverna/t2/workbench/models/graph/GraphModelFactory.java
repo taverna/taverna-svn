@@ -7,10 +7,10 @@ package net.sf.taverna.t2.workbench.models.graph;
  */
 public interface GraphModelFactory {
 
-	public Graph createGraph();
+	public Graph createGraph(GraphEventManager eventManager);
 	
-	public GraphNode createGraphNode();
+	public GraphNode createGraphNode(GraphEventManager eventManager);
 	
-	public GraphEdge createGraphEdge();
+	public GraphEdge createGraphEdge(GraphEventManager eventManager);
 	
 }

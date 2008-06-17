@@ -31,7 +31,8 @@ public class GraphNode extends GraphElement {
 	 * Constructs a new instance of Node.
 	 *
 	 */
-	public GraphNode() {
+	public GraphNode(GraphEventManager eventManager) {
+		super(eventManager);
 	}
 
 	/**

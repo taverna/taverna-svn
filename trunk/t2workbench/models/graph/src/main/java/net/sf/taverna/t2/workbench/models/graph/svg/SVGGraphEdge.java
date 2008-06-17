@@ -1,15 +1,14 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
+import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
+import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventListener;
 
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.util.SVGConstants;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.events.MouseEvent;
 
 /**
  * SVG representation of a graph edge.
@@ -18,7 +17,9 @@ import org.w3c.dom.events.MouseEvent;
  */
 public class SVGGraphEdge extends GraphEdge {
 
-	private SVGGraphComponent graphComponent;
+	private SVGGraphController graphController;
+	
+	private SVGMouseClickEventListener mouseClickAction;
 
 	private SVGOMPathElement path;
 
@@ -38,7 +39,9 @@ public class SVGGraphEdge extends GraphEdge {
 
 	private String selectedEllipseStyle;
 
-	public SVGGraphEdge() {
+	public SVGGraphEdge(GraphEventManager eventManager) {
+		super(eventManager);
+		mouseClickAction = new SVGMouseClickEventListener(eventManager, this);
 	}
 		
 	/**
@@ -46,8 +49,8 @@ public class SVGGraphEdge extends GraphEdge {
 	 *
 	 * @return the graphComponent
 	 */
-	public SVGGraphComponent getGraphComponent() {
-		return graphComponent;
+	public SVGGraphController getGraphController() {
+		return graphController;
 	}
 
 	/**
@@ -55,8 +58,8 @@ public class SVGGraphEdge extends GraphEdge {
 	 *
 	 * @param graphComponent the new graphComponent
 	 */
-	public void setGraphComponent(SVGGraphComponent graphComponent) {
-		this.graphComponent = graphComponent;
+	public void setGraphController(SVGGraphController graphController) {
+		this.graphController = graphController;
 	}
 
 	/**
@@ -78,17 +81,10 @@ public class SVGGraphEdge extends GraphEdge {
 		originalPathStyle = path.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
 		selectedPathStyle = originalPathStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
-		EventTarget t = (EventTarget) path;		
-		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
-			public void handleEvent(Event evt) {
-				if (evt instanceof MouseEvent) {
-					MouseEvent mouseEvent = (MouseEvent) evt;
-					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
-							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-							mouseEvent.getScreenX(), mouseEvent.getScreenY());
-				}
-			}
-		}, false);
+		if (getDataflowObject() != null) {
+			EventTarget t = (EventTarget) path;		
+			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);
+		}
 
 	}
 
@@ -113,16 +109,7 @@ public class SVGGraphEdge extends GraphEdge {
 		selectedPolygonStyle = selectedPolygonStyle.replaceFirst("fill:[^;]*;", "fill:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
 		EventTarget t = (EventTarget) polygon;
-		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
-			public void handleEvent(Event evt) {
-				if (evt instanceof MouseEvent) {
-					MouseEvent mouseEvent = (MouseEvent) evt;
-					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
-							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-							mouseEvent.getScreenX(), mouseEvent.getScreenY());
-				}
-			}
-		}, false);
+		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);
 	}
 
 	/* (non-Javadoc)
@@ -141,16 +128,7 @@ public class SVGGraphEdge extends GraphEdge {
 		selectedEllipseStyle = originalEllipseStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 
 		EventTarget t = (EventTarget) ellipse;
-		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
-			public void handleEvent(Event evt) {
-				if (evt instanceof MouseEvent) {
-					MouseEvent mouseEvent = (MouseEvent) evt;
-					getEventManager().mouseClicked(SVGGraphEdge.this, mouseEvent.getButton(),
-							mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-							mouseEvent.getScreenX(), mouseEvent.getScreenY());
-				}
-			}
-		}, false);
+		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);
 	}
 
 	/* (non-Javadoc)
@@ -158,8 +136,8 @@ public class SVGGraphEdge extends GraphEdge {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (selected) {
@@ -195,8 +173,8 @@ public class SVGGraphEdge extends GraphEdge {
 	 *            the new colour
 	 */
 	public void setColour(final String colour) {
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							path.setAttribute(
@@ -217,8 +195,8 @@ public class SVGGraphEdge extends GraphEdge {
 	 * 
 	 */
 	public void resetStyle() {
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							path.setAttribute(

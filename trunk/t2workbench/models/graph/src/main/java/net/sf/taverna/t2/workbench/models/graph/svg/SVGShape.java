@@ -8,18 +8,18 @@ import org.apache.batik.dom.svg.SVGOMTextElement;
 public interface SVGShape {
 
 	/**
-	 * Returns the graphComponent.
+	 * Returns the graphController.
 	 *
-	 * @return the graphComponent
+	 * @return the graphController
 	 */
-	public SVGGraphComponent getGraphComponent();
+	public SVGGraphController getGraphController();
 
 	/**
-	 * Sets the graphComponent.
+	 * Sets the graphController.
 	 *
-	 * @param graphComponent the new graphComponent
+	 * @param graphComponent the new graphController
 	 */
-	public void setGraphComponent(SVGGraphComponent graphComponent);
+	public void setGraphController(SVGGraphController graphController);
 
 	/**
 	 * Returns the g.
@@ -77,10 +77,10 @@ public interface SVGShape {
 	 */
 	public void setText(SVGOMTextElement text);
 
-	public void setIteration(final int iteration);
-
-	public void setErrors(final int errors);
-
-	public void setCompleted(final float complete);
+//	public void setIteration(final int iteration);
+//
+//	public void setErrors(final int errors);
+//
+//	public void setCompleted(final float complete);
 
 }

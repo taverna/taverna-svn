@@ -1,9 +1,15 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
+import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventListener;
+import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseDownEventListener;
+import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseMovedEventListener;
+import net.sf.taverna.t2.workflowmodel.OutputPort;
 
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
+import org.apache.batik.dom.svg.SVGOMPoint;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.util.SVGConstants;
@@ -13,6 +19,7 @@ import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.events.MouseEvent;
+import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
@@ -27,7 +34,13 @@ import org.w3c.dom.svg.SVGPointList;
  */
 public class SVGGraphNode extends GraphNode implements SVGShape {
 
-	private SVGGraphComponent graphComponent;
+	private SVGGraphController graphController;
+
+	private SVGMouseClickEventListener mouseClickAction;
+
+	private SVGMouseMovedEventListener mouseMovedAction;
+
+	private SVGMouseDownEventListener mouseDownAction;
 
 	private SVGOMGElement g;
 
@@ -53,21 +66,25 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 
 	private String selectedStyle;
 
-	public SVGGraphNode() {
+	public SVGGraphNode(GraphEventManager eventManager) {
+		super(eventManager);
+		mouseClickAction = new SVGMouseClickEventListener(eventManager, this);
+		mouseDownAction = new SVGMouseDownEventListener(eventManager, this);
+		mouseMovedAction = new SVGMouseMovedEventListener(eventManager, this);
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#getGraphComponent()
 	 */
-	public SVGGraphComponent getGraphComponent() {
-		return graphComponent;
+	public SVGGraphController getGraphController() {
+		return graphController;
 	}
 
 	/* (non-Javadoc)
 	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGShape#setGraphComponent(net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent)
 	 */
-	public void setGraphComponent(SVGGraphComponent graphComponent) {
-		this.graphComponent = graphComponent;
+	public void setGraphController(SVGGraphController graphController) {
+		this.graphController = graphController;
 	}
 
 	/* (non-Javadoc)
@@ -84,29 +101,9 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		this.g = g;
 		if (getDataflowObject() != null) {
 			EventTarget t = (EventTarget) g;
-//			t.addEventListener(SVGConstants.SVG_MOUSEOVER_EVENT_TYPE, new EventListener() {
-//			public void handleEvent(Event evt) {
-////			JOptionPane.showMessageDialog(SVGDiagram.this, ((Text) SVGProcessor.this.text.getFirstChild()).getData());
-//			setSelected(true);
-//			}
-//			}, false);
-
-//			t.addEventListener(SVGConstants.SVG_MOUSEOUT_EVENT_TYPE, new EventListener() {
-//			public void handleEvent(Event evt) {
-//			setSelected(!selected);
-//			}
-//			}, false);
-
-			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, new EventListener() {
-				public void handleEvent(Event evt) {
-					if (evt instanceof MouseEvent) {
-						MouseEvent mouseEvent = (MouseEvent) evt;
-						getEventManager().mouseClicked(SVGGraphNode.this, mouseEvent.getButton(),
-								mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-								mouseEvent.getScreenX(), mouseEvent.getScreenY());
-					}
-				}
-			}, false);
+			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);			
+			t.addEventListener(SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE, mouseMovedAction, false);
+			t.addEventListener(SVGConstants.SVG_MOUSEDOWN_EVENT_TYPE, mouseDownAction, false);
 		}
 
 	}
@@ -129,11 +126,7 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
 				"stroke-width:2");
 		
-//		if (isExpanded()) {
-//		iterationPosition = polygon.getPoints().getItem(2);
-//		} else {
 		iterationPosition = polygon.getPoints().getItem(0);
-//		}
 	}
 
 	/* (non-Javadoc)
@@ -173,8 +166,8 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
+		if (this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (selected) {
@@ -199,200 +192,200 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setIteration(int)
-	 */
-	public void setIteration(final int iteration) {
-		if (this.graphComponent.updateManager != null) {
-			if (iterationText == null) {
-				addIterationText();
-			}
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							if (iteration > 0) {
-								iterationText.setData(String
-										.valueOf(iteration));
-							} else {
-								iterationText.setData("");
-							}
-						}
-					});
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setErrors(int)
-	 */
-	public void setErrors(final int errors) {
-		if (this.graphComponent.updateManager != null) {
-			if (errorsText == null) {
-				addErrorsText();
-			}
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							if (errors > 0) {
-								errorsText.setData(String.valueOf(errors));
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
-
-							} else {
-								errorsText.setData("");
-								polygon.setAttribute(
-										SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);
-							}
-						}
-					});
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setCompleted(float)
-	 */
-	public void setCompleted(final float complete) {
-		if (this.graphComponent.updateManager != null) {
-			if (completedBox == null) {
-				addCompletedBox();
-			}
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							completedBox.setAttribute(
-									SVGConstants.SVG_POINTS_ATTRIBUTE,
-									calculatePoints(complete));
-							if (complete == 0f) {
-								completedBox
-								.setAttribute(
-										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
-								"0");
-							} else {
-								completedBox
-								.setAttribute(
-										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
-								"1");
-							}
-						}
-					});
-		}
-	}
-
-	private void addIterationText() {
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							Element text = SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
-									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
-							text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
-									String
-									.valueOf(iterationPosition
-											.getX() - 1.5));
-							text.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE,
-									String
-									.valueOf(iterationPosition
-											.getY() + 5.5));
-							text.setAttribute(
-									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
-							"end");
-							text.setAttribute(
-									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
-							"5.5");
-							text.setAttribute(
-									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
-							"sans-serif");
-							synchronized (g) {
-								if (iterationText == null) {
-									iterationText = SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument()
-									.createTextNode("");
-									text.appendChild(iterationText);
-									g.appendChild(text);
-								}
-							}
-						}
-					});
-		}
-	}
-
-	private void addErrorsText() {
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							Element text = SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument().createElementNS(
-									SVGGraphComponent.svgNS, SVGConstants.SVG_TEXT_TAG);
-							text
-							.setAttribute(
-									SVGConstants.SVG_X_ATTRIBUTE,
-									String.valueOf(errorsPosition
-											.getX() - 1.5));
-							text
-							.setAttribute(
-									SVGConstants.SVG_Y_ATTRIBUTE,
-									String.valueOf(errorsPosition
-											.getY() - 1.0));
-							text.setAttribute(
-									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
-							"end");
-							text.setAttribute(
-									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
-							"5.5");
-							text.setAttribute(
-									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
-							"sans-serif");
-							text.setAttribute(
-									SVGConstants.SVG_FILL_ATTRIBUTE, "red");
-							synchronized (g) {
-								if (errorsText == null) {
-									errorsText = SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument()
-									.createTextNode("");
-									text.appendChild(errorsText);
-									g.appendChild(text);
-								}
-							}
-						}
-					});
-		}
-	}
-
-	private void addCompletedBox() {
-		if (this.graphComponent.updateManager != null) {
-			this.graphComponent.updateManager.getUpdateRunnableQueue().invokeLater(
-					new Runnable() {
-						public void run() {
-							synchronized (g) {
-								if (completedBox == null) {
-									completedBox = (SVGOMPolygonElement) SVGGraphNode.this.graphComponent.getSvgCanvas().getSVGDocument()
-									.createElementNS(
-											SVGGraphComponent.svgNS,
-											SVGConstants.SVG_POLYGON_TAG);
-									completedBox
-									.setAttribute(
-											SVGConstants.SVG_POINTS_ATTRIBUTE,
-											calculatePoints(0f));
-									completedBox
-									.setAttribute(
-											SVGConstants.SVG_FILL_ATTRIBUTE,
-											SVGGraphComponent.COMPLETED_COLOUR);
-									completedBox
-									.setAttribute(
-											SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
-									"0.8");
+//	/* (non-Javadoc)
+//	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setIteration(int)
+//	 */
+//	public void setIteration(final int iteration) {
+//		if (this.graphController.updateManager != null) {
+//			if (iterationText == null) {
+//				addIterationText();
+//			}
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							if (iteration > 0) {
+//								iterationText.setData(String
+//										.valueOf(iteration));
+//							} else {
+//								iterationText.setData("");
+//							}
+//						}
+//					});
+//		}
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setErrors(int)
+//	 */
+//	public void setErrors(final int errors) {
+//		if (this.graphController.updateManager != null) {
+//			if (errorsText == null) {
+//				addErrorsText();
+//			}
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							if (errors > 0) {
+//								errorsText.setData(String.valueOf(errors));
+//								polygon.setAttribute(
+//										SVGConstants.SVG_STYLE_ATTRIBUTE, errorStyle);
+//
+//							} else {
+//								errorsText.setData("");
+//								polygon.setAttribute(
+//										SVGConstants.SVG_STYLE_ATTRIBUTE, originalStyle);
+//							}
+//						}
+//					});
+//		}
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see net.sf.taverna.t2.workbench.models.graph.svg.SVGBox#setCompleted(float)
+//	 */
+//	public void setCompleted(final float complete) {
+//		if (this.graphController.updateManager != null) {
+//			if (completedBox == null) {
+//				addCompletedBox();
+//			}
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							completedBox.setAttribute(
+//									SVGConstants.SVG_POINTS_ATTRIBUTE,
+//									calculatePoints(complete));
+//							if (complete == 0f) {
+//								completedBox
+//								.setAttribute(
+//										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
+//								"0");
+//							} else {
+//								completedBox
+//								.setAttribute(
+//										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
+//								"1");
+//							}
+//						}
+//					});
+//		}
+//	}
+//
+//	private void addIterationText() {
+//		if (this.graphController.updateManager != null) {
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							Element text = SVGGraphNode.this.graphController.getSvgCanvas().getSVGDocument().createElementNS(
+//									SVGUtil.svgNS, SVGConstants.SVG_TEXT_TAG);
+//							text.setAttribute(SVGConstants.SVG_X_ATTRIBUTE,
+//									String
+//									.valueOf(iterationPosition
+//											.getX() - 1.5));
+//							text.setAttribute(SVGConstants.SVG_Y_ATTRIBUTE,
+//									String
+//									.valueOf(iterationPosition
+//											.getY() + 5.5));
+//							text.setAttribute(
+//									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
+//							"end");
+//							text.setAttribute(
+//									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
+//							"5.5");
+//							text.setAttribute(
+//									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
+//							"sans-serif");
+//							synchronized (g) {
+//								if (iterationText == null) {
+//									iterationText = SVGGraphNode.this.graphController.getSvgCanvas().getSVGDocument()
+//									.createTextNode("");
+//									text.appendChild(iterationText);
+//									g.appendChild(text);
+//								}
+//							}
+//						}
+//					});
+//		}
+//	}
+//
+//	private void addErrorsText() {
+//		if (this.graphController.updateManager != null) {
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							Element text = SVGGraphNode.this.graphController.getSvgCanvas().getSVGDocument().createElementNS(
+//									SVGUtil.svgNS, SVGConstants.SVG_TEXT_TAG);
+//							text
+//							.setAttribute(
+//									SVGConstants.SVG_X_ATTRIBUTE,
+//									String.valueOf(errorsPosition
+//											.getX() - 1.5));
+//							text
+//							.setAttribute(
+//									SVGConstants.SVG_Y_ATTRIBUTE,
+//									String.valueOf(errorsPosition
+//											.getY() - 1.0));
+//							text.setAttribute(
+//									SVGConstants.SVG_TEXT_ANCHOR_ATTRIBUTE,
+//							"end");
+//							text.setAttribute(
+//									SVGConstants.SVG_FONT_SIZE_ATTRIBUTE,
+//							"5.5");
+//							text.setAttribute(
+//									SVGConstants.SVG_FONT_FAMILY_ATTRIBUTE,
+//							"sans-serif");
+//							text.setAttribute(
+//									SVGConstants.SVG_FILL_ATTRIBUTE, "red");
+//							synchronized (g) {
+//								if (errorsText == null) {
+//									errorsText = SVGGraphNode.this.graphController.getSvgCanvas().getSVGDocument()
+//									.createTextNode("");
+//									text.appendChild(errorsText);
+//									g.appendChild(text);
+//								}
+//							}
+//						}
+//					});
+//		}
+//	}
+//
+//	private void addCompletedBox() {
+//		if (this.graphController.updateManager != null) {
+//			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+//					new Runnable() {
+//						public void run() {
+//							synchronized (g) {
+//								if (completedBox == null) {
+//									completedBox = (SVGOMPolygonElement) SVGGraphNode.this.graphController.getSvgCanvas().getSVGDocument()
+//									.createElementNS(
+//											SVGUtil.svgNS,
+//											SVGConstants.SVG_POLYGON_TAG);
 //									completedBox
 //									.setAttribute(
-//									SVGConstants.SVG_STROKE_ATTRIBUTE,
-//									"black");
+//											SVGConstants.SVG_POINTS_ATTRIBUTE,
+//											calculatePoints(0f));
 //									completedBox
 //									.setAttribute(
-//									SVGConstants.SVG_STROKE_OPACITY_ATTRIBUTE,
-//									"0.6");
-									g.insertBefore(completedBox, text);
-								}
-							}
-						}
-					});
-		}
-	}
+//											SVGConstants.SVG_FILL_ATTRIBUTE,
+//											SVGGraphComponent.COMPLETED_COLOUR);
+//									completedBox
+//									.setAttribute(
+//											SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
+//									"0.8");
+////									completedBox
+////									.setAttribute(
+////									SVGConstants.SVG_STROKE_ATTRIBUTE,
+////									"black");
+////									completedBox
+////									.setAttribute(
+////									SVGConstants.SVG_STROKE_OPACITY_ATTRIBUTE,
+////									"0.6");
+//									g.insertBefore(completedBox, text);
+//								}
+//							}
+//						}
+//					});
+//		}
+//	}
 
 	/**
 	 * Calculates the points that specify the proportion completed polygon.
@@ -405,17 +398,10 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 		StringBuffer sb = new StringBuffer();
 		SVGPointList points = polygon.getPoints();
 		float x1, x2, y1, y2;
-//		if (isExpanded()) {
-//		x1 = points.getItem(2).getX() - 0.4f;
-//		x2 = points.getItem(0).getX() + 0.4f;
-//		y1 = points.getItem(2).getY() + 0.4f;
-//		y2 = points.getItem(0).getY() - 0.4f;
-//		} else {
 		x1 = points.getItem(0).getX() - 0.4f;
 		x2 = points.getItem(1).getX() + 0.4f;
 		y1 = points.getItem(0).getY() + 0.4f;
 		y2 = points.getItem(2).getY() - 0.4f;
-//		}
 		x1 = x2 + ((x1 - x2) * complete);
 		sb.append(x1 + "," + y1 + " ");
 		sb.append(x2 + "," + y1 + " ");

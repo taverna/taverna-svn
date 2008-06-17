@@ -18,20 +18,22 @@ public class GraphTest {
 	
 	private Alignment alignment;
 	
+	private GraphEventManager graphEventManager;
+	
 	@Before
 	public void setUp() throws Exception {
 		alignment = Alignment.VERTICAL;
-		graph = new Graph();
+		graph = new Graph(graphEventManager);
 	}
 
 	@Test
 	public void testGraph() {
-		assertNotNull(new Graph());
+		assertNotNull(new Graph(graphEventManager));
 	}
 
 	@Test
 	public void testAddEdge() {
-		GraphEdge newEdge = new GraphEdge();
+		GraphEdge newEdge = new GraphEdge(graphEventManager);
 		graph.addEdge(newEdge);
 		assertEquals(1, graph.getEdges().size());
 		assertTrue(graph.getEdges().contains(newEdge));
@@ -39,7 +41,7 @@ public class GraphTest {
 
 	@Test
 	public void testAddNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		graph.addNode(newNode);
 		assertEquals(1, graph.getNodes().size());
 		assertTrue(graph.getNodes().contains(newNode));
@@ -48,7 +50,7 @@ public class GraphTest {
 
 	@Test
 	public void testAddSubgraph() {
-		Graph newGraph = new Graph();
+		Graph newGraph = new Graph(graphEventManager);
 		graph.addSubgraph(newGraph);
 		assertEquals(1, graph.getSubgraphs().size());
 		assertTrue(graph.getSubgraphs().contains(newGraph));
@@ -80,7 +82,7 @@ public class GraphTest {
 
 	@Test
 	public void testRemoveEdge() {
-		GraphEdge newEdge = new GraphEdge();
+		GraphEdge newEdge = new GraphEdge(graphEventManager);
 		assertFalse(graph.removeEdge(newEdge));
 		graph.addEdge(newEdge);
 		assertTrue(graph.removeEdge(newEdge));
@@ -89,7 +91,7 @@ public class GraphTest {
 
 	@Test
 	public void testRemoveNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		assertFalse(graph.removeNode(newNode));
 		graph.addNode(newNode);
 		assertTrue(graph.removeNode(newNode));
@@ -98,7 +100,7 @@ public class GraphTest {
 
 	@Test
 	public void testRemoveSubgraph() {
-		Graph newGraph = new Graph();
+		Graph newGraph = new Graph(graphEventManager);
 		assertFalse(graph.removeSubgraph(newGraph));
 		graph.addSubgraph(newGraph);
 		assertTrue(graph.removeSubgraph(newGraph));

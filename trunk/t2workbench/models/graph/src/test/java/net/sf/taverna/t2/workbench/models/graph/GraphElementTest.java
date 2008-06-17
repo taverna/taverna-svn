@@ -29,15 +29,17 @@ public class GraphElementTest {
 	
 	private GraphElement parent;
 
+	private GraphEventManager graphEventManager;
+	
 	@Before
 	public void setUp() throws Exception {
-		element = new GraphElement() {};
+		element = new GraphElement(graphEventManager) {};
 		id = "element-id";
 		label = "element-label";
 		lineStyle = LineStyle.NONE;
 		color = Color.BLUE;
 		fillColor = Color.GREEN;
-		parent = new GraphNode();
+		parent = new GraphNode(graphEventManager);
 		element.setId(id);
 		element.setLabel(label);
 		element.setLineStyle(lineStyle);
@@ -53,7 +55,7 @@ public class GraphElementTest {
 
 	@Test
 	public void testSetParent() {
-		GraphNode newParent = new GraphNode();
+		GraphNode newParent = new GraphNode(graphEventManager);
 		element.setParent(newParent);
 		assertEquals(newParent, element.getParent());
 		element.setParent(null);

@@ -9,10 +9,9 @@ import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 
 /**
- * Writer for creating a graphical representation of a graph in the DOT language.
+ * Writer for creating a graphical representation of a Graph in the DOT language.
  * 
  * @author David Withers
- *
  */
 public class DotWriter {
 
@@ -30,7 +29,7 @@ public class DotWriter {
 	}
 
 	/**
-	 * Writes a graphical representation of a graph in the DOT language to a writer.
+	 * Writes a graphical representation of a Graph in the DOT language to a Writer.
 	 * 
 	 * @param graph
 	 * @throws IOException
@@ -40,7 +39,8 @@ public class DotWriter {
 
 		// Overall graph style
 		writeLine(" graph [");
-		writeLine("  style=\"\"");
+		writeLine("  bgcolor=\"#ffffff\"");
+		writeLine("  color=\"black\"");
 		writeLine("  fontsize=\"10\"");
 		writeLine("  labeljust=\"left\"");
 		writeLine("  clusterrank=\"local\"");

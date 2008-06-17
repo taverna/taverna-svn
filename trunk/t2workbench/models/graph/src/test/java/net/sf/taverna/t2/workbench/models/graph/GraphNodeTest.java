@@ -26,14 +26,16 @@ public class GraphNodeTest {
 	
 	private boolean expanded;
 	
+	private GraphEventManager graphEventManager;
+	
 	@Before
 	public void setUp() throws Exception {
 		shape = Shape.HOUSE;
 		width = 0.5f;
 		height = 1.5f;
-		graph = new Graph();
+		graph = new Graph(graphEventManager);
 		expanded = false;
-		node = new GraphNode();
+		node = new GraphNode(graphEventManager);
 		node.setShape(shape);
 		node.setWidth(width);
 		node.setHeight(height);
@@ -43,12 +45,12 @@ public class GraphNodeTest {
 
 	@Test
 	public void testNode() {
-		assertNotNull(new GraphNode());
+		assertNotNull(new GraphNode(graphEventManager));
 	}
 
 	@Test
 	public void testAddSinkNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		node.addSinkNode(newNode);
 		assertEquals(1, node.getSinkNodes().size());
 		assertTrue(node.getSinkNodes().contains(newNode));
@@ -57,7 +59,7 @@ public class GraphNodeTest {
 
 	@Test
 	public void testAddSourceNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		node.addSourceNode(newNode);
 		assertEquals(1, node.getSourceNodes().size());
 		assertTrue(node.getSourceNodes().contains(newNode));
@@ -103,7 +105,7 @@ public class GraphNodeTest {
 
 	@Test
 	public void testRemoveSinkNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		assertFalse(node.removeSinkNode(newNode));
 		node.addSinkNode(newNode);
 		assertTrue(node.removeSinkNode(newNode));
@@ -112,7 +114,7 @@ public class GraphNodeTest {
 
 	@Test
 	public void testRemoveSourceNode() {
-		GraphNode newNode = new GraphNode();
+		GraphNode newNode = new GraphNode(graphEventManager);
 		assertFalse(node.removeSourceNode(newNode));
 		node.addSourceNode(newNode);
 		assertTrue(node.removeSourceNode(newNode));
@@ -129,7 +131,7 @@ public class GraphNodeTest {
 
 	@Test
 	public void testSetGraph() {
-		Graph newGraph = new Graph();
+		Graph newGraph = new Graph(graphEventManager);
 		node.setGraph(newGraph);
 		assertEquals(newGraph, node.getGraph());
 		node.setGraph(null);

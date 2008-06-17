@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.workbench.views.graph;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -29,10 +30,12 @@ import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent;
+import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphController;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphModelFactory;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
+import org.apache.batik.swing.JSVGCanvas;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
@@ -54,33 +57,33 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(GraphViewComponent.class);
 
-	private SVGGraphComponent svgGraphComponent = new SVGGraphComponent();
-	
 	private GraphController graphController;
 	
 	private Map<Dataflow, GraphController> graphControllerMap = new HashMap<Dataflow, GraphController>();
 	
 	private Dataflow dataflow;
+	
+	private Component currentComponent;
 
 	public GraphViewComponent() {
 		super(new BorderLayout());
 		
 		JToolBar toolBar = new JToolBar();
-		Action resetDiagramAction = svgGraphComponent.getSvgCanvas().new ResetTransformAction();
-		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
-		toolBar.add(resetDiagramAction);
-		Action zoomInAction = svgGraphComponent.getSvgCanvas().new ZoomAction(1.2);
-		zoomInAction.putValue(Action.NAME, "Zoom In");
-		toolBar.add(zoomInAction);
-		Action zoomOutAction = svgGraphComponent.getSvgCanvas().new ZoomAction(1/1.2);
-		zoomOutAction.putValue(Action.NAME, "Zoom Out");
-		toolBar.add(zoomOutAction);
+//		Action resetDiagramAction = currentComponent.new ResetTransformAction();
+//		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+//		toolBar.add(resetDiagramAction);
+//		Action zoomInAction = currentComponent.new ZoomAction(1.2);
+//		zoomInAction.putValue(Action.NAME, "Zoom In");
+//		toolBar.add(zoomInAction);
+//		Action zoomOutAction = currentComponent.new ZoomAction(1/1.2);
+//		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+//		toolBar.add(zoomOutAction);
 
 		toolBar.add(new AbstractAction("No Ports") {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.NONE);
-				svgGraphComponent.redraw();
+				graphController.redraw();
 				graphController.resetSelection();
 			}
 			
@@ -90,7 +93,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.ALL);
-				svgGraphComponent.redraw();
+				graphController.redraw();
 				graphController.resetSelection();
 			}
 			
@@ -100,7 +103,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 
 			public void actionPerformed(ActionEvent arg0) {
 				graphController.setPortStyle(GraphController.PortStyle.BLOB);
-				svgGraphComponent.redraw();
+				graphController.redraw();
 				graphController.resetSelection();
 			}
 			
@@ -108,7 +111,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		
 		add(toolBar, BorderLayout.NORTH);
 		
-		add(svgGraphComponent, BorderLayout.CENTER);
 		
 		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
 			public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message) {
@@ -126,7 +128,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 				if (message instanceof AbstractDataflowEditEvent) {
 					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
 					if (dataflowEditEvent.getDataFlow() == dataflow ) {
-						svgGraphComponent.redraw();
+						graphController.redraw();
 					}
 					
 				}
@@ -136,14 +138,41 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		setTransferHandler(new GraphViewTransferHandler(this));
 	}
 	
+//	/**
+//	 * Sets the Dataflow to display in the graph view.
+//	 * 
+//	 * @param dataflow
+//	 */
+//	public void setDataflow(Dataflow dataflow) {
+//		this.dataflow = dataflow;
+//		if (!graphControllerMap.containsKey(dataflow)) {
+//			GraphController graphController = new GraphController(dataflow, new SVGGraphModelFactory(), svgGraphComponent);
+//			graphControllerMap.put(dataflow, graphController);
+//		}
+//		graphController = graphControllerMap.get(dataflow);
+//		svgGraphComponent.setGraphController(graphController);
+//	}
+	
+	/**
+	 * Sets the Dataflow to display in the graph view.
+	 * 
+	 * @param dataflow
+	 */
 	public void setDataflow(Dataflow dataflow) {
 		this.dataflow = dataflow;
 		if (!graphControllerMap.containsKey(dataflow)) {
-			GraphController graphController = new GraphController(dataflow, new SVGGraphModelFactory());
+			GraphController graphController = new SVGGraphController(dataflow, this);
 			graphControllerMap.put(dataflow, graphController);
 		}
 		graphController = graphControllerMap.get(dataflow);
-		svgGraphComponent.setGraphController(graphController);
+		graphController.redraw();
+		
+		if (currentComponent != null) {
+			remove(currentComponent);
+		}
+		currentComponent = graphController.getComponent();
+		add(currentComponent, BorderLayout.CENTER);
+		revalidate();
 	}
 	
 	/**

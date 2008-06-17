@@ -3,7 +3,6 @@ package net.sf.taverna.t2.workbench.models.graph;
 import java.awt.Color;
 
 import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
-import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
 
 /**
  * An element of a graph.
@@ -30,6 +29,10 @@ public abstract class GraphElement {
 	
 	private GraphEventManager eventManager;
 
+	protected GraphElement(GraphEventManager eventManager) {
+		this.eventManager = eventManager;
+	}
+	
 	/**
 	 * Returns the eventManager.
 	 *
@@ -37,15 +40,6 @@ public abstract class GraphElement {
 	 */
 	public GraphEventManager getEventManager() {
 		return eventManager;
-	}
-
-	/**
-	 * Sets the eventManager.
-	 *
-	 * @param eventManager the new eventManager
-	 */
-	public void setEventManager(GraphEventManager eventManager) {
-		this.eventManager = eventManager;
 	}
 
 	/**

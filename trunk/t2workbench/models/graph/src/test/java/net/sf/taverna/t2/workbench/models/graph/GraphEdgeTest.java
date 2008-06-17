@@ -8,6 +8,9 @@ import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge.ArrowStyle;
 import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
+import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
+import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
+import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionModelImpl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,11 +29,11 @@ public class GraphEdgeTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		source = new GraphNode();
-		sink = new GraphNode();
+		source = new GraphNode(null);
+		sink = new GraphNode(null);
 		arrowHeadStyle = ArrowStyle.ODOT;
 		arrowTailStyle = ArrowStyle.NORMAL;
-		edge = new GraphEdge();
+		edge = new GraphEdge(null);
 		edge.setArrowHeadStyle(arrowHeadStyle);
 		edge.setArrowTailStyle(arrowTailStyle);
 		edge.setSink(sink);
@@ -39,7 +42,7 @@ public class GraphEdgeTest {
 
 	@Test
 	public void testEdge() {
-		edge = new GraphEdge();
+		edge = new GraphEdge(null);
 		assertNull(edge.getSource());
 		assertNull(edge.getSink());
 		assertNull(edge.getLabel());
@@ -47,7 +50,9 @@ public class GraphEdgeTest {
 
 	@Test
 	public void testEdgeNodeNode() {
-		edge = new GraphEdge(source, sink);
+		edge = new GraphEdge(null);
+		edge.setSource(source);
+		edge.setSink(sink);
 		assertEquals(source, edge.getSource());
 		assertEquals(sink, edge.getSink());
 		assertNull(edge.getLabel());
@@ -60,7 +65,7 @@ public class GraphEdgeTest {
 
 	@Test
 	public void testSetSource() {
-		GraphNode node = new GraphNode();
+		GraphNode node = new GraphNode(null);
 		edge.setSource(node);
 		assertEquals(node, edge.getSource());
 		edge.setSource(null);
@@ -74,7 +79,7 @@ public class GraphEdgeTest {
 
 	@Test
 	public void testSetSink() {
-		GraphNode node = new GraphNode();
+		GraphNode node = new GraphNode(null);
 		edge.setSink(node);
 		assertEquals(node, edge.getSink());
 		edge.setSink(null);

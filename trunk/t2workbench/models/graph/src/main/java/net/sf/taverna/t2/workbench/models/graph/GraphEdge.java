@@ -21,20 +21,10 @@ public class GraphEdge extends GraphElement {
 	 * Constructs a new instance of Edge.
 	 *
 	 */
-	public GraphEdge() {
+	public GraphEdge(GraphEventManager eventManager) {
+		super(eventManager);
 	}
 	
-	/**
-	 * Constructs a new instance of Edge.
-	 *
-	 * @param source
-	 * @param sink
-	 */
-	public GraphEdge(GraphNode source, GraphNode sink) {
-		this.source = source;
-		this.sink = sink;
-	}
-
 	/**
 	 * Returns the source.
 	 *
