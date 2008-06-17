@@ -177,15 +177,8 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private <ActivityItem> RootPartition<?> getPartition(
 			PropertyExtractorRegistry reg) {
-		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
+		return new RootPartition<ActivityItem>(DefaultPartitionAlgorithms.getPartitionAlgorithms(), reg);
 	}
-
-//	private List<PartitionAlgorithm<?>> getDefaultAlgorithms() {
-//		//FIXME more partition algorithms needed
-//		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
-//		list.add(new LiteralValuePartitionAlgorithm("type"));
-//		return list;
-//	}
 
 	/**
 	 * Loop through all the available {@link PartitionAlgorithm}s and create a
