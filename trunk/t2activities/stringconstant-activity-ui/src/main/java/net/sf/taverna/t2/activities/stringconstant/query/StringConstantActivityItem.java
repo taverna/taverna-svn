@@ -5,6 +5,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import net.sf.taverna.t2.activities.stringconstant.StringConstantActivity;
 import net.sf.taverna.t2.activities.stringconstant.StringConstantConfigurationBean;
 import net.sf.taverna.t2.partition.ActivityItem;
@@ -61,6 +64,10 @@ public class StringConstantActivityItem implements ActivityItem {
 
 		};
 		return transferable;
+	}
+
+	public Icon getIcon() {
+		return new ImageIcon(StringConstantActivityItem.class.getResource("/stringconstant.png"));
 	}
 	
 	
