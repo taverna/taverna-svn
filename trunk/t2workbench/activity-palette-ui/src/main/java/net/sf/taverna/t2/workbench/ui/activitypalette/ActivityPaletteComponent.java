@@ -135,7 +135,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 								0);
 						algList.add(algorithm);
 						RootPartition<ActivityItem> root = (RootPartition<ActivityItem>)activityTree.getModel();
-						root.setPartitionAlgorithmList(algList);
+						root.setPartitionAlgorithmList(this, algList);
 						
 					}
 				});
@@ -177,14 +177,15 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private <ActivityItem> RootPartition<?> getPartition(
 			PropertyExtractorRegistry reg) {
-		return new RootPartition<ActivityItem>(getDefaultAlgorithms(), reg);
+		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
 	}
 
-	private List<PartitionAlgorithm<?>> getDefaultAlgorithms() {
-		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
-		list.add(new LiteralValuePartitionAlgorithm("type"));
-		return list;
-	}
+//	private List<PartitionAlgorithm<?>> getDefaultAlgorithms() {
+//		//FIXME more partition algorithms needed
+//		List<PartitionAlgorithm<?>> list = new ArrayList<PartitionAlgorithm<?>>();
+//		list.add(new LiteralValuePartitionAlgorithm("type"));
+//		return list;
+//	}
 
 	/**
 	 * Loop through all the available {@link PartitionAlgorithm}s and create a
