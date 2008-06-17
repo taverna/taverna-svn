@@ -1,13 +1,28 @@
 package net.sf.taverna.t2.workbench.ui.activitypalette;
 
+import java.awt.Point;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import net.sf.taverna.t2.partition.ActivityItem;
 import net.sf.taverna.t2.partition.Partition;
 import net.sf.taverna.t2.partition.Query;
 import net.sf.taverna.t2.partition.RootPartition;
@@ -22,13 +37,21 @@ import net.sf.taverna.t2.partition.SetModelChangeListener;
  * @author Ian Dunlop
  * 
  */
-public class ActivityTree extends JTree {
+public class ActivityTree extends JTree implements DragGestureListener,
+		DropTargetListener, DragSourceListener {
 
 	/** A query for each type of activity */
 	private List<Query<?>> queryList;
+	private ActivityItem activityItem;
+	private DragSource dragSource;
 
 	public ActivityTree(TreeModel newModel) {
 		super(newModel);
+		dragSource = DragSource.getDefaultDragSource();
+		dragSource.createDefaultDragGestureRecognizer(this, // component where
+				// drag originates
+				DnDConstants.ACTION_COPY_OR_MOVE, // actions
+				this);
 		setEditable(false);
 		setExpandsSelectedPaths(false);
 		setDragEnabled(false);
@@ -70,7 +93,7 @@ public class ActivityTree extends JTree {
 				public void run() {
 					query.doQuery();
 				}
-				
+
 			}.start();
 
 		}
@@ -93,6 +116,7 @@ public class ActivityTree extends JTree {
 							public void run() {
 								TreePath path = ev.getTreePath();
 								setExpandedState(path, false);
+//								fireTreeExpanded(path);
 							}
 						});
 					}
@@ -103,10 +127,81 @@ public class ActivityTree extends JTree {
 		if (model != null) {
 			model.addTreeModelListener(treeModelListener);
 		}
-		TreeModel oldTreeModel = treeModel;
+		TreeModel oldValue = treeModel;
 		treeModel = model;
-		
-		firePropertyChange(TREE_MODEL_PROPERTY, oldTreeModel, model);
+		// if (queryList != null) {
+		// doQueries();
+		// }
+		firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
 	}
+
+
+	/**
+	 * Triggered when a node ie. an {@link ActivityItem} is dragged out of the
+	 * tree. Figures out what node it is being dragged and then starts a drag
+	 * action with it
+	 */
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		TreePath selectionPath = this.getSelectionPath();
+		Object lastPathComponent = selectionPath.getLastPathComponent();
+		if (lastPathComponent instanceof ActivityItem) {
+			activityItem = (ActivityItem) lastPathComponent;
+			dragSource.startDrag(dge, DragSource.DefaultMoveNoDrop, null,
+					new Point(0, 0), activityItem.getActivityTransferable(),
+					this);
+		}
+
+	}
+
+	public void dragEnter(DropTargetDragEvent dtde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragExit(DropTargetEvent dte) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragOver(DropTargetDragEvent dtde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void drop(DropTargetDropEvent dtde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dropActionChanged(DropTargetDragEvent dtde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragDropEnd(DragSourceDropEvent dsde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragEnter(DragSourceDragEvent dsde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragExit(DragSourceEvent dse) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragOver(DragSourceDragEvent dsde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dropActionChanged(DragSourceDragEvent dsde) {
+		// TODO Auto-generated method stub
+
+	}
+
 
 }

@@ -85,9 +85,9 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		RootPartition<?> partition = getPartition(propertyExtractorRegistry);
 		initQueries(partition);
 		activityTree = new ActivityTree(partition);
-		
-		
 	}
+
+	
 
 	/**
 	 * Create all the {@link Query}s for the activities and add them to the
@@ -135,7 +135,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 								0);
 						algList.add(algorithm);
 						RootPartition<ActivityItem> root = (RootPartition<ActivityItem>)activityTree.getModel();
-						root.setPartitionAlgorithmList(this, algList);
+						root.setPartitionAlgorithmList(algList);
 						
 					}
 				});
