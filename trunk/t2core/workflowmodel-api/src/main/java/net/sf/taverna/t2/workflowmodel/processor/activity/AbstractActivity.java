@@ -154,7 +154,8 @@ public abstract class AbstractActivity<ConfigType> extends
 	 * @param configBean
 	 */
 	protected void configurePorts(ActivityPortsDefinitionBean configBean) {
-
+		//FIXME should use edits to do this
+		inputPorts.clear();
 		for (ActivityInputPortDefinitionBean inputDef : configBean
 				.getInputPortDefinitions()) {
 			addInput(inputDef.getName(), inputDef.getDepth(), inputDef
@@ -164,7 +165,7 @@ public abstract class AbstractActivity<ConfigType> extends
 			// TODO - use the mime types from the config bean if required,
 			// probably best handled elsewhere though
 		}
-
+		outputPorts.clear();
 		for (ActivityOutputPortDefinitionBean outputDef : configBean
 				.getOutputPortDefinitions()) {
 			addOutput(outputDef.getName(), outputDef.getDepth(), outputDef
