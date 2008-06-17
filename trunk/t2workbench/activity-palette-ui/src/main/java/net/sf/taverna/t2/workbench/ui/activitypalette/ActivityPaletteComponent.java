@@ -85,6 +85,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		RootPartition<?> partition = getPartition(propertyExtractorRegistry);
 		initQueries(partition);
 		activityTree = new ActivityTree(partition);
+		activityTree.setCellRenderer(new ActivityTreeCellRenderer());
 	}
 
 	
@@ -177,7 +178,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private <ActivityItem> RootPartition<?> getPartition(
 			PropertyExtractorRegistry reg) {
-		return new RootPartition<ActivityItem>(DefaultPartitionAlgorithms.getPartitionAlgorithms(), reg);
+		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
 	}
 
 	/**

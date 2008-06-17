@@ -2,6 +2,8 @@ package net.sf.taverna.t2.partition;
 
 import java.awt.datatransfer.Transferable;
 
+import javax.swing.Icon;
+
 /**
  * An interface that defines an "item" that is the result of performing a query
  * for an Activity type.
@@ -21,5 +23,10 @@ public interface ActivityItem {
 	 * Inside this will be a wrapper containing the activity and a bean
 	 */
 	public Transferable getActivityTransferable();
+	
+	/**
+	 * @return the Icon that should be displayed in the activity palette tree.
+	 */
+	public Icon getIcon();
 
 }
