@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.datatransfer.Transferable;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.TransferHandler;
 
 import net.sf.taverna.t2.activities.wsdl.query.WSDLActivityItem;
 import net.sf.taverna.t2.partition.ActivityItem;
@@ -48,6 +51,13 @@ public class WSDLPropertyExtractorTest {
 	@Test
 	public void testExtractPropertiesNotWSDL() {
 		ActivityItem item = new ActivityItem() {
+
+			public Transferable getActivityTransferable() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			
 			
 		};
 		Map<String,Object> props = new WSDLPropertyExtractor().extractProperties(item);
