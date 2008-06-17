@@ -39,13 +39,17 @@
 	</repository>
 
 	<bean id="testBeanId"
-		class="net.sf.taverna.t2.reference.h3.ReferenceSetT2ReferenceImpl">
+		class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+		raven:repository="ravenRepository">
 		<property name="localPart" value="testLocal" />
 		<property name="namespacePart" value="testNS" />
 	</bean>
 
 	<bean id="referenceSet"
-		class="net.sf.taverna.t2.reference.h3.ReferenceSetImpl">
+		class="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+		raven:repository="ravenRepository">
 
 		<property name="typedId">
 			<ref bean="testBeanId" />
