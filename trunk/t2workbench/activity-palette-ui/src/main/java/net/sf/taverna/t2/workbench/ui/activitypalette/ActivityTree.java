@@ -13,6 +13,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.text.Collator;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JTree;
@@ -47,10 +49,8 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	public ActivityTree(TreeModel newModel) {
 		super(newModel);
 		dragSource = DragSource.getDefaultDragSource();
-		dragSource.createDefaultDragGestureRecognizer(this, // component where
-				// drag originates
-				DnDConstants.ACTION_COPY_OR_MOVE, // actions
-				this);
+		dragSource.createDefaultDragGestureRecognizer(this,
+				DnDConstants.ACTION_COPY_OR_MOVE, this);
 		setEditable(false);
 		setExpandsSelectedPaths(false);
 		setDragEnabled(false);
@@ -101,7 +101,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	@Override
 	/**
 	 * Resets the model which means that the user selected filter has probably
-	 * changed so it calls doQuery to get the display to change
+	 * changed
 	 */
 	public void setModel(TreeModel model) {
 		if (treeModel == model)
@@ -115,7 +115,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 							public void run() {
 								TreePath path = ev.getTreePath();
 								setExpandedState(path, false);
-//								fireTreeExpanded(path);
+								// fireTreeExpanded(path);
 							}
 						});
 					}
@@ -131,9 +131,10 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		// if (queryList != null) {
 		// doQueries();
 		// }
+		RootPartition root = (RootPartition) getModel().getRoot();
+
 		firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
 	}
-
 
 	/**
 	 * Triggered when a node ie. an {@link ActivityItem} is dragged out of the
@@ -201,6 +202,5 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		// TODO Auto-generated method stub
 
 	}
-
 
 }
