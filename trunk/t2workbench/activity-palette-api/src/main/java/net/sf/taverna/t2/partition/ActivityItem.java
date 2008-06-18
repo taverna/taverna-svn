@@ -15,7 +15,7 @@ import javax.swing.Icon;
  * @see Query
  * 
  */
-public interface ActivityItem {
+public interface ActivityItem extends Comparable<ActivityItem>{
 	/**
 	 * Used during drag and drop operations. The activity palette (ie the Tree
 	 * which has the {@link RootPartition} stuff) is made up of
