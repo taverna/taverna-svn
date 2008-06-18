@@ -178,7 +178,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 */
 	private <ActivityItem> RootPartition<?> getPartition(
 			PropertyExtractorRegistry reg) {
-		return new RootPartition<ActivityItem>(getAlgorithms(), reg);
+		return new RootPartition<ActivityItem>(DefaultPartitionAlgorithms.getPartitionAlgorithms(), reg);
 	}
 
 	/**
