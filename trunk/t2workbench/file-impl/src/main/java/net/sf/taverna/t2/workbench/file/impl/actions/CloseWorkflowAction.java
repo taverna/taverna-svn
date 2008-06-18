@@ -41,6 +41,7 @@ public class CloseWorkflowAction extends AbstractAction {
 			fileManager.closeDataflow(dataflow, true);
 			return true;
 		} catch (UnsavedException e1) {
+			fileManager.setCurrentDataflow(dataflow);
 			String msg = "Do you want to save changes before closing the workflow "
 					+ dataflow.getLocalName() + "?";
 			int ret = JOptionPane.showConfirmDialog(parentComponent, msg,
