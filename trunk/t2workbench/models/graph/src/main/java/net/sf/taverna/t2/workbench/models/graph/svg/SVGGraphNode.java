@@ -127,6 +127,12 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 				"stroke-width:2");
 		
 		iterationPosition = polygon.getPoints().getItem(0);
+		if (getDataflowObject() != null) {
+			EventTarget t = (EventTarget) polygon;
+			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);			
+			t.addEventListener(SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE, mouseMovedAction, false);
+			t.addEventListener(SVGConstants.SVG_MOUSEDOWN_EVENT_TYPE, mouseDownAction, false);
+		}
 	}
 
 	/* (non-Javadoc)

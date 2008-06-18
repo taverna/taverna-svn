@@ -17,6 +17,8 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
+import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
 public class GraphViewTransferHandler extends TransferHandler {
 
@@ -28,8 +30,17 @@ public class GraphViewTransferHandler extends TransferHandler {
 
 	private GraphViewComponent graphViewComponent;
 	
+	private DataFlavor activityDataFlavor;
+	
 	public GraphViewTransferHandler(GraphViewComponent graphViewComponent) {
 		this.graphViewComponent = graphViewComponent;
+		try {
+			activityDataFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
+			";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -37,12 +48,13 @@ public class GraphViewTransferHandler extends TransferHandler {
 	 */
 	@Override
 	public boolean canImport(JComponent component, DataFlavor[] dataFlavors) {
-		for (DataFlavor dataFlavor : dataFlavors) {
-			if (dataFlavor.getRepresentationClass().getName().endsWith("ConfigurationBean")) {
-				return true;
-			}
-		}
-		return false;
+//		for (DataFlavor dataFlavor : dataFlavors) {
+//			if (dataFlavor.equals(activityDataFlavor)) {
+//				return true;
+//			}
+//		}
+//		return false;
+		return true;
 	}
 
 	/* (non-Javadoc)
@@ -51,19 +63,15 @@ public class GraphViewTransferHandler extends TransferHandler {
 	@Override
 	public boolean importData(JComponent component, Transferable transferable) {
 		try {
-			Object data = transferable.getTransferData(transferable.getTransferDataFlavors()[0]);
-			if (data instanceof List) {
-				List<?> list = (List<?>) data;
-				if (list.size() == 2) {
-					Object object = list.get(1);
-					if (object instanceof Activity) {
-						Activity<?> activity = (Activity<?>) object;
-						Dataflow dataflow = graphViewComponent.getDataflow();
-						Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, Tools.buildFromActivity(activity));
-						editManager.doDataflowEdit(dataflow, edit);
-					}
-				}
-				
+			Object data = transferable.getTransferData(activityDataFlavor);
+			if (data instanceof ActivityAndBeanWrapper) {
+				ActivityAndBeanWrapper activityAndBeanWrapper = (ActivityAndBeanWrapper) data;
+				Activity activity = activityAndBeanWrapper.getActivity();
+				Object bean = activityAndBeanWrapper.getBean();
+				activity.configure(bean);
+				Dataflow dataflow = graphViewComponent.getDataflow();
+				Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, Tools.buildFromActivity(activity));
+				editManager.doDataflowEdit(dataflow, edit);
 			}
 		} catch (UnsupportedFlavorException e) {
 			// TODO Auto-generated catch block
@@ -72,6 +80,9 @@ public class GraphViewTransferHandler extends TransferHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (EditException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ActivityConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
