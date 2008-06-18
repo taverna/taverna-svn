@@ -86,6 +86,9 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 		Dataflow dataflow = fileManager.getCurrentDataflow();
 		DataflowSelectionModel selectionModel = dataflowSelectionManager.getDataflowSelectionModel(dataflow);
 		Set<Object> selection = selectionModel.getSelection();
+		if (selection.isEmpty()) {
+			return;
+		}
 		Iterator<Object> iterator = selection.iterator();
 		//TODO multiple selections, dataflow contextual view, datalink contextual view
 		Object clickedOnObject = iterator.next();
