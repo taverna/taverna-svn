@@ -4,10 +4,13 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
+import javax.swing.JRadioButtonMenuItem;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.ui.menu.AbstractMenuCustom;
 import net.sf.taverna.t2.ui.menu.DefaultMenuBar;
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -70,15 +73,32 @@ public class WorkflowsMenu extends AbstractMenuCustom {
 
 	protected void updateWorkflowsMenu() {
 		workflowsMenu.removeAll();
+		ButtonGroup workflowsGroup = new ButtonGroup();
+
 		int i = 0;
+		Dataflow currentDataflow = fileManager.getCurrentDataflow();
 		for (final Dataflow dataflow : fileManager.getOpenDataflows()) {
-			String name = ++i + " " + dataflow.getLocalName();
-			workflowsMenu.add(new SwitchWorkflowAction(name, dataflow));
+			String name = dataflow.getLocalName();
+			if (fileManager.isDataflowChanged(dataflow)) {
+				name = "*" + name;
+			}
+			// A counter
+			name = ++i + " " + name;
+
+			SwitchWorkflowAction switchWorkflowAction = new SwitchWorkflowAction(
+					name, dataflow);
+			JRadioButtonMenuItem switchWorkflowMenuItem = new JRadioButtonMenuItem(
+					switchWorkflowAction);
+			workflowsGroup.add(switchWorkflowMenuItem);
+			if (dataflow.equals(currentDataflow)) {
+				switchWorkflowMenuItem.setSelected(true);
+			}
+			workflowsMenu.add(switchWorkflowMenuItem);
 		}
 		if (i == 0) {
 			workflowsMenu.add(new NoWorkflowsOpen());
 		}
-		
+
 		workflowsMenu.revalidate();
 	}
 }
