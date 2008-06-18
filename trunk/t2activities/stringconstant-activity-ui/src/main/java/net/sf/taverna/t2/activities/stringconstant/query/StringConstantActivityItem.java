@@ -52,14 +52,31 @@ public class StringConstantActivityItem implements ActivityItem {
 			}
 
 			public DataFlavor[] getTransferDataFlavors() {
-				// TODO Auto-generated method stub
-				return null;
+				DataFlavor[] flavors = new DataFlavor[1];
+				DataFlavor flavor = null;
+				try {
+					flavor = new DataFlavor(
+							DataFlavor.javaJVMLocalObjectMimeType
+									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				flavors[1] = flavor;
+				return flavors;
 			}
 
 			public boolean isDataFlavorSupported(DataFlavor flavor) {
-				// TODO Auto-generated method stub
-				// FIXME put in the actual data flavor
-				return true;
+				DataFlavor thisFlavor = null;
+				try {
+					thisFlavor = new DataFlavor(
+							DataFlavor.javaJVMLocalObjectMimeType
+									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return flavor.equals(flavor);
 			}
 
 		};
