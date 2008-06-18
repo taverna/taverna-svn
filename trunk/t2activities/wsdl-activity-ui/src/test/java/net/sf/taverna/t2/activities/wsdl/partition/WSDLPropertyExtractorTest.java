@@ -62,10 +62,11 @@ public class WSDLPropertyExtractorTest {
 				// TODO Auto-generated method stub
 				return null;
 			}
-			
-			
 
-			
+			public int compareTo(ActivityItem o) {
+				// TODO Auto-generated method stub
+				return 0;
+			}
 			
 		};
 		Map<String,Object> props = new WSDLPropertyExtractor().extractProperties(item);
