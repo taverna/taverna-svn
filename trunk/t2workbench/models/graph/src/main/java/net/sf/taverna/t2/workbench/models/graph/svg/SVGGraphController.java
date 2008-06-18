@@ -21,11 +21,9 @@ import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.GenericText;
-import org.apache.batik.dom.svg.SVGLocatableSupport;
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
-import org.apache.batik.dom.svg.SVGOMPoint;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.dom.svg.SVGOMTitleElement;
@@ -38,7 +36,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGMatrix;
 
 public class SVGGraphController extends GraphController {
 
@@ -66,6 +63,7 @@ public class SVGGraphController extends GraphController {
 //		svgCanvas.setOpaque(false);
 
 		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
+			@Override
 			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
 				updateManager = svgCanvas.getUpdateManager();
 			}
@@ -78,8 +76,9 @@ public class SVGGraphController extends GraphController {
 		return svgCanvas;
 	}
 
+	@Override
 	public void redraw() {
-		System.out.println("REDRAWING GRAPH");
+		logger.debug("Redrawing graph");
 		Graph graph = generateGraph();
 		graphElementMap.clear();
 		mapGraphElements(graph);
@@ -120,6 +119,7 @@ public class SVGGraphController extends GraphController {
         svgRoot.insertBefore(edgePointer, null);		
 	}
 
+	@Override
 	public void startEdgeCreation(GraphElement graphElement, Point point) {
 		super.startEdgeCreation(graphElement, point);
 		if (edgeCreationFromSource || edgeCreationFromSink) {
@@ -136,6 +136,7 @@ public class SVGGraphController extends GraphController {
 		}
 	}
 	
+	@Override
 	public boolean moveEdgeCreationTarget(GraphElement graphElement, Point point) {
 		boolean linkValid = super.moveEdgeCreationTarget(graphElement, point);
 		if (edgeCreationFromSink) {
@@ -168,6 +169,7 @@ public class SVGGraphController extends GraphController {
 		return linkValid;
 	}
 
+	@Override
 	public void stopEdgeCreation(GraphElement graphElement, Point point) {
 		super.stopEdgeCreation(graphElement, point);
 		edgeLine.setAttribute("visibility", "hidden");
@@ -223,7 +225,7 @@ public class SVGGraphController extends GraphController {
 
 	private void mapGraph(Node node, SVGOMGElement gElement) {
 		String title = null;
-		SVGOMPolygonElement polygon = null;
+//		SVGOMPolygonElement polygon = null;
 		Node child = node.getFirstChild();
 		while (child != null) {
 			if (child instanceof SVGOMTitleElement) {
