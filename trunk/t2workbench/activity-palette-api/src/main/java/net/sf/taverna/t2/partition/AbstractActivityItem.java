@@ -10,7 +10,11 @@ import javax.swing.Icon;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
 
+import org.apache.log4j.Logger;
+
 public abstract class AbstractActivityItem implements ActivityItem {
+	
+	private static Logger logger = Logger.getLogger(AbstractActivityItem.class);
 
 	/**
 	 * Returns a {@link Transferable} containing an
@@ -43,10 +47,9 @@ public abstract class AbstractActivityItem implements ActivityItem {
 							DataFlavor.javaJVMLocalObjectMimeType
 									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error casting Dataflavor",e);
 				}
-				flavors[1] = flavor;
+				flavors[0] = flavor;
 				return flavors;
 			}
 
@@ -57,10 +60,9 @@ public abstract class AbstractActivityItem implements ActivityItem {
 							DataFlavor.javaJVMLocalObjectMimeType
 									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("Error casting Dataflavor",e);
 				}
-				return flavor.equals(flavor);
+				return flavor.equals(thisFlavor);
 			}
 
 		};
