@@ -25,6 +25,8 @@ import org.apache.log4j.Logger;
 
 public class SaveWorkflowAction extends AbstractAction {
 
+	private final SaveWorkflowAsAction saveWorkflowAsAction = new SaveWorkflowAsAction();
+
 	private static Logger logger = Logger.getLogger(SaveWorkflowAction.class);
 
 	private static final String SAVE_WORKFLOW = "Save workflow";
@@ -51,41 +53,54 @@ public class SaveWorkflowAction extends AbstractAction {
 		if (ev.getSource() instanceof Component) {
 			parentComponent = (Component) ev.getSource();
 		}
-		if (!fileManager.canSaveCurrentWithoutFilename()) {
-			new SaveWorkflowAsAction().actionPerformed(ev);
-			return;
+
+		Dataflow dataflow = fileManager.getCurrentDataflow();
+
+		saveDataflow(parentComponent, dataflow);
+
+	}
+
+	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
+		if (!fileManager.canSaveWithoutFilename(dataflow)) {
+			return saveWorkflowAsAction.saveDataflow(parentComponent, dataflow);
 		}
 		try {
 			try {
-				fileManager.saveCurrentDataflow(true);
-				logger.info("Saved current workflow to "
-						+ fileManager.getCurrentDataflowFile());
+				fileManager.saveDataflow(dataflow, true);
+				logger.info("Saved dataflow " + dataflow + " to "
+						+ fileManager.getDataflowFile(dataflow));
+				return true;
 			} catch (OverwriteException ex) {
-				File file = fileManager.getCurrentDataflowFile();
+				File file = fileManager.getDataflowFile(dataflow);
 				logger.warn("File was changed on disk: " + file, ex);
+				fileManager.setCurrentDataflow(dataflow);
 				String msg = "File " + file + " has changed on disk, "
 						+ "are you sure you want to overwrite?";
 				int ret = JOptionPane.showConfirmDialog(parentComponent, msg,
 						"File changed on disk",
 						JOptionPane.YES_NO_CANCEL_OPTION);
 				if (ret == JOptionPane.YES_OPTION) {
-					fileManager.saveCurrentDataflow(false);
-					logger.info("Saved current workflow by overwriting "
+					fileManager.saveDataflow(dataflow, false);
+					logger.info("Saved dataflow " + dataflow
+							+ " by overwriting "
 							+ fileManager.getCurrentDataflowFile());
+					return true;
 				} else if (ret == JOptionPane.NO_OPTION) {
 					// Pop up Save As instead to choose another name
-					new SaveWorkflowAsAction().actionPerformed(ev);
+					return saveWorkflowAsAction.saveDataflow(parentComponent,
+							dataflow);
 				} else {
 					logger.info("Aborted overwrite of " + file);
+					return false;
 				}
 			}
 		} catch (SaveException ex) {
-			logger.warn("Could not save current workflow", ex);
+			logger.warn("Could not save dataflow " + dataflow, ex);
 			JOptionPane.showMessageDialog(parentComponent,
 					"Could not save dataflow: \n\n" + ex.getMessage(),
 					"Warning", JOptionPane.WARNING_MESSAGE);
+			return false;
 		}
-
 	}
 
 	protected void updateEnabledStatus(Dataflow dataflow) {

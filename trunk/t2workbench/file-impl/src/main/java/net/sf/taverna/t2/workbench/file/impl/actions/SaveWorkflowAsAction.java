@@ -18,7 +18,6 @@ import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
-import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -64,7 +63,13 @@ public class SaveWorkflowAsAction extends AbstractAction {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+		
+		Dataflow dataflow = fileManager.getCurrentDataflow();
+		saveDataflow(parentComponent, dataflow);
+	}
 
+	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
+		fileManager.setCurrentDataflow(dataflow);
 		JFileChooser fileChooser = new JFileChooser();
 
 		Preferences prefs = Preferences.userNodeForPackage(getClass());
@@ -86,8 +91,9 @@ public class SaveWorkflowAsAction extends AbstractAction {
 				// TODO: Open in separate thread to avoid hanging UI
 				try {
 					try {
-						fileManager.saveCurrentDataflow(file, true);
-						logger.info("Saved current workflow to " + file);
+						fileManager.saveDataflow(dataflow, file, true);
+						logger.info("Saved dataflow " + dataflow + " to " + file);
+						return true;
 					} catch (OverwriteException ex) {
 						logger.warn("File already exists: " + file, ex);
 						String msg = "Are you sure you want to overwrite existing file "
@@ -97,13 +103,15 @@ public class SaveWorkflowAsAction extends AbstractAction {
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (ret == JOptionPane.YES_OPTION) {
 							fileManager.saveCurrentDataflow(file, false);
-							logger.info("Saved current workflow "
-									+ "by overwriting " + file);
+							logger.info("Saved dataflow " + dataflow 
+									+ " by overwriting " + file);
+							return true;
 						} else if (ret == JOptionPane.NO_OPTION) {
 							tryAgain = true;
 							continue;
 						} else {
 							logger.info("Aborted overwrite of " + file);
+							return false;
 						}
 					}
 				} catch (SaveException ex) {
@@ -111,10 +119,12 @@ public class SaveWorkflowAsAction extends AbstractAction {
 					JOptionPane.showMessageDialog(parentComponent,
 							"Could not save workflow to " + file + ": \n\n"
 									+ ex.getMessage(), "Warning",
-							JOptionPane.WARNING_MESSAGE);
+							JOptionPane.WARNING_MESSAGE);		
+					return false;
 				}
 			}
 		}
+		return false;
 	}
 
 	protected void updateEnabledStatus(Dataflow dataflow) {
