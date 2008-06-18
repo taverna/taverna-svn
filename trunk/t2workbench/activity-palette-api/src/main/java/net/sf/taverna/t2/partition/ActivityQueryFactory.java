@@ -5,6 +5,8 @@ import java.util.List;
 
 import net.sf.taverna.t2.workbench.configuration.Configurable;
 
+import org.apache.log4j.Logger;
+
 /**
  * A query factory specialised for use with Activities. 
  * <p>
@@ -24,6 +26,8 @@ import net.sf.taverna.t2.workbench.configuration.Configurable;
  *
  */
 public abstract class ActivityQueryFactory implements QueryFactory {
+	
+	private static Logger logger = Logger.getLogger(ActivityQueryFactory.class);
 	
 	public List<Query<?>> getQueries() {
 		List<Query<?>> result = new ArrayList<Query<?>>();
@@ -62,6 +66,16 @@ public abstract class ActivityQueryFactory implements QueryFactory {
 	 */
 	protected abstract ActivityQuery createQuery(String property);
  
+	public boolean hasAddQueryActionHandler() {
+		return false;
+	}
+	
+	public AddQueryActionHandler getAddQueryActionHandler() {
+		if (hasAddQueryActionHandler()) {
+			logger.warn("ActivityQueryFactory.getAddQueryActionHandler needs to return an action handler if hasAddQueryActionHandler indicates one is supported.");
+		}
+		return null;
+	}
 	/**
 	 * @param config - the Configurable object that holds the values for the propertyKey
 	 */
@@ -72,5 +86,7 @@ public abstract class ActivityQueryFactory implements QueryFactory {
 	Configurable getConfigurable() {
 		return this.config;
 	}
+	
+	
 
 }
