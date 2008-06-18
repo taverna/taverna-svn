@@ -25,6 +25,7 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.file.events.ClosedDataflowEvent;
 import net.sf.taverna.t2.workbench.file.events.FileManagerEvent;
 import net.sf.taverna.t2.workbench.file.events.OpenedDataflowEvent;
+import net.sf.taverna.t2.workbench.file.events.SetCurrentDataflowEvent;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
@@ -417,13 +418,15 @@ public class FileManagerImpl extends FileManager {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
 			if (message.getModelName().equals(
-					ModelMapConstants.CURRENT_PERSPECTIVE)) {
+					ModelMapConstants.CURRENT_DATAFLOW)) {
 				Dataflow newModel = (Dataflow) message.getNewModel();
-				if (!isDataflowOpen(newModel)) {
-					openDataflowInternal(newModel);
+				if (newModel != null) {
+					if (!isDataflowOpen(newModel)) {
+						openDataflowInternal(newModel);
+					}
 				}
+				observers.notify(new SetCurrentDataflowEvent(newModel));
 			}
-
 		}
 	}
 
