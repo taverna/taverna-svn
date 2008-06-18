@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 import java.io.IOException;
@@ -56,9 +57,7 @@ public class SVGGraphController extends GraphController {
 	
 	private JSVGCanvas svgCanvas = new JSVGCanvas();
 	
-	private Element edgeLine;
-	
-	private Element edgePointer;
+	private EdgeLine edgeLine;
 	
 	UpdateManager updateManager;
 	
@@ -101,80 +100,49 @@ public class SVGGraphController extends GraphController {
 		processorMap.clear();
 		datalinkMap.clear();
 
-		addEdgeLine(svgDocument);
+		edgeLine = EdgeLine.createAndAdd(svgDocument);
 		mapNodes(svgDocument.getChildNodes());
 		svgCanvas.setSVGDocument(svgDocument);
 	}
 	
 	public void addEdgeLine(SVGDocument svgDocument) {
-		edgeLine = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_LINE_TAG);
-		edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
-		edgeLine.setAttribute("pointer-events", "none");
-		edgeLine.setAttribute("visibility", "hidden");
-		edgePointer = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_ELLIPSE_TAG);
-		edgePointer.setAttribute(SVGConstants.SVG_RX_ATTRIBUTE, "3");
-		edgePointer.setAttribute(SVGConstants.SVG_RY_ATTRIBUTE, "3");
-		edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
-		edgePointer.setAttribute("pointer-events", "none");
-		edgePointer.setAttribute("visibility", "hidden");
-
-        Element svgRoot = svgDocument.getDocumentElement();
-        svgRoot.insertBefore(edgeLine, null);		
-        svgRoot.insertBefore(edgePointer, null);		
 	}
 
 	public void startEdgeCreation(GraphElement graphElement, Point point) {
 		super.startEdgeCreation(graphElement, point);
 		if (edgeCreationFromSource || edgeCreationFromSink) {
-			edgeLine.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point.getX()));
-			edgeLine.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point.getY()));
-			edgeLine.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point.getX()));
-			edgeLine.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point.getY()));
-			edgePointer.setAttribute(SVGConstants.SVG_CX_ATTRIBUTE, String.valueOf(point.getX()));
-			edgePointer.setAttribute(SVGConstants.SVG_CY_ATTRIBUTE, String.valueOf(point.getY()));
-			edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
-			edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
-//			edgeLine.setAttribute("visibility", "visible");
-//			edgePointer.setAttribute("visibility", "visible");
+			edgeLine.setSourcePoint(point);
+			edgeLine.setTargetPoint(point);
+			edgeLine.setColour(Color.BLACK);
+//			edgeLine.setVisible(true);
 		}
 	}
 	
 	public boolean moveEdgeCreationTarget(GraphElement graphElement, Point point) {
 		boolean linkValid = super.moveEdgeCreationTarget(graphElement, point);
 		if (edgeCreationFromSink) {
-			edgeLine.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point.getX()));							
-			edgeLine.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point.getY()));
+			edgeLine.setSourcePoint(point);
 			if (linkValid) {
-				edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:green");
-				edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:green;stroke:green");
+				edgeLine.setColour(Color.GREEN);
 			} else {
-				edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
-				edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
+				edgeLine.setColour(Color.BLACK);
 			}
-			edgeLine.setAttribute("visibility", "visible");
-			edgePointer.setAttribute("visibility", "visible");
+			edgeLine.setVisible(true);
 		} else if (edgeCreationFromSource) {
-			edgeLine.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point.getX()));							
-			edgeLine.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point.getY()));							
-			edgePointer.setAttribute(SVGConstants.SVG_CX_ATTRIBUTE, String.valueOf(point.getX()));
-			edgePointer.setAttribute(SVGConstants.SVG_CY_ATTRIBUTE, String.valueOf(point.getY()));
+			edgeLine.setTargetPoint(point);
 			if (linkValid) {
-				edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:green");
-				edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:green;stroke:green");
+				edgeLine.setColour(Color.GREEN);
 			} else {
-				edgeLine.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
-				edgePointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
+				edgeLine.setColour(Color.BLACK);
 			}
-			edgeLine.setAttribute("visibility", "visible");
-			edgePointer.setAttribute("visibility", "visible");
+			edgeLine.setVisible(true);
 		}
 		return linkValid;
 	}
 
 	public void stopEdgeCreation(GraphElement graphElement, Point point) {
 		super.stopEdgeCreation(graphElement, point);
-		edgeLine.setAttribute("visibility", "hidden");
-		edgePointer.setAttribute("visibility", "hidden");
+		edgeLine.setVisible(false);
 	}
 
 	private void mapGraphElements(Graph graph) {
@@ -317,9 +285,8 @@ public class SVGGraphController extends GraphController {
 				} else if (svgGraphNode.getShape().equals(Shape.RECORD)) {
 					List<GraphNode> inputs = svgGraphNode.getSinkNodes();
 					List<GraphNode> outputs = svgGraphNode.getSourceNodes();
-					int ports = inputs.size() + outputs.size();
-					if (lines.size() == Math.max(2, ports) && text.size() == Math.max(3, ports + 1)) {
-//						String polygonStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
+					int ports = Math.max(1, inputs.size()) + Math.max(1, outputs.size());
+					if (lines.size() == ports && text.size() == ports + 1) {
 						SVGPointList polygonPoints = polygon.getPoints();
 						Iterator<SVGOMPolylineElement> linesIterator = lines.iterator();
 						Iterator<SVGOMTextElement> textIterator = text.iterator();
@@ -491,4 +458,75 @@ public class SVGGraphController extends GraphController {
 		return title;
 	}
 
+}
+
+class EdgeLine {
+	
+	private Element line;
+	
+	private Element pointer;
+	
+	private EdgeLine() {
+	}
+
+	public static EdgeLine createAndAdd(SVGDocument svgDocument) {
+		EdgeLine edgeLine = new EdgeLine();
+		edgeLine.line = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_LINE_TAG);
+		edgeLine.line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
+		edgeLine.line.setAttribute("pointer-events", "none");
+		edgeLine.line.setAttribute("visibility", "hidden");
+		edgeLine.line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, "0");
+		edgeLine.line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, "0");
+		edgeLine.line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, "0");
+		edgeLine.line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, "0");
+
+		edgeLine.pointer = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_POLYGON_TAG);
+		edgeLine.pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
+		edgeLine.pointer.setAttribute(SVGConstants.SVG_POINTS_ATTRIBUTE, "0,0 -10,3 -10,-3 0,0");
+		edgeLine.pointer.setAttribute("pointer-events", "none");
+		edgeLine.pointer.setAttribute("visibility", "hidden");
+
+		Element svgRoot = svgDocument.getDocumentElement();
+        svgRoot.insertBefore(edgeLine.line, null);		
+        svgRoot.insertBefore(edgeLine.pointer, null);
+        
+        return edgeLine;
+	}
+	
+	public void setSourcePoint(Point point) {
+		line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point.getX()));
+		line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point.getY()));
+
+		float x = Float.parseFloat(line.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
+		float y = Float.parseFloat(line.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
+		double angle = SVGUtil.calculateAngle(line);
+
+		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE,
+				"translate(" + x + " " + y + ") rotate(" + angle + " 0 0) ");
+	}
+	
+	public void setTargetPoint(Point point) {
+		line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point.getX()));
+		line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point.getY()));
+		
+		double angle = SVGUtil.calculateAngle(line);
+		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE,
+				"translate(" + point.x + " " + point.y + ") rotate(" + angle + " 0 0) ");
+	}
+	
+	public void setColour(Color colour) {
+		String hexColour = SVGUtil.getHexValue(colour);
+		line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:"+hexColour+";");
+		pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:"+hexColour+";stroke:"+hexColour+";");
+	}
+	
+	public void setVisible(boolean visible) {
+		if (visible) {
+			line.setAttribute("visibility", "visible");
+			pointer.setAttribute("visibility", "visible");
+		} else {
+			line.setAttribute("visibility", "hidden");
+			pointer.setAttribute("visibility", "hidden");
+		}
+	}
 }

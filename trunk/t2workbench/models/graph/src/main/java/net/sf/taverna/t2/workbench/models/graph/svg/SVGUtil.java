@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import java.awt.Color;
+import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -9,9 +11,12 @@ import net.sf.taverna.t2.workbench.ui.impl.configuration.WorkbenchConfiguration;
 
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.dom.svg.SVGOMLineElement;
 import org.apache.batik.dom.svg.SVGOMPoint;
+import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGLocatable;
 import org.w3c.dom.svg.SVGMatrix;
@@ -84,10 +89,27 @@ public class SVGUtil {
 		// http://www.graphviz.org/bugs/b1075.html
 		// Contributed by Marko Ullgren
 		svgText = svgText.replaceAll("font-weight:regular","font-weight:normal");
-
+//System.out.println(svgText);
 		// Fake URI, just used for internal references like #fish
 		return docFactory.createSVGDocument("http://taverna.sf.net/diagram/generated.svg", 
 			new StringReader(svgText));
+	}
+
+	public static String getHexValue(Color color) {
+		return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
+	}
+
+	public static double calculateAngle(Element line) {
+		float x1 = Float.parseFloat(line.getAttribute(SVGConstants.SVG_X1_ATTRIBUTE));
+		float y1 = Float.parseFloat(line.getAttribute(SVGConstants.SVG_Y1_ATTRIBUTE));
+		float x2 = Float.parseFloat(line.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
+		float y2 = Float.parseFloat(line.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
+		
+		float dx = x2-x1;
+		float dy = y2-y1;
+		double angle = Math.atan2(dy, dx);
+		
+		return angle * 180 / Math.PI;
 	}
 
 }
