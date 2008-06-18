@@ -27,7 +27,7 @@
 							<left>
 								<znode
 									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<namedcomponent scroll="true">
+									<namedcomponent scroll="false">
 										<name>activitypalette</name>
 									</namedcomponent>
 								</znode>
