@@ -7,10 +7,8 @@ import java.util.List;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
-import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.file.events.FileManagerEvent;
 import net.sf.taverna.t2.workbench.file.events.OpenedDataflowEvent;
@@ -21,15 +19,16 @@ import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
 
 /**
- * Manager of open files (ie. Dataflows) in the workbench.
+ * Manager of open files (Dataflows) in the workbench.
  * <p>
  * A {@link Dataflow} can be opened for the workbench using
  * {@link #openDataflow(URL)}, {@link #openDataflow(InputStream)} or
  * {@link #openDataflow(Dataflow)}. {@link Observer}s of the FileManager gets
  * notified with an {@link OpenedDataflowEvent}. The opened workflow is also
  * {@link #setCurrentDataflow(Dataflow) made the current dataflow}, available
- * through {@link #getCurrentDataflow()} or by observing the {@link ModelMap}
- * for the model name {@link ModelMapConstants#CURRENT_DATAFLOW}.
+ * through {@link #getCurrentDataflow()} or by observing the
+ * {@link net.sf.taverna.t2.lang.ui.ModelMap} for the model name
+ * {@link net.sf.taverna.t2.workbench.ModelMapConstants#CURRENT_DATAFLOW}.
  * </p>
  * <p>
  * A dataflow can be saved using {@link #saveDataflow(Dataflow, File, boolean)},
@@ -64,10 +63,6 @@ import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
  * {@link #isDataflowChanged(Dataflow)} will return true until the next save. If
  * the close methods are used with failOnUnsaved=true, an
  * {@link UnsavedException} will be thrown if the dataflow has been changed.
- * </p>
- * 
- * <p>
- * {@link #getDataflowFile(Dataflow)}
  * </p>
  * 
  * 
@@ -108,9 +103,9 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 	 * Note that first using this method and then
 	 * {@link #saveCurrentDataflow(boolean)} is not thread safe as the current
 	 * dataflow might be changed using {@link #setCurrentDataflow(Dataflow)} or
-	 * the {@link ModelMap} meanwhile. If this is the case an
-	 * {@link SaveException} might be thrown if the new current dataflow can't
-	 * be saved.
+	 * the {@link net.sf.taverna.t2.lang.ui.ModelMap} meanwhile. If this is the
+	 * case an {@link SaveException} might be thrown if the new current dataflow
+	 * can't be saved.
 	 * </p>
 	 * 
 	 * @see #canSaveWithoutFilename(Dataflow)
@@ -133,15 +128,137 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 	 */
 	public abstract boolean canSaveWithoutFilename(Dataflow dataflow);
 
-	
+	/**
+	 * Close the current dataflow.
+	 * <p>
+	 * A closed dataflow can no longer be used with the save methods, and will
+	 * disappear from the UI's list of open dataflows.
+	 * </p>
+	 * <p>
+	 * If no more dataflows would be open after the close, a new, empty dataflow
+	 * is opened as through {@link #newDataflow()}.
+	 * </p>
+	 * 
+	 * @param failOnUnsaved
+	 *            If <code>true</code>, fail on unsaved changes
+	 * @throws UnsavedException
+	 *             If failOnUnsaved was <code>true</code> and there has been
+	 *             changes to the dataflow since the last save
+	 */
 	public abstract void closeCurrentDataflow(boolean failOnUnsaved)
 			throws UnsavedException;
 
+	/**
+	 * Close the specified dataflow.
+	 * <p>
+	 * A closed dataflow can no longer be used with the save methods, and will
+	 * disappear from the UI's list of open dataflows.
+	 * </p>
+	 * <p>
+	 * If no more dataflows would be open after the close, a new, empty dataflow
+	 * is opened as through {@link #newDataflow()}.
+	 * </p>
+	 * 
+	 * @param dataflow
+	 *            {@link Dataflow} to close
+	 * @param failOnUnsaved
+	 *            If <code>true</code>, fail on unsaved changes
+	 * @throws UnsavedException
+	 *             If failOnUnsaved was <code>true</code> and there has been
+	 *             changes to the dataflow since the last save
+	 */
 	public abstract void closeDataflow(Dataflow dataflow, boolean failOnUnsaved)
 			throws UnsavedException;
 
+	/**
+	 * Get the current dataflow as set through
+	 * {@link #setCurrentDataflow(Dataflow)} or the
+	 * {@link net.sf.taverna.t2.lang.ui.ModelMap} using the key
+	 * {@link net.sf.taverna.t2.workbench.ModelMapConstants#CURRENT_DATAFLOW}.
+	 * 
+	 * @return The current dataflow, or <code>null</code> if no dataflow is
+	 *         current
+	 */
 	public abstract Dataflow getCurrentDataflow();
 
+	/**
+	 * Get the last opened/saved {@link File} location for the current dataflow.
+	 * <p>
+	 * A concurrent {@link #saveCurrentDataflow(boolean)} would save to the
+	 * returned file.
+	 * </p>
+	 * <p>
+	 * <strong>Note:</strong>It is not thread safe to first use this method and
+	 * then {@link #saveCurrentDataflow(boolean)} as the current dataflow might
+	 * change meanwhile. Use {@link #getCurrentDataflow()} and the specific
+	 * methods {@link #getDataflowFile(Dataflow)} and
+	 * {@link #saveDataflow(Dataflow, boolean)} for such cases.
+	 * </p>
+	 * <p>
+	 * If the current dataflow is <code>null</code>, or the current
+	 * dataflow's last opened/saved location was unknown or not a File (but say
+	 * an HTTP-based URL), return <code>null</code>.
+	 * </p>
+	 * 
+	 * @return The last opened/saved {@link File} for the current dataflow, or
+	 *         <code>null</code> if unknown or not a file.
+	 */
+	public abstract File getCurrentDataflowFile();
+
+	/**
+	 * Get the last opened/saved {@link URL} location for the current dataflow.
+	 * <p>
+	 * If the URL is of the <code>file</code> protocol,
+	 * {@link #getCurrentDataflowFile()} would return the referenced file name.
+	 * </p>
+	 * <p>
+	 * If the current dataflow is <code>null</code>, or the current
+	 * dataflow's last opened/saved location was unknown, return
+	 * <code>null</code>.
+	 * </p>
+	 * 
+	 * @return The last opened/saved {@link URL} for the current dataflow, or
+	 *         <code>null</code> if unknown.
+	 */
+	public abstract URL getCurrentDataflowURL();
+
+	/**
+	 * Get the last opened/saved {@link File} location for the given dataflow.
+	 * <p>
+	 * If the given dataflow's last opened/saved location was unknown or not a
+	 * File (but say an HTTP-based URL), return <code>null</code>.
+	 * </p>
+	 * 
+	 * @param dataflow
+	 *            {@link Dataflow} which file is to be returned
+	 * @return The last opened/saved {@link File} for the given dataflow, or
+	 *         <code>null</code> if unknown or not a file.
+	 */
+	public abstract File getDataflowFile(Dataflow dataflow);
+
+	/**
+	 * Get the last opened/saved {@link URL} location for the given dataflow.
+	 * <p>
+	 * If the URL is of the <code>file</code> protocol,
+	 * {@link #getDataflowFile(Dataflow)} would return the referenced file name.
+	 * </p>
+	 * <p>
+	 * If the given dataflow's last opened/saved location was unknown, return
+	 * <code>null</code>.
+	 * </p>
+	 * 
+	 * @param dataflow
+	 *            {@link Dataflow} which url is to be returned
+	 * @return The last opened/saved {@link URL} for the given dataflow, or
+	 *         <code>null</code> if unknown.
+	 */
+	public abstract URL getDataflowURL(Dataflow dataflow);
+
+	/**
+	 * Get the list of currently open dataflows.
+	 * 
+	 * @return
+	 */
 	public abstract List<Dataflow> getOpenDataflows();
 
 	public abstract boolean isDataflowChanged(Dataflow dataflow);
@@ -170,13 +287,5 @@ public abstract class FileManager implements Observable<FileManagerEvent> {
 	public abstract void setCurrentDataflow(Dataflow dataflow);
 
 	public abstract void setDataflowChanged(Dataflow dataflow, boolean isChanged);
-
-	public abstract File getCurrentDataflowFile();
-
-	public abstract File getDataflowFile(Dataflow dataflow);
-
-	public abstract URL getCurrentDataflowURL();
-
-	public abstract URL getDataflowURL(Dataflow dataflow);
 
 }
