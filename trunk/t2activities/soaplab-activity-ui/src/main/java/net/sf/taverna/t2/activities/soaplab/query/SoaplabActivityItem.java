@@ -54,7 +54,7 @@ public class SoaplabActivityItem extends AbstractActivityItem {
 	@Override
 	protected Object getConfigBean() {
 		SoaplabActivityConfigurationBean bean = new SoaplabActivityConfigurationBean();
-		bean.setEndpoint(getUrl());
+		bean.setEndpoint(getUrl()+getOperation());
 		return bean;
 	}
 
