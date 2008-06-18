@@ -2,6 +2,7 @@ package net.sf.taverna.t2.activities.wsdl.query;
 
 import net.sf.taverna.t2.partition.ActivityQuery;
 import net.sf.taverna.t2.partition.ActivityQueryFactory;
+import net.sf.taverna.t2.partition.AddQueryActionHandler;
 
 public class WSDLQueryFactory extends ActivityQueryFactory {
 
@@ -14,5 +15,17 @@ public class WSDLQueryFactory extends ActivityQueryFactory {
 	protected String getPropertyKey() {
 		return "taverna.defaultwsdl";
 	}
+
+	@Override
+	public AddQueryActionHandler getAddQueryActionHandler() {
+		return new WSDLAddQueryActionHandler();
+	}
+
+	@Override
+	public boolean hasAddQueryActionHandler() {
+		return true;
+	}
+	
+	
 
 }
