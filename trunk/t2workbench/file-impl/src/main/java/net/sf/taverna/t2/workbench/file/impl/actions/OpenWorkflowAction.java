@@ -20,6 +20,23 @@ import org.apache.log4j.Logger;
 
 public class OpenWorkflowAction extends AbstractAction {
 
+	private final class FileOpenerThread extends Thread {
+		private final Component parentComponent;
+		private final File[] files;
+
+		private FileOpenerThread(Component parentComponent,
+				File[] selectedFiles) {
+			super("Opening dataflow");
+			this.parentComponent = parentComponent;
+			this.files = selectedFiles;
+		}
+
+		@Override
+		public void run() {
+			openWorkflows(parentComponent, files);
+		}
+	}
+
 	// TODO: Support .xml as well
 	private static final String[] EXTENSIONS = new String[] { "t2flow" };
 	private static final String OPEN_WORKFLOW = "Open workflow...";
@@ -32,9 +49,11 @@ public class OpenWorkflowAction extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		Component parentComponent = null;
+		final Component parentComponent;
 		if (e.getSource() instanceof Component) {
 			parentComponent = (Component) e.getSource();
+		} else {
+			parentComponent = null;
 		}
 
 		JFileChooser fileChooser = new JFileChooser();
@@ -45,12 +64,20 @@ public class OpenWorkflowAction extends AbstractAction {
 		fileChooser.resetChoosableFileFilters();
 		fileChooser.setFileFilter(new ExtensionFileFilter(EXTENSIONS));
 		fileChooser.setCurrentDirectory(new File(curDir));
+		fileChooser.setMultiSelectionEnabled(true);
 
 		int returnVal = fileChooser.showOpenDialog(parentComponent);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			prefs.put("currentDir", fileChooser.getCurrentDirectory()
 					.toString());
-			final File file = fileChooser.getSelectedFile();
+			final File[] selectedFiles = fileChooser.getSelectedFiles();
+			new FileOpenerThread(parentComponent, selectedFiles).start();
+
+		}
+	}
+	
+	public void openWorkflows(Component parentComponent, File[] files) {
+		for (File file : files) {
 			final URL url;
 			try {
 				url = file.toURI().toURL();
@@ -58,15 +85,16 @@ public class OpenWorkflowAction extends AbstractAction {
 				logger.error("Malformed URL from file " + file, ex);
 				return;
 			}
-			// TODO: Open in separate thread to avoid hanging UI
 			try {
 				fileManager.openDataflow(url);
 			} catch (OpenException ex) {
-				logger.warn("Could not open workflow from " + url, ex);
+				logger.warn("Could not open workflow from " + url,
+						ex);
 				JOptionPane.showMessageDialog(parentComponent,
-						"Could not open workflow from " + url + ": \n\n"
-								+ ex.getMessage(), "Warning",
-						JOptionPane.WARNING_MESSAGE);
+						"Could not open workflow from " + url
+								+ ": \n\n" + ex.getMessage(),
+						"Warning", JOptionPane.WARNING_MESSAGE);
+				return;
 			}
 		}
 	}
