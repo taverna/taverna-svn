@@ -31,7 +31,7 @@ import javax.swing.tree.TreePath;
  *            Any child partition will have a getPartitionValue return type
  *            cast-able to this type.
  */
-public class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
+public class Partition<ItemType extends Comparable, PartitionValueType, ChildPartitionValueType> {
 
 	// A comparator operating over the value type of the child partitions and
 	// used to order them as created or to re-order on a change of this property
@@ -136,7 +136,8 @@ public class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 	 *            a new comparator to order child partitions
 	 */
 	public void setChildPartitionOrder(Comparator<ChildPartitionValueType> order) {
-		if (order.equals(childPartitionOrder) == false) {
+		if (!order.equals(childPartitionOrder)) {
+			System.out.println("comparing");
 			childPartitionOrder = order;
 			sortChildPartitions();
 		}
@@ -168,7 +169,7 @@ public class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 					+ this.partitionValue.toString() + " (" + getItemCount()
 					+ ")";
 		} else {
-			return "Everything (" + getItemCount() + ")";
+			return "Activities which match query = " + getItemCount();
 		}
 	}
 
@@ -365,5 +366,24 @@ public class Partition<ItemType, PartitionValueType, ChildPartitionValueType> {
 		// }
 		return new TreePath(getPartitionPath().toArray());
 	}
+	
+	public void sortItems() {
+		System.out.println("sorting the items");
+		synchronized (members) {
+			List<ItemType> oldOrder = new ArrayList<ItemType>(members);
+			Collections.sort(oldOrder);
+			
+			for (ItemType item:oldOrder) {
+				removeMember(item);
+			}
+			for (ItemType item: oldOrder) {
+				addItem(item);
+			}
+		}
+		
+		
+	}
+	
+	
 
 }

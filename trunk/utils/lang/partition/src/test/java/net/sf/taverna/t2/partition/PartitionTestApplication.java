@@ -164,7 +164,7 @@ public class PartitionTestApplication {
 		return paList;
 	}
 
-	static class ExampleItem {
+	static class ExampleItem implements Comparable<Object>{
 		private String name;
 		private int intValue;
 		private float floatValue;
@@ -190,6 +190,11 @@ public class PartitionTestApplication {
 		@Override
 		public String toString() {
 			return this.name;
+		}
+
+		public int compareTo(Object o) {
+			// TODO Auto-generated method stub
+			return 0;
 		}
 	}
 

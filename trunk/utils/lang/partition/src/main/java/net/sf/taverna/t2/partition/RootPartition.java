@@ -22,7 +22,7 @@ import javax.swing.tree.TreePath;
  * @param <ItemType>
  *            all items added to this partition must cast to this type
  */
-public class RootPartition<ItemType> extends
+public class RootPartition<ItemType extends Comparable> extends
 		Partition<ItemType, Object, Object> implements TreeModel {
 
 	// Used to track where we ended up putting items with the addOrUpdateItem
