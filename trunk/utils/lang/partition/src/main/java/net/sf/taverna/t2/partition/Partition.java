@@ -227,7 +227,8 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 	 * recursively call the same method on child partitions or create new
 	 * partitions where there are none that match the value from the partition
 	 * algorithm. If this is a leaf partition the item is added to the member
-	 * set.
+	 * set. The list is sorted when adding an item and it is inserted in the
+	 * appropriate place
 	 * 
 	 * @param item
 	 *            the item to add to the partition structure.
@@ -237,16 +238,21 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 		if (partitionAlgorithms.isEmpty()) {
 			// Allocate directly to member set, no further partitioning
 			members.add(item);
+			Collections.sort(members);
+			int indexOf = members.indexOf(item);
+			// root.treeNodesInserted(new TreeModelEvent(this, getTreePath(),
+			// new int[] { members.size() - 1 }, new Object[] { item }));
 			root.treeNodesInserted(new TreeModelEvent(this, getTreePath(),
-					new int[] { members.size() - 1 }, new Object[] { item }));
+					new int[] { indexOf }, new Object[] { item }));
 			// Increment item count for all partitions in the partition path
 			for (Partition<ItemType, ?, ?> p : getPartitionPath()) {
 				synchronized (p) {
 					p.itemCount++;
-					root.treeNodesChanged(new TreeModelEvent(this, p.getTreePath()));
+					root.treeNodesChanged(new TreeModelEvent(this, p
+							.getTreePath()));
 				}
 			}
-			
+
 			// Cache the storage of this item to this partition in the root
 			// partition for more efficient removal if required (saves having to
 			// search the entire partition tree, although that wouldn't be too
@@ -366,24 +372,21 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 		// }
 		return new TreePath(getPartitionPath().toArray());
 	}
-	
+
 	public void sortItems() {
 		System.out.println("sorting the items");
 		synchronized (members) {
 			List<ItemType> oldOrder = new ArrayList<ItemType>(members);
 			Collections.sort(oldOrder);
-			
-			for (ItemType item:oldOrder) {
+
+			for (ItemType item : oldOrder) {
 				removeMember(item);
 			}
-			for (ItemType item: oldOrder) {
+			for (ItemType item : oldOrder) {
 				addItem(item);
 			}
 		}
-		
-		
+
 	}
-	
-	
 
 }
