@@ -80,7 +80,7 @@ public class LiteralValuePartitionAlgorithm implements
 
 	@Override
 	public String toString() {
-		return this.propertyName+"=";
+		return this.propertyName;
 	}
 
 }
