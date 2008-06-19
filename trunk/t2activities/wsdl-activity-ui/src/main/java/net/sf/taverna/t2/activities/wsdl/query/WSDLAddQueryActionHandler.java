@@ -14,7 +14,7 @@ public class WSDLAddQueryActionHandler extends AddQueryActionHandler {
 
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
-		String wsdl = JOptionPane.showInputDialog(null,"Address of the WSDL document","WSDL Location",JOptionPane.INFORMATION_MESSAGE);
+		String wsdl = JOptionPane.showInputDialog(null,"Address of the WSDL document","WSDL location",JOptionPane.INFORMATION_MESSAGE);
 		if (wsdl!=null) {
 			WSDLQuery query = new WSDLQuery(wsdl);
 			addQuery(query);
