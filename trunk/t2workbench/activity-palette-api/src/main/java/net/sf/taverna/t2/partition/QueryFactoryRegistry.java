@@ -74,6 +74,9 @@ public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 				soaplabList.add("http://www.ebi.ac.uk/soaplab/services/");
 				map.put("taverna.defaultwsdl", wsdlList);
 				map.put("taverna.defaultsoaplab", soaplabList);
+				List<String> biomart = new ArrayList<String>();
+				biomart.add("http://www.biomart.org/biomart");
+				map.put("taverna.defaultmartregistry",biomart);
 				return map;
 			}
 
