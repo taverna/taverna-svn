@@ -4,7 +4,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
@@ -15,6 +14,7 @@ import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
+import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
@@ -70,8 +70,13 @@ public class GraphViewTransferHandler extends TransferHandler {
 				Object bean = activityAndBeanWrapper.getBean();
 				activity.configure(bean);
 				Dataflow dataflow = graphViewComponent.getDataflow();
-				Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, Tools.buildFromActivity(activity));
+				Processor p = Tools.buildFromActivity(activity);
+				String name=activityAndBeanWrapper.getName();
+				name=Tools.uniqueProcessorName(name,dataflow);
+				Edit<Processor> renameProcessorEdit = edits.getRenameProcessorEdit(p, name);
+				Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, p);
 				editManager.doDataflowEdit(dataflow, edit);
+				editManager.doDataflowEdit(dataflow, renameProcessorEdit);
 			}
 		} catch (UnsupportedFlavorException e) {
 			// TODO Auto-generated catch block
