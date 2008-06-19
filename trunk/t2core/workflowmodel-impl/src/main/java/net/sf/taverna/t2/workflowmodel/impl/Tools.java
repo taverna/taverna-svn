@@ -496,7 +496,7 @@ public class Tools {
 	 * @param dataflow - the dataflow for which the Processor name needs to be unique
 	 * @return
 	 */
-	public String uniqueProcessorName(String preferredName, Dataflow dataflow) {
+	public static String uniqueProcessorName(String preferredName, Dataflow dataflow) {
 		String uniqueName=preferredName;
 		boolean found=true;
 		int prefix=0;
