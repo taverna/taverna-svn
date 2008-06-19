@@ -15,6 +15,14 @@ import org.apache.log4j.Logger;
 public abstract class AbstractActivityItem implements ActivityItem {
 	
 	private static Logger logger = Logger.getLogger(AbstractActivityItem.class);
+	
+	public int compareTo(ActivityItem o) {
+		if (toString().compareTo(o.toString()) > 0) {
+
+			return 1;
+		}
+		return 0;
+	}
 
 	/**
 	 * Returns a {@link Transferable} containing an
@@ -36,6 +44,7 @@ public abstract class AbstractActivityItem implements ActivityItem {
 				ActivityAndBeanWrapper wrapper = new ActivityAndBeanWrapper();
 				wrapper.setActivity(getUnconfiguredActivity());
 				wrapper.setBean(getConfigBean());
+				wrapper.setName(AbstractActivityItem.this.toString());
 				return wrapper;
 			}
 
