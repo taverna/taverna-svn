@@ -88,16 +88,15 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent-menuBar");
 		menuBar.add(algorithmMenu);
 		menuBar.add(addQueryMenu);
+		menuBar.add(sortMenu);
 		// add(menuBar, BorderLayout.PAGE_START);
 		menuBar.setVisible(true);
 		// add(queryLabel, BorderLayout.PAGE_START);
 		// FIXME needs some gridbag style sorting out to get the query in
 		// correct place
+//		menuPanel.add(queryLabel, FlowLayout.LEFT);
 		menuPanel.add(menuBar, FlowLayout.LEFT);
-		menuPanel.add(queryLabel, FlowLayout.LEFT);
-		JMenuBar sortMenuBar = new JMenuBar();
-		sortMenuBar.add(sortMenu);
-		menuPanel.add(sortMenuBar, FlowLayout.LEFT);
+		
 		add(menuPanel, BorderLayout.PAGE_START);
 		add(new JScrollPane(activityTree), BorderLayout.CENTER);
 	}
@@ -211,7 +210,6 @@ private void createQueryMenu() {
 							public int compare(String o1, String o2) {
 								// TODO Auto-generated method stub
 								if (o1.compareTo(o2) > 0) {
-									System.out.println("compare" + o1 + " greater than " + o2);
 									return 1;
 								}
 								return 0;
@@ -223,31 +221,31 @@ private void createQueryMenu() {
 		});
 		sortMenu.add(item);
 		
-		JMenuItem item2 = new JMenuItem("Activities");
-		item2.addActionListener(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("sorting");
-//				listAllChildren((RootPartition)activityTree.getModel());
-				sortAllPartitionChildren((RootPartition)activityTree.getModel());
-			}
-			
-		});
-		sortMenu.add(item2);
+//		JMenuItem item2 = new JMenuItem("Activities");
+//		item2.addActionListener(new AbstractAction() {
+//
+//			public void actionPerformed(ActionEvent e) {
+//				System.out.println("sorting");
+////				listAllChildren((RootPartition)activityTree.getModel());
+//				sortAllPartitionChildren((RootPartition)activityTree.getModel());
+//			}
+//			
+//		});
+//		sortMenu.add(item2);
 	}
 	
-	private void sortAllPartitionChildren(Partition child) {
-		for (Object kid:child.getChildren()) {
-			sortAllPartitionChildren((Partition) kid);
-		}
-		Object partitionValue = child.getPartitionValue();
-		if (partitionValue != null) {			
-			System.out.println("partition value: " + partitionValue.toString());
-		} else {
-			System.out.println("value was null");
-		}
-		child.sortItems();
-	}
+//	private void sortAllPartitionChildren(Partition child) {
+//		for (Object kid:child.getChildren()) {
+//			sortAllPartitionChildren((Partition) kid);
+//		}
+//		Object partitionValue = child.getPartitionValue();
+//		if (partitionValue != null) {			
+//			System.out.println("partition value: " + partitionValue.toString());
+//		} else {
+//			System.out.println("value was null");
+//		}
+//		child.sortItems();
+//	}
 	
 
 	public ImageIcon getIcon() {
