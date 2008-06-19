@@ -137,7 +137,6 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 	 */
 	public void setChildPartitionOrder(Comparator<ChildPartitionValueType> order) {
 		if (!order.equals(childPartitionOrder)) {
-			System.out.println("comparing");
 			childPartitionOrder = order;
 			sortChildPartitions();
 		}
@@ -165,11 +164,22 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 	@Override
 	public String toString() {
 		if (getParent() != null) {
-			return this.getParent().getPartitionAlgorithms().get(0).toString()
-					+ this.partitionValue.toString() + " (" + getItemCount()
+			//query type
+			String string = this.getParent().getPartitionAlgorithms().get(0).toString();
+			//result of query
+			String string2 = this.partitionValue.toString();
+			return string2 + " (" + getItemCount()
 					+ ")";
 		} else {
-			return "Activities which match query = " + getItemCount();
+			// This is for a root partition, loop through its children to return
+			// the correct number when running a new query
+			int items = 0;
+			for (Partition child : children) {
+				items = items + child.getItemCount();
+			}
+			String queryType = getPartitionAlgorithms().get(0).toString();
+			// return "Activities which match query = " + getItemCount();
+			return "Total number of activities= " + items + ", query by " + queryType;
 		}
 	}
 
@@ -236,6 +246,7 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 	@SuppressWarnings("unchecked")
 	protected synchronized void addItem(ItemType item) {
 		if (partitionAlgorithms.isEmpty()) {
+			// itemCount = 0;
 			// Allocate directly to member set, no further partitioning
 			members.add(item);
 			Collections.sort(members);
@@ -373,20 +384,20 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 		return new TreePath(getPartitionPath().toArray());
 	}
 
-	public void sortItems() {
-		System.out.println("sorting the items");
-		synchronized (members) {
-			List<ItemType> oldOrder = new ArrayList<ItemType>(members);
-			Collections.sort(oldOrder);
-
-			for (ItemType item : oldOrder) {
-				removeMember(item);
-			}
-			for (ItemType item : oldOrder) {
-				addItem(item);
-			}
-		}
-
-	}
+	// public void sortItems() {
+	// System.out.println("sorting the items");
+	// synchronized (members) {
+	// List<ItemType> oldOrder = new ArrayList<ItemType>(members);
+	// Collections.sort(oldOrder);
+	//
+	// for (ItemType item : oldOrder) {
+	// removeMember(item);
+	// }
+	// for (ItemType item : oldOrder) {
+	// addItem(item);
+	// }
+	// }
+	//
+	// }
 
 }
