@@ -15,6 +15,7 @@ import net.sf.taverna.raven.repository.BasicArtifact;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalArtifactClassLoader;
 import net.sf.taverna.t2.annotation.Annotated;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
@@ -485,6 +486,33 @@ public class Tools {
 		if (!annotated.getAnnotations().isEmpty()) {
 			element.addContent(getAnnotationsElement(annotated));
 		}
+	}
+	
+	/**
+	 * Returns a unique processor name for the supplied Dataflow, based upon the preferred name.
+	 * A numeric prefix is added to the preferred name, and incremented until it is unique.
+	 * 
+	 * @param preferredName - the preferred name for the Processor
+	 * @param dataflow - the dataflow for which the Processor name needs to be unique
+	 * @return
+	 */
+	public String uniqueProcessorName(String preferredName, Dataflow dataflow) {
+		String uniqueName=preferredName;
+		boolean found=true;
+		int prefix=0;
+		while(found) {
+			found=false;
+			for (Processor p : dataflow.getProcessors()) 
+			{
+				if (p.getLocalName().equals(uniqueName)) {
+					uniqueName=preferredName+String.valueOf(prefix);
+					prefix++;
+					found=true;
+					break;
+				}
+			}
+		}
+		return uniqueName;
 	}
 
 	/**
