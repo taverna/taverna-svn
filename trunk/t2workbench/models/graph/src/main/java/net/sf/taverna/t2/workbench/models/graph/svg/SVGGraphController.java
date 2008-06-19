@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Point;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -32,9 +31,6 @@ import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMPolylineElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.dom.svg.SVGOMTitleElement;
-import org.apache.batik.swing.JSVGCanvas;
-import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
-import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
 import org.apache.batik.util.SVGConstants;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
@@ -52,35 +48,23 @@ public class SVGGraphController extends GraphController {
 	private Map<String, List<SVGGraphEdge>> datalinkMap = new HashMap<String, List<SVGGraphEdge>>();
 
 	private Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
-		
+
 	private SVGDocument svgDocument;
-	
-	private JSVGCanvas svgCanvas = new JSVGCanvas();
-	
+
 	private EdgeLine edgeLine;
-	
+
 	UpdateManager updateManager;
-	
+
 	public SVGGraphController(Dataflow dataflow, JComponent xcomponent) {
 		super(dataflow, new SVGGraphModelFactory(), xcomponent);
-
-		svgCanvas = new JSVGCanvas();
-		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
-
-		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
-			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
-				updateManager = svgCanvas.getUpdateManager();
-			}
-		});
-		
 	}
 
-	@Override
-	public Component getComponent() {
-		return svgCanvas;
-	}
+	public SVGDocument generateSVGDocument() {
+		svgDocument = null;
+		updateManager = null;
+		processorMap.clear();
+		datalinkMap.clear();
 
-	public void redraw() {
 		Graph graph = generateGraph();
 		graphElementMap.clear();
 		mapGraphElements(graph);
@@ -88,24 +72,18 @@ public class SVGGraphController extends GraphController {
 			StringWriter stringWriter = new StringWriter();
 			DotWriter dotWriter = new DotWriter(stringWriter);
 			dotWriter.writeGraph(graph);
-			setSVGDocument(SVGUtil.getSVG(stringWriter.toString()));
+			svgDocument = SVGUtil.getSVG(stringWriter.toString());
+			edgeLine = EdgeLine.createAndAdd(svgDocument);
+			mapNodes(svgDocument.getChildNodes());
 		} catch (IOException e) {
 			logger.error("Couldn't generate svg", e);
 		}
+		return svgDocument;
 	}
 	
-	public void setSVGDocument(SVGDocument svgDocument) {
-		this.svgDocument = svgDocument;
-		updateManager = null;
-		processorMap.clear();
-		datalinkMap.clear();
-
-		edgeLine = EdgeLine.createAndAdd(svgDocument);
-		mapNodes(svgDocument.getChildNodes());
-		svgCanvas.setSVGDocument(svgDocument);
-	}
-	
-	public void addEdgeLine(SVGDocument svgDocument) {
+	public void setUpdateManager(UpdateManager updateManager) {
+		this.updateManager = updateManager;
+		resetSelection();
 	}
 
 	public void startEdgeCreation(GraphElement graphElement, Point point) {
@@ -114,10 +92,10 @@ public class SVGGraphController extends GraphController {
 			edgeLine.setSourcePoint(point);
 			edgeLine.setTargetPoint(point);
 			edgeLine.setColour(Color.BLACK);
-//			edgeLine.setVisible(true);
+			// edgeLine.setVisible(true);
 		}
 	}
-	
+
 	public boolean moveEdgeCreationTarget(GraphElement graphElement, Point point) {
 		boolean linkValid = super.moveEdgeCreationTarget(graphElement, point);
 		if (edgeCreationFromSink) {
@@ -159,9 +137,9 @@ public class SVGGraphController extends GraphController {
 		}
 		for (GraphEdge edge : graph.getEdges()) {
 			graphElementMap.put(edge.getId(), edge);
-		}		
+		}
 	}
-	
+
 	/**
 	 * Traverses nodes in the SVG DOM and maps to SVGGraphNode and
 	 * SVGGraphEdges.
@@ -199,18 +177,18 @@ public class SVGGraphController extends GraphController {
 		while (child != null) {
 			if (child instanceof SVGOMTitleElement) {
 				title = getTitle((SVGOMTitleElement) child);
-//			} else if (child instanceof SVGOMPolygonElement) {
-//				polygon = (SVGOMPolygonElement) child;
+				// } else if (child instanceof SVGOMPolygonElement) {
+				// polygon = (SVGOMPolygonElement) child;
 			}
 			child = child.getNextSibling();
 		}
-		if (title != null/* && polygon != null*/) {
+		if (title != null/* && polygon != null */) {
 			GraphElement graphElement = graphElementMap.get(title);
 			if (graphElement instanceof SVGGraph) {
 				SVGGraph svgGraph = (SVGGraph) graphElement;
 				svgGraph.setGraphController(this);
 				svgGraph.setG(gElement);
-//				svgGraph.setPolygon(polygon);
+				// svgGraph.setPolygon(polygon);
 			}
 		}
 	}
@@ -283,123 +261,12 @@ public class SVGGraphController extends GraphController {
 						svgGraphNode.setText(text.get(0));
 					}
 				} else if (svgGraphNode.getShape().equals(Shape.RECORD)) {
-					List<GraphNode> inputs = svgGraphNode.getSinkNodes();
-					List<GraphNode> outputs = svgGraphNode.getSourceNodes();
-					int ports = Math.max(1, inputs.size()) + Math.max(1, outputs.size());
-					if (lines.size() == ports && text.size() == ports + 1) {
-						SVGPointList polygonPoints = polygon.getPoints();
-						Iterator<SVGOMPolylineElement> linesIterator = lines.iterator();
-						Iterator<SVGOMTextElement> textIterator = text.iterator();
-						if (getAlignment().equals(Alignment.VERTICAL)) {
-							if (inputs.size() == 0) {
-								linesIterator.next();
-								textIterator.next();
-							} else {
-								Iterator<GraphNode> inputsIterator = inputs.iterator();
-								SVGPointList portLine = null;
-								while (inputsIterator.hasNext()) {
-									SVGGraphNode inputNode = (SVGGraphNode) inputsIterator.next();
-									inputNode.setGraphController(this);
-									SVGPointList lastPortLine = portLine;
-									portLine = linesIterator.next().getPoints();
-									textIterator.next();
-									StringBuilder portPoints = new StringBuilder();
-									if (inputs.size() == 1) {//first and only
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(polygonPoints.getItem(3).getX()+","+polygonPoints.getItem(3).getY()+" ");
-										portPoints.append(polygonPoints.getItem(2).getX()+","+polygonPoints.getItem(2).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY());										
-									} else if (lastPortLine == null) {//first
-										portPoints.append(polygonPoints.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(polygonPoints.getItem(3).getX()+","+polygonPoints.getItem(3).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(polygonPoints.getItem(0).getX()+","+portLine.getItem(0).getY());										
-									} else if (inputsIterator.hasNext()) {//mid
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY());
-									} else {//last
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY());
-									}
-									SVGOMPolygonElement portPolygon = createPolygon(portPoints.toString());
-									gElement.insertBefore(portPolygon, null);
-									inputNode.setPolygon(portPolygon);
-								}
-							}
-							svgGraphNode.setText(textIterator.next());
-							if (outputs.size() > 0) {
-								Iterator<GraphNode> outputsIterator = outputs.iterator();
-								SVGPointList portLine = linesIterator.next().getPoints();
-								while (outputsIterator.hasNext()) {
-									SVGGraphNode outputNode = (SVGGraphNode) outputsIterator.next();
-									outputNode.setGraphController(this);
-									SVGPointList lastPortLine = portLine;
-									if (linesIterator.hasNext()) {
-										portLine = linesIterator.next().getPoints();
-									} else {
-										portLine = null;
-									}
-									textIterator.next();
-									StringBuilder portPoints = new StringBuilder();
-									if (outputs.size() == 1) {//first and only
-										portPoints.append(polygonPoints.getItem(0).getX()+","+polygonPoints.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(polygonPoints.getItem(1).getX()+","+polygonPoints.getItem(1).getY()+" ");
-										portPoints.append(polygonPoints.getItem(0).getX()+","+polygonPoints.getItem(0).getY());										
-									} else if (outputs.indexOf(outputNode) == 0) {//first
-										portPoints.append(polygonPoints.getItem(0).getX()+","+polygonPoints.getItem(0).getY()+" ");
-										portPoints.append(polygonPoints.getItem(0).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(polygonPoints.getItem(0).getX()+","+polygonPoints.getItem(0).getY());										
-									} else if (portLine == null) {//last
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(polygonPoints.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(polygonPoints.getItem(1).getX()+","+polygonPoints.getItem(1).getY()+" ");
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY());										
-									} else {//mid
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(1).getX()+","+lastPortLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(1).getX()+","+portLine.getItem(1).getY()+" ");
-										portPoints.append(portLine.getItem(0).getX()+","+portLine.getItem(0).getY()+" ");
-										portPoints.append(lastPortLine.getItem(0).getX()+","+lastPortLine.getItem(0).getY());										
-									}
-									SVGOMPolygonElement portPolygon = createPolygon(portPoints.toString());
-									gElement.insertBefore(portPolygon, null);
-									outputNode.setPolygon(portPolygon);
-								}
-							}
-						} else {
-							
-						}
-					} else {
-						logger.debug("Sanity check failed when adding ports for " + title);
-					}
+					addPortBoxes(gElement, polygon, text, lines, svgGraphNode);
 				}
 				processorMap.put(title, svgGraphNode);
 			}
 		}
 	}
-	
-	private SVGOMPolygonElement createPolygon(String points) {
-		SVGOMPolygonElement polygon = (SVGOMPolygonElement) svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_POLYGON_TAG);
-		polygon.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:none;");
-		polygon.setAttribute("pointer-events", "fill");
-		polygon.setAttribute(SVGConstants.SVG_POINTS_ATTRIBUTE, points);
-
-        return polygon;
-	}
-
 
 	private void mapEdge(Node node) {
 		String title = null;
@@ -419,7 +286,8 @@ public class SVGGraphController extends GraphController {
 			}
 			child = child.getNextSibling();
 		}
-		if (title != null && path != null && (polygon != null || ellipse != null)) {
+		if (title != null && path != null
+				&& (polygon != null || ellipse != null)) {
 			GraphElement graphElement = graphElementMap.get(title);
 			if (graphElement instanceof SVGGraphEdge) {
 				SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
@@ -447,10 +315,340 @@ public class SVGGraphController extends GraphController {
 		datalinkMap.get(sinkProcessor).add(datalink);
 	}
 
+	private void addPortBoxes(SVGOMGElement gElement,
+			SVGOMPolygonElement polygon, List<SVGOMTextElement> text,
+			List<SVGOMPolylineElement> lines, SVGGraphNode svgGraphNode) {
+		List<GraphNode> inputs = svgGraphNode.getSinkNodes();
+		List<GraphNode> outputs = svgGraphNode.getSourceNodes();
+		int ports = Math.max(1, inputs.size()) + Math.max(1, outputs.size());
+		if (lines.size() == ports && text.size() == ports + 1) {
+			SVGPointList polygonPoints = polygon.getPoints();
+			Iterator<SVGOMPolylineElement> linesIterator = lines.iterator();
+			Iterator<SVGOMTextElement> textIterator = text.iterator();
+			if (getAlignment().equals(Alignment.VERTICAL)) {
+				if (inputs.size() == 0) {
+					linesIterator.next();
+					textIterator.next();
+				} else {
+					Iterator<GraphNode> inputsIterator = inputs.iterator();
+					SVGPointList portLine = null;
+					while (inputsIterator.hasNext()) {
+						SVGGraphNode inputNode = (SVGGraphNode) inputsIterator
+								.next();
+						inputNode.setGraphController(this);
+						SVGPointList lastPortLine = portLine;
+						portLine = linesIterator.next().getPoints();
+						textIterator.next();
+						StringBuilder portPoints = new StringBuilder();
+						if (inputs.size() == 1) {// first and only
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(3).getX()
+									+ "," + polygonPoints.getItem(3).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(2).getX()
+									+ "," + polygonPoints.getItem(2).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY());
+						} else if (lastPortLine == null) {// first
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(3).getX()
+									+ "," + polygonPoints.getItem(3).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY());
+						} else if (inputsIterator.hasNext()) {// mid
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY());
+						} else {// last
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY());
+						}
+						SVGOMPolygonElement portPolygon = createPolygon(portPoints
+								.toString());
+						gElement.insertBefore(portPolygon, null);
+						inputNode.setPolygon(portPolygon);
+					}
+				}
+				svgGraphNode.setText(textIterator.next());
+				if (outputs.size() > 0) {
+					Iterator<GraphNode> outputsIterator = outputs.iterator();
+					SVGPointList portLine = linesIterator.next().getPoints();
+					while (outputsIterator.hasNext()) {
+						SVGGraphNode outputNode = (SVGGraphNode) outputsIterator
+								.next();
+						outputNode.setGraphController(this);
+						SVGPointList lastPortLine = portLine;
+						if (linesIterator.hasNext()) {
+							portLine = linesIterator.next().getPoints();
+						} else {
+							portLine = null;
+						}
+						textIterator.next();
+						StringBuilder portPoints = new StringBuilder();
+						if (outputs.size() == 1) {// first and
+							// only
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + polygonPoints.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY());
+						} else if (outputs.indexOf(outputNode) == 0) {// first
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY());
+						} else if (portLine == null) {// last
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + polygonPoints.getItem(1).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY());
+						} else {// mid
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY());
+						}
+						SVGOMPolygonElement portPolygon = createPolygon(portPoints
+								.toString());
+						gElement.insertBefore(portPolygon, null);
+						outputNode.setPolygon(portPolygon);
+					}
+				}
+			} else {
+				svgGraphNode.setText(textIterator.next());
+				SVGPointList portLine = linesIterator.next().getPoints();
+				if (inputs.size() == 0) {
+					portLine = linesIterator.next().getPoints();
+					textIterator.next();
+				} else {
+					Iterator<GraphNode> inputsIterator = inputs.iterator();
+					while (inputsIterator.hasNext()) {
+						SVGGraphNode inputNode = (SVGGraphNode) inputsIterator
+								.next();
+						inputNode.setGraphController(this);
+						SVGPointList lastPortLine = portLine;
+						portLine = linesIterator.next().getPoints();
+						textIterator.next();
+						StringBuilder portPoints = new StringBuilder();
+						if (inputs.size() == 1) {// first and only
+							portPoints.append(polygonPoints.getItem(0).getX() + ","
+									+ polygonPoints.getItem(0).getY() + " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX()
+									+ "," + portLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(0).getX() + ","
+									+ polygonPoints.getItem(0).getY());
+						} else if (inputs.indexOf(inputNode) == 0) {// first
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY() + " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(0).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY());
+						} else if (inputsIterator.hasNext()) {// mid
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY());
+						} else {// last
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX() + ","
+									+ portLine.getItem(0).getY() + " ");
+							portPoints.append(polygonPoints.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY());
+						}
+						SVGOMPolygonElement portPolygon = createPolygon(portPoints
+								.toString());
+						gElement.insertBefore(portPolygon, null);
+						inputNode.setPolygon(portPolygon);
+					}
+				}
+				if (outputs.size() > 0) {
+					Iterator<GraphNode> outputsIterator = outputs.iterator();
+					while (outputsIterator.hasNext()) {
+						SVGGraphNode outputNode = (SVGGraphNode) outputsIterator
+								.next();
+						outputNode.setGraphController(this);
+						SVGPointList lastPortLine = portLine;
+						if (linesIterator.hasNext()) {
+							portLine = linesIterator.next().getPoints();
+						} else {
+							portLine = null;
+						}
+						textIterator.next();
+						StringBuilder portPoints = new StringBuilder();
+						if (outputs.size() == 1) {// first and only
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + polygonPoints.getItem(1).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY());
+						} else if (outputs.indexOf(outputNode) == 0) {// first
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY());
+						} else if (portLine == null) {// last
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX()
+									+ "," + lastPortLine.getItem(1).getY()
+									+ " ");
+							portPoints.append(polygonPoints.getItem(1).getX()
+									+ "," + polygonPoints.getItem(1).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + polygonPoints.getItem(0).getY());
+						} else {// mid
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(0).getX()
+									+ "," + lastPortLine.getItem(0).getY()
+									+ " ");
+							portPoints.append(lastPortLine.getItem(1).getX() + ","
+									+ lastPortLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(1).getX() + ","
+									+ portLine.getItem(1).getY() + " ");
+							portPoints.append(portLine.getItem(0).getX()
+									+ "," + portLine.getItem(0).getY());
+						}
+						SVGOMPolygonElement portPolygon = createPolygon(portPoints
+								.toString());
+						gElement.insertBefore(portPolygon, null);
+						outputNode.setPolygon(portPolygon);
+					}
+					
+				}
+			}
+		} else {
+			logger.debug("Sanity check failed when adding ports for "
+					+ svgGraphNode);
+		}
+	}
+
+	private SVGOMPolygonElement createPolygon(String points) {
+		SVGOMPolygonElement polygon = (SVGOMPolygonElement) svgDocument
+				.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_POLYGON_TAG);
+		polygon.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE,
+				"fill:none;stroke:none;");
+		polygon.setAttribute("pointer-events", "fill");
+		polygon.setAttribute(SVGConstants.SVG_POINTS_ATTRIBUTE, points);
+
+		return polygon;
+	}
+
 	private String getTitle(SVGOMTitleElement titleElement) {
 		String title = null;
-		Object titleElementChild = titleElement
-				.getFirstChild();
+		Object titleElementChild = titleElement.getFirstChild();
 		if (titleElementChild instanceof GenericText) {
 			GenericText textElement = (GenericText) titleElementChild;
 			title = textElement.getData();
@@ -461,18 +659,24 @@ public class SVGGraphController extends GraphController {
 }
 
 class EdgeLine {
-	
+
+	private static final float arrowLength = 10f;
+
+	private static final float arrowWidth = 3f;
+
 	private Element line;
-	
+
 	private Element pointer;
-	
+
 	private EdgeLine() {
 	}
 
 	public static EdgeLine createAndAdd(SVGDocument svgDocument) {
 		EdgeLine edgeLine = new EdgeLine();
-		edgeLine.line = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_LINE_TAG);
-		edgeLine.line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:black");
+		edgeLine.line = svgDocument.createElementNS(SVGUtil.svgNS,
+				SVGConstants.SVG_LINE_TAG);
+		edgeLine.line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE,
+				"fill:none;stroke:black");
 		edgeLine.line.setAttribute("pointer-events", "none");
 		edgeLine.line.setAttribute("visibility", "hidden");
 		edgeLine.line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, "0");
@@ -480,46 +684,58 @@ class EdgeLine {
 		edgeLine.line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, "0");
 		edgeLine.line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, "0");
 
-		edgeLine.pointer = svgDocument.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_POLYGON_TAG);
-		edgeLine.pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:black;stroke:black");
-		edgeLine.pointer.setAttribute(SVGConstants.SVG_POINTS_ATTRIBUTE, "0,0 -10,3 -10,-3 0,0");
+		edgeLine.pointer = svgDocument.createElementNS(SVGUtil.svgNS,
+				SVGConstants.SVG_POLYGON_TAG);
+		edgeLine.pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE,
+				"fill:black;stroke:black");
+		edgeLine.pointer.setAttribute(SVGConstants.SVG_POINTS_ATTRIBUTE, "0,0 "
+				+ -arrowLength + "," + arrowWidth + " " + -arrowLength + ","
+				+ -arrowWidth + " 0,0");
 		edgeLine.pointer.setAttribute("pointer-events", "none");
 		edgeLine.pointer.setAttribute("visibility", "hidden");
 
 		Element svgRoot = svgDocument.getDocumentElement();
-        svgRoot.insertBefore(edgeLine.line, null);		
-        svgRoot.insertBefore(edgeLine.pointer, null);
-        
-        return edgeLine;
+		svgRoot.insertBefore(edgeLine.line, null);
+		svgRoot.insertBefore(edgeLine.pointer, null);
+
+		return edgeLine;
 	}
-	
+
 	public void setSourcePoint(Point point) {
-		line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point.getX()));
-		line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point.getY()));
+		line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point
+				.getX()));
+		line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point
+				.getY()));
 
-		float x = Float.parseFloat(line.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
-		float y = Float.parseFloat(line.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
+		float x = Float.parseFloat(line
+				.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
+		float y = Float.parseFloat(line
+				.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
 		double angle = SVGUtil.calculateAngle(line);
 
-		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE,
-				"translate(" + x + " " + y + ") rotate(" + angle + " 0 0) ");
+		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
+				+ x + " " + y + ") rotate(" + angle + " 0 0) ");
 	}
-	
+
 	public void setTargetPoint(Point point) {
-		line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point.getX()));
-		line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point.getY()));
-		
+		line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point
+				.getX()));
+		line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point
+				.getY()));
+
 		double angle = SVGUtil.calculateAngle(line);
-		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE,
-				"translate(" + point.x + " " + point.y + ") rotate(" + angle + " 0 0) ");
+		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
+				+ point.x + " " + point.y + ") rotate(" + angle + " 0 0) ");
 	}
-	
+
 	public void setColour(Color colour) {
 		String hexColour = SVGUtil.getHexValue(colour);
-		line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:"+hexColour+";");
-		pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:"+hexColour+";stroke:"+hexColour+";");
+		line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:"
+				+ hexColour + ";");
+		pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:"
+				+ hexColour + ";stroke:" + hexColour + ";");
 	}
-	
+
 	public void setVisible(boolean visible) {
 		if (visible) {
 			line.setAttribute("visibility", "visible");

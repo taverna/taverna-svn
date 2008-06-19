@@ -135,10 +135,6 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		graphEventManager = new GraphEventManager(this, component);
 	}
 	
-	public abstract Component getComponent();
-	
-	public void redraw() {}
-	
 	/**
 	 * Generates a graph model of a dataflow.
 	 * 

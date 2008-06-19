@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.views.graph;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -12,9 +11,12 @@ import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import net.sf.taverna.raven.repository.Repository;
@@ -29,13 +31,15 @@ import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
-import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphComponent;
+import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
+import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphController;
-import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphModelFactory;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
 import org.apache.batik.swing.JSVGCanvas;
+import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
+import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ConcurrencyConstraintCreationException;
 import org.embl.ebi.escience.scufl.DataConstraintCreationException;
@@ -57,61 +61,39 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	@SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(GraphViewComponent.class);
 
-	private GraphController graphController;
+	private SVGGraphController graphController;
 	
-	private Map<Dataflow, GraphController> graphControllerMap = new HashMap<Dataflow, GraphController>();
+	private Map<Dataflow, SVGGraphController> graphControllerMap = new HashMap<Dataflow, SVGGraphController>();
 	
 	private Dataflow dataflow;
 	
-	private Component currentComponent;
+	private JSVGCanvas svgCanvas;
 
+	private JButton resetDiagramButton;
+	private JButton zoomInButton;
+	private JButton zoomOutButton;
+	private JToggleButton noPorts;
+	private JToggleButton allPorts;
+	private JToggleButton blobs;
+	private JToggleButton vertical;
+	private JToggleButton horizontal;
+	
+	
 	public GraphViewComponent() {
 		super(new BorderLayout());
 		
-		JToolBar toolBar = new JToolBar();
-//		Action resetDiagramAction = currentComponent.new ResetTransformAction();
-//		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
-//		toolBar.add(resetDiagramAction);
-//		Action zoomInAction = currentComponent.new ZoomAction(1.2);
-//		zoomInAction.putValue(Action.NAME, "Zoom In");
-//		toolBar.add(zoomInAction);
-//		Action zoomOutAction = currentComponent.new ZoomAction(1/1.2);
-//		zoomOutAction.putValue(Action.NAME, "Zoom Out");
-//		toolBar.add(zoomOutAction);
+		svgCanvas = new JSVGCanvas();
+		svgCanvas.setDocumentState(JSVGCanvas.ALWAYS_DYNAMIC);
 
-		toolBar.add(new AbstractAction("No Ports") {
-
-			public void actionPerformed(ActionEvent arg0) {
-				graphController.setPortStyle(GraphController.PortStyle.NONE);
-				graphController.redraw();
-				graphController.resetSelection();
+		svgCanvas.addGVTTreeRendererListener(new GVTTreeRendererAdapter() {
+			public void gvtRenderingCompleted(GVTTreeRendererEvent arg0) {
+				graphController.setUpdateManager(svgCanvas.getUpdateManager());
 			}
-			
 		});
+		add(svgCanvas, BorderLayout.CENTER);
 		
-		toolBar.add(new AbstractAction("All Ports") {
-
-			public void actionPerformed(ActionEvent arg0) {
-				graphController.setPortStyle(GraphController.PortStyle.ALL);
-				graphController.redraw();
-				graphController.resetSelection();
-			}
-			
-		});
-		
-		toolBar.add(new AbstractAction("Blobs") {
-
-			public void actionPerformed(ActionEvent arg0) {
-				graphController.setPortStyle(GraphController.PortStyle.BLOB);
-				graphController.redraw();
-				graphController.resetSelection();
-			}
-			
-		});
-		
-		add(toolBar, BorderLayout.NORTH);
-		
-		
+		add(setupToolbar(), BorderLayout.NORTH);
+				
 		ModelMap.getInstance().addObserver(new Observer<ModelMap.ModelMapEvent>() {
 			public void notify(Observable<ModelMapEvent> sender, ModelMapEvent message) {
 				if (message.getModelName().equals(ModelMapConstants.CURRENT_DATAFLOW)) {
@@ -128,7 +110,8 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 				if (message instanceof AbstractDataflowEditEvent) {
 					AbstractDataflowEditEvent dataflowEditEvent = (AbstractDataflowEditEvent) message;
 					if (dataflowEditEvent.getDataFlow() == dataflow ) {
-						graphController.redraw();
+						svgCanvas.setDocument(graphController.generateSVGDocument());
+						revalidate();
 					}
 					
 				}
@@ -136,22 +119,111 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		});
 		
 		setTransferHandler(new GraphViewTransferHandler(this));
+		
 	}
-	
-//	/**
-//	 * Sets the Dataflow to display in the graph view.
-//	 * 
-//	 * @param dataflow
-//	 */
-//	public void setDataflow(Dataflow dataflow) {
-//		this.dataflow = dataflow;
-//		if (!graphControllerMap.containsKey(dataflow)) {
-//			GraphController graphController = new GraphController(dataflow, new SVGGraphModelFactory(), svgGraphComponent);
-//			graphControllerMap.put(dataflow, graphController);
-//		}
-//		graphController = graphControllerMap.get(dataflow);
-//		svgGraphComponent.setGraphController(graphController);
-//	}
+
+	private JToolBar setupToolbar() {
+		JToolBar toolBar = new JToolBar();
+		
+		resetDiagramButton = new JButton();
+		zoomInButton = new JButton();
+		zoomOutButton = new JButton();
+		
+		Action resetDiagramAction = svgCanvas.new ResetTransformAction();
+		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+		resetDiagramButton.setAction(resetDiagramAction);
+		Action zoomInAction = svgCanvas.new ZoomAction(1.2);
+		zoomInAction.putValue(Action.NAME, "Zoom In");
+		zoomInButton.setAction(zoomInAction);
+		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
+		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+		zoomOutButton.setAction(zoomOutAction);
+
+		toolBar.add(resetDiagramButton);
+		toolBar.add(zoomInButton);
+		toolBar.add(zoomOutButton);
+
+		toolBar.addSeparator();
+		
+		ButtonGroup nodeTypeGroup = new ButtonGroup();
+
+		noPorts = new JToggleButton();
+		allPorts = new JToggleButton();
+		blobs = new JToggleButton();
+		nodeTypeGroup.add(noPorts);
+		nodeTypeGroup.add(allPorts);
+		nodeTypeGroup.add(blobs);
+		noPorts.setSelected(true);
+		
+		noPorts.setAction(new AbstractAction("No Ports") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.NONE);
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		
+		allPorts.setAction(new AbstractAction("All Ports") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.ALL);
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		
+		blobs.setAction(new AbstractAction("Blobs") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setPortStyle(GraphController.PortStyle.BLOB);
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		
+		toolBar.add(noPorts);
+		toolBar.add(allPorts);
+		toolBar.add(blobs);
+		
+		toolBar.addSeparator();
+		
+		ButtonGroup alignmentGroup = new ButtonGroup();
+
+		vertical = new JToggleButton();
+		horizontal = new JToggleButton();
+		alignmentGroup.add(vertical);
+		alignmentGroup.add(horizontal);
+		vertical.setSelected(true);
+
+		vertical.setAction(new AbstractAction("Vertical") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Vertical");
+				graphController.setAlignment(Alignment.VERTICAL);
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		horizontal.setAction(new AbstractAction("Horizontal") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println("Horizontal");
+				graphController.setAlignment(Alignment.HORIZONTAL);
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		
+		toolBar.add(vertical);
+		toolBar.add(horizontal);
+		return toolBar;
+	}
 	
 	/**
 	 * Sets the Dataflow to display in the graph view.
@@ -161,17 +233,25 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	public void setDataflow(Dataflow dataflow) {
 		this.dataflow = dataflow;
 		if (!graphControllerMap.containsKey(dataflow)) {
-			GraphController graphController = new SVGGraphController(dataflow, this);
+			SVGGraphController graphController = new SVGGraphController(dataflow, this);
 			graphControllerMap.put(dataflow, graphController);
 		}
 		graphController = graphControllerMap.get(dataflow);
-		graphController.redraw();
 		
-		if (currentComponent != null) {
-			remove(currentComponent);
+		if (graphController.getPortStyle().equals(PortStyle.NONE)) {
+			noPorts.setSelected(true);
+		} else if (graphController.getPortStyle().equals(PortStyle.ALL)) {
+			allPorts.setSelected(true);
+		} else {
+			blobs.setSelected(true);
 		}
-		currentComponent = graphController.getComponent();
-		add(currentComponent, BorderLayout.CENTER);
+		if (graphController.getAlignment().equals(Alignment.HORIZONTAL)) {
+			horizontal.setSelected(true);
+		} else {
+			vertical.setSelected(true);
+		}
+		
+		svgCanvas.setDocument(graphController.generateSVGDocument());
 		revalidate();
 	}
 	

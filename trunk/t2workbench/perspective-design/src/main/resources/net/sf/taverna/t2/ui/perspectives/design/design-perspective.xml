@@ -6,7 +6,7 @@
 				<right>
 					<znode
 						classname="net.sf.taverna.zaria.ZRavenComponent">
-						<namedcomponent scroll="true">
+						<namedcomponent scroll="false">
 							<name>graphview</name>
 						</namedcomponent>
 					</znode>
