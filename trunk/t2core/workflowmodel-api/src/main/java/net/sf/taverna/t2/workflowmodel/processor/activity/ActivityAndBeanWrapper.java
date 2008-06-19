@@ -12,15 +12,16 @@ import java.awt.datatransfer.Transferable;
  */
 public class ActivityAndBeanWrapper {
 	/** The Activity being dragged */
-	private Activity activity;
+	private Activity<?> activity;
 	/** The bean used to configure the activity */
 	private Object bean;
+	private String name;
 
-	public Activity getActivity() {
+	public Activity<?> getActivity() {
 		return activity;
 	}
 
-	public void setActivity(Activity activity) {
+	public void setActivity(Activity<?> activity) {
 		this.activity = activity;
 	}
 
@@ -30,6 +31,14 @@ public class ActivityAndBeanWrapper {
 
 	public void setBean(Object bean) {
 		this.bean = bean;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
