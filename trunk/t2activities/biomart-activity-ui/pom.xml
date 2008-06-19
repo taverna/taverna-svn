@@ -9,8 +9,8 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.sf.taverna.t2</groupId>
-	<artifactId>wsdl-activity-ui</artifactId>
-	<name>Taverna 2 WSDL Activity UI.</name>
+	<artifactId>biomart-activity-ui</artifactId>
+	<name>Taverna 2 Biomart Activity UI.</name>
 	<version>0.3-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
@@ -19,15 +19,11 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.taverna</groupId>
-			<artifactId>wsdl-generic</artifactId>
-			<version>1.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>wsdl-activity</artifactId>
+			<artifactId>biomart-activity</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+		
 
 		<!--  testing dependencies -->
 		<dependency>

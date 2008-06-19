@@ -16,6 +16,7 @@
   	<module>beanshell-activity</module>
   	<module>beanshell-activity-translator</module>
   	<module>biomart-activity</module>
+  	<module>biomart-activity-ui</module>
   	<module>biomart-activity-translator</module>
   	<module>biomoby-activity</module>
   	<module>biomoby-activity-translator</module>
