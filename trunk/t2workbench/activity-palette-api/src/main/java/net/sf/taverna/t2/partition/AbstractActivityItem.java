@@ -13,11 +13,15 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper
 import org.apache.log4j.Logger;
 
 public abstract class AbstractActivityItem implements ActivityItem {
-	
+
 	private static Logger logger = Logger.getLogger(AbstractActivityItem.class);
-	
+
+	/**
+	 * Compare the values that are shown in the activity palette and re-order
+	 * alphabetically by the lower case representation
+	 */
 	public int compareTo(ActivityItem o) {
-		if (toString().compareTo(o.toString()) > 0) {
+		if (toString().toLowerCase().compareTo(o.toString().toLowerCase()) > 0) {
 
 			return 1;
 		}
@@ -56,7 +60,7 @@ public abstract class AbstractActivityItem implements ActivityItem {
 							DataFlavor.javaJVMLocalObjectMimeType
 									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
 				} catch (ClassNotFoundException e) {
-					logger.error("Error casting Dataflavor",e);
+					logger.error("Error casting Dataflavor", e);
 				}
 				flavors[0] = flavor;
 				return flavors;
@@ -69,7 +73,7 @@ public abstract class AbstractActivityItem implements ActivityItem {
 							DataFlavor.javaJVMLocalObjectMimeType
 									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
 				} catch (ClassNotFoundException e) {
-					logger.error("Error casting Dataflavor",e);
+					logger.error("Error casting Dataflavor", e);
 				}
 				return flavor.equals(thisFlavor);
 			}
@@ -79,7 +83,9 @@ public abstract class AbstractActivityItem implements ActivityItem {
 	}
 
 	public abstract Icon getIcon();
+
 	protected abstract Object getConfigBean();
+
 	protected abstract Activity<?> getUnconfiguredActivity();
 
 }
