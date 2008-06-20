@@ -28,12 +28,12 @@ public class WSDLActivityTest {
 	
 	@Test
 	public void testBasicInvocation() throws Exception {
-		WSDLActivity activity = initActivity("GUIDGenerator.wsdl", "getGUID");
+		WSDLActivity activity = initActivity("menagerie-complex-rpc.wsdl", "createPerson");
 		Map<String,Object> inputMap = new HashMap<String,Object>();
-		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("return"));
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("out"));
 		assertEquals(1,results.size());
-		assertNotNull(results.get("return"));
-		assertTrue(results.get("return") instanceof String);
+		assertNotNull(results.get("out"));
+		assertTrue(results.get("out") instanceof String);
 	}
 	
 	@Test

@@ -19,12 +19,12 @@ public class WSDLActivityTranslatorTest {
 	@Test
 	public void testTranslateAndInvoke() throws Exception {
 		System.setProperty("raven.eclipse", "true");
-		WSDLBasedProcessor proc = new WSDLBasedProcessor(null,"test",WSDLTestConstants.WSDL_TEST_BASE+"GUIDGenerator.wsdl","getGUID");
+		WSDLBasedProcessor proc = new WSDLBasedProcessor(null,"test",WSDLTestConstants.WSDL_TEST_BASE+"menagerie-complex-rpc.wsdl","createPerson");
 		WSDLActivity activity = (WSDLActivity) new WSDLActivityTranslator().doTranslation(proc);
 		Map<String,Object> inputMap = new HashMap<String,Object>();
-		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("return"));
+		Map<String,Object> results = ActivityInvoker.invokeAsyncActivity(activity, inputMap, Collections.singletonList("out"));
 		assertEquals(1,results.size());
-		assertNotNull(results.get("return"));
-		assertTrue(results.get("return") instanceof String);
+		assertNotNull(results.get("out"));
+		assertTrue(results.get("out") instanceof String);
 	}
 }
