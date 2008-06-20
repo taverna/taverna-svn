@@ -76,7 +76,9 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 	}
 
 	public void updateContextualView(JPanel view) {
-		remove(this.view);
+		if (this.view != null) {			
+			remove(this.view);
+		}
 		views.add(view);
 		add(view);
 		revalidate();
