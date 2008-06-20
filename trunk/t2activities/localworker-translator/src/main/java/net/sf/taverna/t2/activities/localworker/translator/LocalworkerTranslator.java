@@ -155,7 +155,7 @@ public class LocalworkerTranslator extends
 		}
 	}
 
-	private String getWorkerClassName(Processor processor) throws ActivityTranslationException {
+	public String getWorkerClassName(Processor processor) throws ActivityTranslationException {
 		try {
 			Method method = processor.getClass().getMethod("getWorkerClassName");
 			return (String) method.invoke(processor);
