@@ -14,6 +14,7 @@ import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -78,7 +79,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 	private JToggleButton blobs;
 	private JToggleButton vertical;
 	private JToggleButton horizontal;
-	
+	private JCheckBox expandNested;
 	
 	public GraphViewComponent() {
 		super(new BorderLayout());
@@ -140,6 +141,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		zoomInButton.setAction(zoomInAction);
 		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
 		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+		zoomOutAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
 		zoomOutButton.setAction(zoomOutAction);
 
 		toolBar.add(resetDiagramButton);
@@ -223,6 +225,24 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		
 		toolBar.add(vertical);
 		toolBar.add(horizontal);
+		
+		toolBar.addSeparator();
+
+		expandNested = new JCheckBox();
+		expandNested.setSelected(true);
+
+		expandNested.setAction(new AbstractAction("Expand Nested Workflows") {
+
+			public void actionPerformed(ActionEvent arg0) {
+				graphController.setExpandNestedDataflows(!graphController.isExpandNestedDataflows());
+				svgCanvas.setDocument(graphController.generateSVGDocument());
+				revalidate();
+			}
+			
+		});
+		
+		toolBar.add(expandNested);
+		
 		return toolBar;
 	}
 	

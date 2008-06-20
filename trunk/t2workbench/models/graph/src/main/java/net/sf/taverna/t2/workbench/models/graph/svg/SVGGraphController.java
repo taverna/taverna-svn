@@ -49,6 +49,8 @@ public class SVGGraphController extends GraphController {
 
 	private Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
 
+	private Map<String, List<GraphElement>> graphEdgeMap = new HashMap<String, List<GraphElement>>();
+
 	private SVGDocument svgDocument;
 
 	private EdgeLine edgeLine;
@@ -138,7 +140,10 @@ public class SVGGraphController extends GraphController {
 			}
 		}
 		for (GraphEdge edge : graph.getEdges()) {
-			graphElementMap.put(edge.getId(), edge);
+			if (!graphEdgeMap.containsKey(edge.getId())) {
+				graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
+			}
+			graphEdgeMap.get(edge.getId()).add(edge);
 		}
 	}
 
@@ -290,17 +295,20 @@ public class SVGGraphController extends GraphController {
 		}
 		if (title != null && path != null
 				&& (polygon != null || ellipse != null)) {
-			GraphElement graphElement = graphElementMap.get(title);
-			if (graphElement instanceof SVGGraphEdge) {
-				SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
-				svgGraphEdge.setGraphController(this);
-				if (polygon != null) {
-					svgGraphEdge.setPolygon(polygon);
-				} else {
-					svgGraphEdge.setEllipse(ellipse);
+			List<GraphElement> graphElementList = graphEdgeMap.get(title);
+			if (graphElementList.size() > 0) {
+				GraphElement graphElement = graphElementList.remove(0);
+				if (graphElement instanceof SVGGraphEdge) {
+					SVGGraphEdge svgGraphEdge = (SVGGraphEdge) graphElement;
+					svgGraphEdge.setGraphController(this);
+					if (polygon != null) {
+						svgGraphEdge.setPolygon(polygon);
+					} else {
+						svgGraphEdge.setEllipse(ellipse);
+					}
+					svgGraphEdge.setPath(path);
+					mapDatalink(title, svgGraphEdge);
 				}
-				svgGraphEdge.setPath(path);
-				mapDatalink(title, svgGraphEdge);
 			}
 		}
 	}

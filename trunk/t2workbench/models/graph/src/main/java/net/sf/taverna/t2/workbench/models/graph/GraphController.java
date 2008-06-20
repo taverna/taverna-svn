@@ -124,7 +124,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	
 	private Alignment alignment = Alignment.VERTICAL;
 	
-	private boolean expandNestedDatflows = true;
+	private boolean expandNestedDataflows = true;
 
 	private boolean showMerges = true;
 
@@ -596,7 +596,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 		dataflowToGraph.put(processor, node);
 
-		if (expandNestedDatflows) {
+		if (expandNestedDataflows) {
 
 			if (firstActivity.getConfiguration() instanceof Dataflow) {
 				Dataflow subDataflow = (Dataflow) firstActivity.getConfiguration();
@@ -709,6 +709,24 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	 */
 	public void setPortStyle(PortStyle portStyle) {
 		this.portStyle = portStyle;
+	}
+
+	/**
+	 * Returns the expandNestedDataflows.
+	 *
+	 * @return the expandNestedDataflows
+	 */
+	public boolean isExpandNestedDataflows() {
+		return expandNestedDataflows;
+	}
+
+	/**
+	 * Sets the expandNestedDataflows.
+	 *
+	 * @param expandNestedDataflows the new expandNestedDataflows
+	 */
+	public void setExpandNestedDataflows(boolean expandNestedDataflows) {
+		this.expandNestedDataflows = expandNestedDataflows;
 	}
 
 	public void resetSelection() {
