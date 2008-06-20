@@ -123,6 +123,8 @@ public class RootPartition<ItemType extends Comparable> extends
 		for (ItemType item : itemsToAdd) {
 			addOrUpdateItem(item);
 		}
+		sortChildPartitions();
+		
 	}
 
 	/**

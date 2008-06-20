@@ -164,12 +164,12 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 	@Override
 	public String toString() {
 		if (getParent() != null) {
-			//query type
-			String string = this.getParent().getPartitionAlgorithms().get(0).toString();
-			//result of query
+			// query type
+			String string = this.getParent().getPartitionAlgorithms().get(0)
+					.toString();
+			// result of query
 			String string2 = this.partitionValue.toString();
-			return string2 + " (" + getItemCount()
-					+ ")";
+			return string2 + " (" + getItemCount() + ")";
 		} else {
 			// This is for a root partition, loop through its children to return
 			// the correct number when running a new query
@@ -179,7 +179,8 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			}
 			String queryType = getPartitionAlgorithms().get(0).toString();
 			// return "Activities which match query = " + getItemCount();
-			return "Total number of activities= " + items + ", query by " + queryType;
+			return "Total number of activities= " + items + ", query by "
+					+ queryType;
 		}
 	}
 
@@ -361,6 +362,15 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			public int compare(
 					Partition<ItemType, ChildPartitionValueType, ?> o1,
 					Partition<ItemType, ChildPartitionValueType, ?> o2) {
+				System.out.println(o1.getPartitionValue().toString()
+						+ o2.getPartitionValue().toString());
+				// FIXME is this really safe to do? It's fairly specific to our
+				// case. Doesn't seem very generic
+				if (o1.getPartitionValue().toString().equalsIgnoreCase(
+						"no value")) {
+					// No value so put it to the end
+					return 1;
+				}
 				return childPartitionOrder.compare(o1.getPartitionValue(), o2
 						.getPartitionValue());
 			}
