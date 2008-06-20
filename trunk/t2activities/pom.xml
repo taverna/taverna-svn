@@ -26,6 +26,7 @@
   	<module>localworker-translator</module>
   	<module>rshell-activity</module>
   	<module>rshell-activity-translator</module>
+  	<module>rshell-activity-ui</module>
   	<module>soaplab-activity</module>
   	<module>soaplab-activity-translator</module>
   	<module>soaplab-activity-ui</module>
