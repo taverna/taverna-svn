@@ -26,8 +26,11 @@ public class MyExperimentClient {
 	
 	private static final String hostname = "http://sandbox.myexperiment.org";
 	
-	public void init() {
+	public void MyExperimentClient() {
 		
 	}
 	
+	public void getLatestWorkflows() {
+		
+	}
 }

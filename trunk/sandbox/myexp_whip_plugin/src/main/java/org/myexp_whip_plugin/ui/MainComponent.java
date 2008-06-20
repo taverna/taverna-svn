@@ -5,15 +5,18 @@ import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import java.awt.Dimension;
+import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
 import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 
-import org.myexp_whip_plugin.ui.MainComponent;
+import org.myexp_whip_plugin.*;
 
-public class MainComponent extends JPanel implements WorkflowModelViewSPI {
+public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 
 	private static final long serialVersionUID = 1L;
 
@@ -21,8 +24,31 @@ public class MainComponent extends JPanel implements WorkflowModelViewSPI {
 
 	private ScuflModel model;
 	
+	private MyExperimentClient client;
+	
+	private JTabbedPane tabsPane;
+	
+	private LatestWorkflowsPanel latestWorkflowsPanel;
+	
+	private SearchWorkflowsPanel searchWorkflowsPanel;
+	
+	private TagsBrowserPanel tagsBrowserPanel;
+	
+	private CurrentWorkflowPanel currentWorkflowPanel;
+	
 	public MainComponent() {
-		//add(new JButton("Example"));
+		super();
+		
+		this.client = new MyExperimentClient();
+		
+		this.setMaximumSize(new Dimension(500, 700));
+		
+		// Do the rest in a separate thread to avoid hanging the GUI
+		new Thread() {
+			public void run() {
+				initialise();						
+			}
+		}.start();
 	}
 	
 	public void attachToModel(ScuflModel model) {
@@ -45,4 +71,20 @@ public class MainComponent extends JPanel implements WorkflowModelViewSPI {
 
 	}
 
+	private void initialise() {
+		this.tabsPane = new JTabbedPane();
+		this.latestWorkflowsPanel = new LatestWorkflowsPanel(this.client);
+		this.searchWorkflowsPanel = new SearchWorkflowsPanel(this.client);
+		this.tagsBrowserPanel = new TagsBrowserPanel(this.client);
+		this.tabsPane.add("Latest Workflows", this.latestWorkflowsPanel);
+		this.tabsPane.add("Search Workflows", this.searchWorkflowsPanel);
+		this.tabsPane.add("Tags Browser", this.tagsBrowserPanel);
+		
+		this.currentWorkflowPanel = new CurrentWorkflowPanel(this.client);
+		
+		this.setLeftComponent(this.tabsPane);
+		this.setRightComponent(this.currentWorkflowPanel);
+		
+		this.setDividerLocation(0.6);
+	}
 }
