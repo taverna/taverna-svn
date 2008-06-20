@@ -24,12 +24,11 @@ public class SVGMouseUpEventListener extends SVGEventListener {
 		if (evt instanceof MouseEvent) {
 			MouseEvent mouseEvent = (MouseEvent) evt;
 			SVGOMPoint point = SVGUtil.screenToDocument((SVGLocatable)evt.getTarget(),
-					new SVGOMPoint(mouseEvent.getClientX(), mouseEvent.getClientY()));
+					new SVGOMPoint(mouseEvent.getClientX(), mouseEvent.getClientX()));
 			graphEventManager.mouseUp(graphElement, mouseEvent.getButton(),
 					mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-					(int) point.getX(), (int) point.getY()
-//					mouseEvent.getScreenX(), mouseEvent.getScreenY()
-					);
+					(int) point.getX(), (int) point.getY(),
+					mouseEvent.getScreenX(), mouseEvent.getScreenY());
 			evt.stopPropagation();
 		}
 	}

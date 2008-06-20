@@ -27,9 +27,8 @@ public class SVGMouseMovedEventListener extends SVGEventListener {
 			new SVGOMPoint(mouseEvent.getClientX(), mouseEvent.getClientY()));
 			graphEventManager.mouseMoved(graphElement, mouseEvent.getButton(),
 					mouseEvent.getAltKey(), mouseEvent.getCtrlKey(), mouseEvent.getMetaKey(),
-					(int) point.getX(), (int) point.getY()
-//					mouseEvent.getScreenX(), mouseEvent.getScreenY()
-					);
+					(int) point.getX(), (int) point.getY(),
+					mouseEvent.getScreenX(), mouseEvent.getScreenY());
 			evt.stopPropagation();
 		}
 	}

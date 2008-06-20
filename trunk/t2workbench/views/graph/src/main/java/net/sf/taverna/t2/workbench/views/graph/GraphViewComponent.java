@@ -30,6 +30,7 @@ import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
+import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
@@ -131,9 +132,11 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		
 		Action resetDiagramAction = svgCanvas.new ResetTransformAction();
 		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+		resetDiagramAction.putValue(Action.SMALL_ICON, WorkbenchIcons.refreshIcon);
 		resetDiagramButton.setAction(resetDiagramAction);
 		Action zoomInAction = svgCanvas.new ZoomAction(1.2);
 		zoomInAction.putValue(Action.NAME, "Zoom In");
+		zoomInAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
 		zoomInButton.setAction(zoomInAction);
 		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
 		zoomOutAction.putValue(Action.NAME, "Zoom Out");
@@ -202,7 +205,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		vertical.setAction(new AbstractAction("Vertical") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Vertical");
 				graphController.setAlignment(Alignment.VERTICAL);
 				svgCanvas.setDocument(graphController.generateSVGDocument());
 				revalidate();
@@ -212,7 +214,6 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		horizontal.setAction(new AbstractAction("Horizontal") {
 
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Horizontal");
 				graphController.setAlignment(Alignment.HORIZONTAL);
 				svgCanvas.setDocument(graphController.generateSVGDocument());
 				revalidate();

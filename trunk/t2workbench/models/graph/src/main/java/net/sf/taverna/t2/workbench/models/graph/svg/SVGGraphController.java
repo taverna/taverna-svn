@@ -52,7 +52,7 @@ public class SVGGraphController extends GraphController {
 	private SVGDocument svgDocument;
 
 	private EdgeLine edgeLine;
-
+	
 	UpdateManager updateManager;
 
 	public SVGGraphController(Dataflow dataflow, JComponent xcomponent) {
@@ -86,14 +86,16 @@ public class SVGGraphController extends GraphController {
 		resetSelection();
 	}
 
-	public void startEdgeCreation(GraphElement graphElement, Point point) {
-		super.startEdgeCreation(graphElement, point);
-		if (edgeCreationFromSource || edgeCreationFromSink) {
+	public boolean startEdgeCreation(GraphElement graphElement, Point point) {
+		boolean alreadyStarted = edgeCreationFromSource || edgeCreationFromSink;
+		boolean started = super.startEdgeCreation(graphElement, point);
+		if (!alreadyStarted && started) {
 			edgeLine.setSourcePoint(point);
 			edgeLine.setTargetPoint(point);
 			edgeLine.setColour(Color.BLACK);
 			// edgeLine.setVisible(true);
 		}
+		return started;
 	}
 
 	public boolean moveEdgeCreationTarget(GraphElement graphElement, Point point) {
