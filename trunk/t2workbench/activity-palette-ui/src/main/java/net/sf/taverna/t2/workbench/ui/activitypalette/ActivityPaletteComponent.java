@@ -88,7 +88,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent-menuBar");
 		menuBar.add(algorithmMenu);
 		menuBar.add(addQueryMenu);
-		menuBar.add(sortMenu);
+//		menuBar.add(sortMenu);
 		// add(menuBar, BorderLayout.PAGE_START);
 		menuBar.setVisible(true);
 		// add(queryLabel, BorderLayout.PAGE_START);
@@ -114,9 +114,21 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		propertyExtractorRegistry = PropertyExtractorSPIRegistry.getInstance();
 		rootPartition = getPartition(propertyExtractorRegistry);
 		initQueries(rootPartition);
-		createSorts();
+//		createSorts();
 		activityTree = new ActivityTree(rootPartition);
 		activityTree.setCellRenderer(new ActivityTreeCellRenderer());
+		((RootPartition) activityTree.getModel().getRoot())
+		.setChildPartitionOrder(new Comparator<String>() {
+
+			public int compare(String o1, String o2) {
+				// TODO Auto-generated method stub
+				if (o1.compareTo(o2) > 0) {
+					return 1;
+				}
+				return 0;
+			}
+
+		});
 	}
 
 	/**
