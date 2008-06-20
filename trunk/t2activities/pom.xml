@@ -15,6 +15,7 @@
   	<module>apiconsumer-activity-translator</module>
   	<module>beanshell-activity</module>
   	<module>beanshell-activity-translator</module>
+  	<module>beanshell-activity-ui</module>
   	<module>biomart-activity</module>
   	<module>biomart-activity-ui</module>
   	<module>biomart-activity-translator</module>
