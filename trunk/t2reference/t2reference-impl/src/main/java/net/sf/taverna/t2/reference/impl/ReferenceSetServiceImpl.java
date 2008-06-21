@@ -22,7 +22,7 @@ import net.sf.taverna.t2.reference.T2Reference;
  */
 public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 		implements ReferenceSetService {
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -35,7 +35,7 @@ public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 			throw new ReferenceSetServiceException(de);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -45,23 +45,33 @@ public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 		checkDao();
 		checkAugmentor();
 		// Obtain the reference set
-		ReferenceSet rs = getReferenceSet(id);
+		
 		try {
-			Set<ExternalReferenceSPI> newReferences = referenceSetAugmentor
-					.augmentReferenceSet(rs, ensureTypes, context);
-			if (newReferences.isEmpty() == false) {
-				// Write back changes to the store if we got here, this can
-				// potentially throw an unsupported operation exception in which
-				// case we have to fail the augmentation.
-				try {
-					rs.getExternalReferences().addAll(newReferences);
-				} catch (RuntimeException re) {
-					throw new ReferenceSetAugmentationException(
-							"Can't add new references back into existing reference set instance");
+			// Synchronize on the reference set, should ensure that we don't
+			// have multiple concurrent translations assuming that Hibernate
+			// retrieves the same entity each time. To work around this
+			// potentially not being the case we can synchronize on the
+			// stringified form of the identifier.
+			synchronized (id.toString()) {
+				ReferenceSet rs = getReferenceSet(id);
+				Set<ExternalReferenceSPI> newReferences = referenceSetAugmentor
+						.augmentReferenceSet(rs, ensureTypes, context);
+				if (newReferences.isEmpty() == false) {
+					// Write back changes to the store if we got here, this can
+					// potentially throw an unsupported operation exception in
+					// which
+					// case we have to fail the augmentation.
+					try {
+						rs.getExternalReferences().addAll(newReferences);
+					} catch (RuntimeException re) {
+						throw new ReferenceSetAugmentationException(
+								"Can't add new references back into existing reference set instance");
+					}
+					referenceSetDao.update(rs);
 				}
-				referenceSetDao.update(rs);
+				return rs;
 			}
-			return rs;
+			
 		} catch (ReferenceSetAugmentationException rsae) {
 			throw new ReferenceSetServiceException(rsae);
 		}
