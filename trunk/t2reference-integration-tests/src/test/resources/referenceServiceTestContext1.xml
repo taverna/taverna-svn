@@ -45,6 +45,7 @@
 				<prop key="hibernate.c3p0.testConnectionOnCheckout">
 					false
 				</prop>
+				<prop key="hibernate.cache.use_second_level_cache">false</prop>
 			</props>
 		</property>
 	</bean>
@@ -123,7 +124,6 @@
 			<sys artifact="org.springframework:spring-jdbc:2.5" />
 			<sys artifact="org.springframework:spring-beans:2.5" />
 			<sys artifact="org.springframework:spring-context:2.5" />
-			<!-- <sys artifact="org.springframework:spring-aop:2.5" /> -->
 			<sys artifact="aopalliance:aopalliance:1.0" />
 
 			<!-- T2 platform -->
