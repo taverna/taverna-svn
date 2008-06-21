@@ -16,25 +16,35 @@
 		base="${user.home}/.m2/repository/">
 		<repositories />
 		<system>
-			<!-- Raven -->
-			<sys artifact="uk.org.mygrid.taverna.raven:raven:1.7.1.0" />
-			<!-- Spring modules -->
-			<sys artifact="org.springframework:spring-core:2.5" />
-			<sys artifact="org.springframework:spring-orm:2.5" />
-			<sys artifact="org.springframework:spring-tx:2.5" />
-			<sys artifact="org.springframework:spring-jdbc:2.5" />
-			<sys artifact="org.springframework:spring-beans:2.5" />
-			<sys artifact="org.springframework:spring-context:2.5" />
-			<sys artifact="org.springframework:spring-aop:2.5" />
-			<sys artifact="aopalliance:aopalliance:1.0" />
-			<!-- T2 platform -->
-			<sys artifact="net.sf.taverna.t2:platform:0.1-SNAPSHOT" />
-			<!-- Logging -->
-			<sys artifact="commons-logging:commons-logging:1.1.1" />
-			<sys artifact="log4j:log4j:1.2.15" />
-			<!-- T2 reference APIs -->
+			<!-- T2Reference API -->
 			<sys
 				artifact="net.sf.taverna.t2:t2reference-api:0.1-SNAPSHOT" />
+
+			<!-- T2Platform -->
+			<sys artifact="net.sf.taverna.t2:platform:0.1-SNAPSHOT" />
+			<sys artifact="commons-logging:commons-logging:1.1.1" />
+
+			<!-- Raven -->
+			<sys artifact="uk.org.mygrid.taverna.raven:raven:1.7.1.0" />
+
+			<!-- Spring + Essential External Modules -->
+			<sys artifact="org.springframework:spring-orm:2.5.4" />
+			<sys artifact="org.springframework:spring-beans:2.5.4" />
+			<sys artifact="org.springframework:spring-core:2.5.4" />
+			<sys artifact="org.springframework:spring-context:2.5.4" />
+			<sys artifact="org.springframework:spring-tx:2.5.4" />
+			<sys artifact="org.springframework:spring-jdbc:2.5.4" />
+			<sys artifact="aopalliance:aopalliance:1.0" />
+			<sys artifact="geronimo-spec:geronimo-spec-jta:1.0-M1" />
+
+			<!-- Hibernate + Dependencies (minimal) -->
+			<sys artifact="org.hibernate:hibernate:3.2.5.ga" />
+			<sys artifact="dom4j:dom4j:1.6.1" />
+			<sys artifact="cglib:cglib:2.1_3" />
+			<sys artifact="asm:asm:1.5.3" />
+			<sys
+				artifact="commons-collections:commons-collections:2.1.1" />
+
 		</system>
 	</repository>
 
