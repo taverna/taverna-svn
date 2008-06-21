@@ -23,6 +23,12 @@
 				jdbc:derby:${user.home}/t2reference-test2/javadb;create=true
 			</value>
 		</property>
+		<property name="repository">
+			<ref bean="ravenRepository" />
+		</property>
+		<property name="driverArtifact">
+			<value>org.apache.derby:derby:10.4.1.3</value>
+		</property>
 	</bean>
 
 	<!-- Configure hibernate to build schema from scratch, dropping existing -->
