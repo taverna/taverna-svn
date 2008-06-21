@@ -59,8 +59,8 @@ public class ReferenceServiceTest {
 	 * some rather informal profiling information at the end.
 	 */
 	public void testSaturatedReadWriteCycle() throws MalformedURLException {
-		int concurrentThreads = 30;
-		final int jobsPerThread = 500;
+		int concurrentThreads = 5;
+		final int jobsPerThread = 3000;
 		int joinPoints = 10;
 		final URL testUrl = new URL("http://www.ebi.ac.uk/~tmo/patterns.xml");
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
