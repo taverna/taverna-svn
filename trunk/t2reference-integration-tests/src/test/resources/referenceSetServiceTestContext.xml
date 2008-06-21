@@ -15,20 +15,19 @@
 	<!-- Apache Derby rooted at ${user.home}/t2reference/javadb -->
 	<bean id="exampleDataSource"
 		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
-		<property name="driverClassName">
-			<value>org.apache.derby.jdbc.EmbeddedDriver</value>
-		</property>
-		<property name="url">
-			<value>
-				jdbc:derby:${user.home}/t2reference-test2/javadb;create=true
-			</value>
-		</property>
+		<!-- Set driver class name -->
+		<property name="driverClassName"
+			value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<!-- Set database URL -->
+		<property name="url"
+			value="jdbc:derby:${user.home}/t2reference-test2/javadb;create=true" />
+		<!-- Loading driver from Raven, so reference the repository -->
 		<property name="repository">
 			<ref bean="ravenRepository" />
 		</property>
-		<property name="driverArtifact">
-			<value>org.apache.derby:derby:10.4.1.3</value>
-		</property>
+		<!-- Specify derby driver artifact -->
+		<property name="driverArtifact"
+			value="org.apache.derby:derby:10.4.1.3" />
 	</bean>
 
 	<!-- Configure hibernate to build schema from scratch, dropping existing -->
@@ -51,7 +50,9 @@
 				<prop key="hibernate.c3p0.testConnectionOnCheckout">
 					false
 				</prop>
-				<prop key="hibernate.cache.use_second_level_cache">false</prop>
+				<prop key="hibernate.cache.use_second_level_cache">
+					false
+				</prop>
 			</props>
 		</property>
 	</bean>

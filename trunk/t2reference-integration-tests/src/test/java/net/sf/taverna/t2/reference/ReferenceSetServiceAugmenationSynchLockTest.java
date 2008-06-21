@@ -44,10 +44,8 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 		Set<Class<ExternalReferenceSPI>> redTarget = new HashSet<Class<ExternalReferenceSPI>>();
 		redTarget.add((Class<ExternalReferenceSPI>) context.getBean("redBean")
 				.getClass());
-
-		System.out.println(rs);
 		ReferenceSet rs2 = rss.registerReferenceSet(rs.getExternalReferences());
-		System.out.println(rs2);
+		
 		final long startTime = System.currentTimeMillis();
 		rss.getReferenceSetWithAugmentationAsynch(rs2.getId(), redTarget,
 				refContext, new ReferenceSetServiceCallback() {
