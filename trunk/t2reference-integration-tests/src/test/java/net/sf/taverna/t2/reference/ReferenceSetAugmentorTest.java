@@ -29,22 +29,22 @@ public class ReferenceSetAugmentorTest {
 		// Get the pre-baked reference set
 		ReferenceSet rs = (ReferenceSet) context.getBean("referenceSet");
 
-		ReferenceSetAugmentor aug = (ReferenceSetAugmentor) context.getBean("referenceSetAugmentor");
-		
+		ReferenceSetAugmentor aug = (ReferenceSetAugmentor) context
+				.getBean("referenceSetAugmentor");
+
 		ReferenceContext refContext = new ReferenceContext() {
 			public <T> List<? extends T> getEntities(Class<T> arg0) {
 				return new ArrayList<T>();
 			}
 		};
-		
+
 		Set<Class<ExternalReferenceSPI>> redTarget = new HashSet<Class<ExternalReferenceSPI>>();
-		redTarget.add((Class<ExternalReferenceSPI>) context.getBean("redBean").getClass());
-		
+		redTarget.add((Class<ExternalReferenceSPI>) context.getBean("redBean")
+				.getClass());
+
 		aug.augmentReferenceSet(rs, redTarget, refContext);
-		
-		
+
 	}
 
-	
 	
 }
