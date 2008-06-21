@@ -12,6 +12,14 @@ public class GreenToRed implements
 			ReferenceContext context) {
 		RedReference newReference = new RedReference();
 		newReference.setContents(ref.getContents());
+		// Insert a two second pause to simulate reference translation and to
+		// test the behaviour of multiple concurrent translations
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException ie) {
+			System.out
+					.println("Translation thread was interrupted, probably something wrong.");
+		}
 		return newReference;
 	}
 
