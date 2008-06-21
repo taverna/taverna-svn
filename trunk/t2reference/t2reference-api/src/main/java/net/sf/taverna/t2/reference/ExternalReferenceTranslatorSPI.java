@@ -28,22 +28,12 @@ public interface ExternalReferenceTranslatorSPI<SourceType extends ExternalRefer
 	 *            the existing external references or to construct the new one,
 	 *            especially in cases where the context contains security agents
 	 *            giving access to a remote data staging system
+	 * @throws ExternalReferenceConstructionException
+	 *             if an error occurs instantiating the new reference.
 	 * @return the newly constructed ExternalReferenceSPI instance.
 	 */
 	public TargetType createReference(SourceType sourceReference,
 			ReferenceContext context);
-
-	/**
-	 * As with {@link #createReference(ReferenceSet, ReferenceContext)} but
-	 * handled in an asynchronous fashion through the specified callback
-	 * 
-	 * @param callback
-	 *            a callback object used to notify the caller of reference
-	 *            contruction or failure thereof.
-	 */
-	public void createReferenceAsynch(SourceType sourceReference,
-			ReferenceContext context,
-			ExternalReferenceConstructionCallback callback);
 
 	/**
 	 * Return the type of external reference that this translator consumes.

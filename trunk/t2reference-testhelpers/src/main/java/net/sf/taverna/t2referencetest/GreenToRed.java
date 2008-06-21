@@ -1,7 +1,5 @@
 package net.sf.taverna.t2referencetest;
 
-import net.sf.taverna.t2.reference.ExternalReferenceConstructionCallback;
-import net.sf.taverna.t2.reference.ExternalReferenceConstructionException;
 import net.sf.taverna.t2.reference.ExternalReferenceTranslatorSPI;
 import net.sf.taverna.t2.reference.ReferenceContext;
 
@@ -21,22 +19,6 @@ public class GreenToRed implements
 					.println("Translation thread was interrupted, probably something wrong.");
 		}
 		return newReference;
-	}
-
-	public void createReferenceAsynch(final GreenReference ref,
-			final ReferenceContext context,
-			final ExternalReferenceConstructionCallback callback) {
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					callback.ExternalReferenceCreated(createReference(ref,
-							context));
-				} catch (ExternalReferenceConstructionException ex) {
-					callback.ExternalReferenceConstructionFailed(ex);
-				}
-			}
-		};
-		new Thread(r).start();
 	}
 
 	public Class<GreenReference> getSourceReferenceType() {

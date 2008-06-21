@@ -30,23 +30,13 @@ public interface ExternalReferenceBuilderSPI<TargetType extends ExternalReferenc
 	 *            a reference resolution context, needed potentially to
 	 *            construct the new ExternalReferenceSchemeSPI, especially in
 	 *            cases where the context contains security agents giving access
-	 *            to a remote data staging system
+	 *            to a remote data staging system *
+	 * @throws ExternalReferenceConstructionException
+	 *             if an error occurs instantiating the new reference.
 	 * @return the newly constructed ExternalReferenceSPI instance.
 	 */
 	public TargetType createReference(InputStream byteStream,
 			ReferenceContext context);
-
-	/**
-	 * As with {@link #createReference(InputStream, ReferenceContext)} but
-	 * handled in an asynchronous fashion through the specified callback
-	 * 
-	 * @param callback
-	 *            a callback object used to notify the caller of reference
-	 *            contruction or failure thereof.
-	 */
-	public void createReferenceAsynch(InputStream byteStream,
-			ReferenceContext context,
-			ExternalReferenceConstructionCallback callback);
 
 	/**
 	 * Expose the type of the ExternalReferenceSPI that this builder can

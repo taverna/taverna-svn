@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import net.sf.taverna.t2.reference.ExternalReferenceBuilderSPI;
-import net.sf.taverna.t2.reference.ExternalReferenceConstructionCallback;
 import net.sf.taverna.t2.reference.ExternalReferenceConstructionException;
 import net.sf.taverna.t2.reference.ReferenceContext;
 
@@ -49,27 +48,6 @@ public class GreenBuilder implements
 			}
 		}
 		return newReference;
-	}
-
-	/**
-	 * Wraps the synchronous form, using a new thread each time (this is only a
-	 * test class, real examples would hopefully be a bit smarter with their
-	 * threading logic)
-	 */
-	public void createReferenceAsynch(final InputStream is,
-			final ReferenceContext context,
-			final ExternalReferenceConstructionCallback callback) {
-		Runnable r = new Runnable() {
-			public void run() {
-				try {
-					callback.ExternalReferenceCreated(createReference(is,
-							context));
-				} catch (ExternalReferenceConstructionException ex) {
-					callback.ExternalReferenceConstructionFailed(ex);
-				}
-			}
-		};
-		new Thread(r).start();
 	}
 
 	/**
