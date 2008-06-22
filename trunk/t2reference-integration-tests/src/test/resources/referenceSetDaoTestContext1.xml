@@ -7,7 +7,7 @@
 	xmlns:raven="http://taverna.sf.net/schema/artifact-support"
 	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd 
 	http://taverna.sf.net/schema/artifact-support 
 	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
@@ -143,7 +143,7 @@
 			<sys artifact="org.springframework:spring-jdbc:2.5.4" />
 			<sys artifact="aopalliance:aopalliance:1.0" />
 			<sys artifact="geronimo-spec:geronimo-spec-jta:1.0-M1" />
-
+							
 			<!-- Hibernate + Dependencies (minimal) -->
 			<sys artifact="org.hibernate:hibernate:3.2.5.ga" />
 			<sys artifact="dom4j:dom4j:1.6.1" />

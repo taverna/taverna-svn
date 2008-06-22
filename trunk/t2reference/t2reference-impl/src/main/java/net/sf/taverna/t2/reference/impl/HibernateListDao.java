@@ -5,6 +5,8 @@ import net.sf.taverna.t2.reference.IdentifiedList;
 import net.sf.taverna.t2.reference.ListDao;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation;
+import net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -33,6 +35,7 @@ public class HibernateListDao extends HibernateDaoSupport implements ListDao {
 	 *             something goes wrong fetching the data or connecting to the
 	 *             database
 	 */
+	@GetIdentifiedOperation
 	public IdentifiedList<T2Reference> get(T2Reference ref) throws DaoException {
 		if (ref == null) {
 			throw new DaoException(
@@ -54,6 +57,7 @@ public class HibernateListDao extends HibernateDaoSupport implements ListDao {
 		}
 	}
 
+	@PutIdentifiedOperation
 	public void store(IdentifiedList<T2Reference> theList) throws DaoException {
 		if (theList.getId() == null) {
 			throw new DaoException("Supplied list set has a null ID, allocate "

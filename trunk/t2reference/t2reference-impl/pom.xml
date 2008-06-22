@@ -38,7 +38,53 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.6.0</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
+		<!-- ehcache appears to be breaking raven, disabling for now -->
+		<!-- 
+			<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.4.0</version>
+			<exclusions>
+			<exclusion>
+			<groupId>net.sf.jsr107cache</groupId>
+			<artifactId>jsr107cache</artifactId>
+			</exclusion>
+			<exclusion>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			</exclusion>
+			<exclusion>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate</artifactId>
+			</exclusion>
+			<exclusion>
+			<groupId>net.sf.hibernate</groupId>
+			<artifactId>hibernate</artifactId>
+			</exclusion>
+			<exclusion>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			</exclusion>
+			<exclusion>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			</exclusion>
+			</exclusions>
+			</dependency>
+		-->
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
@@ -114,5 +160,6 @@
 			<version>4.4</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 </project>

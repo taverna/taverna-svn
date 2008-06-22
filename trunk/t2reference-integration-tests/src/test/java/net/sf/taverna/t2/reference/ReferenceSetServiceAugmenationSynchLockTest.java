@@ -58,8 +58,8 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 
 					public void referenceSetRetrieved(ReferenceSet arg0) {
 						long duration = System.currentTimeMillis() - startTime;
-						System.out.println("Thread 1 (" + duration + ") "
-								+ arg0);
+						System.out.println("--> Thread 1 (" + duration + ") "
+								+ arg0.getId() + " : " +arg0.getExternalReferences().size());
 
 					}
 				});
@@ -74,8 +74,8 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 
 					public void referenceSetRetrieved(ReferenceSet arg0) {
 						long duration = System.currentTimeMillis() - startTime;
-						System.out.println("Thread 2 (" + duration + ") "
-								+ arg0);
+						System.out.println("--> Thread 2 (" + duration + ") "
+								+ arg0.getId() + " : " +arg0.getExternalReferences().size());
 					}
 				});
 		rss.getReferenceSetWithAugmentationAsynch(rs2.getId(), redTarget,
@@ -89,8 +89,8 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 
 					public void referenceSetRetrieved(ReferenceSet arg0) {
 						long duration = System.currentTimeMillis() - startTime;
-						System.out.println("Thread 3 (" + duration + ") "
-								+ arg0);
+						System.out.println("--> Thread 3 (" + duration + ") "
+								+ arg0.getId() + " : " +arg0.getExternalReferences().size());
 					}
 				});
 		// Give plenty of time for the test to go wrong (we could join on the

@@ -12,6 +12,34 @@
 	http://taverna.sf.net/schema/artifact-support/artifact-support.xsd
 	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
+	<!-- Engage caching -->
+	<aop:config>
+		<aop:aspect id="taskCacheAspect" ref="cacheAspect">
+			<aop:around
+				pointcut="@annotation(net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation)"
+				method="getObject" />
+			<aop:around
+				pointcut="@annotation(net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation)"
+				method="putObject" />
+		</aop:aspect>
+	</aop:config>
+
+	<bean id="cacheProvider"
+		class="net.sf.taverna.t2.reference.impl.SimpleCacheProviderImpl"
+		dependency-check="all" scope="singleton"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+		raven:repository="ravenRepository">
+	</bean>
+	<bean id="cacheAspect"
+		class="net.sf.taverna.t2.reference.impl.CacheAspect"
+		raven:artifact="net.sf.taverna.t2:t2reference-impl:0.1-SNAPSHOT"
+		raven:repository="ravenRepository" 
+		scope="singleton">
+		<property name="cacheProvider">
+			<ref bean="cacheProvider" />
+		</property>
+	</bean>
+
 	<!-- Apache Derby rooted at ${user.home}/t2reference/javadb -->
 	<bean id="exampleDataSource"
 		class="net.sf.taverna.platform.spring.jdbc.InterpolatingDriverManagerDataSource">
@@ -141,6 +169,10 @@
 			<sys artifact="org.springframework:spring-jdbc:2.5.4" />
 			<sys artifact="aopalliance:aopalliance:1.0" />
 			<sys artifact="geronimo-spec:geronimo-spec-jta:1.0-M1" />
+
+			<sys artifact="org.springframework:spring-aop:2.5.4" />
+			<sys artifact="org.aspectj:aspectjrt:1.6.0"/>
+			<sys artifact="org.aspectj:aspectjweaver:1.6.0"/>
 
 			<!-- Hibernate + Dependencies (minimal) -->
 			<sys artifact="org.hibernate:hibernate:3.2.5.ga" />

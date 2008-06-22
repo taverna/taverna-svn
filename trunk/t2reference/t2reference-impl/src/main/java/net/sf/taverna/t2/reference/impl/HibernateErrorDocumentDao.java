@@ -5,6 +5,8 @@ import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ErrorDocumentDao;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation;
+import net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -34,6 +36,7 @@ public class HibernateErrorDocumentDao extends HibernateDaoSupport implements
 	 *             something goes wrong fetching the data or connecting to the
 	 *             database
 	 */
+	@GetIdentifiedOperation
 	public ErrorDocument get(T2Reference ref) throws DaoException {
 		if (ref == null) {
 			throw new DaoException(
@@ -55,6 +58,7 @@ public class HibernateErrorDocumentDao extends HibernateDaoSupport implements
 		}
 	}
 
+	@PutIdentifiedOperation
 	public void store(ErrorDocument theDocument) throws DaoException {
 		if (theDocument.getId() == null) {
 			throw new DaoException(
