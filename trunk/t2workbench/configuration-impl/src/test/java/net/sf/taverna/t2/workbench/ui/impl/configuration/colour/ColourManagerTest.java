@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.configuration.colour;
+package net.sf.taverna.t2.workbench.ui.impl.configuration.colour;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -24,14 +24,12 @@ public class ColourManagerTest {
 		assertSame("They should be the same instance",manager, manager2);
 	}
 	
-	@Test(expected=Exception.class)
-	public void testGetPreferredColourEqualsNull() throws Exception {
-		Colourable dummy=new Colourable() {
-			
-		};
+	@Test
+	public void testGetPreferredColourEqualsWhite() throws Exception {
+		String dummy=new String();
 		
 		Color c = ColourManager.getInstance().getPreferredColour(dummy);
-		assertNull("There  should be no colours available for the dummy object", dummy);
+		assertEquals("The default colour should be WHITE", Color.WHITE,c);
 	}
 	
 	@Test
@@ -48,12 +46,12 @@ public class ColourManagerTest {
 	
 	@Test
 	public void saveAsWrongArrayType() {
-		DummyColour dummy = new DummyColour();
+		String dummy = "";
 		ColourManager manager=ColourManager.getInstance();
-		manager.getPropertyMap().put(dummy.getClass().getCanonicalName(), new Integer[] {10, 20, 56});
+		manager.getPropertyMap().put(dummy.getClass().getCanonicalName(), "#ffffff");
 		
 		ConfigurationManager instance = ConfigurationManager.getInstance();
-		instance.setBaseConfigLocation(new File("/tmp/scratch"));
+		instance.setBaseConfigLocation(new File(System.getProperty("java.io.tmpdir")+File.separatorChar+"scratch"));
 		try {
 			instance.store(manager);
 		} catch (Exception e1) {

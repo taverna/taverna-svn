@@ -30,7 +30,4 @@ public class ConfigurationUIRegistry extends SPIRegistry<ConfigurationUIFactory>
 	public List<ConfigurationUIFactory> getConfigurationUIFactories() {
 		return getInstances();
 	}
-	
-	
-
 }

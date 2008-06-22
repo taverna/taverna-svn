@@ -76,6 +76,16 @@
 			<artifactId>biomart-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>beanshell-activity-ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>dataflow-activity-ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
 
 		<dependency>
 			<groupId>javax.help</groupId>

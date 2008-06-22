@@ -1,12 +1,13 @@
-package net.sf.taverna.t2.workbench.configuration;
+package net.sf.taverna.t2.workbench.ui.impl.configuration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.util.Map;
 
-import net.sf.taverna.t2.workbench.configuration.colour.ColourManager;
-import net.sf.taverna.t2.workbench.configuration.colour.DummyColour;
+import net.sf.taverna.t2.workbench.configuration.ConfigurationManager;
+import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -53,12 +54,12 @@ public class ConfigurationManagerTest {
 	
 	@Test
 	public void saveColoursForDummyColourable() {
-		DummyColour dummy = new DummyColour();
+		String dummy = "";
 		ColourManager manager=ColourManager.getInstance();
-		manager.getPropertyMap().put(dummy.getClass().getCanonicalName(), new String[] {"10", "20", "56"});
+		manager.getPropertyMap().put(dummy.getClass().getCanonicalName(), "#000000");
 		
 		ConfigurationManager instance = ConfigurationManager.getInstance();
-		instance.setBaseConfigLocation(new File("/tmp/scratch"));
+		instance.setBaseConfigLocation(new File(System.getProperty("java.io.tmpdir")+File.separatorChar+"scratch"));
 		try {
 			instance.store(manager);
 		} catch (Exception e1) {

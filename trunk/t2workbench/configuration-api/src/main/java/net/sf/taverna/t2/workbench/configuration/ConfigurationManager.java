@@ -26,11 +26,10 @@ public class ConfigurationManager {
 
 	private static ConfigurationManager configManager;
 
-//	private Map<String, PropertiesConfiguration> propertiesConfigMap;
+
 
 	private ConfigurationManager() {
-		// TODO does this need a config file itself?
-		//propertiesConfigMap = new HashMap<String, PropertiesConfiguration>();
+		
 	}
 
 	/**

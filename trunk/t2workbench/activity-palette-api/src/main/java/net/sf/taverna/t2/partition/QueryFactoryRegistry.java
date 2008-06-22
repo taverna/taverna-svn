@@ -67,16 +67,16 @@ public class QueryFactoryRegistry extends SPIRegistry<QueryFactory> {
 				Map<String,Object> map = new HashMap<String, Object>();
 				List<String> wsdlList = new ArrayList<String>();
 				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/KEGG.wsdl");
-				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/bind.wsdl");
-				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/whatizit.wsdl");
-				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/GUIDGenerator.wsdl");
+//				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/bind.wsdl");
+//				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/whatizit.wsdl");
+//				wsdlList.add("http://www.mygrid.org.uk/taverna-tests/testwsdls/GUIDGenerator.wsdl");
 				List<String> soaplabList = new ArrayList<String>();
 				soaplabList.add("http://www.ebi.ac.uk/soaplab/services/");
 				map.put("taverna.defaultwsdl", wsdlList);
 				map.put("taverna.defaultsoaplab", soaplabList);
 				List<String> biomart = new ArrayList<String>();
 				biomart.add("http://www.biomart.org/biomart");
-				map.put("taverna.defaultmartregistry",biomart);
+//				map.put("taverna.defaultmartregistry",biomart);
 				return map;
 			}
 

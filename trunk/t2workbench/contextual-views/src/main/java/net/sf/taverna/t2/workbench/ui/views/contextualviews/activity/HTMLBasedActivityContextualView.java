@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
@@ -54,7 +55,8 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 	}
 
 	public String getBackgroundColour() {
-		return "gray";
+		String colour = (String) ColourManager.getInstance().getPropertyMap().get(getActivity().getClass().getName());
+		return colour==null ? "#ffffff" : colour;
 	}
 
 	protected String getStyle() {

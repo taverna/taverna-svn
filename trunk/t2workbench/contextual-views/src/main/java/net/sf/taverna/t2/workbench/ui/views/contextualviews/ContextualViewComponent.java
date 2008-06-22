@@ -1,15 +1,15 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.plaf.basic.BasicTreeUI.SelectionModelPropertyChangeHandler;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -20,23 +20,28 @@ import net.sf.taverna.t2.workbench.file.FileManager;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
 import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityContextualView;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactory;
+import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ActivityViewFactoryRegistry;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
+@SuppressWarnings("serial")
 public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 	private Observer<DataflowSelectionMessage> dataflowSelectionListener = new DataflowSelectionListener();
 	private ModelMapObserver modelMapObserver = new ModelMapObserver();
-	private JPanel panel;
 	private DataflowSelectionManager dataflowSelectionManager = DataflowSelectionManager
 			.getInstance();
-	private JComponent view;
+	private ContextualView view;
 	private FileManager fileManager = FileManager.getInstance();
-
+	private JButton configureButton = new JButton("Configure");
+	
 	/** Keep list of views in case you want to go back or forward between them */
-	private List<JPanel> views = new ArrayList<JPanel>();
+	private List<ContextualView> views = new ArrayList<ContextualView>();
+	private JPanel panel;
 
 	public ContextualViewComponent() {
 		Dataflow currentDataflow = fileManager.getCurrentDataflow();
@@ -60,9 +65,18 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 	}
 
 	private void initialise() {
-		add(new JLabel("this is a contextual view!"));
-		panel = new JPanel();
-		add(panel);
+		
+		setLayout(new BorderLayout());
+		
+		panel = new JPanel(new BorderLayout());
+		add(panel,BorderLayout.CENTER);
+		
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.add(configureButton);
+		configureButton.setEnabled(false);
+		configureButton.setVisible(false);
+		add(buttonPanel,BorderLayout.SOUTH);
 	}
 
 	public void onDisplay() {
@@ -75,16 +89,37 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 
 	}
 
-	public void updateContextualView(JPanel view) {
+	private void updateContextualView(ContextualView view) {
 		if (this.view != null) {
-			remove(this.view);
+			panel.remove(this.view);
 		}
 		this.view = view;
 		views.add(view);
-		add(view);
+		
+		panel.add(view,BorderLayout.CENTER);
+		if (view.getConfigureAction()!=null) {
+			configureButton.setAction(view.getConfigureAction());
+			configureButton.setText("Configure");
+			configureButton.setEnabled(true);
+			configureButton.setVisible(true);
+		}
+		else {
+			configureButton.setEnabled(false);
+			configureButton.setVisible(false);
+		}
 		revalidate();
 	}
 
+	public void updateSelection(Object selectedItem) {
+		
+		if (selectedItem instanceof Processor) {
+			Processor processor = (Processor)selectedItem;
+			Activity<?> activity = processor.getActivityList().get(0);
+			//handleProcessor(processor);
+			handleActivity(activity);	
+		}
+	}
+	
 	public void updateSelection() {
 		Dataflow dataflow = fileManager.getCurrentDataflow();
 		DataflowSelectionModel selectionModel = dataflowSelectionManager.getDataflowSelectionModel(dataflow);
@@ -93,18 +128,17 @@ public class ContextualViewComponent extends JPanel implements UIComponentSPI {
 			return;
 		}
 		Iterator<Object> iterator = selection.iterator();
-		//TODO multiple selections, dataflow contextual view, datalink contextual view
-		Object clickedOnObject = iterator.next();
 		
-		if (clickedOnObject instanceof Processor) {
-			Activity<?> activity = ((Processor)clickedOnObject).getActivityList().get(0);
-			ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
-			.getInstance()
-			.getViewFactoryForBeanType(activity);
-			ActivityContextualView viewType = viewFactoryForBeanType
-			.getView(activity);
-			updateContextualView(viewType);
-		}
+		//TODO multiple selections, dataflow contextual view, datalink contextual view
+		updateSelection(iterator.next());
+	}
+
+	private void handleActivity(Activity<?> activity) {
+		ActivityViewFactory viewFactoryForBeanType = ActivityViewFactoryRegistry
+		.getInstance()
+		.getViewFactoryForBeanType(activity);
+		ActivityContextualView<?> viewType = viewFactoryForBeanType.getView(activity);
+		updateContextualView(viewType);
 	}
 
 	private final class DataflowSelectionListener implements

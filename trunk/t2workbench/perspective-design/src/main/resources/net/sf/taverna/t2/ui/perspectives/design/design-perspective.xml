@@ -43,7 +43,7 @@
 			<groupid>net.sf.taverna.t2.workbench</groupid>
 			<artifact>contextual-views</artifact>
 			<classname>
-				net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.ContextualViewComponentFactory
+				net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory
 			</classname>
 			<name>contextualview</name>
 		</namedcomponent>

@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.views.contextualviews.activity;
+package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import javax.swing.ImageIcon;
 

@@ -64,32 +64,9 @@ public abstract class ContextualView extends JPanel {
 	 * popping up!
 	 */
 	protected void initView() {
-		setSize(800, 500);
 		setLayout(new BorderLayout());
 		add(getMainFrame(), BorderLayout.CENTER);
 		setName(getViewTitle());
-		JPanel buttonFrame = new JPanel();
-		add(buttonFrame, BorderLayout.SOUTH);
-		buttonFrame.setLayout(new BorderLayout());
-
-		buttonFrame.add(createButtonPanel(), BorderLayout.EAST);
-	}
-
-	private JPanel createButtonPanel() {
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new FlowLayout());
-
-		JButton configureButton = new JButton(getConfigureAction());
-		configureButton.setEnabled(false);
-
-		if (getConfigureAction() != null) {
-			configureButton.setAction(getConfigureAction());
-			configureButton.setEnabled(true);
-		}
-		configureButton.setText("Configure");
-		buttonPanel.add(configureButton);
-
-		return buttonPanel;
 	}
 
 }
