@@ -22,6 +22,7 @@
   	<module>biomoby-activity</module>
   	<module>biomoby-activity-translator</module>
   	<module>dataflow-activity</module>
+  	<module>dataflow-activity-ui</module>
   	<module>dataflow-activity-translator</module>
   	<module>localworker-translator</module>
   	<module>localworker-activity-ui</module>
