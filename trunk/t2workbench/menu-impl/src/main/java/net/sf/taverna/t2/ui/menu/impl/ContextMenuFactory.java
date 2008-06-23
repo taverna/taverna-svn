@@ -5,11 +5,11 @@ import java.awt.Component;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import net.sf.taverna.t2.workbench.ui.impl.actions.AddDataflowInputAction;
-import net.sf.taverna.t2.workbench.ui.impl.actions.AddDataflowOutputAction;
-import net.sf.taverna.t2.workbench.ui.impl.actions.RenameDataflowInputPortAction;
-import net.sf.taverna.t2.workbench.ui.impl.actions.RenameDataflowOutputPortAction;
-import net.sf.taverna.t2.workbench.ui.impl.actions.RenameProcessorAction;
+import net.sf.taverna.t2.workbench.design.actions.AddDataflowInputAction;
+import net.sf.taverna.t2.workbench.design.actions.AddDataflowOutputAction;
+import net.sf.taverna.t2.workbench.design.actions.RenameDataflowInputPortAction;
+import net.sf.taverna.t2.workbench.design.actions.RenameDataflowOutputPortAction;
+import net.sf.taverna.t2.workbench.design.actions.RenameProcessorAction;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;

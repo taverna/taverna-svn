@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.workbench.ui.impl.actions;
+package net.sf.taverna.t2.workbench.design.actions;
 
 import java.awt.Component;
 
