@@ -39,7 +39,7 @@ public class DotWriter {
 
 		// Overall graph style
 		writeLine(" graph [");
-		writeLine("  bgcolor=\"#ffffff\"");
+		writeLine("  bgcolor=\"" + getHexValue(graph.getFillColor()) + "\"");
 		writeLine("  color=\"black\"");
 		writeLine("  fontsize=\"10\"");
 		writeLine("  labeljust=\"left\"");
