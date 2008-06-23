@@ -362,8 +362,6 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			public int compare(
 					Partition<ItemType, ChildPartitionValueType, ?> o1,
 					Partition<ItemType, ChildPartitionValueType, ?> o2) {
-				System.out.println(o1.getPartitionValue().toString()
-						+ o2.getPartitionValue().toString());
 				// FIXME is this really safe to do? It's fairly specific to our
 				// case. Doesn't seem very generic
 				if (o1.getPartitionValue().toString().equalsIgnoreCase(
