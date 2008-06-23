@@ -6,7 +6,6 @@ import javax.swing.ImageIcon;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivity;
 import net.sf.taverna.t2.activities.wsdl.WSDLActivityConfigurationBean;
 import net.sf.taverna.t2.partition.AbstractActivityItem;
-import net.sf.taverna.t2.partition.ActivityItem;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 
 public class WSDLActivityItem extends AbstractActivityItem {
