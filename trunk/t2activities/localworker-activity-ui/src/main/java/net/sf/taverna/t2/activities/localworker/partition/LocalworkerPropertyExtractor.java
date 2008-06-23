@@ -22,6 +22,7 @@ public class LocalworkerPropertyExtractor implements PropertyExtractorSPI {
 			LocalworkerActivityItem item = (LocalworkerActivityItem) target;
 			map.put("type", item.getType());
 			map.put("operation", item.getOperation());
+			map.put("category", item.getCategory());
 		}
 		return map;
 	}
