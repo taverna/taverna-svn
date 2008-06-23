@@ -15,6 +15,8 @@ import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Datalink;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.Edits;
@@ -103,6 +105,16 @@ public class EditsImpl implements Edits {
 		return new RenameProcessorEdit(processor, newName);
 	}
 
+	public Edit<DataflowInputPort> getRenameDataflowInputPortEdit(DataflowInputPort dataflowInputPort,
+			String newName) {
+		return new RenameDataflowInputPortEdit(dataflowInputPort, newName);
+	}
+
+	public Edit<DataflowOutputPort> getRenameDataflowOutputPortEdit(DataflowOutputPort dataflowOutputPort,
+			String newName) {
+		return new RenameDataflowOutputPortEdit(dataflowOutputPort, newName);
+	}
+	
 	public Edit<Processor> getConnectProcessorOutputEdit(Processor processor,
 			String outputPortName, EventHandlingInputPort targetPort) {
 		return new ConnectProcessorOutputEdit(processor, outputPortName,

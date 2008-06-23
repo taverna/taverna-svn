@@ -295,6 +295,30 @@ public interface Edits {
 			String newName);
 
 	/**
+	 * Rename a dataflow input port
+	 * 
+	 * @param dataflowInputPort
+	 *            the dataflow input port to rename
+	 * @param newName
+	 *            the new name, must be unique within the workflow enclosing the
+	 *            dataflow input port instance
+	 */
+	public Edit<DataflowInputPort> getRenameDataflowInputPortEdit(DataflowInputPort dataflowInputPort,
+			String newName);
+
+	/**
+	 * Rename a dataflow output port
+	 * 
+	 * @param dataflowOutputPort
+	 *            the dataflow output port to rename
+	 * @param newName
+	 *            the new name, must be unique within the workflow enclosing the
+	 *            dataflow output port instance
+	 */
+	public Edit<DataflowOutputPort> getRenameDataflowOutputPortEdit(DataflowOutputPort dataflowOutputPort,
+			String newName);
+
+	/**
 	 * Create a condition governing execution of the target processor. The
 	 * target will not consume jobs from any inputs until all control processors
 	 * linked through this edit have completed.

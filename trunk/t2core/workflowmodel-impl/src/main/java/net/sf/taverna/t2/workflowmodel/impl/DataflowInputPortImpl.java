@@ -54,4 +54,9 @@ public class DataflowInputPortImpl extends AbstractEventHandlingInputPort
 	public Dataflow getDataflow() {
 		return dataflow;
 	}
+	
+	public void setName(String newName) {
+		this.name = newName;
+	}
+	
 }

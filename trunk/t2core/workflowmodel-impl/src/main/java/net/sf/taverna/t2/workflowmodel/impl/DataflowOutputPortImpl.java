@@ -76,4 +76,9 @@ public class DataflowOutputPortImpl extends BasicEventForwardingOutputPort
 	public void removeResultListener(ResultListener listener) {
 		resultListeners.remove(listener);
 	}
+	
+	public void setName(String newName) {
+		this.name = newName;
+	}
+	
 }
