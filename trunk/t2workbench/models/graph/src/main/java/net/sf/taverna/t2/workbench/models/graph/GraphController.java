@@ -257,8 +257,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				try {
 					editManager.doDataflowEdit(dataflow, edit);
 				} catch (EditException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.debug("Failed to create datalink from '" + source.getName() + "' to '" + sink.getName() + "'");
 				}
 			}
 		}
@@ -664,6 +663,15 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			node.addSourceNode(portNode);
 		}
 		return node;
+	}
+
+	/**
+	 * Returns the dataflow.
+	 *
+	 * @return the dataflow
+	 */
+	public Dataflow getDataflow() {
+		return dataflow;
 	}
 
 	/**

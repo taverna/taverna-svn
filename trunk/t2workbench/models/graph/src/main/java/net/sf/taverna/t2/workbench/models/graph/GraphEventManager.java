@@ -6,12 +6,15 @@ import java.awt.event.ActionEvent;
 import java.util.List;
 
 import javax.swing.AbstractAction;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+import net.sf.taverna.t2.ui.menu.impl.ContextMenuFactory;
+import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 
 /**
@@ -25,7 +28,7 @@ public class GraphEventManager {
 
 	private Component component;
 
-	private JPopupMenu menu = new JPopupMenu();
+	private JPopupMenu menu;
 
 	/**
 	 * Constructs a new instance of GraphEventManager.
@@ -36,7 +39,6 @@ public class GraphEventManager {
 	public GraphEventManager(GraphController graphController, Component component) {
 		this.graphController = graphController;
 		this.component = component;
-		menu.setLightWeightPopupEnabled(false);
 	}
 
 	public void mouseClicked(final GraphElement graphElement, short button,
@@ -45,8 +47,11 @@ public class GraphEventManager {
 			graphController.getDataflowSelectionModel().addSelection(graphElement.getDataflowObject());
 		} else if (button == 2) {
 			if (graphElement instanceof GraphNode && graphElement.getDataflowObject() instanceof Processor) {
-				menu.removeAll();
-				menu.add(new JLabel(graphElement.getLabel()));
+				menu = ContextMenuFactory.getContextMenu(graphController.getDataflow(), graphElement.getDataflowObject(), component);
+				if (menu == null) {
+					menu = new JPopupMenu();
+				}
+//				menu.add(new JLabel(graphElement.getLabel()));
 				menu.addSeparator();
 				GraphNode graphNode = (GraphNode) graphElement;
 				List<GraphNode> sourceNodes = graphNode.getSourceNodes();
@@ -86,7 +91,6 @@ public class GraphEventManager {
 						JMenu linkMenu = new JMenu("Link to input...");
 						menu.add(linkMenu);
 						for (final GraphNode sinkNode : sinkNodes) {
-							JMenuItem menuItem = new JMenuItem();
 							linkMenu.add(new JMenuItem(new AbstractAction(sinkNode.getLabel()) {
 
 								public void actionPerformed(ActionEvent arg0) {
@@ -100,6 +104,21 @@ public class GraphEventManager {
 				Point p = new Point(screenX, screenY);
 				SwingUtilities.convertPointFromScreen(p, component);
 				menu.show(component, p.x, p.y);
+			} else if (graphElement.getDataflowObject() instanceof DataflowInputPort) {
+				Dataflow dataflow = graphController.getDataflow();
+				Point p = new Point(screenX, screenY);
+				SwingUtilities.convertPointFromScreen(p, component);
+				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
+			} else if (graphElement.getDataflowObject() instanceof DataflowOutputPort) {
+				Dataflow dataflow = graphController.getDataflow();
+				Point p = new Point(screenX, screenY);
+				SwingUtilities.convertPointFromScreen(p, component);
+				ContextMenuFactory.getContextMenu(dataflow, graphElement.getDataflowObject(), component).show(component, p.x, p.y);
+			} else if (graphElement.getDataflowObject() == null) {
+				Dataflow dataflow = graphController.getDataflow();
+				Point p = new Point(screenX, screenY);
+				SwingUtilities.convertPointFromScreen(p, component);
+				ContextMenuFactory.getContextMenu(dataflow, dataflow, component).show(component, p.x, p.y);
 			}
 		}
 	}
