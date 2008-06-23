@@ -43,8 +43,6 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 
 	private SVGMouseDownEventListener mouseDownAction;
 
-//	private SVGMouseUpEventListener mouseUpAction;
-
 	private SVGOMGElement g;
 
 	private SVGOMPolygonElement polygon;
@@ -108,7 +106,6 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);			
 			t.addEventListener(SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE, mouseMovedAction, false);
 			t.addEventListener(SVGConstants.SVG_MOUSEDOWN_EVENT_TYPE, mouseDownAction, false);
-//			t.addEventListener(SVGConstants.SVG_MOUSEUP_EVENT_TYPE, mouseUpAction, false);
 		}
 
 	}
@@ -137,7 +134,6 @@ public class SVGGraphNode extends GraphNode implements SVGShape {
 			t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);			
 			t.addEventListener(SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE, mouseMovedAction, false);
 			t.addEventListener(SVGConstants.SVG_MOUSEDOWN_EVENT_TYPE, mouseDownAction, false);
-//			t.addEventListener(SVGConstants.SVG_MOUSEUP_EVENT_TYPE, mouseUpAction, false);
 		}
 	}
 
