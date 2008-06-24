@@ -1,16 +1,12 @@
 package net.sf.taverna.t2.workbench.file.impl;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
+
+import javax.swing.filechooser.FileFilter;
 
 import net.sf.taverna.t2.lang.observer.MultiCaster;
 import net.sf.taverna.t2.lang.observer.Observable;
@@ -21,39 +17,30 @@ import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.edits.EditManager.AbstractDataflowEditEvent;
 import net.sf.taverna.t2.workbench.edits.EditManager.EditManagerEvent;
+import net.sf.taverna.t2.workbench.file.DataflowInfo;
+import net.sf.taverna.t2.workbench.file.DataflowPersistenceHandler;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workbench.file.events.ClosedDataflowEvent;
 import net.sf.taverna.t2.workbench.file.events.FileManagerEvent;
 import net.sf.taverna.t2.workbench.file.events.OpenedDataflowEvent;
+import net.sf.taverna.t2.workbench.file.events.SavedDataflowEvent;
 import net.sf.taverna.t2.workbench.file.events.SetCurrentDataflowEvent;
 import net.sf.taverna.t2.workbench.file.exceptions.OpenException;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.exceptions.UnsavedException;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.EditException;
-import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
-import net.sf.taverna.t2.workflowmodel.serialization.SerializationException;
-import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializer;
-import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLDeserializerImpl;
-import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializer;
-import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializerImpl;
 
 import org.apache.log4j.Logger;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.XMLOutputter;
 
 public class FileManagerImpl extends FileManager {
-
 	static Logger logger = Logger.getLogger(FileManagerImpl.class);
 
 	/**
 	 * The last blank dataflow created using #newDataflow() until it has been //
 	 * changed - when this variable will be set to null again. Used to //
-	 * automatically close unmodified blank dataflows on open
+	 * automatically close unmodifieabout:blankd blank dataflows on open
 	 */
 	private Dataflow blankDataflow = null;
 
@@ -66,6 +53,9 @@ public class FileManagerImpl extends FileManager {
 	 * Ordered list of open dataflows
 	 */
 	private LinkedHashMap<Dataflow, OpenDataflowInfo> openDataflowInfos = new LinkedHashMap<Dataflow, OpenDataflowInfo>();
+
+	private DataflowPersistenceHandlerRegistry persistanceHandlerRegistry = DataflowPersistenceHandlerRegistry
+			.getInstance();
 
 	protected MultiCaster<FileManagerEvent> observers = new MultiCaster<FileManagerEvent>(
 			this);
@@ -80,23 +70,15 @@ public class FileManagerImpl extends FileManager {
 	}
 
 	@Override
-	public boolean canSaveCurrentWithoutFilename() {
-		return canSaveWithoutFilename(getCurrentDataflow());
-	}
-
-	@Override
-	public boolean canSaveWithoutFilename(Dataflow dataflow) {
+	public boolean canSaveWithoutDestination(Dataflow dataflow) {
 		OpenDataflowInfo dataflowInfo = getOpenDataflowInfo(dataflow);
-		return dataflowInfo.getFile() != null;
-	}
-
-	@Override
-	public void closeCurrentDataflow(boolean failOnUnsaved)
-			throws UnsavedException {
-		Dataflow dataflow = getCurrentDataflow();
-		if (dataflow != null) {
-			closeDataflow(dataflow, failOnUnsaved);
+		if (dataflowInfo.getSource() == null) {
+			return false;
 		}
+		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
+				.getSaveHandlersForType(dataflowInfo.getFileType(),
+						dataflowInfo.getDataflowInfo().getCanonicalSource().getClass());
+		return !handlers.isEmpty();
 	}
 
 	@Override
@@ -137,6 +119,16 @@ public class FileManagerImpl extends FileManager {
 		return (Dataflow) modelMap.getModel(ModelMapConstants.CURRENT_DATAFLOW);
 	}
 
+	@Override
+	public Object getDataflowSource(Dataflow dataflow) {
+		return getOpenDataflowInfo(dataflow).getSource();
+	}
+
+	@Override
+	public Object getDataflowType(Dataflow dataflow) {
+		return getOpenDataflowInfo(dataflow).getFileType();
+	}
+
 	public List<Observer<FileManagerEvent>> getObservers() {
 		return observers.getObservers();
 	}
@@ -144,6 +136,44 @@ public class FileManagerImpl extends FileManager {
 	@Override
 	public List<Dataflow> getOpenDataflows() {
 		return new ArrayList<Dataflow>(openDataflowInfos.keySet());
+	}
+
+	@Override
+	public List<FileFilter> getOpenFileFilters() {
+		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
+		for (FileType fileType : persistanceHandlerRegistry.getOpenFileTypes()) {
+			fileFilters.add(new FileTypeFileFilter(fileType));
+		}
+		return fileFilters;
+	}
+
+	@Override
+	public List<FileFilter> getOpenFileFilters(Class<?> sourceClass) {
+		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
+		for (FileType fileType : persistanceHandlerRegistry
+				.getOpenFileTypesFor(sourceClass)) {
+			fileFilters.add(new FileTypeFileFilter(fileType));
+		}
+		return fileFilters;
+	}
+
+	@Override
+	public List<FileFilter> getSaveFileFilters() {
+		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
+		for (FileType fileType : persistanceHandlerRegistry.getSaveFileTypes()) {
+			fileFilters.add(new FileTypeFileFilter(fileType));
+		}
+		return fileFilters;
+	}
+
+	@Override
+	public List<FileFilter> getSaveFileFilters(Class<?> destinationClass) {
+		List<FileFilter> fileFilters = new ArrayList<FileFilter>();
+		for (FileType fileType : persistanceHandlerRegistry
+				.getSaveFileTypesFor(destinationClass)) {
+			fileFilters.add(new FileTypeFileFilter(fileType));
+		}
+		return fileFilters;
 	}
 
 	@Override
@@ -172,59 +202,38 @@ public class FileManagerImpl extends FileManager {
 	}
 
 	@Override
-	public Dataflow openDataflow(InputStream workflowXMLstream)
+	public Dataflow openDataflow(FileType fileType, Object source)
 			throws OpenException {
-		Dataflow dataflow = openDataflowInternal(workflowXMLstream);
-		observers.notify(new OpenedDataflowEvent(dataflow));
-		return dataflow;
-	}
-
-	@Override
-	public Dataflow openDataflow(URL dataflowURL) throws OpenException {
-		InputStream inputStream;
-		try {
-			inputStream = dataflowURL.openStream();
-		} catch (IOException e) {
-			throw new OpenException("Could not open " + dataflowURL, e);
+		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
+				.getOpenHandlersFor(fileType, source.getClass());
+		if (handlers.isEmpty()) {
+			throw new OpenException("Unsupported file type or class "
+					+ fileType + " " + source.getClass());
 		}
-		logger.debug("Loading dataflow from " + dataflowURL);
-		Dataflow dataflow;
-		try {
-			dataflow = openDataflowInternal(inputStream);
-		} finally {
+		OpenException lastException = null;
+		for (DataflowPersistenceHandler handler : handlers) {
 			try {
-				inputStream.close();
-			} catch (IOException e) {
-				logger.warn("Could not close stream ", e);
+				DataflowInfo openDataflow = handler.openDataflow(fileType,
+						source);
+				Dataflow dataflow = openDataflow.getDataflow();
+				logger.info("Loaded workflow: " + dataflow.getLocalName() + " "
+						+ dataflow.getInternalIdentier() + " from " + source
+						+ " using " + handler);
+				openDataflowInternal(dataflow);
+				getOpenDataflowInfo(dataflow).setOpenedFrom(openDataflow);
+				observers.notify(new OpenedDataflowEvent(dataflow));
+				return dataflow;
+			} catch (OpenException ex) {
+				logger.warn("Could not open from " + source + " using "
+						+ handler);
+				lastException = ex;
 			}
 		}
-		logger.info("Loaded workflow: " + dataflow.getLocalName() + " "
-				+ dataflow.getInternalIdentier() + " from " + dataflowURL);
-		getOpenDataflowInfo(dataflow).setOpenedFrom(dataflowURL);
-		observers.notify(new OpenedDataflowEvent(dataflow));
-		return dataflow;
+		throw new OpenException("Could not open " + source, lastException);
 	}
 
 	public void removeObserver(Observer<FileManagerEvent> observer) {
 		observers.removeObserver(observer);
-	}
-
-	@Override
-	public void saveCurrentDataflow(boolean failOnOverwrite)
-			throws SaveException {
-		Dataflow dataflow = getCurrentDataflow();
-		if (dataflow != null) {
-			saveDataflow(dataflow, failOnOverwrite);
-		}
-	}
-
-	@Override
-	public void saveCurrentDataflow(File dataflowFile, boolean failOnOverwrite)
-			throws SaveException {
-		Dataflow dataflow = getCurrentDataflow();
-		if (dataflow != null) {
-			saveDataflow(dataflow, dataflowFile, failOnOverwrite);
-		}
 	}
 
 	@Override
@@ -234,53 +243,52 @@ public class FileManagerImpl extends FileManager {
 			throw new NullPointerException("Dataflow can't be null");
 		}
 		OpenDataflowInfo lastSave = getOpenDataflowInfo(dataflow);
-		if (lastSave.getFile() == null) {
-			throw new SaveException("Can't save without filename " + dataflow);
+		if (lastSave.getSource() == null) {
+			throw new SaveException("Can't save without source " + dataflow);
 		}
-		saveDataflow(dataflow, lastSave.getFile(), failOnOverwrite);
+		saveDataflow(dataflow, lastSave.getFileType(), lastSave.getSource(),
+				failOnOverwrite);
 	}
 
 	@Override
-	public void saveDataflow(Dataflow dataflow, File dataflowFile,
-			boolean failOnOverwrite) throws SaveException {
-
-		if (failOnOverwrite && wouldOverwriteDataflow(dataflow, dataflowFile)) {
-			throw new OverwriteException(dataflowFile);
+	public void saveDataflow(Dataflow dataflow, FileType fileType,
+			Object destination, boolean failOnOverwrite) throws SaveException {
+		Set<DataflowPersistenceHandler> handlers = persistanceHandlerRegistry
+				.getSaveHandlersForType(fileType, destination.getClass());
+		if (handlers.isEmpty()) {
+			throw new SaveException("Unsupported file type or class "
+					+ fileType + " " + destination.getClass());
 		}
+		SaveException lastException = null;
 
-		FileOutputStream fileOutStream;
-		try {
-			fileOutStream = new FileOutputStream(dataflowFile);
-		} catch (FileNotFoundException e) {
-			throw new SaveException("Can't create dataflow file "
-					+ dataflowFile, e);
-		}
-		OutputStream outStream = new BufferedOutputStream(fileOutStream);
-		XMLOutputter outputter = new XMLOutputter();
+		for (DataflowPersistenceHandler handler : handlers) {
 
-		XMLSerializer serialiser = new XMLSerializerImpl();
-		Element serialized;
-		try {
-			serialized = serialiser.serializeDataflow(dataflow);
-		} catch (SerializationException e) {
-			throw new SaveException("Could not serialize " + dataflow, e);
-		}
-
-		try {
-			outputter.output(serialized, outStream);
-			outStream.close();
-		} catch (IOException e) {
-			throw new SaveException("Can't write dataflow to file "
-					+ dataflowFile, e);
-		} finally {
+			if (failOnOverwrite) {
+				OpenDataflowInfo openDataflowInfo = getOpenDataflowInfo(dataflow);
+				if (handler.wouldOverwriteDataflow(dataflow, fileType,
+						destination, openDataflowInfo.getDataflowInfo())) {
+					throw new OverwriteException(destination);
+				}
+			}
 			try {
-				outStream.close();
-			} catch (IOException e) {
-				logger.warn("Could not close stream to " + dataflowFile, e);
+				DataflowInfo savedDataflow = handler.saveDataflow(dataflow,
+						fileType, destination);
+				savedDataflow.getDataflow();
+				logger.info("Saved workflow: " + dataflow.getLocalName() + " "
+						+ dataflow.getInternalIdentier() + " to "
+						+ savedDataflow.getCanonicalSource() + " using "
+						+ handler);
+				getOpenDataflowInfo(dataflow).setSavedTo(savedDataflow);
+				observers.notify(new SavedDataflowEvent(dataflow));
+				return;
+			} catch (SaveException ex) {
+				logger.warn("Could not save to " + destination + " using "
+						+ handler);
+				lastException = ex;
 			}
 		}
-		getOpenDataflowInfo(dataflow).setSavedTo(dataflowFile);
-
+		throw new SaveException("Could not save to " + destination,
+				lastException);
 	}
 
 	@Override
@@ -294,7 +302,7 @@ public class FileManagerImpl extends FileManager {
 
 	@Override
 	public void setDataflowChanged(Dataflow dataflow, boolean isChanged) {
-		getOpenDataflowInfo(dataflow).setChanged(isChanged);
+		getOpenDataflowInfo(dataflow).setIsChanged(isChanged);
 		if (blankDataflow == dataflow) {
 			blankDataflow = null;
 		}
@@ -314,31 +322,6 @@ public class FileManagerImpl extends FileManager {
 		}
 	}
 
-	protected Dataflow loadDataflowFromStream(InputStream workflowXMLstream)
-			throws OpenException {
-		XMLDeserializer deserializer = new XMLDeserializerImpl();
-		SAXBuilder builder = new SAXBuilder();
-		Document document;
-		try {
-			document = builder.build(workflowXMLstream);
-		} catch (JDOMException e) {
-			throw new OpenException("Could not parse XML of dataflow", e);
-		} catch (IOException e) {
-			throw new OpenException("Could not read dataflow", e);
-		}
-
-		Dataflow dataflow;
-		try {
-			dataflow = deserializer.deserializeDataflow(document
-					.getRootElement());
-		} catch (DeserializationException e) {
-			throw new OpenException("Could not deserialise dataflow ", e);
-		} catch (EditException e) {
-			throw new OpenException("Could not construct dataflow ", e);
-		}
-		return dataflow;
-	}
-
 	protected void openDataflowInternal(Dataflow dataflow) {
 		if (dataflow == null) {
 			throw new NullPointerException("Dataflow can't be null");
@@ -352,7 +335,7 @@ public class FileManagerImpl extends FileManager {
 		setCurrentDataflow(dataflow);
 		if (openDataflowInfos.size() == 2 && blankDataflow != null) {
 			// Behave like a word processor and close the blank workflow
-			// when another one has been opened
+			// when another workflow has been opened
 			try {
 				closeDataflow(blankDataflow, true);
 			} catch (UnsavedException e) {
@@ -364,36 +347,10 @@ public class FileManagerImpl extends FileManager {
 
 	protected Dataflow openDataflowInternal(InputStream workflowXMLstream)
 			throws OpenException {
-		Dataflow dataflow = loadDataflowFromStream(workflowXMLstream);
+		Dataflow dataflow = new T2DataflowOpener()
+				.openDataflowStream(workflowXMLstream);
 		openDataflowInternal(dataflow);
 		return dataflow;
-	}
-
-	protected boolean wouldOverwriteDataflow(Dataflow dataflow,
-			File dataflowFile) throws OverwriteException {
-		if (!dataflowFile.exists()) {
-			return false;
-		}
-		OpenDataflowInfo dataflowInfo = getOpenDataflowInfo(dataflow);
-		synchronized (dataflowInfo) {
-			File lastSavedFile = dataflowInfo.getFile();
-			if (lastSavedFile == null) {
-				return true;
-			}
-			try {
-				dataflowFile = dataflowFile.getCanonicalFile();
-			} catch (IOException e1) {
-				logger.warn("Could not canonically resolve " + dataflowFile);
-				// Better play safe
-				return true;
-			}
-			if (!lastSavedFile.equals(dataflowFile)) {
-				return true;
-			}
-			// It's the same file, compare time stamps
-			return (dataflowInfo.getLastModified() != dataflowFile
-					.lastModified());
-		}
 	}
 
 	private final class EditManagerObserver implements
@@ -428,26 +385,6 @@ public class FileManagerImpl extends FileManager {
 				observers.notify(new SetCurrentDataflowEvent(newModel));
 			}
 		}
-	}
-
-	@Override
-	public File getCurrentDataflowFile() {
-		return getDataflowFile(getCurrentDataflow());
-	}
-
-	@Override
-	public URL getCurrentDataflowURL() {
-		return getDataflowURL(getCurrentDataflow());
-	}
-
-	@Override
-	public File getDataflowFile(Dataflow dataflow) {
-		return getOpenDataflowInfo(dataflow).getFile();
-	}
-
-	@Override
-	public URL getDataflowURL(Dataflow dataflow) {
-		return getOpenDataflowInfo(dataflow).getURL();
 	}
 
 }

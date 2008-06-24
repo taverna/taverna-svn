@@ -26,6 +26,7 @@ public class SaveAllWorkflowsAction extends AbstractAction {
 
 	private final SaveWorkflowAction saveWorkflowAction = new SaveWorkflowAction();
 
+	@SuppressWarnings("unused")
 	private static Logger logger = Logger
 			.getLogger(SaveAllWorkflowsAction.class);
 

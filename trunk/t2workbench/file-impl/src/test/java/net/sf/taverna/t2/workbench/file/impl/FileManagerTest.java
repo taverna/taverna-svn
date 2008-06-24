@@ -35,6 +35,8 @@ import org.junit.Test;
 
 public class FileManagerTest {
 
+	private static final T2FlowFileType T2_FLOW_FILE_TYPE = new T2FlowFileType();
+
 	private static final String DUMMY_WORKFLOW_T2FLOW = "dummy-workflow.t2flow";
 
 	private FileManager fileManager;
@@ -94,7 +96,7 @@ public class FileManagerTest {
 		dataflowFile.deleteOnExit();
 		dataflowFile.delete();
 
-		fileManager.saveDataflow(dataflow, dataflowFile, false);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, false);
 		assertFalse("Dataflow should no longer be marked as changed",
 				fileManager.isDataflowChanged(dataflow));
 	}
@@ -124,14 +126,14 @@ public class FileManagerTest {
 		File dataflowFile = File.createTempFile("test", ".t2flow");
 		dataflowFile.deleteOnExit();
 		dataflowFile.delete();
-		fileManager.saveDataflow(dataflow, dataflowFile, false);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, false);
 		assertFalse("Dataflow should no longer be marked as changed",
 				fileManager.isDataflowChanged(dataflow));
 
 		editManager.undoDataflowEdit(dataflow);
 		assertTrue("Dataflow should have changed after undo", fileManager
 				.isDataflowChanged(dataflow));
-		fileManager.saveDataflow(dataflow, dataflowFile, false);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, false);
 		editManager.redoDataflowEdit(dataflow);
 		assertTrue("Dataflow should have changed after redo after save",
 				fileManager.isDataflowChanged(dataflow));
@@ -186,15 +188,14 @@ public class FileManagerTest {
 		File dataflowFile = File.createTempFile("test", ".t2flow");
 		dataflowFile.deleteOnExit();
 		dataflowFile.delete();
-		fileManager.saveCurrentDataflow(dataflowFile, true);
-		assertTrue(fileManager.canSaveWithoutFilename(savedDataflow));
-		fileManager.saveCurrentDataflow(true);
+		fileManager.saveDataflow(savedDataflow, T2_FLOW_FILE_TYPE, dataflowFile, true);
+		assertTrue(fileManager.canSaveWithoutDestination(savedDataflow));
+		fileManager.saveDataflow(savedDataflow, true);
 		fileManager.closeDataflow(savedDataflow, true);
 
-		Dataflow otherFlow = fileManager.openDataflow(dataflowFile.toURI()
+		Dataflow otherFlow = fileManager.openDataflow(T2_FLOW_FILE_TYPE, dataflowFile.toURI()
 				.toURL());
-		assertTrue(fileManager.canSaveWithoutFilename(otherFlow));
-
+		assertTrue(fileManager.canSaveWithoutDestination(otherFlow));
 	}
 
 	@Test
@@ -204,9 +205,9 @@ public class FileManagerTest {
 		dataflowFile.deleteOnExit();
 		dataflowFile.delete();
 		assertFalse("File should not exist", dataflowFile.isFile());
-		fileManager.saveCurrentDataflow(dataflowFile, false);
+		fileManager.saveDataflow(savedDataflow, T2_FLOW_FILE_TYPE, dataflowFile, false);
 		assertTrue("File should exist", dataflowFile.isFile());
-		Dataflow loadedDataflow = fileManager.openDataflow(dataflowFile.toURI()
+		Dataflow loadedDataflow = fileManager.openDataflow(T2_FLOW_FILE_TYPE, dataflowFile.toURI()
 				.toURL());
 		assertNotSame("Dataflow was not reopened", savedDataflow,
 				loadedDataflow);
@@ -239,7 +240,7 @@ public class FileManagerTest {
 		dataflowFile.delete();
 		dataflowFile.deleteOnExit();
 		// File did NOT exist, should not fail
-		fileManager.saveCurrentDataflow(dataflowFile, true);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, true);
 
 		EditManager editManager = EditManager.getInstance();
 		Edits edits = editManager.getEdits();
@@ -251,12 +252,13 @@ public class FileManagerTest {
 
 		// Last save was OURs, so should *not* fail - even if we now use
 		// the specific saveDataflow() method
-		fileManager.saveDataflow(dataflow, dataflowFile, true);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, true);
 
+		//Thread.sleep(1500);
 		Dataflow otherFlow = openDataflow();
 		// Saving another flow to same file should still fail
 		try {
-			fileManager.saveDataflow(otherFlow, dataflowFile, true);
+			fileManager.saveDataflow(otherFlow,T2_FLOW_FILE_TYPE, dataflowFile, true);
 			fail("Should have thrown OverwriteException");
 		} catch (OverwriteException ex) {
 			// Expected
@@ -270,7 +272,7 @@ public class FileManagerTest {
 		File dataflowFile = File.createTempFile("test", ".t2flow");
 		dataflowFile.deleteOnExit();
 		// Should fail as file already exists
-		fileManager.saveCurrentDataflow(dataflowFile, true);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, true);
 	}
 
 	@Test
@@ -281,7 +283,7 @@ public class FileManagerTest {
 		dataflowFile.delete();
 		dataflowFile.deleteOnExit();
 		// File did NOT exist, should not fail
-		fileManager.saveCurrentDataflow(dataflowFile, true);
+		fileManager.saveDataflow(dataflow, T2_FLOW_FILE_TYPE, dataflowFile, true);
 	}
 
 	@After
@@ -291,7 +293,7 @@ public class FileManagerTest {
 
 	protected Dataflow openDataflow() throws OpenException {
 		URL url = getClass().getResource(DUMMY_WORKFLOW_T2FLOW);
-		return fileManager.openDataflow(url);
+		return fileManager.openDataflow(T2_FLOW_FILE_TYPE, url);
 	}
 
 	private final class ModelMapObserver implements Observer<ModelMapEvent> {

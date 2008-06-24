@@ -2,7 +2,6 @@ package net.sf.taverna.t2.workbench.file.impl.actions;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -61,36 +60,38 @@ public class SaveWorkflowAction extends AbstractAction {
 	}
 
 	public boolean saveDataflow(Component parentComponent, Dataflow dataflow) {
-		if (!fileManager.canSaveWithoutFilename(dataflow)) {
+		if (!fileManager.canSaveWithoutDestination(dataflow)) {
 			return saveWorkflowAsAction.saveDataflow(parentComponent, dataflow);
 		}
 		try {
 			try {
 				fileManager.saveDataflow(dataflow, true);
+				Object dataflowSource = fileManager.getDataflowSource(dataflow);
 				logger.info("Saved dataflow " + dataflow + " to "
-						+ fileManager.getDataflowFile(dataflow));
+						+ dataflowSource);
 				return true;
 			} catch (OverwriteException ex) {
-				File file = fileManager.getDataflowFile(dataflow);
-				logger.warn("File was changed on disk: " + file, ex);
+				Object dataflowSource = fileManager.getDataflowSource(dataflow);
+				logger
+						.warn("Dataflow was changed on source: "
+								+ dataflowSource, ex);
 				fileManager.setCurrentDataflow(dataflow);
-				String msg = "File " + file + " has changed on disk, "
+				String msg = "Dataflow destination " + dataflowSource
+						+ " has been changed from elsewhere, "
 						+ "are you sure you want to overwrite?";
 				int ret = JOptionPane.showConfirmDialog(parentComponent, msg,
-						"File changed on disk",
-						JOptionPane.YES_NO_CANCEL_OPTION);
+						"Dataflow changedk", JOptionPane.YES_NO_CANCEL_OPTION);
 				if (ret == JOptionPane.YES_OPTION) {
 					fileManager.saveDataflow(dataflow, false);
 					logger.info("Saved dataflow " + dataflow
-							+ " by overwriting "
-							+ fileManager.getCurrentDataflowFile());
+							+ " by overwriting " + dataflowSource);
 					return true;
 				} else if (ret == JOptionPane.NO_OPTION) {
 					// Pop up Save As instead to choose another name
 					return saveWorkflowAsAction.saveDataflow(parentComponent,
 							dataflow);
 				} else {
-					logger.info("Aborted overwrite of " + file);
+					logger.info("Aborted overwrite of " + dataflowSource);
 					return false;
 				}
 			}
