@@ -139,6 +139,27 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 	}
 
 	/**
+	 * Adds an input port to the DataFlow.
+	 * 
+	 * @param inputPort
+	 *            the DataflowInputPortImpl to be added to the Dataflow
+	 * @throws EditException 
+	 */
+	protected synchronized void addInputPort(DataflowInputPortImpl inputPort)
+			throws EditException {
+		for (DataflowInputPort existingInputPort : inputs
+				.toArray(new DataflowInputPort[] {})) {
+			if (existingInputPort.getName().equals(inputPort.getName()))
+				throw new NamingException("There already is a dataflow input port named:"
+						+ inputPort.getName());
+		}
+		if (inputPort.getDataflow() != this) {
+			throw new EditException("Port specifies a different dataflow");
+		}
+		inputs.add(inputPort);
+	}
+
+	/**
 	 * Remove the named dataflow input port
 	 * 
 	 * @param name
@@ -205,6 +226,27 @@ public class DataflowImpl extends AbstractAnnotatedThing<Dataflow> implements
 		DataflowOutputPortImpl dopi = new DataflowOutputPortImpl(name, this);
 		outputs.add(dopi);
 		return dopi;
+	}
+
+	/**
+	 * Adds an output port to the DataFlow.
+	 * 
+	 * @param outputPort
+	 *            the DataflowOutputPortImpl to be added to the Dataflow
+	 * @throws EditException 
+	 */
+	protected synchronized void addOutputPort(DataflowOutputPortImpl outputPort)
+			throws EditException {
+		for (DataflowOutputPort existingOutputPort : outputs
+				.toArray(new DataflowOutputPort[] {})) {
+			if (existingOutputPort.getName().equals(outputPort.getName()))
+				throw new NamingException("There already is a dataflow output port named:"
+						+ outputPort.getName());
+		}
+		if (outputPort.getDataflow() != this) {
+			throw new EditException("Port specifies a different dataflow");
+		}
+		outputs.add(outputPort);
 	}
 
 	/**

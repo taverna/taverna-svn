@@ -63,6 +63,26 @@ public interface Edits {
 	public Processor createProcessor(String name);
 
 	/**
+	 * Builds a new DataflowInputPort.
+	 * 
+	 * @param name
+	 * @param depth
+	 * @param granularDepth
+	 * @param dataflow
+	 * @return a new DataflowInputPort
+	 */
+	public DataflowInputPort createDataflowInputPort(String name, int depth, int granularDepth, Dataflow dataflow) ;
+
+	/**
+	 * Builds a new DataflowOutputPort.
+	 * 
+	 * @param name
+	 * @param dataflow
+	 * @return a new DataflowOutputPort
+	 */
+	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow);
+	
+	/**
 	 * Add an {@link AnnotationAssertion} to an {@link AnnotationChain}
 	 * 
 	 * @param annotationChain
@@ -94,6 +114,17 @@ public interface Edits {
 	 *            the processor to be added to the dataflow
 	 */
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
+			Processor processor);
+
+	/**
+	 * Returns an edit to remove a Processor from a Dataflow.
+	 * 
+	 * @param dataflow
+	 *            the dataflow to remove the processor from
+	 * @param processor
+	 *            the processor to be removed from the dataflow
+	 */
+	public Edit<Dataflow> getRemoveProcessorEdit(Dataflow dataflow,
 			Processor processor);
 
 	public Edit<Dataflow> getAddMergeEdit(Dataflow dataflow, Merge processor);
@@ -155,6 +186,15 @@ public interface Edits {
 	 * @return a datalink edit
 	 */
 	public Edit<Datalink> getConnectDatalinkEdit(Datalink datalink);
+
+	/**
+	 * Disconnect a datalink from its source and sink.
+	 * 
+	 * @param datalink
+	 *            the datalink to disconnect
+	 * @return a datalink edit
+	 */
+	public Edit<Datalink> getDisconnectDatalinkEdit(Datalink datalink);
 
 	/**
 	 * Creates and returns an instance of an Edit<Merge> that is responsible
@@ -283,6 +323,26 @@ public interface Edits {
 			String portName);
 
 	/**
+	 * Returns an edit to add a DataflowOutputPort to a Dataflow.
+	 * 
+	 * @param dataflow dataflow to add the port to
+	 * @param dataflowOutputPort the port to add to the dataflow
+	 * @return an edit to add a DataflowOutputPort to a Dataflow
+	 */
+	public Edit<Dataflow> getAddDataflowOutputPortEdit(Dataflow dataflow,
+			DataflowOutputPort dataflowOutputPort);
+
+	/**
+	 * Returns an edit to add a DataflowInputPort to a Dataflow.
+	 * 
+	 * @param dataflow dataflow to add the port to
+	 * @param dataflowInputPort the port to add to the dataflow
+	 * @return an edit to add a DataflowInputPort to a Dataflow
+	 */
+	public Edit<Dataflow> getAddDataflowInputPortEdit(Dataflow dataflow,
+			DataflowInputPort dataflowInputPort);
+
+	/**
 	 * Rename a processor
 	 * 
 	 * @param processor
@@ -317,6 +377,28 @@ public interface Edits {
 	 */
 	public Edit<DataflowOutputPort> getRenameDataflowOutputPortEdit(DataflowOutputPort dataflowOutputPort,
 			String newName);
+
+	/**
+	 * Returns an edit to remove a DataflowOutputPort from a Dataflow.
+	 * 
+	 * @param dataflow
+	 *            the Dataflow to remove this DataflowOutputPort from
+	 * @param dataflowOutputPort
+	 *            the DataflowOutputPort to be removed from the Dataflow
+	 */
+	public Edit<Dataflow> getRemoveDataflowOutputPortEdit(Dataflow dataflow,
+			DataflowOutputPort dataflowOutputPort);
+
+	/**
+	 * Returns an edit to remove a DataflowInputPort from a Dataflow.
+	 * 
+	 * @param dataflow
+	 *            the Dataflow to remove this DataflowInputPort from
+	 * @param dataflowInputPort
+	 *            the DataflowInputPort to be removed from the Dataflow
+	 */
+	public Edit<Dataflow> getRemoveDataflowInputPortEdit(Dataflow dataflow,
+			DataflowInputPort dataflowInputPort);
 
 	/**
 	 * Create a condition governing execution of the target processor. The

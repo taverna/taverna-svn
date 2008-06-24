@@ -46,6 +46,14 @@ public class EditsImpl implements Edits {
 		return new DatalinkImpl(source, sink);
 	}
 
+	public DataflowInputPort createDataflowInputPort(String name, int depth, int granularDepth, Dataflow dataflow) {
+		return new DataflowInputPortImpl(name, depth, granularDepth, dataflow);
+	}
+
+	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow) {
+		return new DataflowOutputPortImpl(name, dataflow);
+	}
+
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
 			Processor processor) {
 		return new AddProcessorEdit(dataflow, processor);
@@ -236,6 +244,35 @@ public class EditsImpl implements Edits {
 	public Edit<Dataflow> getUpdateDataflowInternalIdentifierEdit(Dataflow dataflow,
 			String newId) {
 		return new UpdateDataflowInternalIdentifierEdit(dataflow,newId);
+	}
+
+	public Edit<Datalink> getDisconnectDatalinkEdit(Datalink datalink) {
+		return new DisconnectDatalinkEdit(datalink);
+	}
+
+	public Edit<Dataflow> getRemoveDataflowInputPortEdit(Dataflow dataflow,
+			DataflowInputPort dataflowInputPort) {
+		return new RemoveDataflowInputPortEdit(dataflow, dataflowInputPort);
+	}
+
+	public Edit<Dataflow> getRemoveDataflowOutputPortEdit(Dataflow dataflow,
+			DataflowOutputPort dataflowOutputPort) {
+		return new RemoveDataflowOutputPortEdit(dataflow, dataflowOutputPort);
+	}
+
+	public Edit<Dataflow> getRemoveProcessorEdit(Dataflow dataflow,
+			Processor processor) {
+		return new RemoveProcessorEdit(dataflow, processor);
+	}
+
+	public Edit<Dataflow> getAddDataflowInputPortEdit(Dataflow dataflow,
+			DataflowInputPort dataflowInputPort) {
+		return new AddDataflowInputPortEdit(dataflow, dataflowInputPort);
+	}
+
+	public Edit<Dataflow> getAddDataflowOutputPortEdit(Dataflow dataflow,
+			DataflowOutputPort dataflowOutputPort) {
+		return new AddDataflowOutputPortEdit(dataflow, dataflowOutputPort);
 	}
 
 }
