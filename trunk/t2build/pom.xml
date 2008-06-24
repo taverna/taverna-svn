@@ -7,10 +7,26 @@
 	<name>Taverna 2 build</name>
 	<version>0.3-SNAPSHOT</version>
 	<modules>
-        <module>../utils</module>
-        <module>../wsdl-generic</module>
-        <module>../t2core</module>
-        <module>../t2activities</module>
-        <module>../t2workbench</module>
+		<module>../utils</module>
+		<module>../wsdl-generic</module>
+		<module>../t2core</module>
+		<module>../t2activities</module>
+		<module>../t2workbench</module>
 	</modules>
+	<distributionManagement>
+		<repository>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/repository
+			</url>
+		</repository>
+		<snapshotRepository>
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				scpexe://rosalind.cs.man.ac.uk/local/www/mygrid/maven/snapshot-repository
+			</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
