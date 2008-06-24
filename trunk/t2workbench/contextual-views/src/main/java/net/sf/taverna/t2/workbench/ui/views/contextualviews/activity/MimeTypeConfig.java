@@ -12,9 +12,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+/**
+ * Simple UI for adding mime types to "something". The "something" registers as
+ * a listener using addMimeTypeListener() and is then called back when the OK
+ * button is clicked to do whatever action it wants
+ * 
+ * @author Ian Dunlop
+ * 
+ */
+public class MimeTypeConfig extends JPanel {
 
-public class MimeTypeConfig extends JPanel{
-	
 	private JTextArea mimeTypes;
 	private JTextArea newMimeType;
 	private List<String> mimeTypeList;
@@ -35,12 +42,12 @@ public class MimeTypeConfig extends JPanel{
 
 			public void actionPerformed(ActionEvent e) {
 				String text = mimeTypes.getText();
-				text  = text + "\n" + newMimeType.getText();
+				text = text + "\n" + newMimeType.getText();
 				mimeTypes.setText(text);
 				mimeTypes.revalidate();
 				mimeTypeList.add(newMimeType.getText());
 			}
-			
+
 		});
 		JButton OKbutton = new JButton("OK");
 		OKbutton.addActionListener(new AbstractAction() {
@@ -48,19 +55,30 @@ public class MimeTypeConfig extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				listener.actionPerformed(e);
 			}
-			
+
 		});
 		add(mimeLabel);
 		add(newMimeType);
 		add(addMimeButton);
 		add(mimeTypes);
 		add(OKbutton);
+		//FIXME a remove mime type button is required
 	}
 
+	/**
+	 * All of the mime types which have been added
+	 * 
+	 * @return a List of all the mime types
+	 */
 	public List<String> getMimeTypeList() {
 		return mimeTypeList;
 	}
-	
+
+	/**
+	 * Pass in an action which will happen when the OK button is clicked
+	 * 
+	 * @param listener
+	 */
 	public void addNewMimeListener(ActionListener listener) {
 		this.listener = listener;
 	}
