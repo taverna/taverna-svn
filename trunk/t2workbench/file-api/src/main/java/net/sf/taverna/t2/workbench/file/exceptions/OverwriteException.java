@@ -1,17 +1,14 @@
 package net.sf.taverna.t2.workbench.file.exceptions;
 
-import java.io.File;
-
-
 public class OverwriteException extends SaveException {
-	private final File file;
+	private final Object destination;
 
-	public OverwriteException(File file) {
-		super("Save would overwrite existing file " + file);
-		this.file = file;
+	public OverwriteException(Object destination) {
+		super("Save would overwrite existing destination " + destination);
+		this.destination = destination;
 	}
 
-	public File getFile() {
-		return file;
+	public Object getDestination() {
+		return destination;
 	}
 }
