@@ -17,6 +17,7 @@ import javax.help.CSH;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -463,6 +464,28 @@ public class BeanshellConfigView extends JPanel {
 					.getGranularDepthSpinner();
 			outputEditPanel.add(granularDepthSpinner, outputConstraint);
 			outputConstraint.gridx = 3;
+			final JButton addMimeButton = beanshellOutputViewer.getAddMimeButton();
+			outputEditPanel.add(addMimeButton, outputConstraint);
+			final MimeTypeConfig mimeTypeConfig = beanshellOutputViewer.getMimeTypeConfig();
+			final JFrame mimeFrame = new JFrame();
+			mimeFrame.add(mimeTypeConfig);
+			addMimeButton.addActionListener(new AbstractAction() {
+
+				public void actionPerformed(ActionEvent e) {
+					System.out.println("action");
+					
+					mimeFrame.setVisible(true);
+					mimeTypeConfig.addNewMimeListener(new AbstractAction() {
+
+						public void actionPerformed(ActionEvent e) {
+							mimeFrame.setVisible(false);
+						}
+						
+					});
+				}
+				
+			});
+			outputConstraint.gridx = 4;
 			final JButton removeButton = new JButton("remove");
 			removeButton.addActionListener(new AbstractAction() {
 
@@ -471,6 +494,7 @@ public class BeanshellConfigView extends JPanel {
 					outputEditPanel.remove(nameField);
 					outputEditPanel.remove(depthSpinner);
 					outputEditPanel.remove(granularDepthSpinner);
+					outputEditPanel.remove(addMimeButton);
 					outputEditPanel.remove(removeButton);
 					outputEditPanel.revalidate();
 					outerOutputPanel.revalidate();
@@ -522,6 +546,24 @@ public class BeanshellConfigView extends JPanel {
 							.getGranularDepthSpinner();
 					outputEditPanel.add(granularDepthSpinner, outputConstraint);
 					outputConstraint.gridx = 3;
+					final JButton addMimeButton = beanshellOutputViewer.getAddMimeButton();
+					outputEditPanel.add(addMimeButton, outputConstraint);
+					final MimeTypeConfig mimeTypeConfig = beanshellOutputViewer.getMimeTypeConfig();
+					addMimeButton.addActionListener(new AbstractAction() {
+
+						public void actionPerformed(ActionEvent e) {
+							mimeTypeConfig.setVisible(true);
+							mimeTypeConfig.addNewMimeListener(new AbstractAction() {
+
+								public void actionPerformed(ActionEvent e) {
+									mimeTypeConfig.setVisible(false);
+								}
+								
+							});
+						}
+						
+					});
+					outputConstraint.gridx = 4;
 					final JButton removeButton = new JButton("remove");
 					removeButton.addActionListener(new AbstractAction() {
 
@@ -531,6 +573,7 @@ public class BeanshellConfigView extends JPanel {
 							outputEditPanel.remove(depthSpinner);
 							outputEditPanel.remove(granularDepthSpinner);
 							outputEditPanel.remove(removeButton);
+							outputEditPanel.remove(addMimeButton);
 							outputEditPanel.revalidate();
 						}
 
@@ -627,8 +670,9 @@ public class BeanshellConfigView extends JPanel {
 									.getGranularDepthSpinner().getValue());
 					activityOutputPortDefinitionBean.setName(outputView
 							.getNameField().getText());
-					activityOutputPortDefinitionBean.setMimeTypes(outputView
-							.getBean().getMimeTypes());
+					activityOutputPortDefinitionBean.setMimeTypes(outputView.getMimeTypeConfig().getMimeTypeList());
+					//FIXME add all the mime types as an annotation
+					
 					outputBeanList.add(activityOutputPortDefinitionBean);
 				}
 				BeanshellActivityConfigurationBean beanshellActivityConfigurationBean = new BeanshellActivityConfigurationBean();
