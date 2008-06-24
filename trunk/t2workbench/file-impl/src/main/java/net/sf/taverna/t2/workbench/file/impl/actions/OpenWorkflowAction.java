@@ -70,6 +70,7 @@ public class OpenWorkflowAction extends AbstractAction {
 		fileChooser.resetChoosableFileFilters();
 		List<FileFilter> fileFilters = fileManager.getOpenFileFilters();
 		if (fileFilters.isEmpty()) {
+			logger.warn("No file types found for opening workflow");
 			JOptionPane.showMessageDialog(parentComponent,
 					"No file types found for opening workflow.", "Error",
 					JOptionPane.ERROR_MESSAGE);

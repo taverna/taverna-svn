@@ -83,6 +83,7 @@ public class SaveWorkflowAsAction extends AbstractAction {
 		List<FileFilter> fileFilters = fileManager
 				.getSaveFileFilters(File.class);
 		if (fileFilters.isEmpty()) {
+			logger.warn("No file types found for saving workflow " + dataflow);
 			JOptionPane.showMessageDialog(parentComponent,
 					"No file types found for saving workflow.", "Error",
 					JOptionPane.ERROR_MESSAGE);
