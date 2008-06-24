@@ -17,6 +17,7 @@ import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.file.FileManager;
+import net.sf.taverna.t2.workbench.file.FileType;
 import net.sf.taverna.t2.workbench.file.exceptions.OverwriteException;
 import net.sf.taverna.t2.workbench.file.exceptions.SaveException;
 import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
@@ -101,15 +102,20 @@ public class SaveWorkflowAsAction extends AbstractAction {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				prefs.put("currentDir", fileChooser.getCurrentDirectory()
 						.toString());
-				final File file = fileChooser.getSelectedFile();
+				File file = fileChooser.getSelectedFile();
 				FileTypeFileFilter fileFilter = (FileTypeFileFilter) fileChooser.getFileFilter();
-			
+				FileType fileType = fileFilter.getFileType();
+				String extension = "." + fileType.getExtension();
+				if (! file.getName().toLowerCase().endsWith(extension)) {
+					String newName = file.getName() + extension;
+					file = new File(file.getParentFile(), newName);
+				}
 				
 
 				// TODO: Open in separate thread to avoid hanging UI
 				try {
 					try {
-						fileManager.saveDataflow(dataflow, fileFilter.getFileType(), file, true);
+						fileManager.saveDataflow(dataflow, fileType, file, true);
 						logger.info("Saved dataflow " + dataflow + " to "
 								+ file);
 						return true;
@@ -121,7 +127,7 @@ public class SaveWorkflowAsAction extends AbstractAction {
 								parentComponent, msg, "File already exists",
 								JOptionPane.YES_NO_CANCEL_OPTION);
 						if (ret == JOptionPane.YES_OPTION) {
-							fileManager.saveDataflow(dataflow, fileFilter.getFileType(), file, false);
+							fileManager.saveDataflow(dataflow, fileType, file, false);
 							logger.info("Saved dataflow " + dataflow
 									+ " by overwriting " + file);
 							return true;
