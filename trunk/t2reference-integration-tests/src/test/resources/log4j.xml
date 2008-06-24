@@ -30,10 +30,10 @@
 		<appender-ref ref="AUGMENTOR_CONSOLE"/>
 	</logger>
 	
-	<logger name="net.sf.taverna.t2.reference.impl.SimpleCacheProviderImpl" additivity="false">
+	<!--<logger name="net.sf.taverna.t2.reference.impl.SimpleCacheProviderImpl" additivity="false">
 		<level value="DEBUG"/>
 		<appender-ref ref="CACHE_CONSOLE"/>
-	</logger>
+	</logger>-->
 
 	<logger name="org.hibernate">
 		<level value="ERROR" />
