@@ -10,6 +10,7 @@ import java.util.prefs.Preferences;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import net.sf.taverna.t2.workbench.file.FileManager;
@@ -19,6 +20,7 @@ import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
 import org.apache.log4j.Logger;
+import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 public class OpenWorkflowAction extends AbstractAction {
 
@@ -98,17 +100,22 @@ public class OpenWorkflowAction extends AbstractAction {
 		return false;
 	}
 
-	public void openWorkflows(Component parentComponent, File[] files,
+	public void openWorkflows(final Component parentComponent, File[] files,
 			FileType fileType) {
-		for (File file : files) {
+		for (final File file : files) {
 			try {
 				fileManager.openDataflow(fileType, file);
-			} catch (OpenException ex) {
+			} catch (final OpenException ex) {
 				logger.warn("Could not open workflow from " + file, ex);
-				JOptionPane.showMessageDialog(parentComponent,
-						"Could not open workflow from " + file + ": \n\n"
-								+ ex.getMessage(), "Warning",
-						JOptionPane.WARNING_MESSAGE);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						JOptionPane.showMessageDialog(parentComponent,
+								"Could not open workflow from " + file
+										+ ": \n\n" + ex.getMessage(),
+								"Warning", JOptionPane.WARNING_MESSAGE);
+					}
+				});
+
 				return;
 			}
 		}
