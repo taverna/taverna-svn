@@ -1,0 +1,6 @@
+category:ncbi:Search_PubMed_XML:run_eFetch
+http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/v2.0/efetch_pubmed.wsdl
+category:ncbi:Get_Entrez_Gene_XML:run_eFetch
+http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/v2.0/efetch_gene.wsdl
+category:ncbi:Get_Entrez_Protein_XML:run_eFetch
+http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/v2.0/efetch_seq.wsdl
