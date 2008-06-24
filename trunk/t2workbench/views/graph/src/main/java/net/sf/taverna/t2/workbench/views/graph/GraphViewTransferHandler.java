@@ -71,7 +71,7 @@ public class GraphViewTransferHandler extends TransferHandler {
 				activity.configure(bean);
 				Dataflow dataflow = graphViewComponent.getDataflow();
 				Processor p = Tools.buildFromActivity(activity);
-				String name=activityAndBeanWrapper.getName();
+				String name=activityAndBeanWrapper.getName().replace(' ', '_');
 				name=Tools.uniqueProcessorName(name,dataflow);
 				Edit<Processor> renameProcessorEdit = edits.getRenameProcessorEdit(p, name);
 				Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, p);
