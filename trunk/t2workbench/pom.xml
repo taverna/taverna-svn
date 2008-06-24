@@ -266,5 +266,6 @@
 		<module>activity-palette-impl</module>
 		<module>activity-palette-ui</module>
 		<module>views</module>
+		<module>perspective-results</module>
 	</modules>
 </project>
