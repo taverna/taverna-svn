@@ -1,12 +1,9 @@
 package net.sf.taverna.t2.workbench.ui.views.contextualviews;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
