@@ -86,7 +86,11 @@
 			<artifactId>dataflow-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>localworker-activity-ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>javax.help</groupId>
 			<artifactId>javahelp</artifactId>
@@ -96,11 +100,6 @@
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>contextual-views</artifactId>
-			<version>0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
