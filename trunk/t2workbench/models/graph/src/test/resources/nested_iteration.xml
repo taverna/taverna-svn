@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <s:scufl xmlns:s="http://org.embl.ebi.escience/xscufl/0.1alpha" version="0.2" log="0">
   <s:workflowdescription lsid="urn:lsid:net.sf.taverna:wfDefinition:c7016fc0-c2f4-4171-b6f1-430f408f4822" author="" title="nested_iteration" />
+  <s:processor name="constant" boring="true">
+    <s:stringconstant>constant</s:stringconstant>
+  </s:processor>
   <s:processor name="generate_list">
     <s:defaults>
       <s:default name="prefix">prefix</s:default>
@@ -18,9 +21,6 @@ for (int i = 0; i &lt; 20; i++) {
       </s:beanshelloutputlist>
       <s:dependencies s:classloader="iteration" />
     </s:beanshell>
-  </s:processor>
-  <s:processor name="constant" boring="true">
-    <s:stringconstant>constant</s:stringconstant>
   </s:processor>
   <s:processor name="merge">
     <s:workflow>
@@ -63,12 +63,13 @@ out = in1 + in2;</s:scriptvalue>
     </s:workflow>
     <s:mergemode input="in2" mode="merge" />
   </s:processor>
-  <s:link source="constant:value" sink="merge:in1" />
-  <s:link source="generate_list:list" sink="merge:in2" />
-  <s:link source="generate_list:list" sink="merge:in2" />
   <s:link source="constant:value" sink="constant" />
+  <s:link source="constant:value" sink="merge:in1" />
   <s:link source="generate_list:list" sink="list" />
+  <s:link source="generate_list:list" sink="merge:in2" />
+  <s:link source="generate_list:list" sink="merge:in2" />
   <s:link source="merge:out" sink="concat" />
+  <s:source name="input" />
   <s:sink name="concat">
     <s:metadata>
       <s:mimeTypes>

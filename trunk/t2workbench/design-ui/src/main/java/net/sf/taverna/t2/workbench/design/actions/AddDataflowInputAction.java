@@ -35,7 +35,8 @@ public class AddDataflowInputAction extends DataflowEditAction {
 					"[\\p{L}\\p{Digit}_.]+", "Invalid port name.", "Workflow Input Port", "Create a new workflow input port", null);
 			String inputName = vuid.show(component);
 			if (inputName != null) {
-				editManager.doDataflowEdit(dataflow, edits.getCreateDataflowInputPortEdit(dataflow, inputName, 0, 0));
+				DataflowInputPort dataflowInputPort = edits.createDataflowInputPort(inputName, 0, 0, dataflow);
+				editManager.doDataflowEdit(dataflow, edits.getAddDataflowInputPortEdit(dataflow, dataflowInputPort));
 			}
 		} catch (EditException e) {
 			logger.debug("Create dataflow input port failed");

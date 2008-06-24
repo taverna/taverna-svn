@@ -45,7 +45,7 @@ public class RenameDataflowOutputPortAction extends DataflowEditAction {
 				editManager.doDataflowEdit(dataflow, edits.getRenameDataflowOutputPortEdit(port, portName));
 			}
 		} catch (EditException e1) {
-			logger.debug("Rename processor failed");
+			logger.debug("Rename dataflow output port failed", e1);
 		}
 	}
 

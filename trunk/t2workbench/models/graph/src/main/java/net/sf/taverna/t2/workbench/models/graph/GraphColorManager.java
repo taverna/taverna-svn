@@ -13,7 +13,7 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
  */
 public class GraphColorManager {
 	
-	private static Color[] subGraphFillColors = new Color[] {Color.decode("#ffffff"),
+	private static Color[] subGraphFillColors = new Color[] {Color.decode("#f7f7f7"),
 			Color.decode("#f0f8ff"), Color.decode("#faebd7"), Color.decode("#f5f5dc")};
 	
 	/**

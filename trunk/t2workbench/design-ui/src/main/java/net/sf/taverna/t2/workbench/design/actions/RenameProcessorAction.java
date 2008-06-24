@@ -44,7 +44,7 @@ public class RenameProcessorAction extends DataflowEditAction {
 				editManager.doDataflowEdit(dataflow, edits.getRenameProcessorEdit(processor, processorName));
 			}
 		} catch (EditException e1) {
-			logger.debug("Rename processor failed");
+			logger.debug("Rename processor failed", e1);
 		}
 	}
 

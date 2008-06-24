@@ -8,6 +8,7 @@ import java.util.Set;
 import net.sf.taverna.t2.lang.ui.ValidatingUserInputDialog;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
+import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
@@ -35,10 +36,11 @@ public class AddDataflowOutputAction extends DataflowEditAction {
 					"[\\p{L}\\p{Digit}_.]+", "Invalid port name.", "Workflow Output Port", "Create a new workflow output port", null);
 			String outputName = vuid.show(component);
 			if (outputName != null) {
-				editManager.doDataflowEdit(dataflow, edits.getCreateDataflowOutputPortEdit(dataflow, outputName));
+				DataflowOutputPort dataflowOutputPort = edits.createDataflowOutputPort(outputName, dataflow);
+				editManager.doDataflowEdit(dataflow, edits.getAddDataflowOutputPortEdit(dataflow, dataflowOutputPort));
 			}
 		} catch (EditException e) {
-			logger.debug("Create dataflow output port failed");
+			logger.debug("Create dataflow output port failed", e);
 		}
 
 	}

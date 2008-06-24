@@ -63,12 +63,13 @@ out = in1 + in2;</s:scriptvalue>
     </s:workflow>
     <s:mergemode input="in2" mode="merge" />
   </s:processor>
-  <s:link source="constant:value" sink="constant" />
   <s:link source="constant:value" sink="merge:in1" />
+  <s:link source="generate_list:list" sink="merge:in2" />
+  <s:link source="generate_list:list" sink="merge:in2" />
+  <s:link source="constant:value" sink="constant" />
   <s:link source="generate_list:list" sink="list" />
-  <s:link source="generate_list:list" sink="merge:in2" />
-  <s:link source="generate_list:list" sink="merge:in2" />
   <s:link source="merge:out" sink="concat" />
+  <s:source name="input" />
   <s:sink name="concat">
     <s:metadata>
       <s:mimeTypes>

@@ -29,6 +29,7 @@ import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMPolylineElement;
+import org.apache.batik.dom.svg.SVGOMSVGElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.dom.svg.SVGOMTitleElement;
 import org.apache.batik.util.SVGConstants;
@@ -171,6 +172,9 @@ public class SVGGraphController extends GraphController {
 				} else if ("edge".equals(gElementClass)) {
 					mapEdge(node);
 				}
+//			} else if (node instanceof SVGOMSVGElement) {
+//				((SVGOMSVGElement) node).setAttribute("width", "10");
+//				((SVGOMSVGElement) node).setAttribute("height", "10");
 			} else {
 				mapNodes(node.getChildNodes());
 			}
