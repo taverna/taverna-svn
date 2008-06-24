@@ -102,7 +102,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
-			<version>3.2.5.ga</version>
+			<version>3.2.5.ga.raven</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.transaction</groupId>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>net.sf.taverna.t2</groupId>
@@ -17,7 +19,7 @@
 		environment an application would use so tests here are fully
 		representative of the external use of the reference manager.
 	</description>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -30,6 +32,29 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<repositories>
+		<repository>
+			<releases />
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>mygrid-repository</id>
+			<name>myGrid Repository</name>
+			<url>http://www.mygrid.org.uk/maven/repository</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots />
+			<id>mygrid-snapshot-repository</id>
+			<name>myGrid Snapshot Repository</name>
+			<url>
+				http://www.mygrid.org.uk/maven/snapshot-repository
+			</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 
@@ -89,7 +114,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
-			<version>3.2.5.ga</version>
+			<version>3.2.5.ga.raven</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.transaction</groupId>

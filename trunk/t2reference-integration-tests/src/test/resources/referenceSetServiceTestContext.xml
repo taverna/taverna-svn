@@ -184,7 +184,7 @@
 			<sys artifact="org.aspectj:aspectjweaver:1.6.0" />
 
 			<!-- Hibernate + Dependencies (minimal) -->
-			<sys artifact="org.hibernate:hibernate:3.2.5.ga" />
+			<sys artifact="org.hibernate:hibernate:3.2.5.ga.raven" />
 			<sys artifact="dom4j:dom4j:1.6.1" />
 			<sys artifact="cglib:cglib:2.1_3" />
 			<sys artifact="asm:asm:1.5.3" />
