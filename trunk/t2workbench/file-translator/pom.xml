@@ -22,6 +22,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>uk.org.mygrid.taverna.raven</groupId>
+			<artifactId>appconfig</artifactId>
+			<version>1.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>file-api</artifactId>
 			<version>0.1-SNAPSHOT</version>
@@ -140,7 +145,7 @@
 			<version>1.7.1.0</version>
 		</dependency>
 		<dependency>
-		<!--  A few local workers in here.. -->
+			<!--  A few local workers in here.. -->
 			<groupId>uk.org.mygrid.taverna</groupId>
 			<artifactId>taverna-contrib</artifactId>
 			<version>1.7.1.0</version>
