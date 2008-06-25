@@ -25,9 +25,9 @@
  * Source code information
  * -----------------------
  * Filename           $RCSfile: WSDLSOAPInvokerTest.java,v $
- * Revision           $Revision: 1.2 $
+ * Revision           $Revision: 1.3 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2007-11-30 12:13:37 $
+ * Last modified on   $Date: 2008-06-25 14:05:18 $
  *               by   $Author: sowen70 $
  * Created on 04-May-2006
  *****************************************************************/
@@ -175,27 +175,29 @@ public class WSDLSOAPInvokerTest  implements LocationConstants {
 				.get("getDatabasesWithDetailsReturn"));
 	}
 
-	// The following services were found at http://www.xmethods.org/
-	// and can be tested via that site.
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSOAPEncoded() throws Exception {
 
 		WSDLParser wsdlParser = new WSDLParser(
-				"http://www.claudehussenet.com/ws/services/Anagram.wsdl");
+				"http://www.mygrid.org.uk/menagerie/xfire/Primatives-re?wsdl");
 		List<String> outputNames = new ArrayList<String>();
 		for (TypeDescriptor d : wsdlParser
-				.getOperationOutputParameters("getRandomizeAnagram")) {
+				.getOperationOutputParameters("echo")) {
 			outputNames.add(d.getName());
 		}
 		WSDLSOAPInvoker invoker = new WSDLSOAPInvoker(wsdlParser,
-				"getRandomizeAnagram", outputNames);
-		Map output = invoker.invoke(new HashMap());
+				"echo", outputNames);
+		Map inputs = new HashMap();
+		inputs.put("msg","fred");
+		Map output = invoker.invoke(inputs);
+		
 		assertEquals("should be 2 elements", 2, output.size());
-		Object outputThing = output.get("Result");
-		assertNotNull("there should be a result of name 'Result'", outputThing);
-		assertEquals("output data should be ArrayList", ArrayList.class,
+		Object outputThing = output.get("out");
+		assertNotNull("there should be a result of name 'out'", outputThing);
+		assertEquals("output data should be String", String.class,
 				outputThing.getClass());
+		assertEquals("The output should be fred","fred",outputThing);
 	}
 
 	@SuppressWarnings("unchecked")
