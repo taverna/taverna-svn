@@ -12,17 +12,16 @@ import java.util.Set;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
+import net.sf.taverna.t2.activities.localworker.translator.LocalworkerTranslator;
 import net.sf.taverna.t2.partition.ActivityQuery;
-import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
-import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityOutputPortDefinitionBean;
-import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.ActivityXMLDeserializer;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
@@ -39,6 +38,8 @@ import org.jdom.input.SAXBuilder;
  * 
  */
 public class LocalworkerQuery extends ActivityQuery {
+
+	private static Logger logger = Logger.getLogger(Logger.class);
 
 	/** Used to deserialize the Activities stored on disk */
 	private ActivityXMLDeserializer deserializer;
@@ -74,7 +75,13 @@ public class LocalworkerQuery extends ActivityQuery {
 					String[] split = line.split(":");
 					category = split[1];
 				} else {
-					LocalworkerActivityItem createItem = createItem(line);
+					LocalworkerActivityItem createItem;
+					try {
+						createItem = createItem(line);
+					} catch (ItemCreationException e) {
+						logger.warn("Could not create item for: " + line, e);
+						continue;
+					}
 					createItem.setCategory("localworker_" + category);
 					add(createItem);
 				}
@@ -86,14 +93,40 @@ public class LocalworkerQuery extends ActivityQuery {
 
 	}
 
+	private class ItemCreationException extends Exception {
+
+		public ItemCreationException() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public ItemCreationException(String message, Throwable cause) {
+			super(message, cause);
+			// TODO Auto-generated constructor stub
+		}
+
+		public ItemCreationException(String message) {
+			super(message);
+			// TODO Auto-generated constructor stub
+		}
+
+		public ItemCreationException(Throwable cause) {
+			super(cause);
+			// TODO Auto-generated constructor stub
+		}
+
+	}
+
 	/**
 	 * Loads the deserialized local worker from disk and creates a
 	 * {@link LocalworkerActivityItem} with the correct ports and script from it
 	 * 
 	 * @param line
 	 * @return a LocalWorker with the appropriate Input/Output ports and script
+	 * @throws ItemCreationException
 	 */
-	private LocalworkerActivityItem createItem(String line) {
+	private LocalworkerActivityItem createItem(String line)
+			throws ItemCreationException {
 		String[] split = line.split("[.]");
 		// get the file from disk
 		InputStream resourceAsStream = getClass().getResourceAsStream(
@@ -115,24 +148,8 @@ public class LocalworkerQuery extends ActivityQuery {
 		try {
 			activity = deserializer.deserializeActivity(detachRootElement,
 					new HashMap<String, Element>());
-		} catch (ActivityConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (EditException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (DeserializationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new ItemCreationException(e);
 		}
 		Set<ActivityInputPort> inputPorts = activity.getInputPorts();
 		List<ActivityInputPortDefinitionBean> inputPortBeans = new ArrayList<ActivityInputPortDefinitionBean>();
