@@ -58,7 +58,10 @@ public abstract class AbstractActivityItem implements ActivityItem {
 				try {
 					flavor = new DataFlavor(
 							DataFlavor.javaJVMLocalObjectMimeType
-									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+									+ ";class="
+									+ ActivityAndBeanWrapper.class
+											.getCanonicalName(), "Activity",
+							getClass().getClassLoader());
 				} catch (ClassNotFoundException e) {
 					logger.error("Error casting Dataflavor", e);
 				}
@@ -71,7 +74,10 @@ public abstract class AbstractActivityItem implements ActivityItem {
 				try {
 					thisFlavor = new DataFlavor(
 							DataFlavor.javaJVMLocalObjectMimeType
-									+ ";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+									+ ";class="
+									+ ActivityAndBeanWrapper.class
+											.getCanonicalName(), "Activity",
+							getClass().getClassLoader());
 				} catch (ClassNotFoundException e) {
 					logger.error("Error casting Dataflavor", e);
 				}
