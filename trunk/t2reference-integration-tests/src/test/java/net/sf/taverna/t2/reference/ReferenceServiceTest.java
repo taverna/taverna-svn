@@ -94,6 +94,7 @@ public class ReferenceServiceTest {
 							try {
 								T2Reference ref = rs.register(testUrl, 0, true,
 										dummyContext);
+								@SuppressWarnings("unused")
 								ReferenceSet refSet = (ReferenceSet) rs
 										.resolveIdentifier(ref, null,
 												dummyContext);
