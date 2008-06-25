@@ -41,7 +41,7 @@
 	<namedcomponents>
 		<namedcomponent>
 			<groupid>net.sf.taverna.t2.workbench</groupid>
-			<artifact>contextual-views</artifact>
+			<artifact>contextual-views-api</artifact>
 			<classname>
 				net.sf.taverna.t2.workbench.ui.views.contextualviews.ContextualViewComponentFactory
 			</classname>

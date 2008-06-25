@@ -261,7 +261,8 @@
 		<module>design-ui</module>
 		<module>ui-api</module>
 		<module>ui-impl</module>
-		<module>contextual-views</module>
+		<module>contextual-views-api</module>
+		<module>contextual-views-impl</module>
 		<module>activity-palette-api</module>
 		<module>activity-palette-impl</module>
 		<module>activity-palette-ui</module>
