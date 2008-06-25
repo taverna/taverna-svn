@@ -32,6 +32,8 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	@SuppressWarnings("unchecked")
 	private Map<String, Class> classMap = new HashMap<String, Class>();
 
+	private static Map<String, Object> findClassLocks = new HashMap<String, Object>();
+
 	private String name;
 
 	private LocalRepository repository;
@@ -264,22 +266,39 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 	@SuppressWarnings("unchecked")
 	protected Class<?> findClass(String name, Set<ClassLoader> seenLoaders)
 			throws ClassNotFoundException {
-		Class result = null;
+		Class loadedClass = null;
 		logger.debug("Searching for '" + name + "' - " + this);
 		seenLoaders.add(this);
 
-		if (classMap.containsKey(name)) {
+		synchronized (classMap) {
+			loadedClass = classMap.get(name);
+		}
+		if (loadedClass != null) {
 			logger.debug("Returning cached '" + name + "' - " + this);
-			result = classMap.get(name);
 		} else {
 			try {
-				result = super.findClass(name);
+
+				// Synchronize the call to findClass to avoid TAV-480
+				// java.lang.LinkageError: duplicate class definition
+
+				Object findClassLock;
+				synchronized (findClassLocks) {
+					findClassLock = findClassLocks.get(name);
+					if (findClassLock == null) {
+						findClassLock = new Object();
+						findClassLocks.put(name, findClassLock);
+					}
+				}
+				// One lock per classname per classloader
+				synchronized (findClassLock) {
+					loadedClass = super.findClass(name);
+				}
 				logger.debug("Returning found '" + name + "' - " + this);
 			} catch (ClassNotFoundException e) {
 				for (LocalArtifactClassLoader ac : childLoaders) {
 					if (!seenLoaders.contains(ac)) {
 						try {
-							result = ac.loadClass(name, seenLoaders);
+							loadedClass = ac.loadClass(name, seenLoaders);
 						} catch (ClassNotFoundException cnfe) {
 							logger.debug("No '" + name + "' in " + this);
 						}
@@ -289,15 +308,24 @@ public class LocalArtifactClassLoader extends URLClassLoader {
 				logger.error("Error finding class " + name + " ACL=" + this, e);
 			}
 		}
-		if (result == null) {
+		if (loadedClass == null) {
 			throw new ClassNotFoundException(name);
 		}
 
-		if (!classMap.containsKey(name)) {
-			classMap.put(name, result);
+		synchronized (classMap) {
+			if (!classMap.containsKey(name)) {
+				classMap.put(name, loadedClass);
+			} else {
+				Class otherClass = classMap.get(name);
+				if (otherClass != loadedClass) {
+					logger.error("Duplicate class loading of " + otherClass);
+					logger.error("Returning cached " + otherClass
+							+ " instead of loaded " + loadedClass);
+					loadedClass = otherClass;
+				}
+			}
 		}
 
-		return result;
+		return loadedClass;
 	}
-
 }
