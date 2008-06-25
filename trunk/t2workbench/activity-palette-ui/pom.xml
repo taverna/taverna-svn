@@ -29,7 +29,6 @@
 		</plugins>
 	</build>
 	<dependencies>
-		
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>activity-palette-api</artifactId>
@@ -99,12 +98,15 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>net.sf.taverna.t2.workbench</groupId>
+			<artifactId>contextual-views</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
 	</dependencies>
 </project>
