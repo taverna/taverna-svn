@@ -1,4 +1,4 @@
-<activity xmlns="http://taverna.sf.net/2008/xml/t2flow"><class>net.sf.taverna.t2.activities.beanshell.BeanshellActivity</class><inputMap /><outputMap /><configBean encoding="xstream"><net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean xmlns="">
+<activity xmlns="http://taverna.sf.net/2008/xml/t2flow">raven><group>net.sf.taverna.t2</group><artifact>beanshell-activity</artifact><version>0.3-SNAPSHOT</version></raven><class>net.sf.taverna.t2.activities.beanshell.BeanshellActivity</class><inputMap /><outputMap /><configBean encoding="xstream"><net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean xmlns="">
   <script>import org.biojava.bio.seq.DNATools;
 import org.biojava.bio.symbol.SymbolList;
 
