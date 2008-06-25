@@ -63,6 +63,12 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>2.5.4</version>
+		</dependency>
+
+		<dependency>
 			<groupId>uk.org.mygrid.taverna.raven</groupId>
 			<artifactId>raven</artifactId>
 			<version>1.7.1.0</version>
