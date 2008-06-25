@@ -12,7 +12,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.activities.localworker.translator.LocalworkerTranslator;
 import net.sf.taverna.t2.partition.ActivityQuery;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -50,9 +49,10 @@ public class LocalworkerQuery extends ActivityQuery {
 	}
 
 	/**
-	 * Use the {@link LocalworkerTranslator} to get a {@link Map} of all the
-	 * local workers. Use the keys in this map to load all the serialized
-	 * activities from disk by using
+	 * Use the
+	 * {@link net.sf.taverna.t2.activities.localworker.translator.LocalworkerTranslator}
+	 * to get a {@link Map} of all the local workers. Use the keys in this map
+	 * to load all the serialized activities from disk by using
 	 * <code> getClass().getResourceAsStream("/" + className) </code> to get
 	 * them and then the {@link ActivityXMLDeserializer} to get the actual
 	 * {@link Activity}. Create the {@link LocalworkerActivityItem} by
