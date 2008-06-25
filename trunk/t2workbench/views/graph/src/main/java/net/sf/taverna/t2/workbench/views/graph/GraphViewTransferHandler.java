@@ -20,31 +20,41 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 
+import org.apache.log4j.Logger;
+
 public class GraphViewTransferHandler extends TransferHandler {
 
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = Logger
+	.getLogger(GraphViewTransferHandler.class);
 
 	private Edits edits = EditsRegistry.getEdits();
-	
+
 	private EditManager editManager = EditManager.getInstance();
 
 	private GraphViewComponent graphViewComponent;
-	
+
 	private DataFlavor activityDataFlavor;
-	
+
 	public GraphViewTransferHandler(GraphViewComponent graphViewComponent) {
 		this.graphViewComponent = graphViewComponent;
 		try {
-			activityDataFlavor = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType +
-			";class=net.sf.taverna.t2.workflowmodel.processor.activity.ActivityAndBeanWrapper");
+			activityDataFlavor = new DataFlavor(
+					DataFlavor.javaJVMLocalObjectMimeType + ";class="
+							+ ActivityAndBeanWrapper.class.getCanonicalName(),
+					"Activity", getClass().getClassLoader());
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Could not find the class "
+					+ ActivityAndBeanWrapper.class);
 		}
 	}
-	
-	/* (non-Javadoc)
-	 * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent, java.awt.datatransfer.DataFlavor[])
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.TransferHandler#canImport(javax.swing.JComponent,
+	 *      java.awt.datatransfer.DataFlavor[])
 	 */
 	@Override
 	public boolean canImport(JComponent component, DataFlavor[] dataFlavors) {
@@ -57,9 +67,13 @@ public class GraphViewTransferHandler extends TransferHandler {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.swing.TransferHandler#importData(javax.swing.JComponent, java.awt.datatransfer.Transferable)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.swing.TransferHandler#importData(javax.swing.JComponent,
+	 *      java.awt.datatransfer.Transferable)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importData(JComponent component, Transferable transferable) {
 		try {
