@@ -9,9 +9,9 @@ import net.sf.taverna.t2.annotation.AnnotationRole;
 import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
 import net.sf.taverna.t2.annotation.CurationEvent;
 import net.sf.taverna.t2.annotation.Person;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.DispatchLayer;
@@ -89,6 +89,7 @@ public interface Edits {
 	 * @param annotationAssertion
 	 * @return an {@link Edit}able object with undo feature
 	 */
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(
 			AnnotationChain annotationChain,
 			AnnotationAssertion annotationAssertion);
@@ -169,14 +170,20 @@ public interface Edits {
 	 * @param annotationBean
 	 * @return the edit which has do/undo functionality
 	 */
-	public Edit<AnnotationAssertion> getAddAnnotationBean(AnnotationAssertion annotationAssertion, AnnotationBeanSPI annotationBean);
+	@SuppressWarnings("unchecked")
+	public Edit<AnnotationAssertion> getAddAnnotationBean(
+			AnnotationAssertion annotationAssertion, AnnotationBeanSPI annotationBean);
 	
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddCurationEvent(AnnotationAssertion annotationAssertion, CurationEvent curationEvent);
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddCreator(AnnotationAssertion annotationAssertion, Person person);
 	
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationRole(AnnotationAssertion annotationAssertion, AnnotationRole annotationRole);
 	
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationSource(AnnotationAssertion annotationAssertion, AnnotationSourceSPI annotationSource);
 	/**
 	 * Connect a datalink to its source and sink.
@@ -445,7 +452,7 @@ public interface Edits {
 	 */
 	ActivityInputPort buildActivityInputPort(String portName, int portDepth,
 			boolean allowsLiteralValues,
-			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass);
 
 	/**

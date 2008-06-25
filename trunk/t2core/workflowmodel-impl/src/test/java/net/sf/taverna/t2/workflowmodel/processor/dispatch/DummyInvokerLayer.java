@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.T2Reference;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
-import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
 /**
  * Test dispatch layer which acts as a fake invoker. Receives jobs sent to it
@@ -25,8 +25,8 @@ public class DummyInvokerLayer extends AbstractDispatchLayer<Object> {
 			public void run() {
 				try {
 					Thread.sleep(400);
-					Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
-					dataMap.put("Result1", nextID());
+					Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
+					dataMap.put("Result1", TestInvocationContext.nextReference());
 					getAbove().receiveResult(
 							new DispatchResultEvent(job.getOwningProcess(),
 									job.getIndex(), job.getContext(), dataMap,

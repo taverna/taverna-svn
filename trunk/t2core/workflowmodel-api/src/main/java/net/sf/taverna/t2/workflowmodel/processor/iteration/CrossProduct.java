@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
@@ -79,7 +79,7 @@ public class CrossProduct extends CompletionHandlingAbstractIterationStrategyNod
 				for (int i = 0; i < job2.getIndex().length; i++) {
 					newIndex[j++] = job2.getIndex()[i];
 				}
-				Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> newDataMap = new HashMap<String, T2Reference>();
 				newDataMap.putAll(job1.getData());
 				newDataMap.putAll(job2.getData());
 				newSet.add(new Job(job1.getOwningProcess(), newIndex,

@@ -3,9 +3,9 @@ package net.sf.taverna.t2.workflowmodel.processor.iteration;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.TreeCache;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
@@ -37,7 +37,7 @@ public class DotProduct extends CompletionHandlingAbstractIterationStrategyNode 
 		caches[inputIndex].insertJob(newJob);
 		int[] indexArray = newJob.getIndex();
 		boolean foundMatch = true;
-		Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
+		Map<String, T2Reference> newDataMap = new HashMap<String, T2Reference>();
 		for (TreeCache cache : caches) {
 
 			if (cache.containsLocation(indexArray)) {

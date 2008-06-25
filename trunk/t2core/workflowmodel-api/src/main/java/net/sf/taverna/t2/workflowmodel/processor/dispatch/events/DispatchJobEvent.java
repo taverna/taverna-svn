@@ -3,9 +3,9 @@ package net.sf.taverna.t2.workflowmodel.processor.dispatch.events;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
 
@@ -18,7 +18,7 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMe
  */
 public class DispatchJobEvent extends AbstractDispatchEvent<DispatchJobEvent> {
 
-	private Map<String, EntityIdentifier> dataMap;
+	private Map<String, T2Reference> dataMap;
 
 	private List<? extends Activity<?>> activities;
 
@@ -33,7 +33,7 @@ public class DispatchJobEvent extends AbstractDispatchEvent<DispatchJobEvent> {
 	 * @param activities
 	 */
 	public DispatchJobEvent(String owningProcess, int[] index,
-			InvocationContext context, Map<String, EntityIdentifier> data,
+			InvocationContext context, Map<String, T2Reference> data,
 			List<? extends Activity<?>> activities) {
 		super(owningProcess, index, context);
 		this.dataMap = data;
@@ -49,7 +49,7 @@ public class DispatchJobEvent extends AbstractDispatchEvent<DispatchJobEvent> {
 	 * 
 	 * @return Map of name to data reference for this Job
 	 */
-	public Map<String, EntityIdentifier> getData() {
+	public Map<String, T2Reference> getData() {
 		return this.dataMap;
 	}
 

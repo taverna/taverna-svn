@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -17,7 +17,7 @@ public class DummyDataflowActivity extends AbstractAsynchronousActivity<Dataflow
 	}
 
 	@Override
-	public void executeAsynch(Map<String, EntityIdentifier> data,
+	public void executeAsynch(Map<String, T2Reference> data,
 			AsynchronousActivityCallback callback) {
 		// TODO Auto-generated method stub
 		

@@ -17,10 +17,12 @@ public class AnnotationChainImpl implements AnnotationChain{
 	 * 
 	 * @param annotationAssertion
 	 */
+	@SuppressWarnings("unchecked")
 	public void addAnnotationAssertion(AnnotationAssertion annotationAssertion) {
 		annotationAssertions.add(annotationAssertion);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void removeAnnotationAssertion(AnnotationAssertion annotationAssertion) {
 		annotationAssertions.remove(annotationAssertion);
 	}

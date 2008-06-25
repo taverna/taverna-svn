@@ -1,6 +1,6 @@
 package net.sf.taverna.t2.invocation;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * A single data token passed between processors in a workflow. This is distinct
@@ -12,7 +12,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  */
 public class WorkflowDataToken extends Event<WorkflowDataToken> {
 
-	private EntityIdentifier dataRef;
+	private T2Reference dataRef;
 	
 	/**
 	 * Construct a new data token with the specified owning process, conceptual
@@ -22,7 +22,7 @@ public class WorkflowDataToken extends Event<WorkflowDataToken> {
 	 * @param index
 	 * @param dataRef
 	 */
-	public WorkflowDataToken(String owningProcess, int[] index, EntityIdentifier dataRef, InvocationContext context) {
+	public WorkflowDataToken(String owningProcess, int[] index, T2Reference dataRef, InvocationContext context) {
 		super(owningProcess, index, context);
 		this.dataRef = dataRef;
 	}
@@ -45,7 +45,7 @@ public class WorkflowDataToken extends Event<WorkflowDataToken> {
 	 * 
 	 * @return
 	 */
-	public EntityIdentifier getData() {
+	public T2Reference getData() {
 		return this.dataRef;
 	}
 	

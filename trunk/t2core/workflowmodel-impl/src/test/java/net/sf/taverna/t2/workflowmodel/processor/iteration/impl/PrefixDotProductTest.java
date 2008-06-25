@@ -1,26 +1,24 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DiagnosticIterationStrategyNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.PrefixDotProduct;
-import net.sf.taverna.t2.workflowmodel.processor.iteration.impl.IterationStrategyImpl;
-import junit.framework.TestCase;
 
 public class PrefixDotProductTest extends TestCase {
 
 	InvocationContext context = new TestInvocationContext();
-	
+
 	/**
 	 * Test that the prefix node copes when we feed it two inputs with different
 	 * cardinalities. Output should be four jobs with index arrays length 2
-	 * @throws MalformedIdentifierException 
+	 * 
+	 * @throws MalformedIdentifierException
 	 * 
 	 */
-	public void testMutipleData() throws MalformedIdentifierException {
+	public void testMutipleData() {
 
 		NamedInputPortNode nipn1 = new NamedInputPortNode("a", 0);
 		NamedInputPortNode nipn2 = new NamedInputPortNode("b", 0);
@@ -36,18 +34,15 @@ public class PrefixDotProductTest extends TestCase {
 
 		String owningProcess = "Process1";
 		for (int i = 0; i < 2; i++) {
-			EntityListIdentifier dataReference = new EntityListIdentifier(
-					"urn:t2data:list://foo.bar/alist" + i + "/1");
-			is.receiveData("a", owningProcess, new int[] { i }, dataReference, context);
+			is.receiveData("a", owningProcess, new int[] { i },
+					TestInvocationContext.nextListReference(1), context);
 		}
 		is.receiveCompletion("a", owningProcess, new int[] {}, context);
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 2; j++) {
-				EntityListIdentifier dataReference = new EntityListIdentifier(
-						"urn:t2data:list://foo.bar/blist" + i + "-" + j + "/1");
 				is.receiveData("b", owningProcess, new int[] { i, j },
-						dataReference, context);
+						TestInvocationContext.nextListReference(1), context);
 			}
 			is.receiveCompletion("b", owningProcess, new int[] { i }, context);
 		}

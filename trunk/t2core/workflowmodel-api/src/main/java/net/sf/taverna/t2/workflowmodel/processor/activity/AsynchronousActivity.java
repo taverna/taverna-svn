@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * A concrete invokable activity with an asynchronous invocation API and no
@@ -25,7 +25,7 @@ public interface AsynchronousActivity<ConfigurationType> extends Activity<Config
 	 * specified ActivityCallback object to push results, errors and completion
 	 * events back to the dispatch stack.
 	 */
-	public void executeAsynch(Map<String, EntityIdentifier> data,
+	public void executeAsynch(Map<String, T2Reference> data,
 			AsynchronousActivityCallback callback);
 
 }

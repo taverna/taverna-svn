@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.ProcessorInputPort;
 
@@ -39,7 +39,7 @@ public class ProcessorInputPortImpl extends AbstractFilteringInputPort implement
 	}
 
 	@Override
-	protected void pushData(String portName, String owningProcess, int[] index, EntityIdentifier data, InvocationContext context) {
+	protected void pushData(String portName, String owningProcess, int[] index, T2Reference data, InvocationContext context) {
 		parent.iterationStack.receiveData(portName, owningProcess, index, data, context);
 	}
 	

@@ -1,29 +1,27 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.layers;
 
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.CREATE_PROCESS_STATE;
-import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.UPDATE_PROCESS_STATE;
 import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.NO_EFFECT;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerStateEffect.UPDATE_PROCESS_STATE;
+import static net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType.RESULT;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.ErrorDocumentIdentifier;
 import net.sf.taverna.t2.invocation.Event;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
 import net.sf.taverna.t2.monitor.NoSuchPropertyException;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.PropertyContributingDispatchLayer;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerErrorReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerJobReaction;
-import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultCompletionReaction;
+import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchLayerResultReaction;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.SupportsStreamedResult;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorEvent;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobEvent;
@@ -77,16 +75,15 @@ public class ErrorBounce extends AbstractDispatchLayer<Object> implements
 	 */
 	@Override
 	public void receiveJob(DispatchJobEvent jobEvent) {
-		for (EntityIdentifier ei : jobEvent.getData().values()) {
-			if (ei instanceof ErrorDocumentIdentifier
-					|| (ei instanceof EntityListIdentifier && ((EntityListIdentifier) ei)
-							.getContainsErrors())) {
+		for (T2Reference ei : jobEvent.getData().values()) {
+			if (ei.containsErrors()) {
 				getState(jobEvent.getOwningProcess())
 						.incrementErrorsReflected();
 				sendErrorOutput(jobEvent);
 				return;
 			}
 		}
+
 		// Got here so relay the message down...
 		getBelow().receiveJob(jobEvent);
 	}
@@ -109,12 +106,14 @@ public class ErrorBounce extends AbstractDispatchLayer<Object> implements
 	 * @param e
 	 */
 	private void sendErrorOutput(Event<?> e) {
-		DataManager dm = e.getContext().getDataManager();
+		ReferenceService rs = e.getContext().getReferenceService();
+
+		// DataManager dm = e.getContext().getDataManager();
 		Processor p = dispatchStack.getProcessor();
-		Map<String, EntityIdentifier> outputDataMap = new HashMap<String, EntityIdentifier>();
+		Map<String, T2Reference> outputDataMap = new HashMap<String, T2Reference>();
 		for (OutputPort op : p.getOutputPorts()) {
-			outputDataMap.put(op.getName(), dm.registerError(op.getDepth(), 0,
-					"No message..."));
+			outputDataMap.put(op.getName(), rs.getErrorDocumentService()
+					.registerError("No message...", op.getDepth()).getId());
 		}
 		DispatchResultEvent dre = new DispatchResultEvent(e.getOwningProcess(),
 				e.getIndex(), e.getContext(), outputDataMap, false);

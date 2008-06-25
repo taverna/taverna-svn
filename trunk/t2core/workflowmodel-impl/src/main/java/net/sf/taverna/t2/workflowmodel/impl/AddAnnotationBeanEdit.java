@@ -6,8 +6,10 @@ import net.sf.taverna.t2.annotation.AnnotationBeanSPI;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
+@SuppressWarnings("unchecked")
 public class AddAnnotationBeanEdit implements Edit<AnnotationAssertion> {
 
+	@SuppressWarnings("unchecked")
 	private AnnotationAssertion annotationAssertion;
 	private AnnotationBeanSPI annotationBean;
 	private boolean applied;

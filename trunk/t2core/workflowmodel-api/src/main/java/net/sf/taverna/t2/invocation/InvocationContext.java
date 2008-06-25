@@ -1,6 +1,7 @@
 package net.sf.taverna.t2.invocation;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
+import net.sf.taverna.t2.reference.ReferenceContext;
+import net.sf.taverna.t2.reference.ReferenceService;
 
 /**
  * Carries the context of a workflow invocation, the necessary data manager,
@@ -10,8 +11,14 @@ import net.sf.taverna.t2.cloudone.datamanager.DataManager;
  * @author Tom Oinn
  * 
  */
-public interface InvocationContext {
+public interface InvocationContext extends ReferenceContext {
 
-	public DataManager getDataManager();
-	
+	/**
+	 * Return the reference service to be used within this invocation context
+	 * 
+	 * @return a configured instance of ReferenceService to be used to resolve
+	 *         and register references to data in the workflow
+	 */
+	public ReferenceService getReferenceService();
+
 }

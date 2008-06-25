@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity.config;
 
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 
 /**
  * A bean that describes properties of an Input port.
@@ -12,18 +12,18 @@ import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
  */
 public class ActivityInputPortDefinitionBean extends ActivityPortDefinitionBean {
 
-	private List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes;
+	private List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes;
 	
 	private Class<?> translatedElementType;
 	
 	private boolean allowsLiteralValues;
 
-	public List<Class<? extends ReferenceScheme<?>>> getHandledReferenceSchemes() {
+	public List<Class<? extends ExternalReferenceSPI>> getHandledReferenceSchemes() {
 		return handledReferenceSchemes;
 	}
 
 	public void setHandledReferenceSchemes(
-			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes) {
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes) {
 		this.handledReferenceSchemes = handledReferenceSchemes;
 	}
 

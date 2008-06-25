@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport;
 import net.sf.taverna.t2.workflowmodel.health.HealthReport.Status;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
@@ -21,16 +21,16 @@ public class AsynchEchoActivity extends
 
 	@Override
 	public void configure(EchoConfig conf) throws ActivityConfigurationException {
-		addInput("input",0, true, new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+		addInput("input",0, true, new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 		addOutput("output",0,0);
 		this.config = conf;
 	}
 
 	@Override
-	public void executeAsynch(Map<String, EntityIdentifier> data,
+	public void executeAsynch(Map<String, T2Reference> data,
 			AsynchronousActivityCallback callback) {
-		EntityIdentifier inputID = data.get("input");
-		Map<String, EntityIdentifier> outputMap = new HashMap<String, EntityIdentifier>();
+		T2Reference inputID = data.get("input");
+		Map<String, T2Reference> outputMap = new HashMap<String, T2Reference>();
 		outputMap.put("output", inputID);
 		callback.receiveResult(outputMap, new int[0]);
 	}

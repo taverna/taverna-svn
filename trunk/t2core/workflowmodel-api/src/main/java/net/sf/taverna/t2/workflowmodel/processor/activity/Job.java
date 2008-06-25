@@ -2,10 +2,10 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * Contains a (possibly partial) job description. A job is the smallest entity
@@ -21,7 +21,7 @@ import net.sf.taverna.t2.invocation.ProcessIdentifierException;
  */
 public class Job extends IterationInternalEvent<Job> {
 
-	private Map<String, EntityIdentifier> dataMap;
+	private Map<String, T2Reference> dataMap;
 
 	/**
 	 * Push the index array onto the owning process name and return the new Job
@@ -54,7 +54,7 @@ public class Job extends IterationInternalEvent<Job> {
 	 * 
 	 * @return Map of name to data reference for this Job
 	 */
-	public Map<String, EntityIdentifier> getData() {
+	public Map<String, T2Reference> getData() {
 		return this.dataMap;
 	}
 
@@ -66,10 +66,11 @@ public class Job extends IterationInternalEvent<Job> {
 	 * @param index
 	 * @param data
 	 */
-	public Job(String owner, int[] index, Map<String, EntityIdentifier> data, InvocationContext context) {
+	public Job(String owner, int[] index, Map<String, T2Reference> data,
+			InvocationContext context) {
 		super(owner, index, context);
 		this.dataMap = data;
-		
+
 	}
 
 	/**

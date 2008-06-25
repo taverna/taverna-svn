@@ -7,6 +7,7 @@ public class AddAnnotationAssertionEdit implements Edit<AnnotationChain> {
 
 	private boolean applied;
 
+	@SuppressWarnings("unchecked")
 	private AnnotationAssertion annotationAssertion;
 	private AnnotationChain annotationChain;
 

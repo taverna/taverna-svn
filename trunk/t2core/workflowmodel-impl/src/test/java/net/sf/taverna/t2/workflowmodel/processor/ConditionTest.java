@@ -2,10 +2,10 @@ package net.sf.taverna.t2.workflowmodel.processor;
 
 import java.io.UnsupportedEncodingException;
 
-import net.sf.taverna.t2.cloudone.entity.Literal;
-import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
+import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -13,7 +13,6 @@ import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
 import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
-import junit.framework.TestCase;
 
 /**
  * Test the Condition facility, verify that it does indeed force processors to
@@ -29,7 +28,7 @@ public class ConditionTest extends TestCase {
 	private Processor p1, p2;
 
 	private Edits edits = new EditsImpl();
-	
+
 	private InvocationContext context = new TestInvocationContext();
 
 	private Processor createProcessor() throws ActivityConfigurationException,
@@ -72,41 +71,43 @@ public class ConditionTest extends TestCase {
 	}
 
 	public void testLock() throws UnsupportedEncodingException,
-			MalformedIdentifierException, ActivityConfigurationException,
-			EditException {
+			ActivityConfigurationException, EditException {
 		create();
 		System.out.println("Lock (should produce no output) :");
+		ReferenceService rs = context.getReferenceService();
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("A string"), context);
+				new int[0], rs.register("A string", 0, true, context), context);
 		p2.getInputPorts().get(0).receiveEvent(token);
 		// p1.getInputPorts().get(0).receiveEvent(token);
 		assertTrue(deh2.getEventCount() == 0);
 	}
 
 	public void testLockUnlock() throws UnsupportedEncodingException,
-			MalformedIdentifierException, ActivityConfigurationException,
-			EditException, InterruptedException {
+			ActivityConfigurationException, EditException, InterruptedException {
 		testLock();
 		System.out.println("Unlock (should produce both tokens) :");
 		Thread.sleep(200);
+		ReferenceService rs = context.getReferenceService();
 		WorkflowDataToken token2 = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("Another string"),context);
+				new int[0], rs.register("Another string", 0, true, context),
+				context);
 		p1.getInputPorts().get(0).receiveEvent(token2);
 		assertTrue(deh2.getEventCount() == 1);
 	}
-	
+
 	public void testLockUnlockWithDifferentProcess()
-			throws UnsupportedEncodingException, MalformedIdentifierException,
+			throws UnsupportedEncodingException,
 			ActivityConfigurationException, EditException, InterruptedException {
 		testLock();
-		System.out.println("Unlock with diffent process, only output from p1 :");
+		System.out
+				.println("Unlock with diffent process, only output from p1 :");
 		Thread.sleep(200);
+		ReferenceService rs = context.getReferenceService();
 		WorkflowDataToken token2 = new WorkflowDataToken("outerProcess2",
-				new int[0], Literal.buildLiteral("Another string"),context);
+				new int[0], rs.register("Another string", 0, true, context), context);
 		p1.getInputPorts().get(0).receiveEvent(token2);
 		assertTrue(deh2.getEventCount() == 0);
 		assertTrue(deh1.getEventCount() == 1);
 	}
-
 
 }

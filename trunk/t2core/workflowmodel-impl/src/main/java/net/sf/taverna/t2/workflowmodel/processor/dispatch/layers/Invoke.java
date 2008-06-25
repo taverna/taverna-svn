@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.monitor.MonitorManager;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.ControlBoundary;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -95,12 +95,13 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 				// Get the registered DataManager for this process. In most
 				// cases this will just be a single DataManager for the entire
 				// workflow system but it never hurts to generalize
-				final DataManager dManager = jobEvent.getContext()
-						.getDataManager();
+
+				final ReferenceService rs = jobEvent.getContext()
+						.getReferenceService();
 
 				// Create a Map of EntityIdentifiers named appropriately given
 				// the activity mapping
-				Map<String, EntityIdentifier> inputData = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> inputData = new HashMap<String, T2Reference>();
 				for (String inputName : jobEvent.getData().keySet()) {
 					String activityInputName = as.getInputPortMapping().get(
 							inputName);
@@ -116,7 +117,8 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 					private boolean sentJob = false;
 
-					public void fail(String message, Throwable t, DispatchErrorType errorType) {
+					public void fail(String message, Throwable t,
+							DispatchErrorType errorType) {
 						MonitorManager.getInstance().deregisterNode(
 								invocationProcessIdentifier);
 						getAbove().receiveError(
@@ -125,7 +127,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 										.getIndex(), jobEvent.getContext(),
 										message, t, errorType, as));
 					}
-					
+
 					public void fail(String message, Throwable t) {
 						fail(message, t, DispatchErrorType.INVOCATION);
 					}
@@ -171,20 +173,20 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 							// port with appropriate depth (by definition if
 							// we're streaming all outputs are collection types
 							// of some kind)
-							Map<String, EntityIdentifier> emptyListMap = new HashMap<String, EntityIdentifier>();
+							Map<String, T2Reference> emptyListMap = new HashMap<String, T2Reference>();
 							for (OutputPort op : as.getOutputPorts()) {
 								String portName = op.getName();
 								int portDepth = op.getDepth();
-								emptyListMap.put(portName, dManager
-										.registerEmptyList(portDepth));
+								emptyListMap.put(portName, rs.getListService()
+										.registerEmptyList(portDepth).getId());
 							}
 							receiveResult(emptyListMap, new int[0]);
 						}
 
 					}
 
-					public void receiveResult(
-							Map<String, EntityIdentifier> data, int[] index) {
+					public void receiveResult(Map<String, T2Reference> data,
+							int[] index) {
 
 						if (index.length == 0) {
 							// Final result, clean up monitor state
@@ -194,7 +196,7 @@ public class Invoke extends AbstractDispatchLayer<Object> {
 
 						// Construct a new result map using the activity mapping
 						// (activity output name to processor output name)
-						Map<String, EntityIdentifier> resultMap = new HashMap<String, EntityIdentifier>();
+						Map<String, T2Reference> resultMap = new HashMap<String, T2Reference>();
 						for (String outputName : data.keySet()) {
 							String processorOutputName = as
 									.getOutputPortMapping().get(outputName);

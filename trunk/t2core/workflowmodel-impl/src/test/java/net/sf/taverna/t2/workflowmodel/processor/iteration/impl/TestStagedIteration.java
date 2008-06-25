@@ -1,19 +1,11 @@
 package net.sf.taverna.t2.workflowmodel.processor.iteration.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.identifier.DataDocumentIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityListIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.peer.LocationalContext;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.CrossProduct;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.DotProduct;
@@ -21,24 +13,17 @@ import net.sf.taverna.t2.workflowmodel.processor.iteration.NamedInputPortNode;
 
 import org.junit.Test;
 
-public class TestStagedIteration  {
+public class TestStagedIteration {
 
-	public final DataManager dManager = new InMemoryDataManager("foo.bar",
-			Collections.<LocationalContext> emptySet());
-	
-	public InvocationContext context = new TestInvocationContext() {
-		@Override
-		public DataManager getDataManager() {
-			return dManager;
-		}
-	};
-	
+	public InvocationContext context = new TestInvocationContext();
+
 	@SuppressWarnings("unchecked")
 	@Test
-	public void testStaging() throws MalformedIdentifierException {
+	public void testStaging() {
 		IterationStrategyStackImpl iss = new IterationStrategyStackImpl() {
 			@Override
-			protected void receiveEventFromStrategy(IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
+			protected void receiveEventFromStrategy(
+					IterationInternalEvent<? extends IterationInternalEvent<?>> e) {
 				System.out.println(e);
 			}
 		};
@@ -69,32 +54,29 @@ public class TestStagedIteration  {
 		// Directly inject events into is1 to test
 		String owningProcess = "parent";
 		for (int i = 0; i < 4; i++) {
-			List<EntityIdentifier> idsInList = new ArrayList<EntityIdentifier>();
+			List<String> items = new ArrayList<String>();
 			for (int j = 0; j < 2; j++) {
-				DataDocumentIdentifier ddocIdentifier = context.getDataManager()
-						.registerDocument(Collections
-								.<ReferenceScheme> emptySet());
-				idsInList.add(ddocIdentifier);
+				items.add("bar-" + i + "-" + j);
 			}
-			EntityListIdentifier dataReference = context.getDataManager().registerList(idsInList.toArray(new EntityIdentifier[0]));
-			is1.receiveData("a", owningProcess, new int[] { i }, dataReference, context);
+			T2Reference listReference = context.getReferenceService().register(
+					items, 1, true, context);
+			is1.receiveData("a", owningProcess, new int[] { i }, listReference,
+					context);
 		}
 		is1.receiveCompletion("a", owningProcess, new int[] {}, context);
 
 		for (int i = 0; i < 4; i++) {
-			List<EntityIdentifier> idsInList = new ArrayList<EntityIdentifier>();
-			for (int j = 0; j < 2; j++) {
-				DataDocumentIdentifier ddocIdentifier = context.getDataManager()
-						.registerDocument(Collections
-								.<ReferenceScheme> emptySet());
-				idsInList.add(ddocIdentifier);
-			}
-			EntityListIdentifier dataReference = context.getDataManager().registerList(idsInList.toArray(new EntityIdentifier[0]));
 
-			is1.receiveData("b", owningProcess, new int[] { i }, dataReference, context);
+			List<String> items = new ArrayList<String>();
+			for (int j = 0; j < 2; j++) {
+				items.add("foo-" + i + "-" + j);
+			}
+			T2Reference listReference = context.getReferenceService().register(
+					items, 1, true, context);
+			is1.receiveData("b", owningProcess, new int[] { i }, listReference,
+					context);
 		}
 		is1.receiveCompletion("b", owningProcess, new int[] {}, context);
 
 	}
-
 }

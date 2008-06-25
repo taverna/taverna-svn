@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.sf.taverna.t2.annotation.annotationbeans.FreeTextDescription;
-
 public class AnnotationAssertionImpl implements AnnotationAssertion<AnnotationBeanSPI> {
 	
 	private AnnotationBeanSPI annotationBean;
@@ -93,10 +91,12 @@ public class AnnotationAssertionImpl implements AnnotationAssertion<AnnotationBe
 		annotationBean = null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addCurationEvent(CurationEvent curationEvent) {
 		curationEventList.add(curationEvent);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void removeCurationEvent(CurationEvent curationEvent) {
 		curationEventList.remove(curationEvent);
 	}

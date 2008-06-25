@@ -3,11 +3,11 @@ package net.sf.taverna.t2.workflowmodel.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
@@ -54,7 +54,8 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 	 * node, i.e. the result of iterating over an empty collection structure of
 	 * some kind.
 	 */
-	public Job getEmptyJob(String owningProcess, int[] index, InvocationContext context) {
+	public Job getEmptyJob(String owningProcess, int[] index,
+			InvocationContext context) {
 		int wrappingDepth = parent.resultWrappingDepth;
 		if (wrappingDepth < 0)
 			throw new RuntimeException(
@@ -67,11 +68,12 @@ public class ProcessorCrystalizerImpl extends AbstractCrystalizer {
 		int depth = wrappingDepth - index.length;
 		// TODO - why was this incrementing?
 		// depth++;
-		DataManager dManager = context.getDataManager();
-		Map<String, EntityIdentifier> emptyJobMap = new HashMap<String, EntityIdentifier>();
+
+		ReferenceService rs = context.getReferenceService();
+		Map<String, T2Reference> emptyJobMap = new HashMap<String, T2Reference>();
 		for (OutputPort op : parent.getOutputPorts()) {
-			emptyJobMap.put(op.getName(), dManager.registerEmptyList(depth
-					+ op.getDepth()));
+			emptyJobMap.put(op.getName(), rs.getListService()
+					.registerEmptyList(depth + op.getDepth()).getId());
 		}
 		return new Job(owningProcess, index, emptyJobMap, context);
 	}

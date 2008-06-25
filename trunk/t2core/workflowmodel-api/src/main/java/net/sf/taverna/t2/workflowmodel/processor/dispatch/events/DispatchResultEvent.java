@@ -4,8 +4,8 @@ import java.util.Map;
 
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.ProcessIdentifierException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.description.DispatchMessageType;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Dispatch event containing the results from an invocation. If the event is
@@ -21,7 +21,7 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 public class DispatchResultEvent extends
 		AbstractDispatchEvent<DispatchResultEvent> {
 
-	private Map<String, EntityIdentifier> dataMap;
+	private Map<String, T2Reference> dataMap;
 	private boolean streaming;
 
 	/**
@@ -36,7 +36,7 @@ public class DispatchResultEvent extends
 	 * @param streaming
 	 */
 	public DispatchResultEvent(String owner, int[] index,
-			InvocationContext context, Map<String, EntityIdentifier> data,
+			InvocationContext context, Map<String, T2Reference> data,
 			boolean streaming) {
 		super(owner, index, context);
 		this.dataMap = data;
@@ -59,7 +59,7 @@ public class DispatchResultEvent extends
 	 * 
 	 * @return the result data for this event
 	 */
-	public Map<String, EntityIdentifier> getData() {
+	public Map<String, T2Reference> getData() {
 		return this.dataMap;
 	}
 

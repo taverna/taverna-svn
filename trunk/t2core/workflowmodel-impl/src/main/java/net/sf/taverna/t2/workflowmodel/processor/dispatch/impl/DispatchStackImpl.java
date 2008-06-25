@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,12 +8,9 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import net.sf.taverna.raven.repository.ArtifactNotFoundException;
-import net.sf.taverna.raven.repository.ArtifactStateException;
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
-import net.sf.taverna.t2.workflowmodel.impl.Tools;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.AbstractDispatchLayer;
@@ -27,8 +23,6 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchJobQueu
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchResultEvent;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
-import org.jdom.JDOMException;
 
 /**
  * The dispatch stack is responsible for consuming a queue of jobs from the

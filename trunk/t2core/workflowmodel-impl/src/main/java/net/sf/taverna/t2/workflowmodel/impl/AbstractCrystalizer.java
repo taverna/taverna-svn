@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.invocation.TreeCache;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 
 /**
@@ -30,7 +30,8 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 
 	private Map<String, CompletionAwareTreeCache> cacheMap = new HashMap<String, CompletionAwareTreeCache>();
 
-	public abstract Job getEmptyJob(String owningProcess, int[] index, InvocationContext context);
+	public abstract Job getEmptyJob(String owningProcess, int[] index,
+			InvocationContext context);
 
 	/**
 	 * Receive a Job or Completion, Jobs are emitted unaltered and cached,
@@ -44,13 +45,16 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 	 * 
 	 * @param e
 	 */
-	@SuppressWarnings("unchecked") //suppressed to avoid jdk1.5 compilation errors caused by the declaration IterationInternalEvent<? extends IterationInternalEvent<?>> e
+	@SuppressWarnings("unchecked")
+	// suppressed to avoid jdk1.5 compilation errors caused by the declaration
+	// IterationInternalEvent<? extends IterationInternalEvent<?>> e
 	public void receiveEvent(IterationInternalEvent e) {
 		String owningProcess = e.getOwningProcess();
 		CompletionAwareTreeCache cache = null;
 		synchronized (cacheMap) {
 			if (!cacheMap.containsKey(owningProcess)) {
-				cache = new CompletionAwareTreeCache(owningProcess, e.getContext());
+				cache = new CompletionAwareTreeCache(owningProcess, e
+						.getContext());
 				cacheMap.put(owningProcess, cache);
 			} else {
 				cache = cacheMap.get(owningProcess);
@@ -82,7 +86,8 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 		private String owningProcess;
 		private InvocationContext context;
 
-		public CompletionAwareTreeCache(String owningProcess, InvocationContext context) {
+		public CompletionAwareTreeCache(String owningProcess,
+				InvocationContext context) {
 			super();
 			this.context = context;
 			this.owningProcess = owningProcess;
@@ -113,7 +118,7 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 			// }
 			// System.out.println("assignNamesTo "+iString.toString());
 			if (n.contents == null) {
-				Map<String, List<EntityIdentifier>> listItems = new HashMap<String, List<EntityIdentifier>>();
+				Map<String, List<T2Reference>> listItems = new HashMap<String, List<T2Reference>>();
 				int pos = 0;
 				// System.out.println(" Unnamed node :
 				// ["+iString.toString()+"]");
@@ -153,20 +158,20 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 					// into lists to be registered
 
 					for (String outputName : j.getData().keySet()) {
-						List<EntityIdentifier> items = listItems
-								.get(outputName);
+						List<T2Reference> items = listItems.get(outputName);
 						if (items == null) {
-							items = new ArrayList<EntityIdentifier>();
+							items = new ArrayList<T2Reference>();
 							listItems.put(outputName, items);
 						}
 						items.add(j.getData().get(outputName));
 					}
 				}
-				Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> newDataMap = new HashMap<String, T2Reference>();
 				for (String outputName : listItems.keySet()) {
-					List<EntityIdentifier> idlist = listItems.get(outputName);
-					newDataMap.put(outputName, context.getDataManager().registerList(
-							idlist.toArray(new EntityIdentifier[0])));
+					List<T2Reference> idlist = listItems.get(outputName);
+					newDataMap.put(outputName, context.getReferenceService()
+							.getListService().registerList(idlist).getId());
+
 				}
 				Job newJob = new Job(owningProcess, index, newDataMap, context);
 				n.contents = newJob;
@@ -175,7 +180,6 @@ public abstract class AbstractCrystalizer implements Crystalizer {
 				AbstractCrystalizer.this.jobCreated(n.contents);
 			}
 		}
-
 	}
 
 }

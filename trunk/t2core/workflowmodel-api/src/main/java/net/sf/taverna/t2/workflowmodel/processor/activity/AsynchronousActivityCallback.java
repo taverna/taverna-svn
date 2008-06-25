@@ -2,8 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
 
 /**
@@ -51,7 +51,7 @@ public interface AsynchronousActivityCallback {
 	 *            invocation. If there's no streaming involved this should be a
 	 *            zero length int[].
 	 */
-	public void receiveResult(Map<String, EntityIdentifier> data, int[] index);
+	public void receiveResult(Map<String, T2Reference> data, int[] index);
 
 	/**
 	 * If (and only if) the activity is streaming data then this method can be

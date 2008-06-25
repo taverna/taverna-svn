@@ -5,17 +5,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Element;
-
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategy;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationStrategyStack;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.IterationTypeMismatchException;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.MissingIterationInputException;
 import net.sf.taverna.t2.workflowmodel.serialization.xml.XMLSerializationConstants;
+
+import org.jdom.Element;
 
 /**
  * Contains an ordered list of IterationStrategyImpl objects. The top of the
@@ -87,7 +87,7 @@ public class IterationStrategyStackImpl implements IterationStrategyStack {
 	}
 	
 	public void receiveData(String inputPortName, String owningProcess,
-			int[] indexArray, EntityIdentifier dataReference, InvocationContext context) {
+			int[] indexArray, T2Reference dataReference, InvocationContext context) {
 		if (!strategies.isEmpty()) {
 			strategies.get(0).receiveData(inputPortName, owningProcess,
 					indexArray, dataReference, context);

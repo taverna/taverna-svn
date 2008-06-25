@@ -1,33 +1,26 @@
 package net.sf.taverna.t2.workflowmodel.processor.dispatch;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.peer.LocationalContext;
+import junit.framework.TestCase;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Processor;
 import net.sf.taverna.t2.workflowmodel.impl.AbstractCrystalizer;
-import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
+import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
+import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.impl.DispatchStackImpl;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.layers.Parallelize;
-import net.sf.taverna.t2.workflowmodel.invocation.impl.TestInvocationContext;
-import junit.framework.TestCase;
-import static net.sf.taverna.t2.workflowmodel.processor.iteration.impl.CrossProductTest.nextID;
 
 public class DispatchStackTestWithParallelizeTest extends TestCase {
 
-	public final DataManager dManager = new InMemoryDataManager("foo.bar",Collections.<LocationalContext>emptySet());
-	
 	public InvocationContext context = new TestInvocationContext();
 	
 	private class BasicDispatchStackImpl extends DispatchStackImpl {
@@ -132,8 +125,8 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyInvokerLayer());
-		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
-		dataMap.put("SingleJobInput", nextID());
+		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
+		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(1000);
@@ -153,8 +146,8 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
-		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
-		dataMap.put("SingleJobInput", nextID());
+		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
+		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
@@ -195,8 +188,8 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 		d.addLayer(new DiagnosticLayer());
 		d.addLayer(new Parallelize());
 		d.addLayer(new DummyStreamingInvokerLayer());
-		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
-		dataMap.put("SingleJobInput", nextID());
+		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
+		dataMap.put("SingleJobInput", TestInvocationContext.nextReference());
 		d.receiveEvent(new Job("Process1:processorName", new int[] {}, dataMap, context));
 		try {
 			Thread.sleep(2000);
@@ -241,8 +234,8 @@ public class DispatchStackTestWithParallelizeTest extends TestCase {
 	private List<IterationInternalEvent<?>> generateLotsOfEvents(String processID, int jobs) {
 		List<IterationInternalEvent<?>> events = new ArrayList<IterationInternalEvent<?>>();
 		for (int i = 0; i < jobs; i++) {
-			Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
-			dataMap.put("Input1", nextID());
+			Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
+			dataMap.put("Input1", TestInvocationContext.nextReference());
 			events.add(new Job(processID+":processorName", new int[] { i }, dataMap, context));
 		}
 		events.add(new Completion(processID+":processorName", context));

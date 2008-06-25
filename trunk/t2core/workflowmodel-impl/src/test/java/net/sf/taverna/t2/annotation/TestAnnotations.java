@@ -22,6 +22,7 @@ import org.junit.Test;
 
 public class TestAnnotations {
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void getAnnotationsForADataFlow() {
 
@@ -37,6 +38,7 @@ public class TestAnnotations {
 		personList.add(person1);
 		personList.add(person2);
 
+		@SuppressWarnings("unused")
 		AnnotationSourceSPI annotationSource = null;
 		try {
 			annotationSource = new URISource(new URI("http://google.com"));

@@ -3,16 +3,13 @@ package net.sf.taverna.t2.workflowmodel.processor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.entity.Literal;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.MalformedIdentifierException;
-import net.sf.taverna.t2.cloudone.peer.LocationalContext;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.EditException;
 import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.impl.EditsImpl;
@@ -37,22 +34,11 @@ public class ProcessorLevelInvocationTest {
 	DiagnosticEventHandler deh;
 	ProcessorImpl processor;
 
-	final DataManager dManager = new InMemoryDataManager("dataNS",
-			new HashSet<LocationalContext>());
+	InvocationContext context = new TestInvocationContext();
 
-	InvocationContext context = new TestInvocationContext() {
-
-		@Override
-		public DataManager getDataManager() {
-			return dManager;
-		}
-		
-	};
-	
 	@Before
 	public void createProcessor() throws EditException, JDOMException,
-			IOException, ActivityConfigurationException,
-			MalformedIdentifierException {
+			IOException, ActivityConfigurationException {
 
 		// Create a processor from the simple echo activity
 		AsynchEchoActivity activity = new AsynchEchoActivity();
@@ -71,24 +57,27 @@ public class ProcessorLevelInvocationTest {
 	}
 
 	@Test
-	public synchronized void singleDataTokenBehaviour()
-			throws MalformedIdentifierException, EditException, JDOMException,
-			IOException, ActivityConfigurationException, InterruptedException {
+	public synchronized void singleDataTokenBehaviour() throws EditException,
+			JDOMException, IOException, ActivityConfigurationException,
+			InterruptedException {
 		// System.out.println("Single token, 'A string'");
 		// Build an input data token
+		ReferenceService rs = context.getReferenceService();
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess1",
-				new int[0], Literal.buildLiteral("A string"), context);
+				new int[0], rs.register("A string", 0, true, context), context);
 		processor.getInputPorts().get(0).receiveEvent(token);
 		Thread.sleep(250);
 		assertEquals(1, deh.getEventCount());
 	}
 
 	@Test
-	public void singleEmptyListDataTokenBehaviour()
-			throws MalformedIdentifierException, EditException, JDOMException,
-			IOException, ActivityConfigurationException, InterruptedException {
+	public void singleEmptyListDataTokenBehaviour() throws EditException,
+			JDOMException, IOException, ActivityConfigurationException,
+			InterruptedException {
 		// System.out.println("Empty list");
-		EntityIdentifier listIdentifier = dManager.registerEmptyList(1);
+		ReferenceService rs = context.getReferenceService();
+		T2Reference listIdentifier = rs.getListService().registerEmptyList(1)
+				.getId();
 		// Build an input data token of a single list
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess2",
 				new int[0], listIdentifier, context);
@@ -113,12 +102,14 @@ public class ProcessorLevelInvocationTest {
 	@Test
 	public void singleListDataTokenWithFilterConfigured() throws EditException,
 			JDOMException, IOException, ActivityConfigurationException,
-			MalformedIdentifierException, InterruptedException {
+			InterruptedException {
 		// System.out.println("List with two items, 'foo' and 'bar'");
-		EntityIdentifier listIdentifier = dManager
-				.registerList(new EntityIdentifier[] {
-						Literal.buildLiteral("foo"),
-						Literal.buildLiteral("bar") });
+
+		List<String> itemList = new ArrayList<String>();
+		itemList.add("foo");
+		itemList.add("bar");
+		T2Reference listIdentifier = context.getReferenceService().register(
+				itemList, 1, true, context);
 
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess3",
 				new int[0], listIdentifier, context);
@@ -136,11 +127,12 @@ public class ProcessorLevelInvocationTest {
 
 	@Test
 	public void topLevelEmptyCollection() throws EditException, JDOMException,
-			IOException, ActivityConfigurationException,
-			MalformedIdentifierException, InterruptedException {
+			IOException, ActivityConfigurationException, InterruptedException {
 		// System.out.println("Top level empty list (depth 2)");
-		EntityIdentifier listIdentifier = dManager
-				.registerEmptyList(2);
+		ReferenceService rs = context.getReferenceService();
+		T2Reference listIdentifier = rs.getListService().registerEmptyList(2)
+				.getId();
+
 		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
 				.setFilterDepth(0);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess4",
@@ -162,16 +154,18 @@ public class ProcessorLevelInvocationTest {
 	@Test
 	public void testPartiallyEmptyCollection() throws EditException,
 			JDOMException, IOException, ActivityConfigurationException,
-			MalformedIdentifierException, InterruptedException {
-		EntityIdentifier emptyListIdentifier = dManager.registerEmptyList(1);
+			InterruptedException {
+		List<Object> sourceList = new ArrayList<Object>();
+		sourceList.add(new ArrayList<Object>());
+		List<String> itemList = new ArrayList<String>();
+		itemList.add("foo");
+		itemList.add("bar");
+		sourceList.add(itemList);
+		T2Reference listIdentifier = context.getReferenceService().register(
+				sourceList, 2, true, context);
+
 		// System.out.println("Partially empty collection : {{}{foo, bar}}");
-		EntityIdentifier populatedListIdentifier = dManager
-				.registerList(new EntityIdentifier[] {
-						Literal.buildLiteral("foo"),
-						Literal.buildLiteral("bar") });
-		EntityIdentifier listIdentifier = dManager
-				.registerList(new EntityIdentifier[] { emptyListIdentifier,
-						populatedListIdentifier });
+
 		((ProcessorInputPortImpl) (processor.getInputPorts().get(0)))
 				.setFilterDepth(2);
 		WorkflowDataToken token = new WorkflowDataToken("outerProcess5",
@@ -189,5 +183,5 @@ public class ProcessorLevelInvocationTest {
 		Thread.sleep(COMPLETION_SLEEP);
 		assertEquals(5, deh.getEventCount());
 	}
-	
+
 }

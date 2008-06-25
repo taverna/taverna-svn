@@ -6,6 +6,7 @@ import net.sf.taverna.t2.annotation.Person;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
+@SuppressWarnings("unchecked")
 public class AddCreatorEdit implements Edit<AnnotationAssertion> {
 
 	private AnnotationAssertion annotationAssertion;

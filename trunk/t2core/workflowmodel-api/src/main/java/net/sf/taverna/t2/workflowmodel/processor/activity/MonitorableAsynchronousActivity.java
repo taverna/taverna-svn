@@ -3,8 +3,8 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.monitor.MonitorableProperty;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * An extension of AsynchronousActivity with the additional stipulation that
@@ -33,7 +33,7 @@ public interface MonitorableAsynchronousActivity<ConfigType> extends
 	 *         the invoked resource
 	 */
 	public Set<MonitorableProperty<?>> executeAsynchWithMonitoring(
-			Map<String, EntityIdentifier> data,
+			Map<String, T2Reference> data,
 			AsynchronousActivityCallback callback);
 
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.taverna.t2.invocation.TreeCache;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Matches jobs where the index array of the job on index 0 is the prefix of the
@@ -22,7 +22,7 @@ public class PrefixDotProduct extends DotProduct {
 	protected synchronized final void cleanUp(String owningProcess) {
 		ownerToCache.remove(owningProcess);
 	}
-	
+
 	@Override
 	public void innerReceiveJob(int inputIndex, Job newJob) {
 		String owningProcess = newJob.getOwningProcess();
@@ -56,7 +56,7 @@ public class PrefixDotProduct extends DotProduct {
 				caches[1].cut(prefixIndexArray);
 			}
 			for (Job job : matchingJobs) {
-				Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> newDataMap = new HashMap<String, T2Reference>();
 				newDataMap.putAll(newJob.getData());
 				newDataMap.putAll(job.getData());
 				Job mergedJob = new Job(owningProcess, job.getIndex(),
@@ -77,7 +77,7 @@ public class PrefixDotProduct extends DotProduct {
 				}
 				Job j = caches[0].get(prefix);
 				if (j != null) {
-					Map<String, EntityIdentifier> newDataMap = new HashMap<String, EntityIdentifier>();
+					Map<String, T2Reference> newDataMap = new HashMap<String, T2Reference>();
 					newDataMap.putAll(j.getData());
 					newDataMap.putAll(newJob.getData());
 					Job mergedJob = new Job(owningProcess, newJob.getIndex(),

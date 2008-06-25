@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * Abstract superclass for asynchronous activities. Activity providers should only
@@ -54,7 +54,7 @@ public abstract class AbstractAsynchronousActivity<ConfigType> extends
 	 * heavy lifting in the body of this method without creating a new thread
 	 * specifically for it.
 	 */
-	public abstract void executeAsynch(Map<String, EntityIdentifier> data,
+	public abstract void executeAsynch(Map<String, T2Reference> data,
 			AsynchronousActivityCallback callback);
 
 }

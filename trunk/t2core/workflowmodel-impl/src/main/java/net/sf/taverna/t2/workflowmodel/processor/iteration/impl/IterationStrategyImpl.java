@@ -10,12 +10,12 @@ import java.util.Set;
 
 import javax.swing.tree.TreeNode;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.Completion;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.IterationInternalEvent;
+import net.sf.taverna.t2.reference.ContextualizedT2Reference;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Job;
 import net.sf.taverna.t2.workflowmodel.processor.iteration.AbstractIterationStrategyNode;
@@ -158,6 +158,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * 
 	 * @param strategyElement
 	 */
+	@SuppressWarnings("unchecked")
 	protected void configureFromXML(Element strategyElement) {
 		inputs.clear();
 		terminal.clear();
@@ -183,7 +184,7 @@ public class IterationStrategyImpl implements IterationStrategy {
 			String portName = e.getAttributeValue("name");
 			int portDepth = Integer.parseInt(e.getAttributeValue("depth"));
 			node = new NamedInputPortNode(portName, portDepth);
-			addInput((NamedInputPortNode)node);
+			addInput((NamedInputPortNode) node);
 		}
 		for (Object child : e.getChildren()) {
 			Element childElement = (Element) child;
@@ -219,16 +220,16 @@ public class IterationStrategyImpl implements IterationStrategy {
 			// Now have to split this job up into a number of distinct events!
 			String owningProcess = j.getOwningProcess();
 			for (String portName : j.getData().keySet()) {
-				EntityIdentifier dataRef = j.getData().get(portName);
-				DataManager manager = e.getContext().getDataManager();
+				T2Reference dataRef = j.getData().get(portName);
+				ReferenceService rs = e.getContext().getReferenceService();
 				NamedInputPortNode ipn = nodeForName(portName);
 				int desiredDepth = ipn.getCardinality();
-				Iterator<ContextualizedIdentifier> ids = manager.traverse(
+				Iterator<ContextualizedT2Reference> ids = rs.traverseFrom(
 						dataRef, desiredDepth);
 				while (ids.hasNext()) {
-					ContextualizedIdentifier ci = ids.next();
+					ContextualizedT2Reference ci = ids.next();
 					int[] indexArray = ci.getIndex();
-					EntityIdentifier childDataRef = ci.getDataRef();
+					T2Reference childDataRef = ci.getReference();
 					receiveData(portName, owningProcess, indexArray,
 							childDataRef, e.getContext());
 				}
@@ -258,9 +259,9 @@ public class IterationStrategyImpl implements IterationStrategy {
 	 * @throws WorkflowStructureException
 	 */
 	public void receiveData(String inputPortName, String owningProcess,
-			int[] indexArray, EntityIdentifier dataReference,
+			int[] indexArray, T2Reference dataReference,
 			InvocationContext context) throws WorkflowStructureException {
-		Map<String, EntityIdentifier> dataMap = new HashMap<String, EntityIdentifier>();
+		Map<String, T2Reference> dataMap = new HashMap<String, T2Reference>();
 		dataMap.put(inputPortName, dataReference);
 		Job newJob = new Job(owningProcess, indexArray, dataMap, context);
 		nodeForName(inputPortName).receiveJob(0, newJob);

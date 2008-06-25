@@ -1,12 +1,14 @@
 package net.sf.taverna.t2.workflowmodel.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.identifier.ContextualizedIdentifier;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ContextualizedT2Reference;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.FilteringInputPort;
 import net.sf.taverna.t2.workflowmodel.WorkflowStructureException;
 
@@ -39,13 +41,17 @@ public abstract class AbstractFilteringInputPort extends
 			int desiredDepth) {
 		if (dt.getData().getDepth() == desiredDepth) {
 			// System.out.println("** Job : "+dt.getData());
-			pushData(getName(), owningProcess, dt.getIndex(), dt.getData(), dt.getContext());
+			pushData(getName(), owningProcess, dt.getIndex(), dt.getData(), dt
+					.getContext());
 		} else {
-			DataManager dManager = dt.getContext().getDataManager();
-			Iterator<ContextualizedIdentifier> children = dManager.traverse(dt
+
+			ReferenceService rs = dt.getContext().getReferenceService();
+
+			Iterator<ContextualizedT2Reference> children = rs.traverseFrom(dt
 					.getData(), dt.getData().getDepth() - 1);
+
 			while (children.hasNext()) {
-				ContextualizedIdentifier ci = children.next();
+				ContextualizedT2Reference ci = children.next();
 				int[] newIndex = new int[dt.getIndex().length
 						+ ci.getIndex().length];
 				int i = 0;
@@ -56,10 +62,12 @@ public abstract class AbstractFilteringInputPort extends
 					newIndex[i++] = indx;
 				}
 				pushToken(new WorkflowDataToken(owningProcess, newIndex, ci
-						.getDataRef(), dt.getContext()), owningProcess, desiredDepth);
+						.getReference(), dt.getContext()), owningProcess,
+						desiredDepth);
 			}
 			// System.out.println("** Completion : "+dt.getData());
-			pushCompletion(getName(), owningProcess, dt.getIndex(), dt.getContext());
+			pushCompletion(getName(), owningProcess, dt.getIndex(), dt
+					.getContext());
 		}
 	}
 
@@ -98,7 +106,8 @@ public abstract class AbstractFilteringInputPort extends
 			} else if (tokenDepth > filterDepth) {
 				// Convert to a completion event and push into the iteration
 				// strategy
-				pushCompletion(getName(), newOwner, token.getIndex(), token.getContext());
+				pushCompletion(getName(), newOwner, token.getIndex(), token
+						.getContext());
 			} else if (tokenDepth < filterDepth) {
 				// Normally we can ignore these, but there is a special case
 				// where token depth is less than filter depth and there is no
@@ -107,15 +116,19 @@ public abstract class AbstractFilteringInputPort extends
 				// data manager to register a new single element collection and
 				// recurse.
 				if (token.getIndex().length == 0) {
-					DataManager dManager = token.getContext().getDataManager();
-					EntityIdentifier ref = token.getData();
+					T2Reference ref = token.getData();
+					ReferenceService rs = token.getContext()
+							.getReferenceService();
 					int currentDepth = tokenDepth;
 					while (currentDepth < filterDepth) {
-						ref = dManager
-								.registerList(new EntityIdentifier[] { ref });
+						// Wrap in a single item list
+						List<T2Reference> newList = new ArrayList<T2Reference>();
+						newList.add(ref);
+						ref = rs.getListService().registerList(newList).getId();
 						currentDepth++;
 					}
-					pushData(getName(), newOwner, new int[0], ref, token.getContext());
+					pushData(getName(), newOwner, new int[0], ref, token
+							.getContext());
 				}
 			}
 		}
@@ -147,7 +160,7 @@ public abstract class AbstractFilteringInputPort extends
 	 * @param data
 	 */
 	protected abstract void pushData(String portName, String owningProcess,
-			int[] index, EntityIdentifier data, InvocationContext context);
+			int[] index, T2Reference data, InvocationContext context);
 
 	/**
 	 * Override this to transform owning process identifiers as they pass

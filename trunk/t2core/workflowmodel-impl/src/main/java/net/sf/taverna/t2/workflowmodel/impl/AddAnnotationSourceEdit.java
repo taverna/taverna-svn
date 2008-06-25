@@ -6,6 +6,7 @@ import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
 
+@SuppressWarnings("unchecked")
 public class AddAnnotationSourceEdit implements Edit<AnnotationAssertion> {
 
 	private AnnotationAssertion annotationAssertion;

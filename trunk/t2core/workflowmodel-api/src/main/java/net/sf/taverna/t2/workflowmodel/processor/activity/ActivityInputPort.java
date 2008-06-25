@@ -2,7 +2,7 @@ package net.sf.taverna.t2.workflowmodel.processor.activity;
 
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.InputPort;
 
 /**
@@ -23,7 +23,7 @@ public interface ActivityInputPort extends InputPort {
 	 * @return Class objects representing the reference scheme types which this
 	 *         input can handle
 	 */
-	public List<Class<? extends ReferenceScheme<?>>> getHandledReferenceSchemes();
+	public List<Class<? extends ExternalReferenceSPI>> getHandledReferenceSchemes();
 
 	/**
 	 * Literal values are a special case as they are not represented by

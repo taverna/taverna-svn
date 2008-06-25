@@ -2,7 +2,8 @@ package net.sf.taverna.t2.workflowmodel.processor.activity.impl;
 
 import java.util.Collections;
 import java.util.List;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.AbstractPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 
@@ -18,7 +19,7 @@ public class ActivityInputPortImpl extends AbstractPort implements
 		ActivityInputPort {
 
 	private Class<?> translatedElementClass;
-	private List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes;
+	private List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes;
 	boolean allowsLiteralValues;
 
 	/**
@@ -41,7 +42,7 @@ public class ActivityInputPortImpl extends AbstractPort implements
 	 */
 	public ActivityInputPortImpl(String portName, int portDepth,
 			boolean allowsLiteralValues,
-			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
 		this(portName, portDepth);
 		this.allowsLiteralValues = allowsLiteralValues;
@@ -53,7 +54,7 @@ public class ActivityInputPortImpl extends AbstractPort implements
 		return this.allowsLiteralValues();
 	}
 
-	public List<Class<? extends ReferenceScheme<?>>> getHandledReferenceSchemes() {
+	public List<Class<? extends ExternalReferenceSPI>> getHandledReferenceSchemes() {
 		return Collections.unmodifiableList(this.handledReferenceSchemes);
 	}
 

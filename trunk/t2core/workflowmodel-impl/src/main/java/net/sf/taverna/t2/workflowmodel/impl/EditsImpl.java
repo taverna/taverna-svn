@@ -10,10 +10,10 @@ import net.sf.taverna.t2.annotation.AnnotationRole;
 import net.sf.taverna.t2.annotation.AnnotationSourceSPI;
 import net.sf.taverna.t2.annotation.CurationEvent;
 import net.sf.taverna.t2.annotation.Person;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.facade.impl.WorkflowInstanceFacadeImpl;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -134,6 +134,7 @@ public class EditsImpl implements Edits {
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationChain> getAddAnnotationAssertionEdit(AnnotationChain annotationChain, AnnotationAssertion annotationAssertion) {
 		return new AddAnnotationAssertionEdit(annotationChain, annotationAssertion);
 	}
@@ -185,7 +186,7 @@ public class EditsImpl implements Edits {
 	 */
 	public ActivityInputPort buildActivityInputPort(String portName,
 			int portDepth, boolean allowsLiteralValues,
-			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
 		return new ActivityInputPortImpl(portName, portDepth,
 				allowsLiteralValues, handledReferenceSchemes,
@@ -206,17 +207,20 @@ public class EditsImpl implements Edits {
 		return new WorkflowInstanceFacadeImpl(dataflow, context, parentProcess);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationBean(
 			AnnotationAssertion annotationAssertion,
 			AnnotationBeanSPI annotationBean) {
 		return new AddAnnotationBeanEdit(annotationAssertion, annotationBean);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddCurationEvent(
 			AnnotationAssertion annotationAssertion, CurationEvent curationEvent) {
 		return new AddCurationEventEdit(annotationAssertion, curationEvent);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationRole(
 			AnnotationAssertion annotationAssertion,
 			AnnotationRole annotationRole) {
@@ -224,12 +228,14 @@ public class EditsImpl implements Edits {
 		return new AddAnnotationRoleEdit(annotationAssertion, annotationRole);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddAnnotationSource(
 			AnnotationAssertion annotationAssertion,
 			AnnotationSourceSPI annotationSource) {
 		return new AddAnnotationSourceEdit(annotationAssertion, annotationSource);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddCreator(
 			AnnotationAssertion annotationAssertion, Person person) {
 		// TODO Auto-generated method stub

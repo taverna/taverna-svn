@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.sf.taverna.t2.annotation.AbstractAnnotatedThing;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.EditsRegistry;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -105,7 +105,7 @@ public abstract class AbstractActivity<ConfigType> extends
 	 */
 	protected void addInput(String portName, int portDepth,
 			boolean allowsLiteralValues,
-			List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes,
+			List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes,
 			Class<?> translatedElementClass) {
 		inputPorts.add(EditsRegistry.getEdits().buildActivityInputPort(
 				portName, portDepth, allowsLiteralValues,
