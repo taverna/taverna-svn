@@ -210,6 +210,10 @@ public class LocalRepository implements Repository {
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
+			for (Artifact systemArtifact : systemArtifacts) {
+				loaderMap.put(systemArtifact, new LocalArtifactClassLoader(this,
+						loader, systemArtifact));
+			}
 		}
 		initialize();
 	}
