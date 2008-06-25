@@ -23,10 +23,16 @@ public class OpenDataflowInfo {
 	}
 
 	public FileType getFileType() {
+		if (dataflowInfo == null) {
+			return null;
+		}
 		return dataflowInfo.getFileType();
 	}
 
 	public Date getLastModified() {
+		if (dataflowInfo == null) {
+			return null;
+		}
 		return dataflowInfo.getLastModified();
 	}
 
@@ -35,6 +41,9 @@ public class OpenDataflowInfo {
 	}
 
 	public Object getSource() {
+		if (dataflowInfo == null) {
+			return null;
+		}
 		return dataflowInfo.getCanonicalSource();
 	}
 
