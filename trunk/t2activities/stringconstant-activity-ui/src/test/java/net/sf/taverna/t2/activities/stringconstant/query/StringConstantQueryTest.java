@@ -3,7 +3,6 @@ package net.sf.taverna.t2.activities.stringconstant.query;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import net.sf.taverna.t2.partition.Query;
-import net.sf.taverna.t2.activities.stringconstant.query.StringConstantActivityItem;
 
 import org.junit.Test;
 

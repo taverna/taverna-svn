@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.Icon;
-import javax.swing.TransferHandler;
 
 import net.sf.taverna.t2.activities.wsdl.query.WSDLActivityItem;
 import net.sf.taverna.t2.partition.ActivityItem;

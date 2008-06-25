@@ -1,7 +1,8 @@
 package net.sf.taverna.t2.activities.stringconstant.query;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 public class StringConstantActivityItemTest {
 	
