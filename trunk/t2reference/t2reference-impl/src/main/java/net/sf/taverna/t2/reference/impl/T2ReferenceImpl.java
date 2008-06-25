@@ -131,6 +131,28 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	}
 
 	/**
+	 * Drill inside an error document reference to get the error one deeper than
+	 * this as long as it is at least depth 1.
+	 */
+	T2ReferenceImpl getDeeperErrorReference() {
+		if (getReferenceType().equals(T2ReferenceType.ErrorDocument)) {
+			if (getDepth() == 0) {
+				throw new AssertionError(
+						"Error identifier already has depth 0, cannot decrease");
+			}
+			T2ReferenceImpl result = new T2ReferenceImpl();
+			result.setContainsErrors(true);
+			result.setDepth(getDepth() - 1);
+			result.setLocalPart(getLocalPart());
+			result.setNamespacePart(getNamespacePart());
+			result.setReferenceType(T2ReferenceType.ErrorDocument);
+			return result;
+		}
+		throw new AssertionError(
+				"Attempt to get a deeper reference on something that isn't an error ref");
+	}
+
+	/**
 	 * Returns the identifier expressed as a {@link java.net.URI URI},
 	 * constructed based on the reference type. For references to ReferenceSet
 	 * this is
@@ -177,18 +199,25 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 		}
 		if (other instanceof T2ReferenceImpl) {
 			T2ReferenceImpl otherRef = (T2ReferenceImpl) other;
-			return (toUri().equals(otherRef.toUri()));
+			if (localPart.equals(otherRef.localPart)
+					&& namespacePart.equals(otherRef.namespacePart)
+					&& depth == otherRef.depth) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
 	}
 
 	/**
-	 * Use hashcode method from the URI representation of this bean
+	 * Use hashcode method from the string representation of namespace, local
+	 * and depth parts
 	 */
 	@Override
 	public int hashCode() {
-		return toUri().hashCode();
+		return (namespacePart + ":" + localPart + ":" + depth).hashCode();
 	}
 
 }

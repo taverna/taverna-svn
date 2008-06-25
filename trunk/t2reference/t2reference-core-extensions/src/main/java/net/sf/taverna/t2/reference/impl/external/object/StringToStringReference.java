@@ -6,7 +6,7 @@ import net.sf.taverna.t2.reference.ValueToReferenceConversionException;
 import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 
 /**
- * Convert a URL with http protocol to a HttpReference reference type
+ * Convert a String to a StringReference
  * 
  * @author Tom Oinn
  * 
@@ -17,7 +17,7 @@ public class StringToStringReference implements ValueToReferenceConverterSPI {
 	 * Can convert if the object is an instance of java.lang.String
 	 */
 	public boolean canConvert(Object o, ReferenceContext context) {
-		return (o instanceof String);
+		return (o instanceof java.lang.String);
 	}
 
 	/**

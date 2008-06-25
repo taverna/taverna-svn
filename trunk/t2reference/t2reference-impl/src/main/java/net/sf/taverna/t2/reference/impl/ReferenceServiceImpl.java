@@ -307,10 +307,56 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 *             one of the underlying sub-service exceptions.
 	 */
 	public Iterator<ContextualizedT2Reference> traverseFrom(T2Reference source,
-			int desiredDepth) {
+			int desiredDepth) throws ReferenceServiceException {
 		checkServices();
-		throw new ReferenceServiceException(new UnsupportedOperationException(
-				"Not implemented yet!"));
+		if (desiredDepth < 0) {
+			throw new ReferenceServiceException(
+					"Cannot traverse to a negative depth");
+		}
+		List<ContextualizedT2Reference> workingSet = new ArrayList<ContextualizedT2Reference>();
+		workingSet.add(new ContextualizedT2ReferenceImpl(source, new int[0]));
+		int currentDepth = source.getDepth();
+		while (currentDepth > desiredDepth) {
+			List<ContextualizedT2Reference> newSet = new ArrayList<ContextualizedT2Reference>();
+			for (ContextualizedT2Reference ci : workingSet) {
+				T2ReferenceImpl ref = (T2ReferenceImpl) ci.getReference();
+				switch (ref.getReferenceType()) {
+				case IdentifiedList:
+					try {
+						List<T2Reference> children = getListService().getList(
+								ref);
+						int position = 0;
+						for (T2Reference child : children) {
+							newSet.add(new ContextualizedT2ReferenceImpl(child,
+									addIndex(ci.getIndex(), position++)));
+						}
+					} catch (ListServiceException lse) {
+						throw new ReferenceServiceException(lse);
+					}
+					break;
+				case ReferenceSet:
+					throw new ReferenceServiceException(
+							"Should never be trying to drill inside a data document identifier");
+				case ErrorDocument:
+					newSet.add(new ContextualizedT2ReferenceImpl(ref
+							.getDeeperErrorReference(), addIndex(ci.getIndex(),
+							0)));
+					break;
+				default:
+					throw new ReferenceServiceException(
+							"Fallen off end of case statement, unknown reference type!");
+				}
+			}
+			currentDepth--;
+			workingSet = newSet;
+		}
+		return workingSet.iterator();
 	}
 
+	private static int[] addIndex(int[] current, int head) {
+		int[] result = new int[current.length + 1];
+		System.arraycopy(current, 0, result, 0, current.length);
+		result[current.length] = head;
+		return result;
+	}
 }

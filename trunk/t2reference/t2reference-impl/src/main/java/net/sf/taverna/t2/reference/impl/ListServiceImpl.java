@@ -76,7 +76,7 @@ public class ListServiceImpl extends AbstractListServiceImpl implements
 		}
 		try {
 			T2ReferenceImpl newReference = (T2ReferenceImpl) t2ReferenceGenerator
-					.nextListReference(containsErrors, depth);
+					.nextListReference(containsErrors, depth+1);
 			newList.setTypedId(newReference);
 			listDao.store(newList);
 			return newList;
