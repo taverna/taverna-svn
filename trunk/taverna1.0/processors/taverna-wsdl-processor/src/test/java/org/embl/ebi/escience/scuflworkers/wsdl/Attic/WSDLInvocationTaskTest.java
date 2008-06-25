@@ -10,6 +10,7 @@ import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
 
 import org.embl.ebi.escience.baclava.DataThing;
+import org.embl.ebi.escience.baclava.factory.DataThingFactory;
 import org.embl.ebi.escience.scufl.Processor;
 import org.embl.ebi.escience.scufl.ScuflException;
 import org.embl.ebi.escience.scuflworkers.testhelpers.WSDLBasedTestCase;
@@ -31,19 +32,22 @@ public class WSDLInvocationTaskTest extends WSDLBasedTestCase {
 	}
 	
 
+	@SuppressWarnings("unchecked")
 	public void testExecute() throws ScuflException, TaskExecutionException  {
 		Processor processor = new WSDLBasedProcessor(
 				null,
-				"guid",
-				TESTWSDL_BASE+"GUIDGenerator.wsdl",
-				"getGUID");
+				"echo",
+				"http://www.mygrid.org.uk/menagerie/xfire/Primatives-re?wsdl",
+				"echo");
 		ProcessorTask procTask = new ProcessorTask("id", new Flow(null, null),
 				processor, new LogLevel(LogLevel.NONE), "bob", "ctx");
 		WSDLInvocationTask task = new WSDLInvocationTask(processor);
-		Map result = task.execute(new HashMap(), procTask);
+		Map in = new HashMap();
+		in.put("msg", DataThingFactory.bake("fred"));
+		Map result = task.execute(in, procTask);
 		assertEquals("incorrect number of results", 2, result.size(	));
-		DataThing thing = (DataThing) result.get("return");
-		assertTrue("guid returned should be a string",
+		DataThing thing = (DataThing) result.get("out");
+		assertTrue("output returned should be a string",
 				thing.getDataObject() instanceof String);
 		assertNotNull("no attachmentlist", result.get("attachmentList"));
 	}
