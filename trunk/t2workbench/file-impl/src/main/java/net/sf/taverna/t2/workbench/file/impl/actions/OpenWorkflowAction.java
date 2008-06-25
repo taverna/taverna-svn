@@ -20,7 +20,6 @@ import net.sf.taverna.t2.workbench.file.impl.FileTypeFileFilter;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 
 import org.apache.log4j.Logger;
-import org.embl.ebi.escience.scuflui.shared.UIUtils;
 
 public class OpenWorkflowAction extends AbstractAction {
 
