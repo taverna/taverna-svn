@@ -1,3 +1,4 @@
 # Implementation classes of ExternalReferenceSPI go here, one per line
 net.sf.taverna.t2.reference.impl.external.file.FileReference
 net.sf.taverna.t2.reference.impl.external.http.HttpReference
+net.sf.taverna.t2.reference.impl.external.object.InlineStringReference
