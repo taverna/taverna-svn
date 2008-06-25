@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
+import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
 
 import org.w3c.dom.Document;
@@ -458,26 +459,7 @@ public class Bootstrap {
 	}
 
 	private static File findCache() {
-		String tavernaCache = System.getProperty("taverna.repository");
-		File cacheDir;
-		if (tavernaCache != null) {
-			cacheDir = new File(tavernaCache);
-		} else {
-			String TAVERNA_HOME = System.getProperty("taverna.home");
-			if (TAVERNA_HOME == null) {
-				System.err
-						.println("Could not locate a Taverna home / local repository");
-				return null;
-			}
-			cacheDir = new File(TAVERNA_HOME, "repository");
-		}
-		cacheDir.mkdirs();
-		if (!cacheDir.isDirectory()) {
-			System.err.println("Not a valid repository directory: " + cacheDir);
-			return null;
-		}
-		TAVERNA_CACHE = cacheDir.getAbsolutePath();
-		return cacheDir;
+		return ApplicationRuntime.getInstance().getLocalRepositoryDir();
 	}
 
 	private static String getProfileArtifactVersion(String groupId,
