@@ -21,8 +21,6 @@ public class ApplicationRuntime {
 
 	private static Logger logger = Logger.getLogger(ApplicationRuntime.class);
 
-	private static ApplicationRuntime instance;
-
 	private ApplicationConfig appConfig = ApplicationConfig.getInstance();
 
 	private File localRepositoryDir;
@@ -32,6 +30,10 @@ public class ApplicationRuntime {
 	private ApplicationUserHome appUserHome;
 
 	private Repository ravenRepository;
+
+	private static class ApplicationRuntimeHolder {
+		private static ApplicationRuntime instance = new ApplicationRuntime();
+	}
 
 	/**
 	 * Protected constructor, use {@link #getInstance()}.
@@ -46,11 +48,8 @@ public class ApplicationRuntime {
 	 * 
 	 * @return
 	 */
-	public static synchronized ApplicationRuntime getInstance() {
-		if (instance == null) {
-			instance = new ApplicationRuntime();
-		}
-		return instance;
+	public static ApplicationRuntime getInstance() {
+		return ApplicationRuntimeHolder.instance;
 	}
 
 	/**
@@ -146,9 +145,8 @@ public class ApplicationRuntime {
 			repository = new DummyRepository();
 			return repository;
 		}
-		repository = LocalRepository
-				.getRepository(getLocalRepositoryDir(), getClassLoader(),
-						getSystemArtifacts());
+		repository = LocalRepository.getRepository(getLocalRepositoryDir(),
+				getClassLoader(), getSystemArtifacts());
 		return repository;
 	}
 
@@ -169,11 +167,14 @@ public class ApplicationRuntime {
 				"plugins-api", "1.7-SNAPSHOT"));
 		artifacts.add(new BasicArtifact("uk.org.mygrid.taverna.raven",
 				"appconfig", "1.7-SNAPSHOT"));
-		
+
 		// External dependencies
-		artifacts.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));	
-		artifacts.add(new BasicArtifact("commons-httpclient", "commons-httpclient", "3.1"));	
-		artifacts.add(new BasicArtifact("commons-logging", "commons-logging", "1.0.4"));	
+		artifacts
+				.add(new BasicArtifact("commons-codec", "commons-codec", "1.2"));
+		artifacts.add(new BasicArtifact("commons-httpclient",
+				"commons-httpclient", "3.1"));
+		artifacts.add(new BasicArtifact("commons-logging", "commons-logging",
+				"1.0.4"));
 		artifacts.add(new BasicArtifact("jdom", "jdom", "1.0"));
 		artifacts.add(new BasicArtifact("log4j", "log4j", "1.2.12"));
 		return artifacts;
@@ -218,7 +219,7 @@ public class ApplicationRuntime {
 	}
 
 	public URL getSplashScreenURL() {
-		if (! appConfig.isShowingSplashscreen()) {
+		if (!appConfig.isShowingSplashscreen()) {
 			return null;
 		}
 		return getClass().getResource(LAUNCHER_SPLASHSCREEN_PNG);
