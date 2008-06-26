@@ -1,0 +1,13 @@
+.project
+.classpath
+.settings
+target
+reports
+javadoc
+.externalToolBuilders
+.checkstyle
+bin
+.DS_Store
+.hg
+.hgignore
+target-eclipse
