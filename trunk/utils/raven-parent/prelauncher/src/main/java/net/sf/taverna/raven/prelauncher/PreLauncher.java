@@ -83,7 +83,12 @@ public class PreLauncher {
 			BootstrapClassLoader bootstrapLoader = new BootstrapClassLoader(
 					getClass().getClassLoader());
 			setLaunchingClassLoader(bootstrapLoader);
+			if (Thread.currentThread().getContextClassLoader() == getClass()
+					.getClassLoader()) {
+				Thread.currentThread().setContextClassLoader(bootstrapLoader);
+			}
 		}
+
 		for (URL url : classPath) {
 			addURLToClassPath(url);
 		}
@@ -125,9 +130,11 @@ public class PreLauncher {
 	public BootstrapClassLoader getLaunchingClassLoader() {
 		if (launchingClassLoader == null) {
 			ClassLoader myClassLoader = getClass().getClassLoader();
+			if (myClassLoader == null) {
+				myClassLoader = ClassLoader.getSystemClassLoader();
+			}
 			if (myClassLoader instanceof BootstrapClassLoader) {
-				launchingClassLoader = (BootstrapClassLoader) getClass()
-						.getClassLoader();
+				launchingClassLoader = (BootstrapClassLoader) myClassLoader;
 			}
 		}
 		return launchingClassLoader;
