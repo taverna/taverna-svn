@@ -89,6 +89,10 @@ public class ZRavenComponent extends ZPane {
 			Element componentNameElement = e.getChild("name");
 			String componentName = componentNameElement.getTextTrim();
 			JComponent jc = getRoot().getNamedComponent(componentName);
+			if (jc == null) {
+				logger.error("Could not find named component: " + componentName);
+				return;
+			}
 			if (jc.getParent() != null) {
 				jc.getParent().remove(jc);
 			}
