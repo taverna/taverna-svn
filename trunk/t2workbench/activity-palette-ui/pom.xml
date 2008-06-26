@@ -29,6 +29,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+		
 		<dependency>
 			<groupId>net.sf.taverna.t2.workbench</groupId>
 			<artifactId>activity-palette-api</artifactId>
@@ -49,44 +50,6 @@
 			<version>0.3-SNAPSHOT</version>
 			<artifactId>partition</artifactId>
 		</dependency>
-
-		<!--  purely for testing purposes -->
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>wsdl-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>soaplab-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>stringconstant-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>biomart-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>beanshell-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>dataflow-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>localworker-activity-ui</artifactId>
-			<version>0.3-SNAPSHOT</version>
-		</dependency>
-		
 		
 		<dependency>
 			<groupId>javax.help</groupId>
@@ -98,15 +61,12 @@
 			<artifactId>workflowmodel-api</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2.workbench</groupId>
-			<artifactId>contextual-views</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 </project>
