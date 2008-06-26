@@ -14,10 +14,12 @@ import javax.swing.JToolBar;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.log.ConsoleLog;
 import net.sf.taverna.raven.log.Log;
 import net.sf.taverna.t2.ui.menu.MenuManager;
+import net.sf.taverna.t2.workbench.file.FileManager;
 
 import org.apache.log4j.Logger;
 
@@ -118,9 +120,19 @@ public class Workbench extends JFrame {
 	public static final synchronized Workbench getInstance() {
 		if (instance == null) {
 			instance = new Workbench();
-			instance.makeGUI();
+			instance.initialize();
 		}
 		return instance;
+	}
+
+	protected void initialize() {
+		makeGUI();
+		FileManager.getInstance().newDataflow();
+		SplashScreen splash = SplashScreen.getSplashScreen();
+		if (splash != null) {
+			splash.setClosable();
+			splash.requestClose();
+		}
 	}
 
 	public void exit() {
