@@ -8,6 +8,7 @@ import net.sf.taverna.t2.reference.AbstractExternalReference;
 import net.sf.taverna.t2.reference.DereferenceException;
 import net.sf.taverna.t2.reference.ReferenceContext;
 import net.sf.taverna.t2.reference.ReferencedDataNature;
+import net.sf.taverna.t2.reference.ValueCarryingExternalReference;
 
 /**
  * Contains and references a String value
@@ -15,7 +16,8 @@ import net.sf.taverna.t2.reference.ReferencedDataNature;
  * @author Tom Oinn
  * 
  */
-public class InlineStringReference extends AbstractExternalReference {
+public class InlineStringReference extends AbstractExternalReference implements
+		ValueCarryingExternalReference<String> {
 
 	// Hold the 'value' of this reference, probably the simplest backing store
 	// possible for an ExternalReferenceSPI implementation :)
@@ -84,5 +86,12 @@ public class InlineStringReference extends AbstractExternalReference {
 		return "string{" + contents + "}";
 	}
 
+	public String getValue() {
+		return getContents();
+	}
+
+	public Class<String> getValueType() {
+		return String.class;
+	}
 
 }

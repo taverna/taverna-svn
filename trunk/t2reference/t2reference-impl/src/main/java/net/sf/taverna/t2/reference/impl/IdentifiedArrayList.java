@@ -1,13 +1,12 @@
 package net.sf.taverna.t2.reference.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.ListIterator;
 
 import net.sf.taverna.t2.reference.IdentifiedList;
-import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * Implementation of IdentifiedList which delegates to an ArrayList for its

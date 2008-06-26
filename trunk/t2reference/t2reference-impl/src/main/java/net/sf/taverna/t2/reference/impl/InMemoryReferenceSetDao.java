@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.reference.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

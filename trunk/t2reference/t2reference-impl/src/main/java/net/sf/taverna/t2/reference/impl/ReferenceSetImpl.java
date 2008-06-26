@@ -4,7 +4,6 @@ import java.util.Set;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.reference.ReferenceSet;
-import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.h3.HibernateMappedEntity;
 
 /**

@@ -74,6 +74,41 @@ public interface ReferenceService {
 			throws ReferenceServiceException;
 
 	/**
+	 * Resolve the given identifier, building a POJO structure where the
+	 * non-list items are of the desired class. This makes of any external
+	 * references that can directly expose the appropriate object type, then, if
+	 * none are present in a given reference set, it attempts to locate a POJO
+	 * builder and uses the cheapest available reference to get an InputStream
+	 * and build the target object. If no appropriate builder or embedded value
+	 * can be found the process throws ReferenceServiceException, it also does
+	 * this if any error occurs during retrieval of a (potentially nested)
+	 * identifier.
+	 * <p>
+	 * This method will return a collection structure mirroring that of the
+	 * specified T2Reference, client code should use T2Reference.getDepth() to
+	 * determine the depth of this structure; a reference with depth of 0 means
+	 * that the object returned is of the specified class, one of depth 1 is a
+	 * list of this class and so on.
+	 * <p>
+	 * If the T2Reference contains or is an error this method will not retrieve
+	 * it, and instead throws ReferenceServiceException
+	 * 
+	 * @param id
+	 *            the T2Reference to render to a POJO
+	 * @param leafClass
+	 *            the java class for leaves in the resulting POJO structure
+	 * @param context
+	 *            a reference context, potentially used if required by the
+	 *            openStream methods of ExternalReferenceSPI implementations
+	 *            used as sources for the POJO construction
+	 * @return a java structure as defined above
+	 * @throws ReferenceServiceException
+	 *             if anything fails during this process
+	 */
+	public Object renderIdentifier(T2Reference id, Class<?> leafClass,
+			ReferenceContext context) throws ReferenceServiceException;
+
+	/**
 	 * The top level registration method is used to register either as yet
 	 * unregistered ErrorDocuments and ReferenceSets (if these are passed in and
 	 * already have an identifier this call does nothing) and arbitrarily nested

@@ -11,6 +11,7 @@ import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceServiceResolutionCallback;
 import net.sf.taverna.t2.reference.ReferenceSetService;
+import net.sf.taverna.t2.reference.StreamToValueConverterSPI;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 
@@ -33,6 +34,8 @@ public abstract class AbstractReferenceServiceImpl extends AbstractServiceImpl
 	protected ReferenceSetService referenceSetService = null;
 	protected ListService listService = null;
 	protected InstanceRegistry<ValueToReferenceConverterSPI> converterRegistry = null;
+	@SuppressWarnings("unchecked")
+	protected InstanceRegistry<StreamToValueConverterSPI> valueBuilderRegistry = null;
 
 	/**
 	 * Inject value to reference convertor SPI
@@ -40,6 +43,15 @@ public abstract class AbstractReferenceServiceImpl extends AbstractServiceImpl
 	public final void setConverterRegistry(
 			InstanceRegistry<ValueToReferenceConverterSPI> reg) {
 		this.converterRegistry = reg;
+	}
+
+	/**
+	 * Inject stream to value converter SPI
+	 */
+	@SuppressWarnings("unchecked")
+	public final void setValueBuilderRegistry(
+			InstanceRegistry<StreamToValueConverterSPI> reg) {
+		this.valueBuilderRegistry = reg;
 	}
 
 	/**

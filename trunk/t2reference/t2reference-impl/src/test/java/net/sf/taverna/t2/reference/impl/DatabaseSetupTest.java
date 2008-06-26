@@ -1,7 +1,5 @@
 package net.sf.taverna.t2.reference.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;

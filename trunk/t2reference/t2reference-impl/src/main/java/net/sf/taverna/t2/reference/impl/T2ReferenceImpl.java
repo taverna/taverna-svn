@@ -30,6 +30,33 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	private T2ReferenceType referenceType = T2ReferenceType.ReferenceSet;
 	private int depth = 0;
 
+	public T2ReferenceImpl() {
+		// Default constructor for Hibernate et al
+	}
+
+	/**
+	 * Construct a deep copy of the given T2Reference
+	 * 
+	 * @param source T2Reference to copy
+	 */
+	private T2ReferenceImpl(T2Reference source) {
+		super();
+		setNamespacePart(source.getNamespacePart());
+		setLocalPart(source.getLocalPart());
+		setContainsErrors(source.containsErrors());
+		setReferenceType(source.getReferenceType());
+		setDepth(source.getDepth());
+	}
+
+	public static T2ReferenceImpl getAsImpl(T2Reference source) {
+		if (source instanceof T2ReferenceImpl) {
+			return (T2ReferenceImpl)source;
+		}
+		else {
+			return new T2ReferenceImpl(source);
+		}
+	}
+	
 	/**
 	 * Return whether the identified entity either is or contains errors
 	 */
@@ -232,7 +259,8 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 
 	public synchronized String getCompactForm() {
 		if (this.compactForm == null) {
-			this.compactForm = getNamespacePart() + ":" + getLocalPart() + ":" + getDepth();
+			this.compactForm = getNamespacePart() + ":" + getLocalPart() + ":"
+					+ getDepth();
 		}
 		return this.compactForm;
 	}

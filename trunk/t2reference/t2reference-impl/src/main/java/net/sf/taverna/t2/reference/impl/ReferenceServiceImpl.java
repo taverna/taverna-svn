@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import net.sf.taverna.t2.reference.ContextualizedT2Reference;
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.ErrorDocumentServiceException;
@@ -18,8 +21,9 @@ import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.ReferenceServiceException;
 import net.sf.taverna.t2.reference.ReferenceSet;
 import net.sf.taverna.t2.reference.ReferenceSetServiceException;
+import net.sf.taverna.t2.reference.StreamToValueConverterSPI;
 import net.sf.taverna.t2.reference.T2Reference;
-import net.sf.taverna.t2.reference.T2ReferenceType;
+import net.sf.taverna.t2.reference.ValueCarryingExternalReference;
 import net.sf.taverna.t2.reference.ValueToReferenceConversionException;
 import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
 
@@ -31,6 +35,8 @@ import net.sf.taverna.t2.reference.ValueToReferenceConverterSPI;
  */
 public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 		implements ReferenceService {
+
+	private final Log log = LogFactory.getLog(ReferenceServiceImpl.class);
 
 	/**
 	 * The top level registration method is used to register either as yet
@@ -237,7 +243,9 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			ReferenceContext context) throws ReferenceServiceException {
 		checkServices();
 
-		if (id.getReferenceType().equals(T2ReferenceType.ReferenceSet)) {
+		switch (id.getReferenceType()) {
+
+		case ReferenceSet:
 			try {
 				ReferenceSet rs;
 				if (ensureTypes == null) {
@@ -250,36 +258,126 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			} catch (ReferenceSetServiceException rsse) {
 				throw new ReferenceServiceException(rsse);
 			}
-		} else if (id.getReferenceType().equals(T2ReferenceType.ErrorDocument)) {
+
+		case ErrorDocument:
 			try {
 				ErrorDocument ed = errorDocumentService.getError(id);
 				return ed;
 			} catch (ErrorDocumentServiceException edse) {
 				throw new ReferenceServiceException(edse);
 			}
-		} else if (id.getReferenceType().equals(T2ReferenceType.IdentifiedList)) {
+
+		case IdentifiedList:
 			try {
-				T2ReferenceImpl typedId;
-				if (id instanceof T2ReferenceImpl) {
-					typedId = (T2ReferenceImpl) id;
-				} else {
-					throw new ReferenceSetServiceException(
-							"Supplied or nested T2Reference not an instance of T2ReferenceImpl");
-				}
-				IdentifiedList<T2Reference> idList = listService
-						.getList(typedId);
+				IdentifiedList<T2Reference> idList = listService.getList(id);
 				// Construct a new list, and populate with the result of
 				// resolving each ID in turn
 				IdentifiedArrayList<Identified> newList = new IdentifiedArrayList<Identified>();
 				for (T2Reference item : idList) {
 					newList.add(resolveIdentifier(item, ensureTypes, context));
 				}
-				newList.setTypedId(typedId);
+				newList.setTypedId(T2ReferenceImpl.getAsImpl(id));
 				return newList;
 			} catch (ListServiceException lse) {
 				throw new ReferenceServiceException(lse);
 			}
-		} else {
+
+		default:
+			throw new ReferenceServiceException("Unsupported ID type : "
+					+ id.getReferenceType());
+		}
+	}
+
+	public Object renderIdentifier(T2Reference id, Class<?> leafClass,
+			ReferenceContext context) throws ReferenceServiceException {
+		// Check we have the services installed
+		checkServices();
+
+		// Reject if the source reference contains errors
+		if (id.containsErrors()) {
+			throw new ReferenceServiceException(
+					"Can't render an identifier which contains errors to a POJO");
+		}
+
+		// Attempt to find an appropriate StreamToValueConverterSPI instance to
+		// build the specified class
+		StreamToValueConverterSPI<?> converter = null;
+		if (valueBuilderRegistry != null) {
+			for (StreamToValueConverterSPI<?> stvc : valueBuilderRegistry) {
+				Class<?> builtClass = stvc.getPojoClass();
+				if (leafClass.isAssignableFrom(builtClass)) {
+					converter = stvc;
+					break;
+				}
+			}
+		}
+		if (converter == null) {
+			log.warn("No stream->value converters found for type '"
+					+ leafClass.getCanonicalName() + "'");
+		}
+
+		return renderIdentifierInner(id, leafClass, context, converter);
+	}
+
+	private Object renderIdentifierInner(T2Reference id, Class<?> leafClass,
+			ReferenceContext context, StreamToValueConverterSPI<?> converter)
+			throws ReferenceServiceException {
+		checkServices();
+
+		switch (id.getReferenceType()) {
+
+		case IdentifiedList:
+			try {
+				IdentifiedList<T2Reference> idList = listService.getList(id);
+				List<Object> result = new ArrayList<Object>();
+				for (T2Reference child : idList) {
+					result.add(renderIdentifierInner(child, leafClass, context,
+							converter));
+				}
+				return result;
+			} catch (ListServiceException lse) {
+				throw new ReferenceServiceException(lse);
+			}
+
+		case ReferenceSet:
+			try {
+				ReferenceSet rs = referenceSetService.getReferenceSet(id);
+				// Check that there are references in the set
+				if (rs.getExternalReferences().isEmpty()) {
+					throw new ReferenceServiceException(
+							"Can't render an empty reference set to a POJO");
+				}
+				// If we can't directly map to an appropriate value keep track
+				// of the cheapest reference from which to try to build the pojo
+				// from a stream
+				ExternalReferenceSPI cheapestReference = null;
+				float cheapestReferenceCost = 10.0f;
+				for (ExternalReferenceSPI ers : rs.getExternalReferences()) {
+					if (ers instanceof ValueCarryingExternalReference<?>) {
+						ValueCarryingExternalReference<?> vcer = (ValueCarryingExternalReference<?>) ers;
+						if (leafClass.isAssignableFrom(vcer.getValueType())) {
+							return vcer.getValue();
+						}
+					}
+					// Got here so this wasn't an appropriate value type
+					if (cheapestReference == null
+							|| ers.getResolutionCost() < cheapestReferenceCost) {
+						cheapestReference = ers;
+						cheapestReferenceCost = ers.getResolutionCost();
+					}
+				}
+				if (converter != null) {
+					return converter.renderFrom(cheapestReference
+							.openStream(context));
+				}
+			} catch (Exception e) {
+				throw new ReferenceServiceException(e);
+			}
+			throw new ReferenceServiceException(
+					"No converter found, and reference set didn't contain"
+							+ " an appropriate value carrying reference, cannot render to POJO");
+
+		default:
 			throw new ReferenceServiceException("Unsupported ID type : "
 					+ id.getReferenceType());
 		}
@@ -359,4 +457,5 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 		result[current.length] = head;
 		return result;
 	}
+
 }
