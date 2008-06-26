@@ -18,7 +18,7 @@ public class DataflowSelectionManager {
 	private static final DataflowSelectionManager instance = new DataflowSelectionManager();
 	
 	/**
-	 * Private constructor, use SelectionManager.getInstance().
+	 * Private constructor, use DataflowSelectionManager.getInstance().
 	 *
 	 */
 	private DataflowSelectionManager() {
