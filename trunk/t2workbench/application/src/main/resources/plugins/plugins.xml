@@ -19,22 +19,28 @@
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench"
-				artifactId="perspective-design" version="1.7-SNAPSHOT" />
-			<artifact groupId="net.sf.taverna.t2.workbench"
-				artifactId="contextual-views" version="0.1-SNAPSHOT" />
-			<artifact groupId="net.sf.taverna.t2.workbench"
-				artifactId="ui-impl" version="0.1-SNAPSHOT" />
-			<artifact groupId="net.sf.taverna.t2.workbench.views"
-				artifactId="graph" version="0.0.1-SNAPSHOT" />
-			<artifact groupId="net.sf.taverna.t2.workbench"
-				artifactId="file-translator" version="0.1-SNAPSHOT" />
-			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="file-impl" version="0.1-SNAPSHOT" />
 			<artifact groupId="net.sf.taverna.t2.workbench"
-				artifactId="activity-palette-ui" version="0.1-SNAPSHOT" />
+				artifactId="ui-impl" version="0.1-SNAPSHOT" />
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="menu-impl" version="0.1-SNAPSHOT" />
 
+
+			<artifact groupId="net.sf.taverna.t2.workbench.views"
+				artifactId="graph" version="0.0.1-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="activity-palette-ui" version="0.1-SNAPSHOT" />
+
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="perspective-design" version="1.7-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="contextual-views-impl" version="0.1-SNAPSHOT" />
+
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="perspective-results" version="0.1-SNAPSHOT" />
+
+
+			<!--  system artifacts -->
 
 			<artifact artifactId="saxpath" groupId="saxpath"
 				system="true" version="1.0-FCS" />
@@ -54,8 +60,8 @@
 			<version>2.0</version>
 		</application>
 	</plugin>
-	<!--
-		<plugin>
+
+	<plugin>
 		<name>all-activities</name>
 		<description>Taverna 2 activities</description>
 		<identifier>net.sf.taverna.t2.all-activities</identifier>
@@ -63,52 +69,56 @@
 		<provider>taverna.sf.net</provider>
 		<enabled>true</enabled>
 		<repositories>
-		<repository>file:///Users/stain/.m2/repository/</repository>
-		<repository>
-		http://www.mygrid.org.uk/maven/repository/
-		</repository>
-		<repository>
-		http://www.mygrid.org.uk/maven/snapshot-repository/
-		</repository>
-		<repository>http://mirrors.sunsite.dk/maven2/</repository>
-		<repository>http://www.ibiblio.org/maven2/</repository>
+			<repository>file:///Users/stain/.m2/repository/</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</repository>
+			<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			<repository>http://www.ibiblio.org/maven2/</repository>
 		</repositories>
 		<profile>
-		<artifact groupId="net.sf.taverna.t2"
-		artifactId="all-activities" version="0.3-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="all-activities" version="0.3-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="all-activity-uis" version="0.3-SNAPSHOT" />
 		</profile>
 		<application>
-		<version>2.0</version>
+			<version>2.0</version>
 		</application>
-		</plugin>
-		<plugin>
+	</plugin>
+	<plugin>
 		<name>all-activity-translators</name>
 		<description>Taverna 2 Workbench</description>
 		<identifier>
-		net.sf.taverna.t2.all-activity-translators
+			net.sf.taverna.t2.all-activity-translators
 		</identifier>
 		<version>0.1-SNAPSHOT</version>
 		<provider>taverna.sf.net</provider>
 		<enabled>true</enabled>
 		<repositories>
-		<repository>file:///Users/stain/.m2/repository/</repository>
-		<repository>
-		http://www.mygrid.org.uk/maven/repository/
-		</repository>
-		<repository>
-		http://www.mygrid.org.uk/maven/snapshot-repository/
-		</repository>
-		<repository>http://mirrors.sunsite.dk/maven2/</repository>
-		<repository>http://www.ibiblio.org/maven2/</repository>
+			<repository>file:///Users/stain/.m2/repository/</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/repository/
+			</repository>
+			<repository>
+				http://www.mygrid.org.uk/maven/snapshot-repository/
+			</repository>
+			<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			<repository>http://www.ibiblio.org/maven2/</repository>
 		</repositories>
 		<profile>
-		<artifact groupId="net.sf.taverna.t2"
-		artifactId="all-activity-translators" version="0.3-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2"
+				artifactId="all-activity-translators" version="0.3-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="file-translator" version="0.1-SNAPSHOT" />
 		</profile>
 		<application>
-		<version>2.0</version>
+			<version>2.0</version>
 		</application>
-		</plugin>
-	-->
+	</plugin>
+
 </plugins>
 
