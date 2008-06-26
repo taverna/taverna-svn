@@ -279,10 +279,11 @@ public class Profile extends AbstractArtifactFilter {
 
 	/**
 	 * Get the subset of {@link #getArtifacts()} that is marked as being system
-	 * artifacts by this profile. A system artifact is supposed to be put into
-	 * the {@link net.sf.taverna.raven.appconfig.bootstrap.BootstrapClassLoader} and thereby
-	 * available even to artifacts that don't declare it as a dependency. This
-	 * is mainly useful for global XML parsers.
+	 * artifacts by this profile. A system artifact is supposed to be added by
+	 * {@link net.sf.taverna.raven.prelauncher.PreLauncher#addURLToClassPath(java.net.URL)}
+	 * and thereby available even to artifacts that don't declare it as a
+	 * dependency. This is mainly useful for global XML parsers and similar
+	 * implementations that are discovered by non-Raven SPIs.
 	 * 
 	 * @return a copy of the internal Set of system Artifacts
 	 */
