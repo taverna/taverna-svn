@@ -38,6 +38,21 @@
 				</property>
 			</bean>
 		</property>
+		<property name="valueBuilderRegistry">
+			<bean
+				class="net.sf.taverna.platform.spring.InstanceRegistryFactoryBean">
+				<property name="spiRegistry">
+					<bean
+						class="net.sf.taverna.platform.spring.SpiRegistryFactoryBean">
+						<property name="repository">
+							<ref bean="raven.repository" />
+						</property>
+						<property name="spiClassName"
+							value="net.sf.taverna.t2.reference.StreamToValueConverterSPI" />
+					</bean>
+				</property>
+			</bean>
+		</property>
 	</bean>
 
 </beans>
