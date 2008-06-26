@@ -1,5 +1,6 @@
 package net.sf.taverna.t2.workflowmodel.serialization.xml;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,32 +9,35 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.serialization.DeserializationException;
 
+import org.apache.log4j.Logger;
 import org.jdom.Element;
 
 public class ActivityXMLDeserializer extends AbstractXMLDeserializer {
 	private static ActivityXMLDeserializer instance = new ActivityXMLDeserializer();
 
-	private ActivityXMLDeserializer() {
-
-	}
-
+	private static Logger logger = Logger.getLogger(ActivityXMLDeserializer.class);
+	
 	public static ActivityXMLDeserializer getInstance() {
 		return instance;
 	}
 
+	protected ActivityXMLDeserializer() {
+
+	}
+
 	@SuppressWarnings("unchecked")
-	public Activity<?> deserializeActivity(Element element,Map<String,Element> innerDataflowElements)
-			throws ActivityConfigurationException, ClassNotFoundException,
-			InstantiationException, IllegalAccessException, EditException, DeserializationException {
+	public Activity<?> deserializeActivity(Element element,
+			Map<String, Element> innerDataflowElements, ClassLoader classLoader) throws ClassNotFoundException, InstantiationException, IllegalAccessException, EditException, DeserializationException, ActivityConfigurationException {
 		Element ravenElement = element.getChild(RAVEN, T2_WORKFLOW_NAMESPACE);
-		ClassLoader cl = XMLDeserializerImpl.class.getClassLoader();
+		ClassLoader cl = classLoader;
+		if (cl == null) {
+			cl = getClass().getClassLoader();
+		}
 		if (ravenElement != null) {
 			try {
 				cl = getRavenLoader(ravenElement);
 			} catch (Exception ex) {
-				System.out.println("Exception loading raven classloader "
-						+ "for Activity instance");
-				ex.printStackTrace();
+				logger.warn("Could not load raven classloader " + ravenElement + " for activity", ex);
 				// TODO - handle this properly, either by logging correctly or
 				// by going back to the repository and attempting to fetch the
 				// offending missing artifacts
@@ -79,6 +83,12 @@ public class ActivityXMLDeserializer extends AbstractXMLDeserializer {
 
 		
 		return activity;
+	}
+
+	public Activity<?> deserializeActivity(Element element,Map<String,Element> innerDataflowElements)
+			throws ActivityConfigurationException, ClassNotFoundException,
+			InstantiationException, IllegalAccessException, EditException, DeserializationException {
+		return deserializeActivity(element, innerDataflowElements, null);
 	}
 
 	private Object resolveDataflowReference(String ref,
