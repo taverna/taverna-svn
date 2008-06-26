@@ -13,13 +13,10 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.text.Collator;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
-import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -36,14 +33,16 @@ import net.sf.taverna.t2.partition.SetModelChangeListener;
  * updated the {@link Query}s are rerun which will update the display
  * 
  * @author Ian Dunlop
+ * @author Stuart Owen
  * 
  */
+@SuppressWarnings("serial")
 public class ActivityTree extends JTree implements DragGestureListener,
 		DropTargetListener, DragSourceListener {
 
 	/** A query for each type of activity */
 	private List<Query<?>> queryList;
-	private ActivityItem activityItem;
+	// private ActivityItem activityItem;
 	private DragSource dragSource;
 
 	public ActivityTree(TreeModel newModel) {
@@ -55,7 +54,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		setExpandsSelectedPaths(false);
 		setDragEnabled(false);
 		setScrollsOnExpand(false);
-		addQueries(this.getModel());
+		addQueries(getModel());
 	}
 
 	/**
@@ -80,22 +79,18 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	 * user selected filter.
 	 */
 	private void doQueries() {
-		for (Query<?> query : queryList) {
-			query
-					.addSetModelChangeListener((SetModelChangeListener) ((RootPartition) this.treeModel)
-							.getSetModelChangeListener());
-		}
+		
 		for (final Query<?> query : queryList) {
-			new Thread("Activity query") {
+			new Thread("Activity query:"+query.toString()) {
 
 				@Override
 				public void run() {
 					query.doQuery();
 				}
-
 			}.start();
 
 		}
+
 	}
 
 	@Override
@@ -106,32 +101,9 @@ public class ActivityTree extends JTree implements DragGestureListener,
 	public void setModel(TreeModel model) {
 		if (treeModel == model)
 			return;
-		if (treeModelListener == null)
-			treeModelListener = new TreeModelHandler() {
-				@Override
-				public void treeNodesInserted(final TreeModelEvent ev) {
-					if (ev.getChildren()[0] instanceof Partition == false) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								TreePath path = ev.getTreePath();
-								setExpandedState(path, false);
-								// fireTreeExpanded(path);
-							}
-						});
-					}
 
-				}
-
-			};
-		if (model != null) {
-			model.addTreeModelListener(treeModelListener);
-		}
 		TreeModel oldValue = treeModel;
 		treeModel = model;
-		// if (queryList != null) {
-		// doQueries();
-		// }
-		RootPartition root = (RootPartition) getModel().getRoot();
 
 		firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
 	}
@@ -145,7 +117,7 @@ public class ActivityTree extends JTree implements DragGestureListener,
 		TreePath selectionPath = this.getSelectionPath();
 		Object lastPathComponent = selectionPath.getLastPathComponent();
 		if (lastPathComponent instanceof ActivityItem) {
-			activityItem = (ActivityItem) lastPathComponent;
+			ActivityItem activityItem = (ActivityItem) lastPathComponent;
 			dragSource.startDrag(dge, DragSource.DefaultMoveNoDrop, null,
 					new Point(0, 0), activityItem.getActivityTransferable(),
 					this);

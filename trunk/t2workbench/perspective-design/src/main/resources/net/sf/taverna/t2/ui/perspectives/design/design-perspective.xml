@@ -14,12 +14,12 @@
 				<left>
 					<znode
 						classname="net.sf.taverna.zaria.ZSplitPane">
-						<split ratio="0.4654178674351585"
+						<split ratio="0.7"
 							orientation="vertical">
 							<right>
 								<znode
 									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<namedcomponent scroll="true">
+									<namedcomponent scroll="false">
 										<name>contextualview</name>
 									</namedcomponent>
 								</znode>

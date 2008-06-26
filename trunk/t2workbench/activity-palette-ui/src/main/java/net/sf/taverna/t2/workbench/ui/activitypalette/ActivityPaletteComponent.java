@@ -1,30 +1,35 @@
 package net.sf.taverna.t2.workbench.ui.activitypalette;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.help.CSH;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreeModel;
 
 import net.sf.taverna.t2.partition.ActivityItem;
-import net.sf.taverna.t2.partition.Partition;
 import net.sf.taverna.t2.partition.ActivityQueryFactory;
 import net.sf.taverna.t2.partition.AddQueryActionHandler;
 import net.sf.taverna.t2.partition.PartitionAlgorithm;
@@ -47,8 +52,10 @@ import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
  * properties
  * 
  * @author Ian Dunlop
+ * @author Stuart Owen
  * 
  */
+@SuppressWarnings("serial")
 public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	/** All the available activities filtered by the selected properties */
 	private JTree activityTree;
@@ -59,44 +66,44 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * then reconfigures the tree model with a different set of
 	 * {@link PartitionAlgorithm}s
 	 */
-	private JMenu algorithmMenu;
-	/** When a query is run display the type in this label next to the query menu */
-	private JLabel queryLabel;
-	private JMenu sortMenu;
-	private JMenu addQueryMenu;
+	private JMenu mainMenu;
 	private RootPartition<?> rootPartition;
+	private List<PartitionAlgorithm<?>> selectedPartitions = new ArrayList<PartitionAlgorithm<?>>();
+	JMenu firstMenu;
+	JMenu secondMenu;
+	Map<PartitionAlgorithm<?>,JMenuItem> firstAlgorithmToMenuItemMap = new HashMap<PartitionAlgorithm<?>,JMenuItem>();
+	Map<PartitionAlgorithm<?>,JMenuItem> secondAlgorithmToMenuItemMap = new HashMap<PartitionAlgorithm<?>,JMenuItem>();
+	private static ActivityPaletteComponent instance = new ActivityPaletteComponent();
 
+
+	public static ActivityPaletteComponent getInstance() {
+		return instance;
+	}
 	/**
 	 * Sets the layout as {@link BorderLayout}. Then calls
 	 * {@link #initialise()} to create the {@link ActivityTree}. Adds a
 	 * {@link JMenuBar} to allow the user to filter the activities
 	 */
-	public ActivityPaletteComponent() {
+	private ActivityPaletteComponent() {
 		CSH
 				.setHelpIDString(this,
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent");
 		setLayout(new BorderLayout());
 		initialise();
-		createAlgorithmMenu();
-		createQueryMenu();
+		createMainMenu();
 		JPanel menuPanel = new JPanel();
-		menuPanel.setLayout(new FlowLayout());
+		menuPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		JMenuBar menuBar = new JMenuBar();
 		CSH
 				.setHelpIDString(
 						menuBar,
 						"net.sf.taverna.t2.workbench.ui.activitypalette.ActivityPaletteComponent-menuBar");
-		menuBar.add(algorithmMenu);
-		menuBar.add(addQueryMenu);
-//		menuBar.add(sortMenu);
-		// add(menuBar, BorderLayout.PAGE_START);
-		menuBar.setVisible(true);
-		// add(queryLabel, BorderLayout.PAGE_START);
-		// FIXME needs some gridbag style sorting out to get the query in
-		// correct place
-//		menuPanel.add(queryLabel, FlowLayout.LEFT);
-		menuPanel.add(menuBar, FlowLayout.LEFT);
+		menuBar.add(mainMenu);
 		
+		menuBar.setVisible(true);
+
+		menuPanel.add(menuBar);
+
 		add(menuPanel, BorderLayout.PAGE_START);
 		add(new JScrollPane(activityTree), BorderLayout.CENTER);
 	}
@@ -114,21 +121,21 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 		propertyExtractorRegistry = PropertyExtractorSPIRegistry.getInstance();
 		rootPartition = getPartition(propertyExtractorRegistry);
 		initQueries(rootPartition);
-//		createSorts();
+		// createSorts();
 		activityTree = new ActivityTree(rootPartition);
 		activityTree.setCellRenderer(new ActivityTreeCellRenderer());
 		((RootPartition) activityTree.getModel().getRoot())
-		.setChildPartitionOrder(new Comparator<String>() {
+				.setChildPartitionOrder(new Comparator<String>() {
 
-			public int compare(String o1, String o2) {
-				// TODO Auto-generated method stub
-				if (o1.compareTo(o2) > 0) {
-					return 1;
-				}
-				return 0;
-			}
+					public int compare(String o1, String o2) {
+						// TODO Auto-generated method stub
+						if (o1.compareTo(o2) > 0) {
+							return 1;
+						}
+						return 0;
+					}
 
-		});
+				});
 	}
 
 	/**
@@ -142,7 +149,7 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * 
 	 * @param partition
 	 */
-	private void initQueries(RootPartition partition) {
+	private void initQueries(RootPartition<?> partition) {
 
 		List<Query<?>> queries = QueryFactoryRegistry.getInstance()
 				.getQueries();
@@ -161,104 +168,117 @@ public class ActivityPaletteComponent extends JPanel implements UIComponentSPI {
 	 * {@link Query}s. When a query is selected the type is displayed in a
 	 * {@link JLabel} next to the drop down
 	 */
-	private void createAlgorithmMenu() {
-		queryLabel = new JLabel();
-		algorithmMenu = new JMenu("Query by...");
-		algorithmMenu
+	private void createMainMenu() {
+		firstMenu = new JMenu("First grouping ...");
+		secondMenu = new JMenu("Second grouping ...");
+		ButtonGroup firstGroup = new ButtonGroup();
+		ButtonGroup secondGroup = new ButtonGroup();
+
+		mainMenu = new JMenu("Temp Configure Menu ...");
+		mainMenu
 				.setToolTipText("Open this menu and select a property to query the activities");
-		algorithmMenu.setMnemonic(KeyEvent.VK_Q);
+		mainMenu.setMnemonic(KeyEvent.VK_Q);
 		for (final PartitionAlgorithm<?> algorithm : getAlgorithms()) {
 
 			if (algorithm instanceof LiteralValuePartitionAlgorithm) {
-				JMenuItem item = new JMenuItem(
-						((LiteralValuePartitionAlgorithm) algorithm)
-								.getPropertyName());
-				item.addActionListener(new AbstractAction() {
+				final LiteralValuePartitionAlgorithm litAlgorithm = (LiteralValuePartitionAlgorithm)algorithm;
+				
+				final JMenuItem item1 = new JRadioButtonMenuItem();
+				final JMenuItem item2 = new JRadioButtonMenuItem();
+				
+				firstAlgorithmToMenuItemMap.put(litAlgorithm,item1);
+				secondAlgorithmToMenuItemMap.put(litAlgorithm, item2);
+				
+				Action selectItemAction = new AbstractAction() {
+
+					private static final long serialVersionUID = -6640292235035043107L;
+
 					public void actionPerformed(ActionEvent e) {
-						List<PartitionAlgorithm<?>> algList = new ArrayList<PartitionAlgorithm<?>>(
-								0);
-						algList.add(algorithm);
-						RootPartition<ActivityItem> root = (RootPartition<ActivityItem>) activityTree
-								.getModel();
-						root.setPartitionAlgorithmList(algList);
-						queryLabel
-								.setText(((LiteralValuePartitionAlgorithm) algorithm)
-										.getPropertyName());
+						if (e.getSource() instanceof JMenuItem) {
+							handleSelectedPartition(e.getSource(),litAlgorithm);
+						}
 					}
-				});
-				algorithmMenu.add(item);
+
+					private void handleSelectedPartition(Object source,PartitionAlgorithm<?>alg) {
+						if (source == item1) {
+							secondAlgorithmToMenuItemMap.get(selectedPartitions.get(0)).setEnabled(true);
+							selectedPartitions.set(0, alg);
+							secondAlgorithmToMenuItemMap.get(alg).setEnabled(false);
+						}
+						if (source == item2) {
+							firstAlgorithmToMenuItemMap.get(selectedPartitions.get(1)).setEnabled(true);
+							selectedPartitions.set(1, alg);
+							firstAlgorithmToMenuItemMap.get(alg).setEnabled(false);
+						}	
+						
+						final RootPartition<ActivityItem> root = (RootPartition<ActivityItem>) activityTree.getModel();
+						final List<PartitionAlgorithm<?>> partitions = new ArrayList<PartitionAlgorithm<?>>();
+						for (PartitionAlgorithm<?> selectedAlgorithm : selectedPartitions) {
+							if (!(selectedAlgorithm instanceof NoneSelectedPartitionAlgorithm)) {
+								partitions.add(selectedAlgorithm);
+							}
+						}
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								Cursor oldCursor = getCursor();
+								Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+								setCursor(hourglassCursor);
+								root.setPartitionAlgorithmList(partitions);
+								setCursor(oldCursor);
+							}
+						});
+						
+					}
+				};
+				item1.setAction(selectItemAction);
+				item2.setAction(selectItemAction);
+				item1.setText(litAlgorithm.getPropertyName());
+				item2.setText(litAlgorithm.getPropertyName());
+				if (!(litAlgorithm instanceof NoneSelectedPartitionAlgorithm)) firstMenu.add(item1);
+				secondMenu.add(item2);
+				firstGroup.add(item1);
+				secondGroup.add(item2);
+				
+				if (litAlgorithm.getPropertyName().equalsIgnoreCase("type")) {
+					selectedPartitions.add(0,litAlgorithm);
+					item1.setSelected(true);
+					item2.setEnabled(false);
+				}
+				if (litAlgorithm instanceof NoneSelectedPartitionAlgorithm) {
+					selectedPartitions.add(litAlgorithm);
+					item2.setSelected(true);
+				}
 			}
 		}
+		
+		mainMenu.add(createAddActivity());
+		mainMenu.addSeparator();
+		mainMenu.add(firstMenu);
+		mainMenu.add(secondMenu);
+
 	}
-private void createQueryMenu() {
-		addQueryMenu = new JMenu("Add...");
+
+	
+
+	private JMenu createAddActivity() {
+		JMenu addQueryMenu = new JMenu("Add...");
 		addQueryMenu.setToolTipText("Open this menu to add a new Query");
 		for (QueryFactory factory : QueryFactoryRegistry.getInstance()
 				.getInstances()) {
 			if (factory instanceof ActivityQueryFactory) {
 				ActivityQueryFactory af = (ActivityQueryFactory) factory;
 				if (af.hasAddQueryActionHandler()) {
-					AddQueryActionHandler handler = af.getAddQueryActionHandler();
-					handler.setSetModelChangeListener((SetModelChangeListener<ActivityItem>)rootPartition.getSetModelChangeListener());
+					AddQueryActionHandler handler = af
+							.getAddQueryActionHandler();
+					handler
+							.setSetModelChangeListener((SetModelChangeListener<ActivityItem>) rootPartition
+									.getSetModelChangeListener());
 					addQueryMenu.add(handler);
 				}
 			}
 		}
+		return addQueryMenu;
 	}
-
-	private void createSorts() {
-		
-		sortMenu = new JMenu("Sort by...");
-		
-		JMenuItem item = new JMenuItem("Activity type");
-		item.addActionListener(new AbstractAction() {
-
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				Collator instance = Collator.getInstance();
-				((RootPartition) activityTree.getModel().getRoot())
-						.setChildPartitionOrder(new Comparator<String>() {
-
-							public int compare(String o1, String o2) {
-								// TODO Auto-generated method stub
-								if (o1.compareTo(o2) > 0) {
-									return 1;
-								}
-								return 0;
-							}
-
-						});
-			}
-			
-		});
-		sortMenu.add(item);
-		
-//		JMenuItem item2 = new JMenuItem("Activities");
-//		item2.addActionListener(new AbstractAction() {
-//
-//			public void actionPerformed(ActionEvent e) {
-//				System.out.println("sorting");
-////				listAllChildren((RootPartition)activityTree.getModel());
-//				sortAllPartitionChildren((RootPartition)activityTree.getModel());
-//			}
-//			
-//		});
-//		sortMenu.add(item2);
-	}
-	
-//	private void sortAllPartitionChildren(Partition child) {
-//		for (Object kid:child.getChildren()) {
-//			sortAllPartitionChildren((Partition) kid);
-//		}
-//		Object partitionValue = child.getPartitionValue();
-//		if (partitionValue != null) {			
-//			System.out.println("partition value: " + partitionValue.toString());
-//		} else {
-//			System.out.println("value was null");
-//		}
-//		child.sortItems();
-//	}
-	
 
 	public ImageIcon getIcon() {
 		// TODO Auto-generated method stub
@@ -310,15 +330,18 @@ private void createQueryMenu() {
 		List<PartitionAlgorithmSetSPI> instances = PartitionAlgorithmSetSPIRegistry
 				.getInstance().getInstances();
 		Set<PartitionAlgorithm<?>> partitionAlgorithmSet = new HashSet<PartitionAlgorithm<?>>();
+		
 		for (PartitionAlgorithmSetSPI instance : instances) {
 			Set<PartitionAlgorithm<?>> partitonAlgorithms = instance
 					.getPartitionAlgorithms();
 			partitionAlgorithmSet.addAll(partitonAlgorithms);
 		}
 		List<PartitionAlgorithm<?>> partitionAlgorithmList = new ArrayList<PartitionAlgorithm<?>>();
+		partitionAlgorithmList.add(new NoneSelectedPartitionAlgorithm());
 		for (PartitionAlgorithm<?> algorithm : partitionAlgorithmSet) {
 			partitionAlgorithmList.add(algorithm);
 		}
+		
 		return partitionAlgorithmList;
 	}
 

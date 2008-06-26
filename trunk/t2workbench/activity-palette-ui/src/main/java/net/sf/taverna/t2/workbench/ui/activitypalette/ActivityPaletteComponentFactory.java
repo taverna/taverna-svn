@@ -15,7 +15,7 @@ import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 public class ActivityPaletteComponentFactory implements UIComponentFactorySPI {
 
 	public UIComponentSPI getComponent() {
-		return new ActivityPaletteComponent();
+		return ActivityPaletteComponent.getInstance();
 	}
 
 	public ImageIcon getIcon() {
