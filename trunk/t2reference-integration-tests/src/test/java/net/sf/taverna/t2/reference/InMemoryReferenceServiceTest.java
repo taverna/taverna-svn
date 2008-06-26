@@ -26,9 +26,9 @@ public class InMemoryReferenceServiceTest {
 	@Test
 	public void testInit() {
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"inMemoryReferenceServiceContext.xml");
+				"inMemoryReferenceServiceTestContext.xml");
 		ReferenceService rs = (ReferenceService) context
-				.getBean("referenceService");
+				.getBean("t2reference.service.referenceService");
 		System.out.println("Created reference service implementation :"
 				+ rs.getClass().getCanonicalName());
 	}

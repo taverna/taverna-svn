@@ -26,12 +26,12 @@ public class ReferenceSetServiceAugmenationSynchLockTest {
 		// see the context definition itself as that's really the test case
 		// rather than this code
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"referenceSetServiceTestContext.xml");
+				"referenceSetServiceAugmentationSynchLockTestContext.xml");
 
 		// Get the reference set service object from the context. At this point
 		// it will be wired and configured ready to use.
 		ReferenceSetService rss = (ReferenceSetService) context
-				.getBean("referenceSetService");
+				.getBean("t2reference.service.referenceSetService");
 
 		ReferenceSet rs = (ReferenceSet) context.getBean("referenceSet");
 

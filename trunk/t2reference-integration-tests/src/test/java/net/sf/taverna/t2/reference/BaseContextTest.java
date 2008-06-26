@@ -24,9 +24,9 @@ public class BaseContextTest {
 	public void doTest() {
 
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"baseContextTest1.xml");
+				"baseContextTestContext.xml");
 
-		Repository rep = (Repository) context.getBean("ravenRepository");
+		Repository rep = (Repository) context.getBean("raven.repository");
 
 		Artifact a = new BasicArtifact("net.sf.taverna.t2", "t2reference-impl",
 				"0.1-SNAPSHOT");

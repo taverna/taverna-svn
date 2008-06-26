@@ -10,15 +10,12 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Tests object registration and identity traversal operations of the
- * ReferenceServiceImpl through spring backed by the InMemory...Dao
- * implementations
+ * Tests that we can register a large string as a reference in the database,
+ * exercising the text sql type
  * 
  * @author Tom Oinn
  */
-public class RegistrationAndTraversalTest {
-
-	String[] strings = new String[] { "foo", "bar", "urgle", "wibble" };
+public class RegisterLargeStringTest {
 
 	@SuppressWarnings("unused")
 	private ReferenceContext dummyContext = new ReferenceContext() {
@@ -36,18 +33,32 @@ public class RegistrationAndTraversalTest {
 
 		List<String> objectsToRegister = new ArrayList<String>();
 
-		for (String item : strings) {
-			objectsToRegister.add(item);
-		}
+		String largeString = getLargeString();
+		System.out.println(largeString.length());
+		objectsToRegister.add(largeString);
+		objectsToRegister.add(largeString);
+		objectsToRegister.add(largeString);
+		objectsToRegister.add(largeString);
+		objectsToRegister.add(largeString);
+		objectsToRegister.add(largeString);
+		
 		
 		T2Reference ref = rs.register(objectsToRegister, 1, true, dummyContext);
 		System.out.println(ref);
-		
-		Iterator<ContextualizedT2Reference> refIter = rs.traverseFrom(ref,0);
+
+		Iterator<ContextualizedT2Reference> refIter = rs.traverseFrom(ref, 0);
 		while (refIter.hasNext()) {
 			System.out.println(refIter.next());
 		}
-		
+
+	}
+	
+	private static String getLargeString() {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < 100000; i++) {
+			sb.append("abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde\n");
+		}
+		return sb.toString();
 	}
 
 }

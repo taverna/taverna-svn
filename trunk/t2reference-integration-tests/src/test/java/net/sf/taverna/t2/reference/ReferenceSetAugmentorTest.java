@@ -24,13 +24,13 @@ public class ReferenceSetAugmentorTest {
 		// see the context definition itself as that's really the test case
 		// rather than this code
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"referenceSetAugmentorTestContext1.xml");
+				"referenceSetAugmentorTestContext.xml");
 
 		// Get the pre-baked reference set
 		ReferenceSet rs = (ReferenceSet) context.getBean("referenceSet");
 
 		ReferenceSetAugmentor aug = (ReferenceSetAugmentor) context
-				.getBean("referenceSetAugmentor");
+				.getBean("t2reference.augmentor");
 
 		ReferenceContext refContext = new ReferenceContext() {
 			public <T> List<? extends T> getEntities(Class<T> arg0) {

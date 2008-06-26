@@ -29,9 +29,9 @@ public class ReferenceServiceTest {
 	@Test
 	public void testInit() {
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"referenceServiceTestContext1.xml");
+				"referenceServiceTestContext.xml");
 		ReferenceService rs = (ReferenceService) context
-				.getBean("referenceService");
+				.getBean("t2reference.service.referenceService");
 		System.out.println("Created reference service implementation :"
 				+ rs.getClass().getCanonicalName());
 	}
@@ -40,9 +40,9 @@ public class ReferenceServiceTest {
 	public void testURLRegistration() throws MalformedURLException {
 		URL testUrl = new URL("http://www.ebi.ac.uk/~tmo/patterns.xml");
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"referenceServiceTestContext1.xml");
+				"referenceServiceTestContext.xml");
 		ReferenceService rs = (ReferenceService) context
-				.getBean("referenceService");
+				.getBean("t2reference.service.referenceService");
 		for (int i = 0; i < 10; i++) {
 			long startTime = System.currentTimeMillis();
 			T2Reference ref = rs.register(testUrl, 0, true, dummyContext);
@@ -60,13 +60,15 @@ public class ReferenceServiceTest {
 	 */
 	public void testSaturatedReadWriteCycle() throws MalformedURLException {
 		int concurrentThreads = 5;
-		final int jobsPerThread = 3000;
+		final int jobsPerThread = 1000;
 		int joinPoints = 10;
 		final URL testUrl = new URL("http://www.ebi.ac.uk/~tmo/patterns.xml");
 		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
-				"referenceServiceTestContext1.xml");
+				"referenceServiceTestContext.xml");
+		//ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+		//				"inMemoryReferenceServiceContextWithCoreExtensions.xml");
 		final ReferenceService rs = (ReferenceService) context
-				.getBean("referenceService");
+				.getBean("t2reference.service.referenceService");
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			private int lastCount = getCount();
