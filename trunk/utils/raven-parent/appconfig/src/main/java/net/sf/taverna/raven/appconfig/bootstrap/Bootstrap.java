@@ -16,10 +16,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.prelauncher.BootstrapLocation;
+import net.sf.taverna.raven.prelauncher.PreLauncher;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -27,6 +28,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class Bootstrap {
+
+	private static final PreLauncher preLauncher = PreLauncher.getInstance();
+
+	private static Logger logger = Logger.getLogger(Bootstrap.class);
 
 	public static final String VERSION = "1.7.1";
 
@@ -40,11 +45,10 @@ public class Bootstrap {
 	public static URL[] remoteRepositories;
 
 	private static String loaderVersion;
-	
-	private ApplicationConfig applicationConfig = ApplicationConfig.getInstance();
 
 	private static final String SPLASHSCREEN = "splashscreen-1.7.png";
 
+	@Deprecated
 	public static void main(String[] args) throws MalformedURLException,
 			ClassNotFoundException, SecurityException, NoSuchMethodException,
 			IllegalArgumentException, IllegalAccessException,
@@ -82,58 +86,50 @@ public class Bootstrap {
 	}
 
 	public static void addSystemLoaderArtifacts() throws MalformedURLException {
-		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-		if (systemClassLoader instanceof BootstrapClassLoader) {
-			BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
-			URL cacheURL = findCache().toURI().toURL();
+		URL cacheURL = findCache().toURI().toURL();
 
-			try {
-				String localProfile = RavenProperties.getInstance()
-						.getRavenProfileLocation();
-				if (localProfile != null) {
-					URL url = new URL(localProfile);
-					DocumentBuilder builder = DocumentBuilderFactory
-							.newInstance().newDocumentBuilder();
-					Document doc = builder.parse(url.toURI().toURL()
-							.openStream());
-					NodeList nodes = doc.getElementsByTagName("artifact");
-					for (int i = 0; i < nodes.getLength(); i++) {
-						Node node = nodes.item(i);
-						NamedNodeMap attributes = node.getAttributes();
-						Node systemNode = attributes.getNamedItem("system");
-						if (systemNode != null
-								&& "true".equals(systemNode.getNodeValue())) {
-							Node groupNode = attributes.getNamedItem("groupId");
-							Node artifactNode = attributes
-									.getNamedItem("artifactId");
-							Node versionNode = attributes
-									.getNamedItem("version");
-							if (groupNode != null && artifactNode != null
-									&& versionNode != null) {
-								bootstrapClassLoader.addURL(new URL(cacheURL,
-										artifactURI(groupNode.getNodeValue(),
-												artifactNode.getNodeValue(),
-												versionNode.getNodeValue())));
-							}
+		try {
+			String localProfile = RavenProperties.getInstance()
+					.getRavenProfileLocation();
+			if (localProfile != null) {
+				URL url = new URL(localProfile);
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance()
+						.newDocumentBuilder();
+				Document doc = builder.parse(url.toURI().toURL().openStream());
+				NodeList nodes = doc.getElementsByTagName("artifact");
+				for (int i = 0; i < nodes.getLength(); i++) {
+					Node node = nodes.item(i);
+					NamedNodeMap attributes = node.getAttributes();
+					Node systemNode = attributes.getNamedItem("system");
+					if (systemNode != null
+							&& "true".equals(systemNode.getNodeValue())) {
+						Node groupNode = attributes.getNamedItem("groupId");
+						Node artifactNode = attributes
+								.getNamedItem("artifactId");
+						Node versionNode = attributes.getNamedItem("version");
+						if (groupNode != null && artifactNode != null
+								&& versionNode != null) {
+							URL artifactURL = new URL(cacheURL, artifactURI(
+									groupNode.getNodeValue(), artifactNode
+											.getNodeValue(), versionNode
+											.getNodeValue()));
+							preLauncher.addURLToClassPath(artifactURL);
 						}
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
+		} catch (Exception e) {
+			logger.error("Could not add system artifacts", e);
+
 		}
 	}
 
 	public static void addSystemArtifact(String groupID, String artifactID,
 			String versionID) throws MalformedURLException {
-		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
-		if (systemClassLoader instanceof BootstrapClassLoader) {
-				BootstrapClassLoader bootstrapClassLoader = (BootstrapClassLoader) systemClassLoader;
-				URL cacheURL = findCache().toURI().toURL();
-				bootstrapClassLoader.addURL(new URL(cacheURL, artifactURI(
-						groupID, artifactID, versionID)));
-		}
-
+		URL cacheURL = findCache().toURI().toURL();
+		URL artifactURL = new URL(cacheURL, artifactURI(groupID, artifactID,
+				versionID));
+		preLauncher.addURLToClassPath(artifactURL);
 	}
 
 	/**
@@ -173,7 +169,8 @@ public class Bootstrap {
 	 */
 	private static void determineStartup() {
 		try {
-			File startupDir = BootstrapLocation.getBootstrapDir(Bootstrap.class);
+			File startupDir = BootstrapLocation
+					.getBootstrapDir(Bootstrap.class);
 			if (startupDir != null) {
 				String startup = startupDir.getAbsolutePath();
 				System.setProperty("taverna.startup", startup);

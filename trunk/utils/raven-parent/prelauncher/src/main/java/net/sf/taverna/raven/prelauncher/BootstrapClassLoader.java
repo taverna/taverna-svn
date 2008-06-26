@@ -27,11 +27,11 @@
  * Filename           $RCSfile: BootstrapClassLoader.java,v $
  * Revision           $Revision: 1.1 $
  * Release status     $State: Exp $
- * Last modified on   $Date: 2008-05-13 16:47:57 $
+ * Last modified on   $Date: 2008-06-26 14:42:32 $
  *               by   $Author: stain $
  * Created on 1 Nov 2006
  *****************************************************************/
-package net.sf.taverna.raven.appconfig.bootstrap;
+package net.sf.taverna.raven.prelauncher;
 
 import java.net.URL;
 import java.net.URLClassLoader;

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +13,8 @@ public class PreLauncher {
 
 	private static final String LAUNCHER_CLASS = "net.sf.taverna.raven.launcher.Launcher";
 	private static final String LAUNCHER_MAIN = "main";
+	private static final PreLauncher instance = new PreLauncher();
+	private BootstrapClassLoader launchingClassLoader;
 
 	public class JarFilenameFilter implements FilenameFilter {
 		public boolean accept(File dir, String name) {
@@ -22,11 +23,15 @@ public class PreLauncher {
 	}
 
 	public static void main(String[] args) {
-		PreLauncher launcher = new PreLauncher();
+		PreLauncher launcher = getInstance();
 		int result = launcher.launchArgs(args);
 		if (result != 0) {
 			System.exit(result);
 		}
+	}
+
+	public static PreLauncher getInstance() {
+		return instance;
 	}
 
 	public int launchArgs(String[] args) {
@@ -74,12 +79,29 @@ public class PreLauncher {
 			throws ClassNotFoundException, IllegalArgumentException,
 			IllegalAccessException, InvocationTargetException,
 			SecurityException, NoSuchMethodException {
-		URLClassLoader classLoader = new URLClassLoader(classPath
-				.toArray(new URL[0]), getClass().getClassLoader());
-		Class<?> launcherClass = classLoader.loadClass(LAUNCHER_CLASS);
+		if (getLaunchingClassLoader() == null) {
+			BootstrapClassLoader bootstrapLoader = new BootstrapClassLoader(
+					getClass().getClassLoader());
+			setLaunchingClassLoader(bootstrapLoader);
+		}
+		for (URL url : classPath) {
+			addURLToClassPath(url);
+		}
+		Class<?> launcherClass = getLaunchingClassLoader().loadClass(
+				LAUNCHER_CLASS);
 		Method launcherMain = launcherClass.getMethod(LAUNCHER_MAIN,
 				String[].class);
 		launcherMain.invoke((Object) null, (Object) args);
+	}
+
+	public void addURLToClassPath(URL url) {
+		BootstrapClassLoader classLoader = getLaunchingClassLoader();
+		if (classLoader == null) {
+			System.err.println("No launching class loader, "
+					+ "could not add to classpath: " + url);
+			return;
+		}
+		classLoader.addURL(url);
 	}
 
 	protected List<URL> buildClassPath() throws IOException {
@@ -98,5 +120,20 @@ public class PreLauncher {
 			}
 		}
 		return classPath;
+	}
+
+	public BootstrapClassLoader getLaunchingClassLoader() {
+		if (launchingClassLoader == null) {
+			ClassLoader myClassLoader = getClass().getClassLoader();
+			if (myClassLoader instanceof BootstrapClassLoader) {
+				launchingClassLoader = (BootstrapClassLoader) getClass()
+						.getClassLoader();
+			}
+		}
+		return launchingClassLoader;
+	}
+
+	protected void setLaunchingClassLoader(BootstrapClassLoader classLoader) {
+		this.launchingClassLoader = classLoader;
 	}
 }
