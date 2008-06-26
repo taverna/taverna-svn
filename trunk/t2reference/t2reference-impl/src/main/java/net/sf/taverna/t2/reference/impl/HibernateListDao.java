@@ -8,6 +8,7 @@ import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation;
 import net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation;
 
+import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -40,14 +41,16 @@ public class HibernateListDao extends HibernateDaoSupport implements ListDao {
 		if (ref == null) {
 			throw new DaoException(
 					"Supplied reference is null, can't retrieve.");
-		} else if (ref.getReferenceType().equals(T2ReferenceType.IdentifiedList) == false) {
+		} else if (ref.getReferenceType()
+				.equals(T2ReferenceType.IdentifiedList) == false) {
 			throw new DaoException(
 					"This dao can only retrieve reference of type T2Reference.IdentifiedList");
 		}
 		if (ref instanceof T2ReferenceImpl) {
 			try {
 				return (T2ReferenceListImpl) getHibernateTemplate().get(
-						T2ReferenceListImpl.class, (T2ReferenceImpl) ref);
+						T2ReferenceListImpl.class,
+						((T2ReferenceImpl) ref).getCompactForm());
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}

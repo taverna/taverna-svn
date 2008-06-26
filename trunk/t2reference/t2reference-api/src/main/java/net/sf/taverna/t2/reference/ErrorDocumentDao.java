@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.reference;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Data access object handling ErrorDocument instances.
  * 
@@ -16,6 +19,7 @@ public interface ErrorDocumentDao {
 	 *             if any exception is thrown when connecting to the underlying
 	 *             store or when storing the error document
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void store(ErrorDocument errorDoc) throws DaoException;
 
 	/**
@@ -28,6 +32,7 @@ public interface ErrorDocumentDao {
 	 *             if any exception is thrown when connecting to the underlying
 	 *             data store or when attempting retrieval of the error document
 	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ErrorDocument get(T2Reference reference) throws DaoException;
 
 }

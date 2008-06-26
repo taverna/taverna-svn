@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.reference;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Data Access Object interface for {@link ReferenceSet}. Used by the
  * {@link ReferenceSetService} to store and retrieve implementations of
@@ -23,6 +26,7 @@ public interface ReferenceSetDao {
 	 *             if the entry already exists in the database or some other
 	 *             database related problem occurs
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void store(ReferenceSet rs) throws DaoException;
 
 	/**
@@ -33,6 +37,7 @@ public interface ReferenceSetDao {
 	 *            database
 	 * @throws DaoException
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void update(ReferenceSet rs) throws DaoException;
 
 	/**
@@ -46,5 +51,6 @@ public interface ReferenceSetDao {
 	 *             something goes wrong fetching the data or connecting to the
 	 *             database
 	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public ReferenceSet get(T2Reference ref) throws DaoException;
 }

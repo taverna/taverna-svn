@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.reference;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Data access object handling NamedLists of T2Reference instances.
  * 
@@ -17,6 +20,7 @@ public interface ListDao {
 	 *             if any exception is thrown when connecting to the underlying
 	 *             store or when storing the list
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void store(IdentifiedList<T2Reference> theList) throws DaoException;
 
 	/**
@@ -30,6 +34,7 @@ public interface ListDao {
 	 *             if any exception is thrown when connecting to the underlying
 	 *             data store or when attempting retrieval of the list
 	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public IdentifiedList<T2Reference> get(T2Reference reference)
 			throws DaoException;
 

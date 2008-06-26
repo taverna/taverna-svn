@@ -2,6 +2,7 @@ package net.sf.taverna.t2.reference.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.ReferenceSet;
@@ -20,7 +21,7 @@ public class InMemoryReferenceSetDao implements ReferenceSetDao {
 	private Map<T2Reference, ReferenceSet> store;
 
 	public InMemoryReferenceSetDao() {
-		this.store = new HashMap<T2Reference, ReferenceSet>();
+		this.store = new ConcurrentHashMap<T2Reference, ReferenceSet>();
 	}
 
 	public synchronized ReferenceSet get(T2Reference reference)

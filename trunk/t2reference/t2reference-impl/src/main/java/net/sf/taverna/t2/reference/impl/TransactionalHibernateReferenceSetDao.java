@@ -9,22 +9,30 @@ import net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation;
 import net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation;
 
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
- * An implementation of ReferenceSetDao based on Spring's HibernateDaoSupport.
- * To use this in spring inject a property 'sessionFactory' with either a
+ * An implementation of ReferenceSetDao based on raw hibernate session factory
+ * injection and running within a spring managed context through auto-proxy
+ * generation. To use this in spring inject a property 'sessionFactory' with
+ * either a
  * {@link org.springframework.orm.hibernate3.LocalSessionFactoryBean LocalSessionFactoryBean}
  * or the equivalent class from the T2Platform module to add SPI based
  * implementation discovery and mapping. To use outside of Spring ensure you
  * call the setSessionFactory(..) method before using this (but really, use it
  * from Spring, so much easier).
+ * <p>
+ * Methods in this Dao require transactional support
  * 
  * @author Tom Oinn
  * 
  */
-public class HibernateReferenceSetDao extends HibernateDaoSupport implements
-		ReferenceSetDao {
+public class TransactionalHibernateReferenceSetDao implements ReferenceSetDao {
+
+	private SessionFactory sessionFactory;
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	/**
 	 * Store the specified new reference set
@@ -51,7 +59,7 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 		}
 		if (rs instanceof ReferenceSetImpl) {
 			try {
-				getHibernateTemplate().save(rs);
+				sessionFactory.getCurrentSession().save(rs);
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}
@@ -84,7 +92,7 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 		}
 		if (rs instanceof ReferenceSetImpl) {
 			try {
-				getHibernateTemplate().update(rs);
+				sessionFactory.getCurrentSession().update(rs);
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}
@@ -116,9 +124,9 @@ public class HibernateReferenceSetDao extends HibernateDaoSupport implements
 		}
 		if (ref instanceof T2ReferenceImpl) {
 			try {
-				return (ReferenceSetImpl) getHibernateTemplate().get(
-						ReferenceSetImpl.class,
-						((T2ReferenceImpl) ref).getCompactForm());
+				return (ReferenceSetImpl) sessionFactory.getCurrentSession()
+						.get(ReferenceSetImpl.class,
+								((T2ReferenceImpl) ref).getCompactForm());
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}

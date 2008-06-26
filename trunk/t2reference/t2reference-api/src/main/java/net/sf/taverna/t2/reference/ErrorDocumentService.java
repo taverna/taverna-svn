@@ -1,5 +1,8 @@
 package net.sf.taverna.t2.reference;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Provides facilities to register list of T2References, register empty lists at
  * any given depth and to resolve appropriate T2Reference instances back to
@@ -11,6 +14,7 @@ package net.sf.taverna.t2.reference;
  * 
  * @author Tom Oinn
  */
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public interface ErrorDocumentService {
 
 	/**
@@ -29,18 +33,21 @@ public interface ErrorDocumentService {
 	 * @return a new ErrorDocument instance, constructed fully and stored in the
 	 *         underlying storage system
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ErrorDocument registerError(String message, Throwable t, int depth)
 			throws ErrorDocumentServiceException;
 
 	/**
 	 * Equivalent to <code>registerError(message, null, depth)</code>
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ErrorDocument registerError(String message, int depth)
 			throws ErrorDocumentServiceException;
 
 	/**
 	 * Equivalent to <code>registerError("",t, depth)</code>
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ErrorDocument registerError(Throwable t, int depth)
 			throws ErrorDocumentServiceException;
 

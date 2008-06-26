@@ -8,22 +8,31 @@ import net.sf.taverna.t2.reference.T2ReferenceType;
 import net.sf.taverna.t2.reference.annotations.GetIdentifiedOperation;
 import net.sf.taverna.t2.reference.annotations.PutIdentifiedOperation;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.hibernate.SessionFactory;
 
 /**
- * An implementation of ErrorDocumentDao based on Spring's HibernateDaoSupport.
- * To use this in spring inject a property 'sessionFactory' with either a
+ * An implementation of ErrorDocumentDao based on raw hibernate session factory
+ * injection and running within a spring managed context through auto-proxy
+ * generation. To use this in spring inject a property 'sessionFactory' with
+ * either a
  * {@link org.springframework.orm.hibernate3.LocalSessionFactoryBean LocalSessionFactoryBean}
  * or the equivalent class from the T2Platform module to add SPI based
  * implementation discovery and mapping. To use outside of Spring ensure you
  * call the setSessionFactory(..) method before using this (but really, use it
  * from Spring, so much easier).
+ * <p>
+ * Methods in this Dao require transactional support
  * 
  * @author Tom Oinn
  * 
  */
-public class HibernateErrorDocumentDao extends HibernateDaoSupport implements
-		ErrorDocumentDao {
+public class TransactionalHibernateErrorDocumentDao implements ErrorDocumentDao {
+
+	private SessionFactory sessionFactory;
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
 	/**
 	 * Fetch an ErrorDocument list by id
@@ -47,9 +56,9 @@ public class HibernateErrorDocumentDao extends HibernateDaoSupport implements
 		}
 		if (ref instanceof T2ReferenceImpl) {
 			try {
-				return (ErrorDocumentImpl) getHibernateTemplate().get(
-						ErrorDocumentImpl.class,
-						((T2ReferenceImpl) ref).getCompactForm());
+				return (ErrorDocumentImpl) sessionFactory.getCurrentSession()
+						.get(ErrorDocumentImpl.class,
+								((T2ReferenceImpl) ref).getCompactForm());
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}
@@ -73,7 +82,7 @@ public class HibernateErrorDocumentDao extends HibernateDaoSupport implements
 		}
 		if (theDocument instanceof ErrorDocumentImpl) {
 			try {
-				getHibernateTemplate().save(theDocument);
+				sessionFactory.getCurrentSession().save(theDocument);
 			} catch (Exception ex) {
 				throw new DaoException(ex);
 			}

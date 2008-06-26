@@ -2,6 +2,7 @@ package net.sf.taverna.t2.reference.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.IdentifiedList;
@@ -20,7 +21,7 @@ public class InMemoryListDao implements ListDao {
 	private Map<T2Reference, IdentifiedList<T2Reference>> store;
 
 	public InMemoryListDao() {
-		this.store = new HashMap<T2Reference, IdentifiedList<T2Reference>>();
+		this.store = new ConcurrentHashMap<T2Reference, IdentifiedList<T2Reference>>();
 	}
 
 	public synchronized IdentifiedList<T2Reference> get(T2Reference reference)

@@ -5,29 +5,28 @@
 <!-- Hibernate mapping for ReferenceSetImpl -->
 <hibernate-mapping>
 	<class name="net.sf.taverna.t2.reference.impl.ReferenceSetImpl"
-		abstract="false">
+		abstract="false" lazy="false">
+		<id name="internalId" column="id" type="string"
+			unsaved-value="null" />
+			
 		<!--  Composite key constructed from the namespace and local -->
 		<!--  parts of the T2Reference implementation type, used as  -->
 		<!--  the foreign key in the one to many relationship with   -->
 		<!--  extensions of AbstractExternalReference                -->
-		<composite-id name="typedId"
+		
+		<component name="typedId"
 			class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl">
-			<key-property name="namespacePart" />
-			<key-property name="localPart" />
-			<key-property name="containsErrors"/>
-			<key-property name="depth"/>
-			<key-property name="referenceType"/>
-		</composite-id>
+			<property name="namespacePart" />
+			<property name="localPart" />
+			<property name="containsErrors" />
+			<property name="depth" />
+			<property name="referenceType" />
+		</component>
 		<set name="externalReferences" cascade="all" lazy="false">
-			<key>
-				<column name="namespacePart" />
-				<column name="localPart" />
-				<column name="containsErrors"/>
-				<column name="depth"/>
-				<column name="referenceType"/>
-			</key>
+			<key column="id" />
 			<one-to-many
 				class="net.sf.taverna.t2.reference.AbstractExternalReference" />
 		</set>
+		
 	</class>
 </hibernate-mapping>

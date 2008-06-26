@@ -2,6 +2,9 @@ package net.sf.taverna.t2.reference;
 
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Provides facilities to register sets of ExternalReferenceSPI implementations
  * within the reference manager and to retrieve these sets by T2Reference either
@@ -13,6 +16,7 @@ import java.util.Set;
  * 
  * @author Tom Oinn
  */
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public interface ReferenceSetService {
 
 	/**
@@ -26,6 +30,7 @@ public interface ReferenceSetService {
 	 *            register as a {@link ReferenceSet}
 	 * @return the registered {@link ReferenceSet}
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ReferenceSet registerReferenceSet(
 			Set<ExternalReferenceSPI> references)
 			throws ReferenceSetServiceException;
@@ -98,6 +103,7 @@ public interface ReferenceSetService {
 	 *            {@link ReferenceContext} parameter.
 	 * @return the requested {@link ReferenceSet}
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public ReferenceSet getReferenceSetWithAugmentation(T2Reference id,
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceSetServiceException;
@@ -128,6 +134,7 @@ public interface ReferenceSetService {
 	 *             are not returned here, for obvious reasons, and are instead
 	 *             messaged through the callback interface.
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void getReferenceSetWithAugmentationAsynch(T2Reference id,
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context, ReferenceSetServiceCallback callback)

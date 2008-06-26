@@ -3,6 +3,9 @@ package net.sf.taverna.t2.reference;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Top level access point to the reference manager for client code which is
  * aware of references and error documents. Provides methods to store and
@@ -49,6 +52,7 @@ public interface ReferenceService {
 	 * @throws ReferenceServiceException
 	 *             if any problems occur during resolution
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public Identified resolveIdentifier(T2Reference id,
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceServiceException;
@@ -62,6 +66,7 @@ public interface ReferenceService {
 	 *             Any exceptions during the resolution process itself are
 	 *             communicated through the callback object.
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public void resolveIdentifierAsynch(T2Reference id,
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context,
@@ -128,6 +133,7 @@ public interface ReferenceService {
 	 *             occurs during registration. Also thrown if attempting to use
 	 *             the converter SPI without an attached registry.
 	 */
+	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
 	public T2Reference register(Object o, int targetDepth,
 			boolean useConverterSPI, ReferenceContext context)
 			throws ReferenceServiceException;
@@ -171,6 +177,7 @@ public interface ReferenceService {
 	 *             when used. If the iterator fails it will do so by throwing
 	 *             one of the underlying sub-service exceptions.
 	 */
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public Iterator<ContextualizedT2Reference> traverseFrom(T2Reference source,
 			int desiredDepth);
 

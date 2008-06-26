@@ -2,6 +2,9 @@ package net.sf.taverna.t2.reference;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+
 /**
  * Provides facilities to register list of T2References, register empty lists at
  * any given depth and to resolve appropriate T2Reference instances back to
@@ -13,6 +16,7 @@ import java.util.List;
  * 
  * @author Tom Oinn
  */
+@Transactional(propagation=Propagation.SUPPORTS, readOnly=true)
 public interface ListService {
 
 	/**
@@ -35,6 +39,7 @@ public interface ListService {
 	 *             if there is a problem either with the specified list of
 	 *             references or with the storage subsystem.
 	 */
+	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
 	public IdentifiedList<T2Reference> registerList(List<T2Reference> items)
 			throws ListServiceException;
 
@@ -54,6 +59,7 @@ public interface ListService {
 	 *             if there is a problem with the storage subsystem or if called
 	 *             with an invalid depth argument
 	 */
+	@Transactional(propagation=Propagation.REQUIRED, readOnly=false)
 	public IdentifiedList<T2Reference> registerEmptyList(int depth)
 			throws ListServiceException;
 

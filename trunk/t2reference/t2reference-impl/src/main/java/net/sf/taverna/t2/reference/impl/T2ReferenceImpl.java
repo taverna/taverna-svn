@@ -79,6 +79,7 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	 */
 	public synchronized void setNamespacePart(String namespacePart) {
 		this.namespacePart = namespacePart;
+		this.hashCode = -1;
 		cachedUri = null;
 	}
 
@@ -89,6 +90,7 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	 */
 	public synchronized void setLocalPart(String localPart) {
 		this.localPart = localPart;
+		this.hashCode = -1;
 		cachedUri = null;
 	}
 
@@ -99,6 +101,7 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	 */
 	public synchronized void setDepth(int depth) {
 		this.depth = depth;
+		this.hashCode = -1;
 		cachedUri = null;
 	}
 
@@ -211,13 +214,27 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 		}
 	}
 
+	private int hashCode = -1;
+
 	/**
 	 * Use hashcode method from the string representation of namespace, local
 	 * and depth parts
 	 */
 	@Override
-	public int hashCode() {
-		return (namespacePart + ":" + localPart + ":" + depth).hashCode();
+	public synchronized int hashCode() {
+		if (this.hashCode == -1) {
+			this.hashCode = getCompactForm().hashCode();
+		}
+		return this.hashCode;
+	}
+
+	private String compactForm = null;
+
+	public synchronized String getCompactForm() {
+		if (this.compactForm == null) {
+			this.compactForm = getNamespacePart() + ":" + getLocalPart() + ":" + getDepth();
+		}
+		return this.compactForm;
 	}
 
 }

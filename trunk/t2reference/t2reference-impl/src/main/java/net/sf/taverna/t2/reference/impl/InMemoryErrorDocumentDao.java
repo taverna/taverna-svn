@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.reference.impl;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.ErrorDocument;
@@ -20,7 +20,7 @@ public class InMemoryErrorDocumentDao implements ErrorDocumentDao {
 	private Map<T2Reference, ErrorDocument> store;
 
 	public InMemoryErrorDocumentDao() {
-		this.store = new HashMap<T2Reference, ErrorDocument>();
+		this.store = new ConcurrentHashMap<T2Reference, ErrorDocument>();
 	}
 
 	public synchronized ErrorDocument get(T2Reference reference)

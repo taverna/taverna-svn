@@ -5,7 +5,6 @@ import java.util.List;
 
 import net.sf.taverna.t2.reference.ErrorDocument;
 import net.sf.taverna.t2.reference.StackTraceElementBean;
-import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.h3.HibernateMappedEntity;
 
 /**
@@ -14,13 +13,13 @@ import net.sf.taverna.t2.reference.h3.HibernateMappedEntity;
  * @author Tom Oinn
  * 
  */
-public class ErrorDocumentImpl implements ErrorDocument, HibernateMappedEntity {
+public class ErrorDocumentImpl extends AbstractEntityImpl implements
+		ErrorDocument, HibernateMappedEntity {
 
 	private String exceptionMessage = "";
 	private String message = "";
 	List<StackTraceElementBean> stackTrace;
-	private T2ReferenceImpl id;
-
+	
 	public ErrorDocumentImpl() {
 		this.stackTrace = new ArrayList<StackTraceElementBean>();
 	}
@@ -31,21 +30,6 @@ public class ErrorDocumentImpl implements ErrorDocument, HibernateMappedEntity {
 
 	public void setExceptionMessage(String exceptionMessage) {
 		this.exceptionMessage = exceptionMessage;
-	}
-
-	/**
-	 * From interface, not used by hibernate internally
-	 */
-	public T2Reference getId() {
-		return id;
-	}
-
-	public T2ReferenceImpl getTypedId() {
-		return id;
-	}
-
-	public void setTypedId(T2ReferenceImpl id) {
-		this.id = id;
 	}
 
 	public String getMessage() {

@@ -6,27 +6,22 @@
 <hibernate-mapping>
 	<class name="net.sf.taverna.t2.reference.impl.T2ReferenceListImpl"
 		abstract="false">
+		<id name="internalId" column="id" type="string"/>
 		<!--  Composite key constructed from the namespace and local -->
 		<!--  parts of the T2Reference implementation type, used as  -->
 		<!--  the foreign key in the one to many relationship with   -->
 		<!--  extensions of AbstractExternalReference                -->
-		<composite-id name="typedId"
+		<component name="typedId"
 			class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl">
-			<key-property name="namespacePart" />
-			<key-property name="localPart" />
-			<key-property name="containsErrors" />
-			<key-property name="depth" />
-			<key-property name="referenceType" />
-		</composite-id>
+			<property name="namespacePart" />
+			<property name="localPart" />
+			<property name="containsErrors" />
+			<property name="depth" />
+			<property name="referenceType" />
+		</component>
 		<list name="listContents" cascade="all" lazy="false">
-			<key>
-				<column name="namespacePart" />
-				<column name="localPart" />
-				<column name="containsErrors" />
-				<column name="depth" />
-				<column name="referenceType" />
-			</key>
-			<list-index column="index" base="0" />
+			<key column="id"/>
+			<list-index column="i" base="0" />
 			<composite-element
 				class="net.sf.taverna.t2.reference.impl.T2ReferenceImpl">
 				<!-- Explicit column mapping otherwise we colide with the implict -->

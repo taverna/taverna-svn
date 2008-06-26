@@ -17,9 +17,9 @@ import net.sf.taverna.t2.reference.T2Reference;
  * 
  * @param <T>
  */
-public class IdentifiedArrayList<T> implements IdentifiedList<T> {
+public class IdentifiedArrayList<T> extends AbstractEntityImpl implements
+		IdentifiedList<T> {
 
-	private T2ReferenceImpl id = null;
 	protected List<T> listDelegate = null;
 
 	// Constructors copied from ArrayList for convenience
@@ -27,37 +27,19 @@ public class IdentifiedArrayList<T> implements IdentifiedList<T> {
 		super();
 		this.listDelegate = new ArrayList<T>();
 	}
+
 	public IdentifiedArrayList(Collection<T> c) {
 		super();
 		this.listDelegate = new ArrayList<T>(c);
 	}
+
 	public IdentifiedArrayList(int initialCapacity) {
 		super();
 		this.listDelegate = new ArrayList<T>(initialCapacity);
 	}
-	
-	public T2Reference getId() {
-		return id;
-	}
-
-	/**
-	 * Used by Hibernate to get the implementation type of the internal ID
-	 * correctly
-	 */
-	public T2ReferenceImpl getTypedId() {
-		return id;
-	}
-
-	/**
-	 * Used by Hibernate to restore the ID correctly when constructing instances
-	 * of this object or its subclasses from the database
-	 */
-	public void setTypedId(T2ReferenceImpl newId) {
-		this.id = newId;
-	}
 
 	private void checkUndefinedId() {
-		if (this.id != null) {
+		if (this.getId() != null) {
 			throw new IllegalStateException(
 					"Attempt made to modify a list which has already been named");
 		}

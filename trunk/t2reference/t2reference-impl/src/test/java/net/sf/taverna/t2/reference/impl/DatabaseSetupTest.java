@@ -5,7 +5,9 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 
 import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ListDao;
 import net.sf.taverna.t2.reference.ReferenceSet;
+import net.sf.taverna.t2.reference.ReferenceSetDao;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.reference.T2ReferenceType;
 
@@ -24,7 +26,7 @@ public class DatabaseSetupTest {
 	public void testListStorage() {
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				"vanillaHibernateAppContext.xml");
-		HibernateListDao o = (HibernateListDao) context.getBean("testListDao");
+		ListDao o = (ListDao) context.getBean("testListDao");
 		T2ReferenceImpl listReference = new T2ReferenceImpl();
 		listReference.setContainsErrors(false);
 		listReference.setDepth(1);
@@ -66,7 +68,7 @@ public class DatabaseSetupTest {
 	public void testDatabaseReadWriteWithoutPlugins() {
 		ApplicationContext context = new ClassPathXmlApplicationContext(
 				"vanillaHibernateAppContext.xml");
-		HibernateReferenceSetDao o = (HibernateReferenceSetDao) context
+		ReferenceSetDao o = (ReferenceSetDao) context
 				.getBean("testDao");
 		T2ReferenceImpl id = new T2ReferenceImpl();
 		id.setNamespacePart("testNamespace");
@@ -74,7 +76,8 @@ public class DatabaseSetupTest {
 		ReferenceSetImpl rs = new ReferenceSetImpl(
 				new HashSet<ExternalReferenceSPI>(), id);
 		o.store(rs);
-
+		
+		
 		// Retrieve with a new instance of an anonymous subclass of
 		// ReferenceSetT2ReferenceImpl, just to check that hibernate can cope
 		// with this. It can, but this *must* be a subclass of the registered
@@ -99,51 +102,9 @@ public class DatabaseSetupTest {
 				return "testNamespace";
 			}
 
-			URI cachedUri = null;
-
-			public synchronized URI toUri() {
-				if (cachedUri != null) {
-					return cachedUri;
-				} else {
-					try {
-						URI result = new URI("t2:ref//" + getNamespacePart()
-								+ "?" + getLocalPart());
-						cachedUri = result;
-						return result;
-					} catch (URISyntaxException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return null;
-					}
-				}
-			}
-
-			/**
-			 * Use the equality operator over the URI representation of this
-			 * bean.
-			 */
-			@Override
-			public boolean equals(Object other) {
-				if (other == this) {
-					return true;
-				}
-				if (other instanceof T2ReferenceImpl) {
-					T2ReferenceImpl otherRef = (T2ReferenceImpl) other;
-					return (toUri().equals(otherRef.toUri()));
-				} else {
-					return false;
-				}
-			}
-
-			/**
-			 * Use hashcode method from the URI representation of this bean
-			 */
-			@Override
-			public int hashCode() {
-				return toUri().hashCode();
-			}
 		};
 
+		
 		ReferenceSet returnedset = o.get(newReference);
 		System.out.println(returnedset);
 
