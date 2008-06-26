@@ -41,6 +41,8 @@ public class ApplicationConfig {
 	public static final String APP_LOCAL_REPOSITORY = PREFIX
 			+ "repository.local";
 	public static final String APP_USING_RAVEN = PREFIX + "use_raven";
+	private static final String APP_SHOW_SPLASHSCREEN = PREFIX
+	+ "show_splashscreen";
 	public static final String PROPERTIES = "raven-launcher.properties";
 	private static final boolean DEBUG = false;
 
@@ -236,6 +238,11 @@ public class ApplicationConfig {
 		// or has been set to an invalid value
 		return Boolean.parseBoolean(getProperties()
 				.getProperty(APP_USING_RAVEN));
+	}
+
+	public boolean isShowingSplashscreen() {
+		return Boolean.parseBoolean(getProperties()
+				.getProperty(APP_SHOW_SPLASHSCREEN));		
 	}
 
 }

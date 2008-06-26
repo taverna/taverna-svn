@@ -2,6 +2,7 @@ package net.sf.taverna.raven.appconfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,6 +15,8 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import org.apache.log4j.Logger;
 
 public class ApplicationRuntime {
+	private static final String LAUNCHER_SPLASHSCREEN_PNG = "/launcher_splashscreen.png";
+
 	private static final String REPOSITORY = "repository";
 
 	private static Logger logger = Logger.getLogger(ApplicationRuntime.class);
@@ -212,6 +215,13 @@ public class ApplicationRuntime {
 			return null;
 		}
 		return pluginsDir;
+	}
+
+	public URL getSplashScreenURL() {
+		if (! appConfig.isShowingSplashscreen()) {
+			return null;
+		}
+		return getClass().getResource(LAUNCHER_SPLASHSCREEN_PNG);
 	}
 
 }

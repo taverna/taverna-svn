@@ -1,5 +1,12 @@
 package net.sf.taverna.raven.launcher;
 
+import java.awt.GraphicsEnvironment;
+import java.net.URL;
+
+import org.apache.log4j.Logger;
+
+import net.sf.taverna.raven.Raven;
+import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.plugins.PluginManager;
@@ -26,13 +33,15 @@ import net.sf.taverna.raven.spi.SpiRegistry;
  */
 public class Launcher {
 
+	private static Logger logger = Logger.getLogger(Launcher.class);
+	
 	/**
 	 * Call the "real" application
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Launcher launcher = new Launcher();
+		Launcher launcher = new Launcher();		
 		int status = launcher.launchMain(args);
 		if (status != 0) {
 			System.exit(status);
@@ -41,6 +50,7 @@ public class Launcher {
 
 	private final ApplicationConfig appConfig;
 	private final ApplicationRuntime appRuntime;
+	private SplashScreen splash;
 
 	public Launcher() {
 		appConfig = ApplicationConfig.getInstance();
@@ -92,8 +102,10 @@ public class Launcher {
 	 * @return The status code of launching, 0 means success.
 	 */
 	public int launchMain(String[] args) {
-		Launchable launchable;
+		
+		prepareSplashScreen();
 		String mainClass = appConfig.getMainClass();
+		Launchable launchable;
 		try {
 			launchable = findMainClass(mainClass);
 		} catch (ClassNotFoundException e) {
@@ -110,13 +122,30 @@ public class Launcher {
 			e.printStackTrace();
 			return -3;
 		}
-
+		removeSplashScreenListener();
 		try {
 			return launchable.launch(args);
 		} catch (Exception e) {
 			System.err.println("Error while executing main() of " + mainClass);
 			e.printStackTrace();
 			return -4;
+		}
+	}
+
+	protected void removeSplashScreenListener() {
+		if (splash != null) {
+			splash.removeListener();
+			splash.setText("Starting application..");
+		}
+	}
+
+	protected void prepareSplashScreen() {
+		URL splashScreenURL = appRuntime.getSplashScreenURL();
+		if (splashScreenURL != null && !GraphicsEnvironment.isHeadless()) {
+			splash = SplashScreen.getSplashScreen(splashScreenURL);
+			splash.listenToRepository(appRuntime.getRavenRepository());
+		} else {
+			logger.warn("No splash screen : " + splashScreenURL);
 		}
 	}
 
