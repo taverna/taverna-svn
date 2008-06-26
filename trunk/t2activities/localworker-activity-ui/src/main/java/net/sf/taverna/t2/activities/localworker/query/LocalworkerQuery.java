@@ -38,6 +38,8 @@ import org.jdom.input.SAXBuilder;
  */
 public class LocalworkerQuery extends ActivityQuery {
 
+	private static final String LOCALWORKER_NAMES = "/localworker_names";
+
 	private static Logger logger = Logger.getLogger(Logger.class);
 
 	/** Used to deserialize the Activities stored on disk */
@@ -64,7 +66,11 @@ public class LocalworkerQuery extends ActivityQuery {
 	public void doQuery() {
 
 		InputStream inputStream = getClass().getResourceAsStream(
-				"/localworker_names");
+				LOCALWORKER_NAMES);
+		if (inputStream == null) {
+			logger.error("Could not find resource " + LOCALWORKER_NAMES);
+			return;
+		}
 		BufferedReader inputReader = new BufferedReader(new InputStreamReader(
 				inputStream));
 		String line = "";
@@ -87,8 +93,7 @@ public class LocalworkerQuery extends ActivityQuery {
 				}
 			}
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.warn("Could not read local worker definitions from " + LOCALWORKER_NAMES);
 		}
 
 	}
@@ -97,28 +102,24 @@ public class LocalworkerQuery extends ActivityQuery {
 
 		public ItemCreationException() {
 			super();
-			// TODO Auto-generated constructor stub
 		}
 
 		public ItemCreationException(String message, Throwable cause) {
 			super(message, cause);
-			// TODO Auto-generated constructor stub
 		}
 
 		public ItemCreationException(String message) {
 			super(message);
-			// TODO Auto-generated constructor stub
 		}
 
 		public ItemCreationException(Throwable cause) {
 			super(cause);
-			// TODO Auto-generated constructor stub
 		}
 
 	}
 
 	/**
-	 * Loads the deserialized local worker from disk and creates a
+	 * Loads the deserialised local worker from disk and creates a
 	 * {@link LocalworkerActivityItem} with the correct ports and script from it
 	 * 
 	 * @param line
@@ -129,25 +130,27 @@ public class LocalworkerQuery extends ActivityQuery {
 			throws ItemCreationException {
 		String[] split = line.split("[.]");
 		// get the file from disk
+		String resource = "/" + line;
 		InputStream resourceAsStream = getClass().getResourceAsStream(
-				"/" + line);
-
+				resource);
+		if (resourceAsStream == null) { 
+			throw new ItemCreationException("Could not find resource " + resource);
+		}
+		
 		SAXBuilder builder = new SAXBuilder();
 		Element detachRootElement = null;
 		try {
 			detachRootElement = builder.build(resourceAsStream)
 					.detachRootElement();
 		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ItemCreationException("Could not parse resource " + resource, e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ItemCreationException("Could not read resource " + resource, e);
 		}
 		Activity<?> activity = null;
 		try {
 			activity = deserializer.deserializeActivity(detachRootElement,
-					new HashMap<String, Element>());
+					new HashMap<String, Element>(), getClass().getClassLoader());
 		} catch (Exception e) {
 			throw new ItemCreationException(e);
 		}
