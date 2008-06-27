@@ -88,7 +88,8 @@ public class LocalworkerQuery extends ActivityQuery {
 						logger.warn("Could not create item for: " + line, e);
 						continue;
 					}
-					createItem.setCategory("localworker_" + category);
+					createItem.setCategory(category);
+					createItem.setProvider("myGrid");
 					add(createItem);
 				}
 			}

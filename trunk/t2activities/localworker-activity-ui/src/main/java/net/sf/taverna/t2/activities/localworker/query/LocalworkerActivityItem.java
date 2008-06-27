@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.localworker.query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -29,7 +28,18 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 	private List<ActivityInputPortDefinitionBean> inputPorts;
 	private String operation;
 	private String category;
+	private String provider;
 	
+	
+	
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
 	public String getCategory() {
 		return category;
 	}
@@ -71,7 +81,8 @@ public class LocalworkerActivityItem extends AbstractActivityItem {
 	 */
 	@Override
 	protected Activity<?> getUnconfiguredActivity() {
-		return new BeanshellActivity();
+		Activity<?> activity = new BeanshellActivity();
+		return activity;
 	}
 
 	public String getScript() {

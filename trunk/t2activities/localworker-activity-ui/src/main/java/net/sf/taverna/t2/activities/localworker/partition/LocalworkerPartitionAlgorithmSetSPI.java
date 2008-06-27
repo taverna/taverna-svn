@@ -8,7 +8,7 @@ public class LocalworkerPartitionAlgorithmSetSPI extends ActivityPartitionAlgori
 	public LocalworkerPartitionAlgorithmSetSPI() {
 		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("operation"));
 		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("category"));
-		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("url"));
+		partitionAlgorithms.add(new LiteralValuePartitionAlgorithm("provider"));
 	}
 
 }
