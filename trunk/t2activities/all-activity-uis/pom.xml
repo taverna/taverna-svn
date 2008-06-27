@@ -20,6 +20,11 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>biomoby-activity-ui</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>biomart-activity-ui</artifactId>
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
