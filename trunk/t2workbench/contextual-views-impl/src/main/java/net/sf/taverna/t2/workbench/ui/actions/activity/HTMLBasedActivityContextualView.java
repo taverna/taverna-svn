@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import net.sf.taverna.t2.workbench.ui.impl.configuration.colour.ColourManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
@@ -47,10 +48,7 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 
 	protected Map<String, String> getTableProperties() {
 		Map<String, String> result = new HashMap<String, String>();
-		result.put("width", "100%");
-		result.put("bgcolor", getBackgroundColour());
 		result.put("border", "1");
-		result.put("align", "center");
 		return result;
 	}
 
@@ -61,17 +59,19 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 
 	protected String getStyle() {
 		String style = "<style type='text/css'>";
-		style += "table {align:center}";
+		style += "table {align:center; border:1;background-color:"+getBackgroundColour()+";width:100%; height:100%; overflow:auto;}";
 		style += "</style>";
 		return style;
 	}
 
 	protected JPanel panelForHtml(String html) {
 		JPanel result = new JPanel();
+		
 		result.setLayout(new BorderLayout());
 		editorPane = new JEditorPane("text/html", html);
 		editorPane.setEditable(false);
-		result.add(editorPane, BorderLayout.CENTER);
+		JScrollPane scrollPane = new JScrollPane(editorPane);
+		result.add(scrollPane, BorderLayout.CENTER);
 		return result;
 	}
 
