@@ -22,15 +22,15 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 
 	@Override
 	protected JComponent getMainFrame() {
-		String html = buildHtml();
-		String style = getStyle();
-		return panelForHtml(style + html);
+		return panelForHtml(buildHtml());
 	}
 
 	private String buildHtml() {
-		String html = buildTableOpeningTag();
+		String html="<html><head>"+getStyle()+"</head><body>";
+		html += buildTableOpeningTag();
 		html += "<tr><td colspan=2>" + getViewTitle() + "</td></tr>";
 		html += getRawTableRowsHtml() + "</table>";
+		html+="</body></html>";
 		return html;
 	}
 
@@ -59,7 +59,7 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 
 	protected String getStyle() {
 		String style = "<style type='text/css'>";
-		style += "table {align:center; border:1;background-color:"+getBackgroundColour()+";width:100%; height:100%; overflow:auto;}";
+		style += "table {align:center; border:solid black 1px; background-color:"+getBackgroundColour()+";width:100%; height:100%; overflow:auto;}";
 		style += "</style>";
 		return style;
 	}
@@ -80,8 +80,6 @@ public abstract class HTMLBasedActivityContextualView<ConfigBean> extends
 	 * bean
 	 */
 	public void refreshView() {
-		String html = buildHtml();
-		String style = getStyle();
-		editorPane.setText(style + html);
+		editorPane.setText(buildHtml());
 	}
 }
