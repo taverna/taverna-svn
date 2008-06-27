@@ -1,4 +1,4 @@
-package net.sf.taverna.t2.reference.impl;
+package net.sf.taverna.t2.reference.impl.core;
 
 /**
  * Trivial bean, use a reference to this in your spring configuration along with
