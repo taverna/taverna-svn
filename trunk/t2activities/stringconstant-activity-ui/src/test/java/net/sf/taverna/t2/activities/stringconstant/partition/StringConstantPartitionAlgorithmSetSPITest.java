@@ -37,6 +37,8 @@ public class StringConstantPartitionAlgorithmSetSPITest {
 	public void getPartitonAlgorithms() {
 		PartitionAlgorithmSetSPI p = new StringConstantPartitionAlgorithmSetSPI();
 		Set<PartitionAlgorithm<?>> set = p.getPartitionAlgorithms();
+		assertEquals("There should be 1 partition algorithm in the set",1,set.size());
 		assertTrue("should contain an algorithm for 'type'",set.contains(new LiteralValuePartitionAlgorithm("type")));
+		
 	}
 }
