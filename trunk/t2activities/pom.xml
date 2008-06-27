@@ -43,6 +43,7 @@
   	
   	<module>all-activities</module>
   	<module>all-activity-translators</module>
+  	<module>all-activity-uis</module>
   </modules>
   <licenses>
 		<license>
