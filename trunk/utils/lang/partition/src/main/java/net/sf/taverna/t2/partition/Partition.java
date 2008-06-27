@@ -358,7 +358,7 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			// Can't do anything unless the comparator is set appropriately
 			return;
 		}
-		Comparator<Partition<ItemType, ChildPartitionValueType, ?>> c = new Comparator<Partition<ItemType, ChildPartitionValueType, ?>>() {
+		Comparator<Partition<ItemType, ChildPartitionValueType, ?>> comparator = new Comparator<Partition<ItemType, ChildPartitionValueType, ?>>() {
 			public int compare(
 					Partition<ItemType, ChildPartitionValueType, ?> o1,
 					Partition<ItemType, ChildPartitionValueType, ?> o2) {
@@ -374,7 +374,7 @@ public class Partition<ItemType extends Comparable, PartitionValueType, ChildPar
 			}
 		};
 		Collections.<Partition<ItemType, ChildPartitionValueType, ?>> sort(
-				children, c);
+				children, comparator);
 		// Message the root that the node structure under this node has changed
 		// (this is a bit lazy and we could almost certainly be more clever here
 		// as the nodes have been removed and added to re-order them)

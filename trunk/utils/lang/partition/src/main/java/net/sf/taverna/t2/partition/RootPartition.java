@@ -125,6 +125,8 @@ public class RootPartition<ItemType extends Comparable> extends
 		}
 		sortChildPartitions();
 		
+		
+		
 	}
 
 	/**
@@ -194,9 +196,9 @@ public class RootPartition<ItemType extends Comparable> extends
 				treeNodesChanged(new TreeModelEvent(this, parentPathElement
 						.getTreePath()));
 			}
+			partition.removeMember(item);
 			treeNodesRemoved(new TreeModelEvent(this, pathToPartition,
 					new int[] { previousIndex }, new Object[] { item }));
-			partition.removeMember(item);
 			// Traverse up the partition path and decrement the item count. If
 			// any item count becomes zero we mark this as a partition to
 			// remove, then at the end we remove the highest level one (so we
@@ -224,6 +226,7 @@ public class RootPartition<ItemType extends Comparable> extends
 			}
 			itemToLeafPartition.remove(item);
 		}
+		treeStructureChanged(new TreeModelEvent(this,getTreePath()));
 	}
 
 	/**
