@@ -20,6 +20,7 @@
   	<module>biomart-activity-ui</module>
   	<module>biomart-activity-translator</module>
   	<module>biomoby-activity</module>
+  	<module>biomoby-activity-ui</module>
   	<module>biomoby-activity-translator</module>
   	<module>dataflow-activity</module>
   	<module>dataflow-activity-ui</module>
