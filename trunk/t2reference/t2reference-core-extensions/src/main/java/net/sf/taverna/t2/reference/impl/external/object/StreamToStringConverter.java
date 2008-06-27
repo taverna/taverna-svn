@@ -23,7 +23,7 @@ public class StreamToStringConverter implements
 	/***************************************************************************
 	 * = readFile(): reads a text file and returns a string *
 	 **************************************************************************/
-	private static String readFile(Reader reader) throws IOException {
+	static String readFile(Reader reader) throws IOException {
 		StringBuffer buffer = new StringBuffer();
 		char[] chunk = new char[CHUNK_SIZE];
 		int character;
