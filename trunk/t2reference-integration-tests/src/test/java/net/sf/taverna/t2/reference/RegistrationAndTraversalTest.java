@@ -22,12 +22,6 @@ public class RegistrationAndTraversalTest {
 
 	String[] strings = new String[] { "foo", "bar", "urgle", "wibble" };
 
-	private ReferenceContext dummyContext = new ReferenceContext() {
-		public <T> List<? extends T> getEntities(Class<T> arg0) {
-			return new ArrayList<T>();
-		}
-	};
-
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testRegisterFromStringList() throws MalformedURLException {
@@ -38,26 +32,41 @@ public class RegistrationAndTraversalTest {
 
 		List<Object> objectsToRegister = new ArrayList<Object>();
 
+		// Add four String objects to register
 		for (String item : strings) {
 			objectsToRegister.add(item);
 		}
-		objectsToRegister.add(new URL("http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml"));
-		
-		T2Reference ref = rs.register(objectsToRegister, 1, true, dummyContext);
+		// Add a single URL object to register
+		objectsToRegister.add(new URL(
+				"http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml"));
+
+		// Register the POJOs with the reference service, should return a
+		// T2Reference to a list of five single item reference sets
+		T2Reference ref = rs.register(objectsToRegister, 1, true, null);
 		System.out.println(ref);
-		
-		Iterator<ContextualizedT2Reference> refIter = rs.traverseFrom(ref,0);
+
+		// Use the traversal operator to get all the children with depth 0, this
+		// will iterate over the identifiers of all five previously registered
+		// reference sets
+		Iterator<ContextualizedT2Reference> refIter = rs.traverseFrom(ref, 0);
 		while (refIter.hasNext()) {
 			System.out.println(refIter.next());
 		}
-		
+
+		// Render to a POJO, this causes each reference to be de-referenced,
+		// using the value carrying reference capability if present, or the
+		// openstream+StreamToValueConverterSPI if not. In this case the first
+		// method is used for the four string references and the openStream for
+		// the HttpUrlReference. This should print the contents of the
+		// previously registered URL, not the URL itself!
 		System.out.println("Retrieve as POJO...");
-		List<String> strings = (List<String>) rs.renderIdentifier(ref, String.class, dummyContext);
+		List<String> strings = (List<String>) rs.renderIdentifier(ref,
+				String.class, null);
 		for (String s : strings) {
 			System.out.println(s);
 		}
 		System.out.println("Done.");
-		
+
 	}
 
 }
