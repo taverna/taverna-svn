@@ -44,8 +44,11 @@ public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 			ReferenceContext context) throws ReferenceSetServiceException {
 		checkDao();
 		checkAugmentor();
+		if (context == null) {
+			context = new EmptyReferenceContext();
+		}
 		// Obtain the reference set
-		
+
 		try {
 			// Synchronize on the reference set, should ensure that we don't
 			// have multiple concurrent translations assuming that Hibernate
@@ -71,7 +74,7 @@ public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 				}
 				return rs;
 			}
-			
+
 		} catch (ReferenceSetAugmentationException rsae) {
 			throw new ReferenceSetServiceException(rsae);
 		}
@@ -89,15 +92,8 @@ public class ReferenceSetServiceImpl extends AbstractReferenceSetServiceImpl
 		rsi
 				.setExternalReferences(new HashSet<ExternalReferenceSPI>(
 						references));
-		try {
-			T2ReferenceImpl id = (T2ReferenceImpl) t2ReferenceGenerator
-					.nextReferenceSetReference();
-			rsi.setTypedId(id);
-		} catch (ClassCastException cce) {
-			throw new ReferenceSetServiceException(
-					"ID supplied by generator must be an instance of "
-							+ "ReferenceSetT2ReferenceImpl", cce);
-		}
+		T2Reference id = t2ReferenceGenerator.nextReferenceSetReference();
+		rsi.setTypedId(T2ReferenceImpl.getAsImpl(id));
 		try {
 			referenceSetDao.store(rsi);
 			return rsi;

@@ -2,6 +2,7 @@ package net.sf.taverna.t2.reference.impl;
 
 import java.util.List;
 
+import net.sf.taverna.t2.reference.DaoException;
 import net.sf.taverna.t2.reference.IdentifiedList;
 import net.sf.taverna.t2.reference.ListService;
 import net.sf.taverna.t2.reference.ListServiceException;
@@ -22,8 +23,8 @@ public class ListServiceImpl extends AbstractListServiceImpl implements
 		checkDao();
 		try {
 			return listDao.get(id);
-		} catch (Throwable t) {
-			throw new ListServiceException(t);
+		} catch (DaoException de) {
+			throw new ListServiceException(de);
 		}
 	}
 
@@ -31,15 +32,15 @@ public class ListServiceImpl extends AbstractListServiceImpl implements
 			throws ListServiceException {
 		checkDao();
 		checkGenerator();
+		T2ReferenceImpl newReference = T2ReferenceImpl
+				.getAsImpl(t2ReferenceGenerator.nextListReference(false, depth));
+		T2ReferenceListImpl newList = new T2ReferenceListImpl();
+		newList.setTypedId(newReference);
 		try {
-			T2ReferenceImpl newReference = (T2ReferenceImpl) t2ReferenceGenerator
-					.nextListReference(false, depth);
-			T2ReferenceListImpl newList = new T2ReferenceListImpl();
-			newList.setTypedId(newReference);
 			listDao.store(newList);
 			return newList;
-		} catch (Throwable t) {
-			throw new ListServiceException(t);
+		} catch (DaoException de) {
+			throw new ListServiceException(de);
 		}
 	}
 
@@ -75,8 +76,9 @@ public class ListServiceImpl extends AbstractListServiceImpl implements
 			counter++;
 		}
 		try {
-			T2ReferenceImpl newReference = (T2ReferenceImpl) t2ReferenceGenerator
-					.nextListReference(containsErrors, depth+1);
+			T2ReferenceImpl newReference = T2ReferenceImpl
+					.getAsImpl(t2ReferenceGenerator.nextListReference(
+							containsErrors, depth + 1));
 			newList.setTypedId(newReference);
 			listDao.store(newList);
 			return newList;

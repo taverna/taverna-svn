@@ -15,16 +15,41 @@ import org.springframework.transaction.annotation.Transactional;
  * identified entities (ReferenceSet, IdentifiedList&lt;Identified&gt; and
  * ErrorDocument) from a T2Reference identifying a list.
  * <p>
- * Resolution of collections can happen at three different levels - the
- * ListService resolves the collection ID to a list of child IDs, and doesn't
- * traverse these children if they are themselves lists. This service instead
- * resolves to a fully realized collection of the entities which those IDs
- * reference, and does recursively apply this to child lists. The third level of
- * resolution would be to produce a POJO collection structure containing the
- * data values in place of ReferenceSet instances and failing appropriately on
- * ErrorDocuments - this third layer is part of the DataService. Client code
- * that has no need for explicit reference handling should use the DataService
- * for simplicity.
+ * Also provides registration and retrieval logic for POJOs where supported by
+ * appropriate plug-in instances, these methods can be used by code which is not
+ * 'reference aware' to store and retrieve value types transparently.
+ * <p>
+ * Resolution of collections can happen at three different levels:
+ * <ol>
+ * <li>The embedded {@link ListService} resolves the collection ID to a list of
+ * child IDs, and doesn't traverse these children if they are themselves lists.
+ * Use the {@link #getListService()}.{@link ListService#getList(T2Reference) getList()}
+ * to call this method directly on the list service if you need this
+ * functionality, returning a list of {@link T2Reference}</li>
+ * <li>The
+ * {@link #resolveIdentifier(T2Reference, Set, ReferenceContext) resolveIdentifier}
+ * method in this service instead resolves to a fully realized collection of the
+ * entities which those IDs reference, and does recursively apply this to child
+ * lists, resulting in a nested collection structure where the leaf nodes are
+ * ReferenceSet and ErrorDocument instances and non-leaf are IdentifiedList of
+ * Identified (the super-interface for IdentifiedList, ReferenceSet and
+ * ErrorDocument). Use this method if you want to access the
+ * ExternalReferenceSPI and ErrorDocument entities directly because your code
+ * can act on a particular reference type - in general in these cases you would
+ * also be using the augmentation system to ensure that the required reference
+ * type was actually present in the collection structure.</li>
+ * <li>The third level of resolution is to render the identifier through
+ * {@link #renderIdentifier(T2Reference, Class, ReferenceContext) renderIdentifier}
+ * to a nested structure as in
+ * {@link #resolveIdentifier(T2Reference, Set, ReferenceContext) resolveIdentifier}
+ * but where the structure consists of POJOs of the specified type and lists or
+ * either list or the leaf type. This is used when your code is reference
+ * agnostic and just requires the values in an easy to consume fashion. Note
+ * that because this involves pulling the entire structure into memory it may
+ * not be suitable for large data, use with caution. This method will, unlike
+ * {@link #resolveIdentifier(T2Reference, Set, ReferenceContext) resolveIdentifier},
+ * fail if the reference contains or is an error.</li>
+ * </ol>
  * 
  * @author Tom Oinn
  * 
@@ -46,7 +71,8 @@ public interface ReferenceService {
 	 *            not required this can be set to null.
 	 * @param context
 	 *            the ReferenceContext to use to resolve this and any
-	 *            recursively resolved identifiers
+	 *            recursively resolved identifiers <br/> If null the
+	 *            implementation should insert a new empty context and proceed.
 	 * @return fully resolved Identified subclass - this is either a (recursive)
 	 *         IdentifiedList of Identified, a ReferenceSet or an ErrorDocument
 	 * @throws ReferenceServiceException
@@ -93,6 +119,8 @@ public interface ReferenceService {
 	 * If the T2Reference contains or is an error this method will not retrieve
 	 * it, and instead throws ReferenceServiceException
 	 * 
+	 * @see StreamToValueConverterSPI
+	 * @see ValueCarryingExternalReference
 	 * @param id
 	 *            the T2Reference to render to a POJO
 	 * @param leafClass
@@ -100,7 +128,8 @@ public interface ReferenceService {
 	 * @param context
 	 *            a reference context, potentially used if required by the
 	 *            openStream methods of ExternalReferenceSPI implementations
-	 *            used as sources for the POJO construction
+	 *            used as sources for the POJO construction <br/> If null the
+	 *            implementation should insert a new empty context and proceed.
 	 * @return a java structure as defined above
 	 * @throws ReferenceServiceException
 	 *             if anything fails during this process
@@ -120,16 +149,18 @@ public interface ReferenceService {
 	 * <p>
 	 * This method is only valid on parameters of the following type :
 	 * <ol>
+	 * <li>{@link T2Reference} - returned immediately as itself, this is needed
+	 * because it means we can register lists of existing T2Reference</li>
 	 * <li>{@link ReferenceSet} - registered if not already registered,
 	 * otherwise returns existing T2Reference</li>
 	 * <li>{@link ErrorDocument} - same behaviour as ReferenceSet</li>
 	 * <li>{@link ExternalReferenceSPI} - wrapped in ReferenceSet, registered
 	 * and ID returned</li>
-	 * <li>Throwable - wrapped in ErrorDocument with no message, registered and
-	 * ID returned</li>
+	 * <li>Throwable - wrapped in {@link ErrorDocument} with no message,
+	 * registered and ID returned</li>
 	 * <li>List - all children are first registered, if this succeeds the list
-	 * is itself registered as an IdentifiedList of T2Reference and its
-	 * reference returned.</li>
+	 * is itself registered as an {@link IdentifiedList} of {@link T2Reference}
+	 * and its reference returned.</li>
 	 * </ol>
 	 * The exception to this is if the useConvertorSPI parameter is set to true -
 	 * in this case any objects which do not match the above allowed list will
@@ -138,6 +169,7 @@ public interface ReferenceService {
 	 * ExternalReferenceSPI instances. As these can be registered such objects
 	 * will not cause an exception to be thrown.
 	 * 
+	 * @see ValueToReferenceConverterSPI
 	 * @param o
 	 *            the object to register with the reference system, must comply
 	 *            with and will be interpreted as shown in the type list above.
@@ -160,7 +192,8 @@ public interface ReferenceService {
 	 * @param context
 	 *            ReferenceContext to use if required by component services,
 	 *            this is most likely to be used by the object to reference
-	 *            converters if engaged.
+	 *            converters if engaged. <br/> If null the implementation should
+	 *            insert a new empty context and proceed.
 	 * @return a T2Reference to the registered object
 	 * @throws ReferenceServiceException
 	 *             if the object type (or, for collections, the recursive type

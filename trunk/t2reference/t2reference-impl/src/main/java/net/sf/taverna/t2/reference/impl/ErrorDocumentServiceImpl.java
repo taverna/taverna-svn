@@ -36,17 +36,8 @@ public class ErrorDocumentServiceImpl extends AbstractErrorDocumentServiceImpl
 
 		T2Reference ref = t2ReferenceGenerator
 				.nextErrorDocumentReference(depth);
-
-		// The ID to use for the highest level error
-		T2ReferenceImpl typedId;
-
-		if (ref instanceof T2ReferenceImpl) {
-			typedId = (T2ReferenceImpl) ref;
-		} else {
-			throw new ErrorDocumentServiceException(
-					"Can't use this ID generator, the generated IDs "
-							+ "aren't instances of T2ReferenceImpl");
-		}
+		T2ReferenceImpl typedId = T2ReferenceImpl.getAsImpl(ref);
+		
 		ErrorDocument docToReturn = null;
 		while (depth >= 0) {
 			ErrorDocumentImpl edi = new ErrorDocumentImpl();

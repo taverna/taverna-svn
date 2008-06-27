@@ -101,6 +101,9 @@ public interface ReferenceSetService {
 	 *            if translation of references is required the translation
 	 *            infrastructure will need information in this
 	 *            {@link ReferenceContext} parameter.
+	 *            <p>
+	 *            If null the implementation should insert a new empty context
+	 *            and proceed.
 	 * @return the requested {@link ReferenceSet}
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -125,6 +128,9 @@ public interface ReferenceSetService {
 	 *            if translation of references is required the translation
 	 *            infrastructure will need information in this
 	 *            {@link ReferenceContext} parameter.
+	 *            <p>
+	 *            If null the implementation should insert a new empty context
+	 *            and proceed.
 	 * @param callback
 	 *            a {@link ReferenceSetServiceCallback} used to convey the
 	 *            results of the asynchronous call *

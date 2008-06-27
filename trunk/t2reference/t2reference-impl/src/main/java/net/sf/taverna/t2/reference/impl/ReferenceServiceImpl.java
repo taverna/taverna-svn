@@ -91,6 +91,9 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 *            ReferenceContext to use if required by component services,
 	 *            this is most likely to be used by the object to reference
 	 *            converters if engaged.
+	 *            <p>
+	 *            If the context is null a new empty reference context is
+	 *            inserted.
 	 * @return a T2Reference to the registered object
 	 * @throws ReferenceServiceException
 	 *             if the object type (or, for collections, the recursive type
@@ -102,6 +105,9 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			boolean useConverterSPI, ReferenceContext context)
 			throws ReferenceServiceException {
 		checkServices();
+		if (context == null) {
+			context = new EmptyReferenceContext();
+		}
 		if (useConverterSPI) {
 			checkConverterRegistry();
 		}
@@ -121,6 +127,12 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			if (i.getId() != null) {
 				return i.getId();
 			}
+		}
+		// Then check whether the item *is* a T2Reference, in which case we can
+		// just return it (useful for when registering lists of existing
+		// references)
+		if (o instanceof T2Reference) {
+			return (T2Reference)o;
 		}
 		// Next check lists.
 		else if (o instanceof List) {
@@ -233,6 +245,9 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 	 * @param context
 	 *            the ReferenceContext to use to resolve this and any
 	 *            recursively resolved identifiers
+	 *            <p>
+	 *            If the context is null a new EmptyReferenceContext is inserted
+	 *            in its place.
 	 * @return fully resolved Identified subclass - this is either a (recursive)
 	 *         IdentifiedList of Identified, a ReferenceSet or an ErrorDocument
 	 * @throws ReferenceServiceException
@@ -242,7 +257,9 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 			Set<Class<ExternalReferenceSPI>> ensureTypes,
 			ReferenceContext context) throws ReferenceServiceException {
 		checkServices();
-
+		if (context == null) {
+			context = new EmptyReferenceContext();
+		}
 		switch (id.getReferenceType()) {
 
 		case ReferenceSet:
@@ -293,6 +310,11 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 		// Check we have the services installed
 		checkServices();
 
+		// Insert an empty context if context was null
+		if (context == null) {
+			context = new EmptyReferenceContext();
+		}
+
 		// Reject if the source reference contains errors
 		if (id.containsErrors()) {
 			throw new ReferenceServiceException(
@@ -316,6 +338,7 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 					+ leafClass.getCanonicalName() + "'");
 		}
 
+		// Render the identifier
 		return renderIdentifierInner(id, leafClass, context, converter);
 	}
 
@@ -451,6 +474,15 @@ public class ReferenceServiceImpl extends AbstractReferenceServiceImpl
 		return workingSet.iterator();
 	}
 
+	/**
+	 * Append to an int[]
+	 * 
+	 * @param current
+	 *            current int[]
+	 * @param head
+	 *            new int item to append to the current array
+	 * @return new array of int with the head added
+	 */
 	private static int[] addIndex(int[] current, int head) {
 		int[] result = new int[current.length + 1];
 		System.arraycopy(current, 0, result, 0, current.length);
