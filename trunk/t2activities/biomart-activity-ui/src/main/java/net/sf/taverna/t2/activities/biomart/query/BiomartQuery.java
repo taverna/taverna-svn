@@ -36,6 +36,7 @@ public class BiomartQuery extends ActivityQuery {
 					for (MartDataset dataset : datasets) {
 						if (dataset.isVisible()) {
 							BiomartActivityItem item = new BiomartActivityItem();
+							item.setUrl(martService.getLocation());
 							item.setLocation(martURLLocation.getDisplayName());
 							item.setDataset(dataset.getName());
 							MartQuery biomartQuery = new MartQuery(martService,

@@ -26,7 +26,8 @@ public class BiomartActivityContextualView extends HTMLBasedActivityContextualVi
 	@Override
 	protected String getRawTableRowsHtml() {
 		MartQuery q = MartServiceXMLHandler.elementToMartQuery(getConfigBean().getQuery(), null);
-		String html="<tr><td>Location</td><td>"+q.getMartService().getLocation()+"</td></tr>";
+		String html="<tr><td>URL</td><td>"+q.getMartService().getLocation()+"</td></tr>";
+		html+="<tr><td>Location</td><td>"+q.getMartDataset().getMartURLLocation().getDisplayName() + "</td></tr>";
 		boolean firstFilter=true;
 		for (Filter filter : q.getQuery().getFilters()) {
 			html+=firstFilter ? "<tr><td>Filter</td><td>" : "<tr><td></td></td>";
