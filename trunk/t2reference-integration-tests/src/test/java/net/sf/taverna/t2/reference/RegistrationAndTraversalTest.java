@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Tests object registration and identity traversal operations of the
- * ReferenceServiceImpl through spring backed by the InMemory...Dao
- * implementations
+ * Tests object registration, identity traversal and render to POJO operations
+ * of the ReferenceServiceImpl through spring backed by a Hibernate + Derby Dao
+ * set.
  * 
  * @author Tom Oinn
  */
