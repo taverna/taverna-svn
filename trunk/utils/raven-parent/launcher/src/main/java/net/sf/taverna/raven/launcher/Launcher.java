@@ -10,6 +10,7 @@ import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.raven.plugins.PluginManager;
+import net.sf.taverna.raven.prelauncher.BootstrapClassLoader;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
@@ -34,14 +35,14 @@ import net.sf.taverna.raven.spi.SpiRegistry;
 public class Launcher {
 
 	private static Logger logger = Logger.getLogger(Launcher.class);
-	
+
 	/**
 	 * Call the "real" application
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Launcher launcher = new Launcher();		
+		Launcher launcher = new Launcher();
 		int status = launcher.launchMain(args);
 		if (status != 0) {
 			System.exit(status);
@@ -102,7 +103,7 @@ public class Launcher {
 	 * @return The status code of launching, 0 means success.
 	 */
 	public int launchMain(String[] args) {
-		
+		prepareClassLoaders();
 		prepareSplashScreen();
 		String mainClass = appConfig.getMainClass();
 		Launchable launchable;
@@ -129,6 +130,28 @@ public class Launcher {
 			System.err.println("Error while executing main() of " + mainClass);
 			e.printStackTrace();
 			return -4;
+		}
+	}
+
+	private void prepareClassLoaders() {
+		PreLauncher preLauncher = PreLauncher.getInstance();
+		BootstrapClassLoader launchingClassLoader = preLauncher
+				.getLaunchingClassLoader();
+		if (launchingClassLoader == null) {
+			// Set to a child of the real launching class loader (of us - not
+			// PreLauncher) that is an BootstrapClassLoader instance - this
+			// is only neccessary if we were not launched through PreLauncher
+			launchingClassLoader = new BootstrapClassLoader(appRuntime
+					.getClassLoader());
+			preLauncher.setLaunchingClassLoader(launchingClassLoader);
+		}
+		if (Thread.currentThread().getContextClassLoader() == preLauncher
+				.getClass().getClassLoader()) {
+			// Set context class loader to the launching class loader so that
+			// system artifacts can later be injected with
+			// preLauncher.addURLToClassPath(url) and picked up from
+			// 3rd party libraries
+			Thread.currentThread().setContextClassLoader(launchingClassLoader);
 		}
 	}
 

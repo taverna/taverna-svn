@@ -83,10 +83,6 @@ public class PreLauncher {
 			BootstrapClassLoader bootstrapLoader = new BootstrapClassLoader(
 					getClass().getClassLoader());
 			setLaunchingClassLoader(bootstrapLoader);
-			if (Thread.currentThread().getContextClassLoader() == getClass()
-					.getClassLoader()) {
-				Thread.currentThread().setContextClassLoader(bootstrapLoader);
-			}
 		}
 
 		for (URL url : classPath) {
@@ -128,11 +124,14 @@ public class PreLauncher {
 	}
 
 	public BootstrapClassLoader getLaunchingClassLoader() {
-		if (launchingClassLoader == null) {
+		if (launchingClassLoader != null) {
+			return launchingClassLoader;
+		}
+		ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+		if (systemClassLoader instanceof BootstrapClassLoader) {
+			launchingClassLoader = (BootstrapClassLoader) systemClassLoader;
+		} else {
 			ClassLoader myClassLoader = getClass().getClassLoader();
-			if (myClassLoader == null) {
-				myClassLoader = ClassLoader.getSystemClassLoader();
-			}
 			if (myClassLoader instanceof BootstrapClassLoader) {
 				launchingClassLoader = (BootstrapClassLoader) myClassLoader;
 			}
@@ -140,7 +139,7 @@ public class PreLauncher {
 		return launchingClassLoader;
 	}
 
-	protected void setLaunchingClassLoader(BootstrapClassLoader classLoader) {
+	public void setLaunchingClassLoader(BootstrapClassLoader classLoader) {
 		this.launchingClassLoader = classLoader;
 	}
 }
