@@ -3,9 +3,6 @@ package net.sf.taverna.raven.launcher;
 import java.awt.GraphicsEnvironment;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
-
-import net.sf.taverna.raven.Raven;
 import net.sf.taverna.raven.SplashScreen;
 import net.sf.taverna.raven.appconfig.ApplicationConfig;
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
@@ -14,8 +11,9 @@ import net.sf.taverna.raven.prelauncher.BootstrapClassLoader;
 import net.sf.taverna.raven.prelauncher.PreLauncher;
 import net.sf.taverna.raven.repository.Repository;
 import net.sf.taverna.raven.repository.impl.LocalRepository;
-import net.sf.taverna.raven.spi.ProfileFactory;
 import net.sf.taverna.raven.spi.SpiRegistry;
+
+import org.apache.log4j.Logger;
 
 /**
  * Launcher called by the {@link PreLauncher} after making sure Raven etc. is on
