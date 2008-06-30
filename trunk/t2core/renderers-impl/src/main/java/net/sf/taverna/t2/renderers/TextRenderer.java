@@ -6,10 +6,8 @@ import java.util.regex.Pattern;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * 
@@ -27,17 +25,23 @@ public class TextRenderer implements Renderer {
 		return pattern.matcher(mimeType).matches();
 	}
 
-	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) throws RendererException {
+	public String getType() {
+		return "Text";
+	}
+
+	public boolean canHandle(ReferenceService referenceService,
+			T2Reference reference, String mimeType) throws RendererException {
+		return canHandle(mimeType);
+	}
+
+	public JComponent getComponent(ReferenceService referenceService,
+			T2Reference reference) throws RendererException {
 		JTextArea theTextArea = new JTextArea();
 		String resolve = null;
 		try {
-			resolve = (String) dataFacade.resolve(entityIdentifier,
-					String.class);
-		} catch (RetrievalException e1) {
-			// TODO not a string so break - should handle this better
-			return null;
-		} catch (NotFoundException e1) {
+			resolve = (String) referenceService.renderIdentifier(reference,
+					String.class, null);
+		} catch (Exception e1) {
 			// TODO not a string so break - should handle this better
 			return null;
 		}
@@ -49,15 +53,5 @@ public class TextRenderer implements Renderer {
 		}
 
 		return theTextArea;
-	}
-
-	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType)
-			throws RendererException {
-		return canHandle(mimeType);
-	}
-
-	public String getType() {
-		return "Text";
 	}
 }

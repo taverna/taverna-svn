@@ -7,16 +7,14 @@ import java.awt.Rectangle;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
+
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolSimpleViewer;
 import org.jmol.api.JmolViewer;
 import org.jmol.viewer.Viewer;
-
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 
 /**
  * Renders using the Jmol software for chemical structures
@@ -33,25 +31,26 @@ public class JMolRenderer implements Renderer {
 		return true;
 	}
 
-	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType)
-			throws RendererException {
-		Object resolve = null;
-		try {
-			resolve = facade.resolve(entityIdentifier, String.class);
-		} catch (RetrievalException e) {
-			throw new RendererException(
-					"Could not resolve " + entityIdentifier + " (probably is not a JMOL file");
-		} catch (NotFoundException e) {
-			throw new RendererException("Data Manager Could not find "
-					+ entityIdentifier, e);
-		}
-		if (resolve instanceof String) {
-			return canHandle(mimeType);
-		}
-
-		return false;
-	}
+	// public boolean canHandle(DataFacade facade,
+	// EntityIdentifier entityIdentifier, String mimeType)
+	// throws RendererException {
+	// // Object resolve = null;
+	// // try {
+	// // resolve = facade.resolve(entityIdentifier, String.class);
+	// // } catch (RetrievalException e) {
+	// // throw new RendererException(
+	// // "Could not resolve " + entityIdentifier + " (probably is not a JMOL
+	// file");
+	// // } catch (NotFoundException e) {
+	// // throw new RendererException("Data Manager Could not find "
+	// // + entityIdentifier, e);
+	// // }
+	// // if (resolve instanceof String) {
+	// // return canHandle(mimeType);
+	// // }
+	//
+	// return canHandle(mimeType);
+	// }
 
 	public boolean canHandle(String mimeType) {
 		if (mimeType.matches(".*chemical/x-pdb.*")
@@ -67,19 +66,24 @@ public class JMolRenderer implements Renderer {
 
 	static final String scriptString = "select *; spacefill 0.4; wireframe 0.2; colour cpk;";
 
-	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) throws RendererException {
+	public String getType() {
+		return "JMol";
+	}
+
+	public boolean canHandle(ReferenceService referenceService,
+			T2Reference reference, String mimeType) throws RendererException {
+		return canHandle(mimeType);
+	}
+
+	public JComponent getComponent(ReferenceService referenceService,
+			T2Reference reference) throws RendererException {
 		JMolPanel panel = new JMolPanel();
 		String coordinateText = null;
 		try {
-			coordinateText = (String) dataFacade.resolve(entityIdentifier,
-					String.class);
-		} catch (RetrievalException e) {
-			throw new RendererException(
-					"Could not resolve " + entityIdentifier, e);
-		} catch (NotFoundException e) {
-			throw new RendererException("Data Manager Could not find "
-					+ entityIdentifier, e);
+			coordinateText = (String) referenceService.renderIdentifier(
+					reference, String.class, null);
+		} catch (Exception e) {
+			throw new RendererException("Could not resolve " + reference, e);
 		}
 		JmolSimpleViewer viewer = null;
 		try {
@@ -92,7 +96,7 @@ public class JMolRenderer implements Renderer {
 			}
 		} catch (Exception e) {
 			throw new RendererException("could not create JMOL Renderer for "
-					+ entityIdentifier, e);
+					+ reference, e);
 		}
 		return panel;
 	}
@@ -124,9 +128,5 @@ public class JMolRenderer implements Renderer {
 			g.getClipBounds(rectClip);
 			viewer.renderScreenImage(g, currentSize, rectClip);
 		}
-	}
-
-	public String getType() {
-		return "JMol";
 	}
 }

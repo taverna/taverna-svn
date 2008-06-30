@@ -2,11 +2,8 @@ package net.sf.taverna.t2.renderers;
 
 import javax.swing.JComponent;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import cht.svista.SeqVISTA;
 
 /**
@@ -52,18 +49,23 @@ public class SeqVistaRenderer implements Renderer {
 		return false;
 	}
 
-	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) throws RendererException {
+	public String getType() {
+		return "Seq Vista";
+	}
+
+	public boolean canHandle(ReferenceService referenceService,
+			T2Reference reference, String mimeType) throws RendererException {
+		return canHandle(mimeType);
+	}
+
+	public JComponent getComponent(ReferenceService referenceService,
+			T2Reference reference) throws RendererException {
 		String resolve = null;
 		try {
-			resolve = (String) dataFacade.resolve(entityIdentifier,
-					String.class);
-		} catch (RetrievalException e) {
-			throw new RendererException(
-					"Could not resolve " + entityIdentifier, e);
-		} catch (NotFoundException e) {
-			throw new RendererException("Data Manager Could not find "
-					+ entityIdentifier, e);
+			resolve = (String) referenceService.renderIdentifier(reference,
+					String.class, null);
+		} catch (Exception e) {
+			throw new RendererException("Could not resolve " + reference, e);
 		}
 		SeqVISTA vista = new SeqVISTA() {
 			@Override
@@ -75,19 +77,9 @@ public class SeqVistaRenderer implements Renderer {
 			vista.loadFromText(resolve, false, seqType, np);
 		} catch (Exception e) {
 			throw new RendererException(
-					"Could not create Seq Vista renderer for "
-							+ entityIdentifier, e);
+					"Could not create Seq Vista renderer for " + reference, e);
 		}
 		return vista;
-	}
-
-	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) throws RendererException {
-		return canHandle(mimeType);
-	}
-
-	public String getType() {
-		return "Seq Vista";
 	}
 
 }

@@ -4,10 +4,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.JComponent;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 
 /**
  * Viewer to display XML as a tree.
@@ -16,61 +14,45 @@ import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
  * @auhor Ian Dunlop
  */
 public class TextXMLRenderer implements Renderer {
-	
+
 	private Pattern pattern;
 
 	public TextXMLRenderer() {
-			pattern = Pattern.compile(".*text/xml.*");
+		pattern = Pattern.compile(".*text/xml.*");
 	}
-	
+
 	public boolean isTerminal() {
 		return true;
 	}
-
 
 	public boolean canHandle(String mimeType) {
 		return pattern.matcher(mimeType).matches();
 	}
 
-	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) {
+	public String getType() {
+		return "XML tree";
+	}
+
+	public boolean canHandle(ReferenceService referenceService,
+			T2Reference reference, String mimeType) throws RendererException {
+		return canHandle(mimeType);
+	}
+
+	public JComponent getComponent(ReferenceService referenceService,
+			T2Reference reference) throws RendererException {
 		String resolve = null;
 		try {
-			resolve = (String) dataFacade.resolve(entityIdentifier, String.class);
-		} catch (RetrievalException e) {
-			// TODO not a string so throw something
-			return null;
-		} catch (NotFoundException e) {
+			resolve = (String) referenceService.renderIdentifier(reference,
+					String.class, null);
+		} catch (Exception e) {
 			// TODO not a string so throw something
 			return null;
 		}
 		try {
 			return new XMLTree(resolve);
 		} catch (Exception ex) {
-			//throw something?
+			// throw something?
 		}
-		//return as an XML tree??
-//		DataThing dataThing) throws RendererException {
-//			DataThing copy = new DataThing(dataThing);
-//			copy.getMetadata().setMIMETypes(
-//				Arrays.asList(strip(dataThing.getMetadata().getMIMETypes())));
-//
-//			try {
-//				return new XMLTree((String) dataThing.getDataObject());
-//			} catch (Exception ex) {
-//				throw new RendererException(ex);
-//			}
 		return null;
-	}
-
-
-	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType) {
-		return canHandle(mimeType);
-	}
-
-
-	public String getType() {
-		return "XML tree";
 	}
 }

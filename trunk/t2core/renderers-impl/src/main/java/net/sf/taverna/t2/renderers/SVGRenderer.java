@@ -6,10 +6,8 @@ import java.util.regex.Pattern;
 
 import javax.swing.JComponent;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 
 import org.apache.batik.swing.JSVGCanvas;
 import org.apache.commons.io.FileUtils;
@@ -37,18 +35,24 @@ public class SVGRenderer implements Renderer {
 		return pattern.matcher(mimeType).matches();
 	}
 
-	public JComponent getComponent(EntityIdentifier entityIdentifier,
-			DataFacade dataFacade) throws RendererException {
+	public String getType() {
+		return "SVG";
+	}
+
+	public boolean canHandle(ReferenceService referenceService,
+			T2Reference reference, String mimeType) throws RendererException {
+		return canHandle(mimeType);
+	}
+
+	public JComponent getComponent(ReferenceService referenceService,
+			T2Reference reference) throws RendererException {
 		JSVGCanvas svgCanvas = new JSVGCanvas();
 		Object resolve = null;
 		try {
-			resolve = dataFacade.resolve(entityIdentifier);
-		} catch (RetrievalException e) {
-			throw new RendererException(
-					"Could not resolve " + entityIdentifier, e);
-		} catch (NotFoundException e) {
-			throw new RendererException("Data Manager Could not find "
-					+ entityIdentifier, e);
+			resolve = referenceService.renderIdentifier(reference,
+					Object.class, null);
+		} catch (Exception e) {
+			throw new RendererException("Could not resolve " + reference, e);
 		}
 		if (resolve != null && resolve instanceof String && !resolve.equals("")) {
 			String svgContent = (String) resolve;
@@ -68,16 +72,6 @@ public class SVGRenderer implements Renderer {
 			return svgCanvas;
 		}
 		return null;
-	}
-
-	public boolean canHandle(DataFacade facade,
-			EntityIdentifier entityIdentifier, String mimeType)
-			throws RendererException {
-		return canHandle(mimeType);
-	}
-
-	public String getType() {
-		return "SVG";
 	}
 
 }
