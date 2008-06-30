@@ -23,6 +23,7 @@ import net.sf.taverna.t2.monitor.MonitorManager.MonitorMessage;
 import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workbench.views.monitor.MonitorViewComponent;
+import net.sf.taverna.t2.workbench.views.results.ResultViewComponent;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
@@ -38,7 +39,7 @@ public class RunComponent extends JSplitPane {
 
 	private MonitorViewComponent monitorViewComponent;
 	
-	private ResultsComponent resultsComponent;
+	private ResultViewComponent resultsComponent;
 	
 	private Observer<MonitorMessage> monitorObserver;
 
@@ -54,7 +55,7 @@ public class RunComponent extends JSplitPane {
 		monitorViewComponent = new MonitorViewComponent();
 		setTopComponent(monitorViewComponent);
 		
-		resultsComponent = new ResultsComponent();
+		resultsComponent = new ResultViewComponent();
 		setBottomComponent(resultsComponent);
 
 		setDividerLocation(-1);
