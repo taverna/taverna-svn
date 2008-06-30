@@ -24,7 +24,8 @@
 
 # After running this script, repeat the procedure on rosalind to expose
 # the newly committed artifacts in the official maven repositories
-# at http://www.mygrid.org.uk/maven/
+# at http://www.mygrid.org.uk/maven/  (also done by script)
+
 
 # Variables
 
@@ -79,13 +80,16 @@ svn update
 echo "Building $PROJECT"
 cd $PROJECT
 mvn clean 
-mvn install 
+# If the tests fails, exit before we've done any deploying
+mvn test
+
 echo "Deploying locally from $PROJECT to $REP"
-mvn deploy -DaltDeploymentRepository=svn-repository::default::file://$REP
+# Don't need to run tests again
+mvn -Dmaven.test.skip=true deploy -DaltDeploymentRepository=svn-repository::default::file://$REP
 
+
+echo "Committing locally deployed artifacts"
 cd $REP
-
-echo "Committing locally deployed"
 svn add --force .
 
 date=`date +%Y-%m-%d`
