@@ -69,7 +69,7 @@ public class Workbench extends JFrame {
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.LINE_START;
 		JPanel toolbarPanel = makeToolbarPanel();
-		
+
 		add(toolbarPanel, gbc);
 
 		WorkbenchZBasePane basePane = makeBasePane();
@@ -90,7 +90,6 @@ public class Workbench extends JFrame {
 		WorkbenchZBasePane basePane = new WorkbenchZBasePane();
 		basePane.setRepository(appRuntime.getRavenRepository());
 		perspectives = new WorkbenchPerspectives(basePane, perspectiveToolBar);
-		perspectives.initialisePerspectives();
 		return basePane;
 	}
 
@@ -113,7 +112,7 @@ public class Workbench extends JFrame {
 		gbc.weightx = 0.1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		toolbarPanel.add(perspectiveToolBar, gbc);
-		
+
 		return toolbarPanel;
 	}
 

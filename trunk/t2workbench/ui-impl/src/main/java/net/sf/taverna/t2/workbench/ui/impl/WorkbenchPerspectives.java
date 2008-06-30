@@ -31,10 +31,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import net.sf.taverna.raven.appconfig.ApplicationRuntime;
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
+import net.sf.taverna.t2.lang.ui.ModelMap;
+import net.sf.taverna.t2.lang.ui.ModelMap.ModelDestroyedEvent;
+import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
 import net.sf.taverna.t2.spi.SPIRegistry;
 import net.sf.taverna.t2.spi.SPIRegistry.SPIRegistryEvent;
 import net.sf.taverna.t2.ui.perspectives.CustomPerspective;
@@ -47,11 +52,6 @@ import net.sf.taverna.t2.workbench.ui.zaria.WorkflowPerspective;
 import net.sf.taverna.zaria.ZBasePane;
 
 import org.apache.log4j.Logger;
-import net.sf.taverna.t2.lang.ui.ExtensionFileFilter;
-import net.sf.taverna.t2.lang.ui.ModelMap;
-import net.sf.taverna.t2.lang.ui.ModelMap.ModelDestroyedEvent;
-import net.sf.taverna.t2.lang.ui.ModelMap.ModelMapEvent;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -91,18 +91,24 @@ public class WorkbenchPerspectives {
 
 	private JToolBar toolBar = null;
 
-	Set<CustomPerspective> customPerspectives = Collections.<CustomPerspective>emptySet();
+	Set<CustomPerspective> customPerspectives = Collections
+			.<CustomPerspective> emptySet();
 
 	private PerspectiveRegistryObserver perspectiveRegistryObserver = new PerspectiveRegistryObserver();
 
 	private PerspectiveRegistry perspectiveRegistry = PerspectiveRegistry
 			.getInstance();
 
+	private boolean refreshing;
+
 	public WorkbenchPerspectives(ZBasePane basePane, JToolBar toolBar) {
 		this.basePane = basePane;
 		this.toolBar = toolBar;
+		refreshing = true;
 		perspectiveRegistry.addObserver(perspectiveRegistryObserver);
 		modelMap.addObserver(perspectiveObserver);
+		initialisePerspectives();
+		refreshing = false;
 	}
 
 	public JMenu getDisplayPerspectivesMenu() {
@@ -113,7 +119,7 @@ public class WorkbenchPerspectives {
 		JMenu editPerspectivesMenu = new JMenu("Edit perspectives");
 		Action newPerspectiveAction = new NewPerspectiveAction();
 		editPerspectivesMenu.add(newPerspectiveAction);
-		
+
 		Action toggleEditAction = basePane.getToggleEditAction();
 		toggleEditAction.putValue(Action.SMALL_ICON, WorkbenchIcons.editIcon);
 		editPerspectivesMenu.add(toggleEditAction);
@@ -141,7 +147,7 @@ public class WorkbenchPerspectives {
 		return result;
 	}
 
-	public void initialisePerspectives() {
+	private void initialisePerspectives() {
 		List<PerspectiveSPI> perspectives = PerspectiveRegistry.getInstance()
 				.getPerspectives();
 		for (final PerspectiveSPI perspective : perspectives) {
@@ -225,7 +231,8 @@ public class WorkbenchPerspectives {
 				logger.warn("No WorkflowPerspective found");
 				return;
 			}
-			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, foundPerspective);
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+					foundPerspective);
 		}
 	}
 
@@ -236,7 +243,8 @@ public class WorkbenchPerspectives {
 					"Sorry, unable to change perspectives whilst in edit mode",
 					"Cannot change perspective",
 					JOptionPane.INFORMATION_MESSAGE);
-			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, currentPerspective);
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+					currentPerspective);
 			return;
 		}
 
@@ -302,7 +310,8 @@ public class WorkbenchPerspectives {
 		toolbarButton.setToolTipText(perspective.getText() + " perspective");
 		Action action = new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, perspective);
+				modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+						perspective);
 			}
 		};
 		action.putValue(Action.NAME, perspective.getText());
@@ -401,19 +410,7 @@ public class WorkbenchPerspectives {
 	 * Recreates the toolbar buttons. Useful if a perspective has been removed.
 	 */
 	private void refreshPerspectives() {
-		toolBar.removeAll();
-		toolBar.repaint();
-
-		try {
-			saveAll();
-			perspectiveVisibilityMap.clear();
-			perspectiveVisibilityMenu.removeAll();
-			initialisePerspectives();
-		} catch (IOException e) {
-			logger
-					.error("Error saving perspectives whilst doing a refresh.",
-							e);
-		}
+		SwingUtilities.invokeLater(new RefreshRunner());
 	}
 
 	private void savePerspective(PerspectiveSPI perspective) {
@@ -462,7 +459,8 @@ public class WorkbenchPerspectives {
 		if (!set) // no visible perspectives were found
 		{
 			logger.info("No visible perspectives.");
-			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, new BlankPerspective());
+			modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+					new BlankPerspective());
 		}
 	}
 
@@ -511,7 +509,8 @@ public class WorkbenchPerspectives {
 					}
 					perspective.update(perspectiveLayout);
 				} else {
-					logger.warn("Number of split panes differ, default perspective must have changed. Restoring to default.");
+					logger
+							.warn("Number of split panes differ, default perspective must have changed. Restoring to default.");
 				}
 
 			} catch (JDOMException e) {
@@ -524,12 +523,40 @@ public class WorkbenchPerspectives {
 		}
 	}
 
+	private final class RefreshRunner implements Runnable {
+		public void run() {
+			synchronized (WorkbenchPerspectives.this) {
+				if (refreshing) {
+					// We only need one run
+					return;
+				}
+				refreshing = true;
+			}
+			try {
+				toolBar.removeAll();
+				toolBar.repaint();
+				try {
+					saveAll();
+				} catch (IOException e) {
+					logger.warn("Could not save perspectives", e);
+				}
+				perspectiveVisibilityMap.clear();
+				perspectiveVisibilityMenu.removeAll();
+				initialisePerspectives();
+			} finally {
+				synchronized (WorkbenchPerspectives.this) {
+					refreshing = false;
+				}
+			}
+		}
+	}
+
 	private final class NewPerspectiveAction extends AbstractAction {
-		
+
 		public NewPerspectiveAction() {
 			super("New...", WorkbenchIcons.newIcon);
 		}
-		
+
 		public void actionPerformed(ActionEvent e) {
 			String name = JOptionPane.showInputDialog(basePane,
 					"New perspective name");
@@ -573,7 +600,8 @@ public class WorkbenchPerspectives {
 				// if no perspectives are currently visible, then change to
 				// the one just made visible
 				if (current == null || current instanceof BlankPerspective) {
-					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, perspective);
+					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+							perspective);
 				}
 			}
 		}
@@ -637,7 +665,8 @@ public class WorkbenchPerspectives {
 				PerspectiveSPI p = (PerspectiveSPI) ModelMap.getInstance()
 						.getModel(ModelMapConstants.CURRENT_PERSPECTIVE);
 				if (p != null) {
-					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE, null);
+					modelMap.setModel(ModelMapConstants.CURRENT_PERSPECTIVE,
+							null);
 					basePane.setEditable(false); // cancel edit mode
 					// so perspective can be changed after deletion
 					try {
@@ -658,7 +687,8 @@ public class WorkbenchPerspectives {
 	}
 
 	/**
-	 * Change perspective when ModelMapConstants.CURRENT_PERSPECTIVE has been modified.
+	 * Change perspective when ModelMapConstants.CURRENT_PERSPECTIVE has been
+	 * modified.
 	 * 
 	 * @author Stian Soiland-Reyes
 	 * @author Stuart Owen
@@ -666,7 +696,8 @@ public class WorkbenchPerspectives {
 	public class CurrentPerspectiveObserver implements Observer<ModelMapEvent> {
 		public void notify(Observable<ModelMapEvent> sender,
 				ModelMapEvent message) throws Exception {
-			if (!message.getModelName().equals(ModelMapConstants.CURRENT_PERSPECTIVE)) {
+			if (!message.getModelName().equals(
+					ModelMapConstants.CURRENT_PERSPECTIVE)) {
 				return;
 			}
 			if (message.getOldModel() instanceof PerspectiveSPI) {
@@ -674,12 +705,14 @@ public class WorkbenchPerspectives {
 						.getElement());
 			}
 			if (message.getNewModel() instanceof PerspectiveSPI) {
-				PerspectiveSPI newPerspective = (PerspectiveSPI) message.getNewModel();
+				PerspectiveSPI newPerspective = (PerspectiveSPI) message
+						.getNewModel();
 				switchPerspective(newPerspective);
 			}
 			if (message instanceof ModelDestroyedEvent
 					&& message.getOldModel() instanceof CustomPerspective) {
-				CustomPerspective customPerspective = (CustomPerspective) message.getOldModel();
+				CustomPerspective customPerspective = (CustomPerspective) message
+						.getOldModel();
 				removeCustomPerspective(customPerspective);
 			}
 
