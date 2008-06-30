@@ -87,4 +87,11 @@ public interface ErrorDocumentService {
 			ErrorDocumentServiceCallback callback)
 			throws ErrorDocumentServiceException;
 
+	/**
+	 * Return the T2Reference for the sole child of an error document
+	 * identifier.
+	 */
+	public T2Reference getChild(T2Reference errorId)
+			throws ErrorDocumentServiceException;
+
 }

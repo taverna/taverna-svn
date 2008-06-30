@@ -37,7 +37,7 @@ public class ErrorDocumentServiceImpl extends AbstractErrorDocumentServiceImpl
 		T2Reference ref = t2ReferenceGenerator
 				.nextErrorDocumentReference(depth);
 		T2ReferenceImpl typedId = T2ReferenceImpl.getAsImpl(ref);
-		
+
 		ErrorDocument docToReturn = null;
 		while (depth >= 0) {
 			ErrorDocumentImpl edi = new ErrorDocumentImpl();
@@ -75,6 +75,16 @@ public class ErrorDocumentServiceImpl extends AbstractErrorDocumentServiceImpl
 		}
 		return docToReturn;
 
+	}
+
+	public T2Reference getChild(T2Reference errorId)
+			throws ErrorDocumentServiceException {
+		T2ReferenceImpl refImpl = T2ReferenceImpl.getAsImpl(errorId);
+		try {
+			return refImpl.getDeeperErrorReference();
+		} catch (Throwable t) {
+			throw new ErrorDocumentServiceException(t);
+		}
 	}
 
 }
