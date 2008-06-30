@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -148,6 +151,8 @@ public class LocalRepository implements Repository {
 	 */
 	private LinkedHashSet<URL> repositories = new LinkedHashSet<URL>();
 
+	private HashSet<URI> blacklistedRepositories = new HashSet<URI>();
+
 	/**
 	 * Map of artifact to artifact status
 	 */
@@ -175,8 +180,8 @@ public class LocalRepository implements Repository {
 			this.base = base;
 		}
 		// Fake in our own classloader
-		Artifact ravenArtifact = new BasicArtifact(
-				RAVEN_GROUPID, RAVEN_ARTIFACT, RAVEN_VERSION);
+		Artifact ravenArtifact = new BasicArtifact(RAVEN_GROUPID,
+				RAVEN_ARTIFACT, RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
@@ -205,14 +210,14 @@ public class LocalRepository implements Repository {
 			this.base = base;
 		}
 		// Fake in our own classloader
-		Artifact ravenArtifact = new BasicArtifact(
-				RAVEN_GROUPID, RAVEN_ARTIFACT, RAVEN_VERSION);
+		Artifact ravenArtifact = new BasicArtifact(RAVEN_GROUPID,
+				RAVEN_ARTIFACT, RAVEN_VERSION);
 		synchronized (loaderMap) {
 			loaderMap.put(ravenArtifact, new LocalArtifactClassLoader(this,
 					this.getClass().getClassLoader(), ravenArtifact));
 			for (Artifact systemArtifact : systemArtifacts) {
-				loaderMap.put(systemArtifact, new LocalArtifactClassLoader(this,
-						loader, systemArtifact));
+				loaderMap.put(systemArtifact, new LocalArtifactClassLoader(
+						this, loader, systemArtifact));
 			}
 		}
 		initialize();
@@ -260,7 +265,8 @@ public class LocalRepository implements Repository {
 	 * created it. If the classloader was not an instance of
 	 * LocalArtifactClassLoader then return null
 	 */
-	public Artifact artifactForClass(Class<?> c) throws ArtifactNotFoundException {
+	public Artifact artifactForClass(Class<?> c)
+			throws ArtifactNotFoundException {
 		synchronized (loaderMap) {
 			for (Entry<Artifact, LocalArtifactClassLoader> entry : loaderMap
 					.entrySet()) {
@@ -457,6 +463,9 @@ public class LocalRepository implements Repository {
 	 * @see net.sf.taverna.raven.repository.impl.Repository#update()
 	 */
 	public synchronized void update() {
+		// Clear black list for a new update
+		blacklistedRepositories.clear();
+
 		while (act()) {
 			// nothing
 		}
@@ -687,12 +696,19 @@ public class LocalRepository implements Repository {
 		}
 		String repositoryPath = repositoryPath(a, suffix);
 		for (URL repository : repositories) {
+			if (isBlacklisted(repository)) {
+				logger.debug("Skipping blacklisted repository " + repository
+						+ " for " + a);
+				continue;
+			}
+			InputStream is = null;
 			try {
-				URL pomLocation = new URL(repository, repositoryPath);
-				InputStream is = null;
+				URL pomLocation;
+				pomLocation = new URL(repository, repositoryPath);
 				try {
 					URLConnection connection = pomLocation.openConnection();
 					connection.setConnectTimeout(10000);
+					connection.setReadTimeout(10000);
 					connection.connect();
 					int length = connection.getContentLength();
 					dlstatus.put(a, new DownloadStatusImpl(length));
@@ -704,12 +720,14 @@ public class LocalRepository implements Repository {
 						logger.info(a + " not found in " + repository);
 					}
 				} catch (SocketTimeoutException e) {
-					logger.warn("Connection timed out while looking for" + a
+					logger.warn("Connection timed out while looking for " + a
 							+ " in " + repository);
+					blacklistRepository(repository);
 				} catch (UnknownHostException e) {
-					logger.error("Unable to determine host for:"
+					logger.error("Unable to determine host for: "
 							+ pomLocation.toExternalForm()
 							+ ", maybe there is no network access?");
+					blacklistRepository(repository);
 				}
 
 				if (is != null) {
@@ -753,19 +771,49 @@ public class LocalRepository implements Repository {
 				logger.error("Malformed repository URL: " + repository, e);
 			} catch (FileNotFoundException e) {
 				logger.info(a + " not found in " + repository);
+			} catch (SocketException e) {
+				logger.warn("Socket error when connection to " + repository, e);
+				blacklistRepository(repository);
 			} catch (IOException e) {
-				logger.warn("Could not read " + a, e);
+				logger.warn("Could not read " + a + " from " + repository, e);
 				// Ignore the exception, probably means we couldn't find the POM
 				// in the repository. If there are more repositories in the list
-				// this isn't neccessarily an issue.
+				// this isn't necessarily an issue.
+			} finally {
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
 			}
 		}
+
 		// No appropriate POM found in any of the repositories so throw an
 		// exception
 		setStatus(a, "pom".equals(suffix) ? ArtifactStatus.PomFailed
 				: ArtifactStatus.JarFailed);
 		dlstatus.remove(a);
 		throw new ArtifactNotFoundException("Can't find artifact for: " + a);
+	}
+
+	private boolean isBlacklisted(URL repository) {
+		try {
+			return blacklistedRepositories.contains(repository.toURI());
+		} catch (URISyntaxException e) {
+			logger.debug("Ignoring invalid repository " + repository);
+			return true;
+		}
+	}
+
+	private void blacklistRepository(URL repository) {
+		logger.warn("Blacklisting repository " + repository);
+		try {
+			blacklistedRepositories.add(repository.toURI());
+		} catch (URISyntaxException e1) {
+			logger.error("Invalid blacklisted repository " + repository);
+		}
 	}
 
 	/**
@@ -908,9 +956,14 @@ public class LocalRepository implements Repository {
 			URL metadata = new URL(repository, repositoryDir + "/"
 					+ "maven-metadata.xml");
 			DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+			InputStream metaInStream = null;
 			try {
-				Document doc = fac.newDocumentBuilder().parse(
-						metadata.openStream());
+				URLConnection metaCon = metadata.openConnection();
+				metaCon.setConnectTimeout(10000);
+				metaCon.setReadTimeout(10000);
+
+				metaInStream = metaCon.getInputStream();
+				Document doc = fac.newDocumentBuilder().parse(metaInStream);
 				String filename = getSnapshotFilenameFromMetaData(a, doc,
 						suffix);
 
@@ -918,6 +971,7 @@ public class LocalRepository implements Repository {
 				URLConnection con = new URL(repository, repositoryDir + "/"
 						+ filename).openConnection();
 				con.setConnectTimeout(10000);
+				con.setReadTimeout(10000);
 				result = con.getInputStream();
 
 				logger.info("Returning snapshot stream to "
@@ -931,6 +985,14 @@ public class LocalRepository implements Repository {
 			} catch (ParserConfigurationException e) {
 				logger.error("Error parsing maven-metadata.xml for artifact "
 						+ a + " at " + metadata);
+			} finally {
+				if (metaInStream != null) {
+					try {
+						metaInStream.close();
+					} catch (IOException e) {
+						// ignore
+					}
+				}
 			}
 
 		} catch (MalformedURLException e) {
