@@ -2,6 +2,7 @@ package net.sf.taverna.t2.reference.impl.external.object;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import net.sf.taverna.t2.reference.AbstractExternalReference;
@@ -43,10 +44,21 @@ public class InlineByteArrayReference extends AbstractExternalReference
 	private static Charset charset = Charset.forName("UTF-8");
 
 	public String getContents() {
-		return new String(bytes, charset);
+		try {
+			return new String(bytes, charset.toString());
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void setContents(String contentsAsString) {
-		this.bytes = contentsAsString.getBytes(charset);
+		try {
+			this.bytes = contentsAsString.getBytes(charset.toString());
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
