@@ -1,73 +1,17 @@
 <basepane>
-	<child>
-		<znode classname="net.sf.taverna.zaria.ZSplitPane">
-			<split ratio="0.4992764109985528"
-				orientation="horizontal">
-				<right>
-					<znode
-						classname="net.sf.taverna.zaria.ZRavenComponent">
-						<component scroll="true" />
-						<namedcomponent scroll="false">
-							<name>inputs</name>
-						</namedcomponent>
-					</znode>
-				</right>
-				<left>
-					<znode
-						classname="net.sf.taverna.zaria.ZSplitPane">
-						<split ratio="0.49743589743589745"
-							orientation="vertical">
-							<right>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="true" />
-									<namedcomponent scroll="true">
-										<name>results</name>
-									</namedcomponent>
-								</znode>
-							</right>
-							<left>
-								<znode
-									classname="net.sf.taverna.zaria.ZRavenComponent">
-									<component scroll="true" />
-									<namedcomponent scroll="false">
-										<name>monitor</name>
-									</namedcomponent>
-								</znode>
-							</left>
-						</split>
-					</znode>
-				</left>
-			</split>
-		</znode>
-	</child>
-	<namedcomponents>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench.views</groupid>
-			<artifact>inputs</artifact>
-			<version>0.0.1-SNAPSHOT</version>
-			<classname>
-				net.sf.taverna.t2.workbench.views.inputs.InputsViewComponentFactory
-			</classname>
-			<name>inputs</name>
-		</namedcomponent>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench.views</groupid>
-			<artifact>results</artifact>
-			<version>0.0.1-SNAPSHOT</version>
-			<classname>
-				net.sf.taverna.t2.workbench.views.results.ResultsViewComponentFactory
-			</classname>
-			<name>results</name>
-		</namedcomponent>
-		<namedcomponent>
-			<groupid>net.sf.taverna.t2.workbench.views</groupid>
-			<artifact>monitor</artifact>
-			<version>0.0.1-SNAPSHOT</version>
-			<classname>
-				net.sf.taverna.t2.workbench.views.monitor.MonitorViewComponentFactory
-			</classname>
-			<name>monitor</name>
-		</namedcomponent>
-	</namedcomponents>
+  <child>
+    <znode classname="net.sf.taverna.zaria.ZRavenComponent">
+      <namedcomponent scroll="false">
+        <name>Dataflow Runs</name>
+      </namedcomponent>
+    </znode>
+  </child>
+  <namedcomponents>
+    <namedcomponent>
+      <groupid>net.sf.taverna.t2.workbench</groupid>
+      <artifact>run-ui</artifact>
+      <classname>net.sf.taverna.t2.workbench.run.DataflowRunsComponentFactory</classname>
+      <name>Dataflow Runs</name>
+    </namedcomponent>
+  </namedcomponents>
 </basepane>
