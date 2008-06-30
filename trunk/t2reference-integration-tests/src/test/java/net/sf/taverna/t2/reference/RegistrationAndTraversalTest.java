@@ -39,6 +39,8 @@ public class RegistrationAndTraversalTest {
 		// Add a single URL object to register
 		objectsToRegister.add(new URL(
 				"http://www.ebi.ac.uk/~tmo/defaultMartRegistry.xml"));
+		// Add a byte array to register
+		objectsToRegister.add("Hello world".getBytes());
 
 		// Register the POJOs with the reference service, should return a
 		// T2Reference to a list of five single item reference sets
@@ -64,7 +66,7 @@ public class RegistrationAndTraversalTest {
 				String.class, null);
 		for (String s : strings) {
 			System.out.println(s);
-		}
+		}		
 		System.out.println("Done.");
 
 	}

@@ -18,6 +18,10 @@
 		<property name="hibernateProperties">
 			<ref bean="t2reference.orm.h3.properties" />
 		</property>
+		<property name="lobHandler">
+			<bean
+				class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
+		</property>
 		<!-- Need to map the abstract superclass for the SPI first, SPI classes -->
 		<!-- are subclasses of this and hibernate can be picky about the order  -->
 		<property name="mappingResources">

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <!-- Dao implementations backed by full hibernate transaction manager support -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -36,6 +35,10 @@
 		</property>
 		<property name="hibernateProperties">
 			<ref bean="t2reference.orm.h3.properties" />
+		</property>
+		<property name="lobHandler">
+			<bean
+				class="org.springframework.jdbc.support.lob.DefaultLobHandler" />
 		</property>
 		<!-- Need to map the abstract superclass for the SPI first, SPI classes -->
 		<!-- are subclasses of this and hibernate can be picky about the order  -->
