@@ -3,10 +3,10 @@ package net.sf.taverna.t2.compatibility.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.compatibility.activity.AbstractActivityTranslator;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslationException;
 import net.sf.taverna.t2.compatibility.activity.ActivityTranslator;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.processor.activity.Activity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -103,7 +103,7 @@ public abstract class AbstractActivityTranslator<ConfigurationType> implements
 			List<String> mimeTypes = new ArrayList<String>();
 			mimeTypes.add(inputPort.getSyntacticType());
 			bean.setMimeTypes(mimeTypes);
-			bean.setHandledReferenceSchemes(new ArrayList<Class<? extends ReferenceScheme<?>>>());
+			bean.setHandledReferenceSchemes(new ArrayList<Class<? extends ExternalReferenceSPI>>());
 			bean.setTranslatedElementType(determineClassFromSyntacticType(inputPort.getSyntacticType()));
 			bean.setAllowsLiteralValues(true);
 			inputDefinitions.add(bean);
