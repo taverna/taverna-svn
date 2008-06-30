@@ -1,22 +1,14 @@
 package net.sf.taverna.t2.workbench.models.graph;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
@@ -27,7 +19,6 @@ import net.sf.taverna.t2.workbench.models.graph.GraphEdge.ArrowStyle;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionMessage;
 import net.sf.taverna.t2.workbench.ui.DataflowSelectionModel;
-import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workflowmodel.Condition;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
@@ -128,6 +119,10 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 	private boolean showMerges = true;
 
+	protected Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
+
+	protected Map<String, List<GraphElement>> graphEdgeMap = new HashMap<String, List<GraphElement>>();
+
 	protected GraphElement edgeCreationSource;
 	
 	protected GraphElement edgeCreationSink;
@@ -140,9 +135,14 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		this.dataflow = dataflow;
 		this.graphModelFactory = graphModelFactory;
 		this.componentForPopups = componentForPopups;
-		dataflowSelectionModel = DataflowSelectionManager.getInstance().getDataflowSelectionModel(dataflow);
-		dataflowSelectionModel.addObserver(this);
-		graphEventManager = new GraphEventManager(this, componentForPopups);
+		this.graphEventManager = new DefaultGraphEventManager(this, componentForPopups);
+	}
+	
+	public GraphController(Dataflow dataflow, GraphModelFactory graphModelFactory, GraphEventManager graphEventManager, Component componentForPopups) {
+		this.dataflow = dataflow;
+		this.graphModelFactory = graphModelFactory;
+		this.componentForPopups = componentForPopups;
+		this.graphEventManager = graphEventManager;
 	}
 	
 	/**
@@ -157,7 +157,9 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		outputControls.clear();
 		nestedDataflowPorts.clear();
 		dataflowToProcessorPorts.clear();
+		graphElementMap.clear();
 		return generateGraph(dataflow, "", "dataflow_graph", 0);
+		
 	}
 	
 	public boolean startEdgeCreation(GraphElement graphElement, Point point) {
@@ -369,6 +371,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 		}
 		
+		graphElementMap.put(graph.getId(), graph);
 		return graph;
 	}
 
@@ -407,6 +410,10 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				dataflowToGraph.put(condition, edge);
 			}
 		}
+		if (!graphEdgeMap.containsKey(edge.getId())) {
+			graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
+		}
+		graphEdgeMap.get(edge.getId()).add(edge);
 		return edge;
 	}
 
@@ -441,6 +448,10 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				edge.setDataflowObject(datalink);
 			}
 			dataflowToGraph.put(datalink, edge);
+			if (!graphEdgeMap.containsKey(edge.getId())) {
+				graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
+			}
+			graphEdgeMap.get(edge.getId()).add(edge);
 		}
 		return edge;
 	}
@@ -490,6 +501,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 			ports.put(inputPort.getInternalOutputPort(), inputNode);
 			inputs.addNode(inputNode);
+			graphElementMap.put(inputNode.getId(), inputNode);
 		}
 		return inputs;
 	}
@@ -539,6 +551,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 			ports.put(outputPort.getInternalInputPort(), outputNode);
 			outputs.addNode(outputNode);
+			graphElementMap.put(outputNode.getId(), outputNode);
 		}
 		return outputs;
 	}
@@ -571,6 +584,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		portNode.setLabel(outputPort.getName());
 		ports.put(outputPort, portNode);
 		node.addSourceNode(portNode);
+
+		graphElementMap.put(node.getId(), node);
 		return node;
 	}
 
@@ -647,6 +662,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 			ports.put(inputPort, portNode);
 			node.addSinkNode(portNode);
+			graphElementMap.put(portNode.getId(), portNode);
 		}
 
 		for (ProcessorOutputPort outputPort : processor.getOutputPorts()) {
@@ -661,7 +677,9 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			}
 			ports.put(outputPort, portNode);
 			node.addSourceNode(portNode);
+			graphElementMap.put(portNode.getId(), portNode);
 		}
+		graphElementMap.put(node.getId(), node);
 		return node;
 	}
 
@@ -681,6 +699,35 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	 */
 	public DataflowSelectionModel getDataflowSelectionModel() {
 		return dataflowSelectionModel;
+	}
+
+	/**
+	 * Sets the dataflowSelectionModel.
+	 *
+	 * @param dataflowSelectionModel the new dataflowSelectionModel
+	 */
+	public void setDataflowSelectionModel(
+			DataflowSelectionModel dataflowSelectionModel) {
+		if (this.dataflowSelectionModel != null) {
+			this.dataflowSelectionModel.removeObserver(this);
+		}
+		this.dataflowSelectionModel = dataflowSelectionModel;
+		this.dataflowSelectionModel.addObserver(this);
+	}
+
+	/**
+	 * Sets the proportion of the node's jobs that have been completed.
+	 * 
+	 * @param nodeId
+	 *            the id of the node
+	 * @param complete
+	 *            the proportion of the nodes's jobs that have been
+	 *            completed, a value between 0.0 and 1.0
+	 */
+	public void setNodeCompleted(String nodeId, float complete) {
+		if (graphElementMap.containsKey(nodeId)) {
+			graphElementMap.get(nodeId).setCompleted(complete);
+		}
 	}
 
 	/**
@@ -738,11 +785,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	}
 
 	public void resetSelection() {
-		for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
-			GraphElement graphElement = dataflowToGraph.get(dataflowElement);
-			if (graphElement != null) {
-				graphElement.setSelected(true);
-			}		
+		if (dataflowSelectionModel != null) {
+			for (Object dataflowElement : dataflowSelectionModel.getSelection()) {
+				GraphElement graphElement = dataflowToGraph.get(dataflowElement);
+				if (graphElement != null) {
+					graphElement.setSelected(true);
+				}		
+			}
 		}
 	}
 

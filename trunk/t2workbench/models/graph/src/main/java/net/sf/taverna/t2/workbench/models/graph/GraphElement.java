@@ -28,6 +28,8 @@ public abstract class GraphElement {
 	private Object dataflowObject;
 	
 	private GraphEventManager eventManager;
+	
+	protected float complete;
 
 	protected GraphElement(GraphEventManager eventManager) {
 		this.eventManager = eventManager;
@@ -189,4 +191,14 @@ public abstract class GraphElement {
 	public void setSelected(boolean selected) {
 		this.selected = selected;
 	}
+	
+	/**
+	 * Sets the completed value.
+	 * 
+	 * @param complete
+	 */
+	public void setCompleted(float complete) {
+		this.complete = complete;
+	}
+
 }

@@ -1,7 +1,6 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
 import java.awt.Color;
-import java.awt.Point;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -11,7 +10,6 @@ import net.sf.taverna.t2.workbench.ui.impl.configuration.WorkbenchConfiguration;
 
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.dom.svg.SVGOMLineElement;
 import org.apache.batik.dom.svg.SVGOMPoint;
 import org.apache.batik.util.SVGConstants;
 import org.apache.batik.util.XMLResourceDescriptor;

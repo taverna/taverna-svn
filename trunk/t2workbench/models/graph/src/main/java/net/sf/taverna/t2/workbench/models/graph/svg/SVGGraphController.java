@@ -15,8 +15,8 @@ import javax.swing.JComponent;
 import net.sf.taverna.t2.workbench.models.graph.DotWriter;
 import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
-import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphElement;
+import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode.Shape;
@@ -48,18 +48,18 @@ public class SVGGraphController extends GraphController {
 
 	private Map<String, List<SVGGraphEdge>> datalinkMap = new HashMap<String, List<SVGGraphEdge>>();
 
-	private Map<String, GraphElement> graphElementMap = new HashMap<String, GraphElement>();
-
-	private Map<String, List<GraphElement>> graphEdgeMap = new HashMap<String, List<GraphElement>>();
-
-	private SVGDocument svgDocument;
+	SVGDocument svgDocument;
 
 	private EdgeLine edgeLine;
 	
 	UpdateManager updateManager;
 
-	public SVGGraphController(Dataflow dataflow, JComponent xcomponent) {
-		super(dataflow, new SVGGraphModelFactory(), xcomponent);
+	public SVGGraphController(Dataflow dataflow, JComponent component) {
+		super(dataflow, new SVGGraphModelFactory(), component);
+	}
+
+	public SVGGraphController(Dataflow dataflow, GraphEventManager graphEventManager, JComponent component) {
+		super(dataflow, new SVGGraphModelFactory(), graphEventManager, component);
 	}
 
 	public SVGDocument generateSVGDocument() {
@@ -69,8 +69,6 @@ public class SVGGraphController extends GraphController {
 		datalinkMap.clear();
 
 		Graph graph = generateGraph();
-		graphElementMap.clear();
-		mapGraphElements(graph);
 		try {
 			StringWriter stringWriter = new StringWriter();
 			DotWriter dotWriter = new DotWriter(stringWriter);
@@ -128,25 +126,25 @@ public class SVGGraphController extends GraphController {
 		edgeLine.setVisible(false);
 	}
 
-	private void mapGraphElements(Graph graph) {
-		graphElementMap.put(graph.getId(), graph);
-		for (Graph subgraph : graph.getSubgraphs()) {
-			mapGraphElements(subgraph);
-		}
-		for (GraphNode node : graph.getNodes()) {
-			if (node.isExpanded()) {
-				mapGraphElements(node.getGraph());
-			} else {
-				graphElementMap.put(node.getId(), node);
-			}
-		}
-		for (GraphEdge edge : graph.getEdges()) {
-			if (!graphEdgeMap.containsKey(edge.getId())) {
-				graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
-			}
-			graphEdgeMap.get(edge.getId()).add(edge);
-		}
-	}
+//	private void mapGraphElements(Graph graph) {
+//		graphElementMap.put(graph.getId(), graph);
+//		for (Graph subgraph : graph.getSubgraphs()) {
+//			mapGraphElements(subgraph);
+//		}
+//		for (GraphNode node : graph.getNodes()) {
+//			if (node.isExpanded()) {
+//				mapGraphElements(node.getGraph());
+//			} else {
+//				graphElementMap.put(node.getId(), node);
+//			}
+//		}
+//		for (GraphEdge edge : graph.getEdges()) {
+//			if (!graphEdgeMap.containsKey(edge.getId())) {
+//				graphEdgeMap.put(edge.getId(), new ArrayList<GraphElement>());
+//			}
+//			graphEdgeMap.get(edge.getId()).add(edge);
+//		}
+//	}
 
 	/**
 	 * Traverses nodes in the SVG DOM and maps to SVGGraphNode and
@@ -172,9 +170,12 @@ public class SVGGraphController extends GraphController {
 				} else if ("edge".equals(gElementClass)) {
 					mapEdge(node);
 				}
-//			} else if (node instanceof SVGOMSVGElement) {
+			} else if (node instanceof SVGOMSVGElement) {
 //				((SVGOMSVGElement) node).setAttribute("width", "10");
 //				((SVGOMSVGElement) node).setAttribute("height", "10");
+//				((SVGOMSVGElement) node).setAttribute("preserveAspectRatio", "none");
+//				((SVGOMSVGElement) node).setAttribute("viewBox", "0, 0, "+size.width+", "+size.height);
+				mapNodes(node.getChildNodes());
 			} else {
 				mapNodes(node.getChildNodes());
 			}
@@ -230,6 +231,7 @@ public class SVGGraphController extends GraphController {
 				svgGraph.setG(gElement);
 				svgGraph.setPolygon(polygon);
 				svgGraph.setText(text);
+				gElement.insertBefore(createProgressPolygon(), text);
 				processorMap.put(title, svgGraph);
 			}
 		}
@@ -264,6 +266,13 @@ public class SVGGraphController extends GraphController {
 				svgGraphNode.setG(gElement);
 				if (polygon != null) {
 					svgGraphNode.setPolygon(polygon);
+					SVGOMPolygonElement progressPolygon = createProgressPolygon();
+					if (text.size() > 0) {
+						gElement.insertBefore(progressPolygon, text.get(0));
+					} else {
+						gElement.insertBefore(progressPolygon, null);
+					}
+					svgGraphNode.setCompletedPolygon(progressPolygon);
 				} else {
 					svgGraphNode.setEllipse(ellipse);
 				}
@@ -660,6 +669,27 @@ public class SVGGraphController extends GraphController {
 		return polygon;
 	}
 
+	private SVGOMPolygonElement createProgressPolygon() {
+		SVGOMPolygonElement polygon = (SVGOMPolygonElement) svgDocument
+		.createElementNS(SVGUtil.svgNS, SVGConstants.SVG_POLYGON_TAG);
+		polygon.setAttribute(
+				SVGConstants.SVG_POINTS_ATTRIBUTE, "");
+		polygon.setAttribute(
+				SVGConstants.SVG_FILL_ATTRIBUTE,
+				SVGGraphComponent.COMPLETED_COLOUR);
+		polygon.setAttribute(
+				SVGConstants.SVG_FILL_OPACITY_ATTRIBUTE,
+				"0.8");
+//		completedBox.setAttribute(
+//		SVGConstants.SVG_STROKE_ATTRIBUTE,
+//		"black");
+//		completedBox.setAttribute(
+//		SVGConstants.SVG_STROKE_OPACITY_ATTRIBUTE,
+//		"0.6");
+		return polygon;
+	}
+
+	
 	private String getTitle(SVGOMTitleElement titleElement) {
 		String title = null;
 		Object titleElementChild = titleElement.getFirstChild();

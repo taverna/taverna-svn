@@ -8,18 +8,10 @@ import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseUpEventListene
 
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
-import org.apache.batik.dom.svg.SVGOMPoint;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
 import org.apache.batik.dom.svg.SVGOMTextElement;
 import org.apache.batik.util.SVGConstants;
-import org.w3c.dom.Element;
-import org.w3c.dom.Text;
-import org.w3c.dom.events.Event;
-import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
-import org.w3c.dom.events.MouseEvent;
-import org.w3c.dom.svg.SVGLocatable;
-import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
 /**
@@ -27,7 +19,7 @@ import org.w3c.dom.svg.SVGPointList;
  * 
  * @author David Withers
  */
-public class SVGGraph extends Graph implements SVGShape {
+public class SVGGraph extends Graph implements SVGMonitorShape {
 
 	private SVGGraphController graphController;
 
@@ -45,19 +37,19 @@ public class SVGGraph extends Graph implements SVGShape {
 
 	private SVGOMTextElement text;
 
-	private SVGOMPolygonElement completedBox;
+	private SVGOMPolygonElement completedPolygon;
 
-	private Text iterationText;
-
-	private SVGPoint iterationPosition;
-
-	private Text errorsText;
-
-	private SVGPoint errorsPosition;
+//	private Text iterationText;
+//
+//	private SVGPoint iterationPosition;
+//
+//	private Text errorsText;
+//
+//	private SVGPoint errorsPosition;
 
 	private String originalStyle;
 
-	private String errorStyle;
+//	private String errorStyle;
 
 	private String selectedStyle;
 	
@@ -114,12 +106,12 @@ public class SVGGraph extends Graph implements SVGShape {
 	 */
 	public void setPolygon(SVGOMPolygonElement polygon) {
 		this.polygon = polygon;
-		errorsPosition = polygon.getPoints().getItem(3);
+//		errorsPosition = polygon.getPoints().getItem(3);
 		originalStyle = polygon.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
-		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
+//		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";" +
 				"stroke-width:2");
-		iterationPosition = polygon.getPoints().getItem(2);
+//		iterationPosition = polygon.getPoints().getItem(2);
 	}
 
 	/* (non-Javadoc)
@@ -135,7 +127,7 @@ public class SVGGraph extends Graph implements SVGShape {
 	public void setEllipse(SVGOMEllipseElement ellipse) {
 		this.ellipse = ellipse;
 		originalStyle = ellipse.getAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE);
-		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
+//		errorStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.ERROR_COLOUR + ";");
 		selectedStyle = originalStyle.replaceFirst("stroke:[^;]*;", "stroke:" + SVGGraphComponent.SELECTED_COLOUR + ";");
 	}
 
@@ -369,6 +361,31 @@ public class SVGGraph extends Graph implements SVGShape {
 //		}
 //	}
 
+	public void setCompleted(final float complete) {
+		super.setCompleted(complete);
+		if (this.graphController.updateManager != null) {
+			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							completedPolygon.setAttribute(
+									SVGConstants.SVG_POINTS_ATTRIBUTE,
+									calculatePoints(complete));
+							if (complete == 0f) {
+								completedPolygon
+								.setAttribute(
+										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
+								"0");
+							} else {
+								completedPolygon
+								.setAttribute(
+										SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
+								"1");
+							}
+						}
+					});
+		}
+	}
+
 	/**
 	 * Calculates the points that specify the proportion completed polygon.
 	 * 
@@ -399,6 +416,17 @@ public class SVGGraph extends Graph implements SVGShape {
 		sb.append(x1 + "," + y1);
 
 		return sb.toString();
+	}
+
+	public SVGOMPolygonElement getCompletedPolygon() {
+		return completedPolygon;
+	}
+
+	public void setCompletedPolygon(SVGOMPolygonElement polygon) {
+		this.completedPolygon = polygon;
+		completedPolygon.setAttribute(
+				SVGConstants.SVG_POINTS_ATTRIBUTE,
+				calculatePoints(complete));
 	}
 	
 }

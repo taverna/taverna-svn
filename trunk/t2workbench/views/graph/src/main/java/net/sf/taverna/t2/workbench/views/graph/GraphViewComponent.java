@@ -36,6 +36,7 @@ import net.sf.taverna.t2.workbench.models.graph.GraphController;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.GraphController.PortStyle;
 import net.sf.taverna.t2.workbench.models.graph.svg.SVGGraphController;
+import net.sf.taverna.t2.workbench.ui.impl.DataflowSelectionManager;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 
@@ -132,15 +133,17 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		zoomOutButton = new JButton();
 		
 		Action resetDiagramAction = svgCanvas.new ResetTransformAction();
-		resetDiagramAction.putValue(Action.NAME, "Reset Diagram");
+		resetDiagramAction.putValue(Action.SHORT_DESCRIPTION, "Reset Diagram");
 		resetDiagramAction.putValue(Action.SMALL_ICON, WorkbenchIcons.refreshIcon);
 		resetDiagramButton.setAction(resetDiagramAction);
 		Action zoomInAction = svgCanvas.new ZoomAction(1.2);
-		zoomInAction.putValue(Action.NAME, "Zoom In");
+		zoomInAction.putValue(Action.NAME, "+");
+		zoomInAction.putValue(Action.SHORT_DESCRIPTION, "Zoom In");
 		zoomInAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
 		zoomInButton.setAction(zoomInAction);
 		Action zoomOutAction = svgCanvas.new ZoomAction(1/1.2);
-		zoomOutAction.putValue(Action.NAME, "Zoom Out");
+		zoomOutAction.putValue(Action.NAME, "-");
+		zoomOutAction.putValue(Action.SHORT_DESCRIPTION, "Zoom Out");
 		zoomOutAction.putValue(Action.SMALL_ICON, WorkbenchIcons.zoomIcon);
 		zoomOutButton.setAction(zoomOutAction);
 
@@ -255,6 +258,7 @@ public class GraphViewComponent extends JPanel implements UIComponentSPI {
 		this.dataflow = dataflow;
 		if (!graphControllerMap.containsKey(dataflow)) {
 			SVGGraphController graphController = new SVGGraphController(dataflow, this);
+			graphController.setDataflowSelectionModel(DataflowSelectionManager.getInstance().getDataflowSelectionModel(dataflow));
 			graphControllerMap.put(dataflow, graphController);
 		}
 		graphController = graphControllerMap.get(dataflow);

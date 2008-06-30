@@ -96,5 +96,5 @@ public class GraphEdge extends GraphElement {
 	public void setArrowTailStyle(ArrowStyle arrowTailStyle) {
 		this.arrowTailStyle = arrowTailStyle;
 	}
-	
+
 }
