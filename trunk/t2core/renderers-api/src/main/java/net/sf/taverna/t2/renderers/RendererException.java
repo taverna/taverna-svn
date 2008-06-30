@@ -1,7 +1,7 @@
 package net.sf.taverna.t2.renderers;
 
 /**
- * If a renderer fails for any reason then trow one of these with an appropriate
+ * If a renderer fails for any reason then throw one of these with an appropriate
  * message
  * 
  * @author Ian Dunlop
