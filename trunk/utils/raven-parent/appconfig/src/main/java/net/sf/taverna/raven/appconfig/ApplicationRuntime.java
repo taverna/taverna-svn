@@ -2,6 +2,7 @@ package net.sf.taverna.raven.appconfig;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,9 +16,13 @@ import net.sf.taverna.raven.repository.impl.LocalRepository;
 import org.apache.log4j.Logger;
 
 public class ApplicationRuntime {
+	private static final String STRING = "repository";
+
+	private static final String PLUGINS = "plugins";
+
 	private static final String LAUNCHER_SPLASHSCREEN_PNG = "/launcher_splashscreen.png";
 
-	private static final String REPOSITORY = "repository";
+	private static final String REPOSITORY = STRING;
 
 	private static Logger logger = Logger.getLogger(ApplicationRuntime.class);
 
@@ -147,6 +152,16 @@ public class ApplicationRuntime {
 		}
 		repository = LocalRepository.getRepository(getLocalRepositoryDir(),
 				getClassLoader(), getSystemArtifacts());
+
+		File defaultRepository = getDefaultRepositoryDir();
+		if (defaultRepository != null) {
+			try {
+				repository.addRemoteRepository(defaultRepository.toURL());
+			} catch (MalformedURLException e) {
+				logger.warn("Invalid URL for default repository "
+						+ defaultRepository, e);
+			}
+		}
 		return repository;
 	}
 
@@ -193,7 +208,7 @@ public class ApplicationRuntime {
 	}
 
 	public File getPluginsDir() {
-		File pluginsDir = new File(getApplicationHomeDir(), "plugins");
+		File pluginsDir = new File(getApplicationHomeDir(), PLUGINS);
 		pluginsDir.mkdirs();
 		if (!pluginsDir.isDirectory()) {
 			throw new IllegalStateException(
@@ -210,12 +225,28 @@ public class ApplicationRuntime {
 			logger.warn("Could not find startup directory", e);
 			return null;
 		}
-		File pluginsDir = new File(startupDir, "plugins");
+		File pluginsDir = new File(startupDir, PLUGINS);
 		if (!pluginsDir.isDirectory()) {
 			logger.warn("Could not find plugins directory " + pluginsDir);
 			return null;
 		}
 		return pluginsDir;
+	}
+
+	public File getDefaultRepositoryDir() {
+		File startupDir;
+		try {
+			startupDir = appConfig.getStartupDir();
+		} catch (IOException e) {
+			logger.warn("Could not find startup directory", e);
+			return null;
+		}
+		File repositoryDir = new File(startupDir, STRING);
+		if (!repositoryDir.isDirectory()) {
+			logger.warn("Could not find plugins directory " + repositoryDir);
+			return null;
+		}
+		return repositoryDir;
 	}
 
 	public URL getSplashScreenURL() {
