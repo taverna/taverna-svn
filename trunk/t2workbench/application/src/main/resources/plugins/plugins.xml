@@ -30,26 +30,24 @@
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
 
 			<!--  Maven mirrors from http://maven.apache.org/guides/mini/guide-mirror-settings.html -->
-			<repository>
+			<!-- disabled: Connection time out <repository>
 				http://mirrors.ibiblio.org/pub/mirrors/maven2/
-			</repository>
+				</repository>-->
 			<repository>
 				http://ibiblio.lsu.edu/main/pub/packages/maven2/
 			</repository>
-			<repository>http://maven.sateh.com/repository/</repository>
+			<!--  disabled: Connection time out 
+				<repository>http://maven.sateh.com/repository/</repository>
+			-->
 			<repository>http://mirrors.dotsrc.org/maven2/</repository>
-			<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			<!--  disabled: Bad history
+				<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			-->
 			<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
 			</repository>
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
-			<repository>http://mirrors.redv.com/maven2/</repository>
-			<repository>
-				http://www.ibiblio.net/pub/packages/maven2/
-			</repository>
-			<repository>
-				http://ftp.ggi-project.org/pub/packages/maven2/
-			</repository>
+			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2.workbench"
@@ -131,27 +129,26 @@
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
 
 			<!--  Maven mirrors from http://maven.apache.org/guides/mini/guide-mirror-settings.html -->
-			<repository>
+			<!-- disabled: Connection time out <repository>
 				http://mirrors.ibiblio.org/pub/mirrors/maven2/
-			</repository>
+				</repository>-->
 			<repository>
 				http://ibiblio.lsu.edu/main/pub/packages/maven2/
 			</repository>
-			<repository>http://maven.sateh.com/repository/</repository>
+			<!--  disabled: Connection time out 
+				<repository>http://maven.sateh.com/repository/</repository>
+			-->
 			<repository>http://mirrors.dotsrc.org/maven2/</repository>
-			<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			<!--  disabled: Bad history
+				<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			-->
 			<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
 			</repository>
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
-			<repository>http://mirrors.redv.com/maven2/</repository>
-			<repository>
-				http://www.ibiblio.net/pub/packages/maven2/
-			</repository>
-			<repository>
-				http://ftp.ggi-project.org/pub/packages/maven2/
-			</repository>
+			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
 		</repositories>
+
 		<profile>
 			<artifact groupId="net.sf.taverna.t2"
 				artifactId="all-activities" version="0.3-SNAPSHOT" />
@@ -195,26 +192,25 @@
 			<repository>http://moby.ucalgary.ca/moby_maven/</repository>
 
 			<!--  Maven mirrors from http://maven.apache.org/guides/mini/guide-mirror-settings.html -->
-			<repository>
+			<!-- disabled: Connection time out <repository>
 				http://mirrors.ibiblio.org/pub/mirrors/maven2/
-			</repository>
+				</repository>-->
 			<repository>
 				http://ibiblio.lsu.edu/main/pub/packages/maven2/
 			</repository>
-			<repository>http://maven.sateh.com/repository/</repository>
+			<!--  disabled: Connection time out 
+				<repository>http://maven.sateh.com/repository/</repository>
+			-->
 			<repository>http://mirrors.dotsrc.org/maven2/</repository>
-			<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			<!--  disabled: Bad history
+				<repository>http://mirrors.sunsite.dk/maven2/</repository>
+			-->
 			<repository>
 				http://maven2.mirrors.skynet.be/pub/maven2/
 			</repository>
 			<repository>http://ftp.cica.es/mirrors/maven2/</repository>
-			<repository>http://mirrors.redv.com/maven2/</repository>
-			<repository>
-				http://www.ibiblio.net/pub/packages/maven2/
-			</repository>
-			<repository>
-				http://ftp.ggi-project.org/pub/packages/maven2/
-			</repository>
+			<!--disabled: slow <repository>http://mirrors.redv.com/maven2/</repository>-->
+
 		</repositories>
 		<profile>
 			<artifact groupId="net.sf.taverna.t2"
