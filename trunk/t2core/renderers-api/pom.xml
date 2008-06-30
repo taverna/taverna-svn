@@ -11,7 +11,7 @@
 	<version>0.3-SNAPSHOT</version>
 	<name>Renderers API</name>
 	<description>
-		
+
 	</description>
 	<dependencies>
 		<dependency>
@@ -20,9 +20,14 @@
 			<version>0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		<groupId>net.sf.taverna.t2</groupId>
-		<artifactId>data-impl</artifactId>
-		<version>0.3-SNAPSHOT</version>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>data-impl</artifactId>
+			<version>0.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>workflowmodel-api</artifactId>
+			<version>0.3-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
