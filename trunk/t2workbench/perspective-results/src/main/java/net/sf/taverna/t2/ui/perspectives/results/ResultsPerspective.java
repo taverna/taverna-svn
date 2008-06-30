@@ -33,7 +33,7 @@ public class ResultsPerspective implements PerspectiveSPI{
 
 	public int positionHint() {
 		// TODO Auto-generated method stub
-		return 10;
+		return 20;
 	}
 
 	public void setVisible(boolean visible) {

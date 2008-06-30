@@ -14,5 +14,6 @@
 	<description>Views over a workflow</description>
 	<modules>
 		<module>graph</module>
+		<module>monitor</module>
 	</modules>
 </project>

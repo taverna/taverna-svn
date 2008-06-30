@@ -6,7 +6,7 @@
 	<groupId>net.sf.taverna.t2.workbench</groupId>
 	<artifactId>perspective-results</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>Results component</name>
+	<name>Results Perspective</name>
 	<parent>
 		<groupId>net.sf.taverna.t2</groupId>
 		<artifactId>t2-workbench</artifactId>

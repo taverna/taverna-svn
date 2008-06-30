@@ -38,6 +38,10 @@
 
 			<artifact groupId="net.sf.taverna.t2.workbench"
 				artifactId="perspective-results" version="0.1-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2.workbench"
+				artifactId="run-ui" version="0.1-SNAPSHOT" />
+			<artifact groupId="net.sf.taverna.t2.workbench.views"
+				artifactId="monitor" version="0.0.1-SNAPSHOT" />
 
 
 			<!--  system artifacts -->

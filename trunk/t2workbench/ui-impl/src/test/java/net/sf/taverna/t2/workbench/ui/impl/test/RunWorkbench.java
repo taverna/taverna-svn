@@ -13,6 +13,7 @@ public class RunWorkbench {
 		ProfileFactory.getInstance().getProfile().addArtifact(new BasicArtifact("net.sf.taverna.t2.workbench","contextual-views-api","0.1-SNAPSHOT"));
 		ProfileFactory.getInstance().getProfile().addArtifact(new BasicArtifact("net.sf.taverna.t2.workbench.views","graph","0.0.1-SNAPSHOT"));
 		ProfileFactory.getInstance().getProfile().addArtifact(new BasicArtifact("net.sf.taverna.t2.workbench","activity-palette-ui","0.1-SNAPSHOT"));
+		ProfileFactory.getInstance().getProfile().addArtifact(new BasicArtifact("net.sf.taverna.t2.workbench","run-ui","0.1-SNAPSHOT"));
 		Workbench.main(args);		
 	}
 	
