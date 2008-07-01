@@ -1,36 +1,33 @@
 package org.myexp_whip_plugin;
 
-import org.restlet.Client;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.MediaType;
-import org.restlet.data.Method;
-import org.restlet.data.Preference;
-import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.XmlReader;
 
 public class MyExperimentClient {
 	
-	private static final String hostname = "http://sandbox.myexperiment.org";
+	private URL baseUrl;
 	
-	public void MyExperimentClient() {
-		
+	public MyExperimentClient(URL baseUrl) {
+		this.baseUrl = baseUrl;
 	}
 	
-	public void getLatestWorkflows() {
+	@SuppressWarnings("unchecked")
+	public List<SyndEntry> getLatestWorkflows() throws Exception {
+		return this.getRSS().getEntries();
+	}
+	
+	private SyndFeed getRSS() throws Exception {
+		URL feedUrl = new URL(baseUrl, "workflows.rss");
 		
+		SyndFeedInput input = new SyndFeedInput();
+		SyndFeed feed = input.build(new XmlReader(feedUrl));
+		
+		return feed;
 	}
 }

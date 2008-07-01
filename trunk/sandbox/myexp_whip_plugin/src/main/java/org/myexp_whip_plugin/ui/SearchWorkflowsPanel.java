@@ -7,14 +7,18 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
+import org.apache.log4j.Logger;
 import org.myexp_whip_plugin.MyExperimentClient;
 
 public class SearchWorkflowsPanel extends JPanel implements ActionListener, ChangeListener {
 	
 	private MyExperimentClient client;
 	
-	public SearchWorkflowsPanel(MyExperimentClient client) {
+	private Logger logger;
+	
+	public SearchWorkflowsPanel(MyExperimentClient client, Logger logger) {
 		this.client = client;
+		this.logger = logger;
 	}
 	
 	public void actionPerformed(ActionEvent event) {
