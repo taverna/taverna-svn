@@ -11,7 +11,7 @@
 
 	<repository id="raven.repository"
 		xmlns="http://taverna.sf.net/schema/artifact-support"
-		base="/Users/davidwithers/.m2/repository/">
+		base="${user.home}/.m2/repository/">
 		<repositories />
 		<system>
 			<!-- T2Reference API -->
