@@ -14,7 +14,7 @@
 	<bean
 		raven:artifact="net.sf.taverna.t2:t2reference-core-extensions:0.1-SNAPSHOT"
 		raven:repository="ravenRepository"
-		class="net.sf.taverna.t2.reference.impl.LoadCoreExtensions">
+		class="net.sf.taverna.t2.reference.impl.core.LoadCoreExtensions">
 	</bean>
 
 	<!-- Reference service bean -->
