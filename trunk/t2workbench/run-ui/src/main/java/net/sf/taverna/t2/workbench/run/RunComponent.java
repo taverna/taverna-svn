@@ -26,6 +26,7 @@ import net.sf.taverna.t2.workbench.views.monitor.MonitorViewComponent;
 import net.sf.taverna.t2.workbench.views.results.ResultViewComponent;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
+import net.sf.taverna.t2.workflowmodel.EditException;
 
 import org.springframework.context.ApplicationContext;
 
@@ -66,20 +67,21 @@ public class RunComponent extends JSplitPane {
 		
 		InvocationContext context = createContext();
 
-//		resultsComponent.setContext(context);
+		resultsComponent.setContext(context);
 		MonitorManager.getInstance().addObserver(monitorObserver);
 		// Use the empty context by default to root this facade on the monitor
 		// tree
-		WorkflowInstanceFacade facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
+		final WorkflowInstanceFacadeImpl facade = new WorkflowInstanceFacadeImpl(dataflow, context, "");
 		facade.addResultListener(new ResultListener() {
 
 			public void resultTokenProduced(WorkflowDataToken token,
 					String portName) {
 				if (token.getIndex().length == 0) {
+					System.out.println("Result for : " + portName);
 					results++;
 					if (results == dataflow.getOutputPorts().size()) {
-//						resultComponent.deregister(facade);
-//						facade.removeResultListener(this);
+//						resultsComponent.deregister(facade);
+						facade.removeResultListener(this);
 						MonitorManager.getInstance().removeObserver(monitorObserver);
 						results = 0;
 					}
@@ -88,7 +90,12 @@ public class RunComponent extends JSplitPane {
 
 		});
 		determineOutputMimeTypes();
-//		resultsComponent.register(facade);
+		try {
+			resultsComponent.register(facade);
+		} catch (EditException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		facade.fire();
 		if (inputs != null) {
 			for (Entry<DataflowInputPort, T2Reference> entry : inputs
@@ -119,7 +126,7 @@ public class RunComponent extends JSplitPane {
 							"inMemoryReferenceServiceContext.xml");
 				}
 				ReferenceService referenceService = (ReferenceService) context
-						.getBean("referenceService");
+						.getBean("t2reference.service.referenceService");
 				return referenceService;
 			}
 
