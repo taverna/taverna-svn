@@ -1,6 +1,7 @@
 package org.myexp_whip_plugin.ui;
 
 import java.awt.Dimension;
+import java.awt.event.ComponentEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -83,6 +84,10 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 	public void onDispose() {
 
 	}
+	
+	//public void componentResized(ComponentEvent e) {
+	//	this.latestWorkflowsPanel.revalidateScrollPane();
+	//}
 
 	private void initialiseUI() {
 		this.logger.debug("Initialising myExperiment Perspective UI components");
@@ -119,6 +124,9 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		this.setLeftComponent(this.tabsPane);
 		this.setRightComponent(rightScrollPane);
+		
+		this.setResizeWeight(0.5);
+		this.setContinuousLayout(true);
 	}
 	
 	private void initialiseData() {
