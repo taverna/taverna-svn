@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.lang.observer.Observable;
 import net.sf.taverna.t2.lang.observer.Observer;
+import net.sf.taverna.t2.workbench.design.Tools;
 import net.sf.taverna.t2.workbench.edits.EditManager;
 import net.sf.taverna.t2.workbench.models.graph.Graph.Alignment;
 import net.sf.taverna.t2.workbench.models.graph.Graph.LineStyle;
@@ -254,8 +255,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				sink = (ProcessorInputPort) showPortOptions(ports, "input", componentForPopups, point);
 			}
 			if (source != null && sink != null) {
-				Datalink datalink = edits.createDatalink(source, sink);
-				Edit<Datalink> edit = edits.getConnectDatalinkEdit(datalink);
+				Edit<?> edit = Tools.createAndConnectDatalinkEdit(dataflow, source, sink);
 				try {
 					editManager.doDataflowEdit(dataflow, edit);
 				} catch (EditException e) {
