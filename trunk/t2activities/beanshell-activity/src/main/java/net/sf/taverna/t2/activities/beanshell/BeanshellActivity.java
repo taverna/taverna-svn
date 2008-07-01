@@ -8,10 +8,9 @@ import java.util.regex.Pattern;
 
 import net.sf.taverna.raven.repository.Artifact;
 import net.sf.taverna.raven.repository.BasicArtifact;
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -75,23 +74,22 @@ public class BeanshellActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
 				try {
 					synchronized (interpreter) {
 						// set inputs
 						for (String inputName : data.keySet()) {
 							ActivityInputPort inputPort = getInputPort(inputName);
-							Object input = dataFacade.resolve(data.get(inputName),
-									inputPort.getTranslatedElementClass());
+							Object input = referenceService.renderIdentifier(data.get(inputName),
+									inputPort.getTranslatedElementClass(), callback.getContext());
 							inputName = sanatisePortName(inputName);
 							interpreter.set(inputName, input);
 						}
@@ -102,8 +100,8 @@ public class BeanshellActivity extends
 							String name = outputPort.getName();
 							Object value = interpreter.get(name);
 							if (value != null) {
-								outputData.put(name, dataFacade.register(value,
-										outputPort.getDepth()));
+								outputData.put(name, referenceService.register(value,
+										outputPort.getDepth(), true, callback.getContext()));
 							}
 							interpreter.unset(name);
 						}
@@ -115,10 +113,7 @@ public class BeanshellActivity extends
 					callback.receiveResult(outputData, new int[0]);
 				} catch (EvalError e) {
 					callback.fail("Error evaluating the beanshell script", e);
-				} catch (DataManagerException e) {
-					callback.fail(
-							"Error accessing beanshell input/output data", e);
-				} catch (NotFoundException e) {
+				} catch (ReferenceServiceException e) {
 					callback.fail(
 							"Error accessing beanshell input/output data", e);
 				}

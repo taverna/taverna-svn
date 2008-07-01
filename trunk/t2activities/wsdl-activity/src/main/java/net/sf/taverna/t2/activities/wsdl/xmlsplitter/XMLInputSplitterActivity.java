@@ -1,6 +1,5 @@
 package net.sf.taverna.t2.activities.wsdl.xmlsplitter;
 
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -8,13 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
-import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -56,29 +51,29 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
 				try {
-					DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
+					ReferenceService referenceService = callback.getContext().getReferenceService();
 					XMLInputSplitter splitter = createSplitter();
-					Map<String,Object> inputMap = buildInputMap(data,dataFacade);
+					Map<String,Object> inputMap = buildInputMap(data,referenceService);
 					Map<String,String> outputMap = splitter.execute(inputMap);
-					callback.receiveResult(createOutputData(outputMap,dataFacade), new int[0]);
+					callback.receiveResult(createOutputData(outputMap,referenceService), new int[0]);
 				}
 				catch(Exception e) {
 					callback.fail("Error in XMLInputSplitterActivity",e);
 				}
 			}
 
-			private Map<String, EntityIdentifier> createOutputData(
-					Map<String, String> outputMap,DataFacade dataFacade) throws EmptyListException, MalformedListException, UnsupportedObjectTypeException {
-				Map<String,EntityIdentifier> result = new HashMap<String, EntityIdentifier>();
+			private Map<String, T2Reference> createOutputData(
+					Map<String, String> outputMap,ReferenceService referenceService) throws ReferenceServiceException {
+				Map<String,T2Reference> result = new HashMap<String, T2Reference>();
 				for (String outputName : outputMap.keySet()) {
 					String xmlOut = outputMap.get(outputName);
-					result.put(outputName, dataFacade.register(xmlOut));
+					result.put(outputName, referenceService.register(xmlOut, 0, true, callback.getContext()));
 				}
 				return result;
 			}
@@ -101,11 +96,11 @@ public class XMLInputSplitterActivity extends AbstractAsynchronousActivity<XMLSp
 				return new XMLInputSplitter(typeDescriptor,inputNames.toArray(new String[]{}),inputTypes.toArray(new String[]{}),outputNames.toArray(new String[]{}));
 			}
 			
-			private Map<String,Object> buildInputMap(Map<String, EntityIdentifier> data,DataFacade dataFacade) throws RetrievalException, NotFoundException {
+			private Map<String,Object> buildInputMap(Map<String, T2Reference> data,ReferenceService referenceService) throws ReferenceServiceException {
 				Map<String,Object> result = new HashMap<String, Object>();
 				for (String inputName : data.keySet()) {
-					EntityIdentifier id = data.get(inputName);
-					result.put(inputName, dataFacade.resolve(id,String.class));
+					T2Reference id = data.get(inputName);
+					result.put(inputName, referenceService.renderIdentifier(id,String.class, callback.getContext()));
 					
 				}
 				return result;

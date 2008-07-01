@@ -12,10 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.taverna.t2.activities.rshell.RshellActivity;
-import net.sf.taverna.t2.activities.rshell.RshellActivityConfigurationBean;
 import net.sf.taverna.t2.activities.testutils.ActivityInvoker;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityInputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -43,7 +41,7 @@ public class RshellActivityTest {
 		ActivityInputPortDefinitionBean inputPortBean = new ActivityInputPortDefinitionBean();
 		inputPortBean.setDepth(0);
 		inputPortBean.setName("example_input");
-		inputPortBean.setHandledReferenceSchemes(new ArrayList<Class<? extends ReferenceScheme<?>>>());
+		inputPortBean.setHandledReferenceSchemes(new ArrayList<Class<? extends ExternalReferenceSPI>>());
 		inputPortBean.setTranslatedElementType(String.class);
 		inputPortBean.setAllowsLiteralValues(true);
 		configurationBean.setInputPortDefinitions(Collections.singletonList(inputPortBean));

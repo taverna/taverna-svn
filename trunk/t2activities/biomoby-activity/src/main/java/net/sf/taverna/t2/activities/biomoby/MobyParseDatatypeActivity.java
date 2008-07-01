@@ -7,11 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -52,15 +51,14 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> output = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> output = new HashMap<String, T2Reference>();
 				
 				try {
 
@@ -71,9 +69,9 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 						return;
 					}
 					
-					EntityIdentifier inputId = data.get(inputMapKey);
+					T2Reference inputId = data.get(inputMapKey);
 					
-					Object input = dataFacade.resolve(inputId, String.class);
+					Object input = referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 					
 					if (input instanceof String) {
 						//logger.error(inputMapKey + " is a string!\n");
@@ -120,7 +118,7 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 									stuff.addAll(content);
 								}
 							}
-							output.put(outputPortName, dataFacade.register(stuff, 1));
+							output.put(outputPortName, referenceService.register(stuff, 1, true, callback.getContext()));
 						}
 
 					} else if (input instanceof List) {
@@ -185,14 +183,12 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 						// fill output map
 						for (Iterator<String> it = holder.keySet().iterator(); it.hasNext();) {
 							String key = it.next();
-							output.put(key, dataFacade.register(holder.get(key), 1));
+							output.put(key, referenceService.register(holder.get(key), 1, true, callback.getContext()));
 						}
 					}
 						
 					callback.receiveResult(output, new int[0]);
-				} catch (DataManagerException e) {
-					callback.fail("Error accessing input/output data", e);
-				} catch (NotFoundException e) {
+				} catch (ReferenceServiceException e) {
 					callback.fail("Error accessing input/output data", e);
 				} catch (Exception e) {
 					callback.fail("rror parsing moby data", e);
@@ -243,7 +239,7 @@ public class MobyParseDatatypeActivity extends AbstractAsynchronousActivity<Moby
 		}
 		// add the input port called mobyData('datatypeName')
 		addInput("mobyData('" + this.datatype.getName() + "')", 0, true,
-				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 		// add the namespace/id ports to the processor
 		addOutput("namespace", 1);

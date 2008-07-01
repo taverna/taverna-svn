@@ -9,10 +9,10 @@ import java.util.Map;
 import javax.wsdl.WSDLException;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -22,7 +22,6 @@ import net.sf.taverna.wsdl.parser.UnknownOperationException;
 import net.sf.taverna.wsdl.parser.WSDLParser;
 import net.sf.taverna.wsdl.soap.WSDLSOAPInvoker;
 
-import org.apache.axis.configuration.XMLStringProvider;
 import org.xml.sax.SAXException;
 
 /**
@@ -77,7 +76,7 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
             List<String>mimeTypes = new ArrayList<String>();
             mimeTypes.add(descriptor.getMimeType());
             addInput(descriptor.getName(),descriptor.getDepth(), true,
-            		new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+            		new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
         }
         
         for (TypeDescriptor descriptor : outputDescriptors) {
@@ -96,21 +95,21 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		
 		callback.requestRun(new Runnable() {
 
 			public void run() {
 				
-				DataFacade dataFacade = new DataFacade(callback.getContext().getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 				
-				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 				Map<String,Object> invokerInputMap = new HashMap<String, Object>();
 	
 				try {
 					for (String key : data.keySet()) {
-						invokerInputMap.put(key, dataFacade.resolve(data.get(key),String.class));
+						invokerInputMap.put(key, referenceService.renderIdentifier(data.get(key),String.class, callback.getContext()));
 					}
 					List<String> outputNames = new ArrayList<String>();
 					for (OutputPort port : getOutputPorts()) {
@@ -148,16 +147,17 @@ public class WSDLActivity extends AbstractAsynchronousActivity<WSDLActivityConfi
 						if (value != null) {
 							Integer depth=outputDepth.get(outputName);
 							if (depth!=null) {
-								outputData.put(outputName, dataFacade.register(value,depth));
+								outputData.put(outputName, referenceService.register(value,depth, true, callback.getContext()));
 							}
 							else {
 								System.out.println("Depth not recorded for output:"+outputName);
-								outputData.put(outputName, dataFacade.register(value));
+								//TODO what should the depth be in this case?
+								outputData.put(outputName, referenceService.register(value, 0, true, callback.getContext()));
 							}
 						}
 					}
 				}
-				catch(NotFoundException e) {
+				catch(ReferenceServiceException e) {
 					callback.fail("Unable to find input data",e);
 				}
 				catch(Exception e) {

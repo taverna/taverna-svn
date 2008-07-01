@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
 import net.sf.taverna.t2.facade.ResultListener;
 import net.sf.taverna.t2.facade.WorkflowInstanceFacade;
 import net.sf.taverna.t2.invocation.TokenOrderException;
 import net.sf.taverna.t2.invocation.WorkflowDataToken;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
@@ -53,7 +53,7 @@ public class DataflowActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
@@ -67,7 +67,7 @@ public class DataflowActivity extends
 				facade.addResultListener(new ResultListener() {
 					int outputPortCount = dataflow.getOutputPorts().size();
 
-					Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+					Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
 					public void resultTokenProduced(
 							WorkflowDataToken dataToken, String port) {
@@ -85,7 +85,7 @@ public class DataflowActivity extends
 
 				facade.fire();
 
-				for (Map.Entry<String, EntityIdentifier> entry : data
+				for (Map.Entry<String, T2Reference> entry : data
 						.entrySet()) {
 					try {
 						WorkflowDataToken token = new WorkflowDataToken(
@@ -106,7 +106,7 @@ public class DataflowActivity extends
 	private void buildInputPorts() throws ActivityConfigurationException {
 		for (DataflowInputPort dataflowInputPort : dataflow.getInputPorts()) {
 			addInput(dataflowInputPort.getName(), dataflowInputPort.getDepth(),
-					true, new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+					true, new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 					null);
 		}
 	}

@@ -2,16 +2,16 @@ package net.sf.taverna.t2.activities.testutils;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.peer.LocationalContext;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivity;
+
+import org.springframework.context.ApplicationContext;
 
 /**
  * Helper class to facilitate in executing Activities in isolation.
@@ -41,15 +41,16 @@ public class ActivityInvoker {
 			Map<String, Object> inputs, Collection<String> requestedOutputs)
 			throws Exception {
 		Map<String, Object> results = new HashMap<String, Object>();
-		InMemoryDataManager dataManager = new InMemoryDataManager("namespace",
-				new HashSet<LocationalContext>());
 
-		DummyCallback callback = new DummyCallback(dataManager);
-		DataFacade dataFacade = new DataFacade(dataManager);
-		Map<String, EntityIdentifier> inputEntities = new HashMap<String, EntityIdentifier>();
+		ApplicationContext context = new RavenAwareClassPathXmlApplicationContext(
+		"inMemoryReferenceServiceTestContext.xml");
+		ReferenceService referenceService = (ReferenceService) context.getBean("t2reference.service.referenceService");
+
+		DummyCallback callback = new DummyCallback(referenceService);
+		Map<String, T2Reference> inputEntities = new HashMap<String, T2Reference>();
 		for (String inputName : inputs.keySet()) {
 			Object val = inputs.get(inputName);
-			inputEntities.put(inputName, dataFacade.register(val));
+			inputEntities.put(inputName, referenceService.register(val, 0, true, callback.getContext()));
 		}
 
 		activity.executeAsynch(inputEntities, callback);
@@ -59,13 +60,13 @@ public class ActivityInvoker {
 			results = null;
 		} else {
 			for (String outputName : requestedOutputs) {
-				EntityIdentifier id = callback.data.get(outputName);
+				T2Reference id = callback.data.get(outputName);
 				if (id != null) {
 					Object result;
 					try {
-						result = dataFacade.resolve(id,	String.class);
-					} catch (RetrievalException e) {
-						result = dataFacade.resolve(id,	byte[].class);
+						result = referenceService.renderIdentifier(id, String.class, callback.getContext());
+					} catch (ReferenceServiceException e) {
+						result = referenceService.renderIdentifier(id, byte[].class, callback.getContext());
 					}
 
 //					if (result instanceof ByteArrayInputStream) {

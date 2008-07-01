@@ -11,14 +11,10 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
-import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -63,29 +59,28 @@ public class SoaplabActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			@SuppressWarnings("unchecked")
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
 				try {
 					// Copy the contents of the data set in the input map
 					// to a new Map object which just contains the raw data
 					// objects
 					Map<String, Object> soaplabInputMap = new HashMap<String, Object>();
-					for (Map.Entry<String, EntityIdentifier> entry : data
+					for (Map.Entry<String, T2Reference> entry : data
 							.entrySet()) {
 						logger.info("Resolving " + entry.getKey() + " to "
 								+ inputTypeMap.get(entry.getKey()));
-						soaplabInputMap.put(entry.getKey(), dataFacade.resolve(
+						soaplabInputMap.put(entry.getKey(), referenceService.renderIdentifier(
 								entry.getValue(), inputTypeMap.get(entry
-										.getKey())));
+										.getKey()), callback.getContext()));
 						logger.info("  Value = "
 								+ soaplabInputMap.get(entry.getKey()));
 					}
@@ -193,8 +188,8 @@ public class SoaplabActivity extends
 						if (outputObject instanceof String[]) {
 							// outputThing = DataThingFactory
 							// .bake((String[]) outputObject);
-							outputData.put(parameterName, dataFacade
-									.register(Arrays.asList(outputObject)));
+							outputData.put(parameterName, referenceService
+									.register(Arrays.asList(outputObject), 1, true, callback.getContext()));
 						} else if (outputObject instanceof byte[][]) {
 							// Create a List of byte arrays, this will
 							// map to l('application/octet-stream') in
@@ -205,35 +200,27 @@ public class SoaplabActivity extends
 							for (byte[] byteArray : (byte[][]) outputObject) {
 								list.add(byteArray);
 							}
-							outputData.put(parameterName, dataFacade
-									.register(list));
+							outputData.put(parameterName, referenceService
+									.register(list, 1, true, callback.getContext()));
 							// outputData.put(parameterName, dataFacade
 							// .register(Arrays.asList(outputObject)));
 						} else if (outputObject instanceof List) {
 							List<?> convertedList = convertList((List<?>) outputObject);
-							outputData.put(parameterName, dataFacade
-									.register(convertedList));
+							outputData.put(parameterName, referenceService
+									.register(convertedList, 1, true, callback.getContext()));
 						} else {
 							// Fallthrough case, this mostly applies to
 							// output of type byte[] or string, both of which
 							// are handled perfectly sensibly by default.
-							outputData.put(parameterName, dataFacade
-									.register(outputObject));
+							outputData.put(parameterName, referenceService
+									.register(outputObject, 0, true, callback.getContext()));
 						}
 					}
 
 					// success
 					callback.receiveResult(outputData, new int[0]);
-				} catch (RetrievalException e) {
-					callback.fail("Failure calling soaplab", e);
-				} catch (NotFoundException e) {
-					callback.fail("Failure calling soaplab", e);
-				} catch (EmptyListException e) {
-					callback.fail("Failure calling soaplab", e);
-				} catch (MalformedListException e) {
-					callback.fail("Failure calling soaplab", e);
-				} catch (UnsupportedObjectTypeException e) {
-					callback.fail("Failure calling soaplab", e);
+				} catch (ReferenceServiceException e) {
+					callback.fail("Error accessing beanshell input/output data", e);
 				} catch (IOException e) {
 					callback.fail("Failure calling soaplab", e);
 				} catch (ServiceException e) {
@@ -298,19 +285,19 @@ public class SoaplabActivity extends
 				// so we don't bother.
 				if (input_type.equals("string")) {
 					addInput(input_name, 0, true,
-							new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+							new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("string[]")) {
 					addInput(input_name, 1, true,
-							new ArrayList<Class<? extends ReferenceScheme<?>>>(), String.class);
+							new ArrayList<Class<? extends ExternalReferenceSPI>>(), String.class);
 					inputTypeMap.put(input_name, String.class);
 				} else if (input_type.equals("byte[]")) {
 					addInput(input_name, 0, true,
-							new ArrayList<Class<? extends ReferenceScheme<?>>>(), byte[].class);
+							new ArrayList<Class<? extends ExternalReferenceSPI>>(), byte[].class);
 					inputTypeMap.put(input_name, byte[].class);
 				} else if (input_type.equals("byte[][]")) {
 					addInput(input_name, 1, true,
-							new ArrayList<Class<? extends ReferenceScheme<?>>>(), byte[].class);
+							new ArrayList<Class<? extends ExternalReferenceSPI>>(), byte[].class);
 					inputTypeMap.put(input_name, byte[].class);
 				}
 			}

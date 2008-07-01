@@ -3,11 +3,9 @@ package net.sf.taverna.t2.activities.stringconstant;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
-import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
-import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
@@ -41,24 +39,20 @@ public class StringConstantActivity extends AbstractAsynchronousActivity<StringC
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade=new DataFacade(callback.getContext().getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 				try {
-					EntityIdentifier id=dataFacade.register(value);
-					Map<String,EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+					T2Reference id = referenceService.register(value, 0, true, callback.getContext());
+					Map<String,T2Reference> outputData = new HashMap<String, T2Reference>();
 					outputData.put("value", id);
 					callback.receiveResult(outputData, new int[0]);
-				} catch (EmptyListException e) {
+				} catch (ReferenceServiceException e) {
 					callback.fail(e.getMessage(),e);
-				} catch (MalformedListException e) {
-					callback.fail(e.getMessage(),e);
-				} catch (UnsupportedObjectTypeException e) {
-					callback.fail(e.getMessage(),e);
-				} 
+				}
 			}
 			
 		});

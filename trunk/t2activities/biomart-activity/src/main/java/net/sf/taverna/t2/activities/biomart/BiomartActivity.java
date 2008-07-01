@@ -5,14 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.EmptyListException;
-import net.sf.taverna.t2.cloudone.datamanager.MalformedListException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.UnsupportedObjectTypeException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -68,15 +64,14 @@ public class BiomartActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				final DataFacade dataFacade = new DataFacade(callback
-						.getContext().getDataManager());
+				final ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				final Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				final Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
 				try {
 					// Get a query including data source etc, creating
@@ -90,8 +85,8 @@ public class BiomartActivity extends
 					for (Filter filter : filters) {
 						String name = filter.getQualifiedName();
 						if (data.containsKey(name + "_filter")) {
-							Object filterValue = dataFacade.resolve(data
-									.get(name + "_filter"), String.class);
+							Object filterValue = referenceService.renderIdentifier(data
+									.get(name + "_filter"), String.class, callback.getContext());
 							if (filterValue instanceof String) {
 								filter.setValue((String) filterValue);
 							} else if (filterValue instanceof List) {
@@ -106,10 +101,10 @@ public class BiomartActivity extends
 						if (STREAM_RESULTS) {
 							final List<Attribute> attributes = biomartQuery
 									.getAttributesInLinkOrder();
-							final Map<String, List<EntityIdentifier>> outputLists = new HashMap<String, List<EntityIdentifier>>();
+							final Map<String, List<T2Reference>> outputLists = new HashMap<String, List<T2Reference>>();
 							for (Attribute attribute : attributes) {
 								outputLists.put(attribute.getQualifiedName(),
-										new ArrayList<EntityIdentifier>());
+										new ArrayList<T2Reference>());
 							}
 
 							biomartQuery.getMartService().executeQuery(query,
@@ -117,7 +112,7 @@ public class BiomartActivity extends
 
 										public void receiveResult(
 												Object[] resultLine, long index) {
-											Map<String, EntityIdentifier> partialOutputData = new HashMap<String, EntityIdentifier>();
+											Map<String, T2Reference> partialOutputData = new HashMap<String, T2Reference>();
 											for (int i = 0; i < resultLine.length; i++) {
 												Attribute attribute = attributes
 														.get(i);
@@ -127,18 +122,14 @@ public class BiomartActivity extends
 														.get(outputName)
 														.getDepth();
 												try {
-													EntityIdentifier data = dataFacade
-															.register(resultLine[i], outputDepth - 1);
+													T2Reference data = referenceService
+															.register(resultLine[i], outputDepth - 1, true, callback.getContext());
 													partialOutputData.put(
 															outputName, data);
 													outputLists.get(outputName)
 															.add((int) index, data);
-												} catch (EmptyListException e) {
-													callback.fail("Failure when registering a result", e);
-												} catch (MalformedListException e) {
-													callback.fail("Failure when registering a result", e);
-												} catch (UnsupportedObjectTypeException e) {
-													callback.fail("Failure when registering a result", e);
+												} catch (ReferenceServiceException e) {
+													callback.fail("Failure when calling the reference service", e);
 												}
 											}
 											callback.receiveResult(
@@ -152,9 +143,9 @@ public class BiomartActivity extends
 										.getQualifiedName();
 								int outputDepth = outputMap.get(outputName)
 										.getDepth();
-								outputData.put(outputName, dataFacade.register(
+								outputData.put(outputName, referenceService.register(
 										outputLists.get(outputName),
-										outputDepth));
+										outputDepth, true, callback.getContext()));
 							}
 
 						} else {
@@ -171,8 +162,8 @@ public class BiomartActivity extends
 										.getQualifiedName();
 								int outputDepth = outputMap.get(outputName)
 										.getDepth();
-								outputData.put(outputName, dataFacade.register(
-										resultList[i], outputDepth));
+								outputData.put(outputName, referenceService.register(
+										resultList[i], outputDepth, true, callback.getContext()));
 							}
 						}
 					} else {
@@ -183,23 +174,15 @@ public class BiomartActivity extends
 								.get(0);
 						String outputName = dataset.getName();
 						int outputDepth = outputMap.get(outputName).getDepth();
-						outputData.put(outputName, dataFacade.register(
-								resultList[0], outputDepth));
+						outputData.put(outputName, referenceService.register(
+								resultList[0], outputDepth, true, callback.getContext()));
 					}
 
 					callback.receiveResult(outputData, new int[0]);
 				} catch (MartServiceException e) {
 					callback.fail("Failure calling biomart", e);
-				} catch (RetrievalException e) {
-					callback.fail("Failure when resolving an input", e);
-				} catch (NotFoundException e) {
-					callback.fail("Failure when resolving an input", e);
-				} catch (EmptyListException e) {
-					callback.fail("Failure when registering a result", e);
-				} catch (MalformedListException e) {
-					callback.fail("Failure when registering a result", e);
-				} catch (UnsupportedObjectTypeException e) {
-					callback.fail("Failure calling biomart", e);
+				} catch (ReferenceServiceException e) {
+					callback.fail("Failure when calling the reference service", e);
 				} catch (ResultReceiverException e) {
 					callback.fail("Failure when receiving a result from biomart", e);
 				}
@@ -216,11 +199,11 @@ public class BiomartActivity extends
 			String name = filter.getQualifiedName() + "_filter";
 			if (filter.isList()) {
 				addInput(name, 1, true,
-						new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+						new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 						String.class);
 			} else {
 				addInput(name, 0, true,
-						new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+						new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 						String.class);
 			}
 		}

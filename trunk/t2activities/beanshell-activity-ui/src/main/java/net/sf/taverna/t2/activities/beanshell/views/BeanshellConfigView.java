@@ -27,8 +27,8 @@ import javax.swing.JTextField;
 
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivity;
 import net.sf.taverna.t2.activities.beanshell.BeanshellActivityConfigurationBean;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
-import net.sf.taverna.t2.cloudone.refscheme.file.FileReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+//import net.sf.taverna.t2.reference.impl.external.file.FileReference;
 import net.sf.taverna.t2.workbench.ui.views.contextualviews.activity.MimeTypeConfig;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
 import net.sf.taverna.t2.workflowmodel.processor.activity.config.ActivityInputPortDefinitionBean;
@@ -340,8 +340,8 @@ public class BeanshellConfigView extends JPanel {
 				ActivityInputPortDefinitionBean bean = new ActivityInputPortDefinitionBean();
 				bean.setAllowsLiteralValues(true);
 				bean.setDepth(0);
-				List<Class<? extends ReferenceScheme<?>>> handledReferenceSchemes = new ArrayList<Class<? extends ReferenceScheme<?>>>();
-				handledReferenceSchemes.add(FileReferenceScheme.class);
+				List<Class<? extends ExternalReferenceSPI>> handledReferenceSchemes = new ArrayList<Class<? extends ExternalReferenceSPI>>();
+//				handledReferenceSchemes.add(FileReference.class);
 				bean.setHandledReferenceSchemes(handledReferenceSchemes);
 				List<String> mimeTypes = new ArrayList<String>();
 				mimeTypes.add("text/plain");

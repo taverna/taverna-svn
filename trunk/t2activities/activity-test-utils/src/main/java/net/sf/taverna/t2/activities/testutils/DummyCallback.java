@@ -1,11 +1,12 @@
 package net.sf.taverna.t2.activities.testutils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataManager;
-import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
 import net.sf.taverna.t2.invocation.InvocationContext;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.security.SecurityAgentManager;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AsynchronousActivityCallback;
 import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorType;
@@ -18,14 +19,24 @@ import net.sf.taverna.t2.workflowmodel.processor.dispatch.events.DispatchErrorTy
  *
  */
 public class DummyCallback implements AsynchronousActivityCallback {
-	private final InMemoryDataManager dataManager;
-	public Map<String, EntityIdentifier> data;
+	
+	public InvocationContext invocationContext = new InvocationContext() {
+		public <T> List<? extends T> getEntities(Class<T> arg0) {
+			return new ArrayList<T>();
+		}
+		
+		public ReferenceService getReferenceService() {
+			return referenceService;
+		}
+	};
+	public ReferenceService referenceService;
+	public Map<String, T2Reference> data;
 	public Thread thread;
 
 	public boolean failed = false;
 	
-	public DummyCallback(InMemoryDataManager dataManager) {
-		this.dataManager = dataManager;
+	public DummyCallback(ReferenceService referenceService) {
+		this.referenceService = referenceService;
 	}
 
 	public void fail(String message, Throwable t) {
@@ -43,10 +54,6 @@ public class DummyCallback implements AsynchronousActivityCallback {
 		throw new RuntimeException(message, t);
 	}
 	
-	public DataManager getLocalDataManager() {
-		return dataManager;
-	}
-
 	public SecurityAgentManager getLocalSecurityManager() {
 		// TODO Auto-generated method stub
 		return null;
@@ -57,7 +64,7 @@ public class DummyCallback implements AsynchronousActivityCallback {
 
 	}
 
-	public void receiveResult(Map<String, EntityIdentifier> data,
+	public void receiveResult(Map<String, T2Reference> data,
 			int[] index) {
 		this.data = data;
 	}
@@ -68,13 +75,7 @@ public class DummyCallback implements AsynchronousActivityCallback {
 	}
 
 	public InvocationContext getContext() {
-		return new InvocationContext() {
-
-			public DataManager getDataManager() {
-				return dataManager;
-			}
-			
-		};
+		return invocationContext;
 	}
 
 	public String getParentProcessIdentifier() {

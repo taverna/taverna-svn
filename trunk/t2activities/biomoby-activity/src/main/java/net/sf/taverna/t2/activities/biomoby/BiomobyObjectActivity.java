@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -60,15 +60,14 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> outputMap = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputMap = new HashMap<String, T2Reference>();
 
 				// initialize the namespace and id fields
 				String namespace = "";
@@ -84,27 +83,27 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 				if (isPrimitiveType) {
 					try {
 
-						EntityIdentifier inputId;
+						T2Reference inputId;
 						try {
 							inputId = data.get("namespace");
-							namespace = (String) dataFacade.resolve(inputId, String.class);
+							namespace = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
 						try {
 							inputId = data.get("id");
-							id = (String) dataFacade.resolve(inputId, String.class);
+							id = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
 						try {
 							inputId = data.get("article name");
-							article = (String) dataFacade.resolve(inputId, String.class);
+							article = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
 						inputId = data.get("value");
-						String value = (String) dataFacade.resolve(inputId, String.class);
+						String value = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 
 						if (objectName.equals("String")) {
 							if (value == null) {
@@ -116,8 +115,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 							if (mNamespace != null)
 								d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 							d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-							outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-									"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+							outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+									"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 						} else if (objectName.equals("Float")) {
 							if (value == null || value.trim().equals("")) {
 								MobyDataComposite d = new MobyDataComposite(
@@ -127,8 +126,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							} else {
 								MobyDataFloat d = new MobyDataFloat(value,mRegistry);
 								d.setId(id);
@@ -136,8 +135,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							}
 						} else if (objectName.equals("Integer")) {
 
@@ -150,8 +149,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							} catch (Exception e) {
 								MobyDataComposite d = new MobyDataComposite(
 										MobyDataType.getDataType("Integer", mRegistry));
@@ -160,8 +159,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							}
 						}else if (objectName.equals("Boolean")) {
 							if (value == null || value.trim().equals("")) {
@@ -171,8 +170,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							} else {
 								MobyDataBoolean d = new MobyDataBoolean(value,mRegistry);
 								d.setId(id);
@@ -180,8 +179,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							}
 						} else if (objectName.equals("DateTime")) {
 							if (value == null || value.trim().equals("")) {
@@ -191,8 +190,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							} else {
 								MobyDataDateTime d = new MobyDataDateTime("", value,mRegistry);
 								d.setId(id);
@@ -200,8 +199,8 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 								if (mNamespace != null)
 									d.setPrimaryNamespace(MobyNamespace.getNamespace(namespace,mRegistry));
 								d.setXmlMode(MobyDataInstance.SERVICE_XML_MODE);
-								outputMap.put("mobyData", dataFacade.register(XMLUtilities.createMobyDataElementWrapper(
-										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0));
+								outputMap.put("mobyData", referenceService.register(XMLUtilities.createMobyDataElementWrapper(
+										"<Simple articleName=\""+article+"\">" + d.toXML() +"</Simple>" ), 0, true, callback.getContext()));
 							}
 						}
 						callback.receiveResult(outputMap, new int[0]);						
@@ -214,22 +213,22 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 				} else {
 					// Situation where simples are feeding into this non primitive type
 					try {
-						EntityIdentifier inputId;
+						T2Reference inputId;
 						try {
 							inputId = data.get("namespace");
-							namespace = (String) dataFacade.resolve(inputId, String.class);
+							namespace = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
 						try {
 							inputId = data.get("id");
-							id = (String) dataFacade.resolve(inputId, String.class);
+							id = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
 						try {
 							inputId = data.get("article name");
-							article = (String) dataFacade.resolve(inputId, String.class);
+							article = (String) referenceService.renderIdentifier(inputId, String.class, callback.getContext());
 						} catch (Exception e) {
 						}
 
@@ -262,7 +261,7 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 
 								}
 								if (inputId != null) {
-									String value = (String) dataFacade.resolve(inputId, inputPort.getTranslatedElementClass());
+									String value = (String) referenceService.renderIdentifier(inputId, inputPort.getTranslatedElementClass(), callback.getContext());
 									Element valueElement = (XMLUtilities.getDOMDocument(value)).getRootElement();
 									if (valueElement.getChild("mobyContent",XMLUtilities.MOBY_NS) != null) {
 										valueElement = valueElement.getChild("mobyContent",XMLUtilities.MOBY_NS);
@@ -306,7 +305,7 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
 
 						org.jdom.output.XMLOutputter outputter = new org.jdom.output.XMLOutputter(org.jdom.output.Format.getPrettyFormat());
 						String mobyDataString = outputter.outputString(XMLUtilities.createMobyDataElementWrapper(simple));
-						outputMap.put("mobyData", dataFacade.register(mobyDataString, 0));
+						outputMap.put("mobyData", referenceService.register(mobyDataString, 0, true, callback.getContext()));
 
 						callback.receiveResult(outputMap, new int[0]);
 					} catch (Exception ex) {
@@ -345,15 +344,15 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
     private void generatePorts() {
     	//inputs
 		addInput("namespace", 0, true,
-				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 
 		addInput("id", 0, true,
-				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 
 		addInput("article name", 0, true,
-				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 
     	try {
@@ -381,7 +380,7 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
     				|| serviceName.equalsIgnoreCase("float")
     				|| serviceName.equalsIgnoreCase("DateTime")) {
     			addInput("value", 0, true,
-    					new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+    					new ArrayList<Class<? extends ExternalReferenceSPI>>(),
     					String.class);
     		} else {
     			if (!parent.equalsIgnoreCase("Object"))
@@ -420,7 +419,7 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
                     || serviceName.equalsIgnoreCase("Integer")
                     || serviceName.equalsIgnoreCase("float")) {
         		addInput("value", 0, true,
-        				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+        				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
         				String.class);
             } else {
                 if (!parent.equalsIgnoreCase("Object"))
@@ -446,13 +445,13 @@ public class BiomobyObjectActivity extends AbstractAsynchronousActivity<BiomobyO
             case (Central.iHAS): {
                 // TODO - not really supported
         		addInput(name, 0, true,
-        				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+        				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
         				String.class);
                 break;
             }
             case (Central.iHASA): {
         		addInput(name, 0, true,
-        				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+        				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
         				String.class);
                 break;
             }

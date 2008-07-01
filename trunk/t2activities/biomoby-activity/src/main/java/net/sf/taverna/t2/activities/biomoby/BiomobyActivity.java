@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.datamanager.RetrievalException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
-import net.sf.taverna.t2.cloudone.refscheme.ReferenceScheme;
+import net.sf.taverna.t2.reference.ExternalReferenceSPI;
+import net.sf.taverna.t2.reference.ReferenceContext;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
 import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationException;
@@ -93,23 +92,22 @@ public class BiomobyActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> inputMap,
+	public void executeAsynch(final Map<String, T2Reference> inputMap,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> outputMap = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputMap = new HashMap<String, T2Reference>();
 
 				if (logger.isDebugEnabled()) {
 					logger.debug("Service " /* + proc.getName() */);
 					for (Iterator it = inputMap.keySet().iterator(); it.hasNext();) {
 						String key = (String) it.next();
 						try {
-							Object input = dataFacade.resolve(inputMap.get(key),
-									String.class);
+							Object input = referenceService.renderIdentifier(inputMap.get(key),
+									String.class, callback.getContext());
 							if (input instanceof String) {
 								logger.debug("key " + key + "has value of\n"
 										+ input);
@@ -122,10 +120,7 @@ public class BiomobyActivity extends
 											+ "has value of\n" + it2.next());
 								}
 							}
-						} catch (RetrievalException e) {
-							logger.debug(
-									"Error resolving data for port " + key, e);
-						} catch (NotFoundException e) {
+						} catch (ReferenceServiceException e) {
 							logger.debug(
 									"Error resolving data for port " + key, e);
 						}
@@ -137,7 +132,7 @@ public class BiomobyActivity extends
 					// input port takes precedence over other ports
 					try {
 
-						Object input = dataFacade.resolve(inputMap.get("input"), String.class);
+						Object input = referenceService.renderIdentifier(inputMap.get("input"), String.class, callback.getContext());
 
 						ActivityInputPort myInput = null;
 						for (ActivityInputPort inputPort : getInputPorts()) {
@@ -209,15 +204,13 @@ public class BiomobyActivity extends
 								"http://biomoby.org/").call(methodName,
 								inputXML);
 						// goes through and creates the port 'output'
-						processOutputPort(outputXML, outputMap, dataFacade);
+						processOutputPort(outputXML, outputMap, referenceService, callback.getContext());
 						// create the other ports
-						processOutputPorts(outputXML, outputMap, dataFacade);
+						processOutputPorts(outputXML, outputMap, referenceService, callback.getContext());
 
 						callback.receiveResult(outputMap, new int[0]);
 
-					} catch (DataManagerException e) {
-						callback.fail("Error accessing input/output data", e);
-					} catch (NotFoundException e) {
+					} catch (ReferenceServiceException e) {
 						callback.fail("Error accessing input/output data", e);
 					} catch (MobyException ex) {
 						// a MobyException should be already reasonably
@@ -269,9 +262,9 @@ public class BiomobyActivity extends
 							}
 
 							// String inputType = myInput.getSyntacticType();
-							Object input = dataFacade.resolve(inputMap
+							Object input = referenceService.renderIdentifier(inputMap
 									.get(portName), myInput
-									.getTranslatedElementClass());
+									.getTranslatedElementClass(), callback.getContext());
 							if (myInput.getDepth() == 0) {
 								inputXML = (String) input;
 								Element inputElement = null;
@@ -704,15 +697,13 @@ public class BiomobyActivity extends
 						String outputXML = XMLUtilities
 								.createMultipleInvokations(invocations);
 						// goes through and creates the port 'output'
-						processOutputPort(outputXML, outputMap, dataFacade);
+						processOutputPort(outputXML, outputMap, referenceService, callback.getContext());
 						// create the other ports
-						processOutputPorts(outputXML, outputMap, dataFacade);
+						processOutputPorts(outputXML, outputMap, referenceService, callback.getContext());
 
 						callback.receiveResult(outputMap, new int[0]);
 
-					} catch (DataManagerException e) {
-						callback.fail("Error accessing input/output data", e);
-					} catch (NotFoundException e) {
+					} catch (ReferenceServiceException e) {
 						callback.fail("Error accessing input/output data", e);
 					} catch (MobyException ex) {
 						// a MobyException should be already reasonably
@@ -802,7 +793,7 @@ public class BiomobyActivity extends
 
 				String portName = simple.getDataType().getName() + simpleName;
 				addInput(portName, inputDepth, true,
-						new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+						new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 						String.class);
 			} else {
 				// collection of items
@@ -820,14 +811,14 @@ public class BiomobyActivity extends
 							portName,
 							inputDepth,
 							true,
-							new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+							new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 							String.class);
 
 				}
 			}
 		}
 		addInput("input", inputDepth, true,
-				new ArrayList<Class<? extends ReferenceScheme<?>>>(),
+				new ArrayList<Class<? extends ExternalReferenceSPI>>(),
 				String.class);
 
 		MobyData[] secondaries = this.mobyService.getSecondaryInputs();
@@ -884,8 +875,8 @@ public class BiomobyActivity extends
 	}
 
 	private void processOutputPort(String outputXML, Map outputMap,
-			DataFacade dataFacade) throws ActivityConfigurationException,
-			JDOMException, IOException, DataManagerException {
+			ReferenceService referenceService, ReferenceContext context) throws ActivityConfigurationException,
+			JDOMException, IOException, ReferenceServiceException {
 		OutputPort myOutput = null;
 		for (OutputPort outputPort : getOutputPorts()) {
 			if (outputPort.getName().equalsIgnoreCase("output"))
@@ -895,8 +886,8 @@ public class BiomobyActivity extends
 			throw new ActivityConfigurationException("output port is invalid.");
 
 		if (myOutput.getDepth() == 0) {
-			outputMap.put("output", dataFacade.register(outputXML, myOutput
-					.getDepth()));
+			outputMap.put("output", referenceService.register(outputXML, myOutput
+					.getDepth(), true, context));
 		} else {
 			List outputList = new ArrayList();
 			// Drill into the output xml document creating
@@ -999,13 +990,13 @@ public class BiomobyActivity extends
 			}
 
 			// Return the list (may be empty)
-			outputMap.put("output", dataFacade.register(outputList, myOutput
-					.getDepth()));
+			outputMap.put("output", referenceService.register(outputList, myOutput
+					.getDepth(), true, context));
 		}
 	}
 
 	private void processOutputPorts(String outputXML, Map outputMap,
-			DataFacade dataFacade) throws MobyException, DataManagerException {
+			ReferenceService referenceService, ReferenceContext context) throws MobyException, ReferenceServiceException {
 		boolean isMIM = XMLUtilities.isMultipleInvocationMessage(outputXML);
 		for (OutputPort outputPort : getOutputPorts()) {
 			String name = outputPort.getName();
@@ -1019,8 +1010,8 @@ public class BiomobyActivity extends
 						// TODO could throw exception
 
 						List innerList = new ArrayList();
-						outputMap.put(name, dataFacade.register(innerList,
-								outputPort.getDepth()));
+						outputMap.put(name, referenceService.register(innerList,
+								outputPort.getDepth(), true, context));
 						continue;
 					} else {
 						articleName = name.substring(name.indexOf("'") + 1,
@@ -1074,8 +1065,8 @@ public class BiomobyActivity extends
 										 */
 									}
 								}
-								outputMap.put(name, dataFacade.register(
-										innerList, outputPort.getDepth()));
+								outputMap.put(name, referenceService.register(
+										innerList, outputPort.getDepth(), true, context));
 							} else {
 								// process the single invocation and put string
 								// into
@@ -1107,8 +1098,8 @@ public class BiomobyActivity extends
 																serviceNotesElement));
 									}
 
-									outputMap.put(name, dataFacade.register(
-											innerList, outputPort.getDepth()));
+									outputMap.put(name, referenceService.register(
+											innerList, outputPort.getDepth(), true, context));
 								} catch (MobyException e) {
 									// TODO keep the original wrapper
 									List innerList = new ArrayList();
@@ -1123,8 +1114,8 @@ public class BiomobyActivity extends
 									 * XMLOutputter(Format.getPrettyFormat());
 									 * innerList.add(output.outputString(empty));
 									 */
-									outputMap.put(name, dataFacade.register(
-											innerList, outputPort.getDepth()));
+									outputMap.put(name, referenceService.register(
+											innerList, outputPort.getDepth(), true, context));
 								}
 							}
 						} else {
@@ -1161,8 +1152,8 @@ public class BiomobyActivity extends
 									}
 								}
 
-								outputMap.put(name, dataFacade.register(
-										innerList, outputPort.getDepth()));
+								outputMap.put(name, referenceService.register(
+										innerList, outputPort.getDepth(), true, context));
 							} else {
 
 								try {
@@ -1172,8 +1163,8 @@ public class BiomobyActivity extends
 											.getWrappedCollection(articleName,
 													outputXML);
 									innerList.add(collection);
-									outputMap.put(name, dataFacade.register(
-											innerList, outputPort.getDepth()));
+									outputMap.put(name, referenceService.register(
+											innerList, outputPort.getDepth(), true, context));
 								} catch (MobyException e) {
 									// TODO keep the original wrapper
 									List innerList = new ArrayList();
@@ -1189,8 +1180,8 @@ public class BiomobyActivity extends
 									 * XMLOutputter(Format.getPrettyFormat());
 									 * innerList.add(output.outputString(empty));
 									 */
-									outputMap.put(name, dataFacade.register(
-											innerList, outputPort.getDepth()));
+									outputMap.put(name, referenceService.register(
+											innerList, outputPort.getDepth(), true, context));
 								}
 							}
 						}
@@ -1211,8 +1202,8 @@ public class BiomobyActivity extends
 														.getServiceNotesAsElement(outputXML)));
 						List innerList = new ArrayList();
 						innerList.add(empty);
-						outputMap.put(name, dataFacade.register(empty,
-								outputPort.getDepth()));
+						outputMap.put(name, referenceService.register(empty,
+								outputPort.getDepth(), true, context));
 						// FIXME outputMap.put(name, new
 						// DataThing((Object)null));
 						continue;
@@ -1258,17 +1249,17 @@ public class BiomobyActivity extends
 							String[] s = new String[innerList.size()];
 							s = (String[]) innerList.toArray(s);
 							try {
-								outputMap.put(name, dataFacade.register(
+								outputMap.put(name, referenceService.register(
 										XMLUtilities
 												.createMultipleInvokations(s),
-										outputPort.getDepth()));
+										outputPort.getDepth(), true, context));
 							} catch (MobyException e) {
 								logger.error("Error creating output for service: "
 												+ "."
 												+ System.getProperty("line.separator")
 												+ e.getMessage());
-								outputMap.put(name, dataFacade.register("",
-										outputPort.getDepth()));
+								outputMap.put(name, referenceService.register("",
+										outputPort.getDepth(), true, context));
 							}
 						} else {
 							// process the single invocation and put into a
@@ -1278,8 +1269,8 @@ public class BiomobyActivity extends
 										articleName, outputXML);
 								ArrayList innerList = new ArrayList();
 								innerList.add(simple);
-								outputMap.put(name, dataFacade.register(simple,
-										outputPort.getDepth()));
+								outputMap.put(name, referenceService.register(simple,
+										outputPort.getDepth(), true, context));
 							} catch (MobyException e) {
 								// simple didnt exist, so put an empty mobyData
 								// TODO keep the original wrapper
@@ -1293,9 +1284,9 @@ public class BiomobyActivity extends
 										.getPrettyFormat());
 								ArrayList innerList = new ArrayList();
 								innerList.add(output.outputString(empty));
-								outputMap.put(name, dataFacade.register(output
+								outputMap.put(name, referenceService.register(output
 										.outputString(empty), outputPort
-										.getDepth()));
+										.getDepth(), true, context));
 								// FIXME outputMap.put(name, new DataThing(""));
 
 							}

@@ -11,10 +11,9 @@ import java.util.Set;
 import java.util.Vector;
 
 import net.sf.taverna.t2.activities.rshell.RshellPortTypes.SymanticTypes;
-import net.sf.taverna.t2.cloudone.datamanager.DataFacade;
-import net.sf.taverna.t2.cloudone.datamanager.DataManagerException;
-import net.sf.taverna.t2.cloudone.datamanager.NotFoundException;
-import net.sf.taverna.t2.cloudone.identifier.EntityIdentifier;
+import net.sf.taverna.t2.reference.ReferenceService;
+import net.sf.taverna.t2.reference.ReferenceServiceException;
+import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Port;
 import net.sf.taverna.t2.workflowmodel.processor.activity.AbstractAsynchronousActivity;
@@ -57,15 +56,14 @@ public class RshellActivity extends
 	}
 
 	@Override
-	public void executeAsynch(final Map<String, EntityIdentifier> data,
+	public void executeAsynch(final Map<String, T2Reference> data,
 			final AsynchronousActivityCallback callback) {
 		callback.requestRun(new Runnable() {
 
 			public void run() {
-				DataFacade dataFacade = new DataFacade(callback.getContext()
-						.getDataManager());
+				ReferenceService referenceService = callback.getContext().getReferenceService();
 
-				Map<String, EntityIdentifier> outputData = new HashMap<String, EntityIdentifier>();
+				Map<String, T2Reference> outputData = new HashMap<String, T2Reference>();
 
 				RshellConnection connection = null;
 
@@ -90,14 +88,14 @@ public class RshellActivity extends
 						String inputName = inputPort.getName();
 						SymanticTypes symanticType = inputSymanticTypes
 								.get(inputName);
-						EntityIdentifier inputId = data.get(inputName);
+						T2Reference inputId = data.get(inputName);
 						if (inputId == null) {
 							callback.fail("Input to rserve '" + inputName
 									+ "' was defined but not provided.");
 						}
 
-						Object input = dataFacade.resolve(inputId, inputPort
-								.getTranslatedElementClass());
+						Object input = referenceService.renderIdentifier(inputId, inputPort
+								.getTranslatedElementClass(), callback.getContext());
 						if (symanticType.isFile) {
 							connection.assign(inputName,
 									generateFilename(inputPort));
@@ -165,23 +163,23 @@ public class RshellActivity extends
 							case PNG_FILE: {
 								byte[] data = (byte[]) readRServeFile(
 										outputPort, connection);
-								outputData.put(portName, dataFacade
-										.register(data));
+								outputData.put(portName, referenceService
+										.register(data, 0, true, callback.getContext()));
 								break;
 							}
 							case TEXT_FILE: {
 								String data = (String) readRServeFile(
 										outputPort, connection);
-								outputData.put(portName, dataFacade
-										.register(data));
+								outputData.put(portName, referenceService
+										.register(data, 0, true, callback.getContext()));
 								break;
 							}
 							default: {
 								REXP expression = resultList.at(portName);
 								Object object = rExpToJava(expression,
 										symanticType);
-								outputData.put(portName, dataFacade
-										.register(object));
+								outputData.put(portName, referenceService
+										.register(object, 0, true, callback.getContext()));
 							}
 							}
 						}
@@ -213,9 +211,7 @@ public class RshellActivity extends
 					callback.fail("RShell failed: "
 							+ rSrvException.getRequestErrorDescription(),
 							rSrvException);
-				} catch (DataManagerException e) {
-					callback.fail("Error accessing input/output data", e);
-				} catch (NotFoundException e) {
+				} catch (ReferenceServiceException e) {
 					callback.fail("Error accessing input/output data", e);
 				} finally {
 					if (connection != null && connection.isConnected()) {
