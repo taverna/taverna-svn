@@ -10,7 +10,7 @@
 		<artifactId>activities</artifactId>
 		<version>0.3-SNAPSHOT</version>
 	</parent>
-	<dependencies>
+	<dependencies>	
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>workflowmodel-impl</artifactId>
@@ -22,9 +22,24 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-impl</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.taverna.t2</groupId>
+			<artifactId>t2reference-core-extensions</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>uk.org.mygrid.taverna.scufl</groupId>
 			<artifactId>scufl-model</artifactId>
 			<version>1.7.1.0</version>
-		</dependency>
+		</dependency>		
 	</dependencies>
 </project>

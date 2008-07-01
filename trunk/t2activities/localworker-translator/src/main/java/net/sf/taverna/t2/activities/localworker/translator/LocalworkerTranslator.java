@@ -46,6 +46,7 @@ public class LocalworkerTranslator extends
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.PadNumber", "PadNumber");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.RegularExpressionStringList", "RegularExpressionStringList");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SendEmail", "SendEmail");
+		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SliceList", "SliceList");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.SplitByRegex", "SplitByRegex");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringConcat", "StringConcat");
 		localWorkerToScript.put("org.embl.ebi.escience.scuflworkers.java.StringListMerge", "StringListMerge");

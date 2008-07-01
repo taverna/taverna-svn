@@ -41,9 +41,9 @@ public class BiomartActivityTest {
 		assertEquals(2, activity.getOutputPorts().size());
 		
 		Map<String,Object> inputs = new HashMap<String, Object>();
-		List<String> expectedOutputs = new ArrayList<String>();
-		expectedOutputs.add("hsapiens_gene_ensembl.chromosome_name");
-		expectedOutputs.add("hsapiens_gene_ensembl.go_description");
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("hsapiens_gene_ensembl.chromosome_name", String.class);
+		expectedOutputs.put("hsapiens_gene_ensembl.go_description", String.class);
 
 		Map<String,Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, inputs, expectedOutputs);
 		assertTrue(outputs.containsKey("hsapiens_gene_ensembl.chromosome_name"));

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,9 +61,8 @@ public class RshellActivityTest {
 	@Ignore
 	public void testExecuteAsynch() throws Exception {
 		Map<String, Object> inputs = new HashMap<String, Object>();
-		inputs.put("example_input", "hello");
-		List<String> expectedOutputs = new ArrayList<String>();
-		expectedOutputs.add("example_output");
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("example_output", String.class);
 
 		activity.configure(configurationBean);
 

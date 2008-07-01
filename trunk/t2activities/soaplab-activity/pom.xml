@@ -18,10 +18,10 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>data-impl</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<artifactId>t2reference-api</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
-        <dependency>
+       <dependency>
             <groupId>uk.org.mygrid.resources</groupId>
             <artifactId>axis</artifactId>
             <version>1.4-taverna</version>

@@ -41,9 +41,9 @@ public class SoaplabActivityTest {
 	public void testExecuteAsynch() throws Exception {
 		Map<String, Object> inputs = new HashMap<String, Object>();
 		// inputs.put("full", "true");
-		List<String> expectedOutputs = new ArrayList<String>();
-		expectedOutputs.add("report");
-		expectedOutputs.add("outfile");
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("report", String.class);
+		expectedOutputs.put("outfile", String.class);
 
 		activity.configure(configurationBean);
 

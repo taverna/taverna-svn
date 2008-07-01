@@ -58,7 +58,8 @@ public class BeanshellActivityTest {
 		
 		Map<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("input", "aString");
-		List<String> expectedOutputs = Collections.singletonList("output");
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("output", String.class);
 		
 		Map<String,Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, inputs, expectedOutputs);
 		assertTrue("there should be an output named output",outputs.containsKey("output"));

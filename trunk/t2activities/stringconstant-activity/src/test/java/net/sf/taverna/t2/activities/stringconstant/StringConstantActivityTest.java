@@ -34,7 +34,10 @@ public class StringConstantActivityTest {
 		assertEquals("there should be 1 output",1,activity.getOutputPorts().size());
 		assertEquals("the output port name should be value","value",((AbstractPort)activity.getOutputPorts().toArray()[0]).getName());
 		
-		Map<String,Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, new HashMap<String, Object>(), Collections.singletonList("value"));
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("value", String.class);
+
+		Map<String,Object> outputs = ActivityInvoker.invokeAsyncActivity(activity, new HashMap<String, Object>(), expectedOutputs);
 		
 		assertEquals("there should be 1 output",1,outputs.size());
 		assertTrue("there should be an output named value",outputs.containsKey("value"));

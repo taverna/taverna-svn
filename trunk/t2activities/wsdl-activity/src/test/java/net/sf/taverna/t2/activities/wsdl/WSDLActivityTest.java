@@ -66,8 +66,12 @@ public class WSDLActivityTest implements LocationConstants {
 			throws Exception {
 		Map<String, Object> inputMap = new HashMap<String, Object>();
 		inputMap.put("parameters", "<parameters><db>pubmed</db></parameters>");
+
+		Map<String, Class<?>> expectedOutputs = new HashMap<String, Class<?>>();
+		expectedOutputs.put("parameters", String.class);
+
 		Map<String, Object> outputMap = ActivityInvoker.invokeAsyncActivity(
-				activity, inputMap, Collections.singletonList("parameters"));
+				activity, inputMap, expectedOutputs);
 		assertNotNull("there should be an output named parameters", outputMap
 				.get("parameters"));
 		String xml;
