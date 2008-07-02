@@ -15,6 +15,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -24,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import net.sf.taverna.t2.lang.ui.icons.Icons;
 
 /**
  * A user input dialog that validates the input as the user is entering the
@@ -55,6 +58,8 @@ public class ValidatingUserInputDialog extends JDialog {
 
 	private JTextField inputField;
 
+	private JLabel iconLabel;
+
 	private String defaultValue;
 
 	private String inputValue;
@@ -64,8 +69,8 @@ public class ValidatingUserInputDialog extends JDialog {
 	 * 
 	 * @param invalidInputs
 	 *            a set of inputs that are not valid. This is typically a set of
-	 *            already used identifiers to avoid clashes. Can be an empty set
-	 *            or null.
+	 *            already used identifiers to avoid name clashes. Can be an
+	 *            empty set or null.
 	 * @param invalidInputsMessage
 	 *            the message to display if the user enters a value that is in
 	 *            invalidInputs.
@@ -116,7 +121,10 @@ public class ValidatingUserInputDialog extends JDialog {
 		inputText.setFont(inputText.getFont().deriveFont(11f));
 		inputText.setEditable(false);
 		messagePanel.add(inputText, BorderLayout.CENTER);
-
+		
+		iconLabel = new JLabel();
+		messagePanel.add(iconLabel, BorderLayout.WEST);
+		
 		JPanel inputPanel = new JPanel(new BorderLayout());
 		inputPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		add(inputPanel, BorderLayout.CENTER);
@@ -226,19 +234,34 @@ public class ValidatingUserInputDialog extends JDialog {
 
 	}
 
+	public void setMessage(String message) {
+		iconLabel.setIcon(null);
+		inputText.setText(message);		
+	}
+	
+	public void setWarningMessage(String message) {
+		iconLabel.setIcon(Icons.warningIcon);
+		inputText.setText(message);		
+	}
+	
+	public void setErrorMessage(String message) {
+		iconLabel.setIcon(Icons.severeIcon);
+		inputText.setText(message);		
+	}
+	
 	private void verify() {
 		if (invalidInputs != null
 				&& invalidInputs.contains(inputField.getText())) {
-			inputText.setText(invalidInputsMessage);
+			setErrorMessage(invalidInputsMessage);
 			okButton.setEnabled(false);
 			okButton.setSelected(false);
 		} else if (inputRegularExpression != null
 				&& !inputField.getText().matches(inputRegularExpression)) {
-			inputText.setText(inputRegularExpressionMessage);
+			setErrorMessage(inputRegularExpressionMessage);
 			okButton.setEnabled(false);
 			okButton.setSelected(false);
 		} else {
-			inputText.setText(inputMessage);
+			setMessage(inputMessage);
 			okButton.setEnabled(true);
 			okButton.setSelected(true);
 		}
