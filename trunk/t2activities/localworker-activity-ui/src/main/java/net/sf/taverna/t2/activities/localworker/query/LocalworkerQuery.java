@@ -174,6 +174,7 @@ public class LocalworkerQuery extends ActivityQuery {
 			bean.setDepth(port.getDepth());
 			bean.setGranularDepth(port.getGranularDepth());
 			bean.setName(port.getName());
+			outputPortBeans.add(bean);
 			// FIXME bean.setMimeTypes(port.) mime types needed from
 			// annotations
 		}
