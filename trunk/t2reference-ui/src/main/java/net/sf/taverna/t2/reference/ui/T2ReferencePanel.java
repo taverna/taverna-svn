@@ -2,7 +2,6 @@ package net.sf.taverna.t2.reference.ui;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
-import java.util.Enumeration;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
