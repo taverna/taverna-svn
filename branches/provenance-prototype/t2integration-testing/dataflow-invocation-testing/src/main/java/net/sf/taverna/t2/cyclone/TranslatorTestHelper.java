@@ -16,6 +16,7 @@ import net.sf.taverna.t2.cloudone.datamanager.memory.InMemoryDataManager;
 import net.sf.taverna.t2.invocation.InvocationContext;
 import net.sf.taverna.t2.provenance.InMemoryProvenanceConnector;
 import net.sf.taverna.t2.provenance.ProvenanceConnector;
+import net.sf.taverna.t2.provenance.WebServiceProvenanceConnector;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.DataflowOutputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
@@ -57,7 +58,8 @@ public class TranslatorTestHelper {
 	public void makeDataManager() {
 		dataManager = new InMemoryDataManager("namespace",
 				Collections.EMPTY_SET);
-		provenanceConnector = new InMemoryProvenanceConnector();
+		provenanceConnector = new WebServiceProvenanceConnector();
+		//provenanceConnector = new InMemoryProvenanceConnector();
 		dataFacade=new DataFacade(dataManager);
 		context =  new InvocationContext() {
 			public DataManager getDataManager() {

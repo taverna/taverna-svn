@@ -15,17 +15,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>provenance-impl</artifactId>
-			<version>${depT2core}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
-			<artifactId>provenance-api</artifactId>
-			<version>${depT2core}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sf.taverna.t2</groupId>
 			<artifactId>cyclone-impl</artifactId>
 			<version>${depT2core}</version>
 		</dependency>
@@ -175,5 +164,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-  
+	
 </project>
