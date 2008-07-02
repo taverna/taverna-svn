@@ -18,8 +18,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
@@ -53,7 +53,7 @@ public abstract class PreRegistrationTreeDnDHandler implements
 		source.createDefaultDragGestureRecognizer(tree,
 				DnDConstants.ACTION_MOVE, this);
 	}
-
+	
 	/**
 	 * Called when a node has been dragged onto another node (nodes could be the
 	 * same, client code should handle this correctly).
@@ -120,45 +120,62 @@ public abstract class PreRegistrationTreeDnDHandler implements
 		TreePath targetPath = tree.getClosestPathForLocation(pt.x, pt.y);
 		MutableTreeNode target = (MutableTreeNode) targetPath
 				.getLastPathComponent();
-		try {
-			Transferable tr = dtde.getTransferable();
-			if (tr
-					.isDataFlavorSupported(InternalNodeDragTransferable.INTERNAL_NODE_FLAVOR)) {
-				dtde.acceptDrop(DnDConstants.ACTION_MOVE);
-				handleNodeMove(draggedNode, target);
-				draggedNode = null;
-				dtde.dropComplete(true);
-				return;
-			} else if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-				dtde.acceptDrop(DnDConstants.ACTION_COPY);
+		Transferable tr = dtde.getTransferable();
+		if (tr
+				.isDataFlavorSupported(InternalNodeDragTransferable.INTERNAL_NODE_FLAVOR)) {
+			dtde.acceptDrop(DnDConstants.ACTION_MOVE);
+			handleNodeMove(draggedNode, target);
+			draggedNode = null;
+			dtde.dropComplete(true);
+			return;
+		} else if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+			dtde.acceptDrop(DnDConstants.ACTION_COPY);
+			try {
 				List<File> fileList = (List<File>) tr
 						.getTransferData(DataFlavor.javaFileListFlavor);
 				handleFileDrop(target, fileList);
 				dtde.dropComplete(true);
-				return;
-			} else {
-				for (DataFlavor flavor : tr.getTransferDataFlavors()) {
-					String mimeType = flavor.getMimeType();
-					if (mimeType.startsWith("application/x-java-url")) {
-						dtde.acceptDrop(DnDConstants.ACTION_COPY);
-						URL url = (URL) tr.getTransferData(flavor);
+			} catch (Exception ex) {
+				dtde.dropComplete(false);
+			}
+			return;
+		} else {
+			for (DataFlavor flavor : tr.getTransferDataFlavors()) {
+				String mimeType = flavor.getMimeType();
+				if (mimeType.startsWith("application/x-java-url")) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY);
+					URL url;
+					try {
+						url = (URL) tr.getTransferData(flavor);
 						handleUrlDrop(target, url);
 						dtde.dropComplete(true);
-						return;
-					} else if (mimeType.contains("class=java.lang.String;")) {
-						dtde.acceptDrop(DnDConstants.ACTION_COPY);
-						String string = (String) tr.getTransferData(flavor);
+					} catch (UnsupportedFlavorException e) {
+						dtde.dropComplete(false);
+						e.printStackTrace();
+					} catch (IOException e) {
+						dtde.dropComplete(false);
+						e.printStackTrace();
+					}
+					return;
+				} else if (mimeType.contains("class=java.lang.String;")) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY);
+					String string;
+					try {
+						string = (String) tr.getTransferData(flavor);
 						handleStringDrop(target, string);
 						dtde.dropComplete(true);
-						return;
+					} catch (UnsupportedFlavorException e) {
+						dtde.dropComplete(false);
+						e.printStackTrace();
+					} catch (IOException e) {
+						dtde.dropComplete(false);
+						e.printStackTrace();
 					}
+					return;
 				}
 			}
-			dtde.rejectDrop();
-		} catch (Exception e) {
-			e.printStackTrace();
-			dtde.rejectDrop();
 		}
+		dtde.rejectDrop();
 	}
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {

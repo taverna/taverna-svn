@@ -92,9 +92,20 @@ public abstract class PreRegistrationPanel extends JPanel {
 	 * @param depth
 	 *            Depth of the POJO to construct from this panel
 	 */
+	@SuppressWarnings("serial")
 	public PreRegistrationPanel(int depth) {
 		super(new BorderLayout());
-		tree = new PreRegistrationTree(depth);
+		tree = new PreRegistrationTree(depth) {
+			@Override
+			public void setStatusMessage(String message, boolean isError) {
+				if (isError) {
+					setStatus(message, errorIcon, Color.red);
+				}
+				else {
+					setStatus(message, infoIcon, Color.black);
+				}
+			}
+		};
 		treeModel = tree.getPreRegistrationTreeModel();
 		add(new JScrollPane(this.tree), BorderLayout.CENTER);
 		buildActions();

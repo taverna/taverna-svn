@@ -48,6 +48,13 @@ public class PreRegistrationTree extends JTree implements Autoscroll {
 	}
 
 	/**
+	 * Override this to be informed of status messages from the tree
+	 */
+	public void setStatusMessage(String message, boolean isError) {
+		//
+	}
+
+	/**
 	 * Construct with the depth of the collection to be assembled. This will
 	 * instantiate an appropriate internal model and set all the drag and drop
 	 * handlers, renderers and cell editing components.
@@ -96,6 +103,12 @@ public class PreRegistrationTree extends JTree implements Autoscroll {
 					if (f.isDirectory() == false) {
 						model.addPojoStructure(target, f, 0);
 					} else {
+						if (model.getDepth() < 1) {
+							setStatusMessage(
+									"Can't add directory to single item input",
+									true);
+							return;
+						}
 						// Try to handle directories as flat lists, don't nest
 						// any deeper for now.
 						List<File> children = new ArrayList<File>();
@@ -111,12 +124,20 @@ public class PreRegistrationTree extends JTree implements Autoscroll {
 
 			@Override
 			public void handleUrlDrop(MutableTreeNode target, URL url) {
-				model.addPojoStructure(target, url, 0);
+				if (url.getProtocol().equalsIgnoreCase("http")) {
+					model.addPojoStructure(target, url, 0);
+					setStatusMessage("Added URL : " + url.toExternalForm(),
+							false);
+				} else {
+					setStatusMessage("Only http URLs are supported for now.",
+							true);
+				}
 			}
 
 			@Override
 			public void handleStringDrop(MutableTreeNode target, String string) {
 				model.addPojoStructure(target, string, 0);
+				setStatusMessage("Added string from drag and drop", false);
 			}
 		};
 	}
