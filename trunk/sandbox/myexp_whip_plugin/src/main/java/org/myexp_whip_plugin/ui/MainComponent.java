@@ -1,10 +1,12 @@
 package org.myexp_whip_plugin.ui;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
@@ -14,6 +16,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.embl.ebi.escience.scufl.ScuflModel;
+import org.embl.ebi.escience.scuflui.TavernaIcons;
 import org.embl.ebi.escience.scuflui.spi.WorkflowModelViewSPI;
 import org.myexp_whip_plugin.MyExperimentClient;
 
@@ -94,7 +97,7 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		
 		this.tabsPane = new JTabbedPane();
 		
-		this.latestWorkflowsPanel = new LatestWorkflowsPanel(this.client, this.logger);
+		this.latestWorkflowsPanel = new LatestWorkflowsPanel(this, this.client, this.logger);
 		JScrollPane leftScrollPane1 = new JScrollPane(this.latestWorkflowsPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -133,5 +136,37 @@ public class MainComponent extends JSplitPane implements WorkflowModelViewSPI {
 		this.logger.debug("Initialising myExperiment Perspective data");
 		
 		this.latestWorkflowsPanel.refresh();
+	}
+	
+	public class PreviewWorkflowAction extends AbstractAction {
+        private int workflowId = 0;
+		
+		public PreviewWorkflowAction(int workflowId) {
+                putValue(SMALL_ICON, TavernaIcons.zoomIcon);
+                putValue(NAME,"Preview");
+                putValue(SHORT_DESCRIPTION,"Preview this workflow in the Workflow Preview pane");
+                
+                this.workflowId = workflowId;
+        }
+   
+        public void actionPerformed(ActionEvent actionEvent) {
+                        
+        }
+	}
+	
+	public class LoadWorkflowAction extends AbstractAction {
+        private int workflowId = 0;
+		
+		public LoadWorkflowAction(int workflowId) {
+                putValue(SMALL_ICON, TavernaIcons.importIcon);
+                putValue(NAME,"Load");
+                putValue(SHORT_DESCRIPTION,"Download and load this workflow in Taverna");
+                
+                this.workflowId = workflowId;
+        }
+   
+        public void actionPerformed(ActionEvent actionEvent) {
+                        
+        }
 	}
 }

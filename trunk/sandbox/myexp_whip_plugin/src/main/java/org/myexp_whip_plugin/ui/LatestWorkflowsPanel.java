@@ -18,6 +18,8 @@ import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -53,6 +55,8 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 	
 	private static final String ACTION_REFRESH = "refresh_latest_workflows"; 
 
+	private MainComponent parent;
+	
 	private MyExperimentClient client;
 
 	private Logger logger;
@@ -67,7 +71,8 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 	
 	private JPanel listPanel;
 
-	public LatestWorkflowsPanel(MyExperimentClient client, Logger logger) {
+	public LatestWorkflowsPanel(MainComponent parent, MyExperimentClient client, Logger logger) {
+		this.parent = parent;
 		this.client = client;
 		this.logger = logger;
 		
@@ -129,63 +134,69 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 			this.statusLabel.setText(this.workflows.size() + " workflows found");
 			
 			for (SyndEntry ent : this.workflows) {
-				JPanel mainPanel = new JPanel(new BorderLayout());
-				mainPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-
-				JTextPane infoTextPane = new JTextPane();
-				infoTextPane.setBorder(BorderFactory.createEmptyBorder());
-				infoTextPane.setEditable(false);
-				
-				StringBuffer content = new StringBuffer();
-				content.append("<div class=\"outer\">");
-				content.append("<p class=\"title\">");
-				content.append(ent.getTitle());
-				content.append("</p>");
-				if (ent.getDescription().getValue().length() > 0) {
-					content.append("<div class=\"desc\">");
-					content.append(ent.getDescription().getValue());
-					content.append("<br/>");
-					content.append("</div>");
-				}
-				else {
-					content.append("<br/>");
-				}
-				content.append("</div>");
-				
-				HTMLEditorKit kit = new HTMLEditorKit();
-				HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
-				StyleSheet css = kit.getStyleSheet();
-				
-				css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
-				css.addRule("div.outer {display; block; text-align: left; padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
-				css.addRule("p.title {display; block; line-height: 1.0; color: #000066; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
-				css.addRule("div.desc {display; block; font-size: medium; padding-top: 0; padding-bottom: 0; padding-left: 15px; padding-right: 5px;}");
-				
 				try {
+					JPanel mainPanel = new JPanel(new BorderLayout());
+					mainPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+	
+					JTextPane infoTextPane = new JTextPane();
+					infoTextPane.setBorder(BorderFactory.createEmptyBorder());
+					infoTextPane.setEditable(false);
+					
+					StringBuffer content = new StringBuffer();
+					content.append("<div class=\"outer\">");
+					content.append("<p class=\"title\">");
+					content.append(ent.getTitle());
+					content.append("</p>");
+					if (ent.getDescription().getValue().length() > 0) {
+						content.append("<div class=\"desc\">");
+						content.append(ent.getDescription().getValue());
+						content.append("<br/>");
+						content.append("</div>");
+					}
+					else {
+						content.append("<br/>");
+					}
+					content.append("</div>");
+					
+					HTMLEditorKit kit = new HTMLEditorKit();
+					HTMLDocument doc = (HTMLDocument) (kit.createDefaultDocument());
+					StyleSheet css = kit.getStyleSheet();
+					
+					css.addRule("body {font-family: arial,helvetica,clean,sans-serif; margin: 0; padding: 0;}");
+					css.addRule("div.outer {display; block; text-align: left; padding-top: 0; padding-bottom: 0; padding-left: 10px; padding-right: 10px;}");
+					css.addRule("p.title {display; block; line-height: 1.0; color: #000066; font-size: large; font-weight: bold; margin-bottom: 0; margin-top; 0; padding: 0;}");
+					css.addRule("div.desc {display; block; font-size: medium; padding-top: 0; padding-bottom: 0; padding-left: 15px; padding-right: 5px;}");
+					
 					doc.insertAfterStart(doc.getRootElements()[0].getElement(0), content.toString());
-				} catch (Exception e) {
-					logger.error("Failed to set JTextPane's HTMLDocument with entry from latest workflows feed", e);
+					
+					infoTextPane.setEditorKit(kit);
+					infoTextPane.setDocument(doc);
+					infoTextPane.setContentType("text/html");
+					infoTextPane.addHyperlinkListener(this);
+	
+					mainPanel.add(infoTextPane, BorderLayout.CENTER);
+					
+					// Work out the Workflow ID this entry is referring to:
+					String [] s = ent.getLink().split("/");
+					int workflowId = Integer.parseInt(s[s.length-1]);
+					logger.debug("Workflow ID: " + workflowId);
+					
+					JPanel buttonsPanel = new JPanel();
+					buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
+					//buttonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+					JButton previewButton = new JButton();
+					previewButton.setAction(this.parent.new PreviewWorkflowAction(workflowId));
+					buttonsPanel.add(previewButton);
+					JButton loadButton = new JButton();
+					loadButton.setAction(this.parent.new LoadWorkflowAction(workflowId));
+					buttonsPanel.add(loadButton);
+					mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+					
+					this.listPanel.add(mainPanel);
 				}
-				
-				infoTextPane.setEditorKit(kit);
-				infoTextPane.setDocument(doc);
-				infoTextPane.setContentType("text/html");
-				infoTextPane.addHyperlinkListener(this);
-
-				mainPanel.add(infoTextPane, BorderLayout.CENTER);
-				
-				JPanel buttonsPanel = new JPanel();
-				buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.LINE_AXIS));
-				//buttonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-				JButton previewButton = new JButton("Preview");
-				previewButton.setToolTipText("Click this button to preview this workflow in the Preview Workflow pane");
-				buttonsPanel.add(previewButton);
-				JButton loadButton = new JButton("Load");
-				loadButton.setToolTipText("Click this button to download and load this workflow in Taverna");
-				buttonsPanel.add(loadButton);
-				mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
-				
-				this.listPanel.add(mainPanel);
+				catch (Exception e) {
+					logger.error("Failed to add item entry to Latest Workflows list", e);
+				}
 			}
 			
 			//this.listPanel.setPreferredSize(null);
@@ -220,9 +231,7 @@ public class LatestWorkflowsPanel extends JPanel implements ActionListener,
 		
 		this.listPanel = new JPanel();
 		this.listPanel.setLayout(new BoxLayout(this.listPanel, BoxLayout.Y_AXIS));
-		JPanel dummyPanel = new JPanel(new BorderLayout());
-		dummyPanel.add(this.listPanel, BorderLayout.WEST);
-		this.listScrollPane = new JScrollPane(dummyPanel,
+		this.listScrollPane = new JScrollPane(this.listPanel,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		this.add(this.listScrollPane, BorderLayout.CENTER);
