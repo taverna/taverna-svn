@@ -35,7 +35,7 @@ public class WorkflowLaunchTestApp {
 	private static void createAndShowGUI(ReferenceService referenceService,
 			ReferenceContext referenceContext) {
 		// Create and set up the window.
-		JFrame frame = new JFrame("PreRegistrationTreeModel Demo 3");
+		JFrame frame = new JFrame("Workflow input builder");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		wlp = new WorkflowLaunchPanel(referenceService, referenceContext) {

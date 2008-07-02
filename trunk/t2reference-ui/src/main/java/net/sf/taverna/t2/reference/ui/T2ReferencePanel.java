@@ -32,6 +32,8 @@ public abstract class T2ReferencePanel extends JPanel {
 
 	private final ImageIcon editIcon = new ImageIcon(getClass().getResource(
 			"/icons/write_obj.gif"));
+	private final ImageIcon infoIcon = new ImageIcon(getClass().getResource(
+			"/icons/information.gif"));
 
 	// Return to the edit view
 	private final Action editAction;
@@ -60,8 +62,8 @@ public abstract class T2ReferencePanel extends JPanel {
 		// Construct tool bar
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
-		toolBar
-				.add(new JLabel("Database view, 'edit' to return to edit view."));
+		toolBar.add(new JLabel("Database view, 'edit' to return to edit view.",
+				infoIcon, JLabel.CENTER));
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JButton(editAction));
 		add(toolBar, BorderLayout.NORTH);
