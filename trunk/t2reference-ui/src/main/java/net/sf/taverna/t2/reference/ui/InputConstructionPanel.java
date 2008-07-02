@@ -58,6 +58,7 @@ public abstract class InputConstructionPanel extends JPanel {
 				// value to reference translator system.
 				final T2Reference ref = referenceService.register(pojo,
 						inputDepth, true, context);
+				System.out.println(ref);
 				// Create a new preview window and show it
 				T2ReferencePanel t2preview = new T2ReferencePanel(
 						referenceService, ref) {
@@ -70,14 +71,14 @@ public abstract class InputConstructionPanel extends JPanel {
 						inputDataCleared();
 					}
 				};
-				layout.addLayoutComponent(t2preview, "preview");
+				InputConstructionPanel.this.add(t2preview, "preview");
 				layout.show(InputConstructionPanel.this, "preview");
 				// Message that data has been registered
 				inputDataRegistered(ref);
 			}
 
 		};
-		layout.addLayoutComponent(preRegistrationPanel, "editor");
+		add(preRegistrationPanel, "editor");
 		layout.show(this, "editor");
 
 	}

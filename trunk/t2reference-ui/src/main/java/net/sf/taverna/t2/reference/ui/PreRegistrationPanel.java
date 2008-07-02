@@ -51,6 +51,8 @@ public abstract class PreRegistrationPanel extends JPanel {
 			.getResource("/icons/repo_rep.gif"));
 	private final ImageIcon errorIcon = new ImageIcon(getClass().getResource(
 			"/icons/error_tsk.gif"));
+	private final ImageIcon infoIcon = new ImageIcon(getClass().getResource(
+			"/icons/information.gif"));
 
 	private static final long serialVersionUID = 2304744530333262466L;
 	private final PreRegistrationTree tree;
@@ -116,7 +118,8 @@ public abstract class PreRegistrationPanel extends JPanel {
 		status = new JLabel();
 		status.setOpaque(false);
 		status.setBorder(new EmptyBorder(2, 2, 2, 2));
-		setStatus("Created panel for depth " + treeModel.getDepth(), null, null);
+		setStatus("Drag to re-arrange, or drag files, URLs, or text to add",
+				infoIcon, null);
 		add(status, BorderLayout.SOUTH);
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
@@ -173,7 +176,7 @@ public abstract class PreRegistrationPanel extends JPanel {
 					return;
 				} else {
 					treeModel.removeNodeFromParent(node);
-					setStatus("Deleted node", null, null);
+					setStatus("Deleted node", infoIcon, null);
 				}
 			}
 		};
@@ -186,7 +189,8 @@ public abstract class PreRegistrationPanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				treeModel.addPojoStructure((MutableTreeNode) treeModel
 						.getRoot(), "abcd", 0);
-				setStatus("Added new inline string", null, null);
+				setStatus("Added new inline string, triple click to edit.",
+						infoIcon, null);
 			}
 		};
 		addTextAction.putValue(Action.NAME, "New string");
@@ -200,11 +204,11 @@ public abstract class PreRegistrationPanel extends JPanel {
 						treeModel.addPojoStructure((MutableTreeNode) treeModel
 								.getRoot(), new ArrayList<Object>(), depth);
 						setStatus("Added new collection with depth " + depth,
-								null, null);
+								infoIcon, null);
 					}
 				};
-				addCollectionAction.putValue(Action.NAME, "New list (depth " + depth
-						+ ")");
+				addCollectionAction.putValue(Action.NAME, "New list (depth "
+						+ depth + ")");
 				addCollectionAction.putValue(Action.SMALL_ICON, addListIcon);
 				addCollectionActions.add(addCollectionAction);
 			}
@@ -219,6 +223,7 @@ public abstract class PreRegistrationPanel extends JPanel {
 				try {
 					handleRegistration(pojo);
 				} catch (Throwable t) {
+					t.printStackTrace();
 					setStatus(t.getMessage(), errorIcon, Color.red);
 				}
 			}
