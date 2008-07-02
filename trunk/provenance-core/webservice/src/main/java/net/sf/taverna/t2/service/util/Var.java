@@ -7,6 +7,20 @@ package net.sf.taverna.t2.service.util;
 public class Var {
 	String vName, pName;
 	boolean isInput;
+	String wfInstanceRef;
+	String type;
+	/**
+	 * @return the wfInstanceRef
+	 */
+	public String getWfInstanceRef() {
+		return wfInstanceRef;
+	}
+	/**
+	 * @param wfInstanceRef the wfInstanceRef to set
+	 */
+	public void setWfInstanceRef(String wfInstanceRef) {
+		this.wfInstanceRef = wfInstanceRef;
+	}
 	/**
 	 * @return the vName
 	 */
@@ -42,6 +56,18 @@ public class Var {
 	 */
 	public void setInput(boolean isInput) {
 		this.isInput = isInput;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
+	}
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 

@@ -9,7 +9,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import net.sf.taverna.t2.service.util.DBconnections;
+import net.sf.taverna.t2.service.util.ProcBinding;
 import net.sf.taverna.t2.service.util.Var;
+import net.sf.taverna.t2.service.util.VarBinding;
 
 /**
  * @author paolo
@@ -23,8 +26,11 @@ public class ProvenanceWriter {
 	public ProvenanceWriter() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		
 		// open singleton connection to DB
+		
+		DBconnections DBconn = new DBconnections();
+		
 		if (useDB) {
-			dbConn = openConnection();
+			dbConn = DBconn.openConnection();
 			System.out.println("successfully opened DB connection");
 		}
 	}
@@ -102,6 +108,20 @@ public class ProvenanceWriter {
 		System.out.println("workflow id: "+result+" rows added to DB");
 	}
 
+	
+	
+	public void addWFInstanceId(String wfId) throws SQLException {
+
+		Statement stmt = dbConn.createStatement();
+
+		String q = "INSERT INTO WfInstance SET instanceID = \""+wfId+"\"" +
+		           ", wfnameRef = \""+wfId+"\";";
+
+		System.out.println("executing: "+q);
+		int result = stmt.executeUpdate(q);
+		System.out.println("workflow id: "+result+" rows added to DB");
+	}
+	
 
 	/**
 	 * insert new processor into the provenance DB
@@ -122,43 +142,34 @@ public class ProvenanceWriter {
 	}
 
 
-	int extractIterationCount(String iteration) {
-		
-	// iteration is of the form "[n]" so we extract n
-	String iterationN = iteration.substring(1, iteration.length()-1);
-
-	if (iterationN.length() == 0) return 0;
 	
-	return Integer.parseInt(iterationN);
-
-	}
-	
-	public void addProcessorBinding(String processorId, String activityId,
-			String iteration, String dataflowId) throws SQLException {
-
-		int iterationN = extractIterationCount(iteration);
-		
-		System.out.println("iteration N = ["+iterationN+"]");
+	public void addProcessorBinding(ProcBinding pb) throws SQLException {
 		
 		Statement stmt = dbConn.createStatement();
 
 		String q = "INSERT INTO ProcBinding SET "+
-		           "pnameRef = \""+processorId+"\", "+
-			       "execIDRef = \""+dataflowId+"\", "+
-			       "iteration = \""+iterationN +"\", "+
-			       "actName = \""+activityId+"\";";
+		           "pnameRef = \""+pb.getPNameRef()+"\", "+
+			       "execIDRef = \""+pb.getExecIDRef()+"\", "+
+			       "iteration = \""+pb.getIteration()+"\", "+
+			       "actName = \""+pb.getActName()+"\";";
 
-//		System.out.println("executing: "+q);
+		System.out.println("executing: "+q);
 
 		int result = stmt.executeUpdate(q);
 
-		System.out.println("Processor binding: processor ["+processorId+"] activity ["+activityId+"]");
+		System.out.println("Processor binding: processor ["+pb.getPNameRef()+"] activity ["+pb.getActName()+"]");
 		System.out.println("*** addProcessorBinding: "+result+ " rows added to DB");
+		
 		
 	}
 
+			
 	
-	public String addCollection(String processorId, String collId, String parentCollectionId, String portName, String dataflowId) throws SQLException {
+	public String addCollection(String processorId, 
+						        String collId, 
+						        String parentCollectionId, 
+						        String portName, 
+						        String dataflowId) throws SQLException {
 		
 		String newParentCollectionId = null;
 		
@@ -189,75 +200,32 @@ public class ProvenanceWriter {
 	}
 
 	
-	/**
-	 * 
-	 * @param processorId
-	 * @param value  literal value, if type is literal
-	 * @param ref
-	 * @param one of valueType  literal, dataDocument, list
-	 * @param varName
-	 * @param collIdRef not null if value is part of a collection (list)
-	 * @param iterationCount  as specified in the iteration id
-	 * @param dataflowId
-	 * @throws SQLException
-	 */
-	public void addVarBinding(String processorId, 
-							  String value, 
-							  String ref,
-							  String valueType, 
-							  String varName,
-							  String collIdRef,
-							  int    positionInCollection,
-							  String iterationCount, 
-							  String dataflowId) throws SQLException {
+	public void addVarBinding(VarBinding vb) throws SQLException {
 		
 		Statement stmt = dbConn.createStatement();
 
-		int iterationN = extractIterationCount(iterationCount);
-		
 		String q = "INSERT INTO VarBinding SET "+
-				   "pnameRef = \""+processorId+"\", "+
-			       "wfInstanceRef = \""+dataflowId+"\",  "+
-			       "varNameRef = \""+varName+"\", "+
-			       "valueType = \""+valueType+"\", "+
-			       "value  = \""+value+"\", "+
-			       "ref    = \""+ref+"\", "+			       
-			       "collIdRef    = \""+collIdRef+"\", "+
-			       "iteration    = \""+iterationN+"\", "+
-			       "positionInColl = \""+positionInCollection+"\";";
-
-		System.out.println("Var binding: processor ["+processorId+"] varName ["+varName+
-						   "] collIdRef ["+collIdRef+"] iteration ["+iterationCount+
-						   "] positionInCollection ["+positionInCollection+"] value ["+value+"]");
+		   "pnameRef = \""+vb.getPNameRef()+"\", "+
+	       "wfInstanceRef = \""+vb.getWfInstanceRef()+"\",  "+
+	       "varNameRef = \""+vb.getVarNameRef()+"\", "+
+	       "valueType = \""+vb.getValueType()+"\", "+
+	       "value  = \""+vb.getValue()+"\", "+
+	       "ref    = \""+vb.getRef()+"\", "+			       
+	       "collIdRef    = \""+vb.getCollIDRef()+"\", "+
+	       "iteration    = \""+vb.getIteration()+"\", "+
+	       "positionInColl = \""+vb.getPositionInColl()+"\";";
+		
+		System.out.println("Var binding: processor ["+vb.getPNameRef()+"] varName ["+vb.getVarNameRef()+
+				   "] collIdRef ["+vb.getCollIDRef()+"] iteration ["+vb.getIteration()+
+				   "] positionInCollection ["+vb.getPositionInColl()+"] value ["+vb.getValue()+"]");
 
 		int result = stmt.executeUpdate(q);
 
 		System.out.println("*** addVarBinding: "+result+ " rows added to DB");
-		
+
 	}
+	
 
-
-	/**
-	 * connection parameters hardcoded for testing
-	 * @return a connection to the provenance DB
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 * @throws SQLException 
-	 */
-	private java.sql.Connection openConnection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
-
-		//		mysql on rpc264
-		String DB_URL = "jdbc:mysql://rpc264.cs.man.ac.uk/T2Provenance?autoReconnect=true";  // URL of database server
-		String DB_USER = "paolo";                        // database user id
-		String DB_PASSWD = "riccardino";                          // database password
-
-		Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-		System.out.println("opening DB connection to "+DB_URL);
-
-		return  DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWD);
-	}
 
 
 	/**
@@ -291,6 +259,12 @@ public class ProvenanceWriter {
 		result = stmt.executeUpdate(q);
 		System.out.println(result+ " rows removed from DB");
 
+		q = "DELETE FROM WfInstance;";		
+		System.out.println("executing: "+q);
+		result = stmt.executeUpdate(q);
+		System.out.println(result+ " rows removed from DB");
+
+		
 		q = "DELETE FROM ProcBinding;";		
 		System.out.println("executing: "+q);
 		result = stmt.executeUpdate(q);
