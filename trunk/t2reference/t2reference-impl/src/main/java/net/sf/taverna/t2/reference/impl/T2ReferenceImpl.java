@@ -37,7 +37,8 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 	/**
 	 * Construct a deep copy of the given T2Reference
 	 * 
-	 * @param source T2Reference to copy
+	 * @param source
+	 *            T2Reference to copy
 	 */
 	private T2ReferenceImpl(T2Reference source) {
 		super();
@@ -50,13 +51,12 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 
 	public static T2ReferenceImpl getAsImpl(T2Reference source) {
 		if (source instanceof T2ReferenceImpl) {
-			return (T2ReferenceImpl)source;
-		}
-		else {
+			return (T2ReferenceImpl) source;
+		} else {
 			return new T2ReferenceImpl(source);
 		}
 	}
-	
+
 	/**
 	 * Return whether the identified entity either is or contains errors
 	 */
@@ -211,6 +211,16 @@ public class T2ReferenceImpl implements T2Reference, Serializable,
 				return result;
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+		} else if (referenceType.equals(T2ReferenceType.ErrorDocument)) {
+			try {
+				URI result = new URI("t2:error//" + namespacePart + "?"
+						+ localPart + "/" + depth);
+				cachedUri = result;
+				return result;
+			} catch (URISyntaxException e) {
 				e.printStackTrace();
 				return null;
 			}
