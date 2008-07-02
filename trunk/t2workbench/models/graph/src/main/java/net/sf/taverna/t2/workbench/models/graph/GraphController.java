@@ -97,7 +97,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	
 	private Map<DataflowPort, ProcessorPort> dataflowToProcessorPorts = new HashMap<DataflowPort, ProcessorPort>();
 		
-	private Edits edits = EditsRegistry.getEdits();
+//	private Edits edits = EditsRegistry.getEdits();
 	
 	private EditManager editManager = EditManager.getInstance();
 
@@ -159,7 +159,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		nestedDataflowPorts.clear();
 		dataflowToProcessorPorts.clear();
 		graphElementMap.clear();
-		return generateGraph(dataflow, "", "dataflow_graph", 0);
+		return generateGraph(dataflow, "", dataflow.getLocalName(), 0);
 		
 	}
 	
@@ -312,13 +312,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 
 		//processors
 		for (Processor processor : dataflow.getProcessors()) {
-			graph.addNode(generateProcessorNode(processor, prefix, depth));
+			graph.addNode(generateProcessorNode(processor, graph.getId(), depth));
 		}
 
 		//merges
 		for (Merge merge : dataflow.getMerges()) {
 			if (showMerges) {
-				graph.addNode(generateMergeNode(merge, prefix, depth));				
+				graph.addNode(generateMergeNode(merge, graph.getId(), depth));				
 			} else {
 				Port sinkPort = null;
 				for (Datalink datalink : merge.getOutputPort().getOutgoingLinks()) {
@@ -340,13 +340,13 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		//dataflow outputs
 		List<? extends DataflowOutputPort> outputPorts = dataflow.getOutputPorts();
 		if (outputPorts.size() > 0) {
-			graph.addSubgraph(generateOutputsGraph(outputPorts, prefix, graph, depth));
+			graph.addSubgraph(generateOutputsGraph(outputPorts, graph.getId(), graph, depth));
 		}
 
 		//dataflow inputs
 		List<? extends DataflowInputPort> inputPorts = dataflow.getInputPorts();
 		if (inputPorts.size() > 0) {
-			graph.addSubgraph(generateInputsGraph(inputPorts, prefix, graph, depth));
+			graph.addSubgraph(generateInputsGraph(inputPorts, graph.getId(), graph, depth));
 		}
 
 		//datalinks
@@ -726,7 +726,20 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	 */
 	public void setNodeCompleted(String nodeId, float complete) {
 		if (graphElementMap.containsKey(nodeId)) {
-			graphElementMap.get(nodeId).setCompleted(complete);
+			GraphElement graphElement = graphElementMap.get(nodeId);
+			graphElement.setCompleted(complete);
+			if (graphElement.getDataflowObject() instanceof Processor) {
+				Processor processor = (Processor) graphElement.getDataflowObject();
+				for (ProcessorOutputPort port : processor.getOutputPorts()) {
+					for (Datalink datalink : port.getOutgoingLinks()) {
+						GraphElement element = dataflowToGraph.get(datalink);
+						if (element instanceof GraphEdge) {
+							GraphEdge edge = (GraphEdge) element;
+							edge.setActive(true);
+						}
+					}
+				}
+			}
 		}
 	}
 

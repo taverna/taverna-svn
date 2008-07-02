@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 
 import javax.swing.JComponent;
 
@@ -53,6 +54,12 @@ public class SVGGraphController extends GraphController {
 	private EdgeLine edgeLine;
 	
 	UpdateManager updateManager;
+
+	public static final String OUTPUT_COLOUR = "blue";
+
+	public static final int OUTPUT_FLASH_PERIOD = 200;
+
+	static final Timer timer = new Timer(true);
 
 	public SVGGraphController(Dataflow dataflow, JComponent component) {
 		super(dataflow, new SVGGraphModelFactory(), component);

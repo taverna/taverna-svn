@@ -1,5 +1,7 @@
 package net.sf.taverna.t2.workbench.models.graph.svg;
 
+import java.util.TimerTask;
+
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
 import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventListener;
@@ -163,6 +165,19 @@ public class SVGGraphEdge extends GraphEdge {
 							}
 						}
 					});
+		}
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+		if (active) {
+			setColour(SVGGraphController.OUTPUT_COLOUR);
+			SVGGraphController.timer.schedule(new TimerTask() {
+				public void run() {
+					resetStyle();
+				}
+			}, SVGGraphController.OUTPUT_FLASH_PERIOD);
 		}
 	}
 

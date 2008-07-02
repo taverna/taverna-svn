@@ -42,11 +42,11 @@ public class GraphMonitor implements Observer<MonitorMessage> {
 
 	private Map<String, Object> workflowObjects = new HashMap<String, Object>();
 
-	private Set<String> datalinks = Collections.synchronizedSet(new HashSet<String>());
+//	private Set<String> datalinks = Collections.synchronizedSet(new HashSet<String>());
 
 	private Map<String, GraphMonitorNode> processors = new HashMap<String, GraphMonitorNode>();
 
-	private Map<String, ResultListener> resultListeners = new HashMap<String, ResultListener>();
+//	private Map<String, ResultListener> resultListeners = new HashMap<String, ResultListener>();
 
 	private Timer updateTimer = new Timer(true);
 
@@ -90,14 +90,14 @@ public class GraphMonitor implements Observer<MonitorMessage> {
 					}
 				}
 
-			} else if (workflowObject instanceof WorkflowInstanceFacade) {
-				final WorkflowInstanceFacade facade = (WorkflowInstanceFacade) workflowObject;
-				updateTimer.schedule(new TimerTask() {
-					public void run() {
-						facade.removeResultListener(resultListeners
-								.remove(owningProcessId));
-					}
-				}, deregisterDelay);
+//			} else if (workflowObject instanceof WorkflowInstanceFacade) {
+//				final WorkflowInstanceFacade facade = (WorkflowInstanceFacade) workflowObject;
+//				updateTimer.schedule(new TimerTask() {
+//					public void run() {
+//						facade.removeResultListener(resultListeners
+//								.remove(owningProcessId));
+//					}
+//				}, deregisterDelay);
 			}
 		}
 	}
@@ -119,27 +119,26 @@ public class GraphMonitor implements Observer<MonitorMessage> {
 				if (owningProcess.length == 2) {
 					updateTask = new TimerTask() {
 						public void run() {
-							for (GraphMonitorNode node : processors
-									.values()) {
+							for (GraphMonitorNode node : processors.values()) {
 								node.update();
 							}
-							synchronized (datalinks) {
-								for (String datalink : datalinks) {
-//									graphController.fireDatalink(datalink);																	
-								}
-								datalinks.clear();
-							}
+//							synchronized (datalinks) {
+//								for (String datalink : datalinks) {
+////									graphController.fireDatalink(datalink);																	
+//								}
+//								datalinks.clear();
+//							}
 
 						}
 					};
 					updateTimer.schedule(updateTask, monitorRate, monitorRate);
 				}
-			} else if (workflowObject instanceof WorkflowInstanceFacade) {
-				WorkflowInstanceFacade facade = (WorkflowInstanceFacade) workflowObject;
-				ResultListener resultListener = new MonitorResultListener(
-						getProcessorId(owningProcess));
-				facade.addResultListener(resultListener);
-				resultListeners.put(owningProcessId, resultListener);
+//			} else if (workflowObject instanceof WorkflowInstanceFacade) {
+//				WorkflowInstanceFacade facade = (WorkflowInstanceFacade) workflowObject;
+//				ResultListener resultListener = new MonitorResultListener(
+//						getProcessorId(owningProcess));
+//				facade.addResultListener(resultListener);
+//				resultListeners.put(owningProcessId, resultListener);
 			}
 		}
 	}
@@ -184,19 +183,19 @@ public class GraphMonitor implements Observer<MonitorMessage> {
 		return sb.toString();
 	}
 
-	class MonitorResultListener implements ResultListener {
-
-		private String context;
-
-		public MonitorResultListener(String context) {
-			this.context = context;
-		}
-
-		public void resultTokenProduced(WorkflowDataToken token, String portName) {
-			datalinks.add(context + "WORKFLOWINTERNALSINK_" + portName);
-		}
-
-	}
+//	class MonitorResultListener implements ResultListener {
+//
+//		private String context;
+//
+//		public MonitorResultListener(String context) {
+//			this.context = context;
+//		}
+//
+//		public void resultTokenProduced(WorkflowDataToken token, String portName) {
+//			datalinks.add(context + "WORKFLOWINTERNALSINK_" + portName);
+//		}
+//
+//	}
 
 	/**
 	 * {@inheritDoc}

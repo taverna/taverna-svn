@@ -16,6 +16,8 @@ public class GraphEdge extends GraphElement {
 	private ArrowStyle arrowHeadStyle = ArrowStyle.NORMAL;
 
 	private ArrowStyle arrowTailStyle = ArrowStyle.NONE;
+	
+	private boolean active;
 
 	/**
 	 * Constructs a new instance of Edge.
@@ -97,4 +99,13 @@ public class GraphEdge extends GraphElement {
 		this.arrowTailStyle = arrowTailStyle;
 	}
 
+	/**
+	 * Sets the active state of the Edge.
+	 * 
+	 * @param active the active state of the Edge
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+	
 }
