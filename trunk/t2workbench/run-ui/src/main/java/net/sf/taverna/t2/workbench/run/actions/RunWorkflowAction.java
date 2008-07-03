@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.lang.ui.ModelMap;
 import net.sf.taverna.t2.reference.T2Reference;
-//import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
+import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.run.DataflowRunsComponent;
@@ -57,20 +57,20 @@ public class RunWorkflowAction extends AbstractAction {
 		JFrame frame = new JFrame("Workflow input builder");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-//		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(runComponent.getReferenceService(),
-//				runComponent.getReferenceContext()) {
-//			@Override
-//			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
-//				runComponent.runDataflow(dataflow, workflowInputs);
-//			}
-//		};
-//		wlp.setOpaque(true); // content panes must be opaque
-//
-//		for (DataflowInputPort input : dataflow.getInputPorts()) {
-//			wlp.addInputTab(input.getName(), input.getDepth());
-//		}
-//
-//		frame.setContentPane(wlp);
+		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(runComponent.getReferenceService(),
+				runComponent.getReferenceContext()) {
+			@Override
+			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
+				runComponent.runDataflow(dataflow, workflowInputs);
+			}
+		};
+		wlp.setOpaque(true); // content panes must be opaque
+
+		for (DataflowInputPort input : dataflow.getInputPorts()) {
+			wlp.addInputTab(input.getName(), input.getDepth());
+		}
+
+		frame.setContentPane(wlp);
 
 		// Display the window.
 		frame.pack();
