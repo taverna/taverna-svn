@@ -34,7 +34,9 @@ public class RunComponent extends JSplitPane {
 
 	private Dataflow dataflow;
 	
-	private Map<DataflowInputPort, T2Reference> inputs;
+	private ReferenceService referenceService;
+	
+	private Map<String, T2Reference> inputs;
 	
 	private Date date;
 
@@ -46,8 +48,9 @@ public class RunComponent extends JSplitPane {
 
 	private int results = 0;
 
-	public RunComponent(Dataflow dataflow, Map<DataflowInputPort, T2Reference> inputs, Date date) {
+	public RunComponent(Dataflow dataflow, ReferenceService referenceService, Map<String, T2Reference> inputs, Date date) {
 		this.dataflow = dataflow;
+		this.referenceService = referenceService;
 		this.inputs = inputs;
 		this.date = date;
 		
@@ -98,14 +101,13 @@ public class RunComponent extends JSplitPane {
 //		}
 		facade.fire();
 		if (inputs != null) {
-			for (Entry<DataflowInputPort, T2Reference> entry : inputs
-					.entrySet()) {
-				DataflowInputPort inputPort = entry.getKey();
+			for (Entry<String, T2Reference> entry : inputs.entrySet()) {
+				String portName = entry.getKey();
 				T2Reference identifier = entry.getValue();
 				int[] index = new int[] {};
 				try {
 					facade.pushData(new WorkflowDataToken("", index,
-							identifier, context), inputPort.getName());
+							identifier, context), portName);
 				} catch (TokenOrderException e) {
 					e.printStackTrace();
 				}
@@ -118,15 +120,7 @@ public class RunComponent extends JSplitPane {
 
 		InvocationContext context = new InvocationContext() {
 
-			private ApplicationContext context = null;
-
 			public ReferenceService getReferenceService() {
-				if (context == null) {
-					context = new RavenAwareClassPathXmlApplicationContext(
-							"inMemoryReferenceServiceContext.xml");
-				}
-				ReferenceService referenceService = (ReferenceService) context
-						.getBean("t2reference.service.referenceService");
 				return referenceService;
 			}
 

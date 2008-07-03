@@ -99,6 +99,7 @@
     <module>activity-palette-ui</module>
     <module>views</module>
     <module>perspective-results</module>
+    <module>reference-config</module>
   </modules>
   <repositories>
     <repository>

@@ -17,16 +17,24 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.springframework.context.ApplicationContext;
+
+import net.sf.taverna.platform.spring.RavenAwareClassPathXmlApplicationContext;
+import net.sf.taverna.t2.reference.ReferenceContext;
+import net.sf.taverna.t2.reference.ReferenceService;
 import net.sf.taverna.t2.reference.T2Reference;
 import net.sf.taverna.t2.workbench.ui.zaria.UIComponentSPI;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
-import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 
 public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI {
 
 	private static final long serialVersionUID = 1L;
 	
 	private static DataflowRunsComponent singletonInstance;
+	
+	private ReferenceService referenceService;
+	
+	private ReferenceContext referenceContext;
 
 	private DefaultListModel runListModel;
 	
@@ -34,6 +42,12 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 	
 	private DataflowRunsComponent() {
 		
+		ApplicationContext appContext = new RavenAwareClassPathXmlApplicationContext(
+		"inMemoryReferenceServiceContext.xml");
+		referenceService = (ReferenceService) appContext.getBean("t2reference.service.referenceService");
+//		referenceService = null;
+		referenceContext = null;
+
 		runListModel = new DefaultListModel();
 		runList = new JList(runListModel);
 		runList.setBorder(new CompoundBorder(LineBorder.createGrayLineBorder() ,new EmptyBorder(5,5,5,5)));
@@ -69,11 +83,19 @@ public class DataflowRunsComponent extends JSplitPane implements UIComponentSPI 
 		return singletonInstance;
 	}
 	
-	public void runDataflow(final Dataflow dataflow, Map<DataflowInputPort, T2Reference> inputs) {
-		RunComponent runComponent = new RunComponent(dataflow, inputs, new Date());
+	public void runDataflow(final Dataflow dataflow, Map<String, T2Reference> inputs) {
+		RunComponent runComponent = new RunComponent(dataflow, referenceService, inputs, new Date());
 		runListModel.add(0, runComponent);
 		runList.setSelectedIndex(0);
 		runComponent.run();
+	}
+
+	public ReferenceService getReferenceService() {
+		return referenceService;
+	}
+
+	public ReferenceContext getReferenceContext() {
+		return referenceContext;
 	}
 
 	public ImageIcon getIcon() {

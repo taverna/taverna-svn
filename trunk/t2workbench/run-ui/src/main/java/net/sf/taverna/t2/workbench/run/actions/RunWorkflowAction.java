@@ -2,11 +2,15 @@ package net.sf.taverna.t2.workbench.run.actions;
 
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import net.sf.taverna.t2.lang.ui.ModelMap;
+import net.sf.taverna.t2.reference.T2Reference;
+//import net.sf.taverna.t2.reference.ui.WorkflowLaunchPanel;
 import net.sf.taverna.t2.workbench.ModelMapConstants;
 import net.sf.taverna.t2.workbench.icons.WorkbenchIcons;
 import net.sf.taverna.t2.workbench.run.DataflowRunsComponent;
@@ -15,6 +19,8 @@ import net.sf.taverna.t2.workflowmodel.DataflowInputPort;
 import net.sf.taverna.t2.workflowmodel.DataflowValidationReport;
 
 public class RunWorkflowAction extends AbstractAction {
+
+	private static final long serialVersionUID = 1L;
 
 	private DataflowRunsComponent runComponent;
 	
@@ -34,7 +40,7 @@ public class RunWorkflowAction extends AbstractAction {
 			if (report.isValid()) {
 				List<? extends DataflowInputPort> inputPorts = dataflow.getInputPorts();
 				if (!inputPorts.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Inputs not implemented yet!");
+					showInputDialog(dataflow);
 				} else {
 					runComponent.runDataflow(dataflow, null);
 				}
@@ -46,9 +52,33 @@ public class RunWorkflowAction extends AbstractAction {
 		
 	}
 
+	private void showInputDialog(final Dataflow dataflow) {
+		// Create and set up the window.
+		JFrame frame = new JFrame("Workflow input builder");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+//		WorkflowLaunchPanel wlp = new WorkflowLaunchPanel(runComponent.getReferenceService(),
+//				runComponent.getReferenceContext()) {
+//			@Override
+//			public void handleLaunch(Map<String, T2Reference> workflowInputs) {
+//				runComponent.runDataflow(dataflow, workflowInputs);
+//			}
+//		};
+//		wlp.setOpaque(true); // content panes must be opaque
+//
+//		for (DataflowInputPort input : dataflow.getInputPorts()) {
+//			wlp.addInputTab(input.getName(), input.getDepth());
+//		}
+//
+//		frame.setContentPane(wlp);
+
+		// Display the window.
+		frame.pack();
+		frame.setVisible(true);
+	}
+	
 	private void showErrorDialog(String string, String string2) {
-		// TODO Auto-generated method stub
-		
+		JOptionPane.showMessageDialog(runComponent, string, string2, JOptionPane.ERROR_MESSAGE);		
 	}
 
 }
