@@ -4,11 +4,14 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
 import net.sf.taverna.t2.workbench.edits.EditManager;
+import net.sf.taverna.t2.workflowmodel.CompoundEdit;
 import net.sf.taverna.t2.workflowmodel.Dataflow;
 import net.sf.taverna.t2.workflowmodel.Edit;
 import net.sf.taverna.t2.workflowmodel.EditException;
@@ -22,12 +25,19 @@ import net.sf.taverna.t2.workflowmodel.processor.activity.ActivityConfigurationE
 
 import org.apache.log4j.Logger;
 
+/**
+ * TransferHandler for accepting ActivityAndBeanWrapper object dropped on the
+ * GraphView. On a successful drop a Processor is created from the Activity and
+ * configured with the ConfigurationBean.
+ * 
+ * @author David Withers
+ */
 public class GraphViewTransferHandler extends TransferHandler {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static Logger logger = Logger
-	.getLogger(GraphViewTransferHandler.class);
+			.getLogger(GraphViewTransferHandler.class);
 
 	private Edits edits = EditsRegistry.getEdits();
 
@@ -58,13 +68,12 @@ public class GraphViewTransferHandler extends TransferHandler {
 	 */
 	@Override
 	public boolean canImport(JComponent component, DataFlavor[] dataFlavors) {
-//		for (DataFlavor dataFlavor : dataFlavors) {
-//			if (dataFlavor.equals(activityDataFlavor)) {
-//				return true;
-//			}
-//		}
-//		return false;
-		return true;
+		for (DataFlavor dataFlavor : dataFlavors) {
+			if (dataFlavor.equals(activityDataFlavor)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -76,6 +85,7 @@ public class GraphViewTransferHandler extends TransferHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean importData(JComponent component, Transferable transferable) {
+		boolean result = false;
 		try {
 			Object data = transferable.getTransferData(activityDataFlavor);
 			if (data instanceof ActivityAndBeanWrapper) {
@@ -85,27 +95,26 @@ public class GraphViewTransferHandler extends TransferHandler {
 				activity.configure(bean);
 				Dataflow dataflow = graphViewComponent.getDataflow();
 				Processor p = Tools.buildFromActivity(activity);
-				String name=activityAndBeanWrapper.getName().replace(' ', '_');
-				name=Tools.uniqueProcessorName(name,dataflow);
-				Edit<Processor> renameProcessorEdit = edits.getRenameProcessorEdit(p, name);
-				Edit<Dataflow> edit = edits.getAddProcessorEdit(dataflow, p);
-				editManager.doDataflowEdit(dataflow, edit);
-				editManager.doDataflowEdit(dataflow, renameProcessorEdit);
+				String name = activityAndBeanWrapper.getName()
+						.replace(' ', '_');
+				name = Tools.uniqueProcessorName(name, dataflow);
+				List<Edit<?>> editList = new ArrayList<Edit<?>>();
+				editList.add(edits.getRenameProcessorEdit(p, name));
+				editList.add(edits.getAddProcessorEdit(dataflow, p));
+				editManager
+						.doDataflowEdit(dataflow, new CompoundEdit(editList));
+				result = true;
 			}
 		} catch (UnsupportedFlavorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Could not import data : unsupported flavor", e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Could not import data : I/O error", e);
 		} catch (EditException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Could not add processor : edit error", e);
 		} catch (ActivityConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Could not configure activity", e);
 		}
-		return true;
+		return result;
 	}
 
 }
