@@ -6,6 +6,7 @@ import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventList
 import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseMovedEventListener;
 import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseUpEventListener;
 
+import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMGElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -150,8 +151,9 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		if (this.graphController.updateManager != null) {
-			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (selected) {
@@ -363,8 +365,9 @@ public class SVGGraph extends Graph implements SVGMonitorShape {
 
 	public void setCompleted(final float complete) {
 		super.setCompleted(complete);
-		if (this.graphController.updateManager != null) {
-			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							completedPolygon.setAttribute(

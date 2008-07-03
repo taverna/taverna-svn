@@ -32,7 +32,7 @@ public class Tools {
 	 * @return an Edit that creates a Datalink between a source and sink port
 	 *         and connects the Datalink
 	 */
-	public static Edit<?> createAndConnectDatalinkEdit(Dataflow dataflow,
+	public static Edit<?> getCreateAndConnectDatalinkEdit(Dataflow dataflow,
 			EventForwardingOutputPort source, EventHandlingInputPort sink) {
 		Edit<?> edit = null;
 
@@ -77,6 +77,14 @@ public class Tools {
 		return edit;
 	}
 
+	public static Edit<?> getMoveDatalinkSinkEdit(Dataflow dataflow,
+			Datalink datalink, EventHandlingInputPort sink) {
+		List<Edit<?>> editList = new ArrayList<Edit<?>>();		
+		editList.add(edits.getDisconnectDatalinkEdit(datalink));
+		editList.add(getCreateAndConnectDatalinkEdit(dataflow, datalink.getSource(), sink));
+		return new CompoundEdit(editList);
+	}
+	
 	private static String getUniqueMergeInputPortName(Merge merge, String name,
 			int count) {
 		String uniqueName = name + count;

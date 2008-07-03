@@ -5,7 +5,9 @@ import java.util.TimerTask;
 import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
 import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseClickEventListener;
+import net.sf.taverna.t2.workbench.models.graph.svg.event.SVGMouseDownEventListener;
 
+import org.apache.batik.bridge.UpdateManager;
 import org.apache.batik.dom.svg.SVGOMEllipseElement;
 import org.apache.batik.dom.svg.SVGOMPathElement;
 import org.apache.batik.dom.svg.SVGOMPolygonElement;
@@ -22,6 +24,8 @@ public class SVGGraphEdge extends GraphEdge {
 	private SVGGraphController graphController;
 	
 	private SVGMouseClickEventListener mouseClickAction;
+
+	private SVGMouseDownEventListener mouseDownAction;
 
 	private SVGOMPathElement path;
 
@@ -44,6 +48,7 @@ public class SVGGraphEdge extends GraphEdge {
 	public SVGGraphEdge(GraphEventManager eventManager) {
 		super(eventManager);
 		mouseClickAction = new SVGMouseClickEventListener(eventManager, this);
+		mouseDownAction = new SVGMouseDownEventListener(eventManager, this);
 	}
 		
 	/**
@@ -112,6 +117,7 @@ public class SVGGraphEdge extends GraphEdge {
 
 		EventTarget t = (EventTarget) polygon;
 		t.addEventListener(SVGConstants.SVG_CLICK_EVENT_TYPE, mouseClickAction, false);
+		t.addEventListener(SVGConstants.SVG_MOUSEDOWN_EVENT_TYPE, mouseDownAction, false);
 	}
 
 	/* (non-Javadoc)
@@ -138,8 +144,9 @@ public class SVGGraphEdge extends GraphEdge {
 	 */
 	public void setSelected(final boolean selected) {
 		super.setSelected(selected);
-		if (this.graphController.updateManager != null) {
-			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							if (selected) {
@@ -181,6 +188,32 @@ public class SVGGraphEdge extends GraphEdge {
 		}
 	}
 
+	public void setVisible(final boolean visible) {
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							if (visible) {
+								path.setAttribute("visibility", "visible");
+								if (polygon != null) {
+									polygon.setAttribute("visibility", "visible");
+								} else {
+									ellipse.setAttribute("visibility", "visible");
+								}
+							} else {
+								path.setAttribute("visibility", "hidden");
+								if (polygon != null) {
+									polygon.setAttribute("visibility", "hidden");
+								} else {
+									ellipse.setAttribute("visibility", "hidden");
+								}
+							}
+						}
+					});
+		}
+	}
+	
 	/**
 	 * Set the SVG colour attribute for the edge.
 	 * 
@@ -188,8 +221,9 @@ public class SVGGraphEdge extends GraphEdge {
 	 *            the new colour
 	 */
 	public void setColour(final String colour) {
-		if (this.graphController.updateManager != null) {
-			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							path.setAttribute(
@@ -210,8 +244,9 @@ public class SVGGraphEdge extends GraphEdge {
 	 * 
 	 */
 	public void resetStyle() {
-		if (this.graphController.updateManager != null) {
-			this.graphController.updateManager.getUpdateRunnableQueue().invokeLater(
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
 					new Runnable() {
 						public void run() {
 							path.setAttribute(

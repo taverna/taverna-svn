@@ -128,6 +128,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 	
 	protected GraphElement edgeCreationSink;
 	
+	protected GraphEdge edgeMoveElement;
+	
 	protected boolean edgeCreationFromSource = false;
 	
 	protected boolean edgeCreationFromSink = false;
@@ -172,6 +174,11 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 			} else if (dataflowObject instanceof ProcessorInputPort || dataflowObject instanceof DataflowOutputPort) {
 				edgeCreationSink = graphElement;
 				edgeCreationFromSink = true;
+			} else if (graphElement instanceof GraphEdge) {
+				GraphEdge edge = (GraphEdge) graphElement;
+				edgeCreationSource = edge.getSource();
+				edgeCreationFromSource = true;
+				edgeMoveElement = edge;
 			}
 		}
 		return edgeCreationFromSource || edgeCreationFromSink;
@@ -230,7 +237,8 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		return edgeValid;
 	}
 
-	public void stopEdgeCreation(GraphElement graphElement, Point point) {
+	public boolean stopEdgeCreation(GraphElement graphElement, Point point) {
+		boolean edgeCreated = false;
 		if (edgeCreationSource != null && edgeCreationSink != null) {
 			EventForwardingOutputPort source = null;
 			EventHandlingInputPort sink = null;
@@ -255,18 +263,29 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 				sink = (ProcessorInputPort) showPortOptions(ports, "input", componentForPopups, point);
 			}
 			if (source != null && sink != null) {
-				Edit<?> edit = Tools.createAndConnectDatalinkEdit(dataflow, source, sink);
-				try {
-					editManager.doDataflowEdit(dataflow, edit);
-				} catch (EditException e) {
-					logger.debug("Failed to create datalink from '" + source.getName() + "' to '" + sink.getName() + "'");
+				Edit<?> edit = null;
+				if (edgeMoveElement == null) {
+					edit = Tools.getCreateAndConnectDatalinkEdit(dataflow, source, sink);
+				} else if (edgeMoveElement.getSink().getDataflowObject() != sink) {
+					edit = Tools.getMoveDatalinkSinkEdit(dataflow, (Datalink) edgeMoveElement.getDataflowObject(), sink);
+				}
+				if (edit != null) {
+					try {
+						editManager.doDataflowEdit(dataflow, edit);
+						edgeCreated = true;
+					} catch (EditException e) {
+						logger.debug("Failed to create datalink from '" + source.getName() + "' to '" + sink.getName() + "'");
+					}
 				}
 			}
 		}
 		edgeCreationSource = null;
 		edgeCreationSink = null;
+		edgeMoveElement = null;
 		edgeCreationFromSource = false;
 		edgeCreationFromSink = false;
+		
+		return edgeCreated;
 	}
 	
 	private Object showPortOptions(List<? extends Port> ports, String portType, Component component, Point point) {
@@ -339,7 +358,7 @@ public abstract class GraphController implements Observer<DataflowSelectionMessa
 		
 		//dataflow outputs
 		List<? extends DataflowOutputPort> outputPorts = dataflow.getOutputPorts();
-		if (outputPorts.size() > 0) {
+		if (outputPorts.size() > 0 || depth > 0) {
 			graph.addSubgraph(generateOutputsGraph(outputPorts, graph.getId(), graph, depth));
 		}
 

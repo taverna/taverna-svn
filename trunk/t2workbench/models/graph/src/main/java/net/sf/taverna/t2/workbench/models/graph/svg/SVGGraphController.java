@@ -16,6 +16,7 @@ import javax.swing.JComponent;
 import net.sf.taverna.t2.workbench.models.graph.DotWriter;
 import net.sf.taverna.t2.workbench.models.graph.Graph;
 import net.sf.taverna.t2.workbench.models.graph.GraphController;
+import net.sf.taverna.t2.workbench.models.graph.GraphEdge;
 import net.sf.taverna.t2.workbench.models.graph.GraphElement;
 import net.sf.taverna.t2.workbench.models.graph.GraphEventManager;
 import net.sf.taverna.t2.workbench.models.graph.GraphNode;
@@ -39,6 +40,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.svg.SVGDocument;
+import org.w3c.dom.svg.SVGPathSeg;
+import org.w3c.dom.svg.SVGPoint;
 import org.w3c.dom.svg.SVGPointList;
 
 public class SVGGraphController extends GraphController {
@@ -81,7 +84,7 @@ public class SVGGraphController extends GraphController {
 			DotWriter dotWriter = new DotWriter(stringWriter);
 			dotWriter.writeGraph(graph);
 			svgDocument = SVGUtil.getSVG(stringWriter.toString());
-			edgeLine = EdgeLine.createAndAdd(svgDocument);
+			edgeLine = EdgeLine.createAndAdd(svgDocument, this);
 			mapNodes(svgDocument.getChildNodes());
 		} catch (IOException e) {
 			logger.error("Couldn't generate svg", e);
@@ -98,7 +101,13 @@ public class SVGGraphController extends GraphController {
 		boolean alreadyStarted = edgeCreationFromSource || edgeCreationFromSink;
 		boolean started = super.startEdgeCreation(graphElement, point);
 		if (!alreadyStarted && started) {
-			edgeLine.setSourcePoint(point);
+			if (edgeMoveElement instanceof SVGGraphEdge) {
+				SVGGraphEdge svgGraphEdge = (SVGGraphEdge) edgeMoveElement;
+				SVGPoint sourcePoint = svgGraphEdge.getPath().getPointAtLength(0f);
+				edgeLine.setSourcePoint(new Point((int) sourcePoint.getX(), (int) sourcePoint.getY()));
+			} else {
+				edgeLine.setSourcePoint(point);
+			}
 			edgeLine.setTargetPoint(point);
 			edgeLine.setColour(Color.BLACK);
 			// edgeLine.setVisible(true);
@@ -108,6 +117,9 @@ public class SVGGraphController extends GraphController {
 
 	public boolean moveEdgeCreationTarget(GraphElement graphElement, Point point) {
 		boolean linkValid = super.moveEdgeCreationTarget(graphElement, point);
+		if (edgeMoveElement instanceof SVGGraphEdge) {
+			((SVGGraphEdge) edgeMoveElement).setVisible(false);
+		}
 		if (edgeCreationFromSink) {
 			edgeLine.setSourcePoint(point);
 			if (linkValid) {
@@ -128,9 +140,14 @@ public class SVGGraphController extends GraphController {
 		return linkValid;
 	}
 
-	public void stopEdgeCreation(GraphElement graphElement, Point point) {
-		super.stopEdgeCreation(graphElement, point);
+	public boolean stopEdgeCreation(GraphElement graphElement, Point point) {
+		GraphEdge movedEdge = edgeMoveElement;
+		boolean edgeCreated = super.stopEdgeCreation(graphElement, point);
+		if (!edgeCreated && movedEdge instanceof SVGGraphEdge) {
+			((SVGGraphEdge) movedEdge).setVisible(true);
+		}
 		edgeLine.setVisible(false);
+		return edgeCreated;
 	}
 
 //	private void mapGraphElements(Graph graph) {
@@ -718,12 +735,15 @@ class EdgeLine {
 	private Element line;
 
 	private Element pointer;
+	
+	private SVGGraphController graphController;
 
-	private EdgeLine() {
+	private EdgeLine(SVGGraphController graphController) {
+		this.graphController = graphController;
 	}
 
-	public static EdgeLine createAndAdd(SVGDocument svgDocument) {
-		EdgeLine edgeLine = new EdgeLine();
+	public static EdgeLine createAndAdd(SVGDocument svgDocument, SVGGraphController graphController) {
+		EdgeLine edgeLine = new EdgeLine(graphController);
 		edgeLine.line = svgDocument.createElementNS(SVGUtil.svgNS,
 				SVGConstants.SVG_LINE_TAG);
 		edgeLine.line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE,
@@ -752,48 +772,80 @@ class EdgeLine {
 		return edgeLine;
 	}
 
-	public void setSourcePoint(Point point) {
-		line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point
-				.getX()));
-		line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point
-				.getY()));
+	public void setSourcePoint(final Point point) {
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							line.setAttribute(SVGConstants.SVG_X1_ATTRIBUTE, String.valueOf(point
+									.getX()));
+							line.setAttribute(SVGConstants.SVG_Y1_ATTRIBUTE, String.valueOf(point
+									.getY()));
 
-		float x = Float.parseFloat(line
-				.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
-		float y = Float.parseFloat(line
-				.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
-		double angle = SVGUtil.calculateAngle(line);
+							float x = Float.parseFloat(line
+									.getAttribute(SVGConstants.SVG_X2_ATTRIBUTE));
+							float y = Float.parseFloat(line
+									.getAttribute(SVGConstants.SVG_Y2_ATTRIBUTE));
+							double angle = SVGUtil.calculateAngle(line);
 
-		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
-				+ x + " " + y + ") rotate(" + angle + " 0 0) ");
+							pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
+									+ x + " " + y + ") rotate(" + angle + " 0 0) ");
+						}
+					});
+		}
 	}
 
-	public void setTargetPoint(Point point) {
-		line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point
-				.getX()));
-		line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point
-				.getY()));
+	public void setTargetPoint(final Point point) {
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							line.setAttribute(SVGConstants.SVG_X2_ATTRIBUTE, String.valueOf(point
+									.getX()));
+							line.setAttribute(SVGConstants.SVG_Y2_ATTRIBUTE, String.valueOf(point
+									.getY()));
 
-		double angle = SVGUtil.calculateAngle(line);
-		pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
-				+ point.x + " " + point.y + ") rotate(" + angle + " 0 0) ");
+							double angle = SVGUtil.calculateAngle(line);
+							pointer.setAttribute(SVGConstants.SVG_TRANSFORM_ATTRIBUTE, "translate("
+									+ point.x + " " + point.y + ") rotate(" + angle + " 0 0) ");
+						}
+					});
+		}
 	}
 
-	public void setColour(Color colour) {
-		String hexColour = SVGUtil.getHexValue(colour);
-		line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:"
-				+ hexColour + ";");
-		pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:"
-				+ hexColour + ";stroke:" + hexColour + ";");
+	public void setColour(final Color colour) {
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							String hexColour = SVGUtil.getHexValue(colour);
+							line.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:none;stroke:"
+									+ hexColour + ";");
+							pointer.setAttribute(SVGConstants.SVG_STYLE_ATTRIBUTE, "fill:"
+									+ hexColour + ";stroke:" + hexColour + ";");
+						}
+					});
+		}
 	}
 
-	public void setVisible(boolean visible) {
-		if (visible) {
-			line.setAttribute("visibility", "visible");
-			pointer.setAttribute("visibility", "visible");
-		} else {
-			line.setAttribute("visibility", "hidden");
-			pointer.setAttribute("visibility", "hidden");
+	public void setVisible(final boolean visible) {
+		UpdateManager updateManager = this.graphController.updateManager;
+		if (updateManager != null) {
+			updateManager.getUpdateRunnableQueue().invokeLater(
+					new Runnable() {
+						public void run() {
+							if (visible) {
+								line.setAttribute("visibility", "visible");
+								pointer.setAttribute("visibility", "visible");
+							} else {
+								line.setAttribute("visibility", "hidden");
+								pointer.setAttribute("visibility", "hidden");
+							}
+						}
+					});
 		}
 	}
 }
