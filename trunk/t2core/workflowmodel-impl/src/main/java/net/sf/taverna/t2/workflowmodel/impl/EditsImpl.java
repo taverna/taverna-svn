@@ -23,6 +23,7 @@ import net.sf.taverna.t2.workflowmodel.Edits;
 import net.sf.taverna.t2.workflowmodel.EventForwardingOutputPort;
 import net.sf.taverna.t2.workflowmodel.EventHandlingInputPort;
 import net.sf.taverna.t2.workflowmodel.Merge;
+import net.sf.taverna.t2.workflowmodel.MergeInputPort;
 import net.sf.taverna.t2.workflowmodel.OrderedPair;
 import net.sf.taverna.t2.workflowmodel.OutputPort;
 import net.sf.taverna.t2.workflowmodel.Processor;
@@ -52,6 +53,15 @@ public class EditsImpl implements Edits {
 
 	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow) {
 		return new DataflowOutputPortImpl(name, dataflow);
+	}
+
+	public MergeInputPort createMergeInputPort(Merge merge, String name,
+			int depth) {
+		if (merge instanceof MergeImpl) {
+			return new MergeInputPortImpl((MergeImpl) merge, name, depth);
+		} else {
+			return null;
+		}
 	}
 
 	public Edit<Dataflow> getAddProcessorEdit(Dataflow dataflow,
@@ -224,7 +234,6 @@ public class EditsImpl implements Edits {
 	public Edit<AnnotationAssertion> getAddAnnotationRole(
 			AnnotationAssertion annotationAssertion,
 			AnnotationRole annotationRole) {
-		// TODO Auto-generated method stub
 		return new AddAnnotationRoleEdit(annotationAssertion, annotationRole);
 	}
 
@@ -238,7 +247,6 @@ public class EditsImpl implements Edits {
 	@SuppressWarnings("unchecked")
 	public Edit<AnnotationAssertion> getAddCreator(
 			AnnotationAssertion annotationAssertion, Person person) {
-		// TODO Auto-generated method stub
 		return new AddCreatorEdit(annotationAssertion, person);
 	}
 
@@ -279,6 +287,11 @@ public class EditsImpl implements Edits {
 	public Edit<Dataflow> getAddDataflowOutputPortEdit(Dataflow dataflow,
 			DataflowOutputPort dataflowOutputPort) {
 		return new AddDataflowOutputPortEdit(dataflow, dataflowOutputPort);
+	}
+
+	public Edit<Merge> getAddMergeInputPortEdit(Merge merge,
+			MergeInputPort mergeInputPort) {
+		return new AddMergeInputPortEdit(merge, mergeInputPort);
 	}
 
 }

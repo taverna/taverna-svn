@@ -83,6 +83,16 @@ public interface Edits {
 	public DataflowOutputPort createDataflowOutputPort(String name, Dataflow dataflow);
 	
 	/**
+	 * Builds a new MergeOutputPort.
+	 * 
+	 * @param merge the merge that the port eill be added to
+	 * @param name the name of the port
+	 * @param depth the depth of the port
+	 * @return a new MergeOutputPort
+	 */
+	public MergeInputPort createMergeInputPort(Merge merge, String name, int depth) ;
+
+	/**
 	 * Add an {@link AnnotationAssertion} to an {@link AnnotationChain}
 	 * 
 	 * @param annotationChain
@@ -348,6 +358,16 @@ public interface Edits {
 	 */
 	public Edit<Dataflow> getAddDataflowInputPortEdit(Dataflow dataflow,
 			DataflowInputPort dataflowInputPort);
+
+	/**
+	 * Returns an edit to add a MergeInputPort to a Merge.
+	 * 
+	 * @param merge merge to add the port to
+	 * @param mergeInputPort the port to add to the merge
+	 * @return an edit to add a MergeInputPort to a Merge
+	 */
+	public Edit<Merge> getAddMergeInputPortEdit(Merge merge,
+			MergeInputPort mergeInputPort);
 
 	/**
 	 * Rename a processor
