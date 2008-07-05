@@ -70,6 +70,39 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
         return "Whip Actions";
     }
 
+    public void openWorkflow(Component sourceComponent) {
+        final ScuflModel model = updateModel();
+        boolean workflowOpened = false;
+        InputStream in;
+        try {
+            DataBundle db = bundles.get(getValue(NAME));
+            if (db == null) {
+                return;
+            }
+            in = db.getEntryPoint();
+            if (in == null) {
+                return;
+            }
+            XScuflParser.populate(in, model, null);
+            workflowOpened = true;
+        } catch (Exception ex) {
+            logger.warn("Can't open in online mode " + getValue(NAME), ex);
+            model.clear();
+            JOptionPane.showMessageDialog(
+                    sourceComponent,
+                    "Problem opening workflow: \n\n"
+                            + ex.getMessage(),
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_FAILED);
+
+        }
+        if (workflowOpened) {
+            ScuflModelSet.getInstance().addModel(model);
+            WorkflowChanges.getInstance().synced(model);
+            firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_OPENED);
+        }
+    }
+
     public void artefactArrived(String s, DataBundle bundle) {
         if (bundle != null) {
             String entry = bundle.getMetadatDocument().getEntryPoint();
@@ -77,7 +110,9 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
                 return;
             }
             bundles.put(entry, bundle);
-            putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
+            //putValue(SMALL_ICON, TavernaIcons.updateRecommendedIcon);
+            // ANDREW: opens workflow immediately in the viewer now. So don't need icon to alert user
+            openWorkflow(null);
         }
     }
 
@@ -122,36 +157,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             }
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    final ScuflModel model = updateModel();
-                    boolean workflowOpened = false;
-                    InputStream in;
-                    try {
-                        DataBundle db = bundles.get(getValue(NAME));
-                        if (db == null) {
-                            return;
-                        }
-                        in = db.getEntryPoint();
-                        if (in == null) {
-                            return;
-                        }
-                        XScuflParser.populate(in, model, null);
-                        workflowOpened = true;
-                    } catch (Exception ex) {
-                        logger.warn("Can't open in online mode " + getValue(NAME), ex);
-                        model.clear();
-                        JOptionPane.showMessageDialog(
-                                sourceComponent,
-                                "Problem opening workflow: \n\n"
-                                        + ex.getMessage(),
-                                "Warning", JOptionPane.WARNING_MESSAGE);
-                        firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_FAILED);
-
-                    }
-                    if (workflowOpened) {
-                        ScuflModelSet.getInstance().addModel(model);
-                        WorkflowChanges.getInstance().synced(model);
-                        firePropertyChange(WORKFLOW_STATUS, getValue(NAME), WORKFLOW_OPENED);
-                    }
+                    openWorkflow(sourceComponent);
                 }
             });
         }
@@ -210,30 +216,30 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
             });
         }
 
-        private Frame getFrame(Component c) {
-            Frame f = null;
-            while (c != null) {
-                if (c instanceof Frame) {
-                    f = (Frame) c;
-                    break;
-                }
-                c = c.getParent();
-            }
-            return f;
-        }
-
-        private void saveToFile(ScuflModel model, File file)
-                throws FileNotFoundException, SecurityException {
-            OutputStreamWriter writer = new OutputStreamWriter(
-                    new FileOutputStream(file), Charset.forName("UTF-8"));
-            PrintWriter out = new PrintWriter(writer);
-            out.print(XScuflView.getXMLText(model));
-            out.flush();
-            out.close();
-            logger.info("Saved " + model + " to " + file);
-        }
     }
 
+    private Frame getFrame(Component c) {
+        Frame f = null;
+        while (c != null) {
+            if (c instanceof Frame) {
+                f = (Frame) c;
+                break;
+            }
+            c = c.getParent();
+        }
+        return f;
+    }
+
+    private void saveToFile(ScuflModel model, File file)
+            throws FileNotFoundException, SecurityException {
+        OutputStreamWriter writer = new OutputStreamWriter(
+                new FileOutputStream(file), Charset.forName("UTF-8"));
+        PrintWriter out = new PrintWriter(writer);
+        out.print(XScuflView.getXMLText(model));
+        out.flush();
+        out.close();
+        logger.info("Saved " + model + " to " + file);
+    }
 
     protected ScuflModel updateModel() {
         //model.clear();
