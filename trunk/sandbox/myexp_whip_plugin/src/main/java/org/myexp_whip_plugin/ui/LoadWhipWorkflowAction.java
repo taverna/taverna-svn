@@ -197,7 +197,7 @@ public class LoadWhipWorkflowAction extends ScuflModelActionSPI implements Artef
                         doc.addDataType(XScufl.XScuflNS.getURI());
                         Author a = new Author(desc.getAuthor());
                         doc.addAuthor(a);
-                        owner.publish(frame, f, doc);
+                        owner.publish(frame, f, doc, false);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                         JOptionPane.showMessageDialog(
